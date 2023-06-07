@@ -1,0 +1,420 @@
+package me.vagdedes.spartan.features.synchronicity.cloud;
+
+import me.vagdedes.spartan.Register;
+import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.features.synchronicity.AutoUpdater;
+import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
+import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
+import me.vagdedes.spartan.system.*;
+import me.vagdedes.spartan.utils.java.RequestUtils;
+import me.vagdedes.spartan.utils.java.StringUtils;
+import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class CloudFeature {
+
+    // URLs
+    static final String website = "aHR0cHM6Ly92YWdkZWRlcy5jb20vbWluZWNyYWZ0L2Nsb3VkLw==",
+            accountWebsite = "aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC9hcGkvdmVyaWZ5RG93bmxvYWQv";
+    public static final String downloadWebsite = "aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC9kb3dubG9hZEZpbGUvP3Rva2VuPQ==";
+
+    // Cache
+    private static final Map<Enums.HackType, String[]> disabledDetections = new LinkedHashMap<>(Enums.hackTypes().length);
+    static final CopyOnWriteArrayList<UUID> punishedPlayers = new CopyOnWriteArrayList<>(),
+            updatedPunishedPlayers = new CopyOnWriteArrayList<>();
+
+    // Exception
+    static final int exceptionCooldownMinutes = 5 * 1200;
+    static int cloudExceptionCooldown = 0;
+
+    // Frequencies, Cooldowns & Timers
+    private static final int connectionRefreshFrequencyInMinutes = 10;
+    private static int connectionRefreshTimer = connectionRefreshFrequencyInMinutes * 1200;
+    private static long connectionFailedCooldown = 0L, connectionRefreshCooldown = 0L;
+
+    // Features
+    static String outdatedVersionMessage = null;
+    static int outdatedVersion = AutoUpdater.NOT_CHECKED;
+    static boolean ignoreServerLimits = false, serverLimited = false;
+
+    // Arguments
+    static String identification = "", token = null;
+    static final double version = Math.abs(Piracy.version);
+    public static final String separator = ">@#&!%<;=";
+
+    static {
+        clear(false);
+
+        if (Register.isPluginLoaded()) {
+            SpartanBukkit.runRepeatingTask(() -> {
+                if (cloudExceptionCooldown > 0) {
+                    cloudExceptionCooldown -= 1;
+
+                    if (cloudExceptionCooldown == 0) {
+                        Threads.execute(SpartanBukkit.connectionThread, () -> {
+                            refresh(true);
+                            refresh(false);
+                        });
+                    }
+                } else if (cloudExceptionCooldown == 0) {
+                    if (connectionRefreshTimer == 0) {
+                        Threads.execute(SpartanBukkit.connectionThread, () -> {
+                            refresh(true);
+                            refresh(false);
+                        });
+                    } else {
+                        connectionRefreshTimer -= 1;
+                    }
+                }
+            }, 1L, 1L);
+        }
+    }
+
+    public static String getMaximumServerLimitMessage() {
+        return "You have reached your Maximum Server Limit. " +
+                "Register your account on §nhttps://vagdedes.com/account/profile§r " +
+                "§lOR§r join the Discord server " +
+                "§lOR§r use the " + IDs.getPlatform(true) + " platform to verify";
+    }
+
+    // Separator
+
+    public static boolean hasToken() {
+        return token != null && !IDs.hasUserIDByDefault;
+    }
+
+    public static String getToken() {
+        return IDs.hasUserIDByDefault ? null : token;
+    }
+
+    public static String getRawToken() {
+        return token;
+    }
+
+    // Separator
+
+    public static boolean canSynchroniseFiles(boolean exception) {
+        return Settings.getBoolean("Cloud.synchronise_files")
+                && !IDs.isPreview()
+                && (!exception || !hasException());
+    }
+
+    // Separator
+
+    public static boolean hasException() {
+        return cloudExceptionCooldown != 0;
+    }
+
+    public static String getOutdatedVersionMessage() {
+        return outdatedVersionMessage;
+    }
+
+    public static boolean isServerLimited() { // Once
+        return serverLimited;
+    }
+
+    // Separator
+
+    public static String[] getDisabledDetections(Enums.HackType check) {
+        return disabledDetections.getOrDefault(check, new String[]{});
+    }
+
+    public static boolean isInformationCancelled(Enums.HackType hackType, String info) {
+        String[] disabledDetections = CloudFeature.disabledDetections.get(hackType);
+
+        if (disabledDetections != null && disabledDetections.length > 0) {
+            if (SpartanBukkit.isProductionServer()) {
+                for (String detection : disabledDetections) {
+                    if (info.contains(detection)) {
+                        return true;
+                    }
+                }
+            } else {
+                for (String detection : disabledDetections) {
+                    if (!detection.startsWith(" ") && info.contains(detection)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // Separator
+
+    static boolean recentError(long ms, boolean includePreview) {
+        return connectionFailedCooldown >= ms && (includePreview || !IDs.isPreview());
+    }
+
+    static boolean recentError(long ms) {
+        return recentError(ms, false);
+    }
+
+    public static void throwError(Exception object, String function) {
+        long ms = System.currentTimeMillis();
+
+        if (!recentError(ms)) {
+            connectionFailedCooldown = ms + (connectionRefreshFrequencyInMinutes * 60_000L);
+
+            if (!hasException() && AwarenessNotifications.areEnabled() && SpartanBukkit.isProductionServer()) {
+                AwarenessNotifications.forcefullySend("(" + function + ") Failed to connect to the Game Cloud.");
+                AwarenessNotifications.forcefullySend("Error: " + object.getMessage());
+                AwarenessNotifications.forcefullySend("In Depth: " + object);
+            }
+        }
+    }
+
+    public static void clear(boolean cache) {
+        if (cache) {
+            disabledDetections.clear();
+            punishedPlayers.clear();
+            updatedPunishedPlayers.clear();
+        } else {
+            identification = "identification=" + IDs.user() + "|" + IDs.nonce();
+        }
+    }
+
+    public static void refresh(boolean independent) {
+        long ms = System.currentTimeMillis();
+
+        if (!recentError(ms) && connectionRefreshCooldown <= ms) {
+            connectionRefreshCooldown = ms + 60_000L;
+            connectionRefreshTimer = connectionRefreshFrequencyInMinutes * 1200;
+            boolean async = !SpartanBukkit.isSynchronised(),
+                    validIDs = IDs.isValid();
+
+            // Separator
+            if (independent) {
+                if (async) {
+                    if (validIDs) {
+                        SpartanEdition.refresh();
+                    }
+                } else if (validIDs) {
+                    Threads.execute(SpartanBukkit.connectionThread, SpartanEdition::refresh);
+                }
+            } else if (async) {
+                if (validIDs) {
+                    CloudConnections.punishPlayers();
+                }
+            } else if (validIDs) {
+                Threads.execute(SpartanBukkit.connectionThread, CloudConnections::punishPlayers);
+            }
+
+            // Separator
+            if (independent
+                    && validIDs
+                    && outdatedVersion == AutoUpdater.NOT_CHECKED
+                    && outdatedVersionMessage == null) {
+                Runnable runnable = () -> {
+                    try {
+                        String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
+                                + "&action=get&data=outdatedVersionCheck&version=" + version);
+
+                        if (results.length > 0) {
+                            String data = results[0];
+
+                            if (data.equals("exception")) {
+                                cloudExceptionCooldown = exceptionCooldownMinutes;
+                            } else if (data.equals("true")) {
+                                String token = getToken();
+
+                                if (token != null) {
+                                    if (AutoUpdater.downloadFile(token)) {
+                                        outdatedVersion = AutoUpdater.UPDATE_SUCCESS;
+                                    } else {
+                                        outdatedVersion = AutoUpdater.UPDATE_FAILURE;
+                                    }
+                                } else {
+                                    outdatedVersion = AutoUpdater.OUTDATED;
+                                }
+                            } else if (data.equals("false")) {
+                                outdatedVersion = AutoUpdater.NOT_OUTDATED;
+                            } else {
+                                outdatedVersionMessage = data;
+                            }
+                        }
+                    } catch (Exception e) {
+                        throwError(e, "OVC:GET");
+                    }
+                };
+
+                if (async) {
+                    runnable.run();
+                } else {
+                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                }
+            }
+
+            // Separator
+            if (independent && validIDs && canSynchroniseFiles(true)) {
+                Runnable runnable = () -> {
+                    try {
+                        String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
+                                + "&action=get&data=automaticConfigurationChanges&version=" + version + "&value=" + Bukkit.getPort());
+
+                        if (results.length > 0) {
+                            boolean changed = false;
+
+                            for (String data : results) {
+                                if (data.contains("exception")) {
+                                    cloudExceptionCooldown = exceptionCooldownMinutes;
+                                    break;
+                                } else {
+                                    String[] split = data.split("\\|");
+                                    boolean valueCondition = split.length == 3;
+
+                                    if (valueCondition || split.length == 2) {
+                                        File file = new File(Register.plugin.getDataFolder() + "/" + split[0] + ".yml");
+
+                                        if (file.exists()) {
+                                            String desiredValue = valueCondition ? split[2] : null;
+                                            split = split[1].split(":");
+
+                                            if (split.length == 2) {
+                                                String option = split[0];
+                                                YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+
+                                                for (String key : filea.getKeys(true)) {
+                                                    if (key.contains(option)) {
+                                                        String value = split[1];
+                                                        Object currentValue;
+
+                                                        if (!valueCondition // There is no if-value statement
+                                                                || (currentValue = filea.get(option)) == null // Current value did not return correctly or is non-existent
+                                                                || currentValue.toString().equals(desiredValue)) { // Current value matches desired value
+                                                            Double validDecimal = AlgebraUtils.returnValidDecimal(value);
+                                                            filea.set(key, validDecimal != null ? validDecimal :
+                                                                    AlgebraUtils.validInteger(value) ? Integer.parseInt(value) :
+                                                                            value.equals("true") || value.equals("false") ? Boolean.parseBoolean(value) :
+                                                                                    value);
+                                                            filea.save(file);
+                                                            changed = true;
+                                                        }
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (changed) {
+                                ManageConfiguration.reload(true);
+                            }
+                        }
+                    } catch (Exception e) {
+                        throwError(e, "ACC:GET");
+                    }
+                };
+
+                if (async) {
+                    runnable.run();
+                } else {
+                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                }
+            }
+
+            // Separator
+            if (!independent && validIDs) {
+                Runnable runnable = () -> {
+                    try {
+                        String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
+                                + "&action=get&data=customerSupportCommands&version=" + version + "&value=" + Bukkit.getPort());
+
+                        if (results.length > 0) {
+                            if (results[0].equals("exception")) {
+                                cloudExceptionCooldown = exceptionCooldownMinutes;
+                            } else {
+                                for (String result : results) {
+                                    String[] split = result.split(separator);
+
+                                    if (split.length == 2) {
+                                        // 0 = user, 1 = functionality
+                                        String functionality = StringUtils.decodeBase64(split[1]);
+
+                                        if (!functionality.equals("NULL")) {
+                                            AwarenessNotifications.forcefullySend("Customer Support Command: " +
+                                                    CloudConnections.sendCustomerSupport(null, functionality, "Customer Support Command", true));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        throwError(e, "CSC:GET");
+                    }
+                };
+
+                if (async) {
+                    runnable.run();
+                } else {
+                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                }
+            }
+
+            // Separator
+            if (independent) {
+                disabledDetections.clear();
+
+                // Doesn't need ID validation due to its unique anti-piracy purpose
+                Runnable runnable = () -> {
+                    try {
+                        String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
+                                + "&action=get&data=disabledDetections&version=" + version + "&value=" + MultiVersion.versionString());
+
+                        if (results.length > 0) {
+                            for (String data : results) {
+                                if (data.contains("exception")) {
+                                    cloudExceptionCooldown = exceptionCooldownMinutes;
+                                    break;
+                                } else {
+                                    Enums.HackType hackType = null;
+                                    Set<String> detections = new LinkedHashSet<>();
+
+                                    for (String detection : data.split("\\|")) {
+                                        if (hackType == null) {
+                                            for (Enums.HackType original : Enums.hackTypes()) {
+                                                if (detection.equalsIgnoreCase(original.toString())) {
+                                                    hackType = original;
+                                                    break;
+                                                }
+                                            }
+
+                                            // Not Found
+                                            if (hackType == null) {
+                                                break;
+                                            }
+                                        } else {
+                                            detections.add(detection.replace("__", " "));
+                                        }
+                                    }
+                                    if (detections.size() > 0) {
+                                        disabledDetections.put(hackType, detections.toArray(new String[0]));
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        throwError(e, "DD:GET");
+                    }
+                };
+
+                if (async) {
+                    runnable.run();
+                } else {
+                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                }
+            }
+        } else {
+            clear(true);
+        }
+    }
+}
