@@ -1,0 +1,196 @@
+package me.vagdedes.spartan.system;
+
+import me.vagdedes.spartan.Register;
+import me.vagdedes.spartan.features.important.Permissions;
+import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
+import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
+import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
+import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.utils.java.RequestUtils;
+import me.vagdedes.spartan.utils.java.StringUtils;
+import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginDescriptionFile;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class Piracy implements Listener {
+
+    private static final Set<String> administrators = new HashSet<>(20);
+
+    private static boolean valid = true;
+    private static final String name = Register.plugin.getName();
+    public static final boolean enabled = AlgebraUtils.validInteger("%%__RESOURCE__%%");
+
+    private static final int
+            two = 2,
+            nameLength = name.length();
+    public static double version = -((5 * ((((nameLength * (nameLength / two)) + Math.pow(two, two)) * two) * two)) + (10 * 1) + 1.0);
+
+    static {
+        boolean preview;
+
+        if (!enabled) {
+            Threads.execute(SpartanBukkit.connectionThread, () -> {
+                int userID = CloudConnections.getUserIdentification();
+
+                if (userID <= 0) {
+                    valid = false;
+                } else {
+                    IDs.setUserID(userID);
+                }
+            });
+            preview = false;
+        } else {
+            preview = IDs.isPreview();
+        }
+
+        if (!preview) {
+            SpartanEdition.refresh();
+            CloudConnections.checkServerLimits();
+            CloudConnections.logServerSpecifications();
+
+            // Separator
+            long delay = 1200L;
+            Object scheduledTask;
+
+            if (valid) {
+                if (!IDs.isPreview()) {
+                    scheduledTask = SpartanBukkit.runRepeatingTask(Piracy::collectAdministrators, 1L, 20L);
+
+                    SpartanBukkit.runDelayedTask(() -> Threads.execute(SpartanBukkit.connectionThread, () -> {
+                        boolean b = isValid(IDs.site(), IDs.user(), IDs.nonce());
+
+                        if (!b) {
+                            valid = b;
+                        } else {
+                            SpartanEdition.refresh();
+                        }
+                    }), delay * two);
+                } else {
+                    scheduledTask = null;
+                }
+            } else {
+                scheduledTask = null;
+            }
+
+            // Separator
+
+            SpartanBukkit.runDelayedTask(() -> {
+                if (scheduledTask != null) {
+                    SpartanBukkit.cancelTask(scheduledTask);
+                }
+                if (!valid) {
+                    Register.disablePlugin();
+                }
+            }, delay * (two + 1L));
+        }
+    }
+
+    private static boolean isSiteValid(String other_site) {
+        String domain = RequestUtils.getDomain(other_site, true);
+        boolean b1 = domain != null && domain.length() == 12;
+
+        if (b1) {
+            String[] split = domain.split("\\.");
+            boolean b2 = split.length == two
+                    && split[0].equals("vagdedes")
+                    && split[1].equals("com")
+                    && other_site.length() == 61
+                    && !AlgebraUtils.validInteger(other_site);
+
+            if (b2) {
+                other_site = other_site.substring(8);
+            } else {
+                return b2;
+            }
+            return other_site.equals("vagdedes.com/minecraft/cloud/verification/?id=&nonce=");
+        }
+        return b1;
+    }
+
+    private static boolean isValid(String site, String spigot, String nonce) {
+        PluginDescriptionFile description;
+        boolean b = valid
+                && isSiteValid(site) && name.equalsIgnoreCase("Spartan")
+                && (description = Register.plugin.getDescription()).getVersion().startsWith("Phase " + description.getVersion().substring(6))
+                && description.getDescription().equals("Advanced cheat prevention made simple")
+                && description.getWebsite().startsWith("https://vagdedes.com/")
+                && description.getAuthors().toString().equalsIgnoreCase("[Evangelos Dedes @Vagdedes]");
+
+        if (b && (enabled || IDs.isValid())) {
+            try {
+                int number = site.length() - 7;
+                String platformName = IDs.getPlatform(false),
+                        platform = platformName != null ? ("&platform=" + platformName) : "",
+                        port = "&port=" + Bukkit.getPort(),
+                        website = site.substring(0, number) + spigot + site.substring(number) + nonce + platform + port;
+
+                // Separator
+                String additional;
+
+                if (administrators.size() > 0) {
+                    additional = StringUtils.toString(administrators.toArray(new String[0]));
+                    administrators.clear();
+                } else {
+                    additional = null;
+                }
+
+                // Separator
+                String[] reply = RequestUtils.get(website, "GET", additional, RequestUtils.defaultTimeOut);
+
+                if (reply.length > 0) {
+                    String line = reply[0];
+
+                    if (line.equalsIgnoreCase(String.valueOf(!b))) {
+                        return false;
+                    }
+                    if (CloudFeature.hasToken() && AlgebraUtils.validInteger(line)) {
+                        IDs.setPlatform(Integer.parseInt(line));
+                    }
+                }
+            } catch (Exception e) {
+                if (SpartanBukkit.canAdvertise) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return b;
+    }
+
+    private static void collectAdministrators() {
+        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+
+        if (players.size() > 0) {
+            for (SpartanPlayer p : players) {
+                if (p != null) {
+                    if (Permissions.isStaff(p)) {
+                        String ip = p.getIpAddress();
+
+                        if (ip != null) {
+                            String dot = ".";
+                            String[] split = ip.split("\\.");
+
+                            if (split.length == 4) {
+                                ip = split[two - two] + dot + split[1] + dot + split[two] + dot + "XXX";
+                            } else {
+                                split = ip.split(":");
+
+                                if (split.length == 8) {
+                                    String hidden = "XXXX";
+                                    ip = split[two - two] + dot + split[1] + dot + split[two] + dot + split[3] + dot + split[two * 2] + dot + split[5] + dot + hidden + dot + hidden;
+                                } else {
+                                    ip = "Unknown";
+                                }
+                            }
+                            administrators.add(p.getName() + "|" + p.getUniqueId() + "|" + ip);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

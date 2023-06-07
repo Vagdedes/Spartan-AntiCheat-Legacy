@@ -1,0 +1,226 @@
+package me.vagdedes.spartan.objects.system;
+
+import me.vagdedes.spartan.Register;
+import me.vagdedes.spartan.api.ViolationResetEvent;
+import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.gui.info.PlayerInfo;
+import me.vagdedes.spartan.handlers.stability.TestServer;
+import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
+import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.SpartanBukkit;
+import org.bukkit.entity.Player;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class LiveViolation {
+
+    private static final ConcurrentHashMap<LiveViolation, String> maxLevel = new ConcurrentHashMap<>();
+
+    static {
+        if (Register.isPluginLoaded()) {
+            SpartanBukkit.runRepeatingTask(() -> {
+                if (maxLevel.size() > 0) {
+                    for (Map.Entry<LiveViolation, String> entry : maxLevel.entrySet()) {
+                        LiveViolation violations = entry.getKey();
+                        SpartanPlayer player = violations.getPlayer();
+
+                        if (player != null) {
+                            Enums.HackType hackType = violations.getHackType();
+
+                            if (violations.getLevel() < Check.maxViolations) {
+                                new HackPrevention(player, hackType, entry.getValue());
+                            } else {
+                                maxLevel.remove(violations);
+                            }
+                        } else {
+                            maxLevel.remove(violations);
+                        }
+                    }
+                }
+            }, 1L, 1L);
+        }
+    }
+
+    private final UUID uuid;
+    private final Enums.HackType hackType;
+    private long cycleStart, cycleExpiration, lastViolation;
+    private int level, cancelledLevel;
+    private boolean cancelled;
+
+    public LiveViolation(UUID uuid, Enums.HackType hackType) {
+        this.uuid = uuid;
+        this.hackType = hackType;
+        this.level = 0;
+        this.cancelledLevel = 0;
+        this.lastViolation = 0L;
+        this.cancelled = false;
+        reset(); // Do not make it local as it takes part in object initiation and is not important
+    }
+
+    // Separator
+
+    public int getLevel() {
+        timeReset();
+        return level;
+    }
+
+    public int getCancelledLevel() {
+        timeReset();
+        return cancelledLevel;
+    }
+
+    public boolean isLastLevelCancelled() {
+        return cancelled;
+    }
+
+    public boolean hasLevel() {
+        return getLevel() > 0;
+    }
+
+    public boolean hasCancelledLevel() {
+        return getCancelledLevel() > 0;
+    }
+
+    public void setLevel(int amount) {
+        timeReset();
+        int previousLevel = level;
+
+        // Violations
+        if (amount > Check.maxViolations) {
+            this.level = Check.maxViolations;
+        } else {
+            this.level = Math.max(amount, 0);
+        }
+        this.cancelled = false;
+        timeReset(); // Always after changing the level
+
+        // Always last
+        if (previousLevel != level) {
+            SpartanPlayer player = getPlayer();
+
+            if (player != null) {
+                PlayerInfo.refresh(player.getName());
+            }
+        }
+    }
+
+    public void setCancelledLevel(int amount) {
+        timeReset();
+
+        // Violations
+        if (amount > Check.maxViolations) {
+            this.cancelledLevel = Check.maxViolations;
+        } else {
+            this.cancelledLevel = Math.max(amount, 0);
+        }
+        this.cancelled = true;
+        timeReset(); // Always after changing the level
+    }
+
+    public void setMaxLevel(String message) {
+        maxLevel.put(this, message);
+    }
+
+    public void removeMaxLevel(String message) {
+        String cached = maxLevel.get(this);
+
+        if (cached != null && cached.equals(message)) {
+            maxLevel.remove(this);
+        }
+    }
+
+    // Separator
+
+    public void reset() {
+        reset(false);
+    }
+
+    private void reset(boolean local) {
+        ViolationResetEvent event;
+
+        if (SpartanBukkit.isSynchronised()) {
+            SpartanPlayer spartanPlayer = this.getPlayer();
+
+            if (spartanPlayer != null) {
+                Player player = spartanPlayer.getPlayer();
+
+                if (player != null && player.isOnline()) {
+                    if (Settings.getBoolean("Important.enable_developer_api")) {
+                        event = new ViolationResetEvent(player, this.getHackType());
+                        Register.manager.callEvent(event);
+                    } else {
+                        event = null;
+                    }
+                } else {
+                    event = null;
+                }
+            } else {
+                event = null;
+            }
+        } else {
+            event = null;
+        }
+        long futureExpiration = (TestServer.isIdentified() ? Check.leastViolationCycleSeconds :
+                Math.min(3600, Math.max(60, Settings.getInteger("Important.violations_reset_seconds"))) * 1_000L);
+
+        if (event == null || !event.isCancelled()) {
+            maxLevel.remove(this);
+            this.level = 0;
+            this.cancelledLevel = 0;
+            this.cancelled = false;
+        } else if ((System.currentTimeMillis() - this.cycleExpiration) > futureExpiration) { // Forceful reset to keep potential developer API usage within hardcoded thresholds
+            maxLevel.remove(this);
+            this.level = 0;
+            this.cancelledLevel = 0;
+            this.cancelled = false;
+        }
+        this.cycleStart = System.currentTimeMillis();
+        this.cycleExpiration = this.cycleStart + futureExpiration;
+
+        // Always last
+        SpartanPlayer player = getPlayer();
+
+        if (player != null) {
+            player.getProfile().resetLiveEvidence(hackType);
+
+            if (local) {
+                PlayerInfo.refresh(player.getName());
+            }
+        }
+    }
+
+    private void timeReset() {
+        long time = System.currentTimeMillis();
+
+        if (this.cycleExpiration < time) {
+            reset(true);
+        }
+    }
+
+    // Separator
+
+    public long getLastViolation(boolean maxIfNull) {
+        return maxIfNull && this.lastViolation == 0L ? Long.MAX_VALUE : System.currentTimeMillis() - this.lastViolation;
+    }
+
+    public void setLastViolation() {
+        this.lastViolation = System.currentTimeMillis();
+    }
+
+    // Separator
+
+    public Enums.HackType getHackType() {
+        return hackType;
+    }
+
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    public SpartanPlayer getPlayer() {
+        return SpartanBukkit.getPlayer(this.uuid);
+    }
+}
