@@ -29,7 +29,7 @@ import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.handlers.tracking.ClickData;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
-import me.vagdedes.spartan.listeners.spigot.EventsHandler7;
+import me.vagdedes.spartan.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.data.*;
 import me.vagdedes.spartan.objects.profiling.PlayerFight;

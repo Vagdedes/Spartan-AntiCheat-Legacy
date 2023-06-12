@@ -14,7 +14,7 @@ import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
 import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
-import me.vagdedes.spartan.listeners.spigot.EventsHandler7;
+import me.vagdedes.spartan.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;

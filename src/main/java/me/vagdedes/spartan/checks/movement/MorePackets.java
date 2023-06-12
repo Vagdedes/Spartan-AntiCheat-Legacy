@@ -78,7 +78,8 @@ public class MorePackets {
                 decimals.remove(new String[]{horizontalKey, verticalKey, lastTickKey});
                 return;
             }
-            boolean hacker = p.getProfile().isSuspectedOrHacker(check);
+            boolean bedrockPlayer = p.isBedrockPlayer(),
+                    hacker = p.getProfile().isSuspectedOrHacker(check);
 
             // Detections
             if (timer.has(lastTick)) { // Do not start detection if not all cache is available
@@ -92,9 +93,10 @@ public class MorePackets {
                     double delay = LagLeniencies.getDelay(p);
                     boolean decreasedRequirement = false,
                             canHaveDecreasedRequirement =
-                                    !p.isUsingItem()
-                                            && !p.getHandlers().has(Handlers.HandlerType.Explosion)
+                                    !bedrockPlayer
+                                            && !p.isUsingItem()
                                             && Damage.hasCooldown(p)
+                                            && !p.getHandlers().has(Handlers.HandlerType.Explosion)
                                             && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
                                             && !p.getHandlers().has(Handlers.HandlerType.Trident);
                     int ticksRequirement = Math.min(10 + AlgebraUtils.integerRound(delay), 15),
@@ -118,8 +120,8 @@ public class MorePackets {
                             boolean passedLimit;
 
                             if (overallDistance >= overallLimit) {
-                              passedLimit = true;
-                              cooldowns.add(instantMotionKey + "=passed-limit", 2);
+                                passedLimit = true;
+                                cooldowns.add(instantMotionKey + "=passed-limit", 2);
                             } else {
                                 passedLimit = !cooldowns.canDo(instantMotionKey + "=passed-limit");
                             }
@@ -131,8 +133,7 @@ public class MorePackets {
                                         instantMotionKey + "=second"
                                 });
 
-                                boolean instant = hacker
-                                        || overallDistance >= (overallLimit * tickCycles);
+                                boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
                                 SpartanLocation handlerFrom = FromLocation.get(p, true);
                                 SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
 
@@ -160,9 +161,10 @@ public class MorePackets {
                     if ((delay < 1.0 ? Math.round(tickAverage) : tickAverage) <= 50.0 && extraTicks >= 5) {
                         boolean instantExtraTicks = extraTicks >= maxTicks,
                                 instantExtraPackets = extraPackets >= (maxTicks / 2),
-                                instant = instantExtraPackets
+                                instant = !bedrockPlayer
+                                        && (instantExtraPackets
                                         || instantExtraTicks
-                                        || hacker;
+                                        || hacker);
                         double totalHorizontalMotionLimit = 1.0;
                         String verbose = ", total-horizontal: " + horizontal
                                 + ", total-vertical: " + vertical

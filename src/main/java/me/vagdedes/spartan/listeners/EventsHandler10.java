@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners.spigot;
+package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.VehicleAccess;

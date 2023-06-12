@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.compatibility.manual.essential.protocollib;
 
-import me.vagdedes.spartan.listeners.spigot.PlibHandlers;
+import me.vagdedes.spartan.listeners.PlibHandlers;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.utils.server.ReflectionUtils;

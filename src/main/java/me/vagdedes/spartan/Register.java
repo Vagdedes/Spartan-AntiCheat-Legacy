@@ -12,7 +12,7 @@ import me.vagdedes.spartan.handlers.commands.CommandTab;
 import me.vagdedes.spartan.handlers.connection.DiscordMemberCount;
 import me.vagdedes.spartan.handlers.connection.PluginServerCount;
 import me.vagdedes.spartan.handlers.identifiers.VehicleAccess;
-import me.vagdedes.spartan.listeners.spigot.*;
+import me.vagdedes.spartan.listeners.*;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Piracy;
 import me.vagdedes.spartan.utils.server.NetworkUtils;

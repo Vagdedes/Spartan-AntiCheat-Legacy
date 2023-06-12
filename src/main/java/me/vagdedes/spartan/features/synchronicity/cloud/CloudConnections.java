@@ -419,10 +419,16 @@ public class CloudConnections {
         if (contactInformation == null) {
             contactInformation = "None";
         } else if (contactPlatform.equals("discord")) {
-            String[] discordTag = StringUtils.getDiscordTag(contactInformation);
+            String[] discordTag;
 
-            if (discordTag == null) {
-                return "The Discord tag you provided is incorrect";
+            if (contactInformation.contains("#")) {
+                discordTag = StringUtils.getDiscordTag(contactInformation);
+
+                if (discordTag == null) {
+                    return "The Discord tag you provided is incorrect";
+                }
+            } else {
+                discordTag = new String[]{contactInformation};
             }
             name = discordTag[0];
         }

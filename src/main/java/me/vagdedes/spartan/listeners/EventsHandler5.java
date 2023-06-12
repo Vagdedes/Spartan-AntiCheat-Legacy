@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners.spigot;
+package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.checks.movement.MorePackets;
 import me.vagdedes.spartan.checks.movement.NoSlowdown;

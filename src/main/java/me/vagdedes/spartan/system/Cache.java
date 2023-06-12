@@ -23,7 +23,7 @@ import me.vagdedes.spartan.handlers.stability.FromLocation;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
-import me.vagdedes.spartan.listeners.spigot.EventsHandler7;
+import me.vagdedes.spartan.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.data.CooldownUtils;

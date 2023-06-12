@@ -35,8 +35,8 @@ public class SpartanEdition {
             type = "{type}",
             productID = "{product-id}",
             notificationKey = "alternative-version",
-            notificationMessage = "\n§cYou have " + type + " players which are not checked by the anti-cheat."
-                    + "\nClick §nhttps://vagdedes.com/viewProduct/?id=" + productID + " §r§cto fix this."
+            notificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat."
+                    + (SpartanBukkit.canAdvertise ? "\nClick §nhttps://vagdedes.com/viewProduct/?id=" + productID + " §r§cto fix this." : "")
                     + "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Settings.getFile().getName() + "' to disable this notification.";
     private static final boolean javaEdition;
     public static final boolean freeAlternativeVersion;
@@ -124,8 +124,9 @@ public class SpartanEdition {
                     case ItemDrops:
                     case AutoRespawn:
                     case ImpossibleInventory:
+                    case MorePackets:
                         return !freeAlternativeVersion;
-                    default: // MorePackets, HitReach, GhostHand, InventoryClicks
+                    default: // HitReach, GhostHand, InventoryClicks
                         return false;
                 }
             default:
@@ -275,7 +276,7 @@ public class SpartanEdition {
     }
 
     private static void sendNotification(SpartanPlayer player, ResearchEngine.DataType dataType) {
-        if (SpartanBukkit.canAdvertise && Permissions.isStaff(player)) {
+        if (Permissions.isStaff(player)) {
             String message = AwarenessNotifications.getNotification(
                     notificationMessage.replace(type, dataType.toString()).replace(productID, getProductID(dataType))
             );

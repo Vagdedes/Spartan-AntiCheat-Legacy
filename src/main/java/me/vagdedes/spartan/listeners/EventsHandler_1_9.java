@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners.spigot;
+package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.handlers.identifiers.ElytraUse;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

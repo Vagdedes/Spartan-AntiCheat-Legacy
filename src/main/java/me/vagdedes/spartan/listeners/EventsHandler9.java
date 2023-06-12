@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners.spigot;
+package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.protections.PlayerLimitPerIP;

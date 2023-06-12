@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners.spigot;
+package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.checks.combat.HitReach;
 import me.vagdedes.spartan.checks.combat.VelocityCheck;

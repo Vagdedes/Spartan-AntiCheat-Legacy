@@ -59,8 +59,7 @@ public class MaximumCheckedPlayers {
                                     Iterator<UUID> iterator = list.iterator();
 
                                     while (iterator.hasNext() && optionAmount < newAmount) {
-                                        iterator.next();
-                                        iterator.remove();
+                                        list.remove(iterator.next());
                                         optionAmount++;
                                     }
                                 }
