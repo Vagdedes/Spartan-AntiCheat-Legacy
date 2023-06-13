@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.compatibility.manual.building;
 
+import io.lumine.mythic.bukkit.BukkitAPIHelper;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.replicates.SpartanInventory;
@@ -18,19 +19,9 @@ import java.util.HashSet;
 public class MythicMobs {
 
     private static final HashSet<ItemStack> hm = new HashSet<>();
-    private static int version = 0;
 
     public static void reload() {
         hm.clear();
-
-        if (ReflectionUtils.classExists("io.lumine.mythic.bukkit.BukkitAPIHelper")) {
-            version = 2;
-        } else if (ReflectionUtils.classExists("io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper")) {
-            version = 1;
-        } else {
-            version = 0;
-            return;
-        }
         File[] files = new File("/plugins/MythicMobs/Items/").listFiles();
 
         if (files != null) {
@@ -61,8 +52,7 @@ public class MythicMobs {
 
     public static boolean is(Entity entity) {
         return Compatibility.CompatibilityType.MythicMobs.isFunctional()
-                && (version == 2 ? new io.lumine.mythic.bukkit.BukkitAPIHelper().isMythicMob(entity) :
-                version == 1 && new io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper().isMythicMob(entity));
+                && new BukkitAPIHelper().isMythicMob(entity);
     }
 
     public static boolean is(SpartanPlayer player) {

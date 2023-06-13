@@ -10,7 +10,7 @@ import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.compatibility.manual.essential.Essentials;
-import me.vagdedes.spartan.compatibility.manual.mcmmo.mcMMO;
+import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.chat.ChatProtection;

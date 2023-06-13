@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.checks.combat.killAura;
 
-import me.vagdedes.spartan.compatibility.manual.mcmmo.mcMMO;
+import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.performance.AsyncDetection;

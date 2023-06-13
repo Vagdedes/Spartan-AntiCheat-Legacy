@@ -2,7 +2,7 @@ package me.vagdedes.spartan.checks.world;
 
 import me.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import me.vagdedes.spartan.compatibility.manual.entity.Vehicles;
-import me.vagdedes.spartan.compatibility.manual.mcmmo.mcMMO;
+import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

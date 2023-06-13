@@ -1,20 +1,19 @@
-package me.vagdedes.spartan.compatibility.manual.building.veinminer;
+package me.vagdedes.spartan.compatibility.manual.building;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
 import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.utils.server.ReflectionUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import wtf.choco.veinminer.api.event.player.PlayerVeinMineEvent;
 
-public class VeinMiner {
+public class VeinMiner implements Listener {
 
     public static void reload() {
-        if (ReflectionUtils.classExists("wtf.choco.veinminer.api.event.PlayerVeinMineEvent")) {
-            Register.enable(new VeinMinerNew(), VeinMinerNew.class);
-        } else if (ReflectionUtils.classExists("me.choco.veinminer.api.PlayerVeinMineEvent")) {
-            Register.enable(new VeinMinerOld(), VeinMinerOld.class);
-        }
+        Register.enable(new VeinMiner(), VeinMiner.class);
     }
 
     static void cancel(Player player) {
@@ -25,5 +24,12 @@ public class VeinMiner {
                         Enums.HackType.GhostHand,
                         Enums.HackType.BlockReach
                 }, 30);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void Event(PlayerVeinMineEvent e) {
+        if (Compatibility.CompatibilityType.VeinMiner.isFunctional()) {
+            VeinMiner.cancel(e.getPlayer());
+        }
     }
 }

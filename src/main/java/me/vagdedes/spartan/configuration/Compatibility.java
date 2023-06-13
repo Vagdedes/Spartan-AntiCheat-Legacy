@@ -9,7 +9,7 @@ import me.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import me.vagdedes.spartan.compatibility.manual.building.RampenDrills;
 import me.vagdedes.spartan.compatibility.manual.building.WildTools;
-import me.vagdedes.spartan.compatibility.manual.building.veinminer.VeinMiner;
+import me.vagdedes.spartan.compatibility.manual.building.VeinMiner;
 import me.vagdedes.spartan.compatibility.manual.damage.RealDualWield;
 import me.vagdedes.spartan.compatibility.manual.damage.SmashHit;
 import me.vagdedes.spartan.compatibility.manual.entity.CraftBook;

@@ -5,7 +5,6 @@ import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import me.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import me.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
-import me.vagdedes.spartan.compatibility.manual.essential.ViaVersion;
 import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import me.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
 import me.vagdedes.spartan.configuration.Compatibility;
@@ -933,7 +932,8 @@ public class SpartanPlayer {
                                 runnable
                         );
                     } else {
-                        runnable.run();;
+                        runnable.run();
+                        ;
                     }
                 } else {
                     this.onGroundCustom = false;
@@ -1839,30 +1839,24 @@ public class SpartanPlayer {
     // Border
 
     public boolean isOutsideOfTheBorder() {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && !ViaVersion.isUsing(this, ViaVersion.v1_7)) {
-            SpartanLocation loc = getLocation();
-            WorldBorder border = getWorld().getWorldBorder();
-            double size = border.getSize() / 2.0;
-            Location center = border.getCenter();
-            return Math.abs(loc.getX() - center.getX()) > size
-                    || Math.abs(loc.getZ() - center.getZ()) > size;
-        }
-        return false;
+        SpartanLocation loc = getLocation();
+        WorldBorder border = getWorld().getWorldBorder();
+        double size = border.getSize() / 2.0;
+        Location center = border.getCenter();
+        return Math.abs(loc.getX() - center.getX()) > size
+                || Math.abs(loc.getZ() - center.getZ()) > size;
     }
 
     public boolean isInTheBorder() {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && !ViaVersion.isUsing(this, ViaVersion.v1_7)) {
-            SpartanLocation loc = getLocation();
-            WorldBorder border = getWorld().getWorldBorder();
-            double sizeMinus = (border.getSize() / 2.0) - 1.0,
-                    sizePlus = sizeMinus + 2.0;
-            Location center = border.getCenter();
-            double x = Math.abs(loc.getX() - center.getX()),
-                    z = Math.abs(loc.getZ() - center.getZ());
-            return x >= sizeMinus && x <= sizePlus
-                    || z >= sizeMinus && z <= sizePlus;
-        }
-        return false;
+        SpartanLocation loc = getLocation();
+        WorldBorder border = getWorld().getWorldBorder();
+        double sizeMinus = (border.getSize() / 2.0) - 1.0,
+                sizePlus = sizeMinus + 2.0;
+        Location center = border.getCenter();
+        double x = Math.abs(loc.getX() - center.getX()),
+                z = Math.abs(loc.getZ() - center.getZ());
+        return x >= sizeMinus && x <= sizePlus
+                || z >= sizeMinus && z <= sizePlus;
     }
 
     // Counters

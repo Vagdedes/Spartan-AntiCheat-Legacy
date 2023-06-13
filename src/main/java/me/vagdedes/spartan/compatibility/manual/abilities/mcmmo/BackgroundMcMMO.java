@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.compatibility.manual.mcmmo;
+package me.vagdedes.spartan.compatibility.manual.abilities.mcmmo;
 
 import com.gmail.nossr50.api.AbilityAPI;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

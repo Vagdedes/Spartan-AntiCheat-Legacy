@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.compatibility.manual.mcmmo;
+package me.vagdedes.spartan.compatibility.manual.abilities.mcmmo;
 
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

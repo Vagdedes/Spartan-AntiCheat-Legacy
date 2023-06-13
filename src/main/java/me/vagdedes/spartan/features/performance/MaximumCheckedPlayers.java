@@ -15,6 +15,7 @@ public class MaximumCheckedPlayers {
     private static final int minimumPlayers = 20, refreshTicks = 20;
     public static final String option = "Performance.maximum_checked_players_at_once";
     private static int ticks = 0;
+    private static boolean lock = false;
 
     static {
         if (Register.isPluginLoaded()) {
@@ -56,12 +57,18 @@ public class MaximumCheckedPlayers {
                                 if (newAmount > optionAmount) {
                                     newAmount -= optionAmount;
                                     optionAmount = 0;
-                                    Iterator<UUID> iterator = list.iterator();
+                                    lock = true;
+                                    List<UUID> replacement = new ArrayList<>(list);
+                                    Iterator<UUID> iterator = replacement.iterator();
 
                                     while (iterator.hasNext() && optionAmount < newAmount) {
-                                        list.remove(iterator.next());
+                                        iterator.next();
+                                        iterator.remove();
                                         optionAmount++;
                                     }
+                                    list.clear();
+                                    list.addAll(replacement);
+                                    lock = false;
                                 }
                                 list.addAll(toAdd);
                             }
@@ -76,6 +83,11 @@ public class MaximumCheckedPlayers {
         }
     }
 
+    private static void waitForLoop() {
+        while (lock) {
+        }
+    }
+
     static boolean isActive() {
         int optionAmount = Settings.getInteger(option);
         return optionAmount > 0
@@ -83,10 +95,12 @@ public class MaximumCheckedPlayers {
     }
 
     public static void remove(SpartanPlayer player) {
+        waitForLoop();
         list.remove(player.getUniqueId());
     }
 
     private static boolean add(UUID uuid, int optionAmount) {
+        waitForLoop();
         return list.size() < Math.max(optionAmount, minimumPlayers)
                 && list.addIfAbsent(uuid);
     }

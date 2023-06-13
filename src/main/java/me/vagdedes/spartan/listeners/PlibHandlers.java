@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.checks.movement.NoSlowdown;
-import me.vagdedes.spartan.compatibility.manual.essential.ViaVersion;
 import me.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Cooldowns;
@@ -32,11 +31,7 @@ public class PlibHandlers {
                             && NoSlowdown.check.getCheck().getBooleanOption("check_packets", true)) {
                         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
-                        if (p == null || PlayerData.isInActivePlayerCombat(p)
-                                || !ViaVersion.isUsing(p, ViaVersion.v1_7) && !ViaVersion.isUsing(p, ViaVersion.v1_8)
-                                && !ViaVersion.isUsing(p, ViaVersion.v1_9) && !ViaVersion.isUsing(p, ViaVersion.v1_10)
-                                && !ViaVersion.isUsing(p, ViaVersion.v1_11) && !ViaVersion.isUsing(p, ViaVersion.v1_12)
-                                && !ViaVersion.isUsing(p, ViaVersion.v1_13)) {
+                        if (p == null || PlayerData.isInActivePlayerCombat(p)) {
                             return;
                         }
 
