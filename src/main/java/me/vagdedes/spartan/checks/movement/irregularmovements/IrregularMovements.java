@@ -381,7 +381,7 @@ public class IrregularMovements {
                         }
                         break;
                     case levitationKey:
-                        if (!waterElevator && !liquidBlocks && canRunDetection(p)) {
+                        if (!waterElevator && !liquidBlocks && canRunDetection(bedrockPlayer)) {
                             IrregularMovementsLevitation.run(p, to, from,
                                     vertical,
                                     canGoUp,
@@ -390,7 +390,7 @@ public class IrregularMovements {
                         }
                         break;
                     case "cobweb":
-                        if (canRunDetection(p)) {
+                        if (canRunDetection(bedrockPlayer)) {
                             IrregularMovementsCobweb.run(p, to, from,
                                     vertical, horizontal, box, oldBox,
                                     canGoDown,
@@ -398,7 +398,7 @@ public class IrregularMovements {
                         }
                         break;
                     case "bouncing":
-                        if (canRunDetection(p)) {
+                        if (canRunDetection(bedrockPlayer)) {
                             IrregularMovementsBouncing.run(p, to, from,
                                     vertical, oldVertical, box,
                                     knownBoxes, offGround, airTicksOffGround, heightExistsHalf, canGoUp, canGoDown, jumping, falling,
@@ -407,7 +407,7 @@ public class IrregularMovements {
                         }
                         break;
                     case "inside-blocks":
-                        if (!bedrockPlayer && canRunDetection(p)) {
+                        if (!bedrockPlayer) {
                             IrregularMovementsInsideBlocks.run(p, to, from,
                                     knownBoxes,
                                     prevention);
@@ -743,7 +743,7 @@ public class IrregularMovements {
                 && (!bedrockPlayer || to.getBlockY() > BlockUtils.getMinHeight(p.getWorld()));
     }
 
-    private static boolean canRunDetection(SpartanPlayer player) {
-        return !SpartanEdition.freeAlternativeVersion || !player.isBedrockPlayer();
+    private static boolean canRunDetection(boolean bedrockPlayer) {
+        return !SpartanEdition.freeAlternativeVersion || !bedrockPlayer;
     }
 }
