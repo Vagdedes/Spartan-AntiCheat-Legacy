@@ -1,11 +1,11 @@
 package me.vagdedes.spartan.checks.world;
 
 import me.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
+import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import me.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import me.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import me.vagdedes.spartan.compatibility.manual.entity.Vehicles;
-import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.objects.data.Buffer;

@@ -1,21 +1,21 @@
 package me.vagdedes.spartan.compatibility.manual.essential.protocollib;
 
-import com.comphenix.protocol.injector.server.TemporaryPlayer;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.utils.server.ReflectionUtils;
 import org.bukkit.entity.Player;
 
 public class ProtocolLib {
 
-    private static boolean classExists = false;
+    private static Class<?> temporaryPlayer = null;
 
     public static boolean isTemporaryPLayer(Player p) {
         return Compatibility.CompatibilityType.ProtocolLib.isFunctional()
-                && canHaveTemporaryPlayers() && (p instanceof TemporaryPlayer);
+                && canHaveTemporaryPlayers()
+                && p.getClass().isInstance(temporaryPlayer);
     }
 
     public static void reload() {
-        classExists = ReflectionUtils.classExists("com.comphenix.protocol.injector.server.TemporaryPlayer");
+        temporaryPlayer = ReflectionUtils.getClass("com.comphenix.protocol.injector.server.TemporaryPlayer");
 
         try {
             BackgroundProtocolLib.initiate();
@@ -24,6 +24,6 @@ public class ProtocolLib {
     }
 
     public static boolean canHaveTemporaryPlayers() {
-        return classExists;
+        return temporaryPlayer != null;
     }
 }

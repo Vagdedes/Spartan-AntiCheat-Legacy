@@ -10,10 +10,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6ebaee8-396d-4981-85de-c5da14d6b39c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/player/NoSwing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/player/NoSwing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/world/FastBreak.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/world/FastBreak.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/world/GhostHand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/world/GhostHand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/compatibility/manual/building/MythicMobs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/compatibility/manual/building/MythicMobs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/compatibility/manual/essential/protocollib/ProtocolLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/compatibility/manual/essential/protocollib/ProtocolLib.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Compatibility.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Compatibility.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/listeners/EventsHandler6.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/listeners/EventsHandler6.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/compatibility/manual/building/MythicMobs.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/compatibility/manual/building/MythicMobs.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/compatibility/manual/essential/protocollib/ProtocolLib.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/compatibility/manual/essential/protocollib/ProtocolLib.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Compatibility$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Compatibility$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Compatibility$CompatibilityType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Compatibility$CompatibilityType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Compatibility.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Compatibility.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
