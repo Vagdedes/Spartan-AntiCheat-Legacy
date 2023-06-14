@@ -362,10 +362,10 @@ public class EntityMove {
                 if (entity instanceof Pig) {
                     finalID = pigID;
                 } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)) {
-                    if (entity instanceof Llama) { // Always first because it has horse attributes
-                        finalID = llamaID;
-                    } else if (entity instanceof Horse) {
+                    if (entity instanceof Horse) {
                         finalID = horseID;
+                    } else if (entity instanceof Llama) {
+                        finalID = llamaID;
                     } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20) && entity instanceof Camel) {
                         finalID = camelID;
                     } else {

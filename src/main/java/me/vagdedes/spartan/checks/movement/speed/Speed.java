@@ -805,14 +805,10 @@ public class Speed {
     }
 
     static boolean canDo(SpartanPlayer p, SpartanLocation to) { // Attention, part of the Sprint class too
-        if (p.canRunCheck(check, true)) {
-            if (p.getHandlers().has(Handlers.HandlerType.Vehicle)) {
-                cacheLimit(p.getDecimals(check), 0.0, vehicle, 3);
-                return false;
-            }
-            return !MoveUtils.isInWaterTunnel(p, to) && !p.getHandlers().has(Handlers.HandlerType.ElytraUse);
-        }
-        return false;
+        return p.canRunCheck(check, true)
+                && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !MoveUtils.isInWaterTunnel(p, to);
     }
 
     private static double cacheLimit(Decimals decimals, double existingLimit, double newLimit, int ticks) {
