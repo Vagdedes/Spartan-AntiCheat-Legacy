@@ -30,7 +30,7 @@ public class Threads {
     }
 
     static ExecutorService create() {
-        return Executors.newFixedThreadPool(1);
+        return Executors.newSingleThreadExecutor();
     }
 
     private static boolean execute(ExecutorService service, Runnable runnable, boolean force, boolean executeRegardless) {

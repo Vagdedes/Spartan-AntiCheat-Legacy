@@ -7,6 +7,7 @@ import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.server.PluginUtils;
+import me.vagdedes.spartan.utils.server.ReflectionUtils;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.List;
@@ -15,19 +16,33 @@ import java.util.UUID;
 public class Floodgate {
 
     public static void reload() {
-        if (!PluginUtils.contains("floodgate") && PluginUtils.contains("geyser")) {
-            String message = AwarenessNotifications.getOptionalNotification(
+        String message;
+        boolean floodgate = PluginUtils.contains("floodgate");
+
+        if (floodgate) {
+            if (ReflectionUtils.classExists("org.geysermc.floodgate.api.FloodgateApi")) {
+                message = null;
+            } else {
+                message = AwarenessNotifications.getNotification(
+                        "You are using an outdated version of 'Floodgate', please update to the latest so the anti-cheat"
+                        + " can accurately identify who is a bedrock player."
+                );
+            }
+        } else if (PluginUtils.contains("geyser")) {
+            message = AwarenessNotifications.getOptionalNotification(
                     "'Geyser' plugin allows Bedrock players to join your Java Minecraft server. "
                             + "In order for the Bedrock compatibility to enable, you must also install a plugin named 'Floodgate', which will allow Spartan to identify who is a bedrock player.");
+        } else {
+            message = null;
+        }
 
-            if (message != null) {
-                List<SpartanPlayer> players = Permissions.getStaff();
+        if (message != null) {
+            List<SpartanPlayer> players = Permissions.getStaff();
 
-                if (players.size() > 0) {
-                    for (SpartanPlayer p : players) {
-                        if (AwarenessNotifications.canSend(p.getUniqueId(), "floodgate")) {
-                            p.sendMessage(message);
-                        }
+            if (players.size() > 0) {
+                for (SpartanPlayer p : players) {
+                    if (AwarenessNotifications.canSend(p.getUniqueId(), "floodgate")) {
+                        p.sendMessage(message);
                     }
                 }
             }
@@ -56,7 +71,7 @@ public class Floodgate {
     public static boolean isBedrockPlayer(UUID uuid, String name) {
         return Compatibility.CompatibilityType.Floodgate.isFunctional() ?
                 FloodgateApi.getInstance().isFloodgatePlayer(uuid)
-                :name != null && isBedrockPlayer(name) || uuid.toString().startsWith("00000000-0000-");
+                : name != null && isBedrockPlayer(name) || uuid.toString().startsWith("00000000-0000-");
     }
 
     public static boolean isBedrockPlayer(String name) {
