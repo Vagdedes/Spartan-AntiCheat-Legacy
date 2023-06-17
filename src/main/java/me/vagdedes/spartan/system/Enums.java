@@ -38,8 +38,9 @@ public class Enums {
                 Map<UUID, CancelCause> disabledUsers = this.check.copyDisabledUsers();
                 Map<UUID, CancelCause> silentUsers = this.check.copySilentUsers();
                 Map<UUID, LiveViolation> violations = clearViolations ? new ConcurrentHashMap<>(Config.getMaxPlayers()) : this.check.copyViolations();
+                Map<Integer, String> problematicDetections = this.check.copyProblematicDetections();
                 this.check.clearCache();
-                this.check = new Check(this, disabledUsers, silentUsers, violations);
+                this.check = new Check(this, disabledUsers, silentUsers, violations, problematicDetections);
             }
         }
     }

@@ -466,7 +466,7 @@ public class CommandExecution implements CommandExecutor {
                             Set<Enums.HackType> set = new HashSet<>(hackTypes.length);
 
                             for (Enums.HackType hackType : hackTypes) {
-                                if (ResearchEngine.getTotalFalsePositives(hackType) >= Check.getCategoryPunishment(hackType, ResearchEngine.DataType.Universal, Check.analysisMultiplierCategory)) {
+                                if (ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal) >= Check.getCategoryPunishment(hackType, ResearchEngine.DataType.Universal, Check.analysisMultiplierCategory)) {
                                     set.add(hackType);
                                 }
                             }

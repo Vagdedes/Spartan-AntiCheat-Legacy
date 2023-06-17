@@ -6,11 +6,10 @@ website: https://vagdedes.com/
 description: Advanced cheat prevention made simple
 api-version: 1.13
 softdepend: [ProtocolLib, UltimateStatistics, FileGUI, MinigameMaker, AntiAltAccount,
-             WorldEdit, WorldGuard, mcMMO, ProtocolSupport, VeinMiner, AcidRain, AcidIsland,
+             mcMMO, ProtocolSupport, VeinMiner, AcidRain, AcidIsland, EcoEnchants, CustomEnchantsPlus,
              aSkyBlock, AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, GrapplingHook,
              MagicSpells, MineBomb, MineTinker, MythicMobs, PrinterMode, ProjectKorra, RealDualWield,
-             SmashHit, SuperPickaxe, TreeFeller, Vehicles, WildTools, ViaVersion, floodgate-bukkit,
-             Geyser-Spigot, CustomEnchantsPlus, EcoEnchants]
+             SmashHit, SuperPickaxe, TreeFeller, Vehicles, WildTools, Geyser-Spigot, floodgate-bukkit]
 load: POSTWORLD
 folia-supported: true
 commands:

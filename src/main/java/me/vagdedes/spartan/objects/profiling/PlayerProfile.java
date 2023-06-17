@@ -313,8 +313,7 @@ public class PlayerProfile {
                                     thresholdSurpassing = violationRatio / Check.analysisMultiplier;
 
                             if (thresholdSurpassing >= 1.0) {
-                                int thresholdSurpassingPrepared = AlgebraUtils.integerRound(thresholdSurpassing * 100.0),
-                                        count = 0,
+                                int count = 0,
                                         globalCount = globalStatistics.unrecordedProfiles;
                                 double timeAverage = 0.0,
                                         globalTimeAverage = 0.0;
@@ -340,7 +339,7 @@ public class PlayerProfile {
 
                                     if (timeAverage > 1.5) {
                                         evidence.add(hackType,
-                                                "suspicion: " + thresholdSurpassingPrepared + "%"
+                                                "suspicion: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
                                                         + "§l/§r" + AlgebraUtils.integerRound(timeAverage * 100.0) + "%"
                                         );
                                     } else {

@@ -223,6 +223,7 @@ public class Check {
             disabledUsers,
             silentUsers;
     private final Map<UUID, LiveViolation> violations;
+    private final Map<Integer, String> problematicDetections;
 
     // Object Methods
 
@@ -231,14 +232,16 @@ public class Check {
                 hackType,
                 new ConcurrentHashMap<>(Config.getMaxPlayers()),
                 new ConcurrentHashMap<>(Config.getMaxPlayers()),
-                new ConcurrentHashMap<>(Config.getMaxPlayers())
+                new ConcurrentHashMap<>(Config.getMaxPlayers()),
+                new ConcurrentHashMap<>()
         );
     }
 
     public Check(Enums.HackType hackType,
                  Map<UUID, CancelCause> disabledUsers,
                  Map<UUID, CancelCause> silentUsers,
-                 Map<UUID, LiveViolation> violations) {
+                 Map<UUID, LiveViolation> violations,
+                 Map<Integer, String> problematicDetections) {
         switch (hackType) {
             case FastBow:
             case FastHeal:
@@ -493,6 +496,7 @@ public class Check {
         this.disabledUsers = disabledUsers;
         this.silentUsers = silentUsers;
         this.violations = violations;
+        this.problematicDetections = problematicDetections;
 
         // Separator
 
@@ -738,6 +742,7 @@ public class Check {
         clearConfigurationCache();
         clearViolations();
         clearCancelCauses();
+        clearProblematicDetections();
     }
 
     // Separator
@@ -1097,6 +1102,30 @@ public class Check {
         } else {
             return def;
         }
+    }
+
+    // Separator
+
+    public Map<Integer, String> copyProblematicDetections() {
+        return new ConcurrentHashMap<>(problematicDetections);
+    }
+
+    public Set<String> getProblematicDetections() {
+        return new HashSet<>(problematicDetections.values());
+    }
+
+    public void clearProblematicDetections() {
+        problematicDetections.clear();
+    }
+
+    public boolean isProblematicDetection(ResearchEngine.DataType dataType, String detection) {
+        int hash = SpartanBukkit.hashCodeMultiplier + dataType.hashCode();
+        return problematicDetections.containsKey((hash * SpartanBukkit.hashCodeMultiplier) + detection.hashCode());
+    }
+
+    public void setProblematicDetection(ResearchEngine.DataType dataType, String detection) {
+        int hash = SpartanBukkit.hashCodeMultiplier + dataType.hashCode();
+        problematicDetections.put((hash * SpartanBukkit.hashCodeMultiplier) + detection.hashCode(), detection);
     }
 
     // Separator

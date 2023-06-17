@@ -280,7 +280,7 @@ public class HackPrevention {
                             }
 
                             if (violations < CancelViolation.get(hackType, dataType)
-                                    && FalsePositiveDetection.canCorrect(player, hackType, dataType, playerViolation, true)) {
+                                    && FalsePositiveDetection.canCorrect(player, check, hackType, dataType, playerViolation, true)) {
                                 falsePositive = true;
                                 cancelledViolations = violationsObject.getCancelledLevel() + 1;
                             } else {
@@ -309,7 +309,7 @@ public class HackPrevention {
                                         && ResearchEngine.getFalsePositives(hackType, dataType).size() == 0;
                             }
 
-                            if (FalsePositiveDetection.canCorrect(player, hackType, dataType, playerViolation, false)) {
+                            if (FalsePositiveDetection.canCorrect(player, check, hackType, dataType, playerViolation, false)) {
                                 falsePositive = true;
                                 cancelledViolations = violationsObject.getCancelledLevel() + 1;
                             } else {

@@ -13,6 +13,7 @@ import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.BanManagement;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
+import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
@@ -177,6 +178,13 @@ public class ResearchEngine {
 
     public static boolean isStorageMode() {
         return Settings.getBoolean("Logs.log_file") || isDatabaseMode();
+    }
+
+    public static DataType[] getDynamicUsableDataTypes(boolean universal) {
+        DataType dataType = SpartanEdition.getMissingDetection();
+        return dataType == null ? (universal ? DataType.values() : usableDataTypes) :
+                dataType == DataType.Bedrock ? (universal ? new DataType[]{DataType.Universal, DataType.Java} : new DataType[]{DataType.Java}) :
+                        (universal ? new DataType[]{DataType.Universal, DataType.Bedrock} : new DataType[]{DataType.Bedrock});
     }
 
     // Separator
@@ -369,7 +377,7 @@ public class ResearchEngine {
     public static int getTotalFalsePositives() {
         int sum = 0;
 
-        for (DataType dataType : usableDataTypes) {
+        for (DataType dataType : getDynamicUsableDataTypes(false)) {
             for (Enums.HackType hackType : Enums.hackTypes()) {
                 Map<String, Set<Integer>> map = falsePositives.get(getFalsePositiveStorageKey(hackType, dataType));
 
@@ -385,10 +393,20 @@ public class ResearchEngine {
 
     // Separator
 
-    public static int getTotalFalsePositives(Enums.HackType hackType) {
+    public static int getTotalFalsePositives(Enums.HackType hackType, DataType dataType) {
         int sum = 0;
 
-        for (DataType dataType : usableDataTypes) {
+        if (dataType == DataType.Universal) {
+            for (DataType loopDataType : getDynamicUsableDataTypes(false)) {
+                Map<String, Set<Integer>> map = falsePositives.get(getFalsePositiveStorageKey(hackType, loopDataType));
+
+                if (map != null) {
+                    for (Set<Integer> set : map.values()) {
+                        sum += set.size();
+                    }
+                }
+            }
+        } else {
             Map<String, Set<Integer>> map = falsePositives.get(getFalsePositiveStorageKey(hackType, dataType));
 
             if (map != null) {
@@ -1294,6 +1312,7 @@ public class ResearchEngine {
 
         if (size > 0) {
             Enums.HackType[] hackTypes = Enums.hackTypes();
+            DataType[] dataTypes = getDynamicUsableDataTypes(false);
             List<PlayerProfile> playerProfilesCopy = new ArrayList<>(playerProfiles),
                     hackerFreePlayerProfiles = new ArrayList<>(size);
             int mines = 0, logs = 0, reports = 0,
@@ -1354,7 +1373,7 @@ public class ResearchEngine {
                 Map<Integer, Map<String, Set<Integer>>> localFalsePositives = new LinkedHashMap<>();
 
                 for (Enums.HackType hackType : hackTypes) {
-                    for (DataType dataType : usableDataTypes) {
+                    for (DataType dataType : dataTypes) {
                         Map<String, Set<Integer>> individualFalsePositives = new LinkedHashMap<>();
                         Map<String, Map<Integer, Integer>>
                                 individualHackerViolations = new LinkedHashMap<>(),
@@ -1435,8 +1454,8 @@ public class ResearchEngine {
                                     }
                                 }
                             }
+                            localFalsePositives.put(getFalsePositiveStorageKey(hackType, dataType), individualFalsePositives);
                         }
-                        localFalsePositives.put(getFalsePositiveStorageKey(hackType, dataType), individualFalsePositives);
                     }
                 }
                 ResearchEngine.falsePositives.clear();
@@ -1445,7 +1464,7 @@ public class ResearchEngine {
                 ResearchEngine.falsePositives.clear();
             }
 
-            // Separator
+            // Separator (Calculate mining statistics)
 
             if (hackerFreePlayerProfiles.size() > 0) {
                 for (Enums.MiningOre ore : Enums.MiningOre.values()) {
@@ -1468,6 +1487,50 @@ public class ResearchEngine {
                         averageMining.remove(ore);
                     }
                 }
+
+                // Separator (Calculate problematic detections using a pie equation)
+
+
+                Map<String, Integer> detectionViolationCount = new HashMap<>();
+
+                for (Enums.HackType hackType : hackTypes) {
+                    Check check = hackType.getCheck();
+                    check.clearProblematicDetections();
+
+                    for (DataType dataType : dataTypes) {
+                        detectionViolationCount.clear();
+
+                        for (PlayerProfile playerProfile : hackerFreePlayerProfiles) {
+                            Set<Map.Entry<PlayerViolation, Integer>> data = playerProfile.getViolationHistory(hackType).getViolationCounts();
+
+                            if (data.size() > 0) {
+                                for (Map.Entry<PlayerViolation, Integer> entry : data) {
+                                    String detection = entry.getKey().getDetection(true);
+                                    detectionViolationCount.put(detection, detectionViolationCount.getOrDefault(detection, 0) + entry.getValue());
+                                }
+                            }
+                        }
+
+                        int detections = detectionViolationCount.size();
+
+                        if (detections > 0) {
+                            double doubleOfPieExpectedSize = (1.0 / ((double) detections)) * 2.0,
+                                    totalViolations = 0.0;
+
+                            for (int violations : detectionViolationCount.values()) {
+                                totalViolations += violations;
+                            }
+
+                            for (Map.Entry<String, Integer> entry : detectionViolationCount.entrySet()) {
+                                if ((entry.getValue() / totalViolations) >= doubleOfPieExpectedSize) {
+                                    check.setProblematicDetection(dataType, entry.getKey());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Separator
 
                 CancelViolation.refresh(hackTypes); // Always at the end to include all the recently calculated/cached data
             } else {

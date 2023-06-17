@@ -411,7 +411,7 @@ public class CloudConnections {
                                               String userInformation, boolean local) {
         if (!local) {
             if (!IDs.isValid()) {
-                return "The Cloud feature is not available for you";
+                return "The Cloud feature is not available. If you believe this is a mistake, restart your server.";
             }
         }
         String name = null;
@@ -438,6 +438,9 @@ public class CloudConnections {
             String checkName = check.getName();
 
             if (check.toString().equals(columnInformation) || checkName.equalsIgnoreCase(columnInformation)) {
+                if (!local && !Check.hasPunishCapabilities(hackType)) {
+                    return "This check cannot punish players, therefore we cannot accept a report about it";
+                }
                 ViolationHistory violationHistory = ResearchEngine.getViolationHistory(hackType, ResearchEngine.DataType.Universal, true);
 
                 if (violationHistory == null) {
@@ -468,7 +471,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Important Violations: ").append(violationHistory.getImportantViolations(false))
                         .append(newLine);
-                softwareInformation.append("False Positives: ").append(ResearchEngine.getTotalFalsePositives(hackType))
+                softwareInformation.append("False Positives: ").append(ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal))
                         .append(newLine);
                 softwareInformation.append("Days of Data: ").append(violationHistory.getDays())
                         .append(newLine).append(newLine); // 1 line

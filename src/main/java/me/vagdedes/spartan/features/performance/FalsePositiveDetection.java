@@ -7,6 +7,7 @@ import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
@@ -124,14 +125,15 @@ public class FalsePositiveDetection {
     }
 
     public static boolean canCorrect(SpartanPlayer p,
-                                     Enums.HackType hackType, ResearchEngine.DataType dataType,
+                                     Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
                                      PlayerViolation playerViolation, boolean strict) {
         if (!canFunction() || isTimedOut(p)) {
             return false;
         }
-        return ResearchEngine.isFalsePositive(
+        return (check.isProblematicDetection(dataType, playerViolation.getDetection(true)) // 1
+                || ResearchEngine.isFalsePositive( // 2
                 ResearchEngine.getFalsePositives(hackType, dataType),
-                playerViolation.getFalsePositiveIdentity()
-        ) && !runTimeout(p, hackType, playerViolation.getDecimals().length > 0, strict);
+                playerViolation.getFalsePositiveIdentity()))
+                && !runTimeout(p, hackType, playerViolation.getDecimals().length > 0, strict); // 3
     }
 }

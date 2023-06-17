@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.handlers.stability;
 
 import me.vagdedes.spartan.compatibility.own.UltimateStatistics;
-import me.vagdedes.spartan.objects.profiling.ViolationHistory;
 import me.vagdedes.spartan.objects.profiling.ViolationStatistics;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
@@ -26,7 +25,7 @@ public class CancelViolation {
         for (Enums.HackType hackType : hackTypes) {
             Check check = hackType.getCheck();
 
-            for (ResearchEngine.DataType dataType : ResearchEngine.DataType.values()) {
+            for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(true)) {
                 int key = getKey(hackType, dataType);
 
                 if (check.hasCancelViolation()) {
@@ -34,26 +33,12 @@ public class CancelViolation {
                 } else if (!ViolationStatistics.has(hackType, ResearchEngine.profileRequirement)) {
                     memory.put(key, check.getDefaultCancelViolation());
                 } else {
-                    ViolationHistory violationHistory = ResearchEngine.getViolationHistory(hackType, dataType, true);
-
-                    if (violationHistory == null) {
-                        memory.put(key, check.getDefaultCancelViolation());
-                    } else {
-                        double division = violationHistory.getImportantViolations(true) / ((double) violationHistory.getDays());
-                        int cancelViolation = check.getDefaultCancelViolation(),
-                                average = AlgebraUtils.integerCeil(division) + extra;
-
-                        if (average > cancelViolation) {
-                            memory.put(key,
-                                    Math.min(
-                                            average,
-                                            AlgebraUtils.integerFloor(Check.maxViolations / Check.analysisMultiplier)
-                                    )
-                            );
-                        } else {
-                            memory.put(key, cancelViolation);
-                        }
-                    }
+                    int defaultCancelViolation = check.getDefaultCancelViolation(),
+                            falsePositives = ResearchEngine.getTotalFalsePositives(hackType, dataType);
+                    memory.put(key,
+                            defaultCancelViolation
+                                    + (falsePositives == 0 ? 0 : AlgebraUtils.integerCeil(falsePositives / ((double) defaultCancelViolation)))
+                    );
                 }
             }
         }
