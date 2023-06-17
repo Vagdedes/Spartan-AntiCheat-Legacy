@@ -14,7 +14,8 @@ public class IDs {
             nonce = "%%__NONCE__%%",
             localID = "0";
 
-    public static final boolean hasUserIDByDefault = !user.startsWith("%%__");
+    public static final boolean
+            hasUserIDByDefault = !user.startsWith("%%__");
     static boolean preview = !Piracy.enabled && !hasUserIDByDefault;
 
     private static int platform = 0;
@@ -76,7 +77,7 @@ public class IDs {
     }
 
     public static boolean isPreview() {
-        return preview;
+        return preview && Piracy.isSupplied();
     }
 
     public static boolean isSpigotMC(boolean dismissOthers) {

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Spartan:jar" />
+      <artifact name="SpartanBedrockEdition:jar" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -11,12 +11,13 @@
   <component name="ChangeListManager">
     <list default="true" id="e6ebaee8-396d-4981-85de-c5da14d6b39c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/compatibility/necessary/bedrock/plugins/Floodgate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/compatibility/necessary/bedrock/plugins/Floodgate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Threads.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Threads.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/compatibility/necessary/bedrock/plugins/Floodgate.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/compatibility/necessary/bedrock/plugins/Floodgate.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/IDs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/IDs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/synchronicity/SpartanEdition.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/synchronicity/SpartanEdition.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Threads.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Threads.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Piracy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Piracy.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

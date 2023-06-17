@@ -31,8 +31,6 @@ public class Piracy implements Listener {
     public static double version = -((5 * ((((nameLength * (nameLength / two)) + Math.pow(two, two)) * two) * two)) + (10 * 1) + 2.0);
 
     static {
-        boolean preview;
-
         if (!enabled) {
             Threads.execute(SpartanBukkit.connectionThread, () -> {
                 int userID = CloudConnections.getUserIdentification();
@@ -43,51 +41,41 @@ public class Piracy implements Listener {
                     IDs.setUserID(userID);
                 }
             });
-            preview = false;
-        } else {
-            preview = IDs.isPreview();
         }
 
-        if (!preview) {
+        if (IDs.isValid()) {
             SpartanEdition.refresh();
             CloudConnections.checkServerLimits();
             CloudConnections.logServerSpecifications();
-
-            // Separator
-            long delay = 1200L;
-            Object scheduledTask;
-
-            if (valid) {
-                if (!IDs.isPreview()) {
-                    scheduledTask = SpartanBukkit.runRepeatingTask(Piracy::collectAdministrators, 1L, 20L);
-
-                    SpartanBukkit.runDelayedTask(() -> Threads.execute(SpartanBukkit.connectionThread, () -> {
-                        boolean b = isValid(IDs.site(), IDs.user(), IDs.nonce());
-
-                        if (!b) {
-                            valid = b;
-                        } else {
-                            SpartanEdition.refresh();
-                        }
-                    }), delay * two);
-                } else {
-                    scheduledTask = null;
-                }
-            } else {
-                scheduledTask = null;
-            }
-
-            // Separator
-
-            SpartanBukkit.runDelayedTask(() -> {
-                if (scheduledTask != null) {
-                    SpartanBukkit.cancelTask(scheduledTask);
-                }
-                if (!valid) {
-                    Register.disablePlugin();
-                }
-            }, delay * (two + 1L));
         }
+
+        // Separator
+        long delay = 1200L;
+        Object scheduledTask = SpartanBukkit.runRepeatingTask(Piracy::collectAdministrators, 1L, 20L);
+
+        SpartanBukkit.runDelayedTask(() -> Threads.execute(SpartanBukkit.connectionThread, () -> {
+            boolean b = isValid(IDs.site(), IDs.user(), IDs.nonce());
+
+            if (!b) {
+                valid = b;
+            } else {
+                SpartanEdition.refresh();
+            }
+        }), delay * two);
+
+        // Separator
+
+        SpartanBukkit.runDelayedTask(() -> {
+            SpartanBukkit.cancelTask(scheduledTask);
+
+            if (!valid && isSupplied()) {
+                Register.disablePlugin();
+            }
+        }, delay * (two + 1L));
+    }
+
+    static boolean isSupplied() {
+        return enabled || CloudFeature.hasToken();
     }
 
     private static boolean isSiteValid(String other_site) {
@@ -121,41 +109,39 @@ public class Piracy implements Listener {
                 && description.getWebsite().startsWith("https://vagdedes.com/")
                 && description.getAuthors().toString().equalsIgnoreCase("[Evangelos Dedes @Vagdedes]");
 
-        if (b && (enabled || IDs.isValid())) {
-            try {
-                int number = site.length() - 7;
-                String platformName = IDs.getPlatform(false),
-                        platform = platformName != null ? ("&platform=" + platformName) : "",
-                        port = "&port=" + Bukkit.getPort(),
-                        website = site.substring(0, number) + spigot + site.substring(number) + nonce + platform + port;
+        try {
+            int number = site.length() - 7;
+            String platformName = IDs.getPlatform(false),
+                    platform = platformName != null ? ("&platform=" + platformName) : "",
+                    port = "&port=" + Bukkit.getPort(),
+                    website = site.substring(0, number) + spigot + site.substring(number) + nonce + platform + port;
 
-                // Separator
-                String additional;
+            // Separator
+            String additional;
 
-                if (administrators.size() > 0) {
-                    additional = StringUtils.toString(administrators.toArray(new String[0]));
-                    administrators.clear();
-                } else {
-                    additional = null;
+            if (administrators.size() > 0) {
+                additional = StringUtils.toString(administrators.toArray(new String[0]));
+                administrators.clear();
+            } else {
+                additional = null;
+            }
+
+            // Separator
+            String[] reply = RequestUtils.get(website, "GET", additional, RequestUtils.defaultTimeOut);
+
+            if (reply.length > 0) {
+                String line = reply[0];
+
+                if (line.equalsIgnoreCase(String.valueOf(false))) {
+                    return false;
                 }
-
-                // Separator
-                String[] reply = RequestUtils.get(website, "GET", additional, RequestUtils.defaultTimeOut);
-
-                if (reply.length > 0) {
-                    String line = reply[0];
-
-                    if (line.equalsIgnoreCase(String.valueOf(!b))) {
-                        return false;
-                    }
-                    if (CloudFeature.hasToken() && AlgebraUtils.validInteger(line)) {
-                        IDs.setPlatform(Integer.parseInt(line));
-                    }
+                if (CloudFeature.hasToken() && AlgebraUtils.validInteger(line)) {
+                    IDs.setPlatform(Integer.parseInt(line));
                 }
-            } catch (Exception e) {
-                if (SpartanBukkit.canAdvertise) {
-                    e.printStackTrace();
-                }
+            }
+        } catch (Exception e) {
+            if (SpartanBukkit.canAdvertise) {
+                e.printStackTrace();
             }
         }
         return b;

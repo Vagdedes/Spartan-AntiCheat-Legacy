@@ -433,7 +433,9 @@ public class IrregularMovements {
                     if ((!constructDetection || checkUp) && !jumping && !forcefulUpExtended
                             && IrregularMovements.check.getCheck().getBooleanOption("check_upwards", true)) {
                         AsyncDetection.run(p, check, () -> {
-                            int buffer = explosion ? 5 : bedrockPlayer ? 3 : Math.max(3 - AlgebraUtils.integerFloor(airTicks / ((double) fullOffGroundTicks)), 2);
+                            int buffer = explosion ? 5 :
+                                    bedrockPlayer ? 3 :
+                                            Math.max(3 - AlgebraUtils.integerFloor(airTicks / ((double) fullOffGroundTicks)), 2);
 
                             if (!knownBoxes || vertical != box && vertical != oldBox) {
                                 if (offGround && !cachedJumpEffect) { // Make sure the player is off the ground to ignore collisions that air-ticks cannot account for
