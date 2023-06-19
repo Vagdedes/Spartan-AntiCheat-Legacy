@@ -604,7 +604,8 @@ public class CloudConnections {
                         .append(newLine)
                         .append("Maximum Violations: ").append(maxViolations)
                         .append(newLine)
-                        .append("Low TPS Percentage: ").append((lowTPS / (double) entriesSize) * 100.0);
+                        .append("Low TPS Percentage: ").append((lowTPS / (double) entriesSize) * 100.0)
+                        .append("Problematic Detections: ").append(StringUtils.toString(check.getProblematicDetections().toArray(new String[0]), ", "));
 
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + " " + CloudFeature.identification

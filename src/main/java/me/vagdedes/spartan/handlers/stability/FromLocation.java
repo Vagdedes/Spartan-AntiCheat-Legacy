@@ -21,16 +21,17 @@ public class FromLocation {
 
         if (old != null) {
             double distance = p.getNmsDistance();
+            boolean greatDistance = distance > (MoveUtils.chunk * 2);
 
             if (distance >= 1.0
-                    && (distance > (MoveUtils.chunk * 2)
+                    && (greatDistance
                     || p.getTimer().get("from-location=protection") > 10_000L
                     || !Check.hasViolations(uuid)
                     || Check.getLastViolation(p, false) > 1_000L)) {
-                update(p, p.getLocation(), false);
+                update(p, p.getLocation(), greatDistance);
             }
         } else {
-            update(p, p.getLocation(), false);
+            update(p, p.getLocation(), true);
         }
     }
 

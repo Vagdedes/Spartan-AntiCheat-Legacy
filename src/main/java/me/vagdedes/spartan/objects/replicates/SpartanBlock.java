@@ -91,8 +91,9 @@ public class SpartanBlock {
     }
 
     public boolean isLiquid() {
-        return liquid || waterLogged || (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? this.material == Material.WATER || this.material == Material.LAVA :
-                this.material == Material.getMaterial("STATIONARY_WATER") || this.material == Material.getMaterial("STATIONARY_LAVA"));
+        return liquid
+                || waterLogged
+                || this.material == Material.WATER || this.material == Material.LAVA;
     }
 
     public SpartanLocation getLocation() {

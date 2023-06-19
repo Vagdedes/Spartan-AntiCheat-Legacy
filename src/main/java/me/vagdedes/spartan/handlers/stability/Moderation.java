@@ -354,9 +354,11 @@ public class Moderation {
                             for (String command : commands) {
                                 if (command != null) {
                                     found = true;
-                                    String modifiedCommand = ConfigUtils.replaceWithSyntax(p,
+                                    String modifiedCommand = ConfigUtils.replaceWithSyntax(
+                                            p,
                                             command.replaceAll("\\{detections}|\\{detection}", detections),
-                                            null);
+                                            null
+                                    );
 
                                     if (enabledDeveloperAPI) {
                                         PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(n, hackType, hackTypes, modifiedCommand);
