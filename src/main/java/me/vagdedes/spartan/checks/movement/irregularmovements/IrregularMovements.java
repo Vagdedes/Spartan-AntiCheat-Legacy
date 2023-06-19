@@ -452,12 +452,16 @@ public class IrregularMovements {
                                 if (offGround && !cachedJumpEffect) { // Make sure the player is off the ground to ignore collisions that air-ticks cannot account for
                                     if (airTicksOffGroundCopy) {
                                         cancel(p, from, prevention, "air-up", null, buffer, -defaultBufferTime);
-                                    } else {
+                                    } else if (!bedrockPlayer
+                                            || airTicks > MoveUtils.jumpingMotions
+                                            || p.getBlocksOffGround(true, true) >= 2) {
                                         boolean suspectedOrHacker = p.getProfile().isSuspectedOrHacker(check)
                                                 || check.getCheck().getViolations(p).getLastViolation(true) <= Check.leastViolationCycleSeconds;
 
                                         if (!velocityScenarioCopy && !groundInteractionScenarioCopy && !incompatibility
-                                                && (suspectedOrHacker || horizontal > 0.0)
+
+                                                && (suspectedOrHacker
+                                                || horizontal > 0.0)
 
                                                 && (!oldJumping
                                                 || Math.abs(oldVertical - MoveUtils.jumping[0]) >= MoveUtils.jumping[2]) // Continue only when player was not previously jumping and ignore checking them if the jump motion just ended
