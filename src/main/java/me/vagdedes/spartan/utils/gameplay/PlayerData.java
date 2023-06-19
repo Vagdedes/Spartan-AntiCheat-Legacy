@@ -1,10 +1,7 @@
 package me.vagdedes.spartan.utils.gameplay;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.handlers.identifiers.BouncingBlocks;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
-import me.vagdedes.spartan.handlers.identifiers.ExtremeCollision;
-import me.vagdedes.spartan.handlers.identifiers.Liquid;
+import me.vagdedes.spartan.handlers.identifiers.*;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
@@ -121,6 +118,11 @@ public class PlayerData {
         // Separator
 
         if (heavy) {
+            Entity entity = p.getVehicle();
+
+            if (entity != null) {
+                VehicleAccess.runEnter(p, entity, false);
+            }
             ExtremeCollision.run(p);
 
             if (!Liquid.runMove(p)) {

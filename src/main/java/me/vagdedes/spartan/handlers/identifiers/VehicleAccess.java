@@ -23,7 +23,7 @@ public class VehicleAccess {
                 Entity vehicle = p.getVehicle();
 
                 if (vehicle != null && !(vehicle instanceof LeashHitch)) {
-                    runEnter(p, vehicle);
+                    runEnter(p, vehicle, true);
                 }
             }
         }
@@ -43,11 +43,13 @@ public class VehicleAccess {
         }
     }
 
-    public static void runEnter(SpartanPlayer p, Entity entity) {
+    public static void runEnter(SpartanPlayer p, Entity entity, boolean enter) {
         Handlers handlers = p.getHandlers();
         handlers.add(Handlers.HandlerType.Vehicle);
-        handlers.add(Handlers.HandlerType.Vehicle, "enter", ticks);
 
+        if (enter) {
+            handlers.add(Handlers.HandlerType.Vehicle, "enter", ticks);
+        }
         if (!(entity instanceof Boat)) {
             handlers.add(Handlers.HandlerType.Vehicle, "non-boat");
         }

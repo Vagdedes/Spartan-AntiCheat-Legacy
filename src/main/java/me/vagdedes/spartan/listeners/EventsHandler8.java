@@ -119,7 +119,7 @@ public class EventsHandler8 implements Listener {
                 e.setCancelled(true);
             } else {
                 // Handlers
-                VehicleAccess.runEnter(p, e.getEntered());
+                VehicleAccess.runEnter(p, e.getEntered(), true);
             }
         }
     }
