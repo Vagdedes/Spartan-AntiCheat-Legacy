@@ -161,7 +161,7 @@ public class PlayerStateLists {
                                 lore.add("§7Warnings§8:§c " + punishmentHistory.getWarnings());
                                 lore.add("§7Kicks§8:§c " + punishmentHistory.getKicks());
                                 lore.add("§7Bans§8:§c " + punishmentHistory.getBans());
-                                lore.add("§7Reports§8:§c " + punishmentHistory.getReports());
+                                lore.add("§7Reports§8:§c " + punishmentHistory.getReports().size());
                                 fill(title, inventory, playerProfile.getName(), lore, freeSlots[slotPosition]);
                                 slotPosition++;
                             }

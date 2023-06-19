@@ -70,12 +70,12 @@ public class BlockUtils {
             builder.add(Material.SEAGRASS);
             builder.add(Material.TALL_SEAGRASS);
             builder.add(Material.SEA_PICKLE);
+            builder.add(Material.WATER);
+            builder.add(Material.LAVA);
         } else {
             builder.add(Material.getMaterial("STATIONARY_WATER"));
             builder.add(Material.getMaterial("STATIONARY_LAVA"));
         }
-        builder.add(Material.WATER);
-        builder.add(Material.LAVA);
         liquid = new HashSet<>(builder);
 
         // Separator

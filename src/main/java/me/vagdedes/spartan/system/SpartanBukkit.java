@@ -43,9 +43,9 @@ public class SpartanBukkit {
 
     public static final Threads.ThreadPool
             storageThread = new Threads.ThreadPool(),
-            playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(),
             analysisThread = new Threads.ThreadPool(),
             connectionThread = new Threads.ThreadPool(),
+            playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(),
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool();
 
 

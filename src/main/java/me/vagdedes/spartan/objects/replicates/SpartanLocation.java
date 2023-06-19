@@ -37,6 +37,10 @@ public class SpartanLocation {
     static final Map<Integer, BlockCache> memory = new ConcurrentHashMap<>();
     public static final int clearanceTick = 4;
     private static final long clearanceTime = clearanceTick * TPS.tickTime;
+    private static final boolean
+            v_1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9),
+            v_1_13 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
+            v_1_17 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
     static {
         if (Register.isPluginLoaded()) {
@@ -112,7 +116,8 @@ public class SpartanLocation {
         loadCoordinates(chunk, x, y, z, yaw, pitch);
 
         if (block != null) {
-            loadBlock(block.getType(), block.getData(), block.isLiquid(), block.isWaterLogged());
+            Material material = block.getType();
+            loadBlock(material, block.getData(), BlockUtils.isLiquid(material), block.isWaterLogged());
         } else {
             this.block = null;
         }
@@ -124,7 +129,7 @@ public class SpartanLocation {
         this(player, loc.getWorld());
         loadCoordinates(null, loc.getX(), loc.getY(), loc.getZ(), yaw, pitch);
 
-        if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) { // 1.8 or older
+        if (!v_1_9) { // 1.8 or older
             if (SpartanBukkit.isSynchronised()) {
                 Block block = loc.getBlock();
                 Material material = block.getType();
@@ -360,13 +365,10 @@ public class SpartanLocation {
 
     public SpartanLocation add(double x, double y, double z) {
         Location bukkit = getLimitedBukkitLocation().add(x, y, z);
-        double absX = Math.abs(x),
-                absY = Math.abs(y),
-                absZ = Math.abs(z);
 
-        if (absX >= 1.0 || absY >= 1.0 || absZ >= 1.0) {
-            int startX = getChunkX();
-            int startZ = getChunkZ();
+        if (Math.abs(x) >= 1.0 || Math.abs(y) >= 1.0 || Math.abs(z) >= 1.0) {
+            int startX = getChunkX(),
+                    startZ = getChunkZ();
 
             this.x = bukkit.getX();
             this.y = bukkit.getY();
@@ -377,9 +379,9 @@ public class SpartanLocation {
                 this.chunk = null;
             }
         } else {
-            int startX = getBlockX();
-            int startY = getBlockY();
-            int startZ = getBlockZ();
+            int startX = getBlockX(),
+                    startY = getBlockY(),
+                    startZ = getBlockZ();
 
             this.x = bukkit.getX();
             this.y = bukkit.getY();
@@ -400,14 +402,17 @@ public class SpartanLocation {
         Block block = serverWorld.getBlockAt(getBlockX(), getBlockY(), getBlockZ());
 
         if (block != null) {
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            if (v_1_13) {
                 BlockData blockData = block.getBlockData();
-                return loadBlock(blockData.getMaterial(),
+                Material material = blockData.getMaterial();
+                boolean waterLogged = blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
+                return loadBlock(material,
                         (byte) (blockData instanceof Levelled ? ((Levelled) blockData).getLevel() : 0),
-                        block.isLiquid(),
-                        blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged());
+                        waterLogged || BlockUtils.isLiquid(material),
+                        waterLogged);
             } else {
-                return loadBlock(block.getType(), block.getData(), block.isLiquid(), false);
+                Material material = block.getType();
+                return loadBlock(material, block.getData(), BlockUtils.isLiquid(material), false);
             }
         }
         loadEmptyBlock(false);
@@ -418,7 +423,7 @@ public class SpartanLocation {
         if (block == null) {
             int blockY = getBlockY();
 
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ?
+            if (v_1_17 ?
                     blockY >= serverWorld.getMinHeight() && blockY <= serverWorld.getMaxHeight() :
                     blockY >= 0 && blockY <= MoveUtils.height) {
                 int blockX = getBlockX(),
