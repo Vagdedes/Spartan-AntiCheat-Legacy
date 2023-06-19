@@ -66,8 +66,8 @@ public class Explosion {
         memory.put(block.getLocation(), System.currentTimeMillis() + expirationTime);
     }
 
-    public static void runVelocity(SpartanPlayer player, boolean cancelled) {
-        if (!cancelled && memory.size() > 0) {
+    public static void runVelocity(SpartanPlayer player) {
+        if (memory.size() > 0) {
             clear();
             SpartanLocation to = player.getLocation();
             World world = to.getWorld();

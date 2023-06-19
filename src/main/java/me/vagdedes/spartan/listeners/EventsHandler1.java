@@ -174,13 +174,13 @@ public class EventsHandler1 implements Listener {
         if (p == null) {
             return;
         }
-        boolean cancelled = e.isCancelled();
-
         // Compatibility
         NoHitDelay.runVelocity(p);
 
         // Handlers
-        Velocity.run(p, cancelled);
-        Explosion.runVelocity(p, cancelled);
+        if (!e.isCancelled()) {
+            Velocity.run(p);
+            Explosion.runVelocity(p);
+        }
     }
 }

@@ -131,18 +131,29 @@ public class IrregularMovements {
                     minimumDown = 0.0;
 
             // Early Variables
-            boolean liquidBlocks = BlockUtils.isLiquid(to)
-                    || BlockUtils.isLiquid(to.clone().add(0, 1, 0))
-                    || vertical < 0.0 && BlockUtils.isLiquid(to.clone().add(0, vertical, 0)),
+            boolean liquidBlocks,
                     waterElevator = p.getHandlers().has(Handlers.HandlerType.WaterElevator);
 
-            if (!liquidBlocks && vertical < 0.0) {
-                for (double i = -1.0; i > Math.floor(vertical); i--) {
-                    if (BlockUtils.isLiquid(to.clone().add(0, i, 0))) {
-                        liquidBlocks = true;
-                        break;
+            if (waterElevator
+                    || BlockUtils.isLiquid(to)
+                    || BlockUtils.isLiquid(to.clone().add(0, 1, 0))) {
+                liquidBlocks = true;
+            } else if (vertical < 0.0) {
+                if (BlockUtils.isLiquid(to.clone().add(0, vertical, 0))) {
+                    liquidBlocks = true;
+                } else {
+                    boolean result = false;
+
+                    for (double i = -1.0; i > Math.floor(vertical); i--) {
+                        if (BlockUtils.isLiquid(to.clone().add(0, i, 0))) {
+                            result = true;
+                            break;
+                        }
                     }
+                    liquidBlocks = result;
                 }
+            } else {
+                liquidBlocks = false;
             }
 
             UUID uuid = p.getUniqueId();
@@ -264,9 +275,9 @@ public class IrregularMovements {
 
                 constructDetection = true; // all
                 minimumUp = 0.022;
-            } else if (BlockUtils.canClimbAround(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox, 1, BlockUtils.hitbox)
-                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox, -box, BlockUtils.hitbox)) { // Ladder/Vine Climbing
+            } else if (BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
+                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max)
+                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, -box, BlockUtils.hitbox_max)) { // Ladder/Vine Climbing
                 scenario = "climb";
                 canGoUp = true;
                 canGoDown = !forcefulUp;
@@ -528,7 +539,7 @@ public class IrregularMovements {
                             && IrregularMovements.check.getCheck().getBooleanOption("check_downwards", true)) {
                         AsyncDetection.run(p, check, () -> {
                             if (airTicksOffGroundCopy && offGround && (!groundInteractionScenarioCopy && !explosion || fullAirTicksOffGround)) {
-                                if (!abstractScenarioCopy && !changedScenario) {
+                                if (!abstractScenarioCopy && !changedScenario && !liquidBlocks) {
                                     IrregularMovementsDownwards.run(p, to, from,
                                             vertical,
                                             airTicks, blockY,
@@ -569,7 +580,7 @@ public class IrregularMovements {
                                 && IrregularMovements.check.getCheck().getBooleanOption("check_falling", true)) {
                             AsyncDetection.run(p, check, () -> {
                                 if (airTicksOffGroundCopy && offGround && (!groundInteractionScenarioCopy && !explosion || fullAirTicksOffGround)) {
-                                    if (!abstractScenarioCopy && !changedScenario) {
+                                    if (!abstractScenarioCopy && !changedScenario && !liquidBlocks) {
                                         IrregularMovementsDownwards.run(p, to, from,
                                                 vertical,
                                                 airTicks, blockY,
