@@ -32,7 +32,7 @@ public class Piracy implements Listener {
 
     static {
         if (!enabled) {
-            Threads.execute(SpartanBukkit.connectionThread, () -> {
+            SpartanBukkit.connectionThread.execute(() -> {
                 int userID = CloudConnections.getUserIdentification();
 
                 if (userID <= 0) {
@@ -53,7 +53,7 @@ public class Piracy implements Listener {
         long delay = 1200L;
         Object scheduledTask = SpartanBukkit.runRepeatingTask(Piracy::collectAdministrators, 1L, 20L);
 
-        SpartanBukkit.runDelayedTask(() -> Threads.execute(SpartanBukkit.connectionThread, () -> {
+        SpartanBukkit.runDelayedTask(() -> SpartanBukkit.connectionThread.execute(() -> {
             boolean b = isValid(IDs.site(), IDs.user(), IDs.nonce());
 
             if (!b) {

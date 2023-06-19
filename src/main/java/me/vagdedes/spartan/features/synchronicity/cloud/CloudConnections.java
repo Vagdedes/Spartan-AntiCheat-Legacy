@@ -21,7 +21,10 @@ import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.profiling.ViolationHistory;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.*;
+import me.vagdedes.spartan.system.Cache;
+import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.IDs;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.RequestUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
@@ -104,7 +107,7 @@ public class CloudConnections {
 
     public static void logServerSpecifications() {
         if (!CloudFeature.recentError(System.currentTimeMillis(), true)) {
-            Threads.execute(SpartanBukkit.connectionThread, () -> {
+            SpartanBukkit.connectionThread.execute(() -> {
                 Runtime runtime = Runtime.getRuntime();
                 String motd = StringUtils.getClearColorString(Bukkit.getMotd());
 
@@ -131,7 +134,7 @@ public class CloudConnections {
 
     public static void checkServerLimits() { // Once
         if (!CloudFeature.recentError(System.currentTimeMillis())) {
-            Threads.execute(SpartanBukkit.connectionThread, () -> {
+            SpartanBukkit.connectionThread.execute(() -> {
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification
                             + "&action=get&data=serverLimitations&version=" + CloudFeature.version + "&value=" + Bukkit.getPort());
@@ -395,7 +398,7 @@ public class CloudConnections {
                     };
 
                     if (SpartanBukkit.isSynchronised()) {
-                        Threads.execute(SpartanBukkit.connectionThread, runnable);
+                        SpartanBukkit.connectionThread.execute(runnable);
                     } else {
                         runnable.run();
                     }

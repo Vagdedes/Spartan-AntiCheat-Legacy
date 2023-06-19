@@ -7,7 +7,10 @@ import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.synchronicity.AutoUpdater;
 import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
-import me.vagdedes.spartan.system.*;
+import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.IDs;
+import me.vagdedes.spartan.system.Piracy;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.RequestUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
@@ -58,14 +61,14 @@ public class CloudFeature {
                     cloudExceptionCooldown -= 1;
 
                     if (cloudExceptionCooldown == 0) {
-                        Threads.execute(SpartanBukkit.connectionThread, () -> {
+                        SpartanBukkit.connectionThread.execute(() -> {
                             refresh(true);
                             refresh(false);
                         });
                     }
                 } else if (cloudExceptionCooldown == 0) {
                     if (connectionRefreshTimer == 0) {
-                        Threads.execute(SpartanBukkit.connectionThread, () -> {
+                        SpartanBukkit.connectionThread.execute(() -> {
                             refresh(true);
                             refresh(false);
                         });
@@ -197,14 +200,14 @@ public class CloudFeature {
                         SpartanEdition.refresh();
                     }
                 } else if (validIDs) {
-                    Threads.execute(SpartanBukkit.connectionThread, SpartanEdition::refresh);
+                    SpartanBukkit.connectionThread.execute(SpartanEdition::refresh);
                 }
             } else if (async) {
                 if (validIDs) {
                     CloudConnections.punishPlayers();
                 }
             } else if (validIDs) {
-                Threads.execute(SpartanBukkit.connectionThread, CloudConnections::punishPlayers);
+                SpartanBukkit.connectionThread.execute(CloudConnections::punishPlayers);
             }
 
             // Separator
@@ -248,7 +251,7 @@ public class CloudFeature {
                 if (async) {
                     runnable.run();
                 } else {
-                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                    SpartanBukkit.connectionThread.execute(runnable);
                 }
             }
 
@@ -318,7 +321,7 @@ public class CloudFeature {
                 if (async) {
                     runnable.run();
                 } else {
-                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                    SpartanBukkit.connectionThread.execute(runnable);
                 }
             }
 
@@ -356,7 +359,7 @@ public class CloudFeature {
                 if (async) {
                     runnable.run();
                 } else {
-                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                    SpartanBukkit.connectionThread.execute(runnable);
                 }
             }
 
@@ -410,7 +413,7 @@ public class CloudFeature {
                 if (async) {
                     runnable.run();
                 } else {
-                    Threads.execute(SpartanBukkit.connectionThread, runnable);
+                    SpartanBukkit.connectionThread.execute(runnable);
                 }
             }
         } else {

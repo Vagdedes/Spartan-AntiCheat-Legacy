@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.handlers.connection;
 
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.system.Threads;
 import me.vagdedes.spartan.utils.java.RequestUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
@@ -19,7 +18,7 @@ public class DiscordMemberCount {
         if (times == 0) {
             times = 100;
 
-            Threads.execute(SpartanBukkit.connectionThread, () -> {
+            SpartanBukkit.connectionThread.execute(() -> {
                 try {
                     String number = RequestUtils.get(discordURL + "/count/")[0];
 

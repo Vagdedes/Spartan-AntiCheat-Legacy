@@ -10,7 +10,6 @@ import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.IDs;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.system.Threads;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
@@ -49,7 +48,7 @@ public class CrossServerInformation {
                         max = 200;
                         ticks = max;
 
-                        Threads.execute(SpartanBukkit.connectionThread, () -> {
+                        SpartanBukkit.connectionThread.execute(() -> {
                             String serverName = getOptionValue();
 
                             if (isOptionValid(serverName)) {

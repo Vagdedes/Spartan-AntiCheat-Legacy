@@ -22,7 +22,10 @@ import me.vagdedes.spartan.objects.features.StatisticalProgress;
 import me.vagdedes.spartan.objects.profiling.*;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.*;
+import me.vagdedes.spartan.system.Cache;
+import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.IDs;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.java.MemoryUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
@@ -151,7 +154,7 @@ public class ResearchEngine {
                 if (schedulerTicks == 0) {
                     schedulerTicks = schedulerRefreshTicks;
 
-                    Threads.executeIfFreeElseHere(SpartanBukkit.analysisThread, () -> {
+                    SpartanBukkit.analysisThread.executeIfFreeElseHere(() -> {
                         skullsAndFightsRunnable.run();
                         updateCache();
 
@@ -163,7 +166,7 @@ public class ResearchEngine {
                     schedulerTicks -= 1;
 
                     if (schedulerTicks % 20 == 0) {
-                        Threads.executeIfFreeElseHere(SpartanBukkit.analysisThread, () -> {
+                        SpartanBukkit.analysisThread.executeIfFreeElseHere(() -> {
                             skullsAndFightsRunnable.run();
 
                             if (schedulerTicks % 1200 == 0) {
@@ -257,7 +260,7 @@ public class ResearchEngine {
                 if (!SpartanBukkit.isSynchronised()) { // Other Threads
                     runnable.run();
                 } else { // Main Thread
-                    Threads.execute(SpartanBukkit.analysisThread, runnable);
+                    SpartanBukkit.analysisThread.execute(runnable);
                 }
             } else {
                 isCaching = false;
@@ -648,7 +651,7 @@ public class ResearchEngine {
                     }
 
                     // Clear Files/Database
-                    Threads.execute(SpartanBukkit.storageThread, () -> {
+                    SpartanBukkit.storageThread.execute(() -> {
                         while (isCaching()) {
                             // Wait here until the caching is finished
                         }

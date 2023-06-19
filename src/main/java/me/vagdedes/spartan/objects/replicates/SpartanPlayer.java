@@ -158,7 +158,7 @@ public class SpartanPlayer {
                 if (MultiVersion.folia) {
                     run(false);
                 } else {
-                    Threads.executeIfFreeElseHere(SpartanBukkit.playerThread, () -> run(false));
+                    SpartanBukkit.playerThread.executeIfFreeElseHere(() -> run(false));
                 }
                 run(true);
             }, 1L, 1L);

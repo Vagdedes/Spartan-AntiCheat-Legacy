@@ -5,7 +5,6 @@ import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.system.Threads;
 
 public class AsyncDetection {
 
@@ -13,7 +12,7 @@ public class AsyncDetection {
         if (!MultiVersion.folia
                 && (hackType.getCheck().isSilent(player.getWorld().getName(), player.getUniqueId())
                 || TPS.getMillisecondsPassed(player) <= 40L)) {
-            Threads.executeIfFreeElseHere(SpartanBukkit.detectionThread, runnable);
+            SpartanBukkit.detectionThread.executeIfFreeElseHere(runnable);
         } else {
             // If there are less than 10 milliseconds available and the check is not silent,
             // we definitely run the detection on the main thread because we run into the

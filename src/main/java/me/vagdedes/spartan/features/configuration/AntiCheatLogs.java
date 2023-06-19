@@ -9,7 +9,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.system.Threads;
 import me.vagdedes.spartan.utils.java.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -64,7 +63,7 @@ public class AntiCheatLogs {
 
         if (!playerRelated || (id % Check.sufficientViolations) == 0) {
             if (SpartanBukkit.isSynchronised()) {
-                Threads.executeIfFreeElseHere(SpartanBukkit.storageThread, AntiCheatLogs::save);
+                SpartanBukkit.storageThread.executeIfFreeElseHere(AntiCheatLogs::save);
             } else {
                 save();
             }

@@ -13,7 +13,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.system.Threads;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
@@ -240,7 +239,7 @@ public class SQLFeature {
         ConfigUtils.add(file, "escape_special_characters", false);
         refreshConfiguration();
 
-        Threads.execute(SpartanBukkit.storageThread, SQLFeature::connect);
+        SpartanBukkit.storageThread.execute(SQLFeature::connect);
 
         if (!local && exists) {
             CrossServerInformation.sendConfiguration(file);
@@ -431,7 +430,7 @@ public class SQLFeature {
                 };
 
                 if (SpartanBukkit.isSynchronised()) {
-                    Threads.execute(SpartanBukkit.storageThread, runnable);
+                    SpartanBukkit.storageThread.execute(runnable);
                 } else {
                     runnable.run();
                 }

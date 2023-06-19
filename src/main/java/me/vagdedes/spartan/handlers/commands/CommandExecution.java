@@ -24,8 +24,11 @@ import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.*;
+import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
+import me.vagdedes.spartan.system.IDs;
+import me.vagdedes.spartan.system.Piracy;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.TimeUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
@@ -461,7 +464,7 @@ public class CommandExecution implements CommandExecutor {
                         }
                         AwarenessNotifications.forcefullySend(sender, "Please wait...");
 
-                        Threads.execute(SpartanBukkit.connectionThread, () -> {
+                        SpartanBukkit.connectionThread.execute(() -> {
                             Enums.HackType[] hackTypes = Enums.hackTypes();
                             Set<Enums.HackType> set = new HashSet<>(hackTypes.length);
 
@@ -712,7 +715,7 @@ public class CommandExecution implements CommandExecutor {
                         }
                         AwarenessNotifications.forcefullySend(sender, "Please wait...");
 
-                        Threads.execute(SpartanBukkit.connectionThread, () -> {
+                        SpartanBukkit.connectionThread.execute(() -> {
                             String check = args[1];
                             String discordTag = args[2];
                             AwarenessNotifications.forcefullySend(sender, CloudConnections.sendCustomerSupport(discordTag, check, "No Provided Description", false));
@@ -736,7 +739,7 @@ public class CommandExecution implements CommandExecutor {
                             String argumentsToStringThreaded = argumentsToString;
                             AwarenessNotifications.forcefullySend(sender, "Please wait...");
 
-                            Threads.execute(SpartanBukkit.connectionThread, () -> {
+                            SpartanBukkit.connectionThread.execute(() -> {
                                 String check = args[1];
                                 String discordTag = args[2];
                                 AwarenessNotifications.forcefullySend(sender, CloudConnections.sendCustomerSupport(discordTag, check, argumentsToStringThreaded, false));

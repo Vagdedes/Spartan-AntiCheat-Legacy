@@ -8,7 +8,6 @@ import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.system.Threads;
 import me.vagdedes.spartan.utils.java.CommonsStringUtils;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
 import org.bukkit.Bukkit;
@@ -159,7 +158,7 @@ public class Wave {
                 }
             }
 
-            Threads.executeIfFreeElseHere(SpartanBukkit.storageThread, () -> {
+            SpartanBukkit.storageThread.executeIfFreeElseHere(() -> {
                 UUID[] uuids = getWaveList();
 
                 if (uuids.length > 0) {

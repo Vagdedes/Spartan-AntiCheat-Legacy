@@ -13,7 +13,6 @@ import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.system.Threads;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -70,7 +69,7 @@ public class BanManagement {
         // Separator
 
         if (SQLFeature.isEnabled()) {
-            Threads.execute(SpartanBukkit.storageThread, () -> {
+            SpartanBukkit.storageThread.execute(() -> {
                 SQLFeature.update("CREATE TABLE IF NOT EXISTS " + BanManagement.table + " (" +
                         "id INT(11) NOT NULL AUTO_INCREMENT, " +
 
@@ -183,7 +182,7 @@ public class BanManagement {
         boolean hasExpiration = time != 0L;
 
         if (SQLFeature.isEnabled()) {
-            Threads.execute(SpartanBukkit.storageThread, () -> {
+            SpartanBukkit.storageThread.execute(() -> {
                 SQLFeature.update("DELETE FROM " + table + " WHERE punished = '" + uuid + "';");
                 SQLFeature.update("INSERT INTO " + table
                         + " (punished, punisher, reason, creation, expiration)" +
@@ -268,7 +267,7 @@ public class BanManagement {
 
     public static void unban(UUID uuid, boolean force) {
         if (SQLFeature.isEnabled()) {
-            Threads.execute(SpartanBukkit.storageThread, () -> SQLFeature.update("DELETE FROM " + table + " WHERE punished = '" + uuid + "';"));
+            SpartanBukkit.storageThread.execute(() -> SQLFeature.update("DELETE FROM " + table + " WHERE punished = '" + uuid + "';"));
         }
         if (force || isBanned(uuid)) {
             for (String key : keys) {

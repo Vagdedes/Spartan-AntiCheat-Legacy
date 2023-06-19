@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 
 public class SpartanBukkit {
 
@@ -42,12 +41,13 @@ public class SpartanBukkit {
         }
     }
 
-    public static final ExecutorService
-            storageThread = Threads.create(),
-            playerThread = MultiVersion.folia ? null : Threads.create(),
-            analysisThread = Threads.create(),
-            connectionThread = Threads.create(),
-            detectionThread = MultiVersion.folia ? null : Threads.create();
+    public static final Threads.ThreadPool
+            storageThread = new Threads.ThreadPool(),
+            playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(),
+            analysisThread = new Threads.ThreadPool(),
+            connectionThread = new Threads.ThreadPool(),
+            detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool();
+
 
     public static final int hashCodeMultiplier = 31;
     private static final ConcurrentHashMap<UUID, SpartanPlayer> players = new ConcurrentHashMap<>(Config.getMaxPlayers());
