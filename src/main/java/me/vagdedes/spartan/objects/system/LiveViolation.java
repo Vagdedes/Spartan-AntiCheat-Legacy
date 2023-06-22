@@ -80,8 +80,16 @@ public class LiveViolation {
         return getLevel() > 0;
     }
 
+    public boolean hasMaxLevel() {
+        return getLevel() == Check.maxViolations;
+    }
+
     public boolean hasCancelledLevel() {
         return getCancelledLevel() > 0;
+    }
+
+    public boolean hasMaxCancelledLevel() {
+        return getCancelledLevel() == Check.maxCancelledViolations;
     }
 
     public void setLevel(int amount) {
@@ -111,8 +119,8 @@ public class LiveViolation {
         timeReset();
 
         // Violations
-        if (amount > Check.maxViolations) {
-            this.cancelledLevel = Check.maxViolations;
+        if (amount > Check.maxCancelledViolations) {
+            this.cancelledLevel = Check.maxCancelledViolations;
         } else {
             this.cancelledLevel = Math.max(amount, 0);
         }

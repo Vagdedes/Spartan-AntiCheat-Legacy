@@ -32,13 +32,13 @@ public class DetectionTick {
 
         if (canSkip
                 && !MaximumCheckedPlayers.isActive()
-                && !FalsePositiveDetection.isTimedOut(cooldowns)
                 && !profile.isSuspectedOrHacker()
                 && !player.hasNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance)) {
             for (Enums.HackType hackType : Enums.hackTypes()) {
                 LiveViolation liveViolation = hackType.getCheck().getViolations(uuid);
 
-                if (liveViolation.getLastViolation(true) <= 10_000L) {
+                if (liveViolation.hasMaxCancelledLevel()
+                        || liveViolation.getLastViolation(true) <= 10_000L) {
                     return false;
                 }
             }

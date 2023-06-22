@@ -616,14 +616,15 @@ public class SpartanLocation {
 
     public List<SpartanLocation> getSurroundingLocations(double x, double y, double z) {
         if (x < 1.0 || z < 1.0) {
-            SpartanPlayer p = getPlayer();
             return getSurroundingLocations(x, y, z,
-                    p == null
-                            || p.getVehicle() != null
-                            || p.getActivePotionEffects().length > 0
-                            || BlockUtils.isSolid(p.getItemInHand().getType())
-                            || Check.hasViolations(p)
-                            || p.getProfile().isSuspectedOrHacker()
+                    player == null
+                            || player.isBedrockPlayer()
+                            || player.getVehicle() != null
+                            || player.getActivePotionEffects().length > 0
+                            || BlockUtils.isSolid(player.getItemInHand().getType())
+                            || Check.hasViolations(player)
+                            || Check.getLastViolation(player, true) <= Check.leastViolationCycleSeconds
+                            || player.getProfile().isSuspectedOrHacker()
             );
         }
         return getSurroundingLocations(x, y, z, false);

@@ -188,12 +188,13 @@ public class IrregularMovements {
                     wasInLiquids = p.wasInLiquids();
 
             // Cache Variables
-            boolean heightExists = cacheBoolean(p, knownBoxes, "height-exists", 20),
-                    heightExistsHalf = cacheBoolean(p, knownBoxes, "height-exists=half", 10),
-                    building = cacheBoolean(p, Building.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.BlockPlace), "building", 20),
-                    badTPS = cacheBoolean(p, TPS.get(p) < TPS.good, "bad-TPS", 10),
-                    pastFalling = cacheBoolean(p, falling || oldFalling, "past-falling", 20),
-                    blockedJumping = cacheBoolean(p, GroundUtils.isBlockedJumping(p, to, vertical, box, airTicks), "blocked-jumping", 10);
+            Cooldowns cooldowns = p.getCooldowns(check);
+            boolean heightExists = cacheBoolean(cooldowns, knownBoxes, "height-exists", 20),
+                    heightExistsHalf = cacheBoolean(cooldowns, knownBoxes, "height-exists=half", 10),
+                    building = cacheBoolean(cooldowns, Building.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.BlockPlace), "building", 20),
+                    badTPS = cacheBoolean(cooldowns, TPS.get(p) < TPS.good, "bad-TPS", 10),
+                    pastFalling = cacheBoolean(cooldowns, falling || oldFalling, "past-falling", 20),
+                    blockedJumping = cacheBoolean(cooldowns, GroundUtils.isBlockedJumping(p, to, cooldowns, vertical, box, airTicks), "blocked-jumping", 10);
 
             // Combination Variables
             boolean forcefulUp = levitationEffect || waterElevator || Explosion.justExploded(p),
@@ -347,7 +348,7 @@ public class IrregularMovements {
                     canGoUp, canGoDown, canJump, canFall,
                     checkUp, checkDown, checkJump, checkFall, checkHorizontal
             );
-            boolean changedScenario = cacheBoolean(p, buffers.get(changeScenario, scenarioCode) != scenarioCode, "changed-scenario", 7);
+            boolean changedScenario = cacheBoolean(cooldowns, buffers.get(changeScenario, scenarioCode) != scenarioCode, "changed-scenario", 7);
 
             // Variable Modification
             if (waterElevator) { // Allow the player to go a bit down when in a water soul-sand elevator
@@ -385,7 +386,7 @@ public class IrregularMovements {
                 switch (scenario) {
                     case "climb":
                         if (!bedrockPlayer) {
-                            IrregularMovementsClimb.run(p, to, from,
+                            IrregularMovementsClimb.run(p, to, from, cooldowns,
                                     vertical, oldVertical, box,
                                     knownBoxes, canGoUp, canGoDown, canJump, bouncingBlocks, jumping,
                                     prevention, scenario);
@@ -393,7 +394,7 @@ public class IrregularMovements {
                         break;
                     case levitationKey:
                         if (!waterElevator && !liquidBlocks && canRunDetection(bedrockPlayer)) {
-                            IrregularMovementsLevitation.run(p, to, from,
+                            IrregularMovementsLevitation.run(p, to, from, cooldowns,
                                     vertical,
                                     canGoUp,
                                     box, oldBox,
@@ -665,8 +666,7 @@ public class IrregularMovements {
         }
     }
 
-    static boolean cacheBoolean(SpartanPlayer p, boolean bool, String key, int ticks) {
-        Cooldowns cooldowns = p.getCooldowns(check);
+    static boolean cacheBoolean(Cooldowns cooldowns, boolean bool, String key, int ticks) {
         boolean result;
 
         if (bool) {

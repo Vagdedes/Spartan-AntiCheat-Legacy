@@ -1,6 +1,7 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.features.performance.AsyncDetection;
+import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -8,7 +9,7 @@ import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 
 public class IrregularMovementsClimb {
 
-    static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
+    static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns,
                        double vertical, double oldVertical, double box,
                        boolean knownBoxes, boolean canGoUp, boolean canGoDown, boolean canJump, boolean bouncingBlocks, boolean jumping,
                        String prevention, String scenario) {
@@ -31,7 +32,7 @@ public class IrregularMovementsClimb {
                         IrregularMovements.cancel(p, from, prevention, "up-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, bouncingBlocks || knownBoxes ? 8 : 3, IrregularMovements.defaultBufferTime);
                     } else if (canGoDown && vertical <= -max
                             && !p.isFalling(vertical) && p.getLastFall() >= 1_000L) {
-                        boolean nonClimbable = IrregularMovements.cacheBoolean(p,
+                        boolean nonClimbable = IrregularMovements.cacheBoolean(cooldowns,
                                 !BlockUtils.canClimb(to)
                                         || !BlockUtils.canClimb(to.clone().add(0, 1, 0))
                                         || !BlockUtils.canClimb(to.clone().add(0, -1, 0)),

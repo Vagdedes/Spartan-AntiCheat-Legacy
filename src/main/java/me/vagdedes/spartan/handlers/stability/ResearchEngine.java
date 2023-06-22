@@ -1517,7 +1517,7 @@ public class ResearchEngine {
                         int detections = detectionViolationCount.size();
 
                         if (detections > 0) {
-                            double doubleOfPieExpectedSize = (1.0 / ((double) detections)) * 2.0,
+                            double maxExpectedPieSize = (1.0 / ((double) detections)) * Math.max(Math.ceil(check.getDefaultCancelViolation() / 2.0), 2.0),
                                     totalViolations = 0.0;
 
                             for (int violations : detectionViolationCount.values()) {
@@ -1525,7 +1525,7 @@ public class ResearchEngine {
                             }
 
                             for (Map.Entry<String, Integer> entry : detectionViolationCount.entrySet()) {
-                                if ((entry.getValue() / totalViolations) >= doubleOfPieExpectedSize) {
+                                if ((entry.getValue() / totalViolations) >= maxExpectedPieSize) {
                                     check.setProblematicDetection(dataType, entry.getKey());
                                 }
                             }

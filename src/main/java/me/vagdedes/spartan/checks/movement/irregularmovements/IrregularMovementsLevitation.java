@@ -1,6 +1,7 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.features.performance.AsyncDetection;
+import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -12,7 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class IrregularMovementsLevitation {
 
-    static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
+    static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns,
                     double vertical,
                     boolean canGoUp,
                     double box, double oldBox,
@@ -22,7 +23,7 @@ public class IrregularMovementsLevitation {
                 if (!p.getHandlers().has(Handlers.HandlerType.ElytraWear)) {
                     double modifiedBox = AlgebraUtils.cut(box, 5),
                             modifiedOldBox = AlgebraUtils.cut(oldBox, 5);
-                    boolean modifiedHeightExists = IrregularMovements.cacheBoolean(p,
+                    boolean modifiedHeightExists = IrregularMovements.cacheBoolean(cooldowns,
                             GroundUtils.heightExists(modifiedBox, true)
                                     || GroundUtils.heightExists(modifiedOldBox, true)
                                     || modifiedBox == 0.2

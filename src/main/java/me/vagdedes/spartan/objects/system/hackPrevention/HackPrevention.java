@@ -264,11 +264,11 @@ public class HackPrevention {
                     if (!CheckProtection.hasCooldown(uuid, playerViolation)) {
                         Player realPlayer = player.getPlayer();
                         PlayerProfile playerProfile = player.getProfile();
-                        int cancelledViolations;
+                        int cancelledViolations = violationsObject.getCancelledLevel();
                         boolean canPrevent, canPreventAlternative, falsePositive,
-                                hacker = playerProfile.isSuspectedOrHacker(hackType);
+                                suspectedOrHacker = playerProfile.isSuspectedOrHacker(hackType);
 
-                        if (hacker) {
+                        if (suspectedOrHacker) {
                             CancelCause silentCause = check.getSilentCause(uuid);
 
                             if (silentCause == null || !silentCause.pointerMatches(information)) {
@@ -280,13 +280,12 @@ public class HackPrevention {
                             }
 
                             if (violations < CancelViolation.get(hackType, dataType)
-                                    && FalsePositiveDetection.canCorrect(player, check, hackType, dataType, playerViolation, true)) {
+                                    && FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, cancelledViolations)) {
                                 falsePositive = true;
-                                cancelledViolations = violationsObject.getCancelledLevel() + 1;
+                                cancelledViolations += 1;
                             } else {
                                 falsePositive = false;
                                 violations += 1;
-                                cancelledViolations = 0;
                             }
                         } else {
                             if (CancelViolation.isForced(player, hackType) || bypassCancelViolation(dataType, hackType, violations, hp.damage)) {
@@ -309,13 +308,12 @@ public class HackPrevention {
                                         && ResearchEngine.getFalsePositives(hackType, dataType).size() == 0;
                             }
 
-                            if (FalsePositiveDetection.canCorrect(player, check, hackType, dataType, playerViolation, false)) {
+                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, cancelledViolations)) {
                                 falsePositive = true;
-                                cancelledViolations = violationsObject.getCancelledLevel() + 1;
+                                cancelledViolations += 1;
                             } else {
                                 falsePositive = false;
                                 violations += 1;
-                                cancelledViolations = 0;
                             }
                         }
 
@@ -336,7 +334,7 @@ public class HackPrevention {
                             if (falsePositive) {
                                 violationsObject.removeMaxLevel(information);
                                 violationsObject.setCancelledLevel(cancelledViolations);
-                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, cancelledViolations, false, true, canPrevent || canPreventAlternative, hacker, dataType);
+                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, cancelledViolations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                             } else {
                                 switch (hp.violation) {
                                     case 2:
@@ -345,12 +343,12 @@ public class HackPrevention {
                                     case 1:
                                         playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
                                         violationsObject.setLevel(violations);
-                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, true, false, canPrevent || canPreventAlternative, hacker, dataType);
+                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         Moderation.performPunishments(player, hackType, violations, dataType);
                                         break;
                                     case 0:
                                         playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
-                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, false, false, canPrevent || canPreventAlternative, hacker, dataType);
+                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         break;
                                     default:
                                         break;

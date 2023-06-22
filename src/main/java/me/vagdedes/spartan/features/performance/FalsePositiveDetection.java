@@ -2,11 +2,7 @@ package me.vagdedes.spartan.features.performance;
 
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
-import me.vagdedes.spartan.objects.data.Buffer;
-import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
-import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
@@ -19,11 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FalsePositiveDetection {
 
-    private static final String timeoutKey = "false-positive-detection";
     private static final int
-            timeoutTicks = 5 * 20,
-            timeoutFails = 5 * SpartanLocation.clearanceTick,
-            timeoutStrictFails = 5 * (SpartanLocation.clearanceTick / 2),
             correlationSizeLimit = 65536,
             integerNearest = 5,
             decimalPoint = 1;
@@ -33,28 +25,6 @@ public class FalsePositiveDetection {
 
     public static boolean canFunction() {
         return Settings.getBoolean("Performance.enable_false_positive_detection");
-    }
-
-    private static boolean runTimeout(SpartanPlayer p, Enums.HackType hackType, boolean hasDecimals, boolean strict) {
-        Buffer buffer = p.getBuffer();
-        String key = timeoutKey + "=" + hackType.getStringOrdinal();
-        int limit = strict || !hasDecimals ? timeoutStrictFails : timeoutFails;
-
-        if (buffer.start(key, timeoutTicks) == limit
-                | buffer.start(timeoutKey, timeoutTicks) == (limit * 2)) { // Call it regardless
-            buffer.remove(new String[]{key, timeoutKey});
-            p.getCooldowns().add(timeoutKey, timeoutTicks);
-            return true;
-        }
-        return isTimedOut(p);
-    }
-
-    static boolean isTimedOut(Cooldowns cooldowns) {
-        return !cooldowns.canDo(timeoutKey);
-    }
-
-    static boolean isTimedOut(SpartanPlayer p) {
-        return isTimedOut(p.getCooldowns());
     }
 
     public static int getSimplifiedNumber(String information, Double[] decimals, Integer[] integers) {
@@ -124,16 +94,14 @@ public class FalsePositiveDetection {
         return information.hashCode();
     }
 
-    public static boolean canCorrect(SpartanPlayer p,
-                                     Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
-                                     PlayerViolation playerViolation, boolean strict) {
-        if (!canFunction() || isTimedOut(p)) {
-            return false;
-        }
-        return (check.isProblematicDetection(dataType, playerViolation.getDetection(true)) // 1
+    public static boolean canCorrect(Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
+                                     PlayerViolation playerViolation,
+                                     int cancelledViolations) {
+        return canFunction() // 1
+                && (check.isProblematicDetection(dataType, playerViolation.getDetection(true)) // 2
                 || ResearchEngine.isFalsePositive( // 2
                 ResearchEngine.getFalsePositives(hackType, dataType),
                 playerViolation.getFalsePositiveIdentity()))
-                && !runTimeout(p, hackType, playerViolation.getDecimals().length > 0, strict); // 3
+                && cancelledViolations < Check.maxCancelledViolations; // 3
     }
 }

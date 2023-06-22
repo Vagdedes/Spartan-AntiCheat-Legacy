@@ -37,6 +37,7 @@ public class Check {
             maxCommands = 10,
             maxMath = 10,
             maxViolations = 100,
+            maxCancelledViolations = maxViolations / 2,
             sufficientViolations = (maxViolations / 10),
             minimumDefaultCancelViolation = 1,
             maximumDefaultCancelViolation = 6,
