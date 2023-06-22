@@ -933,7 +933,6 @@ public class SpartanPlayer {
                         );
                     } else {
                         runnable.run();
-                        ;
                     }
                 } else {
                     this.onGroundCustom = false;

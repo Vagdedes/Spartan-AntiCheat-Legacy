@@ -1080,6 +1080,10 @@ public class BlockUtils {
     }
 
     // Local due to Waterlogged block incompatibilities
+    public static boolean isLiquid(Block block) {
+        return liquid.contains(block.getType()) || block.isLiquid();
+    }
+
     public static boolean isLiquid(Material m) {
         return liquid.contains(m);
     }

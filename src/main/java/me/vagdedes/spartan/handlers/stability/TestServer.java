@@ -23,7 +23,8 @@ public class TestServer {
             "TakaAntiCheat", "TakaAC", "AntiAura", "Kauri", "KAC", "NekoAC", "Horizon", "Intave", "GodsEye", "Frequency",
             "DakataAntiCheat", "DakataAC", "Wraith", "Iris", "Fiona", "Vulcan", "Karhu", "Watchdog", "Crimson", "Storm",
             "Negativity", "Soaroma", "Warden", "Wither", "ThotPatrol", "NESS", "AntiHaxerman", "Hades", "Medusa", "Phoenix",
-            "Karma", "OpenEye", "UltraAC", "AngelX", "Cardinal", "Kokumin", "JI", "zHack", "Meow", "Sparky", "Artemis"};
+            "Karma", "OpenEye", "UltraAC", "AngelX", "Cardinal", "Kokumin", "JI", "zHack", "Meow", "Sparky", "Artemis"
+    };
     private static int[] identification = new int[]{};
 
     static {
@@ -47,18 +48,24 @@ public class TestServer {
                                 Player n = p.getPlayer();
 
                                 if (n != null && n.isOnline()) {
+                                    int counter = 0;
+
                                     // Scoreboard
                                     for (String entry : n.getScoreboard().getEntries()) {
                                         int result = identify(entry, true);
 
                                         if (result != 0) {
-                                            identification = new int[]{2, result};
-                                            return;
+                                            if (counter == 0) {
+                                                counter++;
+                                            } else {
+                                                identification = new int[]{2, result};
+                                                return;
+                                            }
                                         }
                                     }
 
                                     // Tablist
-                                    int counter = 0;
+                                    counter = 0;
 
                                     for (String anticheat : anticheats) {
                                         anticheat = anticheat.toLowerCase();

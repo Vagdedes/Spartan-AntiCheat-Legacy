@@ -2,7 +2,6 @@ package me.vagdedes.spartan.objects.replicates;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -43,13 +42,20 @@ public class SpartanBlock {
         this.x = block.getX();
         this.y = (short) block.getY();
         this.z = block.getZ();
-        this.liquid = block.isLiquid();
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             Object blockData = block.getBlockData();
-            this.waterLogged = blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
+
+            if (blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged()) {
+                this.liquid = true;
+                this.waterLogged = true;
+            } else {
+                this.liquid = BlockUtils.isLiquid(block);
+                this.waterLogged = false;
+            }
             this.data = (byte) (blockData instanceof Levelled ? ((Levelled) blockData).getLevel() : 0);
         } else {
+            this.liquid = BlockUtils.isLiquid(block);
             this.waterLogged = false;
             this.data = block.getData();
         }
@@ -103,22 +109,5 @@ public class SpartanBlock {
     public Block getBlock() {
         SpartanLocation loc = getLocation();
         return loc.getWorld().getBlockAt(loc.getLimitedBukkitLocation());
-    }
-
-    // Custom
-
-    // Identifiers
-
-    public boolean isSurfaceBlock() {
-        Material m = getType();
-        return m == MaterialUtils.get("grass_block")
-                || m == MaterialUtils.get("soil")
-                || m == Material.DIRT
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && (m == Material.COARSE_DIRT || m == Material.ANDESITE || m == Material.POLISHED_ANDESITE)
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && m == Material.getMaterial("GRASS_PATH")
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.DIRT_PATH
-                || BlockUtils.areEntityBlocks(m)
-                || BlockUtils.areTerracotta(m)
-                || BlockUtils.areConcrete(m);
     }
 }

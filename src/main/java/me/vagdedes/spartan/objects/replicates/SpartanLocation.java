@@ -116,8 +116,7 @@ public class SpartanLocation {
         loadCoordinates(chunk, x, y, z, yaw, pitch);
 
         if (block != null) {
-            Material material = block.getType();
-            loadBlock(material, block.getData(), BlockUtils.isLiquid(material), block.isWaterLogged());
+            loadBlock(block.getType(), block.getData(), block.isLiquid(), block.isWaterLogged());
         } else {
             this.block = null;
         }
@@ -132,8 +131,7 @@ public class SpartanLocation {
         if (!v_1_9) { // 1.8 or older
             if (SpartanBukkit.isSynchronised()) {
                 Block block = loc.getBlock();
-                Material material = block.getType();
-                loadBlock(material, block.getData(), BlockUtils.isLiquid(material), false);
+                loadBlock(block.getType(), block.getData(), BlockUtils.isLiquid(block), false);
             } else {
                 loadEmptyBlock(false);
             }
@@ -404,19 +402,18 @@ public class SpartanLocation {
         if (block != null) {
             if (v_1_13) {
                 BlockData blockData = block.getBlockData();
-                Material material = blockData.getMaterial();
                 boolean waterLogged = blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
-                return loadBlock(material,
+                return loadBlock(blockData.getMaterial(),
                         (byte) (blockData instanceof Levelled ? ((Levelled) blockData).getLevel() : 0),
-                        waterLogged || BlockUtils.isLiquid(material),
+                        waterLogged || BlockUtils.isLiquid(block),
                         waterLogged);
             } else {
-                Material material = block.getType();
-                return loadBlock(material, block.getData(), BlockUtils.isLiquid(material), false);
+                return loadBlock(block.getType(), block.getData(), BlockUtils.isLiquid(block), false);
             }
+        } else {
+            loadEmptyBlock(false);
+            return null;
         }
-        loadEmptyBlock(false);
-        return null;
     }
 
     public SpartanBlock getBlock() {
@@ -426,10 +423,10 @@ public class SpartanLocation {
             if (v_1_17 ?
                     blockY >= serverWorld.getMinHeight() && blockY <= serverWorld.getMaxHeight() :
                     blockY >= 0 && blockY <= MoveUtils.height) {
-                int blockX = getBlockX(),
-                        blockZ = getBlockZ();
                 UUID uuid = serverWorld.getUID();
-                int hash = uuid.hashCode();
+                int blockX = getBlockX(),
+                        blockZ = getBlockZ(),
+                        hash = uuid.hashCode();
 
                 if (SpartanBukkit.isSynchronised() || Chunks.isLoaded(uuid, serverWorld, blockX >> 4, blockZ >> 4)) {
                     hash = (SpartanBukkit.hashCodeMultiplier * hash) + blockX;

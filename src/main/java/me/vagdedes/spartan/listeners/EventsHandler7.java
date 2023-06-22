@@ -61,6 +61,7 @@ public class EventsHandler7 implements Listener {
     private static final long damageTime = PlayerVelocity.maximumCollection * 50L;
     private static final String str = "movement-listeners=";
     private static final String[] cache = new String[]{(str + "ver"), (str + "hor"), (str + "rem")};
+    public static final String verticalCache = cache[0];
     private static final Map<UUID, PlayerMoveEvent> hm = new LinkedHashMap<>(Config.getMaxPlayers());
     private static boolean heavyMovementChecks = false;
     public static final Collection<Enums.HackType> handledChecks;
@@ -287,7 +288,7 @@ public class EventsHandler7 implements Listener {
             String vehicleKey = vehicle != null ? Integer.toString(vehicle.getEntityId()) : "";
 
             if (checkPlayer && (firstTick || repetition || tick <= 3)) {
-                double oVer = decimals.get(cache[0] + vehicleKey, 0.0),
+                double oVer = decimals.get(verticalCache + vehicleKey, 0.0),
                         oHor = decimals.get(cache[1] + vehicleKey, 0.0),
                         oRem = decimals.get(cache[2] + vehicleKey, 0.0);
 
