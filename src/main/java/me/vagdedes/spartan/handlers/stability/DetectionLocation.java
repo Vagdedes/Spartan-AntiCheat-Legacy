@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FromLocation {
+public class DetectionLocation {
 
     private static final Map<UUID, SpartanLocation> loc = new ConcurrentHashMap<>(Config.getMaxPlayers());
 
@@ -23,7 +23,9 @@ public class FromLocation {
             double distance = p.getNmsDistance();
             boolean greatDistance = distance > (MoveUtils.chunk * 2);
 
-            if (distance >= 1.0
+            if ((greatDistance
+                    || distance >= 1.0)
+
                     && (greatDistance
                     || p.getTimer().get("from-location=protection") > 10_000L
                     || !Check.hasViolations(uuid)
@@ -39,14 +41,22 @@ public class FromLocation {
         loc.remove(p.getUniqueId());
     }
 
+    public static void remove(UUID uuid) {
+        loc.remove(uuid);
+    }
+
     public static SpartanLocation get(SpartanPlayer p, boolean replaceNull) {
         SpartanLocation location = loc.get(p.getUniqueId());
         return location != null ? location : (replaceNull ? MoveUtils.getCachedLocation(p) : null);
     }
 
     public static void update(SpartanPlayer p, SpartanLocation location, boolean force) {
-        if (location.getBlockY() > BlockUtils.getMinHeight(p.getWorld())
-                && (force || !Moderation.wasDetected(p))) {
+        if (force || !Moderation.wasDetected(p)) {
+            int minHeight = BlockUtils.getMinHeight(p.getWorld());
+
+            if (location.getBlockY() < minHeight) {
+                location.setY(minHeight);
+            }
             loc.put(p.getUniqueId(), location);
             p.getTimer().set("from-location=protection");
         }

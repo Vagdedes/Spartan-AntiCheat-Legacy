@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.objects.system.hackPrevention;
 
 import me.vagdedes.spartan.checks.movement.speed.Speed;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -22,7 +22,7 @@ public class HackPreventionUtils {
 
         if ((handleOrganizedPrevention(p) || teleportCooldown) && p.canDo(false)) {
             if (teleportCooldown) {
-                p.safeTeleport(FromLocation.get(p, true));
+                p.safeTeleport(DetectionLocation.get(p, true));
             }
         }
     }
@@ -53,7 +53,7 @@ public class HackPreventionUtils {
 
             if (preventionFrom != null) {
                 if (p.getCooldowns().canDo(str + "location-access")) {
-                    SpartanLocation fromLocation = FromLocation.get(p, false);
+                    SpartanLocation fromLocation = DetectionLocation.get(p, false);
 
                     if (fromLocation != null) {
                         preventionFrom = fromLocation;

@@ -20,7 +20,7 @@ import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.handlers.identifiers.Velocity;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.objects.profiling.PlayerCombat;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
@@ -124,7 +124,7 @@ public class EventsHandler1 implements Listener {
         p.resetHandlers(); // Always First
 
         // Utils
-        FromLocation.remove(p);
+        DetectionLocation.remove(p);
 
         // Objects
         Player killer = n.getKiller();
@@ -154,7 +154,7 @@ public class EventsHandler1 implements Listener {
         IrregularMovements.remove(p);
 
         // Utils
-        FromLocation.remove(p);
+        DetectionLocation.remove(p);
 
         // Objects
         p.resetLocationData();

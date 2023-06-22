@@ -5,7 +5,7 @@ import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.handlers.identifiers.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.Velocity;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 
@@ -29,7 +29,7 @@ public class ServerFlying {
             double limit = (p.getFlySpeed() * 10.0) + 1.0;
 
             if (p.getCustomDistance() >= limit || p.getNmsDistance() >= limit) {
-                p.safeTeleport(FromLocation.get(p, true));
+                p.safeTeleport(DetectionLocation.get(p, true));
             }
         }
     }

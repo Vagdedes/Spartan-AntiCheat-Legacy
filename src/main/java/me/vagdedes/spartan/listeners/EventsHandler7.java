@@ -20,7 +20,7 @@ import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.protections.ServerFlying;
 import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
 import me.vagdedes.spartan.handlers.identifiers.Damage;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
@@ -202,7 +202,7 @@ public class EventsHandler7 implements Listener {
         }
 
         if (Moderation.runTeleportCooldown(p)) {
-            p.safeTeleport(FromLocation.get(p, true));
+            p.safeTeleport(DetectionLocation.get(p, true));
             clear(p, decimals);
             return;
         }

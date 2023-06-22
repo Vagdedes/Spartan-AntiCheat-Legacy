@@ -19,7 +19,7 @@ import me.vagdedes.spartan.features.protections.ReconnectCooldown;
 import me.vagdedes.spartan.features.synchronicity.AutoUpdater;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
@@ -152,9 +152,9 @@ public class Cache {
         // Handlers
         if (distance) {
             if (newLocation != null) {
-                FromLocation.update(p, newLocation, false);
+                DetectionLocation.update(p, newLocation, false);
             } else {
-                FromLocation.remove(p);
+                DetectionLocation.remove(p);
             }
         }
         p.resetHandlers();

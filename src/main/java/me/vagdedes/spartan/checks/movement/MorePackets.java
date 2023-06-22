@@ -5,7 +5,7 @@ import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.handlers.identifiers.Damage;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.data.*;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
@@ -134,7 +134,7 @@ public class MorePackets {
                                 });
 
                                 boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
-                                SpartanLocation handlerFrom = FromLocation.get(p, true);
+                                SpartanLocation handlerFrom = DetectionLocation.get(p, true);
                                 SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
 
                                 if (instant) {

@@ -35,8 +35,7 @@ public class Threads {
                     return false;
                 }
             }
-            runnables.add(runnable);
-            return true;
+            return runnables.add(runnable);
         }
 
         public boolean executeIfFreeElseHere(Runnable runnable) {

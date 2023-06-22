@@ -2,7 +2,7 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.performance.AsyncDetection;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPreventionUtils;
@@ -214,7 +214,7 @@ public class IrregularMovementsStep {
 
     private static SpartanLocation getFurthestLocation(SpartanPlayer p, SpartanLocation to, SpartanLocation loc1, SpartanLocation loc2) {
         if (loc2 == null) {
-            loc2 = FromLocation.get(p, false);
+            loc2 = DetectionLocation.get(p, false);
         }
         return loc2 == null ? loc1 : to.distance(loc1) >= to.distance(loc2) ? loc1 : loc2;
     }

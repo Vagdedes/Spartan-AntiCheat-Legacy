@@ -93,9 +93,6 @@ public class SpartanEdition {
     }
 
     // Detections
-    Thread thread = new Thread(() -> {
-
-    });
 
     public static boolean supportsCheck(ResearchEngine.DataType dataType, Enums.HackType hackType) {
         switch (dataType) {

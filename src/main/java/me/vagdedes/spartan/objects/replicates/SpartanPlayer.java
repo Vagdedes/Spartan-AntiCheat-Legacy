@@ -22,7 +22,7 @@ import me.vagdedes.spartan.handlers.connection.Latency;
 import me.vagdedes.spartan.handlers.identifiers.Damage;
 import me.vagdedes.spartan.handlers.identifiers.ElytraUse;
 import me.vagdedes.spartan.handlers.identifiers.Velocity;
-import me.vagdedes.spartan.handlers.stability.FromLocation;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.stability.TestServer;
@@ -266,11 +266,16 @@ public class SpartanPlayer {
             for (SpartanPlayer p : players) {
                 SpartanBukkit.runTask(p, () -> {
                     if (p != null) {
+                        // Ground Identification Cache
+                        p.resetPing();
+
+                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                            p.trackGround();
+                        }
                         Player n = p.getPlayer();
 
                         if (n != null) {
                             // Only
-                            p.resetPing();
                             p.setFireTicks(n.getFireTicks());
                             p.setFrozen(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && n.isFrozen());
                             p.setInvulnerable(p.isFrozen() || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && n.isInvulnerable());
@@ -295,11 +300,6 @@ public class SpartanPlayer {
                             p.setWorld(n.getWorld());
                             p.setLastDamageCause(n.getLastDamageCause(), n.getLastDamage(), n.getMaximumNoDamageTicks());
 
-                            // Ground Identification Cache
-                            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                                p.trackGround();
-                            }
-
                             // Buffer Cache
                             for (Buffer buffer : p.buffer) {
                                 buffer.run(p);
@@ -323,10 +323,13 @@ public class SpartanPlayer {
                             PlayerData.update(p, n, MultiVersion.folia || !SpartanBukkit.isSynchronised());
                             MoveUtils.run(p);
                             PlayerData.run(p);
-                            FromLocation.run(p);
+                            DetectionLocation.run(p);
                         } else {
                             p.runChecks[0] = false;
                             p.runChecks[1] = false;
+                            MoveUtils.remove(p);
+                            PlayerData.remove(p, false);
+                            DetectionLocation.remove(p.uuid);
                         }
                     }
                 });
