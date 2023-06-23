@@ -216,7 +216,10 @@ public class SpartanPlayer {
 
                 if (hasPlayers) {
                     for (World world : Bukkit.getWorlds()) {
-                        worldEntities.put(world.getUID(), world.getEntities());
+                        worldEntities.put(
+                                world.getUID(),
+                                MultiVersion.folia ? world.getEntities() : new CopyOnWriteArrayList<>(world.getEntities())
+                        );
                     }
                 }
             } else {
@@ -228,7 +231,10 @@ public class SpartanPlayer {
 
                     if (hasPlayers) {
                         for (World world : Bukkit.getWorlds()) {
-                            worldEntities.put(world.getUID(), world.getEntities());
+                            worldEntities.put(
+                                    world.getUID(),
+                                    MultiVersion.folia ? world.getEntities() : new CopyOnWriteArrayList<>(world.getEntities())
+                            );
                         }
                     }
                 }
