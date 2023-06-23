@@ -1,56 +1,10 @@
 package me.vagdedes.spartan.system;
 
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 
 public class Threads {
-
-    // Object
-
-    public static class ThreadPool {
-
-        private final Queue<Runnable> runnables;
-
-        public ThreadPool() {
-            runnables = new LinkedList<>();
-            new Thread(() -> {
-                while (enabled) {
-                    Runnable runnable = runnables.poll();
-
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            }).start();
-        }
-
-        private synchronized boolean execute(Runnable runnable, boolean force, boolean executeRegardless) {
-            if (!force) {
-                Runnable current = runnables.peek();
-
-                if (current != null) {
-                    if (executeRegardless) {
-                        runnable.run();
-                    }
-                    return false;
-                }
-            }
-            return runnables.add(runnable);
-        }
-
-        public boolean executeIfFreeElseHere(Runnable runnable) {
-            return execute(runnable, false, true);
-        }
-
-        public boolean executeIfFree(Runnable runnable) {
-            return execute(runnable, false, false);
-        }
-
-        public boolean execute(Runnable runnable) {
-            return execute(runnable, true, false);
-        }
-
-    }
 
     // Methods
 
@@ -58,5 +12,59 @@ public class Threads {
 
     static void disable() {
         enabled = false;
+    }
+
+    // Object
+
+    public static class ThreadPool {
+
+        private final List<Runnable> runnables;
+
+        public ThreadPool() {
+            runnables = Collections.synchronizedList(new LinkedList<>());
+            new Thread(() -> {
+                while (enabled) {
+                    Runnable runnable;
+
+                    synchronized (runnables) {
+                        runnable = runnables.isEmpty() ? null : runnables.remove(0);
+                    }
+
+                    if (runnable != null) {
+                        runnable.run();
+                    } else {
+                        try {
+                            Thread.sleep(1L);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+                runnables.clear();
+            }).start();
+        }
+
+        public boolean executeIfFreeElseHere(Runnable runnable) {
+            synchronized (runnables) {
+                if (runnables.isEmpty()) {
+                    return runnables.add(runnable);
+                } else {
+                    runnable.run();
+                    return false;
+                }
+            }
+        }
+
+        public boolean executeIfFree(Runnable runnable) {
+            synchronized (runnables) {
+                return runnables.isEmpty() && runnables.add(runnable);
+            }
+        }
+
+        public boolean execute(Runnable runnable) {
+            synchronized (runnables) {
+                return runnables.add(runnable);
+            }
+        }
+
     }
 }

@@ -31,7 +31,7 @@ public class Register extends JavaPlugin {
     private static boolean enabled = false;
 
     public static final PluginManager manager = Bukkit.getPluginManager();
-    private static final Set<Class> listeners = new LinkedHashSet<>(40);
+    private static final Set<Class<?>> listeners = new LinkedHashSet<>(40);
 
     public void onEnable() {
         plugin = this;
@@ -113,7 +113,7 @@ public class Register extends JavaPlugin {
 
     // Utilities
 
-    public static void enable(Listener l, Class c) {
+    public static void enable(Listener l, Class<?> c) {
         if (isPluginEnabled() && listeners.add(c)) {
             manager.registerEvents(l, plugin);
         }
@@ -135,7 +135,7 @@ public class Register extends JavaPlugin {
         return enabled && plugin != null;
     }
 
-    public static Class[] getListeners() {
+    public static Class<?>[] getListeners() {
         return listeners.toArray(new Class[0]);
     }
 
