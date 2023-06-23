@@ -20,7 +20,8 @@ public class DetectionLocation {
         SpartanLocation old = loc.get(uuid);
 
         if (old != null) {
-            double distance = p.getNmsDistance();
+            SpartanLocation location = p.getLocation();
+            double distance = location.distance(old);
             boolean greatDistance = distance > (MoveUtils.chunk * 2);
 
             if ((greatDistance
@@ -30,7 +31,7 @@ public class DetectionLocation {
                     || p.getTimer().get("from-location=protection") > 10_000L
                     || !Check.hasViolations(uuid)
                     || Check.getLastViolation(p, false) > 1_000L)) {
-                update(p, p.getLocation(), greatDistance);
+                update(p, location, greatDistance);
             }
         } else {
             update(p, p.getLocation(), true);
