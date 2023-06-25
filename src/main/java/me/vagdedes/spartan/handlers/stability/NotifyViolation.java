@@ -9,7 +9,7 @@ import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-public class ViolationDivisor {
+public class NotifyViolation {
 
     public static int get(SpartanPlayer staff, SpartanPlayer detectedPlayer,
                           int preferredCancelViolation, int playerCount,

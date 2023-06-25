@@ -4,6 +4,7 @@ import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.server.ReflectionUtils;
@@ -42,12 +43,11 @@ public class SpartanBukkit {
     }
 
     public static final Threads.ThreadPool
-            storageThread = new Threads.ThreadPool(),
-            analysisThread = new Threads.ThreadPool(),
-            connectionThread = new Threads.ThreadPool(),
-            playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(),
-            detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool();
-
+            analysisThread = new Threads.ThreadPool(TPS.tickTime),
+            connectionThread = new Threads.ThreadPool(TPS.tickTime),
+            storageThread = new Threads.ThreadPool(5L),
+            playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(2L),
+            detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
 
     public static final int hashCodeMultiplier = 31;
     private static final ConcurrentHashMap<UUID, SpartanPlayer> players = new ConcurrentHashMap<>(Config.getMaxPlayers());

@@ -91,7 +91,6 @@ public class Settings {
 
         ConfigUtils.add(file, "Important.op_bypass", false);
         ConfigUtils.add(file, "Important.enable_permissions", true);
-        ConfigUtils.add(file, "Important.violations_reset_seconds", 60); // test server
         ConfigUtils.add(file, "Important.violations_reset_on_kick", false); // test server
         ConfigUtils.add(file, "Important.modify_server_configuration", false);
         ConfigUtils.add(file, "Important.refresh_inventory_menu", true);

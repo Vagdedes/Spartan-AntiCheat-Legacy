@@ -70,7 +70,7 @@ public class BackgroundAPI {
     }
 
     static int getViolationResetTime() {
-        return Settings.getInteger("Important.violations_reset_seconds");
+        return (int) (Check.violationCycleSeconds / 1_000L);
     }
 
     @Deprecated
@@ -154,7 +154,7 @@ public class BackgroundAPI {
     static int getViolationDivisor(Player p, HackType hackType) {
         SpartanPlayer player = SpartanBukkit.getPlayer(p);
         return player == null ? 0 :
-                ViolationDivisor.get(player, null, SpartanBukkit.getPlayerCount(),
+                NotifyViolation.get(player, null, SpartanBukkit.getPlayerCount(),
                         CancelViolation.get(
                                 hackType,
                                 player.getDataType()

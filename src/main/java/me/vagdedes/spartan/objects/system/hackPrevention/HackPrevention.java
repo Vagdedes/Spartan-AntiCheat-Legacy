@@ -279,8 +279,7 @@ public class HackPrevention {
                                 canPreventAlternative = false;
                             }
 
-                            if (violations < CancelViolation.get(hackType, dataType)
-                                    && FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, cancelledViolations)) {
+                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, !playerProfile.isHacker())) {
                                 falsePositive = true;
                                 cancelledViolations += 1;
                             } else {
@@ -302,13 +301,13 @@ public class HackPrevention {
                                 canPrevent = false;
                                 canPreventAlternative = violations > 0  // Testing scenario
                                         && !check.hasMaximumDefaultCancelViolation()
-                                        && Check.getLastViolation(uuid, true) <= Check.leastViolationCycleSeconds
+                                        && Check.getLastViolation(uuid, true) <= Check.violationCycleSeconds
                                         && !SpartanBukkit.isProductionServer()
                                         && DetectionNotifications.isEnabled(player)
                                         && ResearchEngine.getFalsePositives(hackType, dataType).size() == 0;
                             }
 
-                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, cancelledViolations)) {
+                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, true)) {
                                 falsePositive = true;
                                 cancelledViolations += 1;
                             } else {

@@ -20,7 +20,7 @@ public class Threads {
 
         private final List<Runnable> runnables;
 
-        public ThreadPool() {
+        public ThreadPool(long refreshRateInMilliseconds) {
             runnables = Collections.synchronizedList(new LinkedList<>());
             new Thread(() -> {
                 while (enabled) {
@@ -34,7 +34,7 @@ public class Threads {
                         runnable.run();
                     } else {
                         try {
-                            Thread.sleep(1L);
+                            Thread.sleep(refreshRateInMilliseconds);
                         } catch (Exception ignored) {
                         }
                     }

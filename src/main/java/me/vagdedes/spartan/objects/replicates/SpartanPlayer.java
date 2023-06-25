@@ -536,7 +536,7 @@ public class SpartanPlayer {
     }
 
     public boolean canSkipDetectionTick(int ticksCooldown) {
-        return detectionTick.canSkip(uuid, playerProfile, cooldowns[Enums.hackTypeLength], ticksCooldown, this);
+        return detectionTick.canSkip(uuid, playerProfile, ticksCooldown, this);
     }
 
     public int getCPS() {

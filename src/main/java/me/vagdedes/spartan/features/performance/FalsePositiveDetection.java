@@ -4,6 +4,7 @@ import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.system.Check;
+import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
@@ -95,13 +96,13 @@ public class FalsePositiveDetection {
     }
 
     public static boolean canCorrect(Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
-                                     PlayerViolation playerViolation,
-                                     int cancelledViolations) {
+                                     PlayerViolation playerViolation, LiveViolation liveViolation,
+                                     boolean problematicDetections) {
         return canFunction() // 1
-                && (check.isProblematicDetection(dataType, playerViolation.getDetection(true)) // 2
+                && (problematicDetections && check.isProblematicDetection(dataType, playerViolation.getDetection(true)) // 2
                 || ResearchEngine.isFalsePositive( // 2
                 ResearchEngine.getFalsePositives(hackType, dataType),
                 playerViolation.getFalsePositiveIdentity()))
-                && cancelledViolations < check.getMaxCancelledViolations(); // 3
+                && !liveViolation.hasMaxCancelledLevel(); // 3
     }
 }

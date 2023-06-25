@@ -65,10 +65,10 @@ public class Moderation {
     }
 
     private static boolean isDetectedAndPrevented(SpartanPlayer p, long ms) {
-        List<LiveViolation> liveViolations = Check.getViolationsObjects(p.getUniqueId());
+        UUID uuid = p.getUniqueId();
+        List<LiveViolation> liveViolations = Check.getViolationsObjects(uuid);
 
         if (liveViolations.size() > 0) {
-            UUID uuid = p.getUniqueId();
             String world = p.getWorld().getName();
 
             for (LiveViolation liveViolation : liveViolations) {
@@ -282,7 +282,7 @@ public class Moderation {
                             uncertain = hacker || falsePositive || testServer || cannotPunish; // Attention
 
                     for (SpartanPlayer staff : notificationPlayers) {
-                        int divisor = ViolationDivisor.get(staff, detectedPlayer, cancelViolation, playerCount, testServer);
+                        int divisor = NotifyViolation.get(staff, detectedPlayer, cancelViolation, playerCount, testServer);
 
                         if (isDivisorValid(level, divisor, uncertain)) {
                             ClickableMessage.sendCommand(

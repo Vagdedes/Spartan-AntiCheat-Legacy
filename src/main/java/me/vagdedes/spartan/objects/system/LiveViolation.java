@@ -46,7 +46,7 @@ public class LiveViolation {
 
     private final UUID uuid;
     private final Enums.HackType hackType;
-    private long cycleStart, cycleExpiration, lastViolation;
+    private long cycleExpiration, lastViolation;
     private int level, cancelledLevel;
     private boolean cancelled;
 
@@ -97,11 +97,10 @@ public class LiveViolation {
         int previousLevel = level;
 
         // Violations
-        if (amount > Check.maxViolations) {
-            this.level = Check.maxViolations;
-        } else {
-            this.level = Math.max(amount, 0);
-        }
+        this.level = Math.min(
+                Check.maxViolations,
+                amount
+        );
         this.cancelled = false;
         timeReset(); // Always after changing the level
 
@@ -117,15 +116,10 @@ public class LiveViolation {
 
     public void setCancelledLevel(int amount) {
         timeReset();
-
-        // Violations
-        int maxCancelledViolations = hackType.getCheck().getMaxCancelledViolations();
-
-        if (amount > maxCancelledViolations) {
-            this.cancelledLevel = maxCancelledViolations;
-        } else {
-            this.cancelledLevel = Math.max(amount, 0);
-        }
+        this.cancelledLevel = Math.min(
+                hackType.getCheck().getMaxCancelledViolations(),
+                amount
+        );
         this.cancelled = true;
         timeReset(); // Always after changing the level
     }
@@ -173,22 +167,19 @@ public class LiveViolation {
         } else {
             event = null;
         }
-        long futureExpiration = (TestServer.isIdentified() ? Check.leastViolationCycleSeconds :
-                Math.min(3600, Math.max(60, Settings.getInteger("Important.violations_reset_seconds"))) * 1_000L);
 
         if (event == null || !event.isCancelled()) {
             maxLevel.remove(this);
             this.level = 0;
             this.cancelledLevel = 0;
             this.cancelled = false;
-        } else if ((System.currentTimeMillis() - this.cycleExpiration) > futureExpiration) { // Forceful reset to keep potential developer API usage within hardcoded thresholds
+        } else if ((System.currentTimeMillis() - this.cycleExpiration) > Check.violationCycleSeconds) { // Forceful reset to keep potential developer API usage within hardcoded thresholds
             maxLevel.remove(this);
             this.level = 0;
             this.cancelledLevel = 0;
             this.cancelled = false;
         }
-        this.cycleStart = System.currentTimeMillis();
-        this.cycleExpiration = this.cycleStart + futureExpiration;
+        this.cycleExpiration = System.currentTimeMillis() + Check.violationCycleSeconds;
 
         // Always last
         SpartanPlayer player = getPlayer();

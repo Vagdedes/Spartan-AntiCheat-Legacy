@@ -31,7 +31,7 @@ public class Check {
 
     // Static Values
 
-    public static final long leastViolationCycleSeconds = 60_000L;
+    public static final long violationCycleSeconds = 60_000L;
 
     public static final int
             maxCommands = 10,
@@ -94,10 +94,6 @@ public class Check {
         return map.entrySet();
     }
 
-    public static Set<Map.Entry<Enums.HackType, Integer>> getViolationsEntry(SpartanPlayer player) {
-        return getViolationsEntry(player.getUniqueId());
-    }
-
     // Separator
 
     public static List<LiveViolation> getViolationsObjects(UUID uuid) {
@@ -112,10 +108,6 @@ public class Check {
             }
         }
         return list;
-    }
-
-    public static List<LiveViolation> getViolationsObjects(SpartanPlayer player) {
-        return getViolationsObjects(player.getUniqueId());
     }
 
     // Separator
@@ -497,7 +489,7 @@ public class Check {
         this.silentUsers = silentUsers;
         this.violations = violations;
         this.problematicDetections = problematicDetections;
-        this.maxCancelledViolations = defaultCancelViolation * 10;
+        this.maxCancelledViolations = (defaultCancelViolation + 1) * (defaultCancelViolation + 1);
 
         // Separator
 
@@ -516,7 +508,7 @@ public class Check {
         } else {
             silent = null;
         }
-        String name = getOption("name", getHackType().toString(), false).toString(),
+        String name = getOption("name", this.hackType.toString(), false).toString(),
                 worlds_config = getOption("disabled_worlds", "exampleDisabledWorld1, exampleDisabledWorld2", false).toString(),
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
@@ -760,7 +752,7 @@ public class Check {
     }
 
     private LiveViolation getLocalViolations(UUID uuid) {
-        return this.violations.getOrDefault(uuid, new LiveViolation(uuid, this.getHackType()));
+        return this.violations.getOrDefault(uuid, new LiveViolation(uuid, this.hackType));
     }
 
     private LiveViolation getLocalOrEmptyViolations(UUID uuid) {
@@ -769,12 +761,12 @@ public class Check {
 
     public LiveViolation getViolations(UUID uuid) {
         if (!isEnabled(null, null) || !SpartanBukkit.isPlayer(uuid)) {
-            return new LiveViolation(uuid, this.getHackType());
+            return new LiveViolation(uuid, this.hackType);
         }
         LiveViolation violations = this.violations.get(uuid);
 
         if (violations == null) {
-            violations = new LiveViolation(uuid, this.getHackType());
+            violations = new LiveViolation(uuid, this.hackType);
             this.violations.put(uuid, violations);
         }
         return violations;
@@ -827,7 +819,7 @@ public class Check {
             CheckToggleEvent event;
 
             if (Settings.getBoolean("Important.enable_developer_api")) {
-                event = new CheckToggleEvent(this.getHackType(), b ? Enums.ToggleAction.Enable : Enums.ToggleAction.Disable);
+                event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.Enable : Enums.ToggleAction.Disable);
                 Register.manager.callEvent(event);
             } else {
                 event = null;
@@ -897,10 +889,8 @@ public class Check {
         if (name.length() > 32) {
             name = name.substring(0, 32);
         }
-        Enums.HackType localHackType = this.getHackType();
-
         for (Enums.HackType hackType : Enums.hackTypes()) {
-            if (!hackType.equals(localHackType) && name.equalsIgnoreCase(hackType.toString())) {
+            if (!hackType.equals(this.hackType) && name.equalsIgnoreCase(hackType.toString())) {
                 return;
             }
         }
@@ -919,7 +909,7 @@ public class Check {
 
         try {
             if (file.exists() || file.createNewFile()) {
-                String key = getHackType() + "." + option;
+                String key = this.hackType + "." + option;
                 YamlConfiguration configuration = Config.getConfiguration();
 
                 if (configuration != null) {
@@ -932,7 +922,7 @@ public class Check {
                             Register.plugin.reloadConfig();
                         }
                         if (production) {
-                            this.getHackType().resetCheck(false);
+                            this.hackType.resetCheck(false);
                         } else {
                             options.remove(key); // Remove instead of modifying to be on demand and have the chance to catch changes by the user
                         }
@@ -973,7 +963,7 @@ public class Check {
             YamlConfiguration configuration = Config.getConfiguration();
 
             if (configuration != null) {
-                String hackTypeString = getHackType().toString();
+                String hackTypeString = this.hackType.toString();
 
                 for (String key : configuration.getKeys(true)) {
                     if (key.split("\\.", 2)[0].equalsIgnoreCase(hackTypeString)) {
@@ -1005,7 +995,7 @@ public class Check {
 
         try {
             if (file.exists() || file.createNewFile()) {
-                String key = getHackType() + "." + option;
+                String key = this.hackType + "." + option;
                 boolean isDefaultNull = def == null;
                 YamlConfiguration configuration = Config.getConfiguration();
 
@@ -1196,7 +1186,7 @@ public class Check {
                 case "dynamic":
                     if (silent != 2) {
                         if (Settings.getBoolean("Important.enable_developer_api")) {
-                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.getHackType(), Enums.ToggleAction.Enable);
+                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.Enable);
                             Register.manager.callEvent(event);
 
                             if (event.isCancelled()) {
@@ -1210,7 +1200,7 @@ public class Check {
                 case "true":
                     if (silent != 1) {
                         if (Settings.getBoolean("Important.enable_developer_api")) {
-                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.getHackType(), Enums.ToggleAction.Enable);
+                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.Enable);
                             Register.manager.callEvent(event);
 
                             if (event.isCancelled()) {
@@ -1224,7 +1214,7 @@ public class Check {
                 case "false":
                     if (silent != 0) {
                         if (Settings.getBoolean("Important.enable_developer_api")) {
-                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.getHackType(), Enums.ToggleAction.Disable);
+                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.Disable);
                             Register.manager.callEvent(event);
 
                             if (event.isCancelled()) {

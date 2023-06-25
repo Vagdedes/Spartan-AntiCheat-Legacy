@@ -623,7 +623,7 @@ public class SpartanLocation {
                             || player.getActivePotionEffects().length > 0
                             || BlockUtils.isSolid(player.getItemInHand().getType())
                             || Check.hasViolations(player)
-                            || Check.getLastViolation(player, true) <= Check.leastViolationCycleSeconds
+                            || Check.getLastViolation(player, true) <= Check.violationCycleSeconds
                             || player.getProfile().isSuspectedOrHacker()
             );
         }

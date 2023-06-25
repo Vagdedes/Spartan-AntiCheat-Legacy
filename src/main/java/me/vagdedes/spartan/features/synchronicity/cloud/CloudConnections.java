@@ -273,7 +273,7 @@ public class CloudConnections {
             StringBuilder value = new StringBuilder();
 
             for (PlayerProfile playerProfile : ResearchEngine.getHackers()) {
-                if (!playerProfile.wasStaff() && playerProfile.isHacker()) {
+                if (!playerProfile.wasStaff() && !playerProfile.wasTesting() && playerProfile.isHacker()) {
                     SpartanPlayer player = playerProfile.getSpartanPlayer();
                     boolean isNull = player == null;
 

@@ -457,7 +457,7 @@ public class IrregularMovements {
                                             || airTicks > MoveUtils.jumpingMotions
                                             || p.getBlocksOffGround(true, true) >= 2) {
                                         boolean suspectedOrHacker = p.getProfile().isSuspectedOrHacker(check)
-                                                || check.getCheck().getViolations(p).getLastViolation(true) <= Check.leastViolationCycleSeconds;
+                                                || check.getCheck().getViolations(p).getLastViolation(true) <= Check.violationCycleSeconds;
 
                                         if (!velocityScenarioCopy && !groundInteractionScenarioCopy && !incompatibility
 

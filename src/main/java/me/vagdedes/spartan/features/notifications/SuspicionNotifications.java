@@ -72,7 +72,8 @@ public class SuspicionNotifications {
             String comma = ", ";
             StringBuilder players = new StringBuilder();
             int size = 0, commaLength = comma.length();
-            long currentTime = System.currentTimeMillis(), extraTime = (Check.leastViolationCycleSeconds * 5);
+            long currentTime = System.currentTimeMillis(),
+                    extraTime = (Check.violationCycleSeconds * 5);
 
             for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
                 if (player.canRunChecks(false)) {
@@ -80,8 +81,7 @@ public class SuspicionNotifications {
 
                     if (isNull || detectedUUID != staffUUID) {
                         PlayerProfile profile = player.getProfile();
-                        boolean shouldList;
-                        boolean hacker;
+                        boolean shouldList, hacker;
 
                         if (profile.isHacker()) {
                             Set<Map.Entry<Enums.HackType, Integer>> violationEntries = Check.getViolationsEntry(detectedUUID);

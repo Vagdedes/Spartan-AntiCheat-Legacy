@@ -78,7 +78,7 @@ public class LagLeniencies {
                 || p.getExtraPackets() >= TPS.maximum;
 
         if (!pingException) {
-            Set<Map.Entry<Enums.HackType, Integer>> set = Check.getViolationsEntry(p);
+            Set<Map.Entry<Enums.HackType, Integer>> set = Check.getViolationsEntry(p.getUniqueId());
 
             if (set.size() > 0) {
                 int cancelViolations = 0;

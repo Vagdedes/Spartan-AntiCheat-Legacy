@@ -1,13 +1,13 @@
 package me.vagdedes.spartan.features.performance;
 
 import me.vagdedes.spartan.handlers.stability.TPS;
-import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
-import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 public class DetectionTick {
@@ -18,7 +18,7 @@ public class DetectionTick {
         this.futureTime = 0L;
     }
 
-    public boolean canSkip(UUID uuid, PlayerProfile profile, Cooldowns cooldowns, int ticksCooldown, SpartanPlayer player) {
+    public boolean canSkip(UUID uuid, PlayerProfile profile, int ticksCooldown, SpartanPlayer player) {
         boolean canSkip;
         long currentTime = System.currentTimeMillis();
 
@@ -34,12 +34,14 @@ public class DetectionTick {
                 && !MaximumCheckedPlayers.isActive()
                 && !profile.isSuspectedOrHacker()
                 && !player.hasNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance)) {
-            for (Enums.HackType hackType : Enums.hackTypes()) {
-                LiveViolation liveViolation = hackType.getCheck().getViolations(uuid);
+            List<LiveViolation> liveViolations = Check.getViolationsObjects(uuid);
 
-                if (liveViolation.hasMaxCancelledLevel()
-                        || liveViolation.getLastViolation(true) <= 10_000L) {
-                    return false;
+            if (liveViolations.size() > 0) {
+                for (LiveViolation liveViolation : liveViolations) {
+                    if (liveViolation.hasMaxCancelledLevel()
+                            || liveViolation.getLastViolation(true) <= 10_000L) {
+                        return false;
+                    }
                 }
             }
             return true;
