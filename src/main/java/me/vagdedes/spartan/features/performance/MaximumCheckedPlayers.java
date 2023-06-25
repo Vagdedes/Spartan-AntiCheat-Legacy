@@ -12,10 +12,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MaximumCheckedPlayers {
 
     private static final CopyOnWriteArrayList<UUID> list = new CopyOnWriteArrayList<>();
+    private static final List<UUID> priority = new ArrayList<>();
     private static final int minimumPlayers = 20, refreshTicks = 20;
     public static final String option = "Performance.maximum_checked_players_at_once";
     private static int ticks = 0;
-    private static boolean lock = false;
 
     static {
         if (Register.isPluginLoaded()) {
@@ -26,52 +26,49 @@ public class MaximumCheckedPlayers {
                     if (ticks == 0) {
                         ticks = refreshTicks;
                         optionAmount = Math.max(optionAmount, minimumPlayers);
-                        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+                        Set<UUID> players = SpartanBukkit.getUUIDs();
                         int playerAmount = players.size();
 
                         if (playerAmount <= optionAmount) {
-                            for (SpartanPlayer player : players) {
-                                list.add(player.getUniqueId());
-                            }
+                            priority.clear();
+                            list.clear();
+                            list.addAll(players);
                         } else {
-                            int toAddSize = 0;
-                            Set<UUID> toAdd = new HashSet<>(playerAmount);
+                            List<UUID> newList = new ArrayList<>(optionAmount);
 
-                            for (SpartanPlayer player : players) {
-                                UUID uuid = player.getUniqueId();
+                            // Add prioritised players first
+                            if (priority.size() > 0) {
+                                Iterator<UUID> iterator = priority.iterator();
 
+                                while (iterator.hasNext() && newList.size() < optionAmount) {
+                                    newList.add(iterator.next());
+                                    iterator.remove();
+                                }
+                            }
+
+                            // Add non-prioritised players that are not being checked
+                            for (UUID uuid : players) {
                                 if (!list.contains(uuid)) {
-                                    toAdd.add(uuid);
-
-                                    if ((toAddSize = toAdd.size()) == optionAmount) {
-                                        list.clear();
-                                        list.addAll(toAdd);
-                                        return;
+                                    if (newList.size() < optionAmount) {
+                                        newList.add(uuid);
+                                    } else if (!priority.contains(uuid)) {
+                                        priority.add(uuid);
                                     }
                                 }
                             }
 
-                            if (toAddSize > 0) {
-                                int newAmount = list.size() + toAddSize;
-
-                                if (newAmount > optionAmount) {
-                                    newAmount -= optionAmount;
-                                    optionAmount = 0;
-                                    lock = true;
-                                    List<UUID> replacement = new ArrayList<>(list);
-                                    Iterator<UUID> iterator = replacement.iterator();
-
-                                    while (iterator.hasNext() && optionAmount < newAmount) {
-                                        iterator.next();
-                                        iterator.remove();
-                                        optionAmount++;
-                                    }
-                                    list.clear();
-                                    list.addAll(replacement);
-                                    lock = false;
+                            // Add non-prioritised players that are being checked
+                            for (UUID uuid : list) {
+                                if (newList.size() < optionAmount) {
+                                    newList.add(uuid);
+                                } else if (!priority.contains(uuid)) {
+                                    priority.add(uuid);
                                 }
-                                list.addAll(toAdd);
                             }
+
+                            // Set the new list
+                            list.clear();
+                            list.addAll(newList);
                         }
                     } else {
                         ticks -= 1;
@@ -83,11 +80,6 @@ public class MaximumCheckedPlayers {
         }
     }
 
-    private static void waitForLoop() {
-        while (lock) {
-        }
-    }
-
     static boolean isActive() {
         int optionAmount = Settings.getInteger(option);
         return optionAmount > 0
@@ -95,14 +87,17 @@ public class MaximumCheckedPlayers {
     }
 
     public static void remove(SpartanPlayer player) {
-        waitForLoop();
-        list.remove(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        priority.remove(uuid);
+        list.remove(uuid);
     }
 
     private static boolean add(UUID uuid, int optionAmount) {
-        waitForLoop();
-        return list.size() < Math.max(optionAmount, minimumPlayers)
-                && list.addIfAbsent(uuid);
+        if (list.size() < Math.max(optionAmount, minimumPlayers) && list.addIfAbsent(uuid)) {
+            priority.remove(uuid);
+            return true;
+        }
+        return false;
     }
 
     public static boolean add(SpartanPlayer player) {
@@ -111,10 +106,7 @@ public class MaximumCheckedPlayers {
     }
 
     public static boolean isChecked(UUID uuid) {
-        if (TestServer.isIdentified()) {
-            return true;
-        }
         int optionAmount = Settings.getInteger(option);
-        return optionAmount > 0 && (list.contains(uuid) || add(uuid, optionAmount));
+        return optionAmount > 0 && (list.contains(uuid) || add(uuid, optionAmount)) || TestServer.isIdentified();
     }
 }

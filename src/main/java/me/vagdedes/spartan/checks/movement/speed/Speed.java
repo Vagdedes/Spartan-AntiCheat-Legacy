@@ -397,7 +397,7 @@ public class Speed {
                         && cooldowns.canDo("above-block")
                         && cooldowns.canDo("bed")
                         && !BlockUtils.isSlime(p, to, 2)) {
-                    float fd = p.getFallDistance();
+                    float fallDistance = p.getFallDistance();
                     boolean allow = true;
 
                     if (dmCopy == Speed.air || dmCopy == ground_jump_speed) {
@@ -409,22 +409,22 @@ public class Speed {
                         }
                     }
 
-                    if (fd <= 1.2f && allow) {
+                    if (fallDistance <= 1.2f && allow) {
                         boolean illegal = true;
 
                         for (float value : fallingDistance) {
-                            if (Math.abs(value - fd) < 0.1) {
+                            if (Math.abs(value - fallDistance) < 0.1) {
                                 illegal = false;
                                 break;
                             }
                         }
 
                         if (hor >= 0.215 && illegal && !fairlyPushed && air <= 12 && !p.isOnFire() && !BouncingBlocks.isBelow(p) && !building) {
-                            cancel(p, from, "type: fall-distance(illegal), horizontal: " + hor + ", limit: " + dmCopy + ", fall-distance: " + fd + ", a: " + air + ", box: " + box + ", vertical: " + ver);
-                        } else if (hor > 0.335 && fd > 0.0f && (!groundVanilla || !groundCustom) && BlockUtils.isFullSolid(locM1, false)) {
+                            cancel(p, from, "type: fall-distance(illegal), horizontal: " + hor + ", limit: " + dmCopy + ", fall-distance: " + fallDistance + ", a: " + air + ", box: " + box + ", vertical: " + ver);
+                        } else if (hor > 0.335 && fallDistance > 0.0f && (!groundVanilla || !groundCustom) && BlockUtils.isFullSolid(locM1, false)) {
                             cancel(p, from, "type: fall-distance(normal), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver);
 
-                        } else if (groundCustom && hor >= 0.36 && fd == 0.0f && GroundUtils.isZeroMiscalculation(box)) {
+                        } else if (groundCustom && hor >= 0.36 && fallDistance == 0.0f && GroundUtils.isZeroMiscalculation(box)) {
                             if (buffer.start("fall-distance", 10) == 2) {
                                 buffer.remove("fall-distance");
                                 cancel(p, from, "type: fall-distance(ground), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver);

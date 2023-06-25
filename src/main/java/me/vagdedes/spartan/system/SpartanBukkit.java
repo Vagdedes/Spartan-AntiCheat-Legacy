@@ -12,9 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanBukkit {
@@ -106,6 +104,10 @@ public class SpartanBukkit {
 
     public static int getPlayerCount() {
         return players.size();
+    }
+
+    public static Set<UUID> getUUIDs() {
+        return new HashSet<>(players.keySet());
     }
 
     public static List<SpartanPlayer> getPlayers() {
