@@ -102,6 +102,6 @@ public class FalsePositiveDetection {
                 || ResearchEngine.isFalsePositive( // 2
                 ResearchEngine.getFalsePositives(hackType, dataType),
                 playerViolation.getFalsePositiveIdentity()))
-                && cancelledViolations < Check.maxCancelledViolations; // 3
+                && cancelledViolations < check.getMaxCancelledViolations(); // 3
     }
 }

@@ -23,9 +23,10 @@ public class Floodgate {
             if (ReflectionUtils.classExists("org.geysermc.floodgate.api.FloodgateApi")) {
                 message = null;
             } else {
+                Compatibility.CompatibilityType.Floodgate.setFunctional(false);
                 message = AwarenessNotifications.getNotification(
                         "You are using an outdated version of 'Floodgate', please update to the latest so the anti-cheat"
-                        + " can accurately identify who is a bedrock player."
+                                + " can accurately identify who is a bedrock player."
                 );
             }
         } else if (PluginUtils.contains("geyser")) {
@@ -76,6 +77,6 @@ public class Floodgate {
 
     public static boolean isBedrockPlayer(String name) {
         String prefix = Settings.getString("Important.bedrock_player_prefix");
-        return prefix != null && prefix.length() > 0 && name.startsWith(prefix);
+        return prefix.length() > 0 && name.startsWith(prefix);
     }
 }

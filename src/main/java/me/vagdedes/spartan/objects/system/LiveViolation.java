@@ -89,7 +89,7 @@ public class LiveViolation {
     }
 
     public boolean hasMaxCancelledLevel() {
-        return getCancelledLevel() == Check.maxCancelledViolations;
+        return getCancelledLevel() == hackType.getCheck().getMaxCancelledViolations();
     }
 
     public void setLevel(int amount) {
@@ -119,8 +119,10 @@ public class LiveViolation {
         timeReset();
 
         // Violations
-        if (amount > Check.maxCancelledViolations) {
-            this.cancelledLevel = Check.maxCancelledViolations;
+        int maxCancelledViolations = hackType.getCheck().getMaxCancelledViolations();
+
+        if (amount > maxCancelledViolations) {
+            this.cancelledLevel = maxCancelledViolations;
         } else {
             this.cancelledLevel = Math.max(amount, 0);
         }

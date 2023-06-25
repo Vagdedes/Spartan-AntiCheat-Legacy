@@ -37,7 +37,6 @@ public class Check {
             maxCommands = 10,
             maxMath = 10,
             maxViolations = 100,
-            maxCancelledViolations = maxViolations / 2,
             sufficientViolations = (maxViolations / 10),
             minimumDefaultCancelViolation = 1,
             maximumDefaultCancelViolation = 6,
@@ -208,7 +207,7 @@ public class Check {
     private final Map<String, Object> options;
     private short silent;
     private int cancelViolation;
-    private final int defaultCancelViolation;
+    private final int defaultCancelViolation, maxCancelledViolations;
     private boolean
             enabled,
             hasCancelViolation;
@@ -498,6 +497,7 @@ public class Check {
         this.silentUsers = silentUsers;
         this.violations = violations;
         this.problematicDetections = problematicDetections;
+        this.maxCancelledViolations = defaultCancelViolation * 10;
 
         // Separator
 
@@ -1295,6 +1295,10 @@ public class Check {
 
     public boolean hasMaximumDefaultCancelViolation() {
         return defaultCancelViolation == maximumDefaultCancelViolation;
+    }
+
+    public int getMaxCancelledViolations() {
+        return maxCancelledViolations;
     }
 
     public int getDefaultCancelViolation() {

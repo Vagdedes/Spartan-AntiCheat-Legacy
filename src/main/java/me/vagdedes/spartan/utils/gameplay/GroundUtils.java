@@ -314,9 +314,13 @@ public class GroundUtils {
                     double[] heights = specificHeights.getOrDefault(material, new double[]{0.0});
 
                     if (heights.length == 1) {
-                        return isValidHeight(heights[0], remaining, nmsVerticalDistance,
+                        if (isValidHeight(
+                                heights[0], remaining, nmsVerticalDistance,
                                 p,
-                                reset);
+                                reset
+                        )) {
+                            return true;
+                        }
                     } else {
                         for (double height : heights) {
                             if (isValidHeight(
@@ -350,7 +354,9 @@ public class GroundUtils {
         // Coordinates
         double correctY = 0.0;
 
-        if (isZeroMiscalculation(remaining) || vertical > 0.0 && vertical < MoveUtils.lowPrecision || p != null && p.isFalling(vertical)) {
+        if (isZeroMiscalculation(remaining)
+                || vertical > 0.0 && vertical < MoveUtils.lowPrecision
+                || p != null && p.isFalling(vertical)) {
             correctY = -motion;
         } else if (remaining == 0.5) {
             array.add(loc.clone().add(0, -(remaining + motion), 0));
@@ -412,7 +418,7 @@ public class GroundUtils {
     // Utils
 
     public static boolean heightExists(double d, boolean all) {
-        return abstractHeights.contains(d) || all && predictableHeights.contains(d);
+        return all ? allHeights.contains(d) : abstractHeights.contains(d);
     }
 
     public static boolean stepsOnBoats(SpartanPlayer p, Cooldowns cooldowns, SpartanLocation to) {

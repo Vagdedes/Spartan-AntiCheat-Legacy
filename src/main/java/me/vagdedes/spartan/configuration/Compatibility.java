@@ -207,14 +207,15 @@ public class Compatibility {
                 }
 
                 if (function) {
-                    this.functional = true;
-
                     if (runnable != null) {
                         try {
                             runnable.run();
                         } catch (Exception ex) {
+                            this.functional = false;
                             AwarenessNotifications.forcefullySend("Compatibility '" + this + "' failed to load.");
                         }
+                    } else {
+                        this.functional = true;
                     }
                 } else {
                     this.functional = false;
