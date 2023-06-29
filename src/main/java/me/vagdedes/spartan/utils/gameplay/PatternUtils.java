@@ -49,7 +49,7 @@ public class PatternUtils {
             }
         }
 
-        // Calculate andd add them in cache
+        // Calculate and add them in cache
         if (surroundings) {
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];

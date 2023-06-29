@@ -706,6 +706,35 @@ public class BlockUtils {
         // Separator
 
         builder.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+            builder.add(Material.POWDER_SNOW);
+        }
+        interactive_snow = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
+            builder.add(Material.SCAFFOLDING);
+        }
+        scaffolding = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        for (Material m : materials) {
+            if (areDripLeafs(m)
+                    || areWebs(m)
+                    || isPowderSnow(m)
+                    || isScaffoldingBlock(m)) {
+                builder.add(m);
+            }
+        }
+        interactive_and_passable = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
         helper.clear();
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
@@ -1180,42 +1209,11 @@ public class BlockUtils {
         // Separator
 
         builder.clear();
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
-            builder.add(Material.SCAFFOLDING);
-        }
-
-        scaffolding = new HashSet<>(builder);
-
-        // Separator
-
-        builder.clear();
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            builder.add(Material.POWDER_SNOW);
-        }
-
-        interactive_snow = new HashSet<>(builder);
-
-        // Separator
-
-        builder.clear();
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
             builder.add(Material.HONEY_BLOCK);
         }
 
         honey_block = new HashSet<>(builder);
-
-        // Separator
-
-        builder.clear();
-        for (Material m : materials) {
-            if (areDripLeafs(m)
-                    || areWebs(m)
-                    || isPowderSnow(m)
-                    || isScaffoldingBlock(m)) {
-                builder.add(m);
-            }
-        }
-        interactive_and_passable = new HashSet<>(builder);
 
         // Separator
 

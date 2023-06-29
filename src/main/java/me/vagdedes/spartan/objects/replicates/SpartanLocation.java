@@ -19,7 +19,10 @@ import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanLocation {
@@ -431,13 +434,8 @@ public class SpartanLocation {
             if (v_1_17 ?
                     blockY >= serverWorld.getMinHeight() && blockY <= serverWorld.getMaxHeight() :
                     blockY >= 0 && blockY <= MoveUtils.height) {
-                UUID uuid = serverWorld.getUID();
-                int blockX = getBlockX(),
-                        blockZ = getBlockZ();
-
-                if (SpartanBukkit.isSynchronised() || Chunks.isLoaded(uuid, serverWorld, blockX >> 4, blockZ >> 4)) {
-                    int hash = Chunks.locationIdentifier(uuid.hashCode(), blockX, blockY, blockZ);
-                    BlockCache cache = memory.get(hash);
+                if (SpartanBukkit.isSynchronised() || Chunks.isLoaded(serverWorld.getUID(), serverWorld, getBlockX() >> 4, getBlockZ() >> 4)) {
+                    BlockCache cache = memory.get(identifier);
 
                     if (cache != null) {
                         this.block = cache.block;
@@ -445,7 +443,7 @@ public class SpartanLocation {
                         SpartanBlock block = setBlock();
 
                         if (block != null) {
-                            memory.put(hash, new BlockCache(block));
+                            memory.put(identifier, new BlockCache(block));
                         }
                     }
                 } else {
