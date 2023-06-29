@@ -1498,7 +1498,7 @@ public class ResearchEngine {
                 // Separator (Calculate problematic detections using a pie equation)
 
 
-                Map<String, Integer> detectionViolationCount = new HashMap<>();
+                Map<String, Integer> detectionViolationCount = new LinkedHashMap<>();
 
                 for (Enums.HackType hackType : hackTypes) {
                     Check check = hackType.getCheck();

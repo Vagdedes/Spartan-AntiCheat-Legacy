@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.utils.gameplay;
 
+import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -7,13 +8,14 @@ import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Material;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PatternUtils {
 
-    private static final Map<Integer, Map<Integer, Boolean>> memory = Cache.store(new ConcurrentHashMap<>());
+    private static final Map<Integer, Map<Integer, Boolean>> memory = Cache.store(MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>());
 
     public static void synchronizeClearance(SpartanBlock block) {
         memory.remove(block.getIdentifier());
@@ -40,11 +42,23 @@ public class PatternUtils {
                 Boolean result = childMap.get(positionIdentifier);
 
                 if (result != null) {
-                    return result;
-                }
-                if (surroundings) {
-                    for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                        Material material = surroundingLocation.getBlock().getType();
+                    if (result) {
+                        return true;
+                    }
+                } else {
+                    if (surroundings) {
+                        for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
+                            Material material = surroundingLocation.getBlock().getType();
+
+                            for (Set<Material> set : sets) {
+                                if (not != set.contains(material)) {
+                                    childMap.put(positionIdentifiers[position], true);
+                                    return true;
+                                }
+                            }
+                        }
+                    } else {
+                        Material material = location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().getType();
 
                         for (Set<Material> set : sets) {
                             if (not != set.contains(material)) {
@@ -53,19 +67,10 @@ public class PatternUtils {
                             }
                         }
                     }
-                } else {
-                    Material material = location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().getType();
-
-                    for (Set<Material> set : sets) {
-                        if (not != set.contains(material)) {
-                            childMap.put(positionIdentifiers[position], true);
-                            return true;
-                        }
-                    }
                 }
             }
         } else {
-            childMap = new ConcurrentHashMap<>();
+            childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
             memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
@@ -121,7 +126,7 @@ public class PatternUtils {
                 return result;
             }
         } else {
-            childMap = new ConcurrentHashMap<>();
+            childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
             memory.put(locationIdentifier, childMap);
         }
 
