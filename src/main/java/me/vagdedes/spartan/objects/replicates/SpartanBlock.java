@@ -1,6 +1,7 @@
 package me.vagdedes.spartan.objects.replicates;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -16,12 +17,11 @@ public class SpartanBlock {
     private final World world;
     private Chunk chunk;
     private final byte data;
-    private final int x;
+    private final int x, z, identifier;
     private final short y;
-    private final int z;
     private final boolean liquid, waterLogged;
 
-    SpartanBlock(SpartanPlayer player, World world, Chunk chunk, Material material, byte data, int x, int y, int z, boolean liquid, boolean waterLogged) {
+    SpartanBlock(SpartanPlayer player, World world, Chunk chunk, Material material, byte data, int identifier, int x, int y, int z, boolean liquid, boolean waterLogged) {
         this.player = player;
         this.world = world;
         this.material = material;
@@ -32,6 +32,7 @@ public class SpartanBlock {
         this.z = z;
         this.liquid = liquid;
         this.waterLogged = waterLogged;
+        this.identifier = identifier;
     }
 
     public SpartanBlock(SpartanPlayer player, Block block) {
@@ -42,6 +43,7 @@ public class SpartanBlock {
         this.x = block.getX();
         this.y = (short) block.getY();
         this.z = block.getZ();
+        this.identifier = Chunks.locationIdentifier(world.getUID().hashCode(), x, y, z);
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             Object blockData = block.getBlockData();
@@ -78,6 +80,10 @@ public class SpartanBlock {
 
     public byte getData() {
         return data;
+    }
+
+    public int getIdentifier() {
+        return identifier;
     }
 
     public int getX() {

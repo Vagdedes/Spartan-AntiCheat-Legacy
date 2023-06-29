@@ -5,8 +5,6 @@ import me.vagdedes.spartan.system.Cache;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Collection;
-import java.util.Map;
 
 public class MemoryUtils {
 

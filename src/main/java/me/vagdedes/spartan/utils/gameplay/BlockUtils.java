@@ -28,10 +28,11 @@ public class BlockUtils {
             beetroot_block = MaterialUtils.get("beetroot_block");
 
     private static Method getBreakSpeed = null;
-    private static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, step, climbable,
+    static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, step, climbable,
             door, entity_blocks, trap_door, liquid, banner, carpet, bed, shulker_box, stairs, fence, fence_gate, heads, leaves, egg,
             coral_fan, pot, anvil, cobble_walls, terracotta, concrete, candle, candleCake, dripleaf, ores, wood, wool, wire,
-            semi_solid, changeable, walls;
+            semi_solid, changeable, walls, interactive_bushes, scaffolding, interactive_snow, interactive_and_passable,
+            honey_block;
 
     public static final double
             hitbox_extra = 0.35,
@@ -801,7 +802,7 @@ public class BlockUtils {
         helper.add(MaterialUtils.get("lily_pad"));
         helper.add(MaterialUtils.get("end_portal_frame"));
         helper.add(MaterialUtils.get("cake"));
-        
+
         for (Material m : materials) {
             if (areFenceGates(m)
                     || areFences(m)
@@ -1170,6 +1171,55 @@ public class BlockUtils {
         // Separator
 
         builder.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
+            builder.add(Material.SWEET_BERRY_BUSH);
+        }
+
+        interactive_bushes = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
+            builder.add(Material.SCAFFOLDING);
+        }
+
+        scaffolding = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+            builder.add(Material.POWDER_SNOW);
+        }
+
+        interactive_snow = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
+            builder.add(Material.HONEY_BLOCK);
+        }
+
+        honey_block = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        for (Material m : materials) {
+            if (areDripLeafs(m)
+                    || areWebs(m)
+                    || isPowderSnow(m)
+                    || isScaffoldingBlock(m)) {
+                builder.add(m);
+            }
+        }
+        interactive_and_passable = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
         helper.clear();
     }
 
@@ -1197,7 +1247,7 @@ public class BlockUtils {
     }
 
     public static boolean isScaffoldingBlock(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.SCAFFOLDING;
+        return scaffolding.contains(m);
     }
 
     public static boolean areWalls(Material m) {
@@ -1226,7 +1276,7 @@ public class BlockUtils {
     }
 
     public static boolean isInteractiveAndPassable(Material m) {
-        return areDripLeafs(m) || areWebs(m) || isPowderSnow(m) || isScaffoldingBlock(m);
+        return interactive_and_passable.contains(m);
     }
 
     public static boolean areStairs(Material m) {
@@ -1270,7 +1320,7 @@ public class BlockUtils {
     }
 
     public static boolean isPowderSnow(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.POWDER_SNOW;
+        return interactive_snow.contains(m);
     }
 
     public static boolean areDripLeafs(Material m) {
@@ -1357,8 +1407,12 @@ public class BlockUtils {
         return concrete.contains(m);
     }
 
+    public static boolean areHoneyBlocks(Material m) {
+        return honey_block.contains(m);
+    }
+
     public static boolean areInteractiveBushes(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.SWEET_BERRY_BUSH;
+        return interactive_bushes.contains(m);
     }
 
     public static boolean canClimb(Material m) {
@@ -1545,6 +1599,10 @@ public class BlockUtils {
         return areBanners(loc.getBlock().getType());
     }
 
+    public static boolean areHoneyBlocks(SpartanLocation loc) {
+        return areHoneyBlocks(loc.getBlock().getType());
+    }
+
     public static boolean isSensitive(SpartanLocation loc, long time) {
         return isSensitive(loc.getBlock().getType(), time);
     }
@@ -1632,11 +1690,9 @@ public class BlockUtils {
     }
 
     public static boolean isHoneyBlockFree(SpartanLocation loc, double x, double y, double z) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
-            for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z, true)) {
-                if (locs.getBlock().getType() == Material.HONEY_BLOCK) {
-                    return false;
-                }
+        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z, true)) {
+            if (areHoneyBlocks(locs)) {
+                return false;
             }
         }
         return true;

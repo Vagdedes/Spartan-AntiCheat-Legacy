@@ -31,7 +31,19 @@ public class Chunks {
 
     // Separator
 
-    private static int identifier(int x, int z) {
+    public static int locationIdentifier(int world, int x, int y, int z) {
+        world = (SpartanBukkit.hashCodeMultiplier * world) + x;
+        world = (SpartanBukkit.hashCodeMultiplier * world) + y;
+        return (SpartanBukkit.hashCodeMultiplier * world) + z;
+    }
+
+    public static int positionIdentifier(double x, double y, double z) {
+        int hash = SpartanBukkit.hashCodeMultiplier + Double.hashCode(x);
+        hash = (SpartanBukkit.hashCodeMultiplier * hash) + Double.hashCode(y);
+        return (SpartanBukkit.hashCodeMultiplier * hash) + Double.hashCode(z);
+    }
+
+    private static int chunkIdentifier(int x, int z) {
         return (SpartanBukkit.hashCodeMultiplier * (SpartanBukkit.hashCodeMultiplier + x)) + z;
     }
 
@@ -56,7 +68,7 @@ public class Chunks {
     public static boolean isLoaded(UUID uuid, World world, int x, int z) {
         List<Integer> list = loadedChunks.get(uuid);
         boolean isNull = list == null;
-        int hash = identifier(x, z);
+        int hash = chunkIdentifier(x, z);
 
         if (!isNull && list.contains(hash)) {
             return true;
@@ -80,7 +92,7 @@ public class Chunks {
             list = new CopyOnWriteArrayList<>();
             loadedChunks.put(uuid, list);
         }
-        list.add(identifier(chunk.getX(), chunk.getZ()));
+        list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
     }
 
     private static void load(World world) {
@@ -88,7 +100,7 @@ public class Chunks {
         loadedChunks.put(world.getUID(), list);
 
         for (Chunk chunk : world.getLoadedChunks()) {
-            list.add(identifier(chunk.getX(), chunk.getZ()));
+            list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
         }
     }
 
@@ -98,7 +110,7 @@ public class Chunks {
         List<Integer> list = loadedChunks.get(world.getUID());
 
         if (list != null) {
-            list.remove((Object) identifier(chunk.getX(), chunk.getZ()));
+            list.remove((Object) chunkIdentifier(chunk.getX(), chunk.getZ()));
         }
     }
 }

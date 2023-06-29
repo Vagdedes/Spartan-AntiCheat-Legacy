@@ -9,6 +9,7 @@ import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -55,6 +56,7 @@ public class SpartanLocation {
 
                         if ((time - cache.time) >= clearanceTime) {
                             iterator.remove();
+                            PatternUtils.synchronizeClearance(cache.block);
                         }
                     }
                 }
@@ -72,6 +74,7 @@ public class SpartanLocation {
     private final SpartanPlayer player;
     private final World serverWorld;
     private Chunk chunk;
+    private int identifier;
     private double x, y, z;
     private float yaw, pitch;
     private Vector vector;
@@ -79,19 +82,8 @@ public class SpartanLocation {
 
     // Utilities
 
-    private void loadCoordinates(Chunk chunk, double x, double y, double z, float yaw, float pitch) {
-        this.chunk = chunk;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.yaw = yaw;
-        this.pitch = pitch;
-        this.vector = null;
-        this.block = null;
-    }
-
     private SpartanBlock loadBlock(Material material, byte data, boolean liquid, boolean waterLogged) {
-        return this.block = new SpartanBlock(this.player, this.serverWorld, this.chunk, material, data, getBlockX(), getBlockY(), getBlockZ(), liquid, waterLogged);
+        return this.block = new SpartanBlock(this.player, this.serverWorld, this.chunk, material, data, identifier, getBlockX(), getBlockY(), getBlockZ(), liquid, waterLogged);
     }
 
     private void loadEmptyBlock(boolean air) {
@@ -100,20 +92,29 @@ public class SpartanLocation {
 
     // Base
 
-    private SpartanLocation(SpartanPlayer player, World world) { // Used for inititation
+    private SpartanLocation(SpartanPlayer player, World world, Chunk chunk,
+                            double x, double y, double z,
+                            float yaw, float pitch) { // Used for inititation
         this.player = player;
         this.serverWorld = world;
+        this.chunk = chunk;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        this.vector = null;
+        this.block = null;
+        this.identifier = Chunks.locationIdentifier(serverWorld.getUID().hashCode(), getBlockX(), getBlockY(), getBlockZ());
     }
 
     SpartanLocation() { // Used as a backup
-        this(null, Bukkit.getWorlds().get(0));
-        loadCoordinates(null, 0, 0, 0, 0, 0);
+        this(null, Bukkit.getWorlds().get(0), null, 0, 0, 0, 0, 0);
         loadEmptyBlock(false);
     }
 
     SpartanLocation(SpartanPlayer player, World world, Chunk chunk, double x, double y, double z, float yaw, float pitch, SpartanBlock block) { // Used for objects
-        this(player, world);
-        loadCoordinates(chunk, x, y, z, yaw, pitch);
+        this(player, world, chunk, x, y, z, yaw, pitch);
 
         if (block != null) {
             loadBlock(block.getType(), block.getData(), block.isLiquid(), block.isWaterLogged());
@@ -125,8 +126,7 @@ public class SpartanLocation {
     // Native
 
     SpartanLocation(SpartanPlayer player, Location loc, float yaw, float pitch) { // Used for vehicles
-        this(player, loc.getWorld());
-        loadCoordinates(null, loc.getX(), loc.getY(), loc.getZ(), yaw, pitch);
+        this(player, loc.getWorld(), null, loc.getX(), loc.getY(), loc.getZ(), yaw, pitch);
 
         if (!v_1_9) { // 1.8 or older
             if (SpartanBukkit.isSynchronised()) {
@@ -147,8 +147,7 @@ public class SpartanLocation {
     }
 
     private SpartanLocation(SpartanLocation loc) { // Used for copying
-        this(loc.player, loc.serverWorld);
-        loadCoordinates(loc.chunk, loc.x, loc.y, loc.z, loc.yaw, loc.pitch);
+        this(loc.player, loc.serverWorld, loc.chunk, loc.x, loc.y, loc.z, loc.yaw, loc.pitch);
         this.block = loc.block;
         this.vector = loc.vector;
     }
@@ -172,6 +171,10 @@ public class SpartanLocation {
             chunk = serverWorld.getChunkAt(getChunkX(), getChunkZ());
         }
         return chunk;
+    }
+
+    public int getIdentifier() {
+        return identifier;
     }
 
     public double getX() {
@@ -376,6 +379,7 @@ public class SpartanLocation {
             if (startX != getChunkX() || startZ != getChunkZ()) {
                 this.chunk = null;
             }
+            this.identifier = Chunks.locationIdentifier(serverWorld.getUID().hashCode(), getBlockX(), getBlockY(), getBlockZ());
         } else {
             int startX = getBlockX(),
                     startY = getBlockY(),
@@ -384,13 +388,17 @@ public class SpartanLocation {
             this.x = bukkit.getX();
             this.y = bukkit.getY();
             this.z = bukkit.getZ();
+            int blockX = getBlockX(),
+                    blockY = getBlockY(),
+                    blockZ = getBlockZ();
 
-            if (getBlockX() != startX || getBlockY() != startY || getBlockZ() != startZ) {
+            if (blockX != startX || blockY != startY || blockZ != startZ) {
                 this.block = null;
 
                 if ((startX >> 4) != getChunkX() || (startZ >> 4) != getChunkZ()) {
                     this.chunk = null;
                 }
+                this.identifier = Chunks.locationIdentifier(serverWorld.getUID().hashCode(), blockX, blockY, blockZ);
             }
         }
         return this;
@@ -425,13 +433,10 @@ public class SpartanLocation {
                     blockY >= 0 && blockY <= MoveUtils.height) {
                 UUID uuid = serverWorld.getUID();
                 int blockX = getBlockX(),
-                        blockZ = getBlockZ(),
-                        hash = uuid.hashCode();
+                        blockZ = getBlockZ();
 
                 if (SpartanBukkit.isSynchronised() || Chunks.isLoaded(uuid, serverWorld, blockX >> 4, blockZ >> 4)) {
-                    hash = (SpartanBukkit.hashCodeMultiplier * hash) + blockX;
-                    hash = (SpartanBukkit.hashCodeMultiplier * hash) + blockY;
-                    hash = (SpartanBukkit.hashCodeMultiplier * hash) + blockZ;
+                    int hash = Chunks.locationIdentifier(uuid.hashCode(), blockX, blockY, blockZ);
                     BlockCache cache = memory.get(hash);
 
                     if (cache != null) {

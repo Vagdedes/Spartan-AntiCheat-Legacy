@@ -27,7 +27,6 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.IDs;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
-import me.vagdedes.spartan.utils.java.MemoryUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.TimeUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
