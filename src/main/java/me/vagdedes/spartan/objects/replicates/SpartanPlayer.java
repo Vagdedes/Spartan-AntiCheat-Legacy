@@ -1833,7 +1833,7 @@ public class SpartanPlayer {
                                 || targetBlock.getZ() != clickedBlock.getZ())
 
                                 && (editableClickedBlock && !BlockUtils.isLiquid(targetBlockLocation)
-                                || BlockUtils.isFullSolid(targetBlockLocation, true))) {
+                                || BlockUtils.isFullSolid(targetBlockLocation))) {
                             return targetBlock;
                         }
                     }

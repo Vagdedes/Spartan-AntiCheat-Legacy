@@ -29,7 +29,7 @@ public class GhostHand {
 
         if (itb != null
                 && (!check.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
-                || BlockUtils.isFullSolid(itb.getType(), true))) {
+                || BlockUtils.isFullSolid(itb.getType()))) {
             new HackPrevention(p, check,
                     "type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
                     null, 0, false, 0.0,
@@ -47,7 +47,7 @@ public class GhostHand {
 
             if (itb != null
                     && (!check.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
-                    || BlockUtils.isFullSolid(itb.getType(), true))) {
+                    || BlockUtils.isFullSolid(itb.getType()))) {
                 new HackPrevention(p, check,
                         "type: break, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
                         10);

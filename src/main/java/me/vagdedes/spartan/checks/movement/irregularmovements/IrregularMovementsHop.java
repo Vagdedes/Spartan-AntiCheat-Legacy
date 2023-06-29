@@ -40,8 +40,8 @@ public class IrregularMovementsHop {
                         && BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max)) {
                     boolean solidFree = true;
 
-                    for (int i = -2; i <= 2; i++) { //todo
-                        if (!BlockUtils.isNonSolidFree(to, 1, i, 1)) {
+                    for (int i = -2; i <= 2; i++) {
+                        if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
                             cooldowns.add("hop=non-solid-free", 20);
                             return;
                         }

@@ -123,7 +123,7 @@ public class ImpossibleActions {
                 && (BlockUtils.isBaseLiquid(blockAgainstType)
 
                 || blockFace == BlockFace.SELF
-                && BlockUtils.isFullSolid(blockType, true)
+                && BlockUtils.isFullSolid(blockType)
                 && blockAgainstLocation.distance(bloc) == 0.0
                 && bloc.getBlock().getType() == Material.AIR)) {
             new HackPrevention(p, check,
@@ -137,7 +137,7 @@ public class ImpossibleActions {
                 return;
             }
 
-            if (BlockUtils.isFullSolid(itemStackType, true) // Placed block must be fully solid
+            if (BlockUtils.isFullSolid(itemStackType) // Placed block must be fully solid
                     && BlockUtils.isSolid(blockAgainstType) // Block against must be solid
                     && blockFace != BlockFace.SELF) { // Block-face handled by the BlockReach check
                 SpartanLocation to = p.getLocation();

@@ -14,23 +14,11 @@ public class MemoryUtils {
         return size - index - 1;
     }
 
-    public static <K, V> int sizeKB(Map<K, V> map) {
+    public static int sizeKB(Object object) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(map);
-            oos.close();
-            return baos.size() / Cache.gradeDivisor;
-        } catch (IOException ignored) {
-        }
-        return 0;
-    }
-
-    public static <E> int sizeKB(Collection<E> collection) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(collection);
+            oos.writeObject(object);
             oos.close();
             return baos.size() / Cache.gradeDivisor;
         } catch (IOException ignored) {

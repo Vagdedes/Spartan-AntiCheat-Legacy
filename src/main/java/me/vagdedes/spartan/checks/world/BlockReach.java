@@ -77,7 +77,7 @@ public class BlockReach {
         SpartanLocation baLoc;
 
         if (!canDo(p, b)
-                || !BlockUtils.isFullSolid((baLoc = ba.getLocation()), true)
+                || !BlockUtils.isFullSolid((baLoc = ba.getLocation()))
                 || p.getItemInHand().getType() == (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))
                 || BlockUtils.areBeds(type = b.getType()) || type == Material.BEDROCK) {
             return;

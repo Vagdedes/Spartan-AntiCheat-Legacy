@@ -557,9 +557,8 @@ public class SpartanLocation {
     // Surrounding
 
     public List<SpartanLocation> getSurroundingLocations(double x, double y, double z, boolean all) {
+        boolean hasXZ = x > 0.0 || z > 0.0;
         List<SpartanLocation> array = new ArrayList<>(9);
-        double dx = getX() - getBlockX(),
-                dz = getZ() - getBlockZ();
 
         if (y == 0.0) {
             array.add(this);
@@ -567,49 +566,54 @@ public class SpartanLocation {
             array.add(this.clone().add(0, y, 0));
         }
 
-        if (!all) {
-            if (dx >= 0.0 && dx < 0.3 && dz >= 0.0 && dz < 0.3) {
-                // 300 300
-                array.add(this.clone().add(0, y, -z));
+        if (hasXZ) {
+            double dx = getX() - getBlockX(),
+                    dz = getZ() - getBlockZ();
+
+            if (!all) {
+                if (dx >= 0.0 && dx < 0.3 && dz >= 0.0 && dz < 0.3) {
+                    // 300 300
+                    array.add(this.clone().add(0, y, -z));
+                    array.add(this.clone().add(-x, y, 0));
+                    array.add(this.clone().add(-x, y, -z));
+                } else if (dx > 0.7 && dx < 1.0 && dz >= 0.0 && dz < 0.3) {
+                    // 700 300
+                    array.add(this.clone().add(x, y, 0));
+                    array.add(this.clone().add(0, y, -z));
+                    array.add(this.clone().add(x, y, -z));
+                } else if (dx > 0.7 && dx < 1.0 && dz > 0.7 && dz < 1.0) {
+                    // 700 700
+                    array.add(this.clone().add(x, y, 0));
+                    array.add(this.clone().add(0, y, z));
+                    array.add(this.clone().add(x, y, z));
+                } else if (dx >= 0.0 && dx < 0.3 && dz > 0.7 && dz < 1.0) {
+                    // 300 700
+                    array.add(this.clone().add(-x, y, 0));
+                    array.add(this.clone().add(0, y, z));
+                    array.add(this.clone().add(-x, y, z));
+                } else if (dx >= 0.0 && dx < 0.3 && dz > 0.3 && dz < 0.7) {
+                    // 300 300-700
+                    array.add(this.clone().add(x, y, 0));
+                } else if (dx > 0.7 && dx < 1.0 && dz > 0.3 && dz < 0.7) {
+                    // 700 300-700
+                    array.add(this.clone().add(-x, y, 0));
+                } else if (dx > 0.3 && dx < 0.7 && dz >= 0.0 && dz < 0.3) {
+                    // 300-700 300
+                    array.add(this.clone().add(0, y, -z));
+                } else if (dx > 0.3 && dx < 0.7 && dz > 0.7 && dz < 1.0) {
+                    // 300-700 700
+                    array.add(this.clone().add(0, y, z));
+                }
+            } else {
+                array.add(this.clone().add(x, y, 0));
                 array.add(this.clone().add(-x, y, 0));
-                array.add(this.clone().add(-x, y, -z));
-            } else if (dx > 0.7 && dx < 1.0 && dz >= 0.0 && dz < 0.3) {
-                // 700 300
-                array.add(this.clone().add(x, y, 0));
-                array.add(this.clone().add(0, y, -z));
-                array.add(this.clone().add(x, y, -z));
-            } else if (dx > 0.7 && dx < 1.0 && dz > 0.7 && dz < 1.0) {
-                // 700 700
-                array.add(this.clone().add(x, y, 0));
                 array.add(this.clone().add(0, y, z));
+                array.add(this.clone().add(0, y, -z));
                 array.add(this.clone().add(x, y, z));
-            } else if (dx >= 0.0 && dx < 0.3 && dz > 0.7 && dz < 1.0) {
-                // 300 700
-                array.add(this.clone().add(-x, y, 0));
-                array.add(this.clone().add(0, y, z));
+                array.add(this.clone().add(-x, y, -z));
+                array.add(this.clone().add(x, y, -z));
                 array.add(this.clone().add(-x, y, z));
-            } else if (dx >= 0.0 && dx < 0.3 && dz > 0.3 && dz < 0.7) {
-                // 300 300-700
-                array.add(this.clone().add(x, y, 0));
-            } else if (dx > 0.7 && dx < 1.0 && dz > 0.3 && dz < 0.7) {
-                // 700 300-700
-                array.add(this.clone().add(-x, y, 0));
-            } else if (dx > 0.3 && dx < 0.7 && dz >= 0.0 && dz < 0.3) {
-                // 300-700 300
-                array.add(this.clone().add(0, y, -z));
-            } else if (dx > 0.3 && dx < 0.7 && dz > 0.7 && dz < 1.0) {
-                // 300-700 700
-                array.add(this.clone().add(0, y, z));
             }
-        } else {
-            array.add(this.clone().add(x, y, 0));
-            array.add(this.clone().add(-x, y, 0));
-            array.add(this.clone().add(0, y, z));
-            array.add(this.clone().add(0, y, -z));
-            array.add(this.clone().add(x, y, z));
-            array.add(this.clone().add(-x, y, -z));
-            array.add(this.clone().add(x, y, -z));
-            array.add(this.clone().add(-x, y, z));
         }
         return array;
     }

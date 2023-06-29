@@ -78,13 +78,15 @@ public class IrregularMovements {
             illegalJumpDetection = "illegal-jump",
             spoofJumpDetection = "spoof-jump",
             uncompletedJumpDetection = "uncompleted-jump";
-    private static final String[] detections = new String[]{horizontalMotionDetection,
+    private static final String[] detections = new String[]{
+            horizontalMotionDetection,
             greaterFallDetection, identicalFallDetection, distantFallDetection, slowFallDetection,
             positionFallDetection, repeatedFallDetection, illegalFallDetection,
             greaterDownDetection, identicalDownDetection, distantDownDetection, slowDownDetection,
             positionDownDetection, repeatedDownDetection, illegalDownDetection,
             greaterJumpDetection, identicalJumpDetection, distantJumpDetection, unknownJumpDetection,
-            uncompletedJumpDetection, airJumpDetection, spoofJumpDetection, illegalJumpDetection};
+            uncompletedJumpDetection, airJumpDetection, spoofJumpDetection, illegalJumpDetection
+    };
 
     // Detections
     static final int defaultBufferTime = 20;
@@ -202,9 +204,15 @@ public class IrregularMovements {
 
             // Buffer Reset
             if (onGroundCustom) {
-                for (String detection : detections) {
-                    buffers.remove(new String[]{detection, detection + "=minute"});
+                if (buffers.get("detection-reset", 1) == 1) {
+                    buffers.set("detection-reset", 0);
+
+                    for (String detection : detections) {
+                        buffers.remove(new String[]{detection, detection + "=minute"});
+                    }
                 }
+            } else {
+                buffers.set("detection-reset", 1);
             }
 
             // Scenario Identification
@@ -246,13 +254,13 @@ public class IrregularMovements {
                 canFall = !forcefulUp;
             } else if (!p.isCrawling()
 
-                    && (BlockUtils.isFullSolid(to, true)
+                    && (BlockUtils.isFullSolid(to)
                     && (!BlockUtils.isSolid(to.clone().add(0, 1, 0))
-                    || BlockUtils.isFullSolid(to.clone().add(0, 1, 0), true))
+                    || BlockUtils.isFullSolid(to.clone().add(0, 1, 0)))
 
-                    || BlockUtils.isFullSolid(to.clone().add(0, 1, 0), true)
+                    || BlockUtils.isFullSolid(to.clone().add(0, 1, 0))
                     && (!BlockUtils.isSolid(to)
-                    || BlockUtils.isFullSolid(to, true)))) { // Inside Blocks
+                    || BlockUtils.isFullSolid(to)))) { // Inside Blocks
                 scenario = "inside-blocks";
                 canGoUp = true;
                 canGoDown = !forcefulUp;
@@ -278,7 +286,8 @@ public class IrregularMovements {
                 minimumUp = 0.022;
             } else if (BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
                     || BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max)
-                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, -box, BlockUtils.hitbox_max)) { // Ladder/Vine Climbing
+                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, -box, BlockUtils.hitbox_max)
+                    || onGroundCustom && BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)) { // Ladder/Vine Climbing
                 scenario = "climb";
                 canGoUp = true;
                 canGoDown = !forcefulUp;
@@ -467,7 +476,7 @@ public class IrregularMovements {
                                                 && (!oldJumping
                                                 || Math.abs(oldVertical - MoveUtils.jumping[0]) >= MoveUtils.jumping[2]) // Continue only when player was not previously jumping and ignore checking them if the jump motion just ended
 
-                                                && BlockUtils.isNonSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
+                                                && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
                                                 && BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)) {
                                             cancel(p, from, prevention, "ground-up",
                                                     blockedJumping ? 12 : !changedScenario && (suspectedOrHacker || horizontal < MovementProcessing.sprintingMaxSpeed) ? 4 : 8);

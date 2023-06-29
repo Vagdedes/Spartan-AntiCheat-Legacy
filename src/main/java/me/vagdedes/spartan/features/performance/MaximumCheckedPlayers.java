@@ -107,6 +107,9 @@ public class MaximumCheckedPlayers {
 
     public static boolean isChecked(UUID uuid) {
         int optionAmount = Settings.getInteger(option);
-        return optionAmount > 0 && (list.contains(uuid) || add(uuid, optionAmount)) || TestServer.isIdentified();
+        return optionAmount <= 0
+                || list.contains(uuid)
+                || add(uuid, optionAmount)
+                || TestServer.isIdentified();
     }
 }

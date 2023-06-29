@@ -54,7 +54,9 @@ public class ResearchEngine {
             logRequirement = Check.maxViolations,
             profileRequirement = logRequirement / 10;
     public static final double downloadedVersion = Double.parseDouble(API.getVersion().substring(6));
-    public static final int maxSize = Cache.enoughRAM ? 102_400 : 20_480;
+    public static final int
+            maxSize = Cache.enoughRAM ? 102_400 : 20_480,
+            maxSizeInBytes = maxSize * 1024;
     public static final DataType[] usableDataTypes = new DataType[]{DataType.Java, DataType.Bedrock};
     private static final double minimumAverageMining = 16.0;
     // Base
@@ -749,7 +751,7 @@ public class ResearchEngine {
     public static Map<String, String> getLogs() {
         long startTime = System.currentTimeMillis();
         Map<String, String> cache = new LinkedHashMap<>();
-        int divisor = 100;
+        int byteSize = 0;
         isFull = false;
         boolean continueWithYAML = false;
 
@@ -767,8 +769,9 @@ public class ResearchEngine {
                         if (isLogValid(information)) {
                             AntiCheatLogs.logInfo(null, information, null, null, null, false, false, -1, -1);
                             cache.put(key, information);
+                            byteSize += key.length() + information.length();
 
-                            if (cache.size() % divisor == 0 && MemoryUtils.sizeKB(cache) >= maxSize) {
+                            if (byteSize >= maxSizeInBytes) {
                                 isFull = true;
                                 break;
                             } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
@@ -797,8 +800,9 @@ public class ResearchEngine {
                                 Timestamp t = rs.getTimestamp("creation_date");
                                 String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolations - 1) + ")[" + TimeUtils.getYearMonthDay(t) + " " + TimeUtils.getTime(t) + "]";
                                 cache.put(date, data);
+                                byteSize += date.length() + data.length();
 
-                                if (cache.size() % divisor == 0 && MemoryUtils.sizeKB(cache) >= maxSize) {
+                                if (byteSize >= maxSizeInBytes) {
                                     isFull = true;
                                     break;
                                 } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
@@ -840,8 +844,9 @@ public class ResearchEngine {
 
                         if (data != null && isLogValid(data)) {
                             cache.put(key, data);
+                            byteSize += key.length() + data.length();
 
-                            if (cache.size() % divisor == 0 && MemoryUtils.sizeKB(cache) >= maxSize) {
+                            if (byteSize >= maxSizeInBytes) {
                                 isFull = true;
                                 break;
                             } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {

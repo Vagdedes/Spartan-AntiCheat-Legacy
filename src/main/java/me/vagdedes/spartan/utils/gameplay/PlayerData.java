@@ -117,12 +117,15 @@ public class PlayerData {
 
         // Separator
 
-        if (heavy) {
-            Entity entity = p.getVehicle();
+        Entity entity = p.getVehicle();
 
-            if (entity != null) {
-                VehicleAccess.runEnter(p, entity, false);
-            }
+        if (entity != null) {
+            VehicleAccess.runEnter(p, entity, false);
+        }
+
+        // Separator
+
+        if (heavy) {
             ExtremeCollision.run(p);
 
             if (!Liquid.runMove(p)) {

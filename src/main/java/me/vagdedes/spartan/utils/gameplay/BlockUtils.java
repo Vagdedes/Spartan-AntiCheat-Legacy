@@ -28,16 +28,15 @@ public class BlockUtils {
             beetroot_block = MaterialUtils.get("beetroot_block");
 
     private static Method getBreakSpeed = null;
-    private static final Set<Material> air, solid, sensitive, full_solid, editable, chest, plate, ice, glass, glass_pane, step, climbable,
+    private static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, step, climbable,
             door, entity_blocks, trap_door, liquid, banner, carpet, bed, shulker_box, stairs, fence, fence_gate, heads, leaves, egg,
-            coral_fan, pot, anvil, cobble_walls, terracotta, concrete, candle, candleCake, dripleaf, ores, wood, wool, wire;
+            coral_fan, pot, anvil, cobble_walls, terracotta, concrete, candle, candleCake, dripleaf, ores, wood, wool, wire,
+            semi_solid, changeable, walls;
 
     public static final double
             hitbox_extra = 0.35,
             hitbox_max = 0.3,
-            hitbox = 0.298,
-            hitbox_safe = 0.25,
-            hitbox_small = 0.1;
+            hitbox = 0.298;
 
     public static boolean endsWith(String s, String ending) {
         return s.endsWith(ending) && !s.contains("LEGACY_");
@@ -60,7 +59,8 @@ public class BlockUtils {
         }
 
         // Separator
-        Set<Material> builder = new HashSet<>();
+        Set<Material> builder = new HashSet<>(),
+                helper = new HashSet<>();
         Material[] materials = Material.values();
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
@@ -77,324 +77,6 @@ public class BlockUtils {
             builder.add(Material.getMaterial("STATIONARY_LAVA"));
         }
         liquid = new HashSet<>(builder);
-
-        // Separator
-
-        builder.clear();
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            builder.add(Material.CHORUS_PLANT);
-            builder.add(Material.END_CRYSTAL);
-        }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
-                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
-                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)) {
-                            //todo calibrated sensor
-                            builder.add(Material.SCULK_SENSOR);
-                            builder.add(Material.SCULK_SHRIEKER);
-                            builder.add(Material.MUD);
-                        }
-                        builder.add(Material.LIGHTNING_ROD);
-                        builder.add(Material.POINTED_DRIPSTONE);
-                        builder.add(Material.SMALL_AMETHYST_BUD);
-                        builder.add(Material.MEDIUM_AMETHYST_BUD);
-                        builder.add(Material.LARGE_AMETHYST_BUD);
-                        builder.add(Material.AMETHYST_CLUSTER);
-                        builder.add(Material.POWDER_SNOW_CAULDRON);
-                        builder.add(Material.LAVA_CAULDRON);
-                        builder.add(Material.WATER_CAULDRON);
-                        builder.add(Material.CAVE_VINES);
-                        builder.add(Material.CAVE_VINES_PLANT);
-                    }
-                    builder.add(Material.SOUL_CAMPFIRE);
-                    builder.add(Material.TWISTING_VINES);
-                    builder.add(Material.TWISTING_VINES_PLANT);
-                    builder.add(Material.WEEPING_VINES);
-                    builder.add(Material.WEEPING_VINES_PLANT);
-                    builder.add(Material.CHAIN);
-                    builder.add(Material.SOUL_LANTERN);
-                }
-                builder.add(Material.BELL);
-                builder.add(Material.LANTERN);
-                builder.add(Material.CAMPFIRE);
-                builder.add(Material.COMPOSTER);
-                builder.add(Material.LECTERN);
-                builder.add(Material.GRINDSTONE);
-                builder.add(Material.STONECUTTER);
-                builder.add(Material.BAMBOO);
-            }
-            builder.add(Material.PISTON_HEAD);
-            builder.add(Material.COBBLESTONE_WALL);
-            builder.add(Material.MOSSY_COBBLESTONE_WALL);
-            builder.add(Material.IRON_BARS);
-            builder.add(Material.PISTON);
-            builder.add(Material.STICKY_PISTON);
-            builder.add(Material.COBWEB);
-            builder.add(Material.FARMLAND);
-            builder.add(Material.TURTLE_EGG);
-            builder.add(Material.CONDUIT);
-        } else {
-            builder.add(Material.getMaterial("PISTON_EXTENSION"));
-            builder.add(Material.getMaterial("COBBLE_WALL"));
-            builder.add(Material.getMaterial("IRON_FENCE"));
-            builder.add(Material.getMaterial("SOIL"));
-            builder.add(Material.getMaterial("PISTON_BASE"));
-            builder.add(Material.getMaterial("PISTON_STICKY_BASE"));
-            builder.add(Material.getMaterial("WEB"));
-        }
-
-        for (Material m : materials) {
-            String s = m.toString();
-
-            if (endsWith(s, "_HANGING_SIGN")) {
-                builder.add(m);
-            }
-        }
-        builder.add(Material.COCOA);
-        builder.add(Material.DRAGON_EGG);
-        builder.add(Material.HOPPER);
-        builder.add(Material.FLOWER_POT);
-        builder.add(Material.BREWING_STAND);
-        builder.add(Material.CAULDRON);
-        builder.add(Material.LADDER);
-        builder.add(Material.VINE);
-        builder.add(Material.SNOW);
-        builder.add(Material.SNOW_BLOCK);
-        builder.add(Material.CACTUS);
-        builder.add(Material.SOUL_SAND);
-        builder.add(MaterialUtils.get("daylight_detector_1"));
-        builder.add(MaterialUtils.get("daylight_detector_2"));
-        builder.add(MaterialUtils.get("repeater_on"));
-        builder.add(MaterialUtils.get("repeater_off"));
-        builder.add(MaterialUtils.get("comparator_on"));
-        builder.add(MaterialUtils.get("comparator_off"));
-        builder.add(MaterialUtils.get("enchanting_table"));
-        builder.add(MaterialUtils.get("lily_pad"));
-        builder.add(MaterialUtils.get("end_portal_frame"));
-        builder.add(MaterialUtils.get("cake"));
-        full_solid = new HashSet<>(builder);
-
-        // Separator
-
-        builder.clear();
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            builder.add(Material.END_CRYSTAL);
-            builder.add(Material.CHORUS_PLANT);
-        }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
-                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
-                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
-                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-                            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)) {
-                                builder.add(Material.MUD);
-                            }
-                            builder.add(Material.GLOW_LICHEN);
-                            builder.add(Material.GLOW_ITEM_FRAME);
-                            builder.add(Material.AZALEA);
-                            builder.add(Material.FLOWERING_AZALEA);
-                            builder.add(Material.TINTED_GLASS);
-                            builder.add(Material.CALCITE);
-                        }
-                        builder.add(Material.WARPED_WART_BLOCK);
-                        builder.add(Material.NETHER_WART_BLOCK);
-                        builder.add(Material.WARPED_NYLIUM);
-                        builder.add(Material.CRIMSON_NYLIUM);
-                    }
-                    builder.add(Material.HONEY_BLOCK);
-                }
-                builder.add(Material.BAMBOO);
-            }
-            builder.add(Material.TURTLE_EGG);
-            builder.add(Material.BROWN_MUSHROOM);
-            builder.add(Material.RED_MUSHROOM);
-            builder.add(Material.BROWN_MUSHROOM_BLOCK);
-            builder.add(Material.RED_MUSHROOM_BLOCK);
-            builder.add(Material.MUSHROOM_STEM);
-            builder.add(Material.CUT_SANDSTONE);
-            builder.add(Material.CUT_RED_SANDSTONE);
-            builder.add(Material.PODZOL);
-
-            for (Material m : materials) {
-                String s = m.toString();
-
-                if (startsWith(s, "INFESTED_")) {
-                    builder.add(m);
-                }
-            }
-        } else {
-            builder.add(Material.getMaterial("HUGE_MUSHROOM_1"));
-            builder.add(Material.getMaterial("HUGE_MUSHROOM_2"));
-        }
-        builder.add(Material.ITEM_FRAME);
-        builder.add(Material.LADDER);
-        builder.add(Material.TNT);
-        builder.add(Material.COCOA);
-        builder.add(Material.NETHERRACK);
-        builder.add(Material.GLASS);
-        builder.add(Material.SANDSTONE);
-        builder.add(Material.SANDSTONE_STAIRS);
-        builder.add(Material.QUARTZ_BLOCK);
-        builder.add(Material.QUARTZ_STAIRS);
-        builder.add(Material.SNOW);
-        builder.add(Material.SNOW_BLOCK);
-        builder.add(Material.SOUL_SAND);
-        builder.add(Material.PUMPKIN);
-        builder.add(MaterialUtils.get("lily_pad"));
-        builder.add(MaterialUtils.get("daylight_detector_1"));
-        builder.add(MaterialUtils.get("daylight_detector_2"));
-        builder.add(MaterialUtils.get("repeater_on"));
-        builder.add(MaterialUtils.get("repeater_off"));
-        builder.add(MaterialUtils.get("comparator_on"));
-        builder.add(MaterialUtils.get("comparator_off"));
-        builder.add(MaterialUtils.get("enchanting_table"));
-        sensitive = new HashSet<>(builder);
-
-        // Separator
-
-        builder.clear();
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
-            builder.add(Material.SCAFFOLDING);
-            builder.add(Material.WITHER_ROSE);
-            builder.add(Material.SWEET_BERRY_BUSH);
-            builder.add(Material.CORNFLOWER);
-            builder.add(Material.LILY_OF_THE_VALLEY);
-        } else {
-            builder.add(Material.getMaterial("SIGN"));
-        }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
-                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)) {
-                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)) {
-                            builder.add(Material.PINK_PETALS);
-                        }
-                        builder.add(Material.SCULK_VEIN);
-                    }
-                    builder.add(Material.GLOW_LICHEN);
-                    builder.add(Material.SPORE_BLOSSOM);
-                    builder.add(Material.HANGING_ROOTS);
-                    builder.add(Material.CAVE_VINES);
-                    builder.add(Material.CAVE_VINES_PLANT);
-                    builder.add(Material.POWDER_SNOW);
-                    builder.add(Material.LIGHT);
-                }
-                builder.add(Material.SOUL_TORCH);
-                builder.add(Material.SOUL_WALL_TORCH);
-                builder.add(Material.SOUL_FIRE);
-                builder.add(Material.TWISTING_VINES);
-                builder.add(Material.TWISTING_VINES_PLANT);
-                builder.add(Material.WEEPING_VINES);
-                builder.add(Material.WEEPING_VINES_PLANT);
-                builder.add(Material.WARPED_ROOTS);
-                builder.add(Material.CRIMSON_ROOTS);
-                builder.add(Material.WARPED_FUNGUS);
-                builder.add(Material.CRIMSON_FUNGUS);
-                builder.add(Material.NETHER_SPROUTS);
-            }
-            builder.add(Material.REDSTONE_TORCH);
-            builder.add(Material.REDSTONE_WALL_TORCH);
-            builder.add(Material.WALL_TORCH);
-            builder.add(Material.RAIL);
-            builder.add(Material.END_PORTAL);
-            builder.add(Material.NETHER_PORTAL);
-            builder.add(Material.MOVING_PISTON);
-            builder.add(Material.DANDELION);
-            builder.add(Material.POPPY);
-            builder.add(Material.SUGAR_CANE);
-            builder.add(Material.TALL_GRASS);
-            builder.add(Material.POTATOES);
-            builder.add(Material.CARROTS);
-            builder.add(Material.NETHER_WART);
-            builder.add(Material.ACTIVATOR_RAIL);
-            builder.add(Material.DETECTOR_RAIL);
-            builder.add(Material.POWERED_RAIL);
-            builder.add(Material.BEETROOT_SEEDS);
-            builder.add(Material.MELON_SEEDS);
-            builder.add(Material.PUMPKIN_SEEDS);
-            builder.add(Material.WHEAT);
-            builder.add(Material.WHEAT_SEEDS);
-            builder.add(Material.BUBBLE_COLUMN);
-            builder.add(Material.CAVE_AIR);
-            builder.add(Material.VOID_AIR);
-            builder.add(Material.KELP);
-            builder.add(Material.KELP_PLANT);
-            builder.add(Material.BEETROOTS);
-            builder.add(Material.GRASS);
-            builder.add(Material.FERN);
-            builder.add(Material.LARGE_FERN);
-            builder.add(Material.SUNFLOWER);
-            builder.add(Material.AZURE_BLUET);
-            builder.add(Material.ATTACHED_MELON_STEM);
-            builder.add(Material.ATTACHED_PUMPKIN_STEM);
-            builder.add(Material.ROSE_BUSH);
-            builder.add(Material.ALLIUM);
-            builder.add(Material.OXEYE_DAISY);
-            builder.add(Material.BLUE_ORCHID);
-            builder.add(Material.LILAC);
-            builder.add(Material.PEONY);
-            builder.add(Material.COBWEB);
-
-            for (Material m : materials) {
-                String s = m.toString();
-
-                if (endsWith(s, "_BUTTON") || !startsWith(s, "POTTED_") && (endsWith(s, "_SAPLING") || endsWith(s, "_TULIP"))) {
-                    builder.add(m);
-                }
-            }
-        } else {
-            builder.add(Material.getMaterial("REDSTONE_TORCH_ON"));
-            builder.add(Material.getMaterial("REDSTONE_TORCH_OFF"));
-            builder.add(Material.getMaterial("SEEDS"));
-            builder.add(Material.getMaterial("RAILS"));
-            builder.add(Material.getMaterial("ENDER_PORTAL"));
-            builder.add(Material.getMaterial("PORTAL"));
-            builder.add(Material.getMaterial("PISTON_MOVING_PIECE"));
-            builder.add(Material.getMaterial("CROPS"));
-            builder.add(Material.getMaterial("SIGN_POST"));
-            builder.add(Material.getMaterial("RED_ROSE"));
-            builder.add(Material.getMaterial("FLOWER"));
-            builder.add(Material.getMaterial("YELLOW_FLOWER"));
-            builder.add(Material.getMaterial("SUGAR_CANE_BLOCK"));
-            builder.add(Material.getMaterial("SAPLING"));
-            builder.add(Material.getMaterial("LONG_GRASS"));
-            builder.add(Material.getMaterial("NETHER_WARTS"));
-            builder.add(Material.getMaterial("DOUBLE_PLANT"));
-            builder.add(Material.getMaterial("NETHER_WARTS"));
-            builder.add(Material.getMaterial("WOOD_BUTTON"));
-            builder.add(Material.STONE_BUTTON);
-            builder.add(Material.getMaterial("WEB"));
-        }
-        for (Material m : materials) {
-            String s = m.toString();
-
-            if (endsWith(s, "_SIGN") && !contains(s, "_HANGING_")) {
-                builder.add(m);
-            }
-        }
-        builder.add(Material.SUGAR_CANE);
-        builder.add(Material.AIR);
-        builder.add(Material.BROWN_MUSHROOM);
-        builder.add(Material.RED_MUSHROOM);
-        builder.add(Material.TORCH);
-        builder.add(Material.TRIPWIRE);
-        builder.add(Material.TRIPWIRE_HOOK);
-        builder.add(Material.REDSTONE_WIRE);
-        builder.add(Material.ACTIVATOR_RAIL);
-        builder.add(Material.DETECTOR_RAIL);
-        builder.add(Material.POWERED_RAIL);
-        builder.add(Material.MELON_SEEDS);
-        builder.add(Material.PUMPKIN_SEEDS);
-        builder.add(Material.PUMPKIN_STEM);
-        builder.add(Material.MELON_STEM);
-        builder.add(Material.CARROT);
-        builder.add(Material.FIRE);
-        builder.add(Material.POTATO);
-        builder.add(Material.LEVER);
-        builder.add(Material.DEAD_BUSH);
-        builder.add(Material.VINE);
-        solid = new HashSet<>(builder);
 
         // Separator
 
@@ -909,6 +591,8 @@ public class BlockUtils {
             builder.add(Material.PLAYER_WALL_HEAD);
             builder.add(Material.ZOMBIE_HEAD);
             builder.add(Material.ZOMBIE_WALL_HEAD);
+        } else {
+            builder.add(Material.getMaterial("SKULL"));
         }
         heads = new HashSet<>(builder);
 
@@ -938,6 +622,8 @@ public class BlockUtils {
                     builder.add(m);
                 }
             }
+        } else {
+            builder.add(Material.getMaterial("MONSTER_EGG"));
         }
         egg = new HashSet<>(builder);
 
@@ -980,9 +666,8 @@ public class BlockUtils {
         // Separator
 
         builder.clear();
+        builder.add(Material.FLOWER_POT);
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            builder.add(Material.FLOWER_POT);
-
             for (Material m : materials) {
                 String s = m.toString();
 
@@ -1020,6 +705,472 @@ public class BlockUtils {
         // Separator
 
         builder.clear();
+        helper.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)) {
+                            helper.add(Material.SCULK_SENSOR);
+                            helper.add(Material.SCULK_SHRIEKER);
+                            helper.add(Material.MUD);
+                        }
+                        helper.add(Material.DIRT_PATH);
+                        helper.add(Material.LIGHTNING_ROD);
+                        helper.add(Material.POINTED_DRIPSTONE);
+                        helper.add(Material.SMALL_AMETHYST_BUD);
+                        helper.add(Material.MEDIUM_AMETHYST_BUD);
+                        helper.add(Material.LARGE_AMETHYST_BUD);
+                        helper.add(Material.AMETHYST_CLUSTER);
+                        helper.add(Material.POWDER_SNOW_CAULDRON);
+                        helper.add(Material.LAVA_CAULDRON);
+                        helper.add(Material.WATER_CAULDRON);
+                        helper.add(Material.CAVE_VINES);
+                        helper.add(Material.CAVE_VINES_PLANT);
+                    }
+                    helper.add(Material.SOUL_CAMPFIRE);
+                    helper.add(Material.TWISTING_VINES);
+                    helper.add(Material.TWISTING_VINES_PLANT);
+                    helper.add(Material.WEEPING_VINES);
+                    helper.add(Material.WEEPING_VINES_PLANT);
+                    helper.add(Material.CHAIN);
+                    helper.add(Material.SOUL_LANTERN);
+                }
+                helper.add(Material.BELL);
+                helper.add(Material.LANTERN);
+                helper.add(Material.CAMPFIRE);
+                helper.add(Material.COMPOSTER);
+                helper.add(Material.LECTERN);
+                helper.add(Material.GRINDSTONE);
+                helper.add(Material.STONECUTTER);
+                helper.add(Material.BAMBOO);
+            }
+            helper.add(Material.PISTON_HEAD);
+            helper.add(Material.COBBLESTONE_WALL);
+            helper.add(Material.MOSSY_COBBLESTONE_WALL);
+            helper.add(Material.IRON_BARS);
+            helper.add(Material.PISTON);
+            helper.add(Material.STICKY_PISTON);
+            helper.add(Material.COBWEB);
+            helper.add(Material.FARMLAND);
+            helper.add(Material.TURTLE_EGG);
+            helper.add(Material.CONDUIT);
+        } else {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                helper.add(Material.CHORUS_PLANT);
+                helper.add(Material.END_CRYSTAL);
+                helper.add(Material.END_ROD);
+                helper.add(Material.getMaterial("GRASS_PATH"));
+                helper.add(beetroot_block);
+            }
+            helper.add(Material.getMaterial("PISTON_EXTENSION"));
+            helper.add(Material.getMaterial("COBBLE_WALL"));
+            helper.add(Material.getMaterial("IRON_FENCE"));
+            helper.add(Material.getMaterial("SOIL"));
+            helper.add(Material.getMaterial("PISTON_BASE"));
+            helper.add(Material.getMaterial("PISTON_STICKY_BASE"));
+            helper.add(Material.getMaterial("WEB"));
+        }
+
+        for (Material m : materials) {
+            String s = m.toString();
+
+            if (endsWith(s, "_HANGING_SIGN")) {
+                helper.add(m);
+            }
+        }
+        helper.add(Material.COCOA);
+        helper.add(Material.DRAGON_EGG);
+        helper.add(Material.HOPPER);
+        helper.add(Material.FLOWER_POT);
+        helper.add(Material.BREWING_STAND);
+        helper.add(Material.CAULDRON);
+        helper.add(Material.LADDER);
+        helper.add(Material.VINE);
+        helper.add(Material.SNOW);
+        helper.add(Material.SNOW_BLOCK);
+        helper.add(Material.CACTUS);
+        helper.add(Material.SOUL_SAND);
+        helper.add(MaterialUtils.get("daylight_detector_1"));
+        helper.add(MaterialUtils.get("daylight_detector_2"));
+        helper.add(MaterialUtils.get("repeater_on"));
+        helper.add(MaterialUtils.get("repeater_off"));
+        helper.add(MaterialUtils.get("comparator_on"));
+        helper.add(MaterialUtils.get("comparator_off"));
+        helper.add(MaterialUtils.get("enchanting_table"));
+        helper.add(MaterialUtils.get("lily_pad"));
+        helper.add(MaterialUtils.get("end_portal_frame"));
+        helper.add(MaterialUtils.get("cake"));
+        
+        for (Material m : materials) {
+            if (areFenceGates(m)
+                    || areFences(m)
+                    || areStairs(m)
+                    || areSlabs(m)
+                    || areTrapdoors(m)
+                    || areDoors(m)
+                    || areStainedGlasses(m)
+                    || areChests(m)
+                    || arePlates(m)
+                    || areShulkerBoxes(m)
+                    || areLeaves(m)
+                    || areHeads(m)
+                    || areCoralFans(m)
+                    || areAnvils(m)
+                    || areCarpets(m)
+                    || areBeds(m)
+                    || areFlowerPots(m)
+                    || areCobbleWalls(m)
+                    || areCandles(m)
+                    || areCandleCakes(m)
+                    || isInteractiveAndPassable(m)
+                    || helper.contains(m)) {
+                builder.add(m);
+            }
+        }
+        semi_solid = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        for (Material m : materials) {
+            if (editable.contains(m)
+                    || areFenceGates(m)
+                    || areTrapdoors(m)
+                    || areChests(m)
+                    || areDoors(m)
+                    || areShulkerBoxes(m)
+                    || areBeds(m)
+                    || areAnvils(m)) {
+                builder.add(m);
+            }
+        }
+        changeable = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        helper.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
+            helper.add(Material.SCAFFOLDING);
+            helper.add(Material.WITHER_ROSE);
+            helper.add(Material.SWEET_BERRY_BUSH);
+            helper.add(Material.CORNFLOWER);
+            helper.add(Material.LILY_OF_THE_VALLEY);
+        } else {
+            helper.add(Material.getMaterial("SIGN"));
+        }
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)) {
+                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)) {
+                            helper.add(Material.PINK_PETALS);
+                        }
+                        helper.add(Material.SCULK_VEIN);
+                    }
+                    helper.add(Material.GLOW_LICHEN);
+                    helper.add(Material.SPORE_BLOSSOM);
+                    helper.add(Material.HANGING_ROOTS);
+                    helper.add(Material.CAVE_VINES);
+                    helper.add(Material.CAVE_VINES_PLANT);
+                    helper.add(Material.POWDER_SNOW);
+                    helper.add(Material.LIGHT);
+                }
+                helper.add(Material.SOUL_TORCH);
+                helper.add(Material.SOUL_WALL_TORCH);
+                helper.add(Material.SOUL_FIRE);
+                helper.add(Material.TWISTING_VINES);
+                helper.add(Material.TWISTING_VINES_PLANT);
+                helper.add(Material.WEEPING_VINES);
+                helper.add(Material.WEEPING_VINES_PLANT);
+                helper.add(Material.WARPED_ROOTS);
+                helper.add(Material.CRIMSON_ROOTS);
+                helper.add(Material.WARPED_FUNGUS);
+                helper.add(Material.CRIMSON_FUNGUS);
+                helper.add(Material.NETHER_SPROUTS);
+            }
+            helper.add(Material.REDSTONE_TORCH);
+            helper.add(Material.REDSTONE_WALL_TORCH);
+            helper.add(Material.WALL_TORCH);
+            helper.add(Material.RAIL);
+            helper.add(Material.END_PORTAL);
+            helper.add(Material.NETHER_PORTAL);
+            helper.add(Material.MOVING_PISTON);
+            helper.add(Material.DANDELION);
+            helper.add(Material.POPPY);
+            helper.add(Material.SUGAR_CANE);
+            helper.add(Material.TALL_GRASS);
+            helper.add(Material.POTATOES);
+            helper.add(Material.CARROTS);
+            helper.add(Material.NETHER_WART);
+            helper.add(Material.ACTIVATOR_RAIL);
+            helper.add(Material.DETECTOR_RAIL);
+            helper.add(Material.POWERED_RAIL);
+            helper.add(Material.BEETROOT_SEEDS);
+            helper.add(Material.MELON_SEEDS);
+            helper.add(Material.PUMPKIN_SEEDS);
+            helper.add(Material.WHEAT);
+            helper.add(Material.WHEAT_SEEDS);
+            helper.add(Material.BUBBLE_COLUMN);
+            helper.add(Material.CAVE_AIR);
+            helper.add(Material.VOID_AIR);
+            helper.add(Material.KELP);
+            helper.add(Material.KELP_PLANT);
+            helper.add(Material.BEETROOTS);
+            helper.add(Material.GRASS);
+            helper.add(Material.FERN);
+            helper.add(Material.LARGE_FERN);
+            helper.add(Material.SUNFLOWER);
+            helper.add(Material.AZURE_BLUET);
+            helper.add(Material.ATTACHED_MELON_STEM);
+            helper.add(Material.ATTACHED_PUMPKIN_STEM);
+            helper.add(Material.ROSE_BUSH);
+            helper.add(Material.ALLIUM);
+            helper.add(Material.OXEYE_DAISY);
+            helper.add(Material.BLUE_ORCHID);
+            helper.add(Material.LILAC);
+            helper.add(Material.PEONY);
+            helper.add(Material.COBWEB);
+
+            for (Material m : materials) {
+                String s = m.toString();
+
+                if (endsWith(s, "_BUTTON") || !startsWith(s, "POTTED_") && (endsWith(s, "_SAPLING") || endsWith(s, "_TULIP"))) {
+                    helper.add(m);
+                }
+            }
+        } else {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)) {
+                        helper.add(Material.STRUCTURE_VOID);
+                    }
+                    helper.add(Material.BEETROOT_SEEDS);
+                    helper.add(Material.END_GATEWAY);
+                }
+                helper.add(Material.ARMOR_STAND);
+            }
+            helper.add(Material.getMaterial("REDSTONE_TORCH_ON"));
+            helper.add(Material.getMaterial("REDSTONE_TORCH_OFF"));
+            helper.add(Material.getMaterial("SEEDS"));
+            helper.add(Material.getMaterial("RAILS"));
+            helper.add(Material.getMaterial("ENDER_PORTAL"));
+            helper.add(Material.getMaterial("PORTAL"));
+            helper.add(Material.getMaterial("PISTON_MOVING_PIECE"));
+            helper.add(Material.getMaterial("CROPS"));
+            helper.add(Material.getMaterial("SIGN_POST"));
+            helper.add(Material.getMaterial("RED_ROSE"));
+            helper.add(Material.getMaterial("FLOWER"));
+            helper.add(Material.getMaterial("YELLOW_FLOWER"));
+            helper.add(Material.getMaterial("SUGAR_CANE_BLOCK"));
+            helper.add(Material.getMaterial("SAPLING"));
+            helper.add(Material.getMaterial("LONG_GRASS"));
+            helper.add(Material.getMaterial("NETHER_WARTS"));
+            helper.add(Material.getMaterial("DOUBLE_PLANT"));
+            helper.add(Material.getMaterial("NETHER_WARTS"));
+            helper.add(Material.getMaterial("WOOD_BUTTON"));
+            helper.add(Material.STONE_BUTTON);
+            helper.add(Material.getMaterial("WEB"));
+        }
+        for (Material m : materials) {
+            String s = m.toString();
+
+            if (endsWith(s, "_SIGN") && !contains(s, "_HANGING_")) {
+                helper.add(m);
+            }
+        }
+        helper.add(Material.SUGAR_CANE);
+        helper.add(Material.AIR);
+        helper.add(Material.BROWN_MUSHROOM);
+        helper.add(Material.RED_MUSHROOM);
+        helper.add(Material.TORCH);
+        helper.add(Material.TRIPWIRE);
+        helper.add(Material.TRIPWIRE_HOOK);
+        helper.add(Material.REDSTONE_WIRE);
+        helper.add(Material.ACTIVATOR_RAIL);
+        helper.add(Material.DETECTOR_RAIL);
+        helper.add(Material.POWERED_RAIL);
+        helper.add(Material.MELON_SEEDS);
+        helper.add(Material.PUMPKIN_SEEDS);
+        helper.add(Material.PUMPKIN_STEM);
+        helper.add(Material.MELON_STEM);
+        helper.add(Material.CARROT);
+        helper.add(Material.FIRE);
+        helper.add(Material.POTATO);
+        helper.add(Material.LEVER);
+        helper.add(Material.DEAD_BUSH);
+        helper.add(Material.VINE);
+
+        for (Material m : materials) {
+            if (!areFenceGates(m)
+                    && !areTrapdoors(m)
+                    && !arePlates(m)
+                    && !isLiquid(m)
+                    && !areDripLeafs(m)
+                    && !areBanners(m)
+                    && !helper.contains(m)) {
+                builder.add(m);
+            }
+        }
+        solid = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        helper.clear();
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            helper.add(Material.END_CRYSTAL);
+            helper.add(Material.CHORUS_PLANT);
+        }
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
+                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+                            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)) {
+                                helper.add(Material.MUD);
+                            }
+                            helper.add(Material.GLOW_LICHEN);
+                            helper.add(Material.GLOW_ITEM_FRAME);
+                            helper.add(Material.AZALEA);
+                            helper.add(Material.FLOWERING_AZALEA);
+                            helper.add(Material.TINTED_GLASS);
+                            helper.add(Material.CALCITE);
+                        }
+                        helper.add(Material.WARPED_WART_BLOCK);
+                        helper.add(Material.NETHER_WART_BLOCK);
+                        helper.add(Material.WARPED_NYLIUM);
+                        helper.add(Material.CRIMSON_NYLIUM);
+                    }
+                    helper.add(Material.HONEY_BLOCK);
+                }
+                helper.add(Material.BAMBOO);
+            }
+            helper.add(Material.TURTLE_EGG);
+            helper.add(Material.BROWN_MUSHROOM);
+            helper.add(Material.RED_MUSHROOM);
+            helper.add(Material.BROWN_MUSHROOM_BLOCK);
+            helper.add(Material.RED_MUSHROOM_BLOCK);
+            helper.add(Material.MUSHROOM_STEM);
+            helper.add(Material.CUT_SANDSTONE);
+            helper.add(Material.CUT_RED_SANDSTONE);
+            helper.add(Material.PODZOL);
+
+            for (Material m : materials) {
+                String s = m.toString();
+
+                if (startsWith(s, "INFESTED_")) {
+                    helper.add(m);
+                }
+            }
+        } else {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)) {
+                        helper.add(magma);
+                    }
+                    helper.add(Material.END_ROD);
+                    helper.add(beetroot_block);
+                }
+                helper.add(Material.SLIME_BLOCK);
+                helper.add(Material.RED_SANDSTONE);
+                helper.add(Material.RED_SANDSTONE_STAIRS);
+            }
+            helper.add(Material.getMaterial("HUGE_MUSHROOM_1"));
+            helper.add(Material.getMaterial("HUGE_MUSHROOM_2"));
+        }
+        helper.add(Material.ITEM_FRAME);
+        helper.add(Material.LADDER);
+        helper.add(Material.TNT);
+        helper.add(Material.COCOA);
+        helper.add(Material.NETHERRACK);
+        helper.add(Material.GLASS);
+        helper.add(Material.SANDSTONE);
+        helper.add(Material.SANDSTONE_STAIRS);
+        helper.add(Material.QUARTZ_BLOCK);
+        helper.add(Material.QUARTZ_STAIRS);
+        helper.add(Material.SNOW);
+        helper.add(Material.SNOW_BLOCK);
+        helper.add(Material.SOUL_SAND);
+        helper.add(Material.PUMPKIN);
+        helper.add(MaterialUtils.get("lily_pad"));
+        helper.add(MaterialUtils.get("daylight_detector_1"));
+        helper.add(MaterialUtils.get("daylight_detector_2"));
+        helper.add(MaterialUtils.get("repeater_on"));
+        helper.add(MaterialUtils.get("repeater_off"));
+        helper.add(MaterialUtils.get("comparator_on"));
+        helper.add(MaterialUtils.get("comparator_off"));
+        helper.add(MaterialUtils.get("enchanting_table"));
+
+        for (Material m : materials) {
+            if (!isSolid(m)
+                    || areGlasses(m)
+                    || areStainedGlasses(m)
+                    || areIceBlocks(m)
+                    || areCoralFans(m)
+                    || areLeaves(m)
+                    || areHeads(m)
+                    || areBeds(m)
+                    || areCarpets(m)
+                    || areFlowerPots(m)
+                    || isLiquid(m)
+                    || isScaffoldingBlock(m)
+                    || isPowderSnow(m)
+                    || areDripLeafs(m)
+                    || areCandles(m)
+                    || areCandleCakes(m)
+                    || helper.contains(m)) {
+                builder.add(m);
+            }
+        }
+        sensitive = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        helper.clear();
+
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+                        helper.add(Material.LIGHTNING_ROD);
+                    }
+                    helper.add(Material.CHAIN);
+                }
+                helper.add(Material.HONEY_BLOCK);
+            }
+            helper.add(Material.CHORUS_PLANT);
+            helper.add(Material.END_ROD);
+        }
+        helper.add(Material.CACTUS);
+        helper.add(Material.COCOA);
+        helper.add(Material.DRAGON_EGG);
+        helper.add(iron_bars);
+        helper.add(cake);
+        helper.add(head);
+
+        for (Material m : materials) {
+            if (areStainedGlasses(m)
+                    || areDoors(m)
+                    || areTrapdoors(m)
+                    || areChests(m)
+                    || areFences(m)
+                    || areFenceGates(m)
+                    || areCobbleWalls(m)
+                    || areFlowerPots(m)
+                    || areAnvils(m)
+                    || helper.contains(m)) {
+                builder.add(m);
+            }
+        }
+        walls = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        helper.clear();
     }
 
     public static float getBreakSpeed(SpartanBlock block, SpartanPlayer player) {
@@ -1038,11 +1189,11 @@ public class BlockUtils {
     }
 
     public static boolean areCandles(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && candle.contains(m);
+        return candle.contains(m);
     }
 
     public static boolean areCandleCakes(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && candleCake.contains(m);
+        return candleCake.contains(m);
     }
 
     public static boolean isScaffoldingBlock(Material m) {
@@ -1050,33 +1201,15 @@ public class BlockUtils {
     }
 
     public static boolean areWalls(Material m) {
-        return areStainedGlasses(m)
-                || areDoors(m)
-                || areTrapdoors(m)
-                || areChests(m)
-                || areFences(m)
-                || areFenceGates(m)
-                || areCobbleWalls(m)
-                || m == iron_bars
-                || areAnvils(m)
-                || m == Material.CACTUS
-                || m == cake
-                || m == Material.COCOA
-                || m == head
-                || areFlowerPots(m)
-                || m == Material.DRAGON_EGG
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && m == Material.HONEY_BLOCK
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && (m == Material.CHORUS_PLANT || m == Material.END_ROD)
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.CHAIN
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.LIGHTNING_ROD;
+        return walls.contains(m);
     }
 
     public static boolean areHeads(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? heads.contains(m) : m == Material.getMaterial("SKULL");
+        return heads.contains(m);
     }
 
     public static boolean areFlowerPots(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? pot.contains(m) : m == Material.FLOWER_POT;
+        return pot.contains(m);
     }
 
     // Local due to Waterlogged block incompatibilities
@@ -1113,15 +1246,15 @@ public class BlockUtils {
     }
 
     public static boolean areCarpets(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? carpet.contains(m) : m == Material.getMaterial("CARPET");
+        return carpet.contains(m);
     }
 
     public static boolean areBeds(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? bed.contains(m) : m == Material.getMaterial("BED_BLOCK");
+        return bed.contains(m);
     }
 
     public static boolean areEggs(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? egg.contains(m) : m == Material.getMaterial("MONSTER_EGG");
+        return egg.contains(m);
     }
 
     public static boolean areTrapdoors(Material m) {
@@ -1141,7 +1274,7 @@ public class BlockUtils {
     }
 
     public static boolean areDripLeafs(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && dripleaf.contains(m);
+        return dripleaf.contains(m);
     }
 
     public static boolean areAnvils(Material m) {
@@ -1192,6 +1325,10 @@ public class BlockUtils {
         return shulker_box.contains(m);
     }
 
+    public static boolean areBanners(Material m) {
+        return banner.contains(m);
+    }
+
     public static boolean areCoralFans(Material m) {
         return coral_fan.contains(m);
     }
@@ -1212,8 +1349,12 @@ public class BlockUtils {
         return wood.contains(m);
     }
 
+    public static boolean isChangeable(Material m) {
+        return changeable.contains(m);
+    }
+
     public static boolean areConcrete(Material m) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12) && concrete.contains(m);
+        return concrete.contains(m);
     }
 
     public static boolean areInteractiveBushes(Material m) {
@@ -1225,34 +1366,7 @@ public class BlockUtils {
     }
 
     public static boolean isSensitive(Material m, long time) {
-        if (time >= 0L && time <= 250L) {
-            return true;
-        }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            if (m == Material.SLIME_BLOCK || m == Material.RED_SANDSTONE || m == Material.RED_SANDSTONE_STAIRS) {
-                return true;
-            }
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && (m == Material.END_ROD || m == beetroot_block || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) && m == magma)) {
-                return true;
-            }
-        }
-        return !isSolid(m)
-                || areGlasses(m)
-                || areStainedGlasses(m)
-                || sensitive.contains(m)
-                || areIceBlocks(m)
-                || areCoralFans(m)
-                || areLeaves(m)
-                || areHeads(m)
-                || areBeds(m)
-                || areCarpets(m)
-                || areFlowerPots(m)
-                || isLiquid(m)
-                || isScaffoldingBlock(m)
-                || isPowderSnow(m)
-                || areDripLeafs(m)
-                || areCandles(m)
-                || areCandleCakes(m);
+        return time >= 0L && time <= 250L || sensitive.contains(m);
     }
 
     public static boolean isSensitive(SpartanPlayer p, Material m) {
@@ -1264,48 +1378,21 @@ public class BlockUtils {
     }
 
     public static boolean isSolid(Material m) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            if (m == Material.ARMOR_STAND || banner.contains(m)
-                    || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && (m == Material.BEETROOT_SEEDS || m == Material.END_GATEWAY
-                    || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) && m == Material.STRUCTURE_VOID)) {
-                return false;
-            }
-        }
-        return !(areFenceGates(m) || areTrapdoors(m) || arePlates(m) || isLiquid(m) || areDripLeafs(m) || solid.contains(m));
+        return solid.contains(m);
+    }
+
+    public static boolean isFullSolid(Material m) {
+        return isSolid(m) && !isSemiSolid(m);
+    }
+
+    public static boolean isSemiSolid(Material m) {
+        return semi_solid.contains(m);
     }
 
     // Separator
 
     public static String blockToString(SpartanBlock b) {
         return materialToString(b.getBlock().getType());
-    }
-
-    public static String getIllegalLocationInfo(SpartanPlayer p, SpartanLocation entityLocation, double minDistance) {
-        SpartanLocation playerLocation = p.getLocation();
-        double realDistance = playerLocation.distance(entityLocation);
-
-        if (realDistance <= 6.0) {
-            SpartanBlock realBlock = entityLocation.getBlock();
-            double eyeHeight = p.getEyeHeight();
-
-            for (double i = 0.0; i <= realDistance; i++) {
-                SpartanLocation targetLocation = playerLocation.clone().add(0, eyeHeight, 0).add(playerLocation.getDirection().multiply(i));
-                double targetDistance = playerLocation.distance(targetLocation);
-
-                if (targetDistance >= minDistance) {
-                    SpartanBlock targetBlock = targetLocation.getBlock();
-                    double distanceDifference = playerLocation.distance(realBlock.getLocation()) - playerLocation.distance(targetBlock.getLocation());
-
-                    if (targetDistance < realDistance && Math.abs(targetDistance - eyeHeight) >= 0.01
-                            && distanceDifference >= 0.4
-                            && targetLocation.getBlockY() >= playerLocation.getY()
-                            && isFullSolid(targetLocation, false)) {
-                        return "real-dis: " + realDistance + ", tar-dis: " + targetDistance + ", dis-diff: " + distanceDifference + ", tar-b: " + blockToString(targetBlock);
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public static String materialToString(Material m) {
@@ -1454,6 +1541,10 @@ public class BlockUtils {
         return areConcrete(loc.getBlock().getType());
     }
 
+    public static boolean areBanners(SpartanLocation loc) {
+        return areBanners(loc.getBlock().getType());
+    }
+
     public static boolean isSensitive(SpartanLocation loc, long time) {
         return isSensitive(loc.getBlock().getType(), time);
     }
@@ -1467,55 +1558,12 @@ public class BlockUtils {
         return p != null ? isSensitive(p, loc.getBlock().getType()) : isSensitive(loc.getBlock().getType());
     }
 
-    public static boolean isFullSolid(Material m, boolean util) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && m == Material.SLIME_BLOCK
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && (m == Material.END_ROD || m == Material.getMaterial("GRASS_PATH") || m == beetroot_block)
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && m == Material.HONEY_BLOCK
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.DIRT_PATH) {
-            return false;
-        }
-        return (!util || isSolid(m)) && !isSemiSolid(m);
-    }
-
-    public static boolean isSemiSolid(Material m) {
-        return areFenceGates(m)
-                || areFences(m)
-                || areStairs(m)
-                || areSlabs(m)
-                || areTrapdoors(m)
-                || areDoors(m)
-                || areStainedGlasses(m)
-                || areChests(m)
-                || arePlates(m)
-                || areShulkerBoxes(m)
-                || areLeaves(m)
-                || areHeads(m)
-                || areCoralFans(m)
-                || areAnvils(m)
-                || areCarpets(m)
-                || areBeds(m)
-                || areFlowerPots(m)
-                || areCobbleWalls(m)
-                || areCandles(m)
-                || areCandleCakes(m)
-                || isInteractiveAndPassable(m)
-                || full_solid.contains(m);
-    }
-
-    public static boolean isFullSolid(SpartanLocation loc, boolean util) {
-        return isFullSolid(loc.getBlock().getType(), util);
+    public static boolean isFullSolid(SpartanLocation loc) {
+        return isFullSolid(loc.getBlock().getType());
     }
 
     public static boolean isChangeable(SpartanLocation loc) {
-        Material m = loc.getBlock().getType();
-        return editable.contains(m)
-                || areFenceGates(m)
-                || areTrapdoors(m)
-                || areChests(m)
-                || areDoors(m)
-                || areShulkerBoxes(m)
-                || areBeds(m)
-                || areAnvils(m);
+        return isChangeable(loc.getBlock().getType());
     }
 
     public static boolean isAnvilBugged(SpartanLocation loc) {
@@ -1538,15 +1586,6 @@ public class BlockUtils {
     public static boolean isLiquidFree(SpartanLocation loc, double x, double y, double z) {
         for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
             if (isLiquid(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isLiquidSurrounded(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z, true)) {
-            if (!isLiquid(locs)) {
                 return false;
             }
         }
@@ -1603,17 +1642,6 @@ public class BlockUtils {
         return true;
     }
 
-    public static boolean isInteractiveAndPassThruFree(SpartanLocation loc, double x, double y, double z) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
-            for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z, true)) {
-                if (isInteractiveAndPassable(locs.getBlock().getType())) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     public static boolean isInteractiveBushFree(SpartanLocation loc, double x, double y, double z) {
         for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
             if (areInteractiveBushes(locs)) {
@@ -1647,18 +1675,9 @@ public class BlockUtils {
         return false;
     }
 
-    public static boolean isNonSolidFree(SpartanLocation loc, double x, double y, double z) {
+    public static boolean isSemiSolidFree(SpartanLocation loc, double x, double y, double z) {
         for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (!isFullSolid(locs, false)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isNonSolidAndAirFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (!isFullSolid(locs, true)) {
+            if (isSemiSolid(locs)) {
                 return false;
             }
         }
@@ -1701,15 +1720,6 @@ public class BlockUtils {
         return true;
     }
 
-    public static boolean isHeadFree(SpartanPlayer p, SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areHeads(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static boolean areWallsAround(SpartanLocation loc, double x, double y, double z) {
         for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
             if (areWalls(locs)) {
@@ -1733,16 +1743,7 @@ public class BlockUtils {
     }
 
     public static boolean isSolid(SpartanLocation loc) {
-        Material m = loc.getBlock().getType();
-
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            if (m == Material.ARMOR_STAND || banner.contains(m)
-                    || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && (m == Material.BEETROOT_SEEDS || m == Material.END_GATEWAY
-                    || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) && m == Material.STRUCTURE_VOID)) {
-                return false;
-            }
-        }
-        return !(areFenceGates(loc) || isLiquid(loc) || solid.contains(m));
+        return solid.contains(loc.getBlock().getType());
     }
 
     public static boolean isSemiSolid(SpartanLocation loc) {

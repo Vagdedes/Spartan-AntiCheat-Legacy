@@ -56,7 +56,7 @@ public class Raytrace {
                                     || raytracedLocationY != block.getY()
                                     || raytracedLocationZ != block.getZ()) {
                                 block = raytracedLocation.getBlock();
-                                fullSolid = BlockUtils.isFullSolid(block.getType(), true);
+                                fullSolid = BlockUtils.isFullSolid(block.getType());
                             }
 
                             if (fullSolid) {

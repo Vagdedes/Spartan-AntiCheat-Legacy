@@ -29,7 +29,7 @@ public class IrregularMovementsDownwards {
                 boolean semiSolidFree = true;
 
                 for (int i = -1; i <= 1; i++) {
-                    if (!BlockUtils.isNonSolidFree(to, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
+                    if (!BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
                         semiSolidFree = false;
                         break;
                     }

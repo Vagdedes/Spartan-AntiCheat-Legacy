@@ -4,7 +4,6 @@ import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.ViolationResetEvent;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
-import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;

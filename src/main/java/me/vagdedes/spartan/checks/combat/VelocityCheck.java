@@ -158,7 +158,7 @@ public class VelocityCheck {
             if (local) {
                 for (int i = -1; i <= 2; i++) {
                     if ((i >= 1 ? BlockUtils.isSolid(loc.clone().add(0, i, 0)) : loc.clone().add(0, i, 0).isBlock(web, BlockUtils.hitbox_max))
-                            || !BlockUtils.isNonSolidFree(loc, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
+                            || !BlockUtils.isSemiSolidFree(loc, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
                         return false;
                     }
                 }

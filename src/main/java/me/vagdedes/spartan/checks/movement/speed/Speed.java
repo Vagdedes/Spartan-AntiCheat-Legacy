@@ -32,6 +32,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Speed {
@@ -144,7 +145,7 @@ public class Speed {
             } else {
                 dm = cacheLimit(decimals, dm, blocks, 15);
             }
-        } else if (BlockUtils.isFullSolid(loc1, true)) {
+        } else if (BlockUtils.isFullSolid(loc1)) {
             reason = "solid";
             dm = cacheLimit(decimals, dm, solid, 10);
         } else if (oldVer == 0.0 && ver == 0.0 || (ver - oldVer) == 0.0 && (!groundVanilla || !groundCustom)) {
@@ -313,7 +314,7 @@ public class Speed {
                     boolean allow = true;
 
                     for (int i = -1; i <= 1; i++) {
-                        if (!BlockUtils.isNonSolidFree(to, 1, i, 1)) {
+                        if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
                             allow = false;
                             break;
                         }
@@ -382,7 +383,7 @@ public class Speed {
                     }
                     if (groundCustom && hor >= (dmCopy * (AlgebraUtils.oneThird * 2.0))
                             && buffer.canDo(reasonCopy)
-                            && BlockUtils.isNonSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
+                            && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
                             && !BlockUtils.isIceBlockFree(to, 0, -1, 0)
                             && buffer.start("ice_speed", 10) == 4) {
                         buffer.remove("ice_speed");
@@ -402,7 +403,7 @@ public class Speed {
 
                     if (dmCopy == Speed.air || dmCopy == ground_jump_speed) {
                         for (int i = -1; i <= 1; i++) {
-                            if (!BlockUtils.isNonSolidFree(to, 1, i, 1)) {
+                            if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
                                 allow = false;
                                 break;
                             }
@@ -421,7 +422,7 @@ public class Speed {
 
                         if (hor >= 0.215 && illegal && !fairlyPushed && air <= 12 && !p.isOnFire() && !BouncingBlocks.isBelow(p) && !building) {
                             cancel(p, from, "type: fall-distance(illegal), horizontal: " + hor + ", limit: " + dmCopy + ", fall-distance: " + fallDistance + ", a: " + air + ", box: " + box + ", vertical: " + ver);
-                        } else if (hor > 0.335 && fallDistance > 0.0f && (!groundVanilla || !groundCustom) && BlockUtils.isFullSolid(locM1, false)) {
+                        } else if (hor > 0.335 && fallDistance > 0.0f && (!groundVanilla || !groundCustom) && !BlockUtils.isSemiSolid(locM1)) {
                             cancel(p, from, "type: fall-distance(normal), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver);
 
                         } else if (groundCustom && hor >= 0.36 && fallDistance == 0.0f && GroundUtils.isZeroMiscalculation(box)) {
@@ -460,7 +461,7 @@ public class Speed {
 
                     if (allow) {
                         for (int i = -1; i <= 1; i++) {
-                            if (!BlockUtils.isNonSolidFree(to, 1, i, 1)) {
+                            if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
                                 allow = false;
                                 break;
                             }
@@ -585,8 +586,8 @@ public class Speed {
                 || PlayerData.isOnGround(p, to, 0, -1.5, 0))) {
             // Combined Step Blocks (Not using hitbox_max due to ascension imperfections)
             if ((dm == air || dm == air_non_solid_min || dm == air_non_solid_max) && air_ticks == 0 && (dy > 0.5 || jumping)
-                    && (!BlockUtils.isNonSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                    || !BlockUtils.isNonSolidFree(to, BlockUtils.hitbox, -1, BlockUtils.hitbox))) {
+                    && (!BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
+                    || !BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, -1, BlockUtils.hitbox))) {
                 reason = "upwards(combined)";
                 dm = cacheLimit(decimals, dm, upwards, 10);
             } else if (!jumping) {
@@ -596,7 +597,7 @@ public class Speed {
                 boolean nonSolidFree = false;
 
                 for (SpartanLocation customs : custom.getSurroundingLocations(BlockUtils.hitbox, 0, BlockUtils.hitbox)) {
-                    if (BlockUtils.isFullSolid(customs, true)) {
+                    if (BlockUtils.isFullSolid(customs)) {
                         nonSolidFree = true;
                         break;
                     }
@@ -773,7 +774,7 @@ public class Speed {
         if (can) {
             for (int i = 0; i <= (1 - remaining); i++) {
                 for (SpartanLocation directionalLoc : loc.getSurroundingLocations(1, i, 1)) {
-                    if (BlockUtils.isFullSolid(directionalLoc, true)) {
+                    if (BlockUtils.isFullSolid(directionalLoc)) {
                         return false;
                     }
                 }
@@ -784,21 +785,24 @@ public class Speed {
 
     private static double getAverageSprintingSpeedDifference() {
         if (SpartanBukkit.isProductionServer()) {
-            String key = "average=sprinting=speed";
-            double summary = 0.0;
-            int count = 0;
+            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            for (SpartanPlayer p : SpartanBukkit.getPlayers()) {
-                Decimals decimals = p.getDecimals(check);
-                double d = decimals.get(key);
+            if (players.size() > 0) {
+                String key = "average=sprinting=speed";
+                double summary = 0.0;
+                int count = 0;
 
-                if (decimals.has(d) && !p.getProfile().isSuspectedOrHacker(check)) {
-                    count++;
-                    summary += d;
+                for (SpartanPlayer p : players) {
+                    double d = p.getDecimals(check).get(key, 0.0);
+
+                    if (d != 0.0 && !p.getProfile().isSuspectedOrHacker(check)) {
+                        count++;
+                        summary += d;
+                    }
                 }
-            }
-            if (count > 0) {
-                return (summary / ((double) count)) - MovementProcessing.sprintingMaxSpeed;
+                if (count > 0) {
+                    return (summary / ((double) count)) - MovementProcessing.sprintingMaxSpeed;
+                }
             }
         }
         return 0.0;

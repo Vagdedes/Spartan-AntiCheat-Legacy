@@ -16,8 +16,8 @@ public class IrregularMovementsInsideBlocks {
                     SpartanLocation to1 = to.clone().add(0, 1, 0);
                     SpartanLocation from1 = from.clone().add(0, 1, 0);
 
-                    if ((BlockUtils.isFullSolid(to, true) || BlockUtils.isFullSolid(to1, true)) // Make sure new blocks are solid
-                            && (BlockUtils.isFullSolid(from, true) || BlockUtils.isFullSolid(from1, true))) {  // Make sure old blocks were solid
+                    if ((BlockUtils.isFullSolid(to) || BlockUtils.isFullSolid(to1)) // Make sure new blocks are solid
+                            && (BlockUtils.isFullSolid(from) || BlockUtils.isFullSolid(from1))) {  // Make sure old blocks were solid
                         String extra = "to: [" + BlockUtils.materialToString(to.getBlock().getType()) + ", " + BlockUtils.materialToString(to1.getBlock().getType()) + "]"
                                 + ", from: [" + BlockUtils.materialToString(from.getBlock().getType()) + ", " + BlockUtils.materialToString(from1.getBlock().getType()) + "]";
                         IrregularMovements.cancel(p, from, prevention, "inside-blocks", extra, knownBoxes ? 1 : 2, -IrregularMovements.defaultBufferTime);

@@ -22,14 +22,14 @@ public class IrregularMovementsLiquids {
                             && BlockUtils.isSolidFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
                             && BlockUtils.isSolidFree(from, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
 
-                            && BlockUtils.isNonSolidFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
-                            && BlockUtils.isNonSolidFree(from, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
+                            && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
+                            && BlockUtils.isSemiSolidFree(from, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
 
                             && BlockUtils.isWaterLogFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
                             && BlockUtils.isWaterLogFree(from, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
 
-                            && BlockUtils.isNonSolidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                            && BlockUtils.isNonSolidFree(from, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
+                            && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
+                            && BlockUtils.isSemiSolidFree(from, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
 
                             && BlockUtils.isWaterLogFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
                             && BlockUtils.isWaterLogFree(from, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)) {
