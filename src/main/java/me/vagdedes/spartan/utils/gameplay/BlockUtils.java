@@ -11,16 +11,13 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class BlockUtils {
 
     private static final Material
             water = MaterialUtils.get("water"),
             lava = MaterialUtils.get("lava"),
-            web = MaterialUtils.get("web"),
             head = MaterialUtils.get("head"),
             iron_bars = MaterialUtils.get("iron_bars"),
             cake = MaterialUtils.get("cake"),
@@ -28,11 +25,11 @@ public class BlockUtils {
             beetroot_block = MaterialUtils.get("beetroot_block");
 
     private static Method getBreakSpeed = null;
-    static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, step, climbable,
+    public static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, step, climbable,
             door, entity_blocks, trap_door, liquid, banner, carpet, bed, shulker_box, stairs, fence, fence_gate, heads, leaves, egg,
             coral_fan, pot, anvil, cobble_walls, terracotta, concrete, candle, candleCake, dripleaf, ores, wood, wool, wire,
             semi_solid, changeable, walls, interactive_bushes, scaffolding, interactive_snow, interactive_and_passable,
-            honey_block;
+            honey_block, web;
 
     public static final double
             hitbox_extra = 0.35,
@@ -153,6 +150,12 @@ public class BlockUtils {
             builder.add(Material.getMaterial("WOOD_PLATE"));
         }
         plate = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        builder.add(MaterialUtils.get("web"));
+        web = new HashSet<>(builder);
 
         // Separator
 
@@ -1366,7 +1369,7 @@ public class BlockUtils {
     }
 
     public static boolean areWebs(Material m) {
-        return m == web;
+        return web.contains(m);
     }
 
     public static boolean areShulkerBoxes(Material m) {
@@ -1718,7 +1721,7 @@ public class BlockUtils {
         if (center && !isSolid(loc.clone().add(0, y, 0))) {
             return true;
         }
-        List<SpartanLocation> list = loc.getSurroundingLocations(x, y, z, true);
+        List<SpartanLocation> list = new ArrayList<>(Arrays.asList(loc.getSurroundingLocations(x, y, z, true)));
         list.remove(0);
 
         for (SpartanLocation locs : list) {
@@ -1797,7 +1800,7 @@ public class BlockUtils {
     }
 
     public static boolean isSolid(SpartanLocation loc) {
-        return solid.contains(loc.getBlock().getType());
+        return isSolid(loc.getBlock().getType());
     }
 
     public static boolean isSemiSolid(SpartanLocation loc) {

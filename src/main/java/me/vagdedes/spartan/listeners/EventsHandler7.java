@@ -84,8 +84,19 @@ public class EventsHandler7 implements Listener {
     }
 
     private static void clear(SpartanPlayer p, Decimals decimals) {
-        for (String key : cache) {
-            decimals.clear(key);
+        Entity vehicle = p.getVehicle();
+
+        if (vehicle != null) {
+            String vehicleKey = Integer.toString(vehicle.getEntityId());
+
+            for (String key : cache) {
+                decimals.remove(key);
+                decimals.remove(key + vehicleKey);
+            }
+        } else {
+            for (String key : cache) {
+                decimals.remove(key);
+            }
         }
         if (p != null) {
             Cache.clearCheckCache(p, handledChecks);
@@ -260,6 +271,7 @@ public class EventsHandler7 implements Listener {
         // Values
         int air = p.getTicksOnAir();
         Entity vehicle = p.getVehicle();
+        boolean hasVehicle = vehicle != null;
 
         // Features
         if (Debug.canRun()) {
@@ -269,7 +281,7 @@ public class EventsHandler7 implements Listener {
                     + "remaining: " + AlgebraUtils.cut(rem, 5) + ", "
                     + "air-ticks: " + air + ", "
                     + "ground(vanilla/custom): " + p.isOnGround() + "/" + p.isOnGroundCustom()
-                    + (vehicle == null ? "" : ", vehicle: " + CombatUtils.entityToString(vehicle)));
+                    + (hasVehicle ? "" : ", vehicle: " + CombatUtils.entityToString(vehicle)));
         }
 
         // Utils
@@ -285,7 +297,7 @@ public class EventsHandler7 implements Listener {
         }
 
         if (heavyMovementChecks) {
-            String vehicleKey = vehicle != null ? Integer.toString(vehicle.getEntityId()) : "";
+            String vehicleKey = hasVehicle ? Integer.toString(vehicle.getEntityId()) : "";
 
             if (checkPlayer && (firstTick || repetition || tick <= 3)) {
                 double oVer = decimals.get(verticalCache + vehicleKey, 0.0),

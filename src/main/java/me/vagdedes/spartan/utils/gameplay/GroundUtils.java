@@ -377,7 +377,9 @@ public class GroundUtils {
                 box = Math.max(CombatUtils.getWidthAndHeight((LivingEntity) vehicle)[0], box);
             }
         }
-        array.addAll(loc.getSurroundingLocations(box, correctY, box)); // Attention: removed "all" argument that was set to "true" recently
+        for (SpartanLocation surroundingLocation : loc.getSurroundingLocations(box, correctY, box)) { // Attention: removed "all" argument that was set to "true" recently
+                array.add(surroundingLocation);
+        }
         return array;
     }
 

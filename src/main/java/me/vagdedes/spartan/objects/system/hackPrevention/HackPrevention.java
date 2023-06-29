@@ -301,7 +301,7 @@ public class HackPrevention {
                                 canPrevent = false;
                                 canPreventAlternative = violations > 0  // Testing scenario
                                         && !check.hasMaximumDefaultCancelViolation()
-                                        && Check.getLastViolation(uuid, true) <= Check.violationCycleSeconds
+                                        && playerProfile.getLastInteraction().getLastViolation(true) <= Check.violationCycleSeconds
                                         && !SpartanBukkit.isProductionServer()
                                         && DetectionNotifications.isEnabled(player)
                                         && ResearchEngine.getFalsePositives(hackType, dataType).size() == 0;
@@ -342,11 +342,13 @@ public class HackPrevention {
                                     case 1:
                                         playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
                                         violationsObject.setLevel(violations);
+                                        playerProfile.setLastInteraction(violationsObject); // Always after interacting with object
                                         Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         Moderation.performPunishments(player, hackType, violations, dataType);
                                         break;
                                     case 0:
                                         playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
+                                        playerProfile.setLastInteraction(violationsObject); // Always after interacting with object
                                         Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         break;
                                     default:
@@ -384,6 +386,21 @@ public class HackPrevention {
             default:
                 return violations >= CancelViolation.get(hackType, dataType);
         }
+    }
+
+    public static boolean hasCooldown(UUID uuid) {
+        Map<Enums.HackType, Long> cooldowns = hc.get(uuid);
+
+        if (cooldowns != null && cooldowns.size() > 0) {
+            long ms = System.currentTimeMillis();
+
+            for (Map.Entry<Enums.HackType, Long> entry : cooldowns.entrySet()) {
+                if (entry.getValue() > ms) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static Enums.HackType getCooldown(UUID uuid, Enums.HackType[] hackTypes) {

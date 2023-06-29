@@ -29,8 +29,8 @@ public class DetectionLocation {
 
                     && (greatDistance
                     || p.getTimer().get("from-location=protection") > 10_000L
-                    || !Check.hasViolations(uuid)
-                    || Check.getLastViolation(p, false) > 1_000L)) {
+                    || p.getProfile().getLastInteraction().getLastViolation(false) > 1_000L
+                    || !Check.hasViolations(uuid))) {
                 update(p, location, greatDistance);
             }
         } else {

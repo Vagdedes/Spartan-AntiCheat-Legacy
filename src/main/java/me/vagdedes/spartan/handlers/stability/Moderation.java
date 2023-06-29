@@ -61,7 +61,8 @@ public class Moderation {
     }
 
     private static boolean isDetected(SpartanPlayer p, long ms) {
-        return Check.getLastViolation(p, true) <= ms || HackPrevention.getCooldown(p, Enums.hackTypes()) != null;
+        return p.getProfile().getLastInteraction().getLastViolation(true) <= ms
+                || HackPrevention.hasCooldown(p.getUniqueId());
     }
 
     private static boolean isDetectedAndPrevented(SpartanPlayer p, long ms) {

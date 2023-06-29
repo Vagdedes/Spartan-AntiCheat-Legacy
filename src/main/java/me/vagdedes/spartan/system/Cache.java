@@ -150,6 +150,9 @@ public class Cache {
         PlayerData.remove(p, true);
 
         // Handlers
+        if (!leave) {
+            EventsHandler7.clear(p);
+        }
         if (distance) {
             if (newLocation != null) {
                 DetectionLocation.update(p, newLocation, false);
@@ -158,7 +161,6 @@ public class Cache {
             }
         }
         p.resetHandlers();
-        EventsHandler7.clear(p);
         MovementProcessing.resetVehicleTicks(p);
         CombatProcessing.remove(p);
 

@@ -9,6 +9,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
@@ -18,6 +19,19 @@ public class IrregularMovementsHop {
             verticalAboveZeroMotion = 0.082,
             verticalBelowZeroMotion = 0.075,
             redundantMotion = 0.001335979112141672;
+
+    private static final double[][]
+            locations1 = new double[][]{
+            {1, -2, 1},
+            {1, -1, 1},
+            {1, 0, 1},
+            {1, 1, 1},
+            {1, 2, 1},
+    }, locations2 = new double[][]{
+            {1, 0, 1},
+            {1, 1, 1},
+            {1, 2, 1}
+    };
 
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns, Timer timer,
                     double vertical, double oldVertical, double box, double oldBox, double horizontal,
@@ -38,20 +52,14 @@ public class IrregularMovementsHop {
                         && BlockUtils.isInteractiveBushFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
                         && BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
                         && BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max)) {
-                    boolean solidFree = true;
-
-                    for (int i = -2; i <= 2; i++) {
-                        if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
-                            cooldowns.add("hop=non-solid-free", 20);
-                            return;
-                        }
-                        if (solidFree && i >= 0 && !BlockUtils.isSolidFree(to, 1, i, 1)) {
-                            solidFree = false;
-                        }
+                    if (PatternUtils.isBlockPattern(locations1, to, true, false, BlockUtils.semi_solid)) {
+                        cooldowns.add("hop=non-solid-free", 20);
+                        return;
                     }
                     if (!cooldowns.canDo("hop=non-solid-free")) {
                         return;
                     }
+                    boolean solidFree = !PatternUtils.isBlockPattern(locations2, to, true, false, BlockUtils.solid);
 
                     if (BlockUtils.isSolidFree(to, 1, 2, 1)) {
                         boolean staticB, dynamic,

@@ -112,51 +112,28 @@ public class Check {
 
     // Separator
 
-    public static long getLastViolation(UUID uuid, boolean maxIfNull) {
-        long max = 0L;
+    public static int getViolationCount(UUID uuid) {
+        int sum = 0;
 
         for (Enums.HackType hackType : Enums.hackTypes()) {
             LiveViolation violations = hackType.getCheck().getLocalOrEmptyViolations(uuid);
 
             if (violations != null) {
-                max = Math.max(violations.getLastViolation(maxIfNull), max);
+                sum += violations.getLevel();
             }
-        }
-        return maxIfNull && max == 0L ? Long.MAX_VALUE : max;
-    }
-
-    public static long getLastViolation(SpartanPlayer player, boolean maxIfNull) {
-        return getLastViolation(player.getUniqueId(), maxIfNull);
-    }
-
-    // Separator
-
-    public static int getViolationCount(UUID uuid) {
-        int sum = 0;
-
-        for (Enums.HackType hackType : Enums.hackTypes()) {
-            sum += hackType.getCheck().getLocalViolations(uuid).getLevel();
         }
         return sum;
     }
 
-    public static int getViolationCount(SpartanPlayer player) {
-        return getViolationCount(player.getUniqueId());
-    }
-
-    // Separator
-
     public static boolean hasViolations(UUID uuid) {
         for (Enums.HackType hackType : Enums.hackTypes()) {
-            if (hackType.getCheck().getLocalViolations(uuid).hasLevel()) {
+            LiveViolation violations = hackType.getCheck().getLocalOrEmptyViolations(uuid);
+
+            if (violations != null && violations.hasLevel()) {
                 return true;
             }
         }
         return false;
-    }
-
-    public static boolean hasViolations(SpartanPlayer player) {
-        return hasViolations(player.getUniqueId());
     }
 
     // Separator

@@ -5,9 +5,16 @@ import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 public class IrregularMovementsDownwards {
+
+    private static final double[][] locations = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max}
+    };
 
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
                     double vertical,
@@ -25,25 +32,15 @@ public class IrregularMovementsDownwards {
             int oldBlockY = buffer.get(timerKey);
             buffer.set(timerKey, blockY);
 
-            if (airTicks >= IrregularMovements.fullOffGroundTicks) {
-                boolean semiSolidFree = true;
+            if (airTicks >= IrregularMovements.fullOffGroundTicks
+                    && !PatternUtils.isBlockPattern(locations, to, true, false, BlockUtils.semi_solid)) {
+                if (ms <= repeatedMilliseconds) { // + detection added recently
+                    IrregularMovements.cancel(p, from, prevention, "repeated-" + detection + "-" + cutVertical, "ms: " + ms, 2, IrregularMovements.defaultBufferTime);
+                } else if (airTicks >= (IrregularMovements.fullOffGroundTicks * 3) && vertical >= -1.0 && oldBlockY >= blockY) { // vertical >= -1.0 added recently
+                    int difference = Math.abs(blockY - oldBlockY);
 
-                for (int i = -1; i <= 1; i++) {
-                    if (!BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
-                        semiSolidFree = false;
-                        break;
-                    }
-                }
-
-                if (semiSolidFree) {
-                    if (ms <= repeatedMilliseconds) { // + detection added recently
-                        IrregularMovements.cancel(p, from, prevention, "repeated-" + detection + "-" + cutVertical, "ms: " + ms, 2, IrregularMovements.defaultBufferTime);
-                    } else if (airTicks >= (IrregularMovements.fullOffGroundTicks * 3) && vertical >= -1.0 && oldBlockY >= blockY) { // vertical >= -1.0 added recently
-                        int difference = Math.abs(blockY - oldBlockY);
-
-                        if (difference <= 1) {
-                            IrregularMovements.cancel(p, from, prevention, "position-" + detection, "difference: " + difference, 2, -IrregularMovements.defaultBufferTime);
-                        }
+                    if (difference <= 1) {
+                        IrregularMovements.cancel(p, from, prevention, "position-" + detection, "difference: " + difference, 2, -IrregularMovements.defaultBufferTime);
                     }
                 }
             }

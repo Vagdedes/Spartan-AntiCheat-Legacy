@@ -18,6 +18,7 @@ import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
@@ -29,6 +30,23 @@ public class NoFall {
 
     public static final HackType check = HackType.NoFall;
     private static final String ratioKey = "ratio=";
+
+    private static final double[][]
+            air = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max}
+    }, spoof = new double[][]{
+            {BlockUtils.hitbox, -1, BlockUtils.hitbox},
+            {BlockUtils.hitbox, 0, BlockUtils.hitbox},
+            {BlockUtils.hitbox, 1, BlockUtils.hitbox},
+            {BlockUtils.hitbox, 2, BlockUtils.hitbox}
+    }, canDo = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 2, BlockUtils.hitbox_max}
+    };
 
     // Utilities
 
@@ -104,11 +122,9 @@ public class NoFall {
             int cooldownTicks = 10;
 
             if (airTicks > 0 && vertical > -3.5 && !p.getHandlers().has(Handlers.HandlerType.ElytraWear) && !PlayerData.hasJumpEffect(p)) {
-                for (int i = -1; i <= 1; i++) {
-                    if (!BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max)) {
-                        p.getCooldowns(check).add(cooldownKey, cooldownTicks);
-                        return;
-                    }
+                if (PatternUtils.isBlockPattern(air, to, true, false, BlockUtils.semi_solid)) {
+                    p.getCooldowns(check).add(cooldownKey, cooldownTicks);
+                    return;
                 }
                 if (!p.getCooldowns(check).canDo(cooldownKey)) {
                     return;
@@ -192,20 +208,10 @@ public class NoFall {
                                    int airTicks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && check.getCheck().getBooleanOption("check_spoof", true)
                 && (airTicks >= 20 || airTicks >= 12 && p.isFalling(vertical))
-                && p.isOnGround() && !p.isOnGroundCustom()
-                && !p.getHandlers().has(Handlers.HandlerType.ElytraWear) && p.isGroundSpoofing()) {
-            boolean valid = true;
-
-            for (int i = -1; i <= 2; i++) {
-                if (!BlockUtils.isSolidFree(to, BlockUtils.hitbox, i, BlockUtils.hitbox)) {
-                    valid = false;
-                    break;
-                }
-            }
-
-            if (valid) {
-                cancel(p, "type: spoof, air: " + airTicks + ", vertical: " + vertical, from, 10, 0.0);
-            }
+                && p.isOnGround() && !p.isOnGroundCustom() && p.isGroundSpoofing()
+                && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)
+                && !PatternUtils.isBlockPattern(spoof, to, true, false, BlockUtils.solid)) {
+            cancel(p, "type: spoof, air: " + airTicks + ", vertical: " + vertical, from, 10, 0.0);
         }
     }
 
@@ -327,15 +333,12 @@ public class NoFall {
                         && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) || p.getWorld().getGameRuleValue(GameRule.FALL_DAMAGE) == true)) {
                     ItemStack boots = p.getInventory().getBoots();
 
-                    if (boots == null || !boots.containsEnchantment(Enchantment.PROTECTION_FALL)) {
-                        for (int i = -1; i <= 2; i++) {
-                            if (!BlockUtils.isWebFree(loc, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
-                                clearRatio(buffer, decimals);
-                                return false;
-                            }
-                        }
-                        return true;
+                    if (boots != null && boots.containsEnchantment(Enchantment.PROTECTION_FALL)
+                            || PatternUtils.isBlockPattern(canDo, loc, true, false, BlockUtils.web)) {
+                        clearRatio(buffer, decimals);
+                        return false;
                     }
+                    return true;
                 }
             }
         }

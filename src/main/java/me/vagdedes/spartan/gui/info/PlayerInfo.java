@@ -99,7 +99,7 @@ public class PlayerInfo {
         InventoryUtils.add(inv, "§2Mining History", lore, item, 16);
 
         if (isOnline) {
-            int violations = Check.getViolationCount(t);
+            int violations = Check.getViolationCount(t.getUniqueId());
             lore.clear();
             lore.add("");
             lore.add("§7CPS (Clicks Per Second)§8:§a " + t.getClickData().getCount());

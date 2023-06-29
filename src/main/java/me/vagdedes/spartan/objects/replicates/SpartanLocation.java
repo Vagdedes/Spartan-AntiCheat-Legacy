@@ -4,7 +4,9 @@ import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.handlers.stability.TPS;
+import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.system.Check;
+import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -19,9 +21,7 @@ import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -559,14 +559,14 @@ public class SpartanLocation {
 
     // Surrounding
 
-    public List<SpartanLocation> getSurroundingLocations(double x, double y, double z, boolean all) {
+    public SpartanLocation[] getSurroundingLocations(double x, double y, double z, boolean all) {
         boolean hasXZ = x > 0.0 || z > 0.0;
-        List<SpartanLocation> array = new ArrayList<>(9);
+        SpartanLocation[] array = new SpartanLocation[hasXZ ? 9 : 1];
 
         if (y == 0.0) {
-            array.add(this);
+            array[0] = this;
         } else {
-            array.add(this.clone().add(0, y, 0));
+            array[0] = this.clone().add(0, y, 0);
         }
 
         if (hasXZ) {
@@ -576,63 +576,72 @@ public class SpartanLocation {
             if (!all) {
                 if (dx >= 0.0 && dx < 0.3 && dz >= 0.0 && dz < 0.3) {
                     // 300 300
-                    array.add(this.clone().add(0, y, -z));
-                    array.add(this.clone().add(-x, y, 0));
-                    array.add(this.clone().add(-x, y, -z));
+                    array[1] = this.clone().add(0, y, -z);
+                    array[2] = this.clone().add(-x, y, 0);
+                    array[3] = this.clone().add(-x, y, -z);
                 } else if (dx > 0.7 && dx < 1.0 && dz >= 0.0 && dz < 0.3) {
                     // 700 300
-                    array.add(this.clone().add(x, y, 0));
-                    array.add(this.clone().add(0, y, -z));
-                    array.add(this.clone().add(x, y, -z));
+                    array[1] = this.clone().add(x, y, 0);
+                    array[2] = this.clone().add(0, y, -z);
+                    array[3] = this.clone().add(x, y, -z);
                 } else if (dx > 0.7 && dx < 1.0 && dz > 0.7 && dz < 1.0) {
                     // 700 700
-                    array.add(this.clone().add(x, y, 0));
-                    array.add(this.clone().add(0, y, z));
-                    array.add(this.clone().add(x, y, z));
+                    array[1] = this.clone().add(x, y, 0);
+                    array[2] = this.clone().add(0, y, z);
+                    array[3] = this.clone().add(x, y, z);
                 } else if (dx >= 0.0 && dx < 0.3 && dz > 0.7 && dz < 1.0) {
                     // 300 700
-                    array.add(this.clone().add(-x, y, 0));
-                    array.add(this.clone().add(0, y, z));
-                    array.add(this.clone().add(-x, y, z));
+                    array[1] = this.clone().add(-x, y, 0);
+                    array[2] = this.clone().add(0, y, z);
+                    array[3] = this.clone().add(-x, y, z);
                 } else if (dx >= 0.0 && dx < 0.3 && dz > 0.3 && dz < 0.7) {
                     // 300 300-700
-                    array.add(this.clone().add(x, y, 0));
+                    array[1] = this.clone().add(x, y, 0);
                 } else if (dx > 0.7 && dx < 1.0 && dz > 0.3 && dz < 0.7) {
                     // 700 300-700
-                    array.add(this.clone().add(-x, y, 0));
+                    array[1] = this.clone().add(-x, y, 0);
                 } else if (dx > 0.3 && dx < 0.7 && dz >= 0.0 && dz < 0.3) {
                     // 300-700 300
-                    array.add(this.clone().add(0, y, -z));
+                    array[1] = this.clone().add(0, y, -z);
                 } else if (dx > 0.3 && dx < 0.7 && dz > 0.7 && dz < 1.0) {
                     // 300-700 700
-                    array.add(this.clone().add(0, y, z));
+                    array[1] = this.clone().add(0, y, z);
                 }
             } else {
-                array.add(this.clone().add(x, y, 0));
-                array.add(this.clone().add(-x, y, 0));
-                array.add(this.clone().add(0, y, z));
-                array.add(this.clone().add(0, y, -z));
-                array.add(this.clone().add(x, y, z));
-                array.add(this.clone().add(-x, y, -z));
-                array.add(this.clone().add(x, y, -z));
-                array.add(this.clone().add(-x, y, z));
+                array[1] = this.clone().add(x, y, 0);
+                array[2] = this.clone().add(-x, y, 0);
+                array[3] = this.clone().add(0, y, z);
+                array[4] = this.clone().add(0, y, -z);
+                array[5] = this.clone().add(x, y, z);
+                array[6] = this.clone().add(-x, y, -z);
+                array[7] = this.clone().add(x, y, -z);
+                array[8] = this.clone().add(-x, y, z);
             }
         }
         return array;
     }
 
-    public List<SpartanLocation> getSurroundingLocations(double x, double y, double z) {
+    public SpartanLocation[] getSurroundingLocations(double x, double y, double z) {
         if (x < 1.0 || z < 1.0) {
-            return getSurroundingLocations(x, y, z,
-                    player == null
-                            || player.isBedrockPlayer()
-                            || player.getVehicle() != null
-                            || player.getActivePotionEffects().length > 0
-                            || BlockUtils.isSolid(player.getItemInHand().getType())
-                            || Check.hasViolations(player)
-                            || Check.getLastViolation(player, true) <= Check.violationCycleSeconds
-                            || player.getProfile().isSuspectedOrHacker()
-            );
+            if (player == null
+                    || player.isBedrockPlayer()
+                    || player.getVehicle() != null
+                    || player.getActivePotionEffects().length > 0
+                    || BlockUtils.isSolid(player.getItemInHand().getType())) {
+                return getSurroundingLocations(x, y, z, true);
+            } else {
+                PlayerProfile playerProfile = player.getProfile();
+
+                if (playerProfile.isSuspectedOrHacker()) {
+                    return getSurroundingLocations(x, y, z, true);
+                } else {
+                    LiveViolation liveViolation = playerProfile.getLastInteraction();
+                    return getSurroundingLocations(x, y, z,
+                            liveViolation.hasLevel()
+                                    || liveViolation.getLastViolation(true) <= Check.violationCycleSeconds
+                    );
+                }
+            }
         }
         return getSurroundingLocations(x, y, z, false);
     }

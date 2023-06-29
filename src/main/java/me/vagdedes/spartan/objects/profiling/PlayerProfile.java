@@ -10,6 +10,7 @@ import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
+import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.StringUtils;
@@ -38,6 +39,7 @@ public class PlayerProfile {
     private OfflinePlayer offlinePlayer;
     private final PlayerCombat playerCombat;
     private long lastPlayed;
+    private LiveViolation lastInteraction;
 
     // Separator
 
@@ -234,6 +236,16 @@ public class PlayerProfile {
 
     public void setOnline(SpartanPlayer player) {
         this.lastPlayed = player.getLastPlayed();
+    }
+
+    // Separator
+
+    public LiveViolation getLastInteraction() {
+        return lastInteraction;
+    }
+
+    public void setLastInteraction(LiveViolation liveViolation) {
+         lastInteraction = liveViolation;
     }
 
     // Separator

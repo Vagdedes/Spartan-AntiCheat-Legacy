@@ -263,8 +263,8 @@ public class WaterSpeed {
     private static boolean canCheck(SpartanPlayer p, Material m, double remaining,
                                     SpartanLocation to, SpartanLocation loc1, SpartanLocation locM1, SpartanLocation locM2,
                                     Buffer buffer) {
-        if ((!isNonSolidFree(locM1) && BlockUtils.isLiquidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                || !isNonSolidFree(to))
+        if ((!isFullSolidFree(locM1) && BlockUtils.isLiquidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
+                || !isFullSolidFree(to))
 
                 && BlockUtils.isLiquidFree(loc1, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)) {
             freezeBuffers(p, buffer, 1);
@@ -359,7 +359,7 @@ public class WaterSpeed {
         return BlockUtils.isSolidFree(loc, x, y, z) && BlockUtils.isLiquidFree(loc, x, y, z);
     }
 
-    private static boolean isNonSolidFree(SpartanLocation loc) {
+    private static boolean isFullSolidFree(SpartanLocation loc) {
         for (SpartanLocation locs : loc.getSurroundingLocations(BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)) {
             if (BlockUtils.isSolid(locs) || BlockUtils.isSemiSolid(locs)) {
                 return false;
