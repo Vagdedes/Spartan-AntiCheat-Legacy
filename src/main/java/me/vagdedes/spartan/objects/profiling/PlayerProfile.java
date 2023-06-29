@@ -44,6 +44,7 @@ public class PlayerProfile {
     // Separator
 
     public PlayerProfile(String name) {
+        Enums.HackType[] hackTypes = Enums.hackTypes();
         boolean isNull = name == null;
 
         // Separator
@@ -54,6 +55,7 @@ public class PlayerProfile {
         this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
+        this.lastInteraction = new LiveViolation(uuid, hackTypes[0]);
 
         // Separator
         if (isNull) {
@@ -81,7 +83,7 @@ public class PlayerProfile {
         this.violationHistory = new ViolationHistory[Enums.hackTypeLength];
         this.miningHistory = new MiningHistory[Enums.miningOreLength];
 
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : hackTypes) {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory(hackType, getDataType());
         }
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {
@@ -90,6 +92,7 @@ public class PlayerProfile {
     }
 
     public PlayerProfile(SpartanPlayer player) {
+        Enums.HackType[] hackTypes = Enums.hackTypes();
         this.uuid = player.getUniqueId();
         this.name = player.getName();
         this.offlinePlayer = player.getPlayer(); // Attention
@@ -102,11 +105,12 @@ public class PlayerProfile {
         this.staff = Permissions.isStaff(player);
         this.bedrockPlayerCheck = true;
         this.lastPlayed = player.getLastPlayed();
+        this.lastInteraction = new LiveViolation(uuid, hackTypes[0]);
 
         this.violationHistory = new ViolationHistory[Enums.hackTypeLength];
         this.miningHistory = new MiningHistory[Enums.miningOreLength];
 
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : hackTypes) {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory(hackType, getDataType());
         }
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {

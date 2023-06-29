@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.handlers.stability;
 
 import me.vagdedes.spartan.compatibility.own.UltimateStatistics;
-import me.vagdedes.spartan.objects.profiling.ViolationStatistics;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
@@ -30,8 +29,6 @@ public class CancelViolation {
 
                 if (check.hasCancelViolation()) {
                     memory.put(key, check.getCancelViolation());
-                } else if (!ViolationStatistics.has(hackType, ResearchEngine.profileRequirement)) {
-                    memory.put(key, check.getDefaultCancelViolation());
                 } else {
                     int defaultCancelViolation = check.getDefaultCancelViolation(),
                             falsePositives = ResearchEngine.getTotalFalsePositives(hackType, dataType);

@@ -29,7 +29,6 @@ public class PatternUtils {
         int[] positionIdentifiers = new int[positions.length];
         Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
 
-        // Calculate hashes and check them if cache is available
         for (Set<Material> set : sets) {
             searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + set.hashCode();
         }
@@ -38,28 +37,24 @@ public class PatternUtils {
                 double[] coordinates = positions[position];
                 int positionIdentifier = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
                 positionIdentifiers[position] = positionIdentifier;
+                Boolean result = childMap.get(positionIdentifier);
 
-                if (childMap.getOrDefault(positionIdentifier, false)) {
-                    return true;
+                if (result != null) {
+                    return result;
                 }
-            }
-        } else {
-            childMap = new ConcurrentHashMap<>();
-            memory.put(locationIdentifier, childMap);
+                if (surroundings) {
+                    for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
+                        Material material = surroundingLocation.getBlock().getType();
 
-            for (int position = 0; position < positions.length; position++) {
-                double[] coordinates = positions[position];
-                positionIdentifiers[position] = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
-            }
-        }
-
-        // Calculate and add them in cache
-        if (surroundings) {
-            for (int position = 0; position < positions.length; position++) {
-                double[] coordinates = positions[position];
-
-                for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                    Material material = surroundingLocation.getBlock().getType();
+                        for (Set<Material> set : sets) {
+                            if (not != set.contains(material)) {
+                                childMap.put(positionIdentifiers[position], true);
+                                return true;
+                            }
+                        }
+                    }
+                } else {
+                    Material material = location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().getType();
 
                     for (Set<Material> set : sets) {
                         if (not != set.contains(material)) {
@@ -70,14 +65,32 @@ public class PatternUtils {
                 }
             }
         } else {
+            childMap = new ConcurrentHashMap<>();
+            memory.put(locationIdentifier, childMap);
+
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
-                Material material = location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().getType();
+                positionIdentifiers[position] = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
 
-                for (Set<Material> set : sets) {
-                    if (not != set.contains(material)) {
-                        childMap.put(positionIdentifiers[position], true);
-                        return true;
+                if (surroundings) {
+                    for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
+                        Material material = surroundingLocation.getBlock().getType();
+
+                        for (Set<Material> set : sets) {
+                            if (not != set.contains(material)) {
+                                childMap.put(positionIdentifiers[position], true);
+                                return true;
+                            }
+                        }
+                    }
+                } else {
+                    Material material = location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().getType();
+
+                    for (Set<Material> set : sets) {
+                        if (not != set.contains(material)) {
+                            childMap.put(positionIdentifiers[position], true);
+                            return true;
+                        }
                     }
                 }
             }
@@ -102,8 +115,10 @@ public class PatternUtils {
         int positionIdentifier = (Chunks.positionIdentifier(x, y, z) * SpartanBukkit.hashCodeMultiplier) + searchHash;
 
         if (childMap != null) {
-            if (childMap.getOrDefault(positionIdentifier, false)) {
-                return true;
+            Boolean result = childMap.get(positionIdentifier);
+
+            if (result != null) {
+                return result;
             }
         } else {
             childMap = new ConcurrentHashMap<>();

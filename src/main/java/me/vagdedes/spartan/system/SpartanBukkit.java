@@ -87,7 +87,7 @@ public class SpartanBukkit {
             SpartanPlayer player = players.get(uuid);
 
             if (player == null && real.getAddress() != null) {
-                players.put(uuid, player = new SpartanPlayer(real));
+                players.put(uuid, player = new SpartanPlayer(real, uuid));
             }
             return player;
         }

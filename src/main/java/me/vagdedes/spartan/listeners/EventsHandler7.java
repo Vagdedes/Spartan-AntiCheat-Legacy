@@ -84,22 +84,26 @@ public class EventsHandler7 implements Listener {
     }
 
     private static void clear(SpartanPlayer p, Decimals decimals) {
-        Entity vehicle = p.getVehicle();
+        if (p != null) {
+            Entity vehicle = p.getVehicle();
 
-        if (vehicle != null) {
-            String vehicleKey = Integer.toString(vehicle.getEntityId());
+            if (vehicle != null) {
+                String vehicleKey = Integer.toString(vehicle.getEntityId());
 
-            for (String key : cache) {
-                decimals.remove(key);
-                decimals.remove(key + vehicleKey);
+                for (String key : cache) {
+                    decimals.remove(key);
+                    decimals.remove(key + vehicleKey);
+                }
+            } else {
+                for (String key : cache) {
+                    decimals.remove(key);
+                }
             }
+            Cache.clearCheckCache(p, handledChecks);
         } else {
             for (String key : cache) {
                 decimals.remove(key);
             }
-        }
-        if (p != null) {
-            Cache.clearCheckCache(p, handledChecks);
         }
     }
 
@@ -198,10 +202,9 @@ public class EventsHandler7 implements Listener {
                 from = new SpartanLocation(p, e.getFrom());
 
         // Objects
-        if (p.canMaintainLocationData()) {
-            to.retrieveDataFrom(p.getLocation());
-            from.retrieveDataFrom(to);
-        }
+        to.retrieveDataFrom(p.getLocation());
+        from.retrieveDataFrom(to);
+
         if (to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
             p.setLastHeadMovement();
         }

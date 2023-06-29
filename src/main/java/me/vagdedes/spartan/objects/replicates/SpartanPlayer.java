@@ -122,8 +122,7 @@ public class SpartanPlayer {
     private final ClickData clickData;
 
     private SpartanLocation location;
-    private long cachedLocation;
-    private long lastLocation;
+    private long locationTime;
     private long chasing;
 
     List<Entity> nearbyEntities;
@@ -245,7 +244,7 @@ public class SpartanPlayer {
                     if (clearCache) {
                         Cache.clearCheckCache(p);
                     }
-                    p.cachedLocation = 0L;
+                    p.locationTime = 0L;
                     p.nearbyEntities = null;
                     p.runCheck.clear();
                     p.runCheckAccountLag.clear();
@@ -345,8 +344,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    public SpartanPlayer(Player p) {
-        UUID uuid = p.getUniqueId();
+    public SpartanPlayer(Player p, UUID uuid) {
         PlayerInventory inv = p.getInventory();
         InventoryView openInventory = p.getOpenInventory();
         SpartanOpenInventory spartanOpenInv = new SpartanOpenInventory(
@@ -357,9 +355,8 @@ public class SpartanPlayer {
         Enums.HackType[] hackTypes = Enums.hackTypes();
         ItemStack itemInHand = p.getItemInHand();
 
-        this.location = null;
-        this.cachedLocation = 0L;
-        this.lastLocation = 0L;
+        this.location = new SpartanLocation();
+        this.locationTime = 0L;
         this.nearbyEntities = null;
         this.nearbyEntitiesDistance = 0;
         this.runChecks = new boolean[]{false, false};
@@ -608,12 +605,7 @@ public class SpartanPlayer {
     }
 
     public void resetLocationData() {
-        this.lastLocation = System.currentTimeMillis();
-        this.cachedLocation = 0L;
-    }
-
-    public boolean canMaintainLocationData() {
-        return (System.currentTimeMillis() - this.lastLocation) <= 1_000L && getVehicle() == null;
+        this.locationTime = 0L;
     }
 
     public void sendMessage(String message) {
@@ -666,25 +658,30 @@ public class SpartanPlayer {
     }
 
     public SpartanLocation getLocation() {
-        long ms = System.currentTimeMillis();
+        SpartanLocation vehicle = getVehicleLocation();
 
-        if ((ms - this.cachedLocation) > 50L) {
-            this.cachedLocation = ms;
-            Player p = getPlayer();
+        if (vehicle != null) {
+            return vehicle;
+        } else {
+            long ms = System.currentTimeMillis();
 
-            if (p != null) {
-                SpartanLocation from = this.location;
-                this.location = new SpartanLocation(this, p.getLocation());
+            if ((ms - this.locationTime) > TPS.tickTime) {
+                this.locationTime = ms;
+                Player p = getPlayer();
 
-                if (from != null && canMaintainLocationData()) {
-                    this.location.retrieveDataFrom(from);
+                if (p != null) {
+                    SpartanLocation from = this.location.clone();
+                    this.location = new SpartanLocation(this, p.getLocation());
+
+                    if (from != null) {
+                        this.location.retrieveDataFrom(from);
+                    }
                 } else {
-                    this.lastLocation = System.currentTimeMillis();
+                    this.location = new SpartanLocation();
                 }
             }
+            return location;
         }
-        SpartanLocation vehicle = getVehicleLocation();
-        return vehicle != null ? vehicle : location == null ? new SpartanLocation() : location.clone();
     }
 
     public SpartanLocation getEventLocation(Location to) {
