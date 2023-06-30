@@ -103,7 +103,7 @@ public class PlayerStateLists {
 
             switch (title) {
                 case playerStates:
-                    List<PlayerProfile> playerProfiles = new LinkedList<>(ResearchEngine.getHackers());
+                    List<PlayerProfile> playerProfiles = ResearchEngine.getHackers();
                     playerProfiles.addAll(ResearchEngine.getSuspectedPlayers());
                     playerProfiles = subList(playerProfiles, skip, skip + limit);
 

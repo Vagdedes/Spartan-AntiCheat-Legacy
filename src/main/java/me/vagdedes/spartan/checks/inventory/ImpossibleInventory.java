@@ -9,6 +9,7 @@ import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
@@ -25,6 +26,10 @@ public class ImpossibleInventory {
     private static final int
             jumping = 8,
             requiredJumpingMotions = AlgebraUtils.integerRound(MoveUtils.jumpingMotions / 2.0);
+
+    private static double[] belowBlocks = new double[]{
+            1, -1, 1
+    };
 
     public static void run(SpartanPlayer p, ItemStack item, ClickType click, int slot) {
         if (p.canRunCheck(check, true)) {
@@ -71,15 +76,10 @@ public class ImpossibleInventory {
         int cases = getActionCase(p, Double.MAX_VALUE);
 
         if (cases != 0 && !click.isCreativeAction() && !click.isKeyboardClick() && !p.isSwimming()
-                && !p.getHandlers().has(Handlers.HandlerType.Vehicle) && PlayerData.isUsingAnInventory(p, 0)) {
-            for (SpartanLocation location : p.getLocation().getSurroundingLocations(1, -1, 1, true)) {
-                if (BlockUtils.areIceBlocks(location)) {
-                    return;
-                }
-            }
-            if (cases != jumping || p.getBuffer(check).start("closed-inventory", 20) >= requiredJumpingMotions) {
-                new HackPrevention(p, check, "type: closed-inventory, case: " + cases);
-            }
+                && !p.getHandlers().has(Handlers.HandlerType.Vehicle) && PlayerData.isUsingAnInventory(p, 0)
+                && !PatternUtils.isBlockPattern(belowBlocks, p.getLocation(), true, BlockUtils.ice)
+                && (cases != jumping || p.getBuffer(check).start("closed-inventory", 20) >= requiredJumpingMotions)) {
+            new HackPrevention(p, check, "type: closed-inventory, case: " + cases);
         }
     }
 

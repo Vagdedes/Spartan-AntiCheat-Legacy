@@ -88,10 +88,14 @@ public class Speed {
             {1, -1, 1},
             {1, 0, 1},
             {1, 1, 1}
-    }, upwardsLocations = new double[][]{
+    }, belowBlocks = new double[][]{
             {BlockUtils.hitbox, -1, BlockUtils.hitbox},
             {BlockUtils.hitbox, 0, BlockUtils.hitbox}
+    }, iceLocations = new double[][]{
+            {0, -1, 0},
+            {0, 0, 0}
     };
+
     private static final double[]
             minus_0_6 = new double[]{
             BlockUtils.hitbox_max, -0.6, BlockUtils.hitbox_max
@@ -562,28 +566,25 @@ public class Speed {
 
     private static Object[] getDynamicLimit(SpartanPlayer p, SpartanLocation to, SpartanLocation loc1, Buffer buffer, Decimals decimals, Cooldowns cooldowns,
                                             double d, double od, double dy, double remaining, double oremaining, int air_ticks,
-                                            boolean jumping, boolean extremelyPushed, boolean fairlyPushed, boolean above_blocks, boolean groundCustom, boolean selfHit, boolean piston,
+                                            boolean jumping, boolean extremelyPushed, boolean fairlyPushed, boolean aboveBlocks, boolean groundCustom, boolean selfHit, boolean piston,
                                             double dm, String reason) {
         boolean iceBlocks = false;
 
         // Limit
-        for (int i = -1; i <= 0; i++) {
-            if (BlockUtils.areIceBlocks(to.clone().add(0, i, 0))) {
-                cooldowns.add("ice=reminder", 20);
-                int iceBlockTimes = 15;
+        if (PatternUtils.isBlockPattern(iceLocations, to, false, BlockUtils.ice)) {
+            cooldowns.add("ice=reminder", 20);
+            int iceBlockTimes = 15;
 
-                if (!above_blocks) {
-                    iceBlocks = true;
-                    dm = cacheLimit(decimals, dm, ice, 0);
+            if (!aboveBlocks) {
+                iceBlocks = true;
+                dm = cacheLimit(decimals, dm, ice, 0);
 
-                    if (dm == ice) {
-                        reason = "ice";
-                        dm = cacheLimit(decimals, dm, dm, iceBlockTimes);
-                    }
-                } else {
-                    dm = cacheLimit(decimals, dm, blocks_ice, iceBlockTimes * 2);
+                if (dm == ice) {
+                    reason = "ice";
+                    dm = cacheLimit(decimals, dm, dm, iceBlockTimes);
                 }
-                break;
+            } else {
+                dm = cacheLimit(decimals, dm, blocks_ice, iceBlockTimes * 2);
             }
         }
 
@@ -596,20 +597,23 @@ public class Speed {
                 || PlayerData.isOnGround(p, to, 0, -1.5, 0))) {
             // Combined Step Blocks (Not using hitbox_max due to ascension imperfections)
             if ((dm == air || dm == air_non_solid_min || dm == air_non_solid_max) && air_ticks == 0 && (dy > 0.5 || jumping)
-                    && PatternUtils.isBlockPattern(upwardsLocations, to, true, BlockUtils.semi_solid)) {
+                    && PatternUtils.isBlockPattern(belowBlocks, to, true, BlockUtils.semi_solid)) {
                 reason = "upwards(combined)";
                 dm = cacheLimit(decimals, dm, upwards, 10);
             } else if (!jumping) {
                 SpartanLocation custom = to.clone();
                 custom.setPitch(0.0f);
                 custom = custom.add(to.getDirection().multiply(1.0));
-                boolean nonSolidFree = false;
+                Boolean nonSolidFree = PatternUtils.getCached(custom, check, "upwards");
 
-                for (SpartanLocation customs : custom.getSurroundingLocations(BlockUtils.hitbox, 0, BlockUtils.hitbox)) {
-                    if (BlockUtils.isFullSolid(customs)) {
-                        nonSolidFree = true;
-                        break;
+                if (nonSolidFree == null) {
+                    for (SpartanLocation customs : custom.getSurroundingLocations(BlockUtils.hitbox, 0, BlockUtils.hitbox)) {
+                        if (BlockUtils.isFullSolid(customs)) {
+                            nonSolidFree = true;
+                            break;
+                        }
                     }
+                    nonSolidFree = PatternUtils.cache(custom, check, "upwards", nonSolidFree != null);
                 }
 
                 if (nonSolidFree
@@ -617,22 +621,9 @@ public class Speed {
                         || buffer.start("upwards=" + AlgebraUtils.cut(dy, 3), 10) >= 2)) { // Step Blocks
                     reason = "upwards";
                     dm = cacheLimit(decimals, dm, upwards, 15);
-                } else {
-                    boolean ascension = false;
-
-                    for (int i = 0; i >= -1; i--) {
-                        for (SpartanLocation locs : custom.getSurroundingLocations(BlockUtils.hitbox, i, BlockUtils.hitbox)) {
-                            if (BlockUtils.areStairs(locs) || BlockUtils.areSlabs(locs)) {
-                                ascension = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (ascension) {
-                        reason = "ascension";
-                        dm = cacheLimit(decimals, dm, upwards, 15);
-                    }
+                } else if (PatternUtils.isBlockPattern(belowBlocks, custom, true, BlockUtils.slabs, BlockUtils.stairs)) {
+                    reason = "ascension";
+                    dm = cacheLimit(decimals, dm, upwards, 15);
                 }
             }
         }
@@ -645,16 +636,20 @@ public class Speed {
                 dm = cacheLimit(decimals, dm, ground_block_speed, 5);
             }
         } else {
-            for (Entity entity : p.getNearbyEntities(3, 3, 3)) {
-                if (entity instanceof Boat) {
-                    reason = "entity";
+            List<Entity> entities = p.getNearbyEntities(3, 3, 3);
 
-                    if (d == od) {
-                        dm = cacheLimit(decimals, dm, ground_block_speed_extended, 5);
-                    } else {
-                        dm = cacheLimit(decimals, dm, ground_block_speed, 5);
+            if (entities.size() > 0) {
+                for (Entity entity : entities) {
+                    if (entity instanceof Boat) {
+                        reason = "entity";
+
+                        if (d == od) {
+                            dm = cacheLimit(decimals, dm, ground_block_speed_extended, 5);
+                        } else {
+                            dm = cacheLimit(decimals, dm, ground_block_speed, 5);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -754,29 +749,41 @@ public class Speed {
         return Math.max(minimumLimit, dm_speed);
     }
 
-    static boolean isSolid(SpartanLocation loc, double remaining) {
+    private static boolean isSolid(SpartanLocation loc, double remaining) {
+        Boolean pattern = PatternUtils.getCached(loc, check, "solid");
+
+        if (pattern != null) {
+            return pattern;
+        }
         Material l1 = loc.getBlock().getType();
 
         // Certain (Phase 1)
         if (BlockUtils.areCarpets(l1) || BlockUtils.areTrapdoors(l1)) {
-            return true;
+            return PatternUtils.cache(loc, check, "solid", true);
         }
         Material l2 = loc.clone().add(0, 2, 0).getBlock().getType();
 
         // Certain (Phase 2)
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && l2 == Material.END_ROD || BlockUtils.areCarpets(l2) || BlockUtils.areTrapdoors(l2)) {
-            return true;
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && l2 == Material.END_ROD
+                || BlockUtils.areCarpets(l2)
+                || BlockUtils.areTrapdoors(l2)) {
+            return PatternUtils.cache(loc, check, "solid", true);
         }
         boolean can = false;
 
         for (double i = (2.0 - remaining); i <= (remaining >= 0.8 ? (3.0 - remaining) : 2.0); i++) {
-            if (BlockUtils.isSolid(loc.clone().add(0, i, 0))) {
-                return true;
-            }
-            for (SpartanLocation directionalLoc : loc.getSurroundingLocations(1, i, 1)) {
-                if (BlockUtils.isSolid(directionalLoc)) {
-                    can = true;
-                    break;
+            SpartanLocation[] locations = loc.getSurroundingLocations(1, i, 1);
+
+            for (int x = 0; x < locations.length; x++) {
+                SpartanLocation loopLocation = locations[x];
+
+                if (BlockUtils.isSolid(loopLocation)) {
+                    if (x == 0) {
+                        return PatternUtils.cache(loc, check, "solid", true);
+                    } else {
+                        can = true;
+                        break;
+                    }
                 }
             }
             if (can) {
@@ -787,12 +794,13 @@ public class Speed {
             for (int i = 0; i <= (1 - remaining); i++) {
                 for (SpartanLocation directionalLoc : loc.getSurroundingLocations(1, i, 1)) {
                     if (BlockUtils.isFullSolid(directionalLoc)) {
-                        return false;
+                        return PatternUtils.cache(loc, check, "solid", false);
                     }
                 }
             }
+            return PatternUtils.cache(loc, check, "solid", true);
         }
-        return can;
+        return PatternUtils.cache(loc, check, "solid", false);
     }
 
     private static double getAverageSprintingSpeedDifference() {

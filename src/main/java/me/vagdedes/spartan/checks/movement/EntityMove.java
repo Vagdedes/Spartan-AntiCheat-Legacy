@@ -411,13 +411,13 @@ public class EntityMove {
     }
 
     private static List<SpartanLocation> getLiquidBlocks(SpartanLocation loc, SpartanLocation locM1) {
-        SpartanLocation[] locations = new SpartanLocation[]{loc, locM1};
-        List<SpartanLocation> positives = new ArrayList<>(locations.length);
+        List<SpartanLocation> positives = new ArrayList<>(2);
 
-        for (SpartanLocation location : locations) {
-            if (location.getBlock().getType() == water || location.getBlock().getType() == lava) {
-                positives.add(location);
-            }
+        if (loc.getBlock().isNonWaterLoggedLiquid()) {
+            positives.add(loc);
+        }
+        if (locM1.getBlock().isNonWaterLoggedLiquid()) {
+            positives.add(locM1);
         }
         return positives;
     }

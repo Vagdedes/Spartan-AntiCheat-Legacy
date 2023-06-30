@@ -108,6 +108,11 @@ public class SpartanBlock {
                 || this.material == Material.WATER || this.material == Material.LAVA;
     }
 
+    public boolean isNonWaterLoggedLiquid() {
+        return liquid && !waterLogged
+                || this.material == Material.WATER || this.material == Material.LAVA;
+    }
+
     public SpartanLocation getLocation() {
         return new SpartanLocation(this.player, this.world, this.chunk, this.x, this.y, this.z, 0.0f, 0.0f, this);
     }

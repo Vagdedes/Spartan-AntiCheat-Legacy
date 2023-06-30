@@ -5,6 +5,7 @@ import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.system.Cache;
+import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.MemoryUtils;
 import org.bukkit.Material;
@@ -21,11 +22,33 @@ public class PatternUtils {
 
     private static final int
             waterLogHash = "water-log".hashCode(),
-            liquidHash = "liquid".hashCode();
+            liquidHash = "liquid".hashCode(),
+            nonWaterLoggedLiquidHash = "non-water-logged-liquid".hashCode();
+
+    // Separator
 
     public static void synchronizeClearance(SpartanBlock block) {
         memory.remove(block.getIdentifier());
     }
+
+    // Separator
+
+    private static int customHash(Enums.HackType hackType, String key) {
+        return (key.hashCode() * SpartanBukkit.hashCodeMultiplier) + (hackType == null ? 1 : hackType.hashCode());
+    }
+
+    public static boolean cache(SpartanLocation location, Enums.HackType hackType, String key, boolean result) {
+        memory.computeIfAbsent(location.getIdentifier(), childMap -> new ConcurrentHashMap<>())
+                .put(customHash(hackType, key), result);
+        return result;
+    }
+
+    public static Boolean getCached(SpartanLocation location, Enums.HackType hackType, String key) {
+        Map<Integer, Boolean> childMap = memory.get(location.getIdentifier());
+        return childMap != null ? childMap.get(customHash(hackType, key)) : null;
+    }
+
+    // Separator
 
     @SafeVarargs
     public static boolean isBlockPattern(double[][] positions,
@@ -344,8 +367,8 @@ public class PatternUtils {
     }
 
     public static boolean isLiquidPattern(double[] coordinates,
-                                            SpartanLocation location,
-                                            boolean surroundings) {
+                                          SpartanLocation location,
+                                          boolean surroundings) {
         if (coordinates.length == 3 || coordinates[3] == 1.0) {
             int locationIdentifier = location.getIdentifier(),
                     searchHash = Boolean.hashCode(surroundings);
@@ -376,6 +399,113 @@ public class PatternUtils {
                     }
                 }
             } else if (location.clone().add(x, y, z).getBlock().isLiquid()) {
+                childMap.put(positionIdentifier, true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Separator
+
+    public static boolean isNonWaterLoggedLiquidPattern(double[][] positions,
+                                                        SpartanLocation location,
+                                                        boolean surroundings) {
+        int locationIdentifier = location.getIdentifier(),
+                searchHash = (Boolean.hashCode(surroundings) * SpartanBukkit.hashCodeMultiplier) + nonWaterLoggedLiquidHash;
+        int[] positionIdentifiers = new int[positions.length];
+        Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+
+        if (childMap != null) {
+            for (int position = 0; position < positions.length; position++) {
+                double[] coordinates = positions[position];
+
+                if (coordinates.length == 3 || coordinates[3] == 1.0) {
+                    int positionIdentifier = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
+                    positionIdentifiers[position] = positionIdentifier;
+                    Boolean result = childMap.get(positionIdentifier);
+
+                    if (result != null) {
+                        if (result) {
+                            return true;
+                        }
+                    } else {
+                        if (surroundings) {
+                            for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
+                                if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
+                                    childMap.put(positionIdentifiers[position], true);
+                                    return true;
+                                }
+                            }
+                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid()) {
+                            childMap.put(positionIdentifiers[position], true);
+                            return true;
+                        }
+                    }
+                }
+            }
+        } else {
+            childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+            memory.put(locationIdentifier, childMap);
+
+            for (int position = 0; position < positions.length; position++) {
+                double[] coordinates = positions[position];
+
+                if (coordinates.length == 3 || coordinates[3] == 1.0) {
+                    positionIdentifiers[position] = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
+
+                    if (surroundings) {
+                        for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
+                            if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
+                                childMap.put(positionIdentifiers[position], true);
+                                return true;
+                            }
+                        }
+                    } else {
+                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid()) {
+                            childMap.put(positionIdentifiers[position], true);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isNonWaterLoggedLiquidPattern(double[] coordinates,
+                                                        SpartanLocation location,
+                                                        boolean surroundings) {
+        if (coordinates.length == 3 || coordinates[3] == 1.0) {
+            int locationIdentifier = location.getIdentifier(),
+                    searchHash = Boolean.hashCode(surroundings);
+            searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + nonWaterLoggedLiquidHash;
+            Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+
+            // Calculate hashes and check them if cache is available
+            double x = coordinates[0], y = coordinates[1], z = coordinates[2];
+            int positionIdentifier = (Chunks.positionIdentifier(x, y, z) * SpartanBukkit.hashCodeMultiplier) + searchHash;
+
+            if (childMap != null) {
+                Boolean result = childMap.get(positionIdentifier);
+
+                if (result != null) {
+                    return result;
+                }
+            } else {
+                childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+                memory.put(locationIdentifier, childMap);
+            }
+
+            // Calculate and add them in cache
+            if (surroundings) {
+                for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
+                    if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
+                        childMap.put(positionIdentifier, true);
+                        return true;
+                    }
+                }
+            } else if (location.clone().add(x, y, z).getBlock().isNonWaterLoggedLiquid()) {
                 childMap.put(positionIdentifier, true);
                 return true;
             }

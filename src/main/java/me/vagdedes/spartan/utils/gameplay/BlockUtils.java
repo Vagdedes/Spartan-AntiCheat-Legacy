@@ -26,7 +26,7 @@ public class BlockUtils {
             beetroot_block = MaterialUtils.get("beetroot_block");
 
     private static Method getBreakSpeed = null;
-    public static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, step, climbable,
+    public static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, slabs, climbable,
             door, entity_blocks, trap_door, liquid, banner, carpet, bed, shulker_box, stairs, fence, fence_gate, heads, leaves, egg,
             coral_fan, pot, anvil, cobble_walls, terracotta, concrete, candle, candleCake, dripleaf, ores, wood, wool, wire,
             semi_solid, changeable, walls, interactive_bushes, scaffolding, interactive_snow, interactive_and_passable,
@@ -286,7 +286,7 @@ public class BlockUtils {
                 builder.add(m);
             }
         }
-        step = new HashSet<>(builder);
+        slabs = new HashSet<>(builder);
 
         // Separator
 
@@ -1290,7 +1290,7 @@ public class BlockUtils {
     }
 
     public static boolean areSlabs(Material m) {
-        return step.contains(m);
+        return slabs.contains(m);
     }
 
     public static boolean areLeaves(Material m) {

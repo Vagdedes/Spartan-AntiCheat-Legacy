@@ -153,13 +153,16 @@ public class IrregularMovements {
                 if (BlockUtils.isLiquid(to.clone().add(0, vertical, 0))) {
                     liquidBlocks = true;
                 } else {
-                    boolean result = false;
+                    Boolean result = PatternUtils.getCached(to, check, "liquid-blocks");
 
-                    for (double i = -1.0; i > Math.floor(vertical); i--) {
-                        if (BlockUtils.isLiquid(to.clone().add(0, i, 0))) {
-                            result = true;
-                            break;
+                    if (result == null) {
+                        for (double i = -1.0; i > Math.floor(vertical); i--) {
+                            if (BlockUtils.isLiquid(to.clone().add(0, i, 0))) {
+                                result = true;
+                                break;
+                            }
                         }
+                        result = PatternUtils.cache(to, check, "liquid-blocks", result != null);
                     }
                     liquidBlocks = result;
                 }

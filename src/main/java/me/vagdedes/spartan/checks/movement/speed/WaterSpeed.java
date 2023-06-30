@@ -42,6 +42,12 @@ public class WaterSpeed {
             stable = 0.17, stable_extra = 0.22,
             instability = 0.3;
 
+    private static double[][] ice = new double[][]{
+            {0, -1, 0},
+            {0, 0, 0},
+            {0, 1, 0}
+    };
+
     private static final double[] genericHitbox = new double[]{
             BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max
     };
@@ -247,21 +253,14 @@ public class WaterSpeed {
             cooldowns.add("allow", 40);
         } else if (dy <= -2.0) {
             cooldowns.add("allow", 20);
-        } else {
-            boolean blocksAbove = PatternUtils.isBlockPattern(new double[][]{
+        } else if (PatternUtils.isBlockPattern(ice, to, false, BlockUtils.ice)) {
+            if (PatternUtils.isBlockPattern(new double[][]{
                     {1, 2, 1},
                     {1, 2 - remaining, 1}
-            }, to, true, BlockUtils.solid);
-
-            for (int i = -1; i <= 0; i++) {
-                if (BlockUtils.areIceBlocks(to.clone().add(0, i, 0))) {
-                    if (blocksAbove) {
-                        cooldowns.add("ice", 20);
-                    } else if (p.wasInLiquids() || !Liquid.isLocation(p, to)) { // Attention, added recently
-                        freezeBuffers(p, buffer, 1);
-                    }
-                    return;
-                }
+            }, to, true, BlockUtils.solid)) { // Blocks above
+                cooldowns.add("ice", 20);
+            } else if (p.wasInLiquids() || !Liquid.isLocation(p, to)) {
+                freezeBuffers(p, buffer, 1);
             }
         }
     }
