@@ -21,10 +21,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.GroundUtils;
-import me.vagdedes.spartan.utils.gameplay.MoveUtils;
-import me.vagdedes.spartan.utils.gameplay.PlayerData;
+import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
@@ -40,7 +37,6 @@ public class Speed {
     public static final HackType check = HackType.Speed;
     public static final String strongPrevention = "normal";
 
-    private static final double vehicle = 1.4;
     private static final double walking = 0.292;
     public static double ground = 0.325;
     private static final double incompatibility = 0.75;
@@ -74,6 +70,42 @@ public class Speed {
     private static final double pushExtreme = 6.0;
     private static final double pushFair = (pushExtreme / 4.0);
     private static final Set<Float> fallingDistance = new HashSet<>(6);
+
+    private static final double[][]
+            honey = new double[][]{
+            {BlockUtils.hitbox_max, -2, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max}
+    }, groundLocations = new double[][]{
+            {1, -1, 1},
+            {1, 0, 1},
+            {1, 1, 1}
+    }, fallDistance = new double[][]{
+            {1, -1, 1},
+            {1, 0, 1},
+            {1, 1, 1}
+    }, hopIllegal = new double[][]{
+            {1, -1, 1},
+            {1, 0, 1},
+            {1, 1, 1}
+    }, upwardsLocations = new double[][]{
+            {BlockUtils.hitbox, -1, BlockUtils.hitbox},
+            {BlockUtils.hitbox, 0, BlockUtils.hitbox}
+    };
+    private static final double[]
+            minus_0_6 = new double[]{
+            BlockUtils.hitbox_max, -0.6, BlockUtils.hitbox_max
+    }, minusOne = new double[]{
+            0, -1, 0
+    }, genericHitboxMax = new double[]{
+            BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max
+    }, genericHitbox = new double[]{
+            BlockUtils.hitbox, 0, BlockUtils.hitbox
+    }, aboveBlock = new double[]{
+            BlockUtils.hitbox, 2, BlockUtils.hitbox
+    }, hopIllegalSingle = new double[]{
+            1, 2, 1
+    };
 
     static {
         float f = (float) MoveUtils.falling[0];
@@ -127,9 +159,7 @@ public class Speed {
         boolean piston = p.getHandlers().has(Handlers.HandlerType.Piston);
         SpartanLocation loc1 = to.clone().add(0, 1, 0);
         SpartanLocation locM1 = to.clone().add(0, -1, 0);
-        boolean honey = !BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                || !BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
-                || !BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, -2, BlockUtils.hitbox_max);
+        boolean honey = !PatternUtils.isBlockPattern(Speed.honey, to, true, BlockUtils.honey_block);
 
         if (groundGliding
                 || isSolid(to, box)
@@ -151,14 +181,18 @@ public class Speed {
         } else if (oldVer == 0.0 && ver == 0.0 || (ver - oldVer) == 0.0 && (!groundVanilla || !groundCustom)) {
             Material material;
 
-            if (!BlockUtils.isWebFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                    || !BlockUtils.isWebFree(to, BlockUtils.hitbox, 1, BlockUtils.hitbox)
-                    || !BlockUtils.isWebFree(to, BlockUtils.hitbox, p.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox)) {
+            if (PatternUtils.isBlockPattern(new double[][]{
+                    {BlockUtils.hitbox, 0, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, 1, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, p.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox},
+            }, to, true, BlockUtils.web)) {
                 reason = "cobweb";
                 dm = cacheLimit(decimals, dm, cobweb, 5);
-            } else if (!BlockUtils.isInteractiveBushFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                    || !BlockUtils.isInteractiveBushFree(to, BlockUtils.hitbox, 1, BlockUtils.hitbox)
-                    || !BlockUtils.isInteractiveBushFree(to, BlockUtils.hitbox, p.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox)) {
+            } else if (PatternUtils.isBlockPattern(new double[][]{
+                    {BlockUtils.hitbox, 0, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, 1, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, p.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox},
+            }, to, true, BlockUtils.interactive_bushes)) {
                 reason = "interactive-bush";
                 dm = cacheLimit(decimals, dm, interactiveBush, 5);
             } else if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && p.isSneaking()) {
@@ -215,14 +249,14 @@ public class Speed {
                 dm = cacheLimit(decimals, dm, ice, 10);
             } else if (honey || BlockUtils.isSlime(p, to, 3)) {
 
-                if (!BlockUtils.isSolidFree(to, BlockUtils.hitbox, 2, BlockUtils.hitbox)) {
+                if (PatternUtils.isBlockPattern(aboveBlock, to, true, BlockUtils.solid)) {
                     dm = cacheLimit(decimals, dm, blocks_slime, 12);
                 } else {
                     dm = cacheLimit(decimals, dm, air_slime, 12);
                 }
-            } else if (!BlockUtils.isCarpetFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max) || to.isBlock(Material.SNOW, BlockUtils.hitbox_max)) {
-                if (!BlockUtils.areWallsAround(to, BlockUtils.hitbox_max, -0.6, BlockUtils.hitbox_max)
-                        && BlockUtils.isAnvilFree(to, BlockUtils.hitbox_max, -0.6, BlockUtils.hitbox_max)) {
+            } else if (PatternUtils.isBlockPattern(genericHitboxMax, to, true, BlockUtils.carpet)
+                    || to.isBlock(Material.SNOW, BlockUtils.hitbox_max)) {
+                if (!PatternUtils.isBlockPattern(minus_0_6, to, true, BlockUtils.walls, BlockUtils.anvil)) {
                     dm = cacheLimit(decimals, dm, air_non_solid_min, 8);
                 } else {
                     dm = cacheLimit(decimals, dm, air_non_solid_max, 8);
@@ -305,42 +339,33 @@ public class Speed {
                 }
 
                 //Separator
-                if (air <= 12 && !explosion
+                if (ver > 0.0 && air <= 12 && !explosion
                         && (dmCopy == Speed.air || dmCopy == ground || dmCopy == ground_jump_speed || dmCopy == ground_block_speed
                         || dmCopy == ground_block_speed_extended || dmCopy == sneaking || dmCopy == walking)
                         && (!groundVanilla || !groundCustom)
-                        && BlockUtils.isSolidFree(to, 1, 2, 1)
-                        && !BouncingBlocks.isBelow(p) && !BlockUtils.isSlime(p, to, 2)) {
-                    boolean allow = true;
-
-                    for (int i = -1; i <= 1; i++) {
-                        if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
-                            allow = false;
-                            break;
+                        && !BouncingBlocks.isBelow(p)
+                        && !BlockUtils.isSlime(p, to, 2)
+                        && !PatternUtils.isBlockPattern(hopIllegalSingle, to, true, BlockUtils.solid)
+                        && !PatternUtils.isBlockPattern(hopIllegal, to, true, BlockUtils.semi_solid)) {
+                    if (!jumping) {
+                        if (!BlockUtils.isSlime(p, to, 3) && buffer.start("hop=illegal", 10) >= 4) {
+                            cancel(p, from, "type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy);
                         }
-                    }
+                    } else if (cooldowns.canDo("above-block")) {
+                        boolean cancel = false;
 
-                    if (allow && ver > 0.0) {
-                        if (!jumping) {
-                            if (!BlockUtils.isSlime(p, to, 3) && buffer.start("hop=illegal", 10) >= 4) {
-                                cancel(p, from, "type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy);
-                            }
-                        } else if (cooldowns.canDo("above-block")) {
-                            boolean cancel = false;
+                        if (Math.abs(MoveUtils.jumping[0] - ver) < MoveUtils.jumping[2] && hor >= 0.35) {
+                            cancel = true;
+                        } else if (Math.abs((MoveUtils.jumping[0] * 2) - ver) < MoveUtils.jumping[2] && hor >= 0.355) {
+                            cancel = true;
+                        } else if (Math.abs((MoveUtils.jumping[0] * 3) - ver) < MoveUtils.jumping[2] && hor >= 0.36) {
+                            cancel = true;
+                        } else if (Math.abs((MoveUtils.jumping[0] * 4) - ver) < MoveUtils.jumping[2] && hor >= 0.365) {
+                            cancel = true;
+                        }
 
-                            if (Math.abs(MoveUtils.jumping[0] - ver) < MoveUtils.jumping[2] && hor >= 0.35) {
-                                cancel = true;
-                            } else if (Math.abs((MoveUtils.jumping[0] * 2) - ver) < MoveUtils.jumping[2] && hor >= 0.355) {
-                                cancel = true;
-                            } else if (Math.abs((MoveUtils.jumping[0] * 3) - ver) < MoveUtils.jumping[2] && hor >= 0.36) {
-                                cancel = true;
-                            } else if (Math.abs((MoveUtils.jumping[0] * 4) - ver) < MoveUtils.jumping[2] && hor >= 0.365) {
-                                cancel = true;
-                            }
-
-                            if (cancel) {
-                                cancel(p, from, "type: hop(acceleration), vertical: " + ver + ", horizontal: " + hor + ", limit: " + dmCopy);
-                            }
+                        if (cancel) {
+                            cancel(p, from, "type: hop(acceleration), vertical: " + ver + ", horizontal: " + hor + ", limit: " + dmCopy);
                         }
                     }
                 }
@@ -383,8 +408,8 @@ public class Speed {
                     }
                     if (groundCustom && hor >= (dmCopy * (AlgebraUtils.oneThird * 2.0))
                             && buffer.canDo(reasonCopy)
-                            && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                            && !BlockUtils.isIceBlockFree(to, 0, -1, 0)
+                            && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.semi_solid)
+                            && PatternUtils.isBlockPattern(minusOne, to, true, BlockUtils.ice)
                             && buffer.start("ice_speed", 10) == 4) {
                         buffer.remove("ice_speed");
                         cancel(p, from, "type: ice-speed(ground), horizontal: " + hor + ", limit: " + dmCopy);
@@ -399,18 +424,10 @@ public class Speed {
                         && cooldowns.canDo("bed")
                         && !BlockUtils.isSlime(p, to, 2)) {
                     float fallDistance = p.getFallDistance();
-                    boolean allow = true;
 
-                    if (dmCopy == Speed.air || dmCopy == ground_jump_speed) {
-                        for (int i = -1; i <= 1; i++) {
-                            if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
-                                allow = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (fallDistance <= 1.2f && allow) {
+                    if (fallDistance <= 1.2f
+                            && (dmCopy != Speed.air && dmCopy != ground_jump_speed
+                            || !PatternUtils.isBlockPattern(Speed.fallDistance, to, true, BlockUtils.semi_solid))) {
                         boolean illegal = true;
 
                         for (float value : fallingDistance) {
@@ -459,16 +476,9 @@ public class Speed {
                         allow = true;
                     }
 
-                    if (allow) {
-                        for (int i = -1; i <= 1; i++) {
-                            if (!BlockUtils.isSemiSolidFree(to, 1, i, 1)) {
-                                allow = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (allow && buffer.start("high_normal_speed", 20) >= 18) {
+                    if (allow
+                            && !PatternUtils.isBlockPattern(groundLocations, to, true, BlockUtils.semi_solid)
+                            && buffer.start("high_normal_speed", 20) >= 18) {
                         cancel(p, from, "type: ground(high), horizontal: " + hor + ", limit: " + dmCopy);
                     }
                     long time = p.getTimer(check).get("repeated=" + v);
@@ -586,8 +596,7 @@ public class Speed {
                 || PlayerData.isOnGround(p, to, 0, -1.5, 0))) {
             // Combined Step Blocks (Not using hitbox_max due to ascension imperfections)
             if ((dm == air || dm == air_non_solid_min || dm == air_non_solid_max) && air_ticks == 0 && (dy > 0.5 || jumping)
-                    && (!BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                    || !BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, -1, BlockUtils.hitbox))) {
+                    && PatternUtils.isBlockPattern(upwardsLocations, to, true, BlockUtils.semi_solid)) {
                 reason = "upwards(combined)";
                 dm = cacheLimit(decimals, dm, upwards, 10);
             } else if (!jumping) {
@@ -659,7 +668,10 @@ public class Speed {
         }
 
         // Limit
-        if (!BlockUtils.isBedFree(to, 1, -remaining, 1) || !BlockUtils.isBedFree(to, BlockUtils.hitbox, -remaining, BlockUtils.hitbox)) {
+        if (PatternUtils.isBlockPattern(new double[][]{
+                {1, -remaining, 1},
+                {BlockUtils.hitbox, -remaining, BlockUtils.hitbox}
+        }, to, true, BlockUtils.bed)) {
             cooldowns.add("bed", 10);
             reason = "bed";
             dm = cacheLimit(decimals, dm, bed, 10);
@@ -689,7 +701,7 @@ public class Speed {
         }
 
         // Limit
-        if (BlockUtils.isSolidFree(to, BlockUtils.hitbox, 2, BlockUtils.hitbox)) {
+        if (!PatternUtils.isBlockPattern(aboveBlock, to, true, BlockUtils.solid)) {
             cooldowns.add("above-block", 20);
         }
         return new Object[]{dm, reason, iceBlocks};

@@ -41,11 +41,18 @@ public class NoFall {
             {BlockUtils.hitbox, 0, BlockUtils.hitbox},
             {BlockUtils.hitbox, 1, BlockUtils.hitbox},
             {BlockUtils.hitbox, 2, BlockUtils.hitbox}
+    }, ratio = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
     }, canDo = new double[][]{
             {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
             {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
             {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
             {BlockUtils.hitbox_max, 2, BlockUtils.hitbox_max}
+    };
+    private static final double[]
+            genericHitbox = new double[]{
+            BlockUtils.hitbox, 0, BlockUtils.hitbox
     };
 
     // Utilities
@@ -122,7 +129,7 @@ public class NoFall {
             int cooldownTicks = 10;
 
             if (airTicks > 0 && vertical > -3.5 && !p.getHandlers().has(Handlers.HandlerType.ElytraWear) && !PlayerData.hasJumpEffect(p)) {
-                if (PatternUtils.isBlockPattern(air, to, true, false, BlockUtils.semi_solid)) {
+                if (PatternUtils.isBlockPattern(air, to, true, BlockUtils.semi_solid)) {
                     p.getCooldowns(check).add(cooldownKey, cooldownTicks);
                     return;
                 }
@@ -193,7 +200,7 @@ public class NoFall {
 
                     if (!p.isOnGround() && p.isOnGroundCustom()
                             && BlockUtils.isFullSolid(to.clone().add(0, -1, 0))
-                            && BlockUtils.isSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)) {
+                            && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.solid)) {
                         cancel(p, "type: land", loc, 10, 5.0);
                     }
                 }
@@ -210,7 +217,7 @@ public class NoFall {
                 && (airTicks >= 20 || airTicks >= 12 && p.isFalling(vertical))
                 && p.isOnGround() && !p.isOnGroundCustom() && p.isGroundSpoofing()
                 && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)
-                && !PatternUtils.isBlockPattern(spoof, to, true, false, BlockUtils.solid)) {
+                && !PatternUtils.isBlockPattern(spoof, to, true, BlockUtils.solid)) {
             cancel(p, "type: spoof, air: " + airTicks + ", vertical: " + vertical, from, 10, 0.0);
         }
     }
@@ -258,8 +265,7 @@ public class NoFall {
                             if (cases != 0) {
                                 SpartanBukkit.runDelayedTask(p, () -> {
                                     if (p != null) {
-                                        if (BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                                                && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)) {
+                                        if ( !PatternUtils.isBlockPattern(ratio, to, true, BlockUtils.semi_solid)) {
                                             int blocks = buffer.get(ratioKey + "blocks");
 
                                             // bigger or "equal" to 3 due to abstract counting of blocks
@@ -334,7 +340,7 @@ public class NoFall {
                     ItemStack boots = p.getInventory().getBoots();
 
                     if (boots != null && boots.containsEnchantment(Enchantment.PROTECTION_FALL)
-                            || PatternUtils.isBlockPattern(canDo, loc, true, false, BlockUtils.web)) {
+                            || PatternUtils.isBlockPattern(canDo, loc, true, BlockUtils.web)) {
                         clearRatio(buffer, decimals);
                         return false;
                     }

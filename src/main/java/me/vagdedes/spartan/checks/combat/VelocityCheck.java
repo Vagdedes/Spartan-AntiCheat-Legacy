@@ -16,20 +16,32 @@ import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
-import me.vagdedes.spartan.utils.server.MaterialUtils;
-import org.bukkit.Material;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 
 import java.util.*;
 
 public class VelocityCheck {
 
     private static final Enums.HackType check = Enums.HackType.Velocity;
-    private static final Material web = MaterialUtils.get("web");
     private static final Map<UUID, PlayerVelocity> entityMemory = Cache.store(new LinkedHashMap<>());
     private static final int
             ticks = 100,
             fails = 4,
             hackerFails = (fails - 1);
+
+    private static final double[][]
+            solid = new double[][]{
+            {0, 1, 0},
+            {0, 2, 0}
+    }, web = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max}
+    }, semiSolid = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 2, BlockUtils.hitbox_max}
+    };
 
     public static void remove(SpartanPlayer player) {
         entityMemory.remove(player.getUniqueId());
@@ -152,18 +164,14 @@ public class VelocityCheck {
                 && !Attributes.has(p, Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
             SpartanLocation loc = p.getLocation();
 
-            if (BlockUtils.canClimb(loc)) {
-                return false;
-            }
-            if (local) {
-                for (int i = -1; i <= 2; i++) {
-                    if ((i >= 1 ? BlockUtils.isSolid(loc.clone().add(0, i, 0)) : loc.clone().add(0, i, 0).isBlock(web, BlockUtils.hitbox_max))
-                            || !BlockUtils.isSemiSolidFree(loc, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
-                        return false;
-                    }
+            if (!BlockUtils.canClimb(loc)) {
+                if (local) {
+                    return !PatternUtils.isBlockPattern(solid, loc, false, BlockUtils.solid)
+                            && !PatternUtils.isBlockPattern(web, loc, true, BlockUtils.web)
+                            && !PatternUtils.isBlockPattern(semiSolid, loc, true, BlockUtils.semi_solid);
                 }
+                return true;
             }
-            return true;
         }
         return false;
     }

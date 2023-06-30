@@ -6,8 +6,13 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.GroundUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 
 public class IrregularMovementsBouncing {
+
+    private static final double[] locations = new double[]{
+            BlockUtils.hitbox_max, 2, BlockUtils.hitbox_max
+    };
 
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
                     double vertical, double oldVertical, double box,
@@ -16,7 +21,7 @@ public class IrregularMovementsBouncing {
                     String prevention, String scenario) {
         if (IrregularMovements.check.getCheck().getBooleanOption("check_bouncing_blocks", true)) {
             AsyncDetection.run(p, IrregularMovements.check, () -> {
-                if (BlockUtils.isSolidFree(to, BlockUtils.hitbox_max, 2, BlockUtils.hitbox_max)) {
+                if (!PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid)) {
                     if (vertical > 0.0) {
                         if (canGoUp) {
                             boolean canBounce = BlockUtils.isBouncingBlock(p, to, 2);

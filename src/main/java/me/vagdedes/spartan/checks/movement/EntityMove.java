@@ -20,6 +20,7 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.GroundUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
@@ -47,6 +48,12 @@ public class EntityMove {
     private static final Map<UUID, Long> validity = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final int[] entityIDs = new int[]{
             horseID, boatID, pigID, llamaID, camelID
+    };
+
+    private static final double[][]
+            ice = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
     };
 
     private static final Material water = MaterialUtils.get("water"),
@@ -79,7 +86,9 @@ public class EntityMove {
                 boolean unstableLiquids = cacheBoolean(p, false, "unstable-liquids", liquidCacheTicks),
                         liquidsLocal = liquidBlocks.size() > 0,
                         liquids = cacheBoolean(p, liquidsLocal, "liquids", liquidCacheTicks) || p.wasInLiquids(),
-                        iceBlocks = cacheBoolean(p, false, "ice-blocks", iceCacheTicks),
+                        iceBlocks = cacheBoolean(p,
+                                PatternUtils.isBlockPattern(ice, to, true, BlockUtils.ice),
+                                "ice-blocks", iceCacheTicks),
                         damage = Damage.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.Explosion),
                         knownBoxes = GroundUtils.heightExists(box, true),
                         oldKnownBoxes = GroundUtils.heightExists(oldBox, true),
@@ -103,12 +112,6 @@ public class EntityMove {
                             unstableLiquids = cacheBoolean(p, true, "unstable-liquids", liquidCacheTicks);
                             break;
                         }
-                    }
-                }
-                for (int i = -1; i <= 0; i++) {
-                    if (!BlockUtils.isIceBlockFree(to, BlockUtils.hitbox_max, i, BlockUtils.hitbox_max)) {
-                        iceBlocks = cacheBoolean(p, true, "ice-blocks", iceCacheTicks);
-                        break;
                     }
                 }
 

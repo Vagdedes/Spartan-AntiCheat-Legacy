@@ -48,6 +48,22 @@ public class GroundUtils {
 
     private static final Material web = MaterialUtils.get("web");
 
+    private static final double[][]
+            jumpMovement = new double[][]{
+            {1, -2, 1},
+            {1, -1, 1},
+            {1, 0, 1},
+    };
+
+    private static final double[]
+            minus_0_6 = new double[]{
+            BlockUtils.hitbox_max, -0.6, BlockUtils.hitbox_max
+    }, run = new double[]{
+            hitbox, 0, hitbox
+    }, blockedJumping = new double[]{
+            BlockUtils.hitbox, 2, BlockUtils.hitbox
+    };
+
     static {
         abstractHeights.add(maxStep);
         abstractHeights.add(bedStep);
@@ -378,7 +394,7 @@ public class GroundUtils {
             }
         }
         for (SpartanLocation surroundingLocation : loc.getSurroundingLocations(box, correctY, box)) { // Attention: removed "all" argument that was set to "true" recently
-                array.add(surroundingLocation);
+            array.add(surroundingLocation);
         }
         return array;
     }
@@ -492,7 +508,7 @@ public class GroundUtils {
         if (airTicks <= 12
                 && p.getLastJump() >= 1_000L
                 && (isZeroMiscalculation(vertical - 0.2) || isZeroMiscalculation(remaining - 0.2))
-                && !BlockUtils.isSolidFree(to, BlockUtils.hitbox, 2, BlockUtils.hitbox)) {
+                && PatternUtils.isBlockPattern(blockedJumping, to, true, BlockUtils.solid)) {
             vertical = Math.abs(vertical - remaining);
 
             for (double height : allHeights) {
@@ -507,14 +523,12 @@ public class GroundUtils {
         return hasCooldown && !cooldowns.canDo(blockedJumpingKey);
     }
 
-    public static void runOnJumpMovement(SpartanPlayer p, SpartanLocation loc, int airTicks) { // Attention, changed recently
-        if (airTicks > 11 && !p.getProfile().isSuspectedOrHacker() && p.getCooldowns().canDo("ground-utils=set-off-ground")) {
-            for (int i = -2; i <= 0; i++) {
-                if (!BlockUtils.isSolidFree(loc, 1, i, 1)) {
-                    setOnGround(p, 1);
-                    break;
-                }
-            }
+    public static void runOnJumpMovement(SpartanPlayer p, SpartanLocation loc, int airTicks) {
+        if (airTicks > 11
+                && !p.getProfile().isSuspectedOrHacker()
+                && p.getCooldowns().canDo("ground-utils=set-off-ground")
+                && PatternUtils.isBlockPattern(jumpMovement, loc, true, BlockUtils.solid)) {
+            setOnGround(p, 1);
         }
     }
 
@@ -523,12 +537,12 @@ public class GroundUtils {
             double dx = loc.getX() - loc.getBlockX();
 
             if (dx < 0.3 || dx > 0.7) {
-                return !solidBlocks.contains(loc.getBlock().getType()) && (p == null || BlockUtils.areWallsAround(loc, BlockUtils.hitbox, -0.6, BlockUtils.hitbox));
+                return !solidBlocks.contains(loc.getBlock().getType()) && (p == null || PatternUtils.isBlockPattern(minus_0_6, loc, true, BlockUtils.walls));
             }
             double dz = loc.getZ() - loc.getBlockZ();
 
             if (dz < 0.3 || dz > 0.7) {
-                return !solidBlocks.contains(loc.getBlock().getType()) && (p == null || BlockUtils.areWallsAround(loc, BlockUtils.hitbox, -0.6, BlockUtils.hitbox));
+                return !solidBlocks.contains(loc.getBlock().getType()) && (p == null || PatternUtils.isBlockPattern(minus_0_6, loc, true, BlockUtils.walls));
             }
         }
         return false;
@@ -541,7 +555,7 @@ public class GroundUtils {
                 && !LagLeniencies.hasInconsistencies(p, "tps") && !LagLeniencies.hasHighLatency(p, LagLeniencies.badPing) // Base
                 && !Building.hasCooldown(p)
                 && !BlockUtils.canClimb(to) && !BlockUtils.canClimb(from)
-                && !BlockUtils.isSolidFree(to, hitbox, 0, hitbox)) {
+                && PatternUtils.isBlockPattern(run, to, true, BlockUtils.solid)) {
             if ((!ground || !p.isOnGround())
                     && (to.getY() - blockY) != 0.5
                     && !Moderation.wasDetected(p)

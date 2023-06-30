@@ -55,7 +55,7 @@ public class PlayerProfile {
         this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
-        this.lastInteraction = new LiveViolation(uuid, hackTypes[0]);
+        this.lastInteraction = isNull ? null : new LiveViolation(hackTypes[0]);
 
         // Separator
         if (isNull) {
@@ -105,7 +105,7 @@ public class PlayerProfile {
         this.staff = Permissions.isStaff(player);
         this.bedrockPlayerCheck = true;
         this.lastPlayed = player.getLastPlayed();
-        this.lastInteraction = new LiveViolation(uuid, hackTypes[0]);
+        this.lastInteraction = new LiveViolation(hackTypes[0]);
 
         this.violationHistory = new ViolationHistory[Enums.hackTypeLength];
         this.miningHistory = new MiningHistory[Enums.miningOreLength];

@@ -15,6 +15,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.GroundUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -29,6 +30,13 @@ public class Building {
     private static final String key = "building=protection";
     public static final double maxMovingSpeed = 0.15;
     private static final Collection<Enums.HackType> concerningHackTypes;
+
+    private static final double[]
+            current = new double[]{
+            BlockUtils.hitbox_max, -1.5, BlockUtils.hitbox_max
+    }, extra = new double[]{
+            BlockUtils.hitbox_extra, -1.5, BlockUtils.hitbox_extra
+    };
 
     static {
         Enums.HackType[] hackTypes = Enums.hackTypes();
@@ -100,9 +108,9 @@ public class Building {
                     && ploc.getBlockY() == blocY
                     && ploc.getBlockZ() == bloc.getBlockZ()) {
                 cases = 1;
-            } else if (!BlockUtils.isSolidFree(loc, BlockUtils.hitbox_max, -1.5, BlockUtils.hitbox_max)) {
+            } else if (PatternUtils.isBlockPattern(current, loc, true, BlockUtils.solid)) {
                 cases = 2;
-            } else if (!BlockUtils.isSolidFree(loc, BlockUtils.hitbox_extra, -1.5, BlockUtils.hitbox_extra)) {
+            } else if (PatternUtils.isBlockPattern(extra, loc, true, BlockUtils.solid)) {
                 cases = 3;
             } else {
                 ItemStack item = p.getItemInHand();

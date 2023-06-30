@@ -14,6 +14,7 @@ import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPreventionUtils;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
@@ -40,6 +41,10 @@ public class WaterSpeed {
             premature = 0.6,
             stable = 0.17, stable_extra = 0.22,
             instability = 0.3;
+
+    private static final double[] genericHitbox = new double[]{
+            BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max
+    };
 
     public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
                            double vertical, double oldVertical, double box, double horizontal,
@@ -82,7 +87,7 @@ public class WaterSpeed {
                 suspicion = false;
                 clearMovement = true;
             } else {
-                suspicion = vertical >= -0.07 && BlockUtils.isLiquidFree(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max);
+                suspicion = vertical >= -0.07 && !PatternUtils.isLiquidPattern(new double[]{BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max}, to, true);
                 clearMovement = suspicion || p.getProfile().isSuspectedOrHacker(Speed.check);
             }
             double limit = 0.0;
@@ -141,8 +146,8 @@ public class WaterSpeed {
                             }
                         }
 
-                    } else if (locM1.areBlocks(material, 1.0) && isSolidFree(to, 1, 0, 1)
-                            || locM2.areBlocks(material, 1.0) && isSolidFree(to, 1, 0, 1) && isSolidFree(to, 1, -1, 1)) {
+                    } else if (locM1.areBlocks(material, 1.0) && isSolidAndLiquidFree(to, 1, 0, 1)
+                            || locM2.areBlocks(material, 1.0) && isSolidAndLiquidFree(to, 1, 0, 1) && isSolidAndLiquidFree(to, 1, -1, 1)) {
                         if (canCheckWater) {
                             limit = out_water;
                             limitType += 6;
@@ -222,8 +227,8 @@ public class WaterSpeed {
 
                 && (AlgebraUtils.cut(vertical, 1) != 0.0
 
-                || isSolidFree(loc, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                && isSolidFree(locM1, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max))) {
+                || isSolidAndLiquidFree(loc, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
+                && isSolidAndLiquidFree(locM1, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max))) {
             increase = 3;
         } else {
             increase = 1;
@@ -243,7 +248,10 @@ public class WaterSpeed {
         } else if (dy <= -2.0) {
             cooldowns.add("allow", 20);
         } else {
-            boolean blocksAbove = !BlockUtils.isSolidFree(to, 1, 2, 1) || !BlockUtils.isSolidFree(to, 1, 2 - remaining, 1);
+            boolean blocksAbove = PatternUtils.isBlockPattern(new double[][]{
+                    {1, 2, 1},
+                    {1, 2 - remaining, 1}
+            }, to, true, BlockUtils.solid);
 
             for (int i = -1; i <= 0; i++) {
                 if (BlockUtils.areIceBlocks(to.clone().add(0, i, 0))) {
@@ -263,10 +271,10 @@ public class WaterSpeed {
     private static boolean canCheck(SpartanPlayer p, Material m, double remaining,
                                     SpartanLocation to, SpartanLocation loc1, SpartanLocation locM1, SpartanLocation locM2,
                                     Buffer buffer) {
-        if ((!isFullSolidFree(locM1) && BlockUtils.isLiquidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
+        if ((!isFullSolidFree(locM1) && !PatternUtils.isLiquidPattern(genericHitbox, to, true)
                 || !isFullSolidFree(to))
 
-                && BlockUtils.isLiquidFree(loc1, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)) {
+                && !PatternUtils.isLiquidPattern(genericHitbox, loc1, true)) {
             freezeBuffers(p, buffer, 1);
             return false;
         }
@@ -274,7 +282,7 @@ public class WaterSpeed {
                 || to.areBlocks(m, BlockUtils.hitbox_max)
                 || locM1.areBlocks(m, BlockUtils.hitbox_max)
                 || to.clone().add(0, -remaining, 0).areBlocks(m, BlockUtils.hitbox_max)
-                || BlockUtils.isSolidFree(locM1, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max) && locM2.areBlocks(m, BlockUtils.hitbox_max);
+                || !PatternUtils.isBlockPattern(genericHitbox, locM1, true, BlockUtils.solid) && locM2.areBlocks(m, BlockUtils.hitbox_max);
     }
 
     private static double adjustLimit(SpartanPlayer p, SpartanLocation loc, SpartanLocation locM1, SpartanLocation loc1,
@@ -355,22 +363,18 @@ public class WaterSpeed {
 
     // Utils
 
-    private static boolean isSolidFree(SpartanLocation loc, double x, double y, double z) {
-        return BlockUtils.isSolidFree(loc, x, y, z) && BlockUtils.isLiquidFree(loc, x, y, z);
+    private static boolean isSolidAndLiquidFree(SpartanLocation loc, double x, double y, double z) {
+        return !PatternUtils.isBlockPattern(new double[]{x, y, z}, loc, true, BlockUtils.solid)
+                && !PatternUtils.isLiquidPattern(new double[]{x, y, z}, loc, true);
     }
 
     private static boolean isFullSolidFree(SpartanLocation loc) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)) {
-            if (BlockUtils.isSolid(locs) || BlockUtils.isSemiSolid(locs)) {
-                return false;
-            }
-        }
-        return true;
+        return !PatternUtils.isBlockPattern(genericHitbox, loc, true, BlockUtils.solid, BlockUtils.semi_solid);
     }
 
     private static boolean areWalls(SpartanLocation locM1, SpartanLocation to, SpartanLocation loc1) {
         return !BlockUtils.isSolid(loc1) && !BlockUtils.isSolid(to.clone().add(0, 2, 0))
-                && !BlockUtils.isLiquidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                && BlockUtils.areWallsAround(locM1, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max);
+                && PatternUtils.isLiquidPattern(genericHitbox, to, true)
+                && PatternUtils.isBlockPattern(genericHitbox, locM1, true, BlockUtils.walls);
     }
 }

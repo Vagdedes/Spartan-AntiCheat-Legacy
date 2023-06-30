@@ -5,9 +5,17 @@ import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 public class IrregularMovementsLiquids {
+
+    private static final double[]
+            minus = new double[]{
+            BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max,
+    }, current = new double[]{
+            BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max,
+    };
 
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
                     double vertical, double horizontal,
@@ -19,20 +27,17 @@ public class IrregularMovementsLiquids {
                     if (!building
                             && BlockUtils.isLiquid(to.clone().add(0, -1, 0))
 
-                            && BlockUtils.isSolidFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
-                            && BlockUtils.isSolidFree(from, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
+                            && !PatternUtils.isBlockPattern(minus, to, true, BlockUtils.solid, BlockUtils.semi_solid)
+                            && !PatternUtils.isBlockPattern(minus, from, true, BlockUtils.solid, BlockUtils.semi_solid)
 
-                            && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
-                            && BlockUtils.isSemiSolidFree(from, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
+                            && !PatternUtils.isBlockPattern(current, to, true, BlockUtils.semi_solid)
+                            && !PatternUtils.isBlockPattern(current, from, true, BlockUtils.semi_solid)
 
-                            && BlockUtils.isWaterLogFree(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
-                            && BlockUtils.isWaterLogFree(from, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)
+                            && !PatternUtils.isWaterLogPattern(minus, to, true)
+                            && !PatternUtils.isBlockPattern(minus, from, true)
 
-                            && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                            && BlockUtils.isSemiSolidFree(from, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-
-                            && BlockUtils.isWaterLogFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                            && BlockUtils.isWaterLogFree(from, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)) {
+                            && !PatternUtils.isWaterLogPattern(current, to, true)
+                            && !PatternUtils.isBlockPattern(current, from, true)) {
                         if (jumping) {
                             IrregularMovements.cancel(p, from, prevention, "jumping-" + detection, null, oldJumping ? 3 : 2, -IrregularMovements.defaultBufferTime);
                         } else {

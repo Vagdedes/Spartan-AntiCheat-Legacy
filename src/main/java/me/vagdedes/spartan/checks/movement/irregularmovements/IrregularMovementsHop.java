@@ -21,16 +21,25 @@ public class IrregularMovementsHop {
             redundantMotion = 0.001335979112141672;
 
     private static final double[][]
-            locations1 = new double[][]{
+            semiSolid = new double[][]{
             {1, -2, 1},
             {1, -1, 1},
             {1, 0, 1},
             {1, 1, 1},
             {1, 2, 1},
-    }, locations2 = new double[][]{
+    }, solid = new double[][]{ // Attention: Connected logically with 'solidTop'
             {1, 0, 1},
             {1, 1, 1},
             {1, 2, 1}
+    }, solidTop = new double[][]{
+            {1, 2, 1}
+    }, honey = new double[][]{
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max}
+    }, walls = new double[][]{
+            {0, -1, 0}
+    }, genericHitbox = new double[][]{
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max}
     };
 
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns, Timer timer,
@@ -46,22 +55,23 @@ public class IrregularMovementsHop {
                         && !p.getHandlers().has(Handlers.HandlerType.ElytraWear) // State
                         && !BlockUtils.isAnvilBugged(to) && !p.stepsOnBoats() && !Building.hasCooldown(p) // Situation
 
-                        // Environment
-                        && !BlockUtils.areCobbleWalls(to.clone().add(0, -1, 0))
-                        && BlockUtils.isCoralFanFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                        && BlockUtils.isInteractiveBushFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                        && BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                        && BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max)) {
-                    if (PatternUtils.isBlockPattern(locations1, to, true, false, BlockUtils.semi_solid)) {
+                        // Close Environment
+                        && !PatternUtils.isBlockPattern(walls, to, false, BlockUtils.cobble_walls)
+
+                        // Further Environment
+                        && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.coral_fan)
+                        && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.interactive_bushes)
+                        && !PatternUtils.isBlockPattern(honey, to, true, BlockUtils.honey_block)) {
+                    if (PatternUtils.isBlockPattern(semiSolid, to, true, BlockUtils.semi_solid)) {
                         cooldowns.add("hop=non-solid-free", 20);
                         return;
                     }
                     if (!cooldowns.canDo("hop=non-solid-free")) {
                         return;
                     }
-                    boolean solidFree = !PatternUtils.isBlockPattern(locations2, to, true, false, BlockUtils.solid);
+                    boolean solidFree = !PatternUtils.isBlockPattern(solid, to, true, BlockUtils.solid);
 
-                    if (BlockUtils.isSolidFree(to, 1, 2, 1)) {
+                    if (solidFree || !PatternUtils.isBlockPattern(solidTop, to, true, BlockUtils.solid)) {
                         boolean staticB, dynamic,
                                 verticalAboveZero = vertical > 0.0;
                         double limit = verticalAboveZero ? verticalAboveZeroMotion : verticalBelowZeroMotion,

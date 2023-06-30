@@ -25,10 +25,7 @@ import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPreventionUtils;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.GroundUtils;
-import me.vagdedes.spartan.utils.gameplay.MoveUtils;
-import me.vagdedes.spartan.utils.gameplay.PlayerData;
+import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.potion.PotionEffectType;
 
@@ -88,6 +85,19 @@ public class IrregularMovements {
             uncompletedJumpDetection, airJumpDetection, spoofJumpDetection, illegalJumpDetection
     };
 
+    private static final double[][]
+            interactiveAndPassable = new double[][]{
+            {0, 0, 0},
+            {0, 1, 0},
+    }, liquid = new double[][]{
+            {0, 0, 0},
+            {0, 1, 0},
+    };
+    private static final double[]
+            genericHitbox = new double[]{
+            BlockUtils.hitbox, 0, BlockUtils.hitbox
+    };
+
     // Detections
     static final int defaultBufferTime = 20;
     private static final int minuteTicks = 1200;
@@ -137,8 +147,7 @@ public class IrregularMovements {
                     waterElevator = p.getHandlers().has(Handlers.HandlerType.WaterElevator);
 
             if (waterElevator
-                    || BlockUtils.isLiquid(to)
-                    || BlockUtils.isLiquid(to.clone().add(0, 1, 0))) {
+                    || PatternUtils.isBlockPattern(liquid, to, false, BlockUtils.liquid)) {
                 liquidBlocks = true;
             } else if (vertical < 0.0) {
                 if (BlockUtils.isLiquid(to.clone().add(0, vertical, 0))) {
@@ -272,10 +281,12 @@ public class IrregularMovements {
                 checkJump = true;
                 checkDown = true;
                 checkFall = true;
-            } else if (!BlockUtils.isWebFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                    || !BlockUtils.isWebFree(to, BlockUtils.hitbox, 1, BlockUtils.hitbox)
-                    || !BlockUtils.isWebFree(to, BlockUtils.hitbox, -0.1, BlockUtils.hitbox)
-                    || !BlockUtils.isWebFree(to, BlockUtils.hitbox, p.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox)) { // Cobwebs
+            } else if (PatternUtils.isBlockPattern(new double[][]{
+                    {BlockUtils.hitbox, 0, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, 1, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, -0.1, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, p.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox}
+            }, to, true, BlockUtils.web)) { // Cobwebs
                 scenario = "cobweb";
                 canGoUp = forcefulUp;
                 canGoDown = !forcefulUp;
@@ -284,10 +295,12 @@ public class IrregularMovements {
 
                 constructDetection = true; // all
                 minimumUp = 0.022;
-            } else if (BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max)
-                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max)
-                    || BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, -box, BlockUtils.hitbox_max)
-                    || onGroundCustom && BlockUtils.canClimbAround(to, BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max)) { // Ladder/Vine Climbing
+            } else if (PatternUtils.isBlockPattern(new double[][]{
+                    {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+                    {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
+                    {BlockUtils.hitbox_max, -box, BlockUtils.hitbox_max},
+                    {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max, onGroundCustom ? 1 : 0}
+            }, to, true, BlockUtils.climbable)) { // Ladder/Vine Climbing
                 scenario = "climb";
                 canGoUp = true;
                 canGoDown = !forcefulUp;
@@ -315,10 +328,10 @@ public class IrregularMovements {
                 checkDown = true;
                 checkFall = true;
             } else if (p.isOnFire()
+                    || p.isFrozen()
                     || FloorProtection.hasCooldown(p)
                     || PlayerData.hasBadPotionEffects(p)
-                    || BlockUtils.isInteractiveAndPassable(p, to)
-                    || BlockUtils.isInteractiveAndPassable(p, to.clone().add(0, 1, 0))) { // Small damage by effects, circumstances or fire
+                    || PatternUtils.isBlockPattern(interactiveAndPassable, to, false, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;
 
                 scenario = "ground-interaction";
@@ -476,8 +489,8 @@ public class IrregularMovements {
                                                 && (!oldJumping
                                                 || Math.abs(oldVertical - MoveUtils.jumping[0]) >= MoveUtils.jumping[2]) // Continue only when player was not previously jumping and ignore checking them if the jump motion just ended
 
-                                                && BlockUtils.isSemiSolidFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)
-                                                && BlockUtils.isHoneyBlockFree(to, BlockUtils.hitbox, 0, BlockUtils.hitbox)) {
+                                                && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.semi_solid)
+                                                && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.honey_block)) {
                                             cancel(p, from, prevention, "ground-up",
                                                     blockedJumping ? 12 : !changedScenario && (suspectedOrHacker || horizontal < MovementProcessing.sprintingMaxSpeed) ? 4 : 8);
                                         }

@@ -5,7 +5,8 @@ import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.CombatUtils;
+import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
@@ -46,8 +47,10 @@ public class Liquid {
     public static boolean isLocation(SpartanPlayer player, SpartanLocation location) {
         double hitbox = player.isBedrockPlayer() ? BlockUtils.hitbox_max : BlockUtils.hitbox;
         return location.getBlock().isLiquid()
-                || !BlockUtils.isLiquidFree(location, hitbox, 0.0, hitbox)
-                || !BlockUtils.isLiquidFree(location, hitbox, 1.0, hitbox)
-                || !BlockUtils.isLiquidFree(location, hitbox, CombatUtils.playerWidthAndHeight[1], hitbox);
+                || PatternUtils.isLiquidPattern(new double[][]{
+                {hitbox, 0, hitbox},
+                {hitbox, 1, hitbox},
+                {hitbox, player.getEyeHeight() + MoveUtils.lowPrecision, hitbox}
+        }, location, true);
     }
 }

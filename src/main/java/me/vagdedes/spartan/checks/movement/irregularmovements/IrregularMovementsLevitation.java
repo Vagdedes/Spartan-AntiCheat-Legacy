@@ -7,11 +7,18 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.GroundUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.potion.PotionEffectType;
 
 public class IrregularMovementsLevitation {
+
+    private static final double[][]
+            locations = new double[][]{
+            {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 2, BlockUtils.hitbox_max}
+    };
 
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns,
                     double vertical,
@@ -34,8 +41,7 @@ public class IrregularMovementsLevitation {
                         IrregularMovements.cancel(p, from, prevention, "up-" + scenario, 3);
                     } else if (vertical == 0.0
                             && (!modifiedHeightExists
-                            || BlockUtils.isSolidFree(to, BlockUtils.hitbox_max, 1.0, BlockUtils.hitbox_max)
-                            && BlockUtils.isSolidFree(to, BlockUtils.hitbox_max, 2.0, BlockUtils.hitbox_max))) {
+                            || !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid))) {
                         IrregularMovements.cancel(p, from, prevention, "horizontal-" + scenario, 3);
                     }  // Do not create a down detection as it is covered by the illegal-down algorithm
                 }

@@ -6,13 +6,20 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 
 public class IrregularMovementsClimb {
 
+    private static final double[][]
+            scaffolding = new double[][]{
+            {0, 0, 0},
+            {0, 1, 0}
+    };
+
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns,
-                       double vertical, double oldVertical, double box,
-                       boolean knownBoxes, boolean canGoUp, boolean canGoDown, boolean canJump, boolean bouncingBlocks, boolean jumping,
-                       String prevention, String scenario) {
+                    double vertical, double oldVertical, double box,
+                    boolean knownBoxes, boolean canGoUp, boolean canGoDown, boolean canJump, boolean bouncingBlocks, boolean jumping,
+                    String prevention, String scenario) {
         if (IrregularMovements.check.getCheck().getBooleanOption("check_climbing", true)) {
             AsyncDetection.run(p, IrregularMovements.check, () -> {
                 if (jumping) {
@@ -24,8 +31,7 @@ public class IrregularMovementsClimb {
                         IrregularMovements.cancel(p, from, prevention, "jump-" + scenario, 1);
                     }
                 } else if (!p.isClimbing(vertical)) {
-                    boolean scaffolding = BlockUtils.isScaffoldingBlock(to)
-                            || BlockUtils.isScaffoldingBlock(to.clone().add(0, 1, 0));
+                    boolean scaffolding = PatternUtils.isBlockPattern(IrregularMovementsClimb.scaffolding, to, false, BlockUtils.scaffolding);
                     double max = (scaffolding ? MoveUtils.climbingScaffoldingMax : MoveUtils.getClimbingMotionEdges()[1]) + MoveUtils.lowPrecision;
 
                     if (canGoUp && vertical >= max) {

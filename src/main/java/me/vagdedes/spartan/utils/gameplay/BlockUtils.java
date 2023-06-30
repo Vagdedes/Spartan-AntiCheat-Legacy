@@ -11,7 +11,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BlockUtils {
 
@@ -1265,7 +1266,7 @@ public class BlockUtils {
 
     // Local due to Waterlogged block incompatibilities
     public static boolean isLiquid(Block block) {
-        return liquid.contains(block.getType()) || block.isLiquid();
+        return isLiquid(block.getType()) || block.isLiquid();
     }
 
     public static boolean isLiquid(Material m) {
@@ -1545,7 +1546,7 @@ public class BlockUtils {
     }
 
     public static boolean areCobbleWalls(SpartanLocation loc) {
-        return areWalls(loc.getBlock().getType());
+        return areCobbleWalls(loc.getBlock().getType());
     }
 
     public static boolean areShulkerBoxes(SpartanLocation loc) {
@@ -1642,15 +1643,6 @@ public class BlockUtils {
         return loc.getBlock().isLiquid();
     }
 
-    public static boolean isLiquidFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (isLiquid(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static boolean isGroundFree(SpartanPlayer p, SpartanLocation loc, double x, double y, double z) {
         if (p.isOnGroundCustom()) {
             return false;
@@ -1663,136 +1655,22 @@ public class BlockUtils {
         return true;
     }
 
-    public static boolean isSolidFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (isSolid(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isWaterLogFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (locs.getBlock().isWaterLogged()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isCoralFanFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areCoralFans(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isHoneyBlockFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z, true)) {
-            if (areHoneyBlocks(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isInteractiveBushFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areInteractiveBushes(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isWebFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z, true)) {
-            if (areWebs(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static boolean hasNonSolidSide(SpartanLocation loc, double x, double y, double z, boolean center) {
         if (center && !isSolid(loc.clone().add(0, y, 0))) {
             return true;
         }
-        List<SpartanLocation> list = new ArrayList<>(Arrays.asList(loc.getSurroundingLocations(x, y, z, true)));
-        list.remove(0);
+        SpartanLocation[] locations = loc.getSurroundingLocations(x, y, z, true);
 
-        for (SpartanLocation locs : list) {
-            if (!isSolid(locs)) {
-                return true;
+        if (locations.length > 1) {
+            locations[0] = null;
+
+            for (int i = 1; i < locations.length; i++) {
+                if (!isSolid(locations[i])) {
+                    return true;
+                }
             }
         }
         return false;
-    }
-
-    public static boolean isSemiSolidFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (isSemiSolid(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean canClimbAround(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z, true)) {
-            if (canClimb(locs)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isIceBlockFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areIceBlocks(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isBedFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areBeds(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isCarpetFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areCarpets(locs)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean areWallsAround(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areWalls(locs)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isAnvilFree(SpartanLocation loc, double x, double y, double z) {
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (areAnvils(locs)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public static boolean areWalls(SpartanLocation loc) {

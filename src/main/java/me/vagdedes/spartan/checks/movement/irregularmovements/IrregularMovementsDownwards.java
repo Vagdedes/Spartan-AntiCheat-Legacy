@@ -33,7 +33,7 @@ public class IrregularMovementsDownwards {
             buffer.set(timerKey, blockY);
 
             if (airTicks >= IrregularMovements.fullOffGroundTicks
-                    && !PatternUtils.isBlockPattern(locations, to, true, false, BlockUtils.semi_solid)) {
+                    && !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.semi_solid)) {
                 if (ms <= repeatedMilliseconds) { // + detection added recently
                     IrregularMovements.cancel(p, from, prevention, "repeated-" + detection + "-" + cutVertical, "ms: " + ms, 2, IrregularMovements.defaultBufferTime);
                 } else if (airTicks >= (IrregularMovements.fullOffGroundTicks * 3) && vertical >= -1.0 && oldBlockY >= blockY) { // vertical >= -1.0 added recently

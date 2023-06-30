@@ -10,11 +10,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.CombatUtils;
-import me.vagdedes.spartan.utils.gameplay.GroundUtils;
-import me.vagdedes.spartan.utils.gameplay.PlayerData;
-import me.vagdedes.spartan.utils.server.MaterialUtils;
+import me.vagdedes.spartan.utils.gameplay.*;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
@@ -28,7 +24,18 @@ import java.util.Set;
 public class Criticals {
 
     static final HackType check = HackType.Criticals;
-    private static final Material web = MaterialUtils.get("web");
+
+    private static final double[][]
+            web = new double[][]{
+            {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
+            {BlockUtils.hitbox_max, 2, BlockUtils.hitbox_max}
+    };
+
+    private static final double[] aboveBlock = new double[]{
+        BlockUtils.hitbox_max, 2.0, BlockUtils.hitbox_max
+    };
 
     // Handlers
 
@@ -166,15 +173,17 @@ public class Criticals {
         }
     }
 
-    private static boolean isBlockFree(SpartanPlayer p, SpartanLocation loc, double v) {
-        if (p.getCooldowns(check).canDo("block-free=" + v)) {
+    private static boolean isBlockFree(SpartanPlayer p, SpartanLocation loc, double box) {
+        if (p.getCooldowns(check).canDo("block-free=" + box)) {
             boolean onGroundCustom = p.isOnGroundCustom();
 
-            for (int i = 0; i <= 2; i++) {
-                if (!BlockUtils.isSolidFree(loc, v, i, v)) {
-                    p.getCooldowns(check).add("block-free=" + v, onGroundCustom ? 40 : 60);
-                    return false;
-                }
+            if (PatternUtils.isBlockPattern(new double[][]{
+                    {box, 0, box},
+                    {box, 1, box},
+                    {box, 2, box}
+            }, loc, true, BlockUtils.solid)) {
+                p.getCooldowns(check).add("block-free=" + box, onGroundCustom ? 40 : 60);
+                return false;
             }
             return true;
         }
@@ -182,21 +191,14 @@ public class Criticals {
     }
 
     private static boolean canDo(SpartanPlayer p, SpartanLocation location) {
-        if (p.canRunCheck(check, true)
+        return p.canRunCheck(check, true)
                 && !p.wasFlying()
                 && !p.wasInLiquids()
                 && !p.hasPotionEffect(PotionEffectType.BLINDNESS)
                 && p.getBlocksOffGround(3, true, true) <= 2
                 && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !BouncingBlocks.isBelow(p)
-                && BlockUtils.isSolidFree(location, BlockUtils.hitbox_max, 2.0, BlockUtils.hitbox_max)) {
-            for (int i = -1; i <= 2; i++) {
-                if (location.clone().add(0, i, 0).isBlock(web, BlockUtils.hitbox_max)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+                && !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid)
+                && !PatternUtils.isBlockPattern(web, location, true, BlockUtils.web);
     }
 }

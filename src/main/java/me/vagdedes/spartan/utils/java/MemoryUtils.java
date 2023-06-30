@@ -1,10 +1,12 @@
 package me.vagdedes.spartan.utils.java;
 
 import me.vagdedes.spartan.system.Cache;
+import me.vagdedes.spartan.system.SpartanBukkit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 
 public class MemoryUtils {
 
@@ -22,5 +24,10 @@ public class MemoryUtils {
         } catch (IOException ignored) {
         }
         return 0;
+    }
+
+    public static <E> int fastHashCode(Collection<E> collection) {
+        int size = collection.size();
+        return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
     }
 }

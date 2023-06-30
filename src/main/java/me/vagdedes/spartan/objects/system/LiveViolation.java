@@ -49,6 +49,15 @@ public class LiveViolation {
     private int level, cancelledLevel;
     private boolean cancelled;
 
+    public LiveViolation(Enums.HackType hackType) {
+        this.uuid = SpartanBukkit.uuid;
+        this.hackType = hackType;
+        this.level = 0;
+        this.cancelledLevel = 0;
+        this.lastViolation = 0L;
+        this.cancelled = false;
+    }
+
     public LiveViolation(UUID uuid, Enums.HackType hackType) {
         this.uuid = uuid;
         this.hackType = hackType;
