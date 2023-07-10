@@ -4,7 +4,7 @@ import me.vagdedes.spartan.checks.exploits.RapidDisallowedBuilding;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.data.Timer;

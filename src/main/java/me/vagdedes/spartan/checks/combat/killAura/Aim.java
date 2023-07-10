@@ -3,7 +3,7 @@ package me.vagdedes.spartan.checks.combat.killAura;
 // Study of the utility and yaw/pitch movement when in an active fight
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;

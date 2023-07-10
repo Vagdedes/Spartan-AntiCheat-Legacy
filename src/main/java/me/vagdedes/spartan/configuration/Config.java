@@ -11,7 +11,7 @@ import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.DiscordWebhooks;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
-import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
+import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.listeners.EventsHandler7;

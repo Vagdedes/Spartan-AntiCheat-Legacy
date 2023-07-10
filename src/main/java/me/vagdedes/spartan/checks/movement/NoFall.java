@@ -5,8 +5,8 @@ import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.features.protections.Building;
-import me.vagdedes.spartan.handlers.identifiers.BouncingBlocks;
-import me.vagdedes.spartan.handlers.identifiers.FloorProtection;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
@@ -85,7 +85,7 @@ public class NoFall {
                     boolean requiresSuspicion = p.getProfile().isSuspectedOrHacker(check),
                             offGround = p.getBlocksOffGround(3, true, true) >= 2;
 
-                    if (!BouncingBlocks.isBelow(p) && !BlockUtils.isBouncingBlock(p, to, 2)) {
+                    if (!BouncingBlocks.isBelow(p)) {
                         if (requiresSuspicion) {
                             checkLanding(p, to, from, vertical, fallDistance);
                         }
@@ -265,7 +265,7 @@ public class NoFall {
                             if (cases != 0) {
                                 SpartanBukkit.runDelayedTask(p, () -> {
                                     if (p != null) {
-                                        if ( !PatternUtils.isBlockPattern(ratio, to, true, BlockUtils.semi_solid)) {
+                                        if (!PatternUtils.isBlockPattern(ratio, to, true, BlockUtils.semi_solid)) {
                                             int blocks = buffer.get(ratioKey + "blocks");
 
                                             // bigger or "equal" to 3 due to abstract counting of blocks

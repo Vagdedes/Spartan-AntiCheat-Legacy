@@ -2,7 +2,7 @@ package me.vagdedes.spartan.compatibility.manual.damage;
 
 import com.evill4mer.RealDualWield.Api.PlayerOffhandAnimationEvent;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
+import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

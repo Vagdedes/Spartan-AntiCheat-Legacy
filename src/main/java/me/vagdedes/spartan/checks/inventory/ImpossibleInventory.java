@@ -31,31 +31,18 @@ public class ImpossibleInventory {
             1, -1, 1
     };
 
-    public static void run(SpartanPlayer p, ItemStack item, ClickType click, int slot) {
+    public static void run(SpartanPlayer p, ItemStack item, ClickType click) {
         if (p.canRunCheck(check, true)) {
             runClosedInventory(p, click);
             runPortalInventory(p, item);
-            trackAutoTotem(p, item, slot);
+            trackAutoTotem(p, item);
         }
     }
 
     // Separator
 
-    private static void trackAutoTotem(SpartanPlayer p, ItemStack itemStack, int slot) {
-        if (totem_of_undying != null
-                && itemStack.getType() == totem_of_undying
-                && slot <= 8) {
-            int totemCount = 0;
-
-            for (ItemStack loopItem : p.getInventory().getContents()) {
-                if (loopItem != null && loopItem.getType() == totem_of_undying) {
-                    totemCount++;
-
-                    if (totemCount == 3) {
-                        return;
-                    }
-                }
-            }
+    private static void trackAutoTotem(SpartanPlayer p, ItemStack itemStack) {
+        if (totem_of_undying != null && itemStack.getType() == totem_of_undying) {
             p.getCooldowns(check).add("auto-totem", 3);
         }
     }

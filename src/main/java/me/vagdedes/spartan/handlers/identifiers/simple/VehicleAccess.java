@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.handlers.identifiers;
+package me.vagdedes.spartan.handlers.identifiers.simple;
 
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -44,7 +44,20 @@ public class VehicleAccess {
     }
 
     public static void runEnter(SpartanPlayer p, Entity entity, boolean enter) {
+        // Damage, BouncingBlocks, WaterElevator cover vehicles too
+        // Velocity is far too important to be manipulated
+        // Simple ones do not need to be manipulated here
+        // Liquid is based on the past, so it's not counted here
         Handlers handlers = p.getHandlers();
+        handlers.remove(Handlers.HandlerType.ElytraUse);
+        handlers.remove(Handlers.HandlerType.Trident);
+        handlers.remove(Handlers.HandlerType.Piston);
+        handlers.remove(Handlers.HandlerType.FishingHook);
+        handlers.remove(Handlers.HandlerType.ExtremeCollision);
+        handlers.remove(Handlers.HandlerType.Floor);
+
+        // Separator
+
         handlers.add(Handlers.HandlerType.Vehicle);
 
         if (enter) {

@@ -8,10 +8,10 @@ import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.features.protections.Building;
 import me.vagdedes.spartan.features.protections.Explosion;
 import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
-import me.vagdedes.spartan.handlers.identifiers.BouncingBlocks;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
-import me.vagdedes.spartan.handlers.identifiers.FishingHook;
-import me.vagdedes.spartan.handlers.identifiers.FloorProtection;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;
@@ -186,8 +186,9 @@ public class IrregularMovements {
                     incompatibility = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || Compatibility.CompatibilityType.ItemAttributes.isFunctional(),
                     fullAirTicksOffGround = airTicks >= fullOffGroundTicks,
                     airTicksOffGround = fullAirTicksOffGround || airTicks >= (bedrockPlayer || incompatibility ? fullOffGroundTicks : offGroundTicks),
+                    onGround = p.isOnGround(),
                     onGroundCustom = p.isOnGroundCustom(),
-                    offGround = !onGroundCustom || !p.isOnGround() && !liquidBlocks,
+                    offGround = !onGroundCustom || !onGround && !liquidBlocks,
                     knownBoxes = GroundUtils.heightExists(box, true) || GroundUtils.heightExists(oldBox, true),
                     bouncingBlocks = (!knownBoxes || airTicks > 0) && BouncingBlocks.isBelow(p),
                     jumpEffect = p.hasPotionEffect(PotionEffectType.JUMP),
@@ -302,7 +303,7 @@ public class IrregularMovements {
                     {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
                     {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
                     {BlockUtils.hitbox_max, -box, BlockUtils.hitbox_max},
-                    {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max, onGroundCustom ? 1 : 0}
+                    {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max, onGround || onGroundCustom ? 1 : 0}
             }, to, true, BlockUtils.climbable)) { // Ladder/Vine Climbing
                 scenario = "climb";
                 canGoUp = true;
@@ -541,7 +542,7 @@ public class IrregularMovements {
                                     }
                                 }
 
-                                if (!knownBoxes && p.isOnGround()
+                                if (!knownBoxes && onGround
                                         //&& (!p.isOnGroundCustom() || airTicks > 0) // Since first jump motion is not targeted, the player is already expected to be off ground
                                         && jumping
                                         && Math.abs(vertical - MoveUtils.jumping[1]) >= MoveUtils.jumping[2]) { // Do not target the initial jump motion

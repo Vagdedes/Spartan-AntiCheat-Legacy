@@ -1,7 +1,8 @@
-package me.vagdedes.spartan.handlers.identifiers;
+package me.vagdedes.spartan.handlers.identifiers.complex.predictable;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Handlers;
+import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -15,7 +16,7 @@ public class WaterElevator {
             int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(p.getWorld());
 
             if (blockY > minY && isSoulSand(location, blockY, minY)) {
-                p.getHandlers().add(Handlers.HandlerType.WaterElevator, 60);
+                p.getHandlers().add(Handlers.HandlerType.WaterElevator, 20);
             }
         }
     }
@@ -27,11 +28,12 @@ public class WaterElevator {
             locationModified.setY(i);
 
             for (SpartanLocation loc : locationModified.getSurroundingLocations(BlockUtils.hitbox, 0, BlockUtils.hitbox)) {
-                Material type = loc.getBlock().getType();
+                SpartanBlock block = loc.getBlock();
+                Material type = block.getType();
 
                 if (type == Material.SOUL_SAND) {
                     return true;
-                } else if (BlockUtils.isSolid(type)) {
+                } else if (BlockUtils.isSolid(type) && !block.isWaterLogged()) {
                     break;
                 }
             }

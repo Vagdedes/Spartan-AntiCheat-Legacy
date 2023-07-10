@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.checks.combat.killAura;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;

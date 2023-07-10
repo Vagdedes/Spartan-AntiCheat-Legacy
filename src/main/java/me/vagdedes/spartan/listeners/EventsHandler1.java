@@ -19,7 +19,7 @@ import me.vagdedes.spartan.features.protections.ReconnectCooldown;
 import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
-import me.vagdedes.spartan.handlers.identifiers.Velocity;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.objects.profiling.PlayerCombat;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

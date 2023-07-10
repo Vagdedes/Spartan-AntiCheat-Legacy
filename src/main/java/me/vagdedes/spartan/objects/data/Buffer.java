@@ -2,7 +2,7 @@ package me.vagdedes.spartan.objects.data;
 
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;

@@ -296,19 +296,16 @@ public class BlockUtils {
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
-                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
-                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-                        builder.add(Material.CAVE_VINES);
-                        builder.add(Material.CAVE_VINES_PLANT);
-                    }
-                    builder.add(Material.TWISTING_VINES);
-                    builder.add(Material.TWISTING_VINES_PLANT);
-                    builder.add(Material.WEEPING_VINES);
-                    builder.add(Material.WEEPING_VINES_PLANT);
-                }
                 builder.add(Material.HONEY_BLOCK);
             }
             builder.add(Material.SCAFFOLDING);
+        }
+        for (Material m : materials) {
+            String s = m.toString();
+
+            if (endsWith(s, "_VINES") || endsWith(s, "_VINES_PLANT")) {
+                builder.add(m);
+            }
         }
         climbable = new HashSet<>(builder);
 

@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.handlers.identifiers;
+package me.vagdedes.spartan.handlers.identifiers.complex.unpredictable;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Handlers;

@@ -5,7 +5,7 @@ import com.shampaggon.crackshot.events.WeaponPreShootEvent;
 import com.shampaggon.crackshot.events.WeaponScopeEvent;
 import com.shampaggon.crackshot.events.WeaponShootEvent;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
+import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;

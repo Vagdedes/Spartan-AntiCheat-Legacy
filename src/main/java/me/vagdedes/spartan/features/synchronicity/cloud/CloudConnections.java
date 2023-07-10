@@ -599,6 +599,7 @@ public class CloudConnections {
                     softwareInformation.append("None").append(newLine);
                 }
 
+                Set<String> problematicDetections = check.getProblematicDetections();
                 softwareInformation.append(newLine).append(newLine) // +2 lines
                         .append("Detection Statistics:").append(newLine)
                         .append("Minimum Violations: ").append(minViolations)
@@ -608,7 +609,8 @@ public class CloudConnections {
                         .append("Maximum Violations: ").append(maxViolations)
                         .append(newLine)
                         .append("Low TPS Percentage: ").append((lowTPS / (double) entriesSize) * 100.0)
-                        .append("Problematic Detections: ").append(StringUtils.toString(check.getProblematicDetections().toArray(new String[0]), ", "));
+                        .append(newLine)
+                        .append("Problematic Detections: ").append(problematicDetections.isEmpty() ? "None" : StringUtils.toString(problematicDetections.toArray(new String[0]), ", "));
 
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + " " + CloudFeature.identification

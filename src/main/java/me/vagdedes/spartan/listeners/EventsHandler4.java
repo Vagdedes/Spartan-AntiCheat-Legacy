@@ -13,8 +13,8 @@ import me.vagdedes.spartan.gui.info.DebugMenu;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.gui.spartan.SupportIncompatibleItems;
-import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
-import me.vagdedes.spartan.handlers.identifiers.Piston;
+import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Piston;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
@@ -106,7 +106,7 @@ public class EventsHandler4 implements Listener {
                 p.setInventory(n.getInventory(), n.getOpenInventory());
 
                 // Detections
-                ImpossibleInventory.run(p, item, click, slot);
+                ImpossibleInventory.run(p, item, click);
                 InventoryClicks.run(p, item, click);
             }
 

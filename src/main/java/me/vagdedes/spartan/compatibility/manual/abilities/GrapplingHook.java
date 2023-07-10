@@ -2,7 +2,7 @@ package me.vagdedes.spartan.compatibility.manual.abilities;
 
 import com.snowgears.grapplinghook.api.HookAPI;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
+import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.server.PluginUtils;

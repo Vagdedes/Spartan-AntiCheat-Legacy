@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.handlers.identifiers;
+package me.vagdedes.spartan.handlers.identifiers.simple;
 
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;

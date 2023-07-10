@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.features.performance.AsyncDetection;
-import me.vagdedes.spartan.handlers.identifiers.BouncingBlocks;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;

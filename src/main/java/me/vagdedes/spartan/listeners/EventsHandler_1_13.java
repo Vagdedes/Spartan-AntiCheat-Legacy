@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.checks.movement.NoSlowdown;
-import me.vagdedes.spartan.handlers.identifiers.TridentUse;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.TridentUse;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.entity.Entity;

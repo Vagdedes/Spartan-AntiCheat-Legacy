@@ -5,7 +5,7 @@ import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Handlers;

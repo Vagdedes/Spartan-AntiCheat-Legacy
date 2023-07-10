@@ -2,6 +2,7 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of hitting entities behind other entities or blocks
 
+import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -32,6 +33,7 @@ public class Raytrace {
                 int nearbyEntitiesSize = nearbyEntities.size();
 
                 if (nearbyEntitiesSize <= maxEntities) {
+                    PlayerProfile playerProfile = player.getProfile();
                     boolean hasNearbyEntities = nearbyEntitiesSize > 0, fullSolid = false;
 
                     SpartanLocation playerEyeHeightLocation = location.clone().add(0.0, player.getEyeHeight(), 0.0);
@@ -42,7 +44,7 @@ public class Raytrace {
                     double entityLocationX = entityLocation.getBlockX(),
                             entityLocationZ = entityLocation.getBlockZ();
 
-                    for (double raytrace = (entityWidth + multiplication); raytrace < distance; raytrace += multiplication) {
+                    for (double raytrace = (entityWidth + multiplication); raytrace < (Math.floor(distance / multiplication) * multiplication); raytrace += multiplication) {
                         SpartanLocation raytracedLocation = playerEyeHeightLocation.clone().add(
                                 new Vector(vector.getX(), vector.getY(), vector.getZ()).multiply(raytrace)
                         );
@@ -50,13 +52,17 @@ public class Raytrace {
                                 raytracedLocationZ = raytracedLocation.getBlockZ();
 
                         if (raytracedLocationX != entityLocationX || raytracedLocationZ != entityLocationZ) { // Do not check the x & z coordinates of the entity
-                            double raytracedLocationY = raytracedLocation.getBlockY();
+                            double raytracedLocationY = raytracedLocation.getBlockY(), distanceToBlock;
 
                             if (raytracedLocationX != block.getX()
                                     || raytracedLocationY != block.getY()
                                     || raytracedLocationZ != block.getZ()) {
                                 block = raytracedLocation.getBlock();
-                                fullSolid = BlockUtils.isFullSolid(block.getType());
+                                distanceToBlock = raytracedLocation.distance(block.getLocation());
+                                fullSolid = (playerProfile.isSuspectedOrHacker(KillAura.check) || distanceToBlock <= 1.0)
+                                        && BlockUtils.isFullSolid(block.getType());
+                            } else {
+                                distanceToBlock = 0.0;
                             }
 
                             if (fullSolid) {
@@ -64,6 +70,7 @@ public class Raytrace {
                                         "type: raytrace(block)"
                                                 + ", raytrace: " + raytrace
                                                 + ", diagonal-distance: " + distance
+                                                + ", distance-to-block: " + distanceToBlock
                                                 + ", block: " + BlockUtils.blockToString(block)
                                                 + ", damaged-entity: " + CombatUtils.entityToString(entity)
                                                 + ", nearby-entities: " + nearbyEntitiesSize);

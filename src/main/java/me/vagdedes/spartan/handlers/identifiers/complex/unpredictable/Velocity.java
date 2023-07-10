@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.handlers.identifiers;
+package me.vagdedes.spartan.handlers.identifiers.complex.unpredictable;
 
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.handlers.stability.TestServer;

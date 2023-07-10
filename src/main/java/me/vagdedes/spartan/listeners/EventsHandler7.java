@@ -18,8 +18,8 @@ import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.chat.ChatProtection;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.protections.ServerFlying;
-import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
-import me.vagdedes.spartan.handlers.identifiers.Damage;
+import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
@@ -284,7 +284,7 @@ public class EventsHandler7 implements Listener {
                     + "remaining: " + AlgebraUtils.cut(rem, 5) + ", "
                     + "air-ticks: " + air + ", "
                     + "ground(vanilla/custom): " + p.isOnGround() + "/" + p.isOnGroundCustom()
-                    + (hasVehicle ? "" : ", vehicle: " + CombatUtils.entityToString(vehicle)));
+                    + (hasVehicle ? ", vehicle: " + CombatUtils.entityToString(vehicle) : ""));
         }
 
         // Utils

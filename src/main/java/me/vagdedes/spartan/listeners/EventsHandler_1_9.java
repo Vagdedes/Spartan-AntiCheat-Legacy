@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.listeners;
 
-import me.vagdedes.spartan.handlers.identifiers.ElytraUse;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.ElytraUse;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.entity.Entity;

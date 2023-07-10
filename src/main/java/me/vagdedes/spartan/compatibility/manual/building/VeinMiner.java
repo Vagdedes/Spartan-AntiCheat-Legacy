@@ -2,7 +2,7 @@ package me.vagdedes.spartan.compatibility.manual.building;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.handlers.identifiers.CheckProtection;
+import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

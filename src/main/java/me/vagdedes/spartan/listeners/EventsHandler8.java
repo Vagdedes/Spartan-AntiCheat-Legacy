@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
-import me.vagdedes.spartan.handlers.identifiers.VehicleAccess;
+import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;

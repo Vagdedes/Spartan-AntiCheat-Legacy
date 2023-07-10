@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.handlers.identifiers;
+package me.vagdedes.spartan.handlers.identifiers.simple;
 
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.listeners;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.handlers.identifiers.VehicleAccess;
+import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Bukkit;
