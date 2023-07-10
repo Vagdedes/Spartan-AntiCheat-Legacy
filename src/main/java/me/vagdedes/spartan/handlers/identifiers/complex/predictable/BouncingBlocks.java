@@ -12,8 +12,12 @@ public class BouncingBlocks {
             slime = 55,
             bed = 25;
 
+    private static final boolean
+            v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8),
+            v1_12 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12);
+
     public static void runMove(SpartanPlayer p) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
+        if (v1_8) {
             double vertical = p.getNmsVerticalDistance();
 
             if (vertical != 0.0 && !p.isJumping(vertical)
@@ -52,13 +56,11 @@ public class BouncingBlocks {
     // Cached
 
     public static boolean isSlimeBelow(SpartanPlayer p) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks, "slime");
+        return v1_8 && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks, "slime");
     }
 
     public static boolean isBedBelow(SpartanPlayer p) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12)
-                && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks, "bed");
+        return v1_12 && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks, "bed");
     }
 
     public static boolean isBelow(SpartanPlayer p) {

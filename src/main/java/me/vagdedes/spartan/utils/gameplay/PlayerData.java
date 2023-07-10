@@ -131,10 +131,13 @@ public class PlayerData {
         // Separator
 
         if (heavy) {
-            ExtremeCollision.run(p);
-
-            if (!Liquid.runMove(p) && !GroundCollision.run(p)) {
-                BouncingBlocks.runMove(p);
+            if (!Liquid.runMove(p)) {
+                if (!GroundCollision.run(p)) {
+                    ExtremeCollision.run(p);
+                    BouncingBlocks.runMove(p);
+                }
+            } else {
+                ExtremeCollision.run(p);
             }
         }
     }

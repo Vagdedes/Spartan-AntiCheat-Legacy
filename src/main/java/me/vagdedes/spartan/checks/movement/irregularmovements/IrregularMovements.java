@@ -9,9 +9,9 @@ import me.vagdedes.spartan.features.protections.Building;
 import me.vagdedes.spartan.features.protections.Explosion;
 import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
-import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;
@@ -675,7 +675,8 @@ public class IrregularMovements {
                 } else {
                     IrregularMovementsStep.remove(p);
                 }
-                if (defaultScenario && !cachedJumpEffect && !liquidBlocks && !wasInLiquids && !bedrockPlayer && !waterElevator) {
+                if (defaultScenario && !cachedJumpEffect && !liquidBlocks && !wasInLiquids
+                        && !bedrockPlayer && !waterElevator && !bouncingBlocks) {
                     IrregularMovementsHop.run(p, to, from, p.getCooldowns(check), p.getTimer(check),
                             vertical, oldVertical, box, oldBox, horizontal,
                             bedrockPlayer,

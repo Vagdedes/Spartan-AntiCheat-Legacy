@@ -156,8 +156,8 @@ public class SpartanPlayer {
             SpartanBukkit.runRepeatingTask(() -> {
                 if (MultiVersion.folia) {
                     run(false);
-                } else {
-                    SpartanBukkit.playerThread.executeIfFreeElseHere(() -> run(false));
+                } else if (!SpartanBukkit.playerThread.executeIfFree(() -> run(false))) {
+                    SpartanBukkit.detectionThread.executeIfFreeElseHere(() -> run(false));
                 }
                 run(true);
             }, 1L, 1L);
@@ -1536,6 +1536,8 @@ public class SpartanPlayer {
         }
         if (GroundUtils.isOnGround(this, ploc, 0.0, liquid, climbable)
                 || BlockUtils.isSolid(ploc.clone().add(0, 1, 0))) {
+            decimals.set(key, 0);
+            cooldowns.add(key, 4);
             return 0;
         }
         int blocksOffGround = 0;

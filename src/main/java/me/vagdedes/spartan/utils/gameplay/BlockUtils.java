@@ -5,6 +5,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -1686,23 +1687,26 @@ public class BlockUtils {
 
     public static boolean isSlime(SpartanPlayer p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            int y = loc.getBlockY();
-            SpartanLocation loopLocation = loc.clone();
+            if (p.isOnGroundCustom()) {
+                return loc.getBlock().getType() == Material.SLIME_BLOCK;
+            } else {
+                int y = loc.getBlockY();
+                SpartanLocation loopLocation = loc.clone();
 
-            for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
-                loopLocation.setY(i);
-                Material m = loopLocation.getBlock().getType();
+                for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
+                    Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
-                if (m == Material.SLIME_BLOCK) {
-                    return true;
-                } else if (isSolid(m)
-                        && m != Material.SNOW
-                        && !areCarpets(m)
-                        && !areSlabs(m)
-                        && !areStairs(m)
-                        && !areWalls(m)
-                        && !canClimb(m)) {
-                    break;
+                    if (m == Material.SLIME_BLOCK) {
+                        return true;
+                    } else if (isSolid(m)
+                            && m != Material.SNOW
+                            && !areCarpets(m)
+                            && !areSlabs(m)
+                            && !areStairs(m)
+                            && !areWalls(m)
+                            && !canClimb(m)) {
+                        break;
+                    }
                 }
             }
         }
@@ -1711,17 +1715,21 @@ public class BlockUtils {
 
     public static boolean isBed(SpartanPlayer p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12)) {
-            int y = loc.getBlockY();
-            SpartanLocation loopLocation = loc.clone();
+            if (p.isOnGroundCustom()) {
+                return areBeds(loc.getBlock().getType());
+            } else {
+                int y = loc.getBlockY();
+                SpartanLocation loopLocation = loc.clone();
 
-            for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
-                loopLocation.setY(i);
-                Material m = loopLocation.getBlock().getType();
+                for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
+                    loopLocation.setY(i);
+                    Material m = loopLocation.getBlock().getType();
 
-                if (areBeds(m)) {
-                    return true;
-                } else if (isSolid(m)) {
-                    break;
+                    if (areBeds(m)) {
+                        return true;
+                    } else if (isSolid(m)) {
+                        break;
+                    }
                 }
             }
         }

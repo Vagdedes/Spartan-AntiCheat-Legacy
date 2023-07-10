@@ -21,8 +21,8 @@ public class GroundCollision {
             handlers.remove(Handlers.HandlerType.BouncingBlocks);
             handlers.remove(Handlers.HandlerType.WaterElevator);
 
-            if (player.getNmsHorizontalDistance() <= MoveUtils.lowPrecision
-                    && player.getCustomDistance() <= MoveUtils.highPrecision) {
+            if (player.getNmsHorizontalDistance() <= MoveUtils.highPrecision
+                    && player.getCustomDistance() <= MoveUtils.lowPrecision) {
                 handlers.remove(Handlers.HandlerType.ElytraUse);
                 handlers.remove(Handlers.HandlerType.Trident);
                 handlers.remove(Handlers.HandlerType.Piston);

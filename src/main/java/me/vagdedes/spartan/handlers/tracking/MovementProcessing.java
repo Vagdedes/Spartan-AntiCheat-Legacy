@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.handlers.tracking;
 
-import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
+import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.objects.data.Buffer;

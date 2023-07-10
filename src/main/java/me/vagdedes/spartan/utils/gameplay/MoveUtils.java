@@ -23,7 +23,7 @@ public class MoveUtils {
 
     public static final double
             highPrecision = 0.0019,
-            lowPrecision = highPrecision / 2.0,
+            lowPrecision = highPrecision * 2.0,
             nearMaxFallingMotion = 3.87,
             chunk = 16.0,
             climbingScaffoldingMax = climbing[3] + 0.2;

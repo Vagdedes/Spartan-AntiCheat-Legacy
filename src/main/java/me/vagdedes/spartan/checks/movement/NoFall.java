@@ -5,8 +5,8 @@ import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.features.protections.Building;
-import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
@@ -84,8 +84,9 @@ public class NoFall {
                 AsyncDetection.run(p, check, () -> {
                     boolean requiresSuspicion = p.getProfile().isSuspectedOrHacker(check),
                             offGround = p.getBlocksOffGround(3, true, true) >= 2;
+                    boolean bouncingBlocks = BouncingBlocks.isBelow(p);
 
-                    if (!BouncingBlocks.isBelow(p)) {
+                    if (!bouncingBlocks) {
                         if (requiresSuspicion) {
                             checkLanding(p, to, from, vertical, fallDistance);
                         }
@@ -94,7 +95,7 @@ public class NoFall {
                         clearRatio(buffer, decimals);
                     }
 
-                    if (offGround && vertical <= -0.1 && !BouncingBlocks.isBelow(p)) {
+                    if (offGround && vertical <= -0.1 && !bouncingBlocks) {
                         if (to.getBlockY() < from.getBlockY()) {
                             double oldFallDistance = decimals.get("old");
 
@@ -230,7 +231,9 @@ public class NoFall {
                                     boolean requiresSuspicion,
                                     Buffer buffer, Decimals decimals) {
         if (!p.getHandlers().has(Handlers.HandlerType.BlockBreak)) {
-            if (check.getCheck().getBooleanOption("check_ratio", true) && !PlayerData.hasJumpEffect(p)) {
+            if (check.getCheck().getBooleanOption("check_ratio", true)
+                    && !PlayerData.hasJumpEffect(p)
+                    && !BouncingBlocks.isBelow(p)) {
                 if (buffer.get(ratioKey + "cancelled") != 1) {
                     int toY = to.getBlockY(), fromY = from.getBlockY();
 
