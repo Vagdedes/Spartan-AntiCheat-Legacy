@@ -16,7 +16,7 @@ import org.bukkit.event.block.Action;
 public class ItemDrops {
 
     private static final HackType check = HackType.ItemDrops;
-    private static final String checkID = check.getStringOrdinal();
+    private static final String checkID = Integer.toString(check.ordinal());
     private static final Material water = MaterialUtils.get("water");
 
     public static void run(SpartanPlayer p) {

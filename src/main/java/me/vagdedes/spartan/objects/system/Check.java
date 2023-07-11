@@ -850,10 +850,6 @@ public class Check {
         return hackType.hashCode();
     }
 
-    public String getStringOrdinal() {
-        return hackType.getStringOrdinal();
-    }
-
     public Enums.HackType getHackType() {
         return hackType;
     }
@@ -1082,18 +1078,25 @@ public class Check {
         return new HashSet<>(problematicDetections.values());
     }
 
+    public int getProblematicDetectionsCount() {
+        return getProblematicDetections().size();
+    }
+
     public void clearProblematicDetections() {
         problematicDetections.clear();
     }
 
     public boolean isProblematicDetection(ResearchEngine.DataType dataType, String detection) {
-        int hash = SpartanBukkit.hashCodeMultiplier + dataType.hashCode();
-        return problematicDetections.containsKey((hash * SpartanBukkit.hashCodeMultiplier) + detection.hashCode());
+        return problematicDetections.containsKey(
+                (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode()
+        );
     }
 
     public void setProblematicDetection(ResearchEngine.DataType dataType, String detection) {
-        int hash = SpartanBukkit.hashCodeMultiplier + dataType.hashCode();
-        problematicDetections.put((hash * SpartanBukkit.hashCodeMultiplier) + detection.hashCode(), detection);
+        problematicDetections.put(
+                (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode(),
+                detection
+        );
     }
 
     // Separator
@@ -1224,8 +1227,8 @@ public class Check {
 
     // Separator
 
-    public boolean isUsingDefaultCancelViolation(int preferred, int deviation) {
-        return (!hasCancelViolation || defaultCancelViolation == cancelViolation) && (defaultCancelViolation + deviation) >= preferred;
+    public boolean isUsingCancelViolation(int preferred, int deviationUpwards) {
+        return cancelViolation + deviationUpwards >= preferred;
     }
 
     public int getCancelViolation() {

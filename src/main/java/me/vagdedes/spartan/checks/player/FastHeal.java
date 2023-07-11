@@ -18,7 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 public class FastHeal {
 
     private static final HackType check = HackType.FastHeal;
-    private static final String checkID = check.getStringOrdinal();
+    private static final String checkID = Integer.toString(check.ordinal());
 
     private static long calculate(SpartanPlayer p) {
         boolean regeneration = p.hasPotionEffect(PotionEffectType.REGENERATION);

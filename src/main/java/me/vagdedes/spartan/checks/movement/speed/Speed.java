@@ -324,6 +324,8 @@ public class Speed {
 
         if (p.isSprinting() && (modifiedLimit == ground || modifiedLimit == Speed.air)) {
             decimals.set("average=sprinting=speed", hor);
+        } else {
+            decimals.remove("average=sprinting=speed");
         }
 
         if (dm != blocks && dm != blocks_slime && (reason.length() != 6 || !reason.equals("blocks"))
@@ -809,8 +811,8 @@ public class Speed {
 
             if (players.size() > 0) {
                 String key = "average=sprinting=speed";
-                double summary = 0.0;
-                int count = 0;
+                double summary = 0.0,
+                        count = 0.0;
 
                 for (SpartanPlayer p : players) {
                     double d = p.getDecimals(check).get(key, 0.0);
@@ -821,7 +823,7 @@ public class Speed {
                     }
                 }
                 if (count > 0) {
-                    return (summary / ((double) count)) - MovementProcessing.sprintingMaxSpeed;
+                    return (summary / count) - MovementProcessing.sprintingMaxSpeed;
                 }
             }
         }

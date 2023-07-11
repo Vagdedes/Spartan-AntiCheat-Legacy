@@ -17,16 +17,10 @@ public class Enums {
         NoSlowdown, Criticals, GhostHand, BlockReach, FastBow, FastClicks, FastHeal, ImpossibleInventory, HitReach, FastBreak,
         Speed, FastPlace, MorePackets, NoFall, FastEat, Velocity, KillAura;
 
-        private final String ordinalString;
         private Check check;
 
         HackType() {
-            this.ordinalString = String.valueOf(this.ordinal());
             this.check = null;
-        }
-
-        public String getStringOrdinal() {
-            return ordinalString;
         }
 
         public Check getCheck() {

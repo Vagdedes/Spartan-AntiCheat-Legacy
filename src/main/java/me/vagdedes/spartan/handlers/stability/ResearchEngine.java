@@ -383,7 +383,7 @@ public class ResearchEngine {
 
         for (DataType dataType : getDynamicUsableDataTypes(false)) {
             for (Enums.HackType hackType : Enums.hackTypes()) {
-                Set<Integer> set = falsePositives.get(getFalsePositiveStorageKey(hackType, dataType));
+                Set<Integer> set = falsePositives.get(getStorageKey(hackType, dataType));
 
                 if (set != null) {
                     sum += set.size();
@@ -400,14 +400,14 @@ public class ResearchEngine {
 
         if (dataType == DataType.Universal) {
             for (DataType loopDataType : getDynamicUsableDataTypes(false)) {
-                Set<Integer> set = falsePositives.get(getFalsePositiveStorageKey(hackType, loopDataType));
+                Set<Integer> set = falsePositives.get(getStorageKey(hackType, loopDataType));
 
                 if (set != null) {
                     sum += set.size();
                 }
             }
         } else {
-            Set<Integer> set = falsePositives.get(getFalsePositiveStorageKey(hackType, dataType));
+            Set<Integer> set = falsePositives.get(getStorageKey(hackType, dataType));
 
             if (set != null) {
                 sum = set.size();
@@ -416,12 +416,8 @@ public class ResearchEngine {
         return sum;
     }
 
-    private static int getFalsePositiveStorageKey(Enums.HackType hackType, DataType dataType) {
-        return (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + dataType.hashCode();
-    }
-
     public static Set<Integer> getFalsePositives(Enums.HackType hackType, DataType dataType) {
-        return falsePositives.getOrDefault(getFalsePositiveStorageKey(hackType, dataType), new HashSet<>());
+        return falsePositives.getOrDefault(getStorageKey(hackType, dataType), new HashSet<>());
     }
 
     public static List<PlayerReport> getReports(Enums.HackType hackType, int days, boolean checkIfDismissed) {
@@ -856,6 +852,10 @@ public class ResearchEngine {
 
     // Separator
 
+    public static int getStorageKey(Enums.HackType hackType, DataType dataType) {
+        return (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + dataType.hashCode();
+    }
+
     public static boolean isLowTPS(String data) {
         int tpsString = data.indexOf("(TPS: ");
 
@@ -885,6 +885,8 @@ public class ResearchEngine {
         }
         return false;
     }
+
+    // Separator
 
     private static String recalculateCache() {
         if (isStorageMode()) {
@@ -1260,8 +1262,6 @@ public class ResearchEngine {
         }
     }
 
-    // Separator
-
     private static void updateCache() {
         if (!SpartanBukkit.isSynchronised()) {
             updateComprehensionCache(); // Always First
@@ -1379,10 +1379,7 @@ public class ResearchEngine {
 
                                         if (playerFalsePositives.add(hash)) {
                                             loopFalsePositives.put(hash, loopFalsePositives.getOrDefault(hash, 0) + 1);
-
-                                            if (!detectionCorrelations.containsKey(hash)) {
-                                                detectionCorrelations.put(hash, detection);
-                                            }
+                                            detectionCorrelations.putIfAbsent(hash, detection);
                                         }
                                         if (playerProfile.isLegitimate()) { // We specify only legitimate players because we now use only the detection name and not its information
                                             detectionViolationCount.put(detection, detectionViolationCount.getOrDefault(detection, 0) + entry.getValue());
@@ -1409,7 +1406,7 @@ public class ResearchEngine {
                             }
 
                             if (loopFalsePositives.size() > 0) {
-                                localFalsePositives.put(getFalsePositiveStorageKey(hackType, dataType), new HashSet<>(loopFalsePositives.keySet()));
+                                localFalsePositives.put(getStorageKey(hackType, dataType), new HashSet<>(loopFalsePositives.keySet()));
                                 loopFalsePositives.clear();
                             }
                         } else { // No need to continue when no profiles were found
@@ -1712,6 +1709,8 @@ public class ResearchEngine {
             ResearchEngine.playerFights.clear();
         }
     }
+
+    // Separator
 
     public enum DataType {
         Java, Bedrock, Universal
