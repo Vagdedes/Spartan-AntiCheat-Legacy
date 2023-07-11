@@ -4,6 +4,7 @@ import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
+import org.bukkit.Material;
 
 public class IrregularMovementsInsideBlocks {
 
@@ -13,17 +14,23 @@ public class IrregularMovementsInsideBlocks {
         if (IrregularMovements.check.getCheck().getBooleanOption("check_inside_blocks", true)) {
             AsyncDetection.run(p, IrregularMovements.check, () -> {
                 if (from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) { // Make sure player changed blocks
-                    SpartanLocation to1 = to.clone().add(0, 1, 0);
-                    SpartanLocation from1 = from.clone().add(0, 1, 0);
+                    Material toMaterial = to.getBlock().getType(),
+                            fromMaterial = from.getBlock().getType(),
+                            to1 = to.clone().add(0, 1, 0).getBlock().getType(),
+                            from1 = from.clone().add(0, 1, 0).getBlock().getType();
 
-                    if ((BlockUtils.isFullSolid(to) || BlockUtils.isFullSolid(to1)) // Make sure new blocks are solid
-                            && (BlockUtils.isFullSolid(from) || BlockUtils.isFullSolid(from1))) {  // Make sure old blocks were solid
-                        String extra = "to: [" + BlockUtils.materialToString(to.getBlock().getType()) + ", " + BlockUtils.materialToString(to1.getBlock().getType()) + "]"
-                                + ", from: [" + BlockUtils.materialToString(from.getBlock().getType()) + ", " + BlockUtils.materialToString(from1.getBlock().getType()) + "]";
+                    if ((isValidBlock(toMaterial) || isValidBlock(to1)) // Make sure new blocks are solid
+                            && (isValidBlock(fromMaterial) || isValidBlock(from1))) {  // Make sure old blocks were solid
+                        String extra = "to: [" + BlockUtils.materialToString(toMaterial) + ", " + BlockUtils.materialToString(to1) + "]"
+                                + ", from: [" + BlockUtils.materialToString(fromMaterial) + ", " + BlockUtils.materialToString(from1) + "]";
                         IrregularMovements.cancel(p, from, prevention, "inside-blocks", extra, knownBoxes ? 1 : 2, -IrregularMovements.defaultBufferTime);
                     }
                 }
             });
         }
+    }
+
+    private static boolean isValidBlock(Material type) {
+        return BlockUtils.isFullSolid(type) && !BlockUtils.areHoneyBlocks(type);
     }
 }
