@@ -58,8 +58,8 @@ public class PlayerFight extends PlayerProfile {
         this.judged = judged;
 
         if (!winner.getName().equals(loser.getName())) { // Log manipulation protection
-            ResearchEngine.getPlayerProfile(winner.getName()).getCombat().storeFight(this);
-            ResearchEngine.getPlayerProfile(loser.getName()).getCombat().storeFight(this);
+            ResearchEngine.getPlayerProfile(winner.getName()).getCombat().storeFight(this, false);
+            ResearchEngine.getPlayerProfile(loser.getName()).getCombat().storeFight(this, false);
         }
     }
 

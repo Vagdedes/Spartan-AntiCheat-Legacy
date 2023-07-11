@@ -386,12 +386,12 @@ public class PlayerProfile {
             return true;
         }
         if (hackType != Enums.HackType.XRay) {
-            int cancelViolation = CancelViolation.get(hackType, dataType),
-                    violationCount = hackType.getCheck().getViolations(player).getLevel() - cancelViolation;
+            Check check = hackType.getCheck();
+            int violationCount = check.getViolations(player).getLevel() - check.getCancelViolation();
 
             if (violationCount > 0) {
                 violationCount += punishmentHistory.getReportCount(hackType, 0);
-                double violationRatio = (violationCount / ((double) cancelViolation)),
+                double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, dataType))),
                         thresholdSurpassing = violationRatio / Check.analysisMultiplier;
 
                 if (thresholdSurpassing >= 1.0) {

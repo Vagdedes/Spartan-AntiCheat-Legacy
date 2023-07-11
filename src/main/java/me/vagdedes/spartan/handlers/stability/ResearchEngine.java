@@ -470,9 +470,12 @@ public class ResearchEngine {
         return new ArrayList<>(0);
     }
 
-    public static void addFight(PlayerFight fight) {
+    public static void addFight(PlayerFight fight, boolean refreshMenu) {
         playerFights.add(fight);
-        SpartanMenu.refresh();
+
+        if (refreshMenu) {
+            SpartanMenu.refresh();
+        }
     }
 
     public static void addHacker(PlayerProfile playerProfile) {
@@ -835,6 +838,10 @@ public class ResearchEngine {
         return cache;
     }
 
+    public static int getStorageKey(Enums.HackType hackType, DataType dataType) {
+        return (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + dataType.hashCode();
+    }
+
     public static int getOnlinePlayers(String data) {
         int startString = data.indexOf("(Online: ");
 
@@ -848,12 +855,6 @@ public class ResearchEngine {
             }
         }
         return -1;
-    }
-
-    // Separator
-
-    public static int getStorageKey(Enums.HackType hackType, DataType dataType) {
-        return (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + dataType.hashCode();
     }
 
     public static boolean isLowTPS(String data) {

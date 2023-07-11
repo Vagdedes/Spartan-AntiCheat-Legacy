@@ -28,15 +28,15 @@ public class PlayerCombat {
 
     public void removeFight(PlayerFight fight, boolean store) {
         if (store) {
-            storeFight(fight);
+            storeFight(fight, true);
         }
         currentFights.remove(fight);
     }
 
-    public void storeFight(PlayerFight fight) {
+    public void storeFight(PlayerFight fight, boolean refreshMenu) {
         if (name.length() > 0) { // If length is zero, this means this object is part of a temporary profile
             pastFights.add(fight);
-            ResearchEngine.addFight(fight);
+            ResearchEngine.addFight(fight, refreshMenu);
         }
     }
 

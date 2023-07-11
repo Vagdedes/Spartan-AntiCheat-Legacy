@@ -7,6 +7,7 @@ import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
+import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
@@ -56,7 +57,8 @@ public class ManageChecks {
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(p, hackType);
         String[] disabledDetections = CloudFeature.getDisabledDetections(hackType);
-        int falsePositives = ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Java);
+        int falsePositives = ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal),
+                cancelViolation = check.getDefaultCancelViolation();
         Set<String> problematicDetections = check.getProblematicDetections();
 
         String enabledOption;
@@ -107,8 +109,12 @@ public class ManageChecks {
                 lore.addAll(extra);
             }
         }
+        lore.add("");
+
+        for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+            lore.add("§7§l" + dataType.toString() + " §r§7Cancel Violation§8:§c " + Math.max(cancelViolation, CancelViolation.get(hackType, dataType)));
+        }
         if (falsePositives > 0) {
-            lore.add("");
             lore.add("§7False Positives§8:§c " + falsePositives);
         }
         if (problematicDetections.size() > 0) {
