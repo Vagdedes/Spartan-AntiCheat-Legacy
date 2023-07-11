@@ -65,11 +65,11 @@ public class CheckProtection {
     public static boolean hasCooldown(UUID uuid, PlayerViolation playerViolation) {
         if (cooldown >= System.currentTimeMillis() || !CooldownUtils.canDo(uuid, "check=protection")) { // has cooldown
             if (CooldownUtils.canDo(uuid, "check=protection=ignore-numbers")) {
-                Double[] decimals = playerViolation.getDecimals();
+                List<Number> numbers = playerViolation.getNumbersList();
 
-                if (decimals.length > 0) {
-                    for (double decimal : decimals) {
-                        if (decimal >= 1.0) {
+                if (numbers.size() > 0) {
+                    for (Number number : numbers) {
+                        if (number instanceof Double && number.doubleValue() >= 1.0) {
                             return false;
                         }
                     }

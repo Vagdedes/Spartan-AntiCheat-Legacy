@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class CancelViolation {
 
-    public static final int extra = 1;
     private static final String masterKey = "cancel-violation";
     private static final Map<Integer, Integer> memory = new LinkedHashMap<>(Enums.hackTypes().length * ResearchEngine.DataType.values().length);
     private static final int cooldown = 3;

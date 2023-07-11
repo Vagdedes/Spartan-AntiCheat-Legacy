@@ -207,7 +207,7 @@ public class ViolationStatistics {
     }
 
     void count(PlayerViolation playerViolation) {
-        String detection = playerViolation.getDetection(false);
+        String detection = playerViolation.getDetection();
         Calculator subStatistics = memory.get(detection);
 
         if (subStatistics == null) {

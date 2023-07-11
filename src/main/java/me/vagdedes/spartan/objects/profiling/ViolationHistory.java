@@ -53,7 +53,7 @@ public class ViolationHistory {
     // Separator
 
     public void increaseViolations(PlayerViolation playerViolation) {
-        int identity = playerViolation.getIdentity();
+        int identity = playerViolation.divisionIdentity;
         List<PlayerViolation> list = violationsMap.get(identity);
 
         if (list == null) {

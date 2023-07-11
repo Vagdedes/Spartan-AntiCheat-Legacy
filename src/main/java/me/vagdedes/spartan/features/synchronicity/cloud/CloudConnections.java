@@ -579,11 +579,11 @@ public class CloudConnections {
                             averageViolations += violation;
                             totalViolations++;
                             String rawInformation = playerViolation.getInformation(),
-                                    information = playerViolation.getDate() + ": "
-                                            + violation + "x" + entry.getValue()
+                                    information = playerViolation.getDate()
+                                            + ": x" + entry.getValue()
                                             + " (" + rawInformation + ")";
 
-                            if (uniqueInformation.add(playerViolation.getFalsePositiveIdentity())) {
+                            if (uniqueInformation.add(playerViolation.getSimilarityIdentity())) {
                                 softwareInformation.append(information).append(newLine);
                                 validViolations++;
 

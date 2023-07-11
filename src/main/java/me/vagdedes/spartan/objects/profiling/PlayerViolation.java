@@ -2,20 +2,20 @@ package me.vagdedes.spartan.objects.profiling;
 
 import me.vagdedes.spartan.features.performance.FalsePositiveDetection;
 import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.SpartanBukkit;
 
 import java.sql.Timestamp;
-import java.util.Objects;
+import java.util.*;
 
 public class PlayerViolation {
 
     private final Enums.HackType hackType;
     private final long time;
-    private final String information, date;
-    private final int level, identity, falsePositiveIdentity;
+    private final String information, date, detection;
+    private final int level, similarityIdentity;
+    final int divisionIdentity;
     private final boolean lowTPS, isOption;
-    private final String[] detection;
-    private final Double[] decimals;
-    private final Integer[] integers;
+    private final Collection<Number> numbers;
 
     public PlayerViolation(Enums.HackType hackType, long time, String information, int level, boolean lowTPS) {
         this.hackType = hackType;
@@ -24,17 +24,16 @@ public class PlayerViolation {
         this.information = information;
         this.level = level;
         this.lowTPS = lowTPS;
-        this.identity = Objects.hash(information, level, lowTPS);
 
         InformationAnalysis informationAnalysis = new InformationAnalysis(hackType, information);
-        this.decimals = informationAnalysis.getDecimals();
-        this.integers = informationAnalysis.getIntegers();
-        this.falsePositiveIdentity = FalsePositiveDetection.getSimplifiedNumber(information, decimals, integers);
-        this.detection = new String[]{
-                informationAnalysis.getDetection(false),
-                informationAnalysis.getDetection(true)
-        };
-        this.isOption = informationAnalysis.isOption();
+        this.detection = informationAnalysis.detection;
+        this.numbers = informationAnalysis.getNumbers();
+        this.isOption = informationAnalysis.isOption(hackType);
+        this.similarityIdentity = FalsePositiveDetection.getSimplifiedNumber(hackType, detection, numbers);
+
+        int divisionIdentity = (information.hashCode() * SpartanBukkit.hashCodeMultiplier) + level;
+        divisionIdentity = (divisionIdentity * SpartanBukkit.hashCodeMultiplier) + Boolean.hashCode(lowTPS);
+        this.divisionIdentity = divisionIdentity;
     }
 
     public Enums.HackType getHackType() {
@@ -61,31 +60,23 @@ public class PlayerViolation {
         return lowTPS;
     }
 
-    // Dynamic
-
     public boolean isDetectionEnabled() {
-        return !isOption || hackType.getCheck().getBooleanOption(detection[0], false);
+        return !isOption || hackType.getCheck().getBooleanOption(detection, false);
     }
 
-    public String getDetection(boolean details) {
-        return detection[details ? 1 : 0];
+    public String getDetection() {
+        return detection;
     }
 
-    public int getFalsePositiveIdentity() {
-        return falsePositiveIdentity;
+    public List<Number> getNumbersList() {
+        return new ArrayList<>(numbers);
     }
 
-    public Double[] getDecimals() {
-        return decimals;
+    public Set<Number> getNumbersSet() {
+        return new TreeSet<>(numbers);
     }
 
-    public Integer[] getIntegers() {
-        return integers;
-    }
-
-    // Local
-
-    int getIdentity() {
-        return identity;
+    public int getSimilarityIdentity() {
+        return similarityIdentity;
     }
 }

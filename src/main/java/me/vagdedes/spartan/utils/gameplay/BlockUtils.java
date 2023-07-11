@@ -5,7 +5,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -1722,8 +1721,7 @@ public class BlockUtils {
                 SpartanLocation loopLocation = loc.clone();
 
                 for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
-                    loopLocation.setY(i);
-                    Material m = loopLocation.getBlock().getType();
+                    Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
                     if (areBeds(m)) {
                         return true;

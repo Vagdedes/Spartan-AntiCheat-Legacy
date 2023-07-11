@@ -44,7 +44,7 @@ public class Chunks {
     }
 
     private static int chunkIdentifier(int x, int z) {
-        return (SpartanBukkit.hashCodeMultiplier * (SpartanBukkit.hashCodeMultiplier + x)) + z;
+        return (SpartanBukkit.hashCodeMultiplier * x) + z;
     }
 
     private static void add(List<Integer> list, boolean isNull, UUID uuid, int hash) {

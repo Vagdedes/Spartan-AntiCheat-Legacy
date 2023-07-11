@@ -333,7 +333,7 @@ public class HackPrevention {
                             if (falsePositive) {
                                 violationsObject.removeMaxLevel(information);
                                 violationsObject.setCancelledLevel(cancelledViolations);
-                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, cancelledViolations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
+                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, cancelledViolations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                             } else {
                                 switch (hp.violation) {
                                     case 2:
@@ -343,15 +343,13 @@ public class HackPrevention {
                                         playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
                                         violationsObject.setLevel(violations);
                                         playerProfile.setLastInteraction(violationsObject); // Always after interacting with object
-                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
+                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         Moderation.performPunishments(player, hackType, violations, dataType);
                                         break;
-                                    case 0:
+                                    default:
                                         playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
                                         playerProfile.setLastInteraction(violationsObject); // Always after interacting with object
-                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(true), information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
-                                        break;
-                                    default:
+                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         break;
                                 }
 

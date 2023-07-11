@@ -5,104 +5,45 @@ import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
 
 public class FalsePositiveDetection {
 
     private static final int
-            correlationSizeLimit = 65536,
             integerNearest = 5,
             decimalPoint = 1;
-    private static final Map<Integer, Integer>
-            decimalCorrelation = Cache.store(new ConcurrentHashMap<>(correlationSizeLimit)),
-            integerCorrelation = Cache.store(new ConcurrentHashMap<>(correlationSizeLimit));
 
     public static boolean canFunction() {
         return Settings.getBoolean("Performance.enable_false_positive_detection");
     }
 
-    public static int getSimplifiedNumber(String information, Double[] decimals, Integer[] integers) {
-        int decimalCount = decimals.length;
+    public static int getSimplifiedNumber(Enums.HackType hackType, String detection, Collection<Number> numbers) {
+        int hash = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
 
-        if (decimalCount > 0) {
-            int initialHash = information.hashCode();
-            Integer correlated = decimalCorrelation.get(initialHash);
-
-            if (correlated != null) {
-                return correlated;
-            }
-            Set<Double> processedDecimals = new HashSet<>(decimalCount);
-
-            for (Double decimal : decimals) {
-                if (processedDecimals.add(decimal)) {
-                    information = information.replace(Double.toString(decimal), String.valueOf(AlgebraUtils.cut(decimal, decimalPoint)));
+        if (numbers.size() > 0) {
+            for (Number number : numbers) {
+                if (number instanceof Double) {
+                    hash = (hash * SpartanBukkit.hashCodeMultiplier)
+                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), decimalPoint));
+                } else {
+                    hash = (hash * SpartanBukkit.hashCodeMultiplier)
+                            + AlgebraUtils.roundToNearest(number.intValue(), integerNearest);
                 }
             }
-            int integerCount = integers.length;
-
-            if (integerCount > 0) {
-                Set<Integer> processedIntegers = new HashSet<>(Math.min(decimalCount, integerCount));
-
-                for (Integer integer : integers) {
-                    if (processedIntegers.add(integer)) {
-                        if (decimalCount > 0) {
-                            information = information.replace(Integer.toString(integer), "");
-                            decimalCount--;
-                        } else {
-                            information = information.replace(Integer.toString(integer), Integer.toString(AlgebraUtils.roundToNearest(integer, integerNearest)));
-                        }
-                    }
-                }
-            }
-            if (decimalCorrelation.size() >= correlationSizeLimit) {
-                decimalCorrelation.clear();
-            }
-            int simplifiedHash = information.hashCode();
-            decimalCorrelation.put(initialHash, simplifiedHash);
-            return simplifiedHash;
         }
-        int integerCount = integers.length;
-
-        if (integerCount > 0) {
-            int initialHash = information.hashCode();
-            Integer correlated = integerCorrelation.get(initialHash);
-
-            if (correlated != null) {
-                return correlated;
-            }
-            Set<Integer> processedIntegers = new HashSet<>(integerCount);
-
-            for (Integer integer : integers) {
-                if (processedIntegers.add(integer)) {
-                    information = information.replace(Integer.toString(integer), Integer.toString(AlgebraUtils.roundToNearest(integer, integerNearest)));
-                }
-            }
-
-            if (integerCorrelation.size() >= correlationSizeLimit) {
-                integerCorrelation.clear();
-            }
-            int simplifiedHash = information.hashCode();
-            integerCorrelation.put(initialHash, simplifiedHash);
-            return simplifiedHash;
-        }
-        return information.hashCode();
+        return hash;
     }
 
     public static boolean canCorrect(Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
                                      PlayerViolation playerViolation, LiveViolation liveViolation,
                                      boolean problematicDetections) {
         return canFunction() // 1
-                && (problematicDetections && check.isProblematicDetection(dataType, playerViolation.getDetection(true)) // 2
-                || ResearchEngine.isFalsePositive( // 2
-                ResearchEngine.getFalsePositives(hackType, dataType),
-                playerViolation.getFalsePositiveIdentity()))
+                && (problematicDetections && check.isProblematicDetection(dataType, playerViolation.getDetection()) // 2
+                || ResearchEngine.getFalsePositives(hackType, dataType).contains(playerViolation.getSimilarityIdentity())) // 2
                 && !liveViolation.hasMaxCancelledLevel(); // 3
     }
 }

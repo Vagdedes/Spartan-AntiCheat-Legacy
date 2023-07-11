@@ -154,16 +154,16 @@ public class Speed {
         Decimals decimals = p.getDecimals(check);
         double dm = getGreaterRepetitiveLimit(decimals);
         String reason;
-        boolean aboveBlocks = false;
-        boolean groundVanilla = p.isOnGround();
-        boolean groundCustom = p.isOnGroundCustom();
-        boolean jumping = p.isJumping(ver);
-        boolean extremelyPushed = p.getHandlers().has(Handlers.HandlerType.ExtremeCollision);
-        boolean fairlyPushed = extremelyPushed || PlayerData.hasNearbyCollisions(p);
-        boolean piston = p.getHandlers().has(Handlers.HandlerType.Piston);
-        SpartanLocation loc1 = to.clone().add(0, 1, 0);
-        SpartanLocation locM1 = to.clone().add(0, -1, 0);
-        boolean honey = !PatternUtils.isBlockPattern(Speed.honey, to, true, BlockUtils.honey_block);
+        boolean aboveBlocks = false,
+                groundVanilla = p.isOnGround(),
+                groundCustom = p.isOnGroundCustom(),
+                jumping = p.isJumping(ver),
+                extremelyPushed = p.getHandlers().has(Handlers.HandlerType.ExtremeCollision),
+                fairlyPushed = extremelyPushed || PlayerData.hasNearbyCollisions(p),
+                piston = p.getHandlers().has(Handlers.HandlerType.Piston),
+                honey = !PatternUtils.isBlockPattern(Speed.honey, to, true, BlockUtils.honey_block);
+        SpartanLocation loc1 = to.clone().add(0, 1, 0),
+                locM1 = to.clone().add(0, -1, 0);
 
         if (groundGliding
                 || isSolid(to, box)

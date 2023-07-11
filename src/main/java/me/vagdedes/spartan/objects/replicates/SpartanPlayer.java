@@ -690,7 +690,8 @@ public class SpartanPlayer {
     }
 
     public boolean debug(boolean broadcast, boolean cutDecimals, Object... message) {
-        if (!Piracy.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda() && Bukkit.getMotd().contains(Register.plugin.getName())) {
+        if (!Piracy.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
+                && Bukkit.getMotd().contains(Register.plugin.getName())) {
             Player p = getPlayer();
 
             if (p != null && p.isWhitelisted()) {

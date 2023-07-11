@@ -24,8 +24,8 @@ public class IrregularMovementsBouncing {
                 if (!PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid)) {
                     if (vertical > 0.0) {
                         if (canGoUp) {
-                            boolean canBounce = BlockUtils.isBouncingBlock(p, to, 2);
-                            boolean canBounceLive = false; // Use it to save performance in specific circumstances
+                            boolean canBounce = BlockUtils.isBouncingBlock(p, to, 2),
+                                    canBounceLive = false; // Use it to save performance in specific circumstances
 
                             if (vertical > oldVertical) { // Supposed bounce moment
                                 double verticalRemaining = vertical - Math.floor(vertical);

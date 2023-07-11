@@ -2,6 +2,7 @@ package me.vagdedes.spartan.objects.profiling;
 
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.CharUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
@@ -12,11 +13,10 @@ public class InformationAnalysis {
 
     // Structure
 
-    private static final Map<String, Map<Integer, Set<Integer>>>
-            decimals = Cache.store(new ConcurrentHashMap<>()),
-            integers = Cache.store(new ConcurrentHashMap<>());
-    private static final Map<Integer, String>
-            simplifiedDetection = Cache.store(new ConcurrentHashMap<>());
+    private static final Map<Integer, Map<Integer, Set<Integer>>>
+            numbers = Cache.store(new ConcurrentHashMap<>());
+    private static final Map<Integer, Boolean>
+            detectionHasOption = Cache.store(new ConcurrentHashMap<>());
 
     public static String[] getHeadArray(String information, int limit) {
         return information.split(" ", limit);
@@ -72,43 +72,32 @@ public class InformationAnalysis {
 
     // Orientation
 
-    private final Enums.HackType hackType;
-    private final String key;
+    private final int key;
+    final String detection;
     private final String[] array;
-    private boolean isOption;
 
     InformationAnalysis(Enums.HackType hackType, String information) {
         this.array = getHeadArray(information, 0);
-        this.key = hackType.getStringOrdinal() + array[1];
-        this.hackType = hackType;
-        this.isOption = false;
+
+        String detection = array[1];
+        this.detection = detection.substring(0, detection.length() - 1); // Remove comma
+        this.key = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
     }
 
-    boolean isOption() {
-        return isOption;
-    }
+    boolean isOption(Enums.HackType hackType) {
+        Set<String> configKeys = hackType.getCheck().getOptionKeys();
+        int configKeyCount = configKeys.size();
 
-    String getDetection(boolean details) {
-        if (array.length > 1) {
-            String currentDetection = array[1];
-
-            if (details) {
-                return currentDetection.substring(0, currentDetection.length() - 1); // Remove comma
-            }
-            int hash = currentDetection.hashCode();
-            String cachedDetection = simplifiedDetection.get(hash);
+        if (configKeyCount > 0) {
+            int hash = (key * SpartanBukkit.hashCodeMultiplier) + configKeyCount;
+            Boolean cachedDetection = detectionHasOption.get(hash);
 
             if (cachedDetection != null) {
                 return cachedDetection;
-            }
-            cachedDetection = removeDetectionDetails(currentDetection.substring(0, currentDetection.length() - 1)); // Remove comma
-            Set<String> configKeys = hackType.getCheck().getOptionKeys();
-            int configKeyCount = configKeys.size();
-
-            if (configKeyCount > 0) {
+            } else {
                 List<String> foundDetections = new ArrayList<>(configKeyCount);
 
-                for (String keyword : cachedDetection.split("-")) {
+                for (String keyword : removeDetectionDetails(detection).split("-")) {
                     for (String configKey : configKeys) {
                         if (containsDetection(configKey, keyword)) {
                             foundDetections.add(configKey);
@@ -116,130 +105,89 @@ public class InformationAnalysis {
                     }
                 }
 
-                if (foundDetections.size() == 1) { // Use the config key instead to cover all the sub-detections
-                    cachedDetection = foundDetections.get(0);
-                    this.isOption = true;
+                // Use the config key instead to cover all the sub-detections
+                if (foundDetections.size() == 1) {
+                    detectionHasOption.put(hash, true);
+                    return true;
+                } else {
+                    detectionHasOption.put(hash, false);
                 }
             }
-            simplifiedDetection.put(hash, cachedDetection);
-            return cachedDetection;
         }
-        return null;
+        return false;
     }
 
-    Double[] getDecimals() {
+    Collection<Number> getNumbers() {
         int size = array.length;
 
         if (size >= 2) {
-            Map<Integer, Set<Integer>> childMap = decimals.get(key);
+            Map<Integer, Set<Integer>> childMap = numbers.get(key);
 
             if (childMap == null) {
                 childMap = new ConcurrentHashMap<>();
-                Map<Integer, Double> positionsAndNumbers = identifyAndShowDecimals(array, size);
+                Map<Integer, Number> positionsAndNumbers = identifyAndShowNumbers(array, size);
                 childMap.put(size, positionsAndNumbers.keySet());
-                decimals.put(key, childMap);
-                return positionsAndNumbers.values().toArray(new Double[0]);
-            }
-            Set<Integer> positions = childMap.get(size);
+                numbers.put(key, childMap);
+                return positionsAndNumbers.values();
+            } else {
+                Set<Integer> positions = childMap.get(size);
 
-            if (positions != null) {
-                return showDecimals(array, size, positions);
+                if (positions != null) {
+                    return showNumbers(array, size, positions);
+                } else {
+                    Map<Integer, Number> positionsAndNumbers = identifyAndShowNumbers(array, size);
+                    childMap.put(size, positionsAndNumbers.keySet());
+                    return positionsAndNumbers.values();
+                }
             }
-            Map<Integer, Double> positionsAndNumbers = identifyAndShowDecimals(array, size);
-            childMap.put(size, positionsAndNumbers.keySet());
-            return positionsAndNumbers.values().toArray(new Double[0]);
+        } else {
+            return new ArrayList<>(0);
         }
-        return new Double[]{};
     }
 
-    Integer[] getIntegers() {
-        int size = array.length;
-
-        if (size >= 2) {
-            Map<Integer, Set<Integer>> childMap = integers.get(key);
-
-            if (childMap == null) {
-                childMap = new ConcurrentHashMap<>();
-                Map<Integer, Integer> positionsAndNumbers = identifyAndShowIntegers(array, size);
-                childMap.put(size, positionsAndNumbers.keySet());
-                integers.put(key, childMap);
-                return positionsAndNumbers.values().toArray(new Integer[0]);
-            }
-            Set<Integer> positions = childMap.get(size);
-
-            if (positions != null) {
-                return showIntegers(array, size, positions);
-            }
-            Map<Integer, Integer> positionsAndNumbers = identifyAndShowIntegers(array, size);
-            childMap.put(size, positionsAndNumbers.keySet());
-            return positionsAndNumbers.values().toArray(new Integer[0]);
-        }
-        return new Integer[]{};
-    }
-
-    // Utils
-
-    private Map<Integer, Double> identifyAndShowDecimals(String[] array, int size) {
-        Map<Integer, Double> map = new LinkedHashMap<>(size);
+    private Map<Integer, Number> identifyAndShowNumbers(String[] array, int size) {
+        Map<Integer, Number> map = new LinkedHashMap<>(size);
 
         for (int position = 0; position < array.length; position++) {
             if (position % 2 == 1) {
-                Double decimal = AlgebraUtils.returnValidDecimal(array[position].substring(1)); // Removes the comma
+                String string = array[position].substring(1); // Removes the comma
+                Number number = AlgebraUtils.returnValidDecimal(string);
 
-                if (decimal != null) {
-                    map.put(position, decimal);
+                if (number != null) {
+                    map.put(position, number);
+                } else {
+                    number = AlgebraUtils.returnValidInteger(string);
+
+                    if (number != null) {
+                        map.put(position, number);
+                    }
                 }
             }
         }
         return map;
     }
 
-    private Map<Integer, Integer> identifyAndShowIntegers(String[] array, int size) {
-        Map<Integer, Integer> map = new LinkedHashMap<>(size);
-
-        for (int position = 0; position < array.length; position++) {
-            if (position % 2 == 1) {
-                Integer integer = AlgebraUtils.returnValidInteger(array[position].substring(1)); // Removes the comma
-
-                if (integer != null) {
-                    map.put(position, integer);
-                }
-            }
-        }
-        return map;
-    }
-
-    private Double[] showDecimals(String[] array, int size, Set<Integer> positions) {
-        List<Double> numbers = new ArrayList<>(size);
+    private Collection<Number> showNumbers(String[] array, int size, Set<Integer> positions) {
+        List<Number> numbers = new ArrayList<>(size);
 
         for (int position : positions) {
             if (position < size) {
-                Double decimal = AlgebraUtils.returnValidDecimal(array[position].substring(1)); // Removes the comma
+                String string = array[position].substring(1); // Removes the comma
+                Number number = AlgebraUtils.returnValidDecimal(string);
 
-                if (decimal != null) { // basic check to avoid exceptions at a high chance
-                    numbers.add(decimal);
+                if (number != null) {
+                    numbers.add(number);
+                } else {
+                    number = AlgebraUtils.returnValidInteger(string);
+
+                    if (number != null) {
+                        numbers.add(number);
+                    }
                 }
             } else {
                 break;
             }
         }
-        return numbers.toArray(new Double[0]);
-    }
-
-    private Integer[] showIntegers(String[] array, int size, Set<Integer> positions) {
-        List<Integer> numbers = new ArrayList<>(size);
-
-        for (int position : positions) {
-            if (position < size) {
-                Integer integer = AlgebraUtils.returnValidInteger(array[position].substring(1)); // Removes the comma
-
-                if (integer != null) { // basic check to avoid exceptions at a high chance
-                    numbers.add(integer);
-                }
-            } else {
-                break;
-            }
-        }
-        return numbers.toArray(new Integer[0]);
+        return numbers;
     }
 }

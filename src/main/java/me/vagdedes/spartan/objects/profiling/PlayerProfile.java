@@ -249,7 +249,7 @@ public class PlayerProfile {
     }
 
     public void setLastInteraction(LiveViolation liveViolation) {
-         lastInteraction = liveViolation;
+        lastInteraction = liveViolation;
     }
 
     // Separator
@@ -449,7 +449,7 @@ public class PlayerProfile {
                             + punishmentHistory.getReportCount(violationHistory.getHackType(), 0);
                     double averageViolations = violationCount / ((double) days);
 
-                    if (averageViolations > (Check.maximumDefaultCancelViolation + CancelViolation.extra)) {
+                    if (averageViolations > Check.maximumDefaultCancelViolation) {
                         return false;
                     }
                 }
