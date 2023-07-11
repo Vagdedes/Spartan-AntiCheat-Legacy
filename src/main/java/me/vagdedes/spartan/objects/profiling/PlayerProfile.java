@@ -436,27 +436,10 @@ public class PlayerProfile {
         return (staff || evidence.noCalculations() || wasRecentlyOnline()) && getUsefulLogs() > 0;
     }
 
-    public boolean isTrustWorthy() {
-        if (isLegitimate()
-                && !wasStaff()
+    public boolean isTrustWorthy(boolean history) {
+        return !wasStaff()
                 && !wasTesting()
-                && punishmentHistory.getOverall(true) == 0) {
-            for (ViolationHistory violationHistory : violationHistory) {
-                int days = violationHistory.getDays();
-
-                if (days > 0) {
-                    int violationCount = violationHistory.getImportantViolations(true)
-                            + punishmentHistory.getReportCount(violationHistory.getHackType(), 0);
-                    double averageViolations = violationCount / ((double) days);
-
-                    if (averageViolations > Check.maximumDefaultCancelViolation) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+                && (!history || punishmentHistory.getOverall(true) == 0);
     }
 
     // Separator

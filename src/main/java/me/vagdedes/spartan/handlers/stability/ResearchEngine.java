@@ -513,7 +513,7 @@ public class ResearchEngine {
         if (!legitimatePlayers.contains(playerProfile)) {
             legitimatePlayers.add(playerProfile);
 
-            if (playerProfile.isTrustWorthy()) {
+            if (playerProfile.isTrustWorthy(true)) {
                 hackerFreePlayerProfiles.add(playerProfile);
             }
             suspectedPlayers.remove(playerProfile);
@@ -1295,18 +1295,13 @@ public class ResearchEngine {
         if (size > 0) {
             Enums.HackType[] hackTypes = Enums.hackTypes();
             DataType[] dataTypes = getDynamicUsableDataTypes(false);
-            List<PlayerProfile> playerProfilesCopy = new ArrayList<>(playerProfiles),
-                    hackerFreePlayerProfiles = new ArrayList<>(size);
+            List<PlayerProfile> playerProfilesCopy = new ArrayList<>(playerProfiles);
             int mines = 0, logs = 0, reports = 0,
                     bans = 0, kicks = 0, warnings = 0;
             ViolationStatistics.calculate(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
                 playerProfile.calculateHistoricalEvidence();
-
-                if (playerProfile.isTrustWorthy()) {
-                    hackerFreePlayerProfiles.add(playerProfile);
-                }
 
                 // Separator
 
@@ -1351,146 +1346,121 @@ public class ResearchEngine {
 
             // Separator (Find False Positives)
 
-            if (hackerFreePlayerProfiles.size() >= profileRequirement) {
-                Map<Integer, Set<Integer>> localFalsePositives = new LinkedHashMap<>();
-                Map<Integer, Integer> loopFalsePositives = new LinkedHashMap<>();
+            Map<Integer, Set<Integer>> localFalsePositives = new LinkedHashMap<>();
+            Map<Integer, Integer> loopFalsePositives = new LinkedHashMap<>();
+            Set<Integer> playerFalsePositives = new HashSet<>();
+            Map<String, Integer> detectionViolationCount = new LinkedHashMap<>();
+            Map<Integer, String> detectionCorrelations = new LinkedHashMap<>();
 
-                if (true) {
-                    Set<Integer> playerFalsePositives = new HashSet<>();
+            for (Enums.HackType hackType : hackTypes) {
+                Check check = hackType.getCheck();
+                check.clearProblematicDetections();
 
-                    for (Enums.HackType hackType : hackTypes) {
-                        for (DataType dataType : dataTypes) {
-                            loopFalsePositives.clear();
-                            double totalProfiles = 0.0;
+                for (DataType dataType : dataTypes) {
+                    double totalFalsePositiveProfiles = 0.0;
+                    boolean bedrock = dataType == DataType.Bedrock;
 
-                            for (PlayerProfile playerProfile : hackerFreePlayerProfiles) {
-                                if ((dataType == DataType.Bedrock) == playerProfile.isBedrockPlayer()) {
-                                    totalProfiles++;
-                                    List<PlayerViolation> playerViolations = playerProfile.getViolationHistory(hackType).getViolationsList();
+                    for (PlayerProfile playerProfile : playerProfiles) {
+                        if (bedrock == playerProfile.isBedrockPlayer()
+                                && playerProfile.isTrustWorthy(false)
+                                && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
+                            totalFalsePositiveProfiles++;
+                            Set<Map.Entry<PlayerViolation, Integer>> data = playerProfile.getViolationHistory(hackType).getViolationCounts();
 
-                                    if (playerViolations.size() > 0) {
-                                        playerFalsePositives.clear();
+                            if (data.size() > 0) {
+                                playerFalsePositives.clear();
 
-                                        for (PlayerViolation playerViolation : playerViolations) {
-                                            if (playerViolation.isDetectionEnabled()) {
-                                                int hash = playerViolation.getSimilarityIdentity();
+                                for (Map.Entry<PlayerViolation, Integer> entry : data) {
+                                    PlayerViolation playerViolation = entry.getKey();
 
-                                                if (playerFalsePositives.add(hash)) {
-                                                    loopFalsePositives.put(hash, loopFalsePositives.getOrDefault(hash, 0) + 1);
-                                                }
+                                    if (playerViolation.isDetectionEnabled()) {
+                                        int hash = playerViolation.getSimilarityIdentity();
+                                        String detection = playerViolation.getDetection();
+
+                                        if (playerFalsePositives.add(hash)) {
+                                            loopFalsePositives.put(hash, loopFalsePositives.getOrDefault(hash, 0) + 1);
+
+                                            if (!detectionCorrelations.containsKey(hash)) {
+                                                detectionCorrelations.put(hash, detection);
                                             }
+                                        }
+                                        if (playerProfile.isLegitimate()) { // We specify only legitimate players because we now use only the detection name and not its information
+                                            detectionViolationCount.put(detection, detectionViolationCount.getOrDefault(detection, 0) + entry.getValue());
                                         }
                                     }
                                 }
-                            }
-
-                            if (totalProfiles > 0 && loopFalsePositives.size() > 0) {
-                                Iterator<Integer> iterator = loopFalsePositives.values().iterator();
-
-                                while (iterator.hasNext()) {
-                                    int uniqueCount = iterator.next();
-
-                                    if ((uniqueCount / totalProfiles) < AlgebraUtils.twoThirds) {
-                                        iterator.remove();
-                                    }
-                                    AwarenessNotifications.forcefullySend((uniqueCount / totalProfiles) + " " + uniqueCount + " / " + totalProfiles);
-                                }
-                                localFalsePositives.put(getFalsePositiveStorageKey(hackType, dataType), new HashSet<>(loopFalsePositives.keySet()));
                             }
                         }
                     }
-                } else {
-                    /*for (Enums.HackType hackType : hackTypes) {
-                        for (DataType dataType : dataTypes) {
-                            Map<String, Set<Integer>> individualFalsePositives = new LinkedHashMap<>();
-                            Map<String, Map<Integer, Integer>>
-                                    individualHackerViolations = new LinkedHashMap<>(),
-                                    individualLegitimateViolations = new LinkedHashMap<>();
 
-                            for (PlayerProfile playerProfile : playerProfiles) {
-                                if ((dataType == DataType.Bedrock) == playerProfile.isBedrockPlayer()) {
-                                    ViolationHistory violationHistory = playerProfile.getViolationHistory(hackType);
-                                    Set<Map.Entry<PlayerViolation, Integer>> data = violationHistory.getViolationCounts();
+                    if (loopFalsePositives.size() > 0) {
+                        if (totalFalsePositiveProfiles > 0) {
+                            Iterator<Map.Entry<Integer, Integer>> iterator = loopFalsePositives.entrySet().iterator();
 
-                                    if (data.size() > 0) {
-                                        boolean suspectedOrHacker = playerProfile.isSuspectedOrHacker();
+                            while (iterator.hasNext()) {
+                                Map.Entry<Integer, Integer> entry = iterator.next();
+                                int uniqueCount = entry.getValue();
 
-                                        if (suspectedOrHacker || violationHistory.getDays() > 1) {
-                                            Map<String, Map<Integer, Integer>> parentMap = suspectedOrHacker ? individualHackerViolations : individualLegitimateViolations;
-
-                                            for (Map.Entry<PlayerViolation, Integer> entry : data) {
-                                                PlayerViolation playerViolation = entry.getKey();
-
-                                                if (playerViolation.isDetectionEnabled()) {
-                                                    String detection = playerViolation.getDetection();
-                                                    Map<Integer, Integer> map = parentMap.get(detection);
-
-                                                    if (map == null) {
-                                                        map = new LinkedHashMap<>();
-                                                        map.put(playerViolation.getFalsePositiveIdentity(), entry.getValue());
-                                                        parentMap.put(detection, map);
-                                                    } else {
-                                                        int hash = playerViolation.getFalsePositiveIdentity();
-                                                        map.put(hash, map.getOrDefault(hash, 0) + entry.getValue());
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
+                                if (uniqueCount < profileRequirement // At least 10 profiles
+                                        || (uniqueCount / totalFalsePositiveProfiles) < 0.01) { // at least 1%
+                                    iterator.remove();
+                                    detectionCorrelations.remove(entry.getKey());
                                 }
                             }
 
-                            // Separator (Compare separated violations)
+                            if (loopFalsePositives.size() > 0) {
+                                localFalsePositives.put(getFalsePositiveStorageKey(hackType, dataType), new HashSet<>(loopFalsePositives.keySet()));
+                                loopFalsePositives.clear();
+                            }
+                        } else { // No need to continue when no profiles were found
+                            loopFalsePositives.clear();
+                            detectionViolationCount.clear();
+                            detectionCorrelations.clear();
+                            continue;
+                        }
+                    } else { // No need to continue when no violations were found
+                        detectionViolationCount.clear();
+                        detectionCorrelations.clear();
+                        continue;
+                    }
 
-                            if (individualLegitimateViolations.size() > 0) {
-                                for (Map.Entry<String, Map<Integer, Integer>> entry : individualLegitimateViolations.entrySet()) {
-                                    String detection = entry.getKey();
-                                    Map<Integer, Integer> hackerMap = individualHackerViolations.get(detection);
+                    // Separator (Calculate problematic detections using a pie equation)
 
-                                    if (hackerMap != null) {
-                                        for (Map.Entry<Integer, Integer> entryChild : entry.getValue().entrySet()) {
-                                            int hash = entryChild.getKey(),
-                                                    legitimateCount = entryChild.getValue(),
-                                                    total = legitimateCount + hackerMap.getOrDefault(hash, 0);
+                    int detections = detectionViolationCount.size();
 
-                                            // What we are truly looking for is over 50%, problem is any of these players could theoretically become a hacker, thus why there is a higher number
-                                            if (total >= profileRequirement && (legitimateCount / ((double) total)) >= AlgebraUtils.twoThirds) {
-                                                Set<Integer> set = individualFalsePositives.get(detection);
+                    if (detections > 0) {
+                        double totalViolations = 0.0;
+                        Collection<String> falsePositiveDetections = detectionCorrelations.values();
+                        Iterator<Map.Entry<String, Integer>> iterator = detectionViolationCount.entrySet().iterator();
 
-                                                if (set == null) {
-                                                    set = new HashSet<>();
-                                                    set.add(hash);
-                                                    individualFalsePositives.put(detection, set);
-                                                } else {
-                                                    set.add(hash);
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        for (int hash : entry.getValue().keySet()) {
-                                            // We trust any result recorded more than once because there's absolutely no hacker data recorded
-                                            Set<Integer> set = individualFalsePositives.get(detection);
+                        while (iterator.hasNext()) {
+                            Map.Entry<String, Integer> entry = iterator.next();
 
-                                            if (set == null) {
-                                                set = new HashSet<>();
-                                                set.add(hash);
-                                                individualFalsePositives.put(detection, set);
-                                            } else {
-                                                set.add(hash);
-                                            }
-                                        }
-                                    }
-                                }
-                                localFalsePositives.put(getFalsePositiveStorageKey(hackType, dataType), individualFalsePositives);
+                            if (falsePositiveDetections.contains(entry.getKey())) {
+                                totalViolations += entry.getValue();
+                            } else {
+                                iterator.remove();
+                                detections--;
                             }
                         }
-                    }*/
+
+                        if (detections > 0) {
+                            double maxExpectedPieSize = (1.0 / ((double) detections)) * (check.getDefaultCancelViolation() + 1);
+
+                            if (totalViolations >= Check.maxViolations) { // At least a good amount of violations
+                                for (Map.Entry<String, Integer> entry : detectionViolationCount.entrySet()) {
+                                    if ((entry.getValue() / totalViolations) >= maxExpectedPieSize) {
+                                        check.setProblematicDetection(dataType, entry.getKey());
+                                    }
+                                }
+                                detectionViolationCount.clear();
+                            }
+                        }
+                    }
                 }
-                ResearchEngine.falsePositives.clear();
-                ResearchEngine.falsePositives.putAll(localFalsePositives);
-            } else {
-                ResearchEngine.falsePositives.clear();
             }
+            ResearchEngine.falsePositives.clear();
+            ResearchEngine.falsePositives.putAll(localFalsePositives);
 
             // Separator (Calculate mining statistics)
 
@@ -1513,47 +1483,6 @@ public class ResearchEngine {
                         averageMining.put(ore, average);
                     } else {
                         averageMining.remove(ore);
-                    }
-                }
-
-                // Separator (Calculate problematic detections using a pie equation)
-
-                Map<String, Integer> detectionViolationCount = new LinkedHashMap<>();
-
-                for (Enums.HackType hackType : hackTypes) {
-                    Check check = hackType.getCheck();
-                    check.clearProblematicDetections();
-
-                    for (DataType dataType : dataTypes) {
-                        detectionViolationCount.clear();
-
-                        for (PlayerProfile playerProfile : hackerFreePlayerProfiles) {
-                            Set<Map.Entry<PlayerViolation, Integer>> data = playerProfile.getViolationHistory(hackType).getViolationCounts();
-
-                            if (data.size() > 0) {
-                                for (Map.Entry<PlayerViolation, Integer> entry : data) {
-                                    String detection = entry.getKey().getDetection();
-                                    detectionViolationCount.put(detection, detectionViolationCount.getOrDefault(detection, 0) + entry.getValue());
-                                }
-                            }
-                        }
-
-                        int detections = detectionViolationCount.size();
-
-                        if (detections > 0) {
-                            double maxExpectedPieSize = (1.0 / ((double) detections)) * 3.0,
-                                    totalViolations = 0.0;
-
-                            for (int violations : detectionViolationCount.values()) {
-                                totalViolations += violations;
-                            }
-
-                            for (Map.Entry<String, Integer> entry : detectionViolationCount.entrySet()) {
-                                if ((entry.getValue() / totalViolations) >= maxExpectedPieSize) {
-                                    check.setProblematicDetection(dataType, entry.getKey());
-                                }
-                            }
-                        }
                     }
                 }
 
