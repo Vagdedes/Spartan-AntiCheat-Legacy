@@ -40,7 +40,7 @@ public class IrregularMovementsStep {
                     boolean velocityScenario, boolean damageScenario, boolean groundInteractionScenario, boolean knownBoxes, boolean bedrockPlayer, boolean falling, boolean oldFalling,
                     String prevention) {
         if (!p.getAllowFlight()) {
-            double configurationLimit = IrregularMovements.check.getCheck().getDecimalOption("step_limit_in_blocks", GroundUtils.maxStep);
+            double configurationLimit = IrregularMovements.check.getCheck().getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
 
             if (configurationLimit > 0.0) {
                 AsyncDetection.run(p, IrregularMovements.check, () -> {

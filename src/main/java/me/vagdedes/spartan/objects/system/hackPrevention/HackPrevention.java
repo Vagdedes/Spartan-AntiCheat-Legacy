@@ -287,7 +287,7 @@ public class HackPrevention {
                                 violations += 1;
                             }
                         } else {
-                            if (CancelViolation.isForced(player, hackType) || bypassCancelViolation(dataType, hackType, violations, hp.damage)) {
+                            if (CancelViolation.isForced(player, hackType, violationsObject) || bypassCancelViolation(dataType, hackType, violations, hp.damage)) {
                                 CancelCause silentCause = check.getSilentCause(uuid);
 
                                 if (silentCause == null || !silentCause.pointerMatches(information)) {

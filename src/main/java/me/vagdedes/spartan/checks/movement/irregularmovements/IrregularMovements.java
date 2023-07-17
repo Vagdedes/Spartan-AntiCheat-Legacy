@@ -55,35 +55,11 @@ public class IrregularMovements {
             identicalFallDetection = "identical-fall",
             distantFallDetection = "distant-fall",
             slowFallDetection = "slow-fall",
-            repeatedFallDetection = "repeated-fall",
-            positionFallDetection = "position-fall",
-            illegalFallDetection = "illegal-fall",
 
     greaterDownDetection = "greater-down",
             identicalDownDetection = "identical-down",
             distantDownDetection = "distant-down",
-            slowDownDetection = "slow-down",
-            repeatedDownDetection = "repeated-down",
-            positionDownDetection = "position-down",
-            illegalDownDetection = "illegal-down",
-
-    greaterJumpDetection = "greater-jump",
-            identicalJumpDetection = "identical-jump",
-            distantJumpDetection = "distant-jump",
-            unknownJumpDetection = "unknown-jump",
-            airJumpDetection = "air-jump",
-            illegalJumpDetection = "illegal-jump",
-            spoofJumpDetection = "spoof-jump",
-            uncompletedJumpDetection = "uncompleted-jump";
-    private static final String[] detections = new String[]{
-            horizontalMotionDetection,
-            greaterFallDetection, identicalFallDetection, distantFallDetection, slowFallDetection,
-            positionFallDetection, repeatedFallDetection, illegalFallDetection,
-            greaterDownDetection, identicalDownDetection, distantDownDetection, slowDownDetection,
-            positionDownDetection, repeatedDownDetection, illegalDownDetection,
-            greaterJumpDetection, identicalJumpDetection, distantJumpDetection, unknownJumpDetection,
-            uncompletedJumpDetection, airJumpDetection, spoofJumpDetection, illegalJumpDetection
-    };
+            slowDownDetection = "slow-down";
 
     private static final double[][]
             interactiveAndPassable = new double[][]{
@@ -119,7 +95,8 @@ public class IrregularMovements {
 
     // Re-enable Fly & IrregularMovements checks
     public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
-                           double vertical, double oldVertical, double horizontal, double box, double oldBox,
+                           double vertical, double oldVertical, double verticalDifference, double oldVerticalDifference,
+                           double horizontal, double box, double oldBox,
                            int airTicks) {
         boolean bedrockPlayer = p.isBedrockPlayer();
 
@@ -129,7 +106,7 @@ public class IrregularMovements {
             boolean canGoUp, canGoDown,
                     canJump, canFall,
                     defaultScenario = false, groundInteractionScenario = false, damageScenario = false, // Real
-                    abstractScenario = false, velocityScenario = false; // Combinations
+                    abstractVelocityScenario = false, velocityScenario = false; // Combinations
             String scenario;
 
             // Detection Management
@@ -189,7 +166,9 @@ public class IrregularMovements {
                     onGround = p.isOnGround(),
                     onGroundCustom = p.isOnGroundCustom(),
                     offGround = !onGroundCustom || !onGround && !liquidBlocks,
-                    knownBoxes = GroundUtils.heightExists(box, true) || GroundUtils.heightExists(oldBox, true),
+                    knownBoxesNew = GroundUtils.heightExists(box, true),
+                    knownBoxesOld = GroundUtils.heightExists(oldBox, true),
+                    knownBoxes = knownBoxesNew || knownBoxesOld,
                     bouncingBlocks = (!knownBoxes || airTicks > 0) && BouncingBlocks.isBelow(p),
                     jumpEffect = p.hasPotionEffect(PotionEffectType.JUMP),
                     cachedJumpEffect = jumpEffect || PlayerData.hasJumpEffect(p),
@@ -215,26 +194,13 @@ public class IrregularMovements {
             boolean forcefulUp = levitationEffect || waterElevator || Explosion.justExploded(p),
                     forcefulUpExtended = forcefulUp || threwTrident; // Used to prevent false positives and not heavily modify detections
 
-            // Buffer Reset
-            if (onGroundCustom) {
-                if (buffers.get("detection-reset", 1) == 1) {
-                    buffers.set("detection-reset", 0);
-
-                    for (String detection : detections) {
-                        buffers.remove(new String[]{detection, detection + "=minute"});
-                    }
-                }
-            } else {
-                buffers.set("detection-reset", 1);
-            }
-
             // Scenario Identification
             if (threwTrident
                     || PlayerData.hasNearbyCollisions(p)
                     || NoHitDelay.hasCooldown(p)
                     || p.getHandlers().has(Handlers.HandlerType.Piston)
                     || FishingHook.hasCooldown(p)) { // Extreme circumstances
-                abstractScenario = true;
+                abstractVelocityScenario = true;
                 velocityScenario = true;
 
                 scenario = "abstract";
@@ -350,7 +316,7 @@ public class IrregularMovements {
                 canJump = !forcefulUp;
                 canFall = !forcefulUp;
             } else if (levitationEffect) { // Levitation Effect
-                abstractScenario = true;
+                abstractVelocityScenario = true;
 
                 scenario = levitationKey;
                 canGoUp = true;
@@ -366,6 +332,13 @@ public class IrregularMovements {
                 canGoDown = true;
                 canJump = true;
                 canFall = true;
+            }
+            if (!constructDetection) {
+                checkUp = true;
+                checkDown = true;
+                checkJump = true;
+                checkFall = true;
+                checkHorizontal = true;
             }
 
             // Scenario Tracker
@@ -466,9 +439,23 @@ public class IrregularMovements {
                     groundInteractionScenarioCopy = groundInteractionScenario,
                     velocityScenarioCopy = velocityScenario;
 
+            IrregularMovementsMotion.run(p,
+                    to, from,
+                    vertical, oldVertical, verticalDifference, oldVerticalDifference,
+                    box, oldBox,
+                    knownBoxes, knownBoxesNew, knownBoxesOld,
+                    onGroundCustom,
+                    groundInteractionScenario,
+                    velocityScenario,
+                    bouncingBlocks,
+                    canGoUp && checkUp, canGoDown && checkDown,
+                    canJump && checkJump, canFall && checkFall, checkHorizontal,
+                    airTicks,
+                    prevention);
+
             if (vertical > minimumUp) {
                 if (canGoUp) {
-                    if ((!constructDetection || checkUp) && !jumping && !forcefulUpExtended
+                    if (!p.isOp() && checkUp && !jumping && !forcefulUpExtended //todo
                             && IrregularMovements.check.getCheck().getBooleanOption("check_upwards", true)) {
                         AsyncDetection.run(p, check, () -> {
                             int buffer = explosion ? 5 :
@@ -511,50 +498,10 @@ public class IrregularMovements {
 
                 // Separator
 
-                if (jumping) {
-                    if (canJump) {
-                        if ((!constructDetection || checkJump) && IrregularMovements.check.getCheck().getBooleanOption("check_jumping", true) && !badTPS) {
-                            boolean defaultScenarioCopy = defaultScenario;
-
-                            AsyncDetection.run(p, check, () -> {
-                                if (oldJumping) {
-                                    if (vertical > oldVertical) {
-                                        if (!velocityScenarioCopy && !groundInteractionScenarioCopy) {
-                                            cancel(p, from, prevention, greaterJumpDetection, 1);
-                                        }
-                                    } else if (oldVertical == vertical) {
-                                        if (cancel(p, from, prevention, identicalJumpDetection, 1)) {
-                                            return;
-                                        }
-                                    } else if (!cachedJumpEffect && (oldVertical - vertical) >= (MoveUtils.jumping[0] + MoveUtils.lowPrecision)) {
-                                        if (!groundInteractionScenarioCopy) {
-                                            cancel(p, from, prevention, distantJumpDetection, 1);
-                                        }
-                                    }
-                                } else if (!cachedJumpEffect) {
-                                    if (!knownBoxes) {
-                                        if (!building && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.jumping[2]) {
-                                            cancel(p, from, prevention, unknownJumpDetection, null, 2, -defaultBufferTime);
-                                        }
-                                    } else if (airTicksOffGroundCopy) { // Don't remove else statement
-                                        cancel(p, from, prevention, airJumpDetection, null,
-                                                p.getBlocksOffGround(2, true, true) > 1 ? 1 : 2, -defaultBufferTime);
-                                    }
-                                }
-
-                                if (!knownBoxes && onGround
-                                        //&& (!p.isOnGroundCustom() || airTicks > 0) // Since first jump motion is not targeted, the player is already expected to be off ground
-                                        && jumping
-                                        && Math.abs(vertical - MoveUtils.jumping[1]) >= MoveUtils.jumping[2]) { // Do not target the initial jump motion
-                                    cancel(p, from, prevention, spoofJumpDetection, 1);
-                                } else if (defaultScenarioCopy && p.getLastJump() == 0L && p.getLastFall() >= 2_000L) { // A player must fall to jump and so forth. Not doing so suspects them
-                                    cancel(p, from, prevention, uncompletedJumpDetection, 3);
-                                }
-                            });
-                        }
-                    } else if (cancel(p, from, prevention, illegalJumpDetection, velocityScenario || forcefulUpExtended ? 6 : 3)) {
-                        return;
-                    }
+                if (jumping
+                        && !canJump
+                        && cancel(p, from, prevention, "illegal-jump", velocityScenario || forcefulUpExtended ? 6 : 3)) {
+                    return;
                 }
             } else if (vertical < minimumDown) {
                 int illegalBufferLimit = velocityScenario || forcefulUpExtended || jumpEffect ? 6 : 3;
@@ -563,14 +510,14 @@ public class IrregularMovements {
                         vertical <= -1.0 ? (MoveUtils.highPrecision / Math.round(Math.abs(vertical))) :
                                 MoveUtils.falling[1] - (MoveUtils.lowPrecision * Math.max(airTicks / 3.0, 3));
                 long repeatedMilliseconds = ((offGroundTicks - 1) * 50L) + 5L;
-                boolean abstractScenarioCopy = abstractScenario;
+                boolean abstractVelocityScenarioCopy = abstractVelocityScenario;
 
                 if (canGoDown) {
-                    if ((!constructDetection || checkDown) && !falling && !oldFalling && blockY > MoveUtils.voidDamageHeight
+                    if (!p.isOp() && checkDown && !falling && !oldFalling && blockY > MoveUtils.voidDamageHeight //todo
                             && IrregularMovements.check.getCheck().getBooleanOption("check_downwards", true)) {
                         AsyncDetection.run(p, check, () -> {
                             if (airTicksOffGroundCopy && offGround && (!groundInteractionScenarioCopy && !explosion || fullAirTicksOffGround)) {
-                                if (!abstractScenarioCopy && !changedScenario && !liquidBlocks) {
+                                if (!abstractVelocityScenarioCopy && !changedScenario && !liquidBlocks) {
                                     IrregularMovementsDownwards.run(p, to, from,
                                             vertical,
                                             airTicks, blockY,
@@ -599,7 +546,7 @@ public class IrregularMovements {
                             }
                         });
                     }
-                } else if (vertical <= -allowedDown && cancel(p, from, prevention, illegalDownDetection, illegalBufferLimit)) {
+                } else if (vertical <= -allowedDown && cancel(p, from, prevention, "illegal-down", illegalBufferLimit)) {
                     return;
                 }
 
@@ -607,11 +554,11 @@ public class IrregularMovements {
 
                 if (falling || oldFalling) {
                     if (canFall) {
-                        if ((!constructDetection || checkFall) && blockY > MoveUtils.voidDamageHeight
-                                && IrregularMovements.check.getCheck().getBooleanOption("check_falling", true)) {
+                        if (!p.isOp() && checkFall && blockY > MoveUtils.voidDamageHeight
+                                && IrregularMovements.check.getCheck().getBooleanOption("check_falling", true)) { //todo
                             AsyncDetection.run(p, check, () -> {
                                 if (airTicksOffGroundCopy && offGround && (!groundInteractionScenarioCopy && !explosion || fullAirTicksOffGround)) {
-                                    if (!abstractScenarioCopy && !changedScenario && !liquidBlocks) {
+                                    if (!abstractVelocityScenarioCopy && !changedScenario && !liquidBlocks) {
                                         IrregularMovementsDownwards.run(p, to, from,
                                                 vertical,
                                                 airTicks, blockY,
@@ -640,11 +587,11 @@ public class IrregularMovements {
                                 }
                             });
                         }
-                    } else if (falling && !bouncingBlocks && cancel(p, from, prevention, illegalFallDetection, illegalBufferLimit)) {
+                    } else if (falling && !bouncingBlocks && cancel(p, from, prevention, "illegal-fall", illegalBufferLimit)) {
                         return;
                     }
                 }
-            } else if ((!constructDetection || checkHorizontal) && offGround && !forcefulUpExtended
+            } else if (!p.isOp() && !constructDetection && offGround && !forcefulUpExtended //todo
                     && IrregularMovements.check.getCheck().getBooleanOption("check_horizontal", true)
 
                     && (!heightExists && fullAirTicksOffGround
@@ -665,8 +612,8 @@ public class IrregularMovements {
 
             // Separator
 
-            if (!changedScenario && (canGoUp && (!constructDetection || checkUp)
-                    || canJump && (!constructDetection || checkJump))) {
+            if (!changedScenario && (canGoUp && !constructDetection
+                    || canJump && checkJump)) {
                 if (!threwTrident) {
                     IrregularMovementsStep.run(p, to, previousFrom,
                             vertical,
@@ -710,7 +657,6 @@ public class IrregularMovements {
         int bufferAmount;
 
         if (buffer > 1) {
-            hasBuffer = true;
             boolean suspected;
 
             if (time >= 0) { // Make buffer dynamic when time is equal or above zero
@@ -718,40 +664,26 @@ public class IrregularMovements {
                         || !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                         && !Compatibility.CompatibilityType.ItemAttributes.isFunctional();
 
-                if (suspected && buffer > 2) { // (buffer > 2) added recently to delete single buffers that produce instabilities
-                    buffer -= 1; // Decrease buffer limit if player is suspected and if buffer is 3 or more
+                if (suspected) {
+                    buffer -= 1; // Decrease buffer limit if player is suspected and if buffer is 2 or more
+                    hasBuffer = buffer > 1;
+                } else {
+                    hasBuffer = true;
                 }
             } else { // Make buffer static when time is below zero, and return time to absolute state
                 time = -time;
                 suspected = false;
+                hasBuffer = true;
             }
 
-            if (buffer == 1) { // Skip buffer counting if buffer limit is one
-                bufferAmount = 1;
+            Buffer bufferObj = p.getBuffer(check);
+            violate = (bufferAmount = bufferObj.start(instance, time)) >= buffer;
+
+            if (violate) {
                 prevention = true;
-                violate = true;
+                bufferObj.remove(instance); // Reset buffer after its completion
             } else {
-                Buffer buffers = p.getBuffer(check);
-                String key = instance;
-                String minuteKey = key + "=minute";
-                violate = (bufferAmount = buffers.start(key, time)) >= buffer;
-
-                if (violate) {
-                    prevention = true;
-                    buffers.remove(new String[]{key, minuteKey}); // Reset buffer after its completion
-                } else {
-                    double multiplier = (minuteTicks / ((double) time)) / 5.0;
-                    int extendedBuffer = AlgebraUtils.integerRound(buffer * multiplier);
-
-                    if (buffers.start(minuteKey, minuteTicks) >= extendedBuffer) { // Run minute buffer
-                        buffer = extendedBuffer;
-                        time = minuteTicks;
-                        prevention = true;
-                        buffers.remove(new String[]{key, minuteKey}); // Reset buffer after its completion
-                    } else {
-                        prevention = suspected && bufferAmount > 2; // Create fake violation if circumstances are met
-                    }
-                }
+                prevention = suspected && bufferAmount > 2; // Create fake violation if circumstances are met
             }
         } else {
             bufferAmount = 0;
@@ -766,7 +698,8 @@ public class IrregularMovements {
             HackPreventionUtils.preventVelocity(p, 5);
             new HackPrevention(p,
                     check,
-                    "instance: " + instance.split("=")[0] + "(" + buffer + (hasBuffer ? "/" + time + "/" + bufferAmount : "") + ")" + (extra == null ? ", " : ", extra: (" + extra + "), ") + information,
+                    "instance: " + instance.split("=")[0] + "(" + buffer + (hasBuffer ? "/" + time + "/" + bufferAmount : "") + "), "
+                            + information + (extra == null ? "" : ", extra: 1, " + extra),
                     violate ? from : null,
                     0,
                     groundTeleport,

@@ -156,6 +156,16 @@ public class SpartanLocation {
         this.vector = loc.vector;
     }
 
+    private SpartanLocation(SpartanLocation loc, boolean ceilX, boolean floorX, boolean ceilZ, boolean floorZ) { // Used for searching
+        this(loc.player, loc.serverWorld, loc.chunk,
+                ceilX ? Math.ceil(loc.x) : floorX ? Math.floor(loc.x) : loc.x,
+                loc.y,
+                ceilZ ? Math.ceil(loc.z) : floorZ ? Math.floor(loc.z) : loc.z,
+                loc.yaw, loc.pitch);
+        this.block = loc.block;
+        this.vector = loc.vector;
+    }
+
     // Methods
 
     public SpartanLocation clone() {
@@ -484,9 +494,13 @@ public class SpartanLocation {
         }
     }
 
+    private double rawDistance(SpartanLocation loc) {
+        return AlgebraUtils.getDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
+    }
+
     public double distance(SpartanLocation loc) {
         this.retrieveDataFrom(loc);
-        return AlgebraUtils.getDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
+        return rawDistance(loc);
     }
 
     public double distance(Location loc) {

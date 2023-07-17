@@ -4,6 +4,7 @@ import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
+import me.vagdedes.spartan.utils.gameplay.GroundUtils;
 import org.bukkit.Material;
 
 public class IrregularMovementsInsideBlocks {
@@ -31,6 +32,8 @@ public class IrregularMovementsInsideBlocks {
     }
 
     private static boolean isValidBlock(Material type) {
-        return BlockUtils.isFullSolid(type) && !BlockUtils.areHoneyBlocks(type);
+        return BlockUtils.isFullSolid(type)
+                && !BlockUtils.areHoneyBlocks(type)
+                && !GroundUtils.getHeights(type).contains(GroundUtils.maxPossibleStep); // Surface blocks
     }
 }

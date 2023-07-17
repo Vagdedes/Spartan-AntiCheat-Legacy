@@ -37,7 +37,9 @@ public class GroundUtils {
     public static final double
             hitbox = 0.305,
             bedStep = 0.5625,
-            maxStep = bedStep + 0.1;
+            maxPossibleStep = 0.9375, // Attention, serious usage
+            minPossibleStep = 0.015625,  // Attention, serious usage
+            maxPlayerStep = bedStep + 0.1;
 
     public static final String
             inaccuracyKey = "ground-utils=utility-inaccuracy";
@@ -65,12 +67,12 @@ public class GroundUtils {
     };
 
     static {
-        abstractHeights.add(maxStep);
+        abstractHeights.add(maxPlayerStep);
         abstractHeights.add(bedStep);
 
         abstractHeights.add(0.1875);
         abstractHeights.add(0.8125);
-        abstractHeights.add(0.9375);
+        abstractHeights.add(maxPossibleStep);
         abstractHeights.add(0.375);
         abstractHeights.add(0.0625);
         abstractHeights.add(0.125);
@@ -80,7 +82,7 @@ public class GroundUtils {
         abstractHeights.add(0.09375);
         abstractHeights.add(0.3125);
         abstractHeights.add(0.625);
-        abstractHeights.add(0.015625);
+        abstractHeights.add(minPossibleStep);
 
         predictableHeights.add(0.0);
         predictableHeights.add(0.25);
@@ -142,9 +144,9 @@ public class GroundUtils {
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) && m == Material.MUD) {
                 specificHeights.put(m, new double[]{-1.0});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.STONECUTTER) {
-                specificHeights.put(m, new double[]{0.0, 0.5, 0.5625, maxStep});
+                specificHeights.put(m, new double[]{0.0, 0.5, 0.5625, maxPlayerStep});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.LANTERN || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.SOUL_LANTERN) {
-                specificHeights.put(m, new double[]{0.0, 0.5, 0.5625, 0.4375, 0.625, maxStep});
+                specificHeights.put(m, new double[]{0.0, 0.5, 0.5625, 0.4375, 0.625, maxPlayerStep});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.CAMPFIRE || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.SOUL_CAMPFIRE) {
                 specificHeights.put(m, new double[]{0.4375});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.BELL) {
@@ -154,7 +156,7 @@ public class GroundUtils {
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.LECTERN) {
                 specificHeights.put(m, new double[]{0.0, 0.125, 0.875});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.GRINDSTONE) {
-                specificHeights.put(m, new double[]{0.0, 0.8125, 0.875, 0.6875, 0.625, 0.5625, 0.75, maxStep});
+                specificHeights.put(m, new double[]{0.0, 0.8125, 0.875, 0.6875, 0.625, 0.5625, 0.75, maxPlayerStep});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && m == Material.TURTLE_EGG) {
                 specificHeights.put(m, new double[]{0.0, 0.4375});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.AMETHYST_CLUSTER) {
@@ -416,6 +418,21 @@ public class GroundUtils {
             return true;
         }
         return false;
+    }
+
+    public static Set<Double> getHeights(Material m) {
+        double[] heights = specificHeights.get(m);
+
+        if (heights != null) {
+            HashSet<Double> set = new HashSet<>(heights.length);
+
+            for (double height : heights) {
+                set.add(height);
+            }
+            return set;
+        } else {
+            return new HashSet<>(0);
+        }
     }
 
     public static double getHeight(Material m) {

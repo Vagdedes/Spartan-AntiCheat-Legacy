@@ -26,7 +26,8 @@ public class MoveUtils {
             lowPrecision = highPrecision * 2.0,
             nearMaxFallingMotion = 3.87,
             chunk = 16.0,
-            climbingScaffoldingMax = climbing[3] + 0.2;
+            climbingScaffoldingMax = climbing[3] + 0.2,
+            maxJumpingMotionDifference;
 
     public static final int
             height,
@@ -43,7 +44,20 @@ public class MoveUtils {
         jumps.add(0.33319);
         jumps.add(0.24813);
         jumps.add(0.16477);
-        jumps.add(0.08307);
+        jumps.add(jumping[0]);
+        Iterator<Double> iterator = jumps.iterator();
+        double maxJumpingMotionDifferenceLocal = Double.MIN_VALUE,
+                previousJumpingMotion = iterator.next();
+
+        while (iterator.hasNext()) {
+            double currentMotion = iterator.next();
+            maxJumpingMotionDifferenceLocal = Math.max(
+                    previousJumpingMotion - currentMotion,
+                    maxJumpingMotionDifferenceLocal
+            );
+            previousJumpingMotion = currentMotion;
+        }
+        maxJumpingMotionDifference = maxJumpingMotionDifferenceLocal;
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             List<World> worlds = Bukkit.getWorlds();
@@ -61,11 +75,6 @@ public class MoveUtils {
         } else {
             height = 256;
         }
-
-        /*for (int i = 1; i <= 4; i++) {
-            jumps.add(jumping[0] * i);
-        }
-        jumps.add(jumping[1]);*/
     }
 
     public static void run(SpartanPlayer p) {
