@@ -78,7 +78,7 @@ public class LiveViolation {
 
     private int getRawCancelledLevel() {
         long time = cancelledLevel - System.currentTimeMillis();
-        return time > 0L ? AlgebraUtils.integerRound(time / 1000.0) : 0;
+        return time > 0L ? AlgebraUtils.integerCeil(time / 1000.0) : 0;
     }
 
     public int getCancelledLevel() {
@@ -98,7 +98,7 @@ public class LiveViolation {
     }
 
     public boolean hasCancelledLevel() {
-        return getRawCancelledLevel() > 0;
+        return cancelledLevel > System.currentTimeMillis();
     }
 
     public boolean hasMaxCancelledLevel() {

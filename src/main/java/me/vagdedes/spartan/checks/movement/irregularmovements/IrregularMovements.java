@@ -399,11 +399,13 @@ public class IrregularMovements {
 
             // Has important counters, so put it first regardless
             IrregularMovementsMotion.run(p,
+                    cooldowns,
                     to, from,
                     vertical, oldVertical, verticalDifference,
                     box, oldBox,
                     knownBoxes, knownBoxesNew, knownBoxesOld,
                     onGround, onGroundCustom,
+                    oldFalling,
                     constructDetection, groundInteractionScenario, velocityScenario,
                     canGoUp && checkUp, canGoDown && checkDown,
                     canJump && checkJump, canFall && checkFall, checkHorizontal,
@@ -443,15 +445,16 @@ public class IrregularMovements {
     }
 
     static boolean cacheBoolean(Cooldowns cooldowns, boolean bool, String key, int ticks) {
-        boolean result;
-
         if (bool) {
-            result = true;
             cooldowns.add(key, ticks);
+            return true;
         } else {
-            result = !cooldowns.canDo(key);
+            return !cooldowns.canDo(key);
         }
-        return result;
+    }
+
+    static void forgetBoolean(Cooldowns cooldowns, String key) {
+        cooldowns.remove(key);
     }
 
     static void clear(SpartanPlayer p, String instance) {

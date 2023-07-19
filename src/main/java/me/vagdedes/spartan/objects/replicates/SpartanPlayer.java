@@ -1570,10 +1570,7 @@ public class SpartanPlayer {
     // Jumping
 
     public boolean isJumping(double d) {
-        return MoveUtils.isJumping(d, MoveUtils.getJumpingPrecision(this))
-
-                || hasPotionEffect(PotionEffectType.JUMP)
-                && MoveUtils.isJumping(d - getExtraMovementFromJumpEffect(), MoveUtils.lowPrecision);
+        return MoveUtils.isJumping(d - getExtraMovementFromJumpEffect(), MoveUtils.getJumpingPrecision(this));
     }
 
     public long getLastJump() {

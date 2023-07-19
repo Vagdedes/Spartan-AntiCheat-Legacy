@@ -145,7 +145,7 @@ public class MoveUtils {
     // Jumping
 
     public static double getJumpingPrecision(SpartanPlayer p) {
-        return p.isBedrockPlayer() ? MoveUtils.highPrecision : MoveUtils.jumping[2];
+        return p.isBedrockPlayer() || PlayerData.hasJumpEffect(p) ? MoveUtils.highPrecision : MoveUtils.jumping[2];
     }
 
     public static boolean isJumping(double d, double diff) {

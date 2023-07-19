@@ -1,25 +1,28 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.features.performance.AsyncDetection;
+import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.GroundUtils;
-import me.vagdedes.spartan.utils.gameplay.MoveUtils;
-import me.vagdedes.spartan.utils.gameplay.PatternUtils;
+import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 public class IrregularMovementsMotion {
 
     private static final double
+            criticalDecelerationLimit = -0.1,
             criticalUpwardsLimit = Math.sqrt(MoveUtils.chunk),
             postJumpPreFallPrecision = MoveUtils.jumping[2] * 7, // 0.0007
             criticalStepLimit = GroundUtils.maxPlayerStep * 2.0; // 1.325
-    private static final int criticalTickDifference = MoveUtils.jumpingMotions * 3; // 15
+    private static final int
+            extendedDefaultBufferTime = AlgebraUtils.pow2(IrregularMovements.defaultBufferTime),
+            criticalTickDifference = MoveUtils.jumpingMotions * 4; // 20
 
     private static final String
+            motionJumpKey = "motion-jump-effect",
+            motionVelocityKey = "motion-velocity",
             upwardsProgressiveKey = "upwards-progressive",
             upwardsAccelerationKey = "upwards-acceleration",
             upwardsDecelerationKey = "upwards-deceleration",
@@ -27,7 +30,12 @@ public class IrregularMovementsMotion {
             downwardsPredictionKey = "downwards-prediction",
             downwardsUnexpectedKey = "downwards-unexpected";
 
-    private static void clear(SpartanPlayer p, Decimals decimals) {
+    private static void clearGeneralCache(Cooldowns cooldowns) {
+        IrregularMovements.forgetBoolean(cooldowns, motionJumpKey);
+        IrregularMovements.forgetBoolean(cooldowns,motionVelocityKey);
+    }
+
+    private static void clearDetectionCache(SpartanPlayer p, Decimals decimals) {
         IrregularMovements.clear(p, upwardsDecelerationKey);
         // no Decimals usage
 
@@ -48,18 +56,21 @@ public class IrregularMovementsMotion {
     }
 
     static void run(SpartanPlayer p,
+                    Cooldowns cooldowns,
                     SpartanLocation to, SpartanLocation from,
                     double vertical, double oldVertical, double verticalDifference,
                     double box, double oldBox,
                     boolean knownBoxes, boolean knownBoxesNew, boolean knownBoxesOld,
                     boolean onGroundVanilla, boolean onGroundCustom,
+                    boolean oldFalling,
                     boolean constructDetection, boolean groundInteractionScenario, boolean velocityScenario,
                     boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
                     int airTicks,
                     String prevention) {
         Check check = IrregularMovements.check.getCheck();
         double stepLimit = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
-        boolean checkUpASYNC = checkUp && check.getBooleanOption("check_upwards", true),
+        boolean jumpEffect = PlayerData.hasJumpEffect(p),
+                checkUpASYNC = checkUp && check.getBooleanOption("check_upwards", true),
                 checkDownASYNC = checkDown && check.getBooleanOption("check_downwards", true),
                 checkJumpASYNC = checkJump && check.getBooleanOption("check_jumping", true),
                 checkFallASYNC = checkFall && check.getBooleanOption("check_falling", true),
@@ -69,48 +80,66 @@ public class IrregularMovementsMotion {
         // Separator
         AsyncDetection.run(p, IrregularMovements.check, () -> {
             Decimals decimals = p.getDecimals(IrregularMovements.check);
+            double criticalDecelerationLimit;
+            boolean jumpEffectASYNC, velocityScenarioASYNC;
 
             if (onGround) { // Ground
-                clear(p, decimals);
+                clearGeneralCache(cooldowns);
+                clearDetectionCache(p, decimals);
+                jumpEffectASYNC = jumpEffect;
+                velocityScenarioASYNC = velocityScenario;
+                criticalDecelerationLimit = jumpEffectASYNC ?
+                        (IrregularMovementsMotion.criticalDecelerationLimit * 3) :
+                        IrregularMovementsMotion.criticalDecelerationLimit;
             } else { // Motion
+                jumpEffectASYNC = IrregularMovements.cacheBoolean(cooldowns, jumpEffect, motionJumpKey, extendedDefaultBufferTime);
+                velocityScenarioASYNC = IrregularMovements.cacheBoolean(cooldowns, velocityScenario, motionVelocityKey, extendedDefaultBufferTime);
+                criticalDecelerationLimit = jumpEffectASYNC ?
+                        (IrregularMovementsMotion.criticalDecelerationLimit * 3) :
+                        IrregularMovementsMotion.criticalDecelerationLimit;
+
                 if (vertical > 0.0) {
                     if (checkUpASYNC
                             && !knownBoxesNew
                             && !p.isJumping(vertical)
                             && Math.abs(vertical - MoveUtils.postJumpPreFall) >= postJumpPreFallPrecision) {
-                        boolean abstractScenario = groundInteractionScenario || velocityScenario;
+                        boolean abstractScenario = groundInteractionScenario || velocityScenarioASYNC;
 
                         if (stepLimit > 0.0) {
-                            double upwardsLimit = abstractScenario ? Math.max(stepLimit, criticalUpwardsLimit) : stepLimit;
+                            double upwardsLimit = stepLimit;
 
+                            if (jumpEffect) {
+                                upwardsLimit += p.getExtraMovementFromJumpEffect();
+                            }
+                            if (abstractScenario) {
+                                upwardsLimit = Math.max(upwardsLimit, criticalUpwardsLimit);
+                            }
                             if (vertical > upwardsLimit) {
                                 IrregularMovements.cancel(p, from, prevention,
                                         "upwards-instant", "limit: " + upwardsLimit,
                                         1, 0);
                             }
                         }
-                        if (verticalDifference <= -0.1) {
+                        if (verticalDifference <= criticalDecelerationLimit) {
                             IrregularMovements.cancel(p, from, prevention,
                                     upwardsDecelerationKey, null,
-                                    5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                                    5, extendedDefaultBufferTime);
                         }
-                        if (abstractScenario) {
+                        if (jumpEffect || abstractScenario) {
                             if (verticalDifference >= vertical) {
                                 IrregularMovements.cancel(p, from, prevention,
                                         upwardsAccelerationKey, null,
-                                        5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                                        5, extendedDefaultBufferTime);
                             }
                         } else {
                             IrregularMovements.cancel(p, from, prevention,
                                     upwardsProgressiveKey, null,
-                                    5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                                    5, extendedDefaultBufferTime);
                         }
                     }
                 } else if ((checkDownASYNC || checkFallASYNC)
-                        && !velocityScenario) {
+                        && !velocityScenarioASYNC) {
                     if (vertical < 0.0) {
-                        int expectedTick = MoveUtils.getFallingTick(vertical);
-
                         if (constructDetection) {
                             decimals.remove(downwardsDifferenceKey);
                         } else {
@@ -120,42 +149,46 @@ public class IrregularMovementsMotion {
                                 if (decimals.get(downwardsDifferenceKey) != fallingToAirTicksDifference) {
                                     IrregularMovements.cancel(p, from, prevention,
                                             downwardsDifferenceKey, "difference: " + fallingToAirTicksDifference,
-                                            5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                                            5, extendedDefaultBufferTime);
                                 }
                                 decimals.set(downwardsDifferenceKey, fallingToAirTicksDifference);
                             } else {
                                 decimals.remove(downwardsDifferenceKey);
                             }
                         }
-                        if (expectedTick != -1) {
-                            int predictedExpectedTick = AlgebraUtils.integerRound(
-                                    decimals.get(downwardsPredictionKey, -1.0)
-                            );
+                        if (!jumpEffect) {
+                            int expectedTick = MoveUtils.getFallingTick(vertical);
 
-                            if (predictedExpectedTick != -1) {
-                                int inaccuracy = AlgebraUtils.integerRound(
-                                        Math.abs(expectedTick - predictedExpectedTick)
+                            if (expectedTick != -1) {
+                                int predictedExpectedTick = AlgebraUtils.integerRound(
+                                        decimals.get(downwardsPredictionKey, -1.0)
                                 );
 
-                                if (inaccuracy > 1) {
-                                    IrregularMovements.cancel(p, from,
-                                            prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
-                                            5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                                if (predictedExpectedTick != -1) {
+                                    int inaccuracy = AlgebraUtils.integerRound(
+                                            Math.abs(expectedTick - predictedExpectedTick)
+                                    );
+
+                                    if (inaccuracy > 1) {
+                                        IrregularMovements.cancel(p, from,
+                                                prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
+                                                5, extendedDefaultBufferTime);
+                                    }
                                 }
+                                decimals.set(
+                                        downwardsPredictionKey,
+                                        MoveUtils.getFallingTick((vertical * MoveUtils.dragComplement) - MoveUtils.gravityAcceleration)
+                                );
+                            } else {
+                                decimals.remove(downwardsPredictionKey);
+                                IrregularMovements.cancel(p, from,
+                                        prevention, downwardsUnexpectedKey, null,
+                                        5, extendedDefaultBufferTime);
                             }
-                            decimals.set(
-                                    downwardsPredictionKey,
-                                    MoveUtils.getFallingTick((vertical * MoveUtils.dragComplement) - MoveUtils.gravityAcceleration)
-                            );
-                        } else {
-                            decimals.remove(downwardsPredictionKey);
-                            IrregularMovements.cancel(p, from,
-                                    prevention, downwardsUnexpectedKey, null,
-                                    5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
                         }
                     }
                 } else {
-                    clear(p, decimals);
+                    clearDetectionCache(p, decimals);
                 }
             }
 
@@ -170,40 +203,41 @@ public class IrregularMovementsMotion {
                         if (boxDifference > stepLimit) {
                             IrregularMovements.cancel(p, from, prevention, "step-up-predictable",
                                     "box-difference: " + boxDifference + ", limit: " + stepLimit,
-                                    !velocityScenario && boxDifference >= criticalStepLimit ? 1 : 2,
-                                    velocityScenario ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
+                                    !velocityScenarioASYNC && boxDifference >= criticalStepLimit ? 1 : 2,
+                                    velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                         }
-                    } else if (vertical < 0.0 //todo false positives
+                    } else if (vertical < 0.0
                             && boxDifference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Anything below this threshold is likely instant, where otherwise you fall for a bit
                         IrregularMovements.cancel(p, from, prevention, "step-down-predictable", "box-difference: " + boxDifference, 1, 0);
                     }
                 } else if (knownBoxesNew) {
                     if (vertical > stepLimit) {
                         IrregularMovements.cancel(p, from, prevention, "step-up-known", "limit: " + stepLimit,
-                                !velocityScenario && vertical >= criticalStepLimit ? 1 : 2,
-                                velocityScenario ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
-                    } else if (vertical < MoveUtils.gravityAcceleration) {
-                        //todo step down known
-                        p.debug(false, true, vertical, oldVertical, verticalDifference, airTicks, oldBox);
+                                !velocityScenarioASYNC && vertical >= criticalStepLimit ? 1 : 2,
+                                velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
+                    } else if (!oldFalling && vertical <= criticalDecelerationLimit) {
+                        IrregularMovements.cancel(p, from, prevention, "step-down-known", "limit: " + stepLimit,
+                                !velocityScenarioASYNC && vertical <= -criticalStepLimit ? 1 : 2,
+                                velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                     }
                 }
             }
 
             if (vertical < oldVertical) { // Fall
-                if (p.isJumping(vertical)) {
-                    if (checkJumpASYNC
-                            && p.isJumping(oldVertical)) {
-                        double difference = Math.abs(verticalDifference);
+                if (checkJumpASYNC) {
+                    if (p.isJumping(vertical)) {
+                        if (p.isJumping(oldVertical)) {
+                            double difference = Math.abs(verticalDifference);
 
-                        if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
-                            IrregularMovements.cancel(p, from, prevention, "jump-up-skip", 1);
-                        } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
-                            IrregularMovements.cancel(p, from, prevention, "jump-up-equilibrium",
-                                    groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
+                            if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
+                                IrregularMovements.cancel(p, from, prevention, "jump-up-skip", 1);
+                            } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
+                                IrregularMovements.cancel(p, from, prevention, "jump-up-equilibrium",
+                                        groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
+                            }
                         }
-                    }
-                } else if (p.isJumping(oldVertical)) {
-                    if (checkJumpASYNC) {
+                    } else if (!jumpEffect
+                            && p.isJumping(oldVertical)) {
                         double jumpingPrecision = MoveUtils.getJumpingPrecision(p);
 
                         if (Math.abs(oldVertical - MoveUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
@@ -211,7 +245,7 @@ public class IrregularMovementsMotion {
                                 BlockUtils.hitbox_max, 2 - box, BlockUtils.hitbox_max
                         }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                             IrregularMovements.cancel(p, from, prevention, "jump-end",
-                                    groundInteractionScenario || velocityScenario ? MoveUtils.jumpingMotions : 1);
+                                    groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                         }
                     }
                 }

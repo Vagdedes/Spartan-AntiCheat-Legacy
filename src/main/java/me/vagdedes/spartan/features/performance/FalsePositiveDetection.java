@@ -10,6 +10,8 @@ import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 public class FalsePositiveDetection {
 
@@ -38,12 +40,31 @@ public class FalsePositiveDetection {
         return hash;
     }
 
-    public static boolean canCorrect(Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
+    public static boolean canCorrect(UUID uuid,
+                                     Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
                                      PlayerViolation playerViolation, LiveViolation liveViolation,
                                      boolean problematicDetections) {
-        return canFunction() // 1
+        if (canFunction() // 1
                 && (problematicDetections && check.isProblematicDetection(dataType, playerViolation.getDetection()) // 2
                 || ResearchEngine.getFalsePositives(hackType, dataType).contains(playerViolation.getSimilarityIdentity())) // 2
-                && !liveViolation.hasMaxCancelledLevel(); // 3
+                && !liveViolation.hasMaxCancelledLevel()) { // 3
+            List<LiveViolation> violationList = Check.getViolationsObjects(uuid);
+            violationList.remove(liveViolation);
+            int count = 0;
+
+            if (violationList.size() > 0) {
+                for (LiveViolation loopLiveViolation : violationList) {
+                    if (loopLiveViolation.hasMaxCancelledLevel()) {
+                        count++;
+
+                        if (count == Check.hackerCheckAmount) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

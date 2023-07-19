@@ -278,7 +278,7 @@ public class HackPrevention {
                                 canPreventAlternative = false;
                             }
 
-                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, !playerProfile.isHacker())) {
+                            if (FalsePositiveDetection.canCorrect(uuid, check, hackType, dataType, playerViolation, violationsObject, !playerProfile.isHacker())) {
                                 falsePositive = true;
                             } else {
                                 falsePositive = false;
@@ -305,7 +305,7 @@ public class HackPrevention {
                                         && ResearchEngine.getFalsePositives(hackType, dataType).size() == 0;
                             }
 
-                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, true)) {
+                            if (FalsePositiveDetection.canCorrect(uuid, check, hackType, dataType, playerViolation, violationsObject, true)) {
                                 falsePositive = true;
                             } else {
                                 falsePositive = false;
