@@ -37,6 +37,12 @@ public class ViolationHistory {
 
     // Separator
 
+    public void clear() {
+        violationsMap.clear();
+        violationsList.clear();
+        clearDays();
+    }
+
     public void clearDays() {
         days = -1;
     }

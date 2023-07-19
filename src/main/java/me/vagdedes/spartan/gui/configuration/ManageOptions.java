@@ -60,7 +60,9 @@ public class ManageOptions {
                 }
                 InventoryUtils.add(inv, "§" + (positive ? "a" : "c") + option[0], null, item, -1);
             }
-            InventoryUtils.add(inv, "§4Back", AntiCheatUpdates.getInformation(false),
+            InventoryUtils.add(inv, "§4Reset", AntiCheatUpdates.getInformation(false),
+                    new ItemStack(Material.REDSTONE), size - 2);
+            InventoryUtils.add(inv, "§cBack", AntiCheatUpdates.getInformation(false),
                     new ItemStack(Material.ARROW), size - 1);
             p.openInventory(inv);
         }
@@ -79,8 +81,8 @@ public class ManageOptions {
         }
         if (item.equals("Back")) {
             ManageChecks.open(p);
+        } else if (item.equals("Reset")) {
         } else {
-            item = StringUtils.getClearColorString(item);
             String[] split = item.split("\\.");
 
             if (split.length > 1) {

@@ -609,6 +609,50 @@ public class ResearchEngine {
 
     // Separator
 
+    public static void resetData(Enums.HackType hackType) {
+        SpartanBukkit.storageThread.execute(() -> {
+            while (isCaching()) {
+                // Wait here until the caching is finished
+            }
+            String hackTypeString = hackType.toString();
+            Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
+
+            if (playerProfiles.size() > 0) {
+                for (PlayerProfile playerProfile : playerProfiles) {
+                    playerProfile.getViolationHistory(hackType).clear();
+                }
+            }
+
+            // Separator
+
+            if (SQLFeature.isEnabled()) {
+                SQLFeature.update("DELETE FROM " + SQLFeature.getTable() + " WHERE functionality = '" + hackTypeString + "';");
+            }
+
+            // Separator
+
+            Collection<File> files = getFiles();
+
+            if (files.size() > 0) {
+                for (File file : files) {
+                    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+
+                    for (String key : configuration.getKeys(false)) {
+                        String value = configuration.getString(key);
+
+                        if (value != null && value.contains(hackTypeString)) {
+                            configuration.set(key, null);
+                        }
+                    }
+                    try {
+                        configuration.save(file);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        });
+    }
+
     public static void resetData(UUID uuid, String playerName) {
         if (playerName != null) {
             PlayerProfile playerProfile = playerProfiles.get(playerName);

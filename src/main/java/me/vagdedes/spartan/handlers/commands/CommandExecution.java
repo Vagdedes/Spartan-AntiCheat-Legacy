@@ -43,9 +43,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class CommandExecution implements CommandExecutor {
 
@@ -617,7 +615,7 @@ public class CommandExecution implements CommandExecutor {
 
                         if (noSeconds || args.length == 4) {
                             SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
-                            String check = args[2];
+                            String[] checks = args[2].split(",");
                             String sec = noSeconds ? null : args[3];
 
                             if (isPlayer && !Permissions.has((Player) sender, Permission.use_bypass)) {
@@ -628,35 +626,33 @@ public class CommandExecution implements CommandExecutor {
                                 sender.sendMessage(Messages.get("player_not_found_message"));
                                 return true;
                             }
-                            boolean exists = false;
+                            Enums.HackType[] hackTypes = Enums.hackTypes();
+                            List<Enums.HackType> found = new ArrayList<>(hackTypes.length);
 
-                            for (Enums.HackType hackType : Enums.hackTypes()) {
-                                if (hackType.toString().equalsIgnoreCase(check)) {
-                                    check = hackType.toString();
-                                    exists = true;
-                                    break;
+                            for (Enums.HackType hackType : hackTypes) {
+                                for (String check : checks) {
+                                    if (hackType.toString().equalsIgnoreCase(check)) {
+                                        found.add(hackType);
+                                        break;
+                                    }
                                 }
                             }
-                            if (exists) {
-                                Enums.HackType type = Enums.HackType.valueOf(check);
-
-                                try {
+                            if (found.size() > 0) {
+                                for (Enums.HackType hackType : found) {
                                     int seconds = noSeconds ? 0 : Integer.parseInt(sec);
 
                                     if (noSeconds) {
-                                        type.getCheck().addDisabledUser(t.getUniqueId(), "Command-" + sender.getName(), 0);
+                                        hackType.getCheck().addDisabledUser(t.getUniqueId(), "Command-" + sender.getName(), 0);
                                     } else {
                                         if (seconds < 1 || seconds > 3600) {
                                             sender.sendMessage(ChatColor.RED + "Seconds must be between 1 and 3600.");
                                             return true;
                                         }
-                                        type.getCheck().addDisabledUser(t.getUniqueId(), "Command-" + sender.getName(), seconds * 20);
+                                        hackType.getCheck().addDisabledUser(t.getUniqueId(), "Command-" + sender.getName(), seconds * 20);
                                     }
-                                    String message = ConfigUtils.replaceWithSyntax(t, Messages.get("bypass_message"), type)
+                                    String message = ConfigUtils.replaceWithSyntax(t, Messages.get("bypass_message"), hackType)
                                             .replace("{time}", noSeconds ? "infinite" : String.valueOf(seconds));
                                     sender.sendMessage(message);
-                                } catch (Exception ex) {
-                                    sender.sendMessage(ChatColor.RED + sec + " is not a valid number.");
                                 }
                             } else {
                                 sender.sendMessage(Messages.get("non_existing_check"));

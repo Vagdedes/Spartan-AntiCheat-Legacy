@@ -74,7 +74,8 @@ public class IrregularMovementsMotion {
                         if (stepLimit > 0.0) {
                             if (abstractScenario) {
                                 //todo fix limit
-                            } else if (vertical > stepLimit) {
+                            }
+                            if (vertical > stepLimit) {
                                 IrregularMovements.cancel(p, from, prevention,
                                         "upwards-instant", "limit: " + stepLimit,
                                         1, 0);
