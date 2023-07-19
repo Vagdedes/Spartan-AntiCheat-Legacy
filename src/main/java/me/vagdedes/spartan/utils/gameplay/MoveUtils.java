@@ -127,7 +127,7 @@ public class MoveUtils {
                 if (newMin < min) {
                     min = newMin;
                 } else {
-                    if (min < lowPrecision) {
+                    if (min < gravityAcceleration) {
                         return entry.getKey();
                     } else {
                         return -1;

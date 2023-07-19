@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Spartan:jar" />
+      <artifact name="SpartanBedrockEdition:jar" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -14,10 +14,13 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/exploits/UndetectedMovement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/exploits/UndetectedMovement.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/performance/FalsePositiveDetection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/performance/FalsePositiveDetection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/identifiers/complex/predictable/FloorProtection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/identifiers/complex/predictable/FloorProtection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/stability/CancelViolation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/stability/CancelViolation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/stability/ResearchEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/stability/ResearchEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/listeners/EventsHandler7.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/listeners/EventsHandler7.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/profiling/PlayerEvidence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/profiling/PlayerEvidence.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/LiveViolation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/LiveViolation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/hackPrevention/HackPrevention.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/hackPrevention/HackPrevention.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/MoveUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/MoveUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/replicates/SpartanPlayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/replicates/SpartanPlayer.class" afterDir="false" />

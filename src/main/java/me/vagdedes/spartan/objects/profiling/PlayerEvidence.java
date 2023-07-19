@@ -97,7 +97,7 @@ public class PlayerEvidence {
         this.evidence.put(hackType, reason);
     }
 
-    void remove(Enums.HackType hackType) {
+    public void remove(Enums.HackType hackType) {
         this.evidence.remove(hackType);
     }
 

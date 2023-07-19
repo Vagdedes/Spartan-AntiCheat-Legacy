@@ -20,6 +20,12 @@ public class CancelViolation {
         memory.clear();
     }
 
+    static void clear(Enums.HackType hackType) {
+        for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(true)) {
+            memory.remove(ResearchEngine.getStorageKey(hackType, dataType));
+        }
+    }
+
     static void refresh(Enums.HackType[] hackTypes) {
         for (Enums.HackType hackType : hackTypes) {
             Check check = hackType.getCheck();

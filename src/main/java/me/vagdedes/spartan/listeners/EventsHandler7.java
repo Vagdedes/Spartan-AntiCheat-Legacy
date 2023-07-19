@@ -305,8 +305,7 @@ public class EventsHandler7 implements Listener {
             if (checkPlayer && (firstTick || repetition || tick <= 3)) {
                 double oHor = decimals.get(cache[1] + vehicleKey, 0.0),
                         oRem = decimals.get(cache[2] + vehicleKey, 0.0),
-                        oVer = decimals.get(verticalCache + vehicleKey, 0.0),
-                        verDiff = ver - oVer;
+                        oVer = decimals.get(verticalCache + vehicleKey, 0.0);
 
                 // Detections
                 if (firstTick || repetition) {
@@ -315,7 +314,7 @@ public class EventsHandler7 implements Listener {
                         NoSlowdown.run(p, to, from, ver, hor, oHor); // Repetitive (Optimised)
                         EntityMove.run(p, to, from, hor, ver, oVer, rem, oRem, air); // Repetitive (Optimised)
                     }
-                    IrregularMovements.run(p, to, from, ver, oVer, verDiff, hor, rem, oRem, air); // Repetitive (Optimised)
+                    IrregularMovements.run(p, to, from, ver, oVer, hor, oHor, rem, oRem, air); // Repetitive (Optimised)
                 }
                 Speed.run(p, to, from, ver, hor, air, rem, oVer, oHor, oRem, crawling); // Important (Optimised)
                 WaterSpeed.run(p, to, from, ver, oVer, rem, hor, air); // Repetitive (Optimised)

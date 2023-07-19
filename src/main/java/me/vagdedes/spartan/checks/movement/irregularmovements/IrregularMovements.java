@@ -67,12 +67,17 @@ public class IrregularMovements {
 
     // Re-enable Fly & IrregularMovements checks
     public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
-                           double vertical, double oldVertical, double verticalDifference,
-                           double horizontal, double box, double oldBox,
+                           double vertical, double oldVertical,
+                           double horizontal, double oldHorizontal,
+                           double box, double oldBox,
                            int airTicks) {
         boolean bedrockPlayer = p.isBedrockPlayer();
 
         if (canDo(p, to, bedrockPlayer)) {
+            // New Variables
+            double verticalDifference = vertical - oldVertical,
+                    horizontalDifference = horizontal - oldHorizontal;
+
             // Scenario Management
             double allowedUp = 0.0, allowedDown = 0.0;
             boolean canGoUp, canGoDown,
@@ -312,7 +317,8 @@ public class IrregularMovements {
                     canGoUp, canGoDown, canJump, canFall,
                     checkUp, checkDown, checkJump, checkFall, checkHorizontal
             );
-            boolean changedScenario = cacheBoolean(cooldowns, buffers.get(changeScenario, scenarioCode) != scenarioCode, "changed-scenario", 7);
+            boolean changedScenario = cacheBoolean(cooldowns, buffers.get(changeScenario, scenarioCode) != scenarioCode, "changed-scenario", 5);
+            buffers.set(IrregularMovements.changeScenario, scenarioCode);
 
             // Variable Modification
             if (waterElevator) { // Allow the player to go a bit down when in a water soul-sand elevator
@@ -330,7 +336,8 @@ public class IrregularMovements {
                     + ", jump/fall: " + (canJump && canFall ? 1 : !canJump && !canFall ? 0 : (canJump ? 1 : 0) + "/" + (canFall ? 1 : 0))
                     + (vertical == oldVertical ? ", motion/old-motion: " + vertical : ", motion: " + vertical + ", old-motion: " + oldVertical)
                     + (box == oldBox ? ", box/old-box: " + box : ", box: " + box + ", old-box: " + oldBox)
-                    + ", air: " + airTicks + ", motion-acceleration: " + verticalDifference + ", horizontal: " + horizontal;
+                    + ", air: " + airTicks + ", motion-acceleration: " + verticalDifference
+                    + ", horizontal: " + horizontal + ", horizontal-acceleration: " + horizontalDifference;
 
             // Do not process if the player is not in a water elevator or water block but has liquid cooldown
             if (!waterElevator && !liquidBlocks && wasInLiquids) {
@@ -402,9 +409,10 @@ public class IrregularMovements {
                     cooldowns,
                     to, from,
                     vertical, oldVertical, verticalDifference,
+                    horizontalDifference,
                     box, oldBox,
                     knownBoxes, knownBoxesNew, knownBoxesOld,
-                    onGround, onGroundCustom,
+                    onGroundCustom,
                     oldFalling,
                     constructDetection, groundInteractionScenario, velocityScenario,
                     canGoUp && checkUp, canGoDown && checkDown,

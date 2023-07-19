@@ -873,6 +873,10 @@ public class SpartanPlayer {
                 || Damage.getLastReceived(this) <= 100L);
     }
 
+    public boolean isVanillaSprinting() {
+        return sprinting ;
+    }
+
     public boolean isSprinting() {
         return sprinting || isCustomSprinting();
     }

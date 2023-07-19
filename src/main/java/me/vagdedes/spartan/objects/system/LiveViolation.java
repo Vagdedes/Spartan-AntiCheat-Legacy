@@ -110,10 +110,10 @@ public class LiveViolation {
         int previousLevel = level;
 
         // Violations
-        this.level = Math.min(
-                Check.maxViolations,
-                amount
-        );
+        if (amount < Check.maxViolations) {
+            this.level = amount;
+            increaseCancelledLevel();
+        }
         this.cancelled = false;
         timeReset(); // Always after changing the level
 

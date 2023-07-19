@@ -615,11 +615,21 @@ public class ResearchEngine {
                 // Wait here until the caching is finished
             }
             String hackTypeString = hackType.toString();
+
+            for (DataType dataType : getDynamicUsableDataTypes(false)) {
+                falsePositives.remove(getStorageKey(hackType, dataType));
+            }
+            hackType.getCheck().clearProblematicDetections();
+            CancelViolation.clear(hackType);
+
+            // Separator
+
             Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
             if (playerProfiles.size() > 0) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     playerProfile.getViolationHistory(hackType).clear();
+                    playerProfile.getEvidence().remove(hackType);
                 }
             }
 

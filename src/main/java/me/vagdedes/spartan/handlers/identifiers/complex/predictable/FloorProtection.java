@@ -55,7 +55,7 @@ public class FloorProtection {
         Handlers handlers = p.getHandlers();
         return (handlers.has(Handlers.HandlerType.Floor)
                 && (!fall || !handlers.has(Handlers.HandlerType.Floor, "fall")))
-                && p.getBlocksOffGround(blocksOffGround + 1, true, true) <= blocksOffGround;
+                && (fall || p.getBlocksOffGround(blocksOffGround + 1, true, true) <= blocksOffGround);
     }
 
     public static boolean hasCooldown(SpartanPlayer p) {
