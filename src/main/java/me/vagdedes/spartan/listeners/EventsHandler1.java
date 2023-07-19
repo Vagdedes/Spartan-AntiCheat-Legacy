@@ -101,7 +101,7 @@ public class EventsHandler1 implements Listener {
         // System
         LagLeniencies.remove(p);
         HackPrevention.remove(p);
-        Cache.clear(p, true, true, false, null);
+        Cache.clear(p, n, true, true, false, null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

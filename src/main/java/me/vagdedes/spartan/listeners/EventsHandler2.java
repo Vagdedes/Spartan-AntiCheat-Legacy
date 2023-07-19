@@ -40,7 +40,8 @@ public class EventsHandler2 implements Listener {
         if (nto == null) {
             return;
         }
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        Player n = e.getPlayer();
+        SpartanPlayer p = SpartanBukkit.getPlayer(n);
 
         if (p == null) {
             return;
@@ -51,7 +52,7 @@ public class EventsHandler2 implements Listener {
         p.resetLocationData();
 
         // System
-        Cache.clear(p,
+        Cache.clear(p, n,
                 false,
                 to.distance(e.getFrom()) >= MoveUtils.chunk && !Moderation.isDetectedAndPrevented(p),
                 !Moderation.wasDetected(p),

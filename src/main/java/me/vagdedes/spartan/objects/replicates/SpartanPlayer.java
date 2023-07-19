@@ -74,7 +74,7 @@ public class SpartanPlayer {
     private boolean dead;
     private boolean sleeping;
     private WeatherType playerWeather;
-    private PotionEffect[] potionEffects;
+    private Collection<PotionEffect> potionEffects;
     private float walkSpeed;
     private float flySpeed;
     private SpartanInventory inventory;
@@ -136,6 +136,7 @@ public class SpartanPlayer {
 
     private double
             nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
+            oldNmsDistance, oldNmsHorizontalDistance, oldNmsVerticalDistance,
             customDistance, customHorizontalDistance, customVerticalDistance;
     private long
             lastOffSprint,
@@ -148,6 +149,7 @@ public class SpartanPlayer {
             lastLiquidTime;
     private int
             airTicks, oldAirTicks,
+            fallingTicks,
             groundTicks,
             extraPackets;
 
@@ -254,12 +256,14 @@ public class SpartanPlayer {
                         Player n = p.getPlayer();
 
                         if (n != null) {
-                            p.setActivePotionEffects(n.getActivePotionEffects()); // Bad
+                            Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
+                            p.setActivePotionEffects(potionEffects); // Bad
+                            PlayerData.run(p, n, potionEffects);
                         }
 
-                        // Ground Identification Cache
-                        if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                            p.trackGround();
+                        // Buffer Cache
+                        for (Buffer buffer : p.buffer) {
+                            buffer.run(p);
                         }
 
                         // Preventions
@@ -273,10 +277,6 @@ public class SpartanPlayer {
                     if (p != null) {
                         // Ground Identification Cache
                         p.resetPing();
-
-                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                            p.trackGround();
-                        }
                         Player n = p.getPlayer();
 
                         if (n != null) {
@@ -305,11 +305,6 @@ public class SpartanPlayer {
                             p.setWorld(n.getWorld());
                             p.setLastDamageCause(n.getLastDamageCause(), n.getLastDamage(), n.getMaximumNoDamageTicks());
 
-                            // Buffer Cache
-                            for (Buffer buffer : p.buffer) {
-                                buffer.run(p);
-                            }
-
                             // Check Allowance Cache
                             if (TPS.getTick(p) <= 100
                                     || !MaximumCheckedPlayers.isChecked(p.getUniqueId())
@@ -324,17 +319,14 @@ public class SpartanPlayer {
                                 p.runChecks[1] = true;
                             }
 
-                            // External (Always Last & In Set Order)
-                            PlayerData.update(p, n, MultiVersion.folia || !SpartanBukkit.isSynchronised());
-                            MoveUtils.run(p);
-                            PlayerData.run(p);
+                            // External
+                            if (MultiVersion.folia || !SpartanBukkit.isSynchronised()) {
+                                PlayerData.update(p, n, true);
+                            }
                             DetectionLocation.run(p);
                         } else {
                             p.runChecks[0] = false;
                             p.runChecks[1] = false;
-                            MoveUtils.remove(p);
-                            PlayerData.remove(p, false);
-                            DetectionLocation.remove(p.uuid);
                         }
                     }
                 });
@@ -407,7 +399,7 @@ public class SpartanPlayer {
         this.maximumNoDamageTicks = p.getMaximumNoDamageTicks();
         this.fallDistance = p.getFallDistance();
         this.foodLevel = p.getFoodLevel();
-        this.potionEffects = p.getActivePotionEffects().toArray(new PotionEffect[0]);
+        this.potionEffects = new ArrayList<>(p.getActivePotionEffects());
         this.playerWeather = p.getPlayerWeather();
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
@@ -420,14 +412,18 @@ public class SpartanPlayer {
         this.customHorizontalDistance = 0.0;
         this.customVerticalDistance = 0.0;
         this.nmsDistance = 0.0;
+        this.oldNmsDistance = 0.0;
         this.nmsHorizontalDistance = 0.0;
+        this.oldNmsHorizontalDistance = 0.0;
         this.nmsVerticalDistance = 0.0;
+        this.oldNmsVerticalDistance = 0.0;
         this.lastFall = 0L;
         this.lastOffSprint = 0L;
         this.lastJump = 0L;
         this.oldLastJump = 0L;
         this.airTicks = 0;
         this.oldAirTicks = 0;
+        this.fallingTicks = 0;
         this.groundTicks = 0;
         this.extraPackets = 0;
         this.sprintingTime = 0L;
@@ -902,7 +898,7 @@ public class SpartanPlayer {
         return p != null && p.isOnGround();
     }
 
-    private void trackGround() {
+    public boolean refreshOnGroundCustom(SpartanLocation from) {
         if (!TestServer.isIdentified() && this.isOnGround()
 
                 && (Settings.getBoolean("Performance.use_vanilla_ground_method")
@@ -911,41 +907,38 @@ public class SpartanPlayer {
             this.onGroundCustom = true; // Vanilla On-Ground When Necessary
         } else if (PlayerData.isOnGround(this, this.getLocation(), 0.0)) {
             this.onGroundCustom = true; // Server Current Location
+        } else if (from != null && PlayerData.isOnGround(this, from, 0.0)) {
+            this.onGroundCustom = true; // Server Previous Location
         } else {
-            SpartanLocation from = MoveUtils.getCachedLocation(this, true);
+            PlayerMoveEvent event = EventsHandler7.getMovementEvent(this);
 
-            if (from != null && PlayerData.isOnGround(this, from, 0.0)) {
-                this.onGroundCustom = true; // Server Previous Location
-            } else {
-                PlayerMoveEvent event = EventsHandler7.getMovementEvent(this);
-
-                if (event != null) {
-                    Location eventFrom = event.getFrom();
-                    Runnable runnable = () -> {
-                        if (PlayerData.isOnGround(this, new SpartanLocation(this, eventFrom), 0.0)) {
-                            this.onGroundCustom = true; // Event Previous Location
-                        } else {
-                            Location eventLocation = event.getTo();
-                            this.onGroundCustom = eventLocation != null && PlayerData.isOnGround(this, new SpartanLocation(this, eventLocation), 0.0); // Event Current Location
-                        }
-                    };
-
-                    if (MultiVersion.folia) {
-                        SpartanBukkit.runTask(
-                                this,
-                                eventFrom.getWorld(),
-                                eventFrom.getBlockX() >> 4,
-                                eventFrom.getBlockZ() >> 4,
-                                runnable
-                        );
+            if (event != null) {
+                Location eventFrom = event.getFrom();
+                Runnable runnable = () -> {
+                    if (PlayerData.isOnGround(this, new SpartanLocation(this, eventFrom), 0.0)) {
+                        this.onGroundCustom = true; // Event Previous Location
                     } else {
-                        runnable.run();
+                        Location eventLocation = event.getTo();
+                        this.onGroundCustom = eventLocation != null && PlayerData.isOnGround(this, new SpartanLocation(this, eventLocation), 0.0); // Event Current Location
                     }
+                };
+
+                if (MultiVersion.folia) {
+                    SpartanBukkit.runTask(
+                            this,
+                            eventFrom.getWorld(),
+                            eventFrom.getBlockX() >> 4,
+                            eventFrom.getBlockZ() >> 4,
+                            runnable
+                    );
                 } else {
-                    this.onGroundCustom = false;
+                    runnable.run();
                 }
+            } else {
+                this.onGroundCustom = false;
             }
         }
+        return this.onGroundCustom;
     }
 
     public void removePotionEffect(PotionEffectType potionEffectType) {
@@ -1293,16 +1286,17 @@ public class SpartanPlayer {
         return 1.0f;
     }
 
-    public PotionEffect[] getActivePotionEffects() {
+    public Collection<PotionEffect> getActivePotionEffects() {
         return potionEffects;
     }
 
     public void setActivePotionEffects(Collection<PotionEffect> potionEffects) {
-        this.potionEffects = potionEffects.toArray(new PotionEffect[0]);
+        this.potionEffects.clear();
+        this.potionEffects.addAll(potionEffects);
     }
 
     public PotionEffect getPotionEffect(PotionEffectType type) {
-        if (potionEffects.length > 0) {
+        if (potionEffects.size() > 0) {
             for (PotionEffect potionEffect : potionEffects) {
                 if (potionEffect.getType().equals(type)) {
                     return potionEffect;
@@ -1313,7 +1307,7 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType[] potionEffectTypes) {
-        if (potionEffects.length > 0) {
+        if (potionEffects.size() > 0) {
             for (PotionEffect potionEffect : potionEffects) {
                 for (PotionEffectType potionEffectType : potionEffectTypes) {
                     if (potionEffect.getType().equals(potionEffectType)) {
@@ -1326,7 +1320,7 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType potionEffectType) {
-        if (potionEffects.length > 0) {
+        if (potionEffects.size() > 0) {
             for (PotionEffect potionEffect : potionEffects) {
                 if (potionEffect.getType().equals(potionEffectType)) {
                     return true;
@@ -1472,44 +1466,60 @@ public class SpartanPlayer {
         if (!testServer && !Settings.getBoolean("Detections.ground_teleport_on_detection")) {
             return false;
         }
-        SpartanLocation ploc = getLocation();
+        SpartanLocation location = getLocation();
 
-        if (checkGround && GroundUtils.isOnGround(this, ploc, 0.0, false, false)) {
+        if (checkGround
+                && onGroundCustom
+                && GroundUtils.isOnGround(this, location, 0.0, false, false)) {
             return false;
         }
-        SpartanLocation ploc1 = ploc.clone().add(0, 1, 0);
+        SpartanLocation locationP1 = location.clone().add(0, 1, 0);
 
-        if (BlockUtils.isSolid(ploc1) && !(BlockUtils.areWalls(ploc1) || BlockUtils.canClimb(ploc1))) {
+        if (BlockUtils.isSolid(locationP1) && !(BlockUtils.areWalls(locationP1) || BlockUtils.canClimb(locationP1))) {
             return false;
         }
         GroundUtils.clear(this); // Attention
-        double y = ploc.getY();
-        double counted_damage = 0.0;
-        double standingBlockHeight = GroundUtils.getHeight(ploc.getBlock().getType());
+        float countedDamage = 0.0f;
+        double startY = location.getY(),
+                box = startY - location.getBlockY();
 
-        for (double i = -2.0; i <= y; i++) {
-            counted_damage += 1.0;
-            SpartanLocation loc = getLocation();
-            loc.setY(Math.floor(y - i) + standingBlockHeight); // Attention
-            Material material = loc.getBlock().getType();
-            int blockY = loc.getBlockY();
+        if (!GroundUtils.heightExists(box, true)) {
+            box = 0.0;
+        }
 
-            if ((BlockUtils.canClimb(material) || BlockUtils.areWalls(material) || !BlockUtils.isSolid(material) || blockY <= 0) && blockY > MoveUtils.voidDamageHeight) {
-                safeTeleport(loc);
+        for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
+            SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
+            Material material = loopLocation.getBlock().getType();
+
+            if (BlockUtils.canClimb(material) || BlockUtils.areWalls(material) || !BlockUtils.isSolid(material)) {
+                countedDamage++;
             } else {
-                if (getProfile().isSuspectedOrHacker() && blockY > BlockUtils.getMinHeight(world)) {
-                    boolean is_bigger = counted_damage >= 4.0 && counted_damage >= getFallDistance();
-                    boolean can_damage = testServer || Settings.getBoolean("Detections.fall_damage_on_teleport");
+                double blockBox = GroundUtils.getHeight(material);
 
-                    if (is_bigger || !can_damage) {
-                        setFallDistance(0.0f, true);
-                    }
-                    if (is_bigger && can_damage) {
-                        applyFallDamage(counted_damage);
-                    }
+                if (blockBox == 0.0 || blockBox == 0.5) {
+                    loopLocation.setY(Math.floor(progressiveY) + 1.0);
+                } else {
+                    loopLocation.setY(Math.floor(progressiveY) + Math.max(blockBox, box));
                 }
+                safeTeleport(loopLocation);
                 break;
             }
+        }
+        countedDamage--; // Ignoring the first check of the current location
+
+        if (testServer
+                || Settings.getBoolean("Detections.fall_damage_on_teleport")) { // Damage
+            if (countedDamage >= Math.max(fallDistance, 4.0)) { // Greater than fall
+                setFallDistance(0.0f, true);
+
+                if (playerProfile.isSuspectedOrHacker()) {
+                    applyFallDamage(countedDamage);
+                }
+            } else if (countedDamage > 0.0f) {
+                setFallDistance(0.0f, true);
+            }
+        } else if (countedDamage > 0.0f) {
+            setFallDistance(0.0f, true);
         }
         return true;
     }
@@ -1535,27 +1545,13 @@ public class SpartanPlayer {
         if (!cooldowns.canDo(key)) {
             return (int) decimals.get(key, 0.0);
         }
-        if (GroundUtils.isOnGround(this, ploc, 0.0, liquid, climbable)
-                || BlockUtils.isSolid(ploc.clone().add(0, 1, 0))) {
-            decimals.set(key, 0);
-            cooldowns.add(key, 4);
-            return 0;
-        }
         int blocksOffGround = 0;
 
         for (double i = 0.0; i <= ploc.getY(); i++) {
-            SpartanBlock block = ploc.clone().add(0, -i, 0).getBlock();
+            if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, liquid, climbable)) {
+                blocksOffGround++;
 
-            if (!block.isLiquid()) {
-                Material material = block.getType();
-
-                if (!BlockUtils.isSolid(material)) {
-                    blocksOffGround++;
-
-                    if (hasLimit && blocksOffGround == limit) {
-                        break;
-                    }
-                } else {
+                if (hasLimit && blocksOffGround == limit) {
                     break;
                 }
             } else {
@@ -1567,10 +1563,6 @@ public class SpartanPlayer {
         return blocksOffGround;
     }
 
-    public int getBlocksOffGround(boolean liquid, boolean climbable) {
-        return getBlocksOffGround(0, liquid, climbable);
-    }
-
     public boolean isGroundSpoofing() {
         return isOnGroundCustom() != isOnGround();
     }
@@ -1578,7 +1570,7 @@ public class SpartanPlayer {
     // Jumping
 
     public boolean isJumping(double d) {
-        return MoveUtils.isJumping(d, isBedrockPlayer() ? MoveUtils.lowPrecision : MoveUtils.jumping[2])
+        return MoveUtils.isJumping(d, MoveUtils.getJumpingPrecision(this))
 
                 || hasPotionEffect(PotionEffectType.JUMP)
                 && MoveUtils.isJumping(d - getExtraMovementFromJumpEffect(), MoveUtils.lowPrecision);
@@ -1601,23 +1593,13 @@ public class SpartanPlayer {
     }
 
     public boolean isFalling(double dy) {
-        if (dy < 0.0) {
-            for (double divisor : MoveUtils.falling) {
-                double division = dy / divisor;
-                division -= Math.floor(division);
-
-                if (division < 0.1 || division > 0.9) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return MoveUtils.getFallingTick(dy) != -1;
     }
 
     public boolean isClimbing(double d) {
         double v5 = AlgebraUtils.cut(d, 5);
 
-        if (v5 != MoveUtils.falling[0] && v5 != MoveUtils.falling[1]) {
+        if (v5 != MoveUtils.gravityAcceleration && v5 != 0.07544) {
             for (double value : MoveUtils.climbing) {
                 if (Math.abs(value - Math.abs(d)) < MoveUtils.lowPrecision) {
                     return true;
@@ -1685,7 +1667,7 @@ public class SpartanPlayer {
                         SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
 
                         if (target != null && target.isMoving(false)) { // Make sure the target is also moving
-                            PlayerFight fight = getProfile().getCombat().getCurrentFight(target);
+                            PlayerFight fight = playerProfile.getCombat().getCurrentFight(target);
                             PlayerOpponent[] playerOpponents = fight.getOpponent(this);
 
                             if (playerOpponents[0].getLastHit() <= PlayerData.combatTimeRequirement // Make sure the player has recently hit the target
@@ -1720,8 +1702,8 @@ public class SpartanPlayer {
 
     public double getCalculatedFallingRatio(double vertical) {
         if (vertical < 0.0) {
-            vertical -= MoveUtils.falling[0];
-            double calculated = MoveUtils.falling[0] * (getTicksOnAir() + 1);
+            vertical -= MoveUtils.gravityAcceleration;
+            double calculated = MoveUtils.gravityAcceleration * (getTicksOnAir() + 1);
             return Math.abs(calculated - Math.abs(vertical));
         }
         return 0.0;
@@ -1788,7 +1770,16 @@ public class SpartanPlayer {
     }
 
     public void setNmsDistance(double distance) {
+        this.oldNmsDistance = this.nmsDistance;
         this.nmsDistance = distance;
+    }
+
+    public double getOld_NmsDistance() {
+        return getCustomDistance() == 0.0 ? 0.0 : oldNmsDistance;
+    }
+
+    public void setOld_NmsDistance(double distance) {
+        this.oldNmsDistance = distance;
     }
 
     public double getNmsHorizontalDistance() {
@@ -1796,7 +1787,16 @@ public class SpartanPlayer {
     }
 
     public void setNmsHorizontalDistance(double distance) {
+        this.oldNmsHorizontalDistance = this.nmsHorizontalDistance;
         this.nmsHorizontalDistance = distance;
+    }
+
+    public double getOld_NmsHorizontalDistance() {
+        return getCustomDistance() == 0.0 ? 0.0 : oldNmsHorizontalDistance;
+    }
+
+    public void setOld_NmsHorizontalDistance(double distance) {
+        this.oldNmsHorizontalDistance = distance;
     }
 
     public double getNmsVerticalDistance() {
@@ -1804,7 +1804,16 @@ public class SpartanPlayer {
     }
 
     public void setNmsVerticalDistance(double distance) {
+        this.oldNmsVerticalDistance = this.nmsVerticalDistance;
         this.nmsVerticalDistance = distance;
+    }
+
+    public double getOld_NmsVerticalDistance() {
+        return getCustomDistance() == 0.0 ? 0.0 : oldNmsVerticalDistance;
+    }
+
+    public void setOld_NmsVerticalDistance(double distance) {
+        this.oldNmsVerticalDistance = distance;
     }
 
     // Direction
@@ -1886,6 +1895,10 @@ public class SpartanPlayer {
             setOldAirTicks(airTicks);
         }
         this.airTicks = number;
+
+        if (number == 0) {
+            this.fallingTicks = 0;
+        }
     }
 
     public int getOldTicksOnAir() {
@@ -1896,12 +1909,24 @@ public class SpartanPlayer {
         this.oldAirTicks = number;
     }
 
+    public int getFallingTicks() {
+        return fallingTicks;
+    }
+
+    public void setFallingTicks(int number) {
+        this.fallingTicks = number;
+    }
+
     public int getTicksOnGround() {
         return groundTicks;
     }
 
     public void setGroundTicks(int number) {
         this.groundTicks = number;
+
+        if (number > 0) {
+            this.fallingTicks = 0;
+        }
     }
 
     // Movement

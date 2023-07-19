@@ -201,7 +201,7 @@ public class NoFall {
 
                     if (!p.isOnGround() && p.isOnGroundCustom()
                             && BlockUtils.isFullSolid(to.clone().add(0, -1, 0))
-                            && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.solid)) {
+                            && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                         cancel(p, "type: land", loc, 10, 5.0);
                     }
                 }
@@ -218,7 +218,7 @@ public class NoFall {
                 && (airTicks >= 20 || airTicks >= 12 && p.isFalling(vertical))
                 && p.isOnGround() && !p.isOnGroundCustom() && p.isGroundSpoofing()
                 && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)
-                && !PatternUtils.isBlockPattern(spoof, to, true, BlockUtils.solid)) {
+                && !PatternUtils.isBlockPattern(spoof, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
             cancel(p, "type: spoof, air: " + airTicks + ", vertical: " + vertical, from, 10, 0.0);
         }
     }
@@ -245,7 +245,7 @@ public class NoFall {
                         }
                         buffer.set(ratioKey + "block-y", toY);
 
-                        if (vertical < -(MoveUtils.falling[0] * 8) && airTicks > 8) {
+                        if (vertical < -(MoveUtils.gravityAcceleration * 8) && airTicks > 8) {
                             buffer.set(ratioKey + "validated", 1);
                         }
                     } else if (buffer.get(ratioKey + "validated") == 1 && Math.abs(toY - fromY) <= 3.0 && to.distance(from) <= MoveUtils.chunk) {

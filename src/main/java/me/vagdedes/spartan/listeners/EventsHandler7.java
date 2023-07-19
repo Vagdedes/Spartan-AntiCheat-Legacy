@@ -348,6 +348,6 @@ public class EventsHandler7 implements Listener {
         CheckProtection.cancel(p.getUniqueId(), 20, true);
 
         // System
-        Cache.clear(p, false, true, true, p.getLocation());
+        Cache.clear(p, n, false, true, true, p.getLocation());
     }
 }

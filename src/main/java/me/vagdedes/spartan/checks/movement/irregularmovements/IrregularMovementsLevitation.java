@@ -41,7 +41,7 @@ public class IrregularMovementsLevitation {
                         IrregularMovements.cancel(p, from, prevention, "up-" + scenario, 3);
                     } else if (vertical == 0.0
                             && (!modifiedHeightExists
-                            || !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid))) {
+                            || !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid))) {
                         IrregularMovements.cancel(p, from, prevention, "horizontal-" + scenario, 3);
                     }  // Do not create a down detection as it is covered by the illegal-down algorithm
                 }

@@ -69,9 +69,9 @@ public class IrregularMovementsHop {
                     if (!cooldowns.canDo("hop=non-solid-free")) {
                         return;
                     }
-                    boolean solidFree = !PatternUtils.isBlockPattern(solid, to, true, BlockUtils.solid);
+                    boolean solidFree = !PatternUtils.isBlockPattern(solid, to, true, BlockUtils.solid, BlockUtils.semi_solid);
 
-                    if (solidFree || !PatternUtils.isBlockPattern(solidTop, to, true, BlockUtils.solid)) {
+                    if (solidFree || !PatternUtils.isBlockPattern(solidTop, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                         boolean staticB, dynamic,
                                 verticalAboveZero = vertical > 0.0;
                         double limit = verticalAboveZero ? verticalAboveZeroMotion : verticalBelowZeroMotion,
@@ -117,7 +117,7 @@ public class IrregularMovementsHop {
                         }
 
                         if (box <= limit) {
-                            if (box < 0.01 && Math.abs(box - redundantMotion) >= MoveUtils.jumping[2]) {
+                            if (box < 0.01 && Math.abs(box - redundantMotion) >= MoveUtils.getJumpingPrecision(p)) {
                                 IrregularMovements.cancel(p, from, prevention, "hop-micro", "box: " + box, 2, -IrregularMovements.defaultBufferTime);
                             }
 

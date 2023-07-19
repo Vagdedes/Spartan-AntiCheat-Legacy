@@ -181,7 +181,7 @@ public class Criticals {
                     {box, 0, box},
                     {box, 1, box},
                     {box, 2, box}
-            }, loc, true, BlockUtils.solid)) {
+            }, loc, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                 p.getCooldowns(check).add("block-free=" + box, onGroundCustom ? 40 : 60);
                 return false;
             }
@@ -198,7 +198,7 @@ public class Criticals {
                 && p.getBlocksOffGround(3, true, true) <= 2
                 && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !BouncingBlocks.isBelow(p)
-                && !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid)
+                && !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid, BlockUtils.semi_solid)
                 && !PatternUtils.isBlockPattern(web, location, true, BlockUtils.web);
     }
 }

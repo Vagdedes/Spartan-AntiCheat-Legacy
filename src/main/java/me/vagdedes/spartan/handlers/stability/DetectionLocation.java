@@ -42,10 +42,6 @@ public class DetectionLocation {
         loc.remove(p.getUniqueId());
     }
 
-    public static void remove(UUID uuid) {
-        loc.remove(uuid);
-    }
-
     public static SpartanLocation get(SpartanPlayer p, boolean replaceNull) {
         SpartanLocation location = loc.get(p.getUniqueId());
         return location != null ? location : (replaceNull ? MoveUtils.getCachedLocation(p) : null);

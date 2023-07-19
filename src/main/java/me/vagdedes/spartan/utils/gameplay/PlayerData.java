@@ -28,6 +28,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,13 +63,17 @@ public class PlayerData {
         }
     }
 
-    public static void run(SpartanPlayer p) {
-        if (p.canDoAccurately()) {
+    public static void run(SpartanPlayer p, Player n, Collection<PotionEffect> potionEffects) {
+        update(p, n, false);
+
+        if (p.canDoAccurately() || p.isFlying()) {
             Buffer buffer = p.getBuffer();
 
             // Separator
-            boolean ground = p.isOnGroundCustom();
-            GroundUtils.run(p, p.getLocation(), MoveUtils.getCachedLocation(p), ground);
+            SpartanLocation to = MoveUtils.trackLocation(p),
+                    from = MoveUtils.getCachedLocation(p);
+            boolean ground = p.refreshOnGroundCustom(from);
+            GroundUtils.trackInaccuracy(p, to, from, ground);
 
             if (ground) {
                 p.setAirTicks(0);
@@ -76,10 +81,12 @@ public class PlayerData {
             } else {
                 p.setGroundTicks(0);
                 p.setAirTicks(p.getTicksOnAir() + 1);
-            }
 
-            if (p.getVehicle() != null) {
-                buffer.remove(GroundUtils.inaccuracyKey);
+                if (p.getNmsVerticalDistance() < p.getOld_NmsVerticalDistance()) {
+                    p.setFallingTicks(p.getFallingTicks() + 1);
+                } else {
+                    p.setFallingTicks(0);
+                }
             }
 
             // Separator
@@ -90,9 +97,7 @@ public class PlayerData {
             }
 
             // Separator
-            PotionEffect[] potionEffects = p.getActivePotionEffects();
-
-            if (potionEffects.length > 0) {
+            if (potionEffects.size() > 0) {
                 for (PotionEffect potionEffect : potionEffects) {
                     PotionEffectType type = potionEffect.getType();
 
@@ -101,35 +106,10 @@ public class PlayerData {
                     }
                 }
             }
-        } else {
-            remove(p, false);
         }
     }
 
     public static void update(SpartanPlayer p, Player n, boolean heavy) {
-        if (n.isSprinting()) {
-            p.setSprinting(true);
-            p.setSneaking(false);
-        } else {
-            p.setSprinting(false);
-            p.setSneaking(n.isSneaking());
-        }
-        p.setFallDistance(n.getFallDistance(), false);
-        p.setWalkSpeed(n.getWalkSpeed());
-        p.setFlySpeed(n.getFlySpeed());
-        p.setEyeHeight(n.getEyeHeight());
-        p.setUsingItem(n.isBlocking());
-
-        // Separator
-
-        Entity entity = p.getVehicle();
-
-        if (entity != null) {
-            VehicleAccess.runEnter(p, entity, false);
-        }
-
-        // Separator
-
         if (heavy) {
             if (!Liquid.runMove(p)) {
                 if (!GroundCollision.run(p)) {
@@ -139,19 +119,29 @@ public class PlayerData {
             } else {
                 ExtremeCollision.run(p);
             }
-        }
-    }
+        } else {
+            if (n.isSprinting()) {
+                p.setSprinting(true);
+                p.setSneaking(false);
+            } else {
+                p.setSprinting(false);
+                p.setSneaking(n.isSneaking());
+            }
+            p.setFallDistance(n.getFallDistance(), false);
+            p.setWalkSpeed(n.getWalkSpeed());
+            p.setFlySpeed(n.getFlySpeed());
+            p.setEyeHeight(n.getEyeHeight());
+            p.setUsingItem(n.isBlocking());
 
-    public static void remove(SpartanPlayer p, boolean modify) {
-        p.setAirTicks(0);
-        p.setOldAirTicks(0);
-        p.setGroundTicks(0);
-        p.setWalking(0);
-        p.setSprinting(0);
-        p.setJumpWalking(0);
-        p.setJumpSprinting(0);
-        p.setFallDistance(0.0f, modify);
-        p.getBuffer().remove(new String[]{"player-data=inventory-use", GroundUtils.inaccuracyKey});
+            // Separator
+
+            Entity entity = p.getVehicle();
+
+            if (entity != null) {
+                p.getBuffer().remove(GroundUtils.inaccuracyKey);
+                VehicleAccess.runEnter(p, entity, false);
+            }
+        }
     }
 
     // Combat

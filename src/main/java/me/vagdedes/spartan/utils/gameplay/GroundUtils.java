@@ -31,7 +31,7 @@ public class GroundUtils {
             v1_15 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15),
             v1_20 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20);
     private static final double
-            fallingMotion = MoveUtils.falling[0],
+            fallingMotion = MoveUtils.gravityAcceleration,
             jumpingMotion = MoveUtils.jumping[1],
             jumpingStartMotion = MoveUtils.jumping[0];
     public static final double
@@ -41,7 +41,7 @@ public class GroundUtils {
             minPossibleStep = 0.015625,  // Attention, serious usage
             maxPlayerStep = bedStep + 0.1;
 
-    public static final String
+    static final String
             inaccuracyKey = "ground-utils=utility-inaccuracy";
     private static final String
             setOnGroundKey = "ground-utils=set-on-ground",
@@ -407,15 +407,21 @@ public class GroundUtils {
         if (remaining == height
                 || height == -1.0
                 || height > 0.0 && (remaining % height) == 0.0
-                || height == 0.0 && isZeroMiscalculation(remaining)
-
-                || predictableHeights.contains(height)
-                && (Math.abs(jumpingMotion - nmsVerticalDistance) < MoveUtils.jumping[2]
-                || Math.abs(jumpingMotion - remaining) < MoveUtils.jumping[2])) {
+                || height == 0.0 && isZeroMiscalculation(remaining)) {
             if (reset) {
                 p.setAirTicks(0);
             }
             return true;
+        } else if (predictableHeights.contains(height)) {
+            double jumpingPrecision = p == null ? MoveUtils.jumping[2] : MoveUtils.getJumpingPrecision(p);
+
+            if (Math.abs(jumpingMotion - nmsVerticalDistance) < jumpingPrecision
+                    || Math.abs(jumpingMotion - remaining) < jumpingPrecision) {
+                if (reset) {
+                    p.setAirTicks(0);
+                }
+                return true;
+            }
         }
         return false;
     }
@@ -525,7 +531,7 @@ public class GroundUtils {
         if (airTicks <= 12
                 && p.getLastJump() >= 1_000L
                 && (isZeroMiscalculation(vertical - 0.2) || isZeroMiscalculation(remaining - 0.2))
-                && PatternUtils.isBlockPattern(blockedJumping, to, true, BlockUtils.solid)) {
+                && PatternUtils.isBlockPattern(blockedJumping, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
             vertical = Math.abs(vertical - remaining);
 
             for (double height : allHeights) {
@@ -544,7 +550,7 @@ public class GroundUtils {
         if (airTicks > 11
                 && !p.getProfile().isSuspectedOrHacker()
                 && p.getCooldowns().canDo("ground-utils=set-off-ground")
-                && PatternUtils.isBlockPattern(jumpMovement, loc, true, BlockUtils.solid)) {
+                && PatternUtils.isBlockPattern(jumpMovement, loc, true, BlockUtils.solid, BlockUtils.semi_solid)) {
             setOnGround(p, 1);
         }
     }
@@ -565,14 +571,14 @@ public class GroundUtils {
         return false;
     }
 
-    public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, boolean ground) {
+    static void trackInaccuracy(SpartanPlayer p, SpartanLocation to, SpartanLocation from, boolean ground) {
         int blockY = to.getBlockY();
 
         if ((blockY + 0.5) >= from.getBlockY() && to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ()
                 && !LagLeniencies.hasInconsistencies(p, "tps") && !LagLeniencies.hasHighLatency(p, LagLeniencies.badPing) // Base
                 && !Building.hasCooldown(p)
                 && !BlockUtils.canClimb(to) && !BlockUtils.canClimb(from)
-                && PatternUtils.isBlockPattern(run, to, true, BlockUtils.solid)) {
+                && PatternUtils.isBlockPattern(run, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
             if ((!ground || !p.isOnGround())
                     && (to.getY() - blockY) != 0.5
                     && !Moderation.wasDetected(p)

@@ -26,7 +26,7 @@ public class IrregularMovementsClimb {
                     if (canJump && !knownBoxes && p.isClimbing(oldVertical)
 
                             // Attention, added recently
-                            && (Math.abs(vertical - MoveUtils.jumping[1]) >= MoveUtils.jumping[2] // Not first jump motion
+                            && (Math.abs(vertical - MoveUtils.jumping[1]) >= MoveUtils.getJumpingPrecision(p) // Not first jump motion
                             || Math.abs(vertical - box) >= MoveUtils.highPrecision)) { // Vertical & box are not correlated
                         IrregularMovements.cancel(p, from, prevention, "jump-" + scenario, 1);
                     }

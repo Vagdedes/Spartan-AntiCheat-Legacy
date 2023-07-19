@@ -98,6 +98,10 @@ public class AlgebraUtils {
         return i * i;
     }
 
+    public static double pow2(double i) {
+        return i * i;
+    }
+
     public static double sqrt(double number) {
         if (number == 0) {
             return 0;

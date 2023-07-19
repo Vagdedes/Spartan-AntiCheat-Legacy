@@ -112,7 +112,7 @@ public class Speed {
     };
 
     static {
-        float f = (float) MoveUtils.falling[0];
+        float f = (float) MoveUtils.gravityAcceleration;
         fallingDistance.add(0.0f);
         fallingDistance.add(f);
         fallingDistance.add(f * 3);
@@ -229,8 +229,8 @@ public class Speed {
                     dm = cacheLimit(decimals, dm, dm, 10);
                 }
             }
-        } else if (Math.abs(MoveUtils.jumping[1] - ver) < MoveUtils.jumping[2]
-                || Math.abs(MoveUtils.jumping[1] - box) < MoveUtils.jumping[2]) {
+        } else if (Math.abs(MoveUtils.jumping[1] - ver) < MoveUtils.getJumpingPrecision(p)
+                || Math.abs(MoveUtils.jumping[1] - box) < MoveUtils.getJumpingPrecision(p)) {
             reason = "ypos";
             if (!cooldowns.canDo("ice=reminder")) {
                 dm = cacheLimit(decimals, dm, ypos_advanced, 0);
@@ -253,7 +253,7 @@ public class Speed {
                 dm = cacheLimit(decimals, dm, ice, 10);
             } else if (honey || BlockUtils.isSlime(p, to, 3)) {
 
-                if (PatternUtils.isBlockPattern(aboveBlock, to, true, BlockUtils.solid)) {
+                if (PatternUtils.isBlockPattern(aboveBlock, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                     dm = cacheLimit(decimals, dm, blocks_slime, 12);
                 } else {
                     dm = cacheLimit(decimals, dm, air_slime, 12);
@@ -351,7 +351,7 @@ public class Speed {
                         && (!groundVanilla || !groundCustom)
                         && !BouncingBlocks.isBelow(p)
                         && !BlockUtils.isSlime(p, to, 2)
-                        && !PatternUtils.isBlockPattern(hopIllegalSingle, to, true, BlockUtils.solid)
+                        && !PatternUtils.isBlockPattern(hopIllegalSingle, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                         && !PatternUtils.isBlockPattern(hopIllegal, to, true, BlockUtils.semi_solid)) {
                     if (!jumping) {
                         if (!BlockUtils.isSlime(p, to, 3) && buffer.start("hop=illegal", 10) >= 4) {
@@ -360,13 +360,13 @@ public class Speed {
                     } else if (cooldowns.canDo("above-block")) {
                         boolean cancel = false;
 
-                        if (Math.abs(MoveUtils.jumping[0] - ver) < MoveUtils.jumping[2] && hor >= 0.35) {
+                        if (Math.abs(MoveUtils.jumping[0] - ver) < MoveUtils.getJumpingPrecision(p) && hor >= 0.35) {
                             cancel = true;
-                        } else if (Math.abs((MoveUtils.jumping[0] * 2) - ver) < MoveUtils.jumping[2] && hor >= 0.355) {
+                        } else if (Math.abs((MoveUtils.jumping[0] * 2) - ver) < MoveUtils.getJumpingPrecision(p) && hor >= 0.355) {
                             cancel = true;
-                        } else if (Math.abs((MoveUtils.jumping[0] * 3) - ver) < MoveUtils.jumping[2] && hor >= 0.36) {
+                        } else if (Math.abs((MoveUtils.jumping[0] * 3) - ver) < MoveUtils.getJumpingPrecision(p) && hor >= 0.36) {
                             cancel = true;
-                        } else if (Math.abs((MoveUtils.jumping[0] * 4) - ver) < MoveUtils.jumping[2] && hor >= 0.365) {
+                        } else if (Math.abs((MoveUtils.jumping[0] * 4) - ver) < MoveUtils.getJumpingPrecision(p) && hor >= 0.365) {
                             cancel = true;
                         }
 
@@ -698,7 +698,7 @@ public class Speed {
         }
 
         // Limit
-        if (!PatternUtils.isBlockPattern(aboveBlock, to, true, BlockUtils.solid)) {
+        if (!PatternUtils.isBlockPattern(aboveBlock, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
             cooldowns.add("above-block", 20);
         }
         return new Object[]{dm, reason, iceBlocks};

@@ -83,14 +83,14 @@ public class FastBreak {
 
                     if (limit > 100L && time < limit) { // Do not check blocks that take equal or less than 1/10th of a second to break
                         boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
-                        PotionEffect[] potionEffects = p.getActivePotionEffects();
+                        Collection<PotionEffect> potionEffects = p.getActivePotionEffects();
                         Set<Map.Entry<Enchantment, Integer>> enchantments =
                                 !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants() ?
                                         itemStack.getEnchantments().entrySet() : new HashSet<>();
                         StringBuilder enchantmentsString = new StringBuilder(),
                                 effectsString = new StringBuilder();
                         boolean hasEnchantments = enchantments.size() > 0,
-                                hasEffects = potionEffects.length > 0;
+                                hasEffects = potionEffects.size() > 0;
 
                         if (hasEnchantments) {
                             for (Map.Entry<Enchantment, Integer> enchantment : enchantments) {

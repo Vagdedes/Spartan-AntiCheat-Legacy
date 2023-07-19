@@ -27,8 +27,8 @@ import me.vagdedes.spartan.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.data.CooldownUtils;
-import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -142,12 +142,13 @@ public class Cache {
         }
     }
 
-    public static void clear(SpartanPlayer p,
+    public static void clear(SpartanPlayer p, Player n,
                              boolean leave, boolean distance, boolean deep,
                              SpartanLocation newLocation) {
         // Utils
-        MoveUtils.remove(p);
-        PlayerData.remove(p, true);
+        if (!leave) {
+            PlayerData.run(p, n, n.getActivePotionEffects());
+        }
 
         // Handlers
         if (!leave) {
@@ -159,6 +160,8 @@ public class Cache {
             } else {
                 DetectionLocation.remove(p);
             }
+        } else {
+            DetectionLocation.remove(p);
         }
         p.resetHandlers();
         MovementProcessing.resetVehicleTicks(p);

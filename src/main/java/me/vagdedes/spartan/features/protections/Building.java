@@ -108,9 +108,9 @@ public class Building {
                     && ploc.getBlockY() == blocY
                     && ploc.getBlockZ() == bloc.getBlockZ()) {
                 cases = 1;
-            } else if (PatternUtils.isBlockPattern(current, loc, true, BlockUtils.solid)) {
+            } else if (PatternUtils.isBlockPattern(current, loc, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                 cases = 2;
-            } else if (PatternUtils.isBlockPattern(extra, loc, true, BlockUtils.solid)) {
+            } else if (PatternUtils.isBlockPattern(extra, loc, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                 cases = 3;
             } else {
                 ItemStack item = p.getItemInHand();

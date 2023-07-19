@@ -23,7 +23,7 @@ public class IrregularMovementsCobweb {
             AsyncDetection.run(p, IrregularMovements.check, () -> {
                 if (vertical == 0.0) {
                     if (horizontal >= 0.01 && !p.isOnGround()
-                            || !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid)) { // Second is used in case the first method is spoofed
+                            || !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Second is used in case the first method is spoofed
                         double selectedBox = AlgebraUtils.cut(GroundUtils.heightExists(box, true) ? box : oldBox, 5);
                         IrregularMovements.cancel(p, from, prevention,
                                 "horizontal-" + scenario + "=" + selectedBox, "selected-box: " + selectedBox,

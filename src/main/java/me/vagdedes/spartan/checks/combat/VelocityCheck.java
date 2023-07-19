@@ -166,7 +166,7 @@ public class VelocityCheck {
 
             if (!BlockUtils.canClimb(loc)) {
                 if (local) {
-                    return !PatternUtils.isBlockPattern(solid, loc, false, BlockUtils.solid)
+                    return !PatternUtils.isBlockPattern(solid, loc, false, BlockUtils.solid, BlockUtils.semi_solid)
                             && !PatternUtils.isBlockPattern(web, loc, true, BlockUtils.web)
                             && !PatternUtils.isBlockPattern(semiSolid, loc, true, BlockUtils.semi_solid);
                 }

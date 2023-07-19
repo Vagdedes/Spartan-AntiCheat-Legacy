@@ -102,8 +102,7 @@ public class DetectionNotifications {
             if (!isEnabled(p)) {
                 change(p, i, false);
             }
-        } else if (isEnabled(p)) {
-            notifications.remove(p.getUniqueId());
+        } else if (notifications.remove(p.getUniqueId()) != null) {
             p.sendMessage(Messages.get("notifications_disable").replace("{type}", "Verbose"));
         }
     }

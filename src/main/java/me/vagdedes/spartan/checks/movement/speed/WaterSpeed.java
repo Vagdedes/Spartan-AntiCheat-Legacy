@@ -261,7 +261,7 @@ public class WaterSpeed {
             if (PatternUtils.isBlockPattern(new double[][]{
                     {1, 2, 1},
                     {1, 2 - remaining, 1}
-            }, to, true, BlockUtils.solid)) { // Blocks above
+            }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Blocks above
                 cooldowns.add("ice", 20);
             } else if (p.wasInLiquids() || !Liquid.isLocation(p, to)) {
                 freezeBuffers(p, buffer, 1);
@@ -285,7 +285,7 @@ public class WaterSpeed {
                 || to.areBlocks(m, BlockUtils.hitbox_max)
                 || locM1.areBlocks(m, BlockUtils.hitbox_max)
                 || to.clone().add(0, -remaining, 0).areBlocks(m, BlockUtils.hitbox_max)
-                || !PatternUtils.isBlockPattern(genericHitbox, locM1, true, BlockUtils.solid) && locM2.areBlocks(m, BlockUtils.hitbox_max);
+                || !PatternUtils.isBlockPattern(genericHitbox, locM1, true, BlockUtils.solid, BlockUtils.semi_solid) && locM2.areBlocks(m, BlockUtils.hitbox_max);
     }
 
     private static double adjustLimit(SpartanPlayer p, SpartanLocation loc, SpartanLocation locM1, SpartanLocation loc1,
@@ -367,7 +367,7 @@ public class WaterSpeed {
     // Utils
 
     private static boolean isSolidAndLiquidFree(SpartanLocation loc, double x, double y, double z) {
-        return !PatternUtils.isBlockPattern(new double[]{x, y, z}, loc, true, BlockUtils.solid)
+        return !PatternUtils.isBlockPattern(new double[]{x, y, z}, loc, true, BlockUtils.solid, BlockUtils.semi_solid)
                 && !PatternUtils.isLiquidPattern(new double[]{x, y, z}, loc, true);
     }
 

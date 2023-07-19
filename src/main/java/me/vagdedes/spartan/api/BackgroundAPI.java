@@ -90,17 +90,17 @@ public class BackgroundAPI {
 
     @Deprecated
     static void setVerbose(Player p, boolean value, int frequency) {
+        setNotifications(p, frequency);
+    }
+
+    static void setNotifications(Player p, int frequency) {
         if (Settings.getBoolean("Important.enable_developer_api")) {
             SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
             if (player != null) {
-                DetectionNotifications.set(player, value, -Math.max(1, Math.abs(frequency)));
+                DetectionNotifications.set(player, true, -Math.max(1, Math.abs(frequency)));
             }
         }
-    }
-
-    static void setNotifications(Player p, int frequency) {
-        setVerbose(p, true, frequency);
     }
 
     static int getPing(Player p) {

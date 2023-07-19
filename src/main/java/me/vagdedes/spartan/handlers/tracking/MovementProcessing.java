@@ -41,7 +41,7 @@ public class MovementProcessing {
 
             if (!groundGliding) {
                 // Jump/Fall Identifier
-                if (Math.abs(MoveUtils.jumping[1] - ver) < MoveUtils.jumping[2]) { // Last Jump
+                if (Math.abs(MoveUtils.jumping[1] - ver) < MoveUtils.getJumpingPrecision(p)) { // Last Jump
                     p.setOldLastJump();
                     p.setLastJump();
                     GroundUtils.runOnJumpMovement(p, to, airTicks);
@@ -64,7 +64,7 @@ public class MovementProcessing {
 
                 // Sprint/Walk Identifier
                 if (dis > 0.1) {
-                    if (p.getActivePotionEffects().length > 0 // Potions
+                    if (p.getActivePotionEffects().size() > 0 // Potions
                             || p.isUsingItem() // Inventory
                             || Damage.hasCooldown(p) // Damage
                             || p.isSwimming() || p.wasInLiquids() // Liquid

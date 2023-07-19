@@ -21,7 +21,7 @@ public class IrregularMovementsBouncing {
                     String prevention, String scenario) {
         if (IrregularMovements.check.getCheck().getBooleanOption("check_bouncing_blocks", true)) {
             AsyncDetection.run(p, IrregularMovements.check, () -> {
-                if (!PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid)) {
+                if (!PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                     if (vertical > 0.0) {
                         if (canGoUp) {
                             boolean canBounce = BlockUtils.isBouncingBlock(p, to, 2),

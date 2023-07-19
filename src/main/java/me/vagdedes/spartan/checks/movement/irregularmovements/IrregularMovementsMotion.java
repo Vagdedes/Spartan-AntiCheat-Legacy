@@ -1,33 +1,143 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
-import me.vagdedes.spartan.handlers.stability.TPS;
-import me.vagdedes.spartan.objects.data.Buffer;
+import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
+import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 public class IrregularMovementsMotion {
 
-    private static final double criticalStepLimit = 0.5 * Math.round((GroundUtils.maxPlayerStep * 2.0) / 0.5); // 1.5
+    private static final double
+            postJumpPreFallPrecision = MoveUtils.jumping[2] * 7, // 0.0007
+            criticalStepLimit = 0.5 * Math.round((GroundUtils.maxPlayerStep * 2.0) / 0.5); // 1.5
+    private static final int criticalTickDifference = MoveUtils.jumpingMotions * 3; // 15
+
+    private static final String
+            downwardsDifferenceKey = "downwards-difference",
+            downwardsPredictionKey = "downwards-prediction",
+            downwardsUnexpectedKey = "downwards-unexpected";
+
+    private static void clearDown(SpartanPlayer p, Decimals decimals) {
+        IrregularMovements.clear(p, downwardsUnexpectedKey);
+        // no Decimals usage
+
+        IrregularMovements.clear(p, downwardsDifferenceKey);
+        decimals.remove(downwardsDifferenceKey);
+
+        IrregularMovements.clear(p, downwardsPredictionKey);
+        decimals.remove(downwardsPredictionKey);
+    }
 
     static void run(SpartanPlayer p,
                     SpartanLocation to, SpartanLocation from,
                     double vertical, double oldVertical, double verticalDifference, double oldVerticalDifference,
                     double box, double oldBox,
                     boolean knownBoxes, boolean knownBoxesNew, boolean knownBoxesOld,
-                    boolean onGroundCustom,
-                    boolean groundInteractionScenario, boolean velocityScenario,
-                    boolean bouncingBlocks,
+                    boolean onGround, boolean onGroundCustom,
+                    boolean constructDetection, boolean groundInteractionScenario, boolean velocityScenario,
                     boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
                     int airTicks,
                     String prevention) {
+        double stepLimit = IrregularMovements.check.getCheck().getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
         checkUp &= IrregularMovements.check.getCheck().getBooleanOption("check_upwards", true);
         checkDown &= IrregularMovements.check.getCheck().getBooleanOption("check_downwards", true);
         checkJump &= IrregularMovements.check.getCheck().getBooleanOption("check_jumping", true);
         checkFall &= IrregularMovements.check.getCheck().getBooleanOption("check_falling", true);
         checkHorizontal &= IrregularMovements.check.getCheck().getBooleanOption("check_horizontal", true);
-        double stepLimit = IrregularMovements.check.getCheck().getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
+        onGround = onGroundCustom || onGround && airTicks == 0;
+
+        // Separator
+        Decimals decimals = p.getDecimals(IrregularMovements.check);
+
+        if (onGround) { // Ground
+            clearDown(p, decimals);
+        } else { // Motion
+            if (vertical > 0.0) {
+                if (checkUp
+                        && !knownBoxesNew
+                        && !p.isJumping(vertical)
+                        && Math.abs(vertical - MoveUtils.postJumpPreFall) >= postJumpPreFallPrecision) {
+                    boolean abstractScenario = groundInteractionScenario || velocityScenario;
+
+                    if (stepLimit > 0.0) {
+                        if (abstractScenario) {
+
+                        }
+                        if (vertical > stepLimit) {
+                            /*IrregularMovements.cancel(p, from, prevention,
+                                    downwardsDifferenceKey, "difference: " + fallingToAirTicksDifference,
+                                    5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));*/
+                        }
+                    }
+                    if (abstractScenario) {
+
+                    } else {
+
+                    }
+                    p.debug(false, true,
+                            vertical, oldVertical, "|",
+                            verticalDifference, oldVerticalDifference, "|",
+                            oldBox
+                    );
+                }
+            } else if ((checkDown || checkFall)
+                    && !velocityScenario) {
+                if (vertical < 0.0) {
+                    int expectedTick = MoveUtils.getFallingTick(vertical);
+
+                    if (constructDetection) {
+                        decimals.remove(downwardsDifferenceKey);
+                    } else {
+                        int fallingToAirTicksDifference = airTicks - p.getFallingTicks(); // Do not consider when air-ticks are less than falling-ticks
+
+                        if (fallingToAirTicksDifference >= criticalTickDifference) {
+                            if (decimals.get(downwardsDifferenceKey) != fallingToAirTicksDifference) {
+                                IrregularMovements.cancel(p, from, prevention,
+                                        downwardsDifferenceKey, "difference: " + fallingToAirTicksDifference,
+                                        5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                            }
+                            decimals.set(downwardsDifferenceKey, fallingToAirTicksDifference);
+                        } else {
+                            decimals.remove(downwardsDifferenceKey);
+                        }
+                    }
+                    if (expectedTick != -1) {
+                        int predictedExpectedTick = AlgebraUtils.integerRound(
+                                decimals.get(downwardsPredictionKey, -1.0)
+                        );
+
+                        if (predictedExpectedTick != -1) {
+                            int inaccuracy = AlgebraUtils.integerRound(
+                                    Math.abs(expectedTick - predictedExpectedTick)
+                            );
+
+                            if (inaccuracy > 1) {
+                                IrregularMovements.cancel(p, from,
+                                        prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
+                                        5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                            }
+                        }
+                        decimals.set(
+                                downwardsPredictionKey,
+                                MoveUtils.getFallingTick((vertical * MoveUtils.dragComplement) - MoveUtils.gravityAcceleration)
+                        );
+                    } else {
+                        decimals.remove(downwardsPredictionKey);
+                        IrregularMovements.cancel(p, from,
+                                prevention, downwardsUnexpectedKey, null,
+                                5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                    }
+                }
+            } else {
+                clearDown(p, decimals);
+            }
+        }
+
+        // Separator
 
         if (stepLimit > 0.0) { // Step
             if (knownBoxesNew
@@ -36,20 +146,23 @@ public class IrregularMovementsMotion {
 
                 if (vertical > 0.0) {
                     if (boxDifference > stepLimit) {
-                        IrregularMovements.cancel(p, from, prevention, "step-up-predictable", "box-difference: " + boxDifference, boxDifference >= criticalStepLimit ? 1 : 2, IrregularMovements.defaultBufferTime);
+                        IrregularMovements.cancel(p, from, prevention, "step-up-predictable",
+                                "box-difference: " + boxDifference + ", limit: " + stepLimit,
+                                !velocityScenario && boxDifference >= criticalStepLimit ? 1 : 2,
+                                velocityScenario ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                     }
-                } else if (vertical < 0.0
+                } else if (vertical < 0.0 //todo false positives
                         && boxDifference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Anything below this threshold is likely instant, where otherwise you fall for a bit
-                    IrregularMovements.cancel(p, from, prevention, "step-down-predictable", 1);
+                    IrregularMovements.cancel(p, from, prevention, "step-down-predictable", "box-difference: " + boxDifference, 1, 0);
                 }
             } else if (knownBoxesNew) {
                 if (vertical > stepLimit) {
-                    IrregularMovements.cancel(p, from, prevention, "step-up-predictable", vertical >= criticalStepLimit ? 1 : 2);
-                } else if (vertical <= -(MoveUtils.falling[2] + MoveUtils.highPrecision)) {
-                    p.debug(false, false, "step-down-known", vertical, oldVertical, "|", verticalDifference,oldVerticalDifference);
+                    IrregularMovements.cancel(p, from, prevention, "step-up-predictable",  "limit: " + stepLimit,
+                            !velocityScenario && vertical >= criticalStepLimit ? 1 : 2,
+                            velocityScenario ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
+                } else if (vertical < MoveUtils.gravityAcceleration) {
+                    //todo
                 }
-            } else {
-                //todo
             }
         }
 
@@ -62,16 +175,22 @@ public class IrregularMovementsMotion {
                     if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
                         IrregularMovements.cancel(p, from, prevention, "jump-up-skip", 1);
                     } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
-                        IrregularMovements.cancel(p, from, prevention, "jump-up-equilibrium", groundInteractionScenario ? 3 : 1);
+                        IrregularMovements.cancel(p, from, prevention, "jump-up-equilibrium",
+                                groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
                     }
                 }
             } else if (p.isJumping(oldVertical)) {
-                if (checkJump
-                        && Math.abs(oldVertical - MoveUtils.jumping[0]) >= MoveUtils.jumping[2]) { // Jumping must end somewhere
-                    IrregularMovements.cancel(p, from, prevention, "jump-end", groundInteractionScenario || velocityScenario ? 3 : 1);
+                if (checkJump) {
+                    double jumpingPrecision = MoveUtils.getJumpingPrecision(p);
+
+                    if (Math.abs(oldVertical - MoveUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
+                            && !PatternUtils.isBlockPattern(new double[]{
+                            BlockUtils.hitbox_max, 2 - box, BlockUtils.hitbox_max
+                    }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
+                        IrregularMovements.cancel(p, from, prevention, "jump-end",
+                                groundInteractionScenario || velocityScenario ? MoveUtils.jumpingMotions : 1);
+                    }
                 }
-            } else if (!(checkFall || checkDown) && !onGroundCustom) {
-                //todo
             }
         } else if (vertical > oldVertical) { // Ascension
             if (p.isJumping(vertical)) {
@@ -80,30 +199,37 @@ public class IrregularMovementsMotion {
                         double difference = Math.abs(verticalDifference);
 
                         if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
-                            IrregularMovements.cancel(p, from, prevention, "jump-down-skip", groundInteractionScenario ? 3 : 1);
+                            IrregularMovements.cancel(p, from, prevention, "jump-down-skip",
+                                    groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
                         } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
-                            IrregularMovements.cancel(p, from, prevention, "jump-down-equilibrium", groundInteractionScenario ? 3 : 1);
+                            IrregularMovements.cancel(p, from, prevention, "jump-down-equilibrium",
+                                    groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
                         }
                     } else if (!onGroundCustom
-                            && !GroundUtils.heightExists(box - vertical, true)
-                            && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.jumping[2]) { // Jumping must start from somewhere
+                            && !GroundUtils.heightExists(Math.abs(box - vertical), true)
+                            && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(p)) { // Jumping must start from somewhere
                         IrregularMovements.cancel(p, from, prevention, "jump-start", 1);
                     }
                 }
-            } else if (p.isJumping(oldVertical)) {
-                if (checkJump) {
-                    p.debug(false, false, "jump", vertical, oldVertical, box, oldBox);
-                }
-                // check if it's negative or zero
-            } else if (checkUp && !onGroundCustom) {
-                //todo
             }
-        } else if (checkHorizontal && !onGroundCustom) { // Equilibrium
-            p.debug(false, false, "horizontal", vertical, oldVertical, verticalDifference, oldVerticalDifference);
+        } else if (checkHorizontal
+                && !onGround) { // Equilibrium
+            double[][] positions = new double[][]{
+                    {1, 0, 1},
+                    {1, -(box + GroundUtils.minPossibleStep), 1},
+                    {1, 1, 1},
+            };
+
+            if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
+                    && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
+                IrregularMovements.cancel(p, from, prevention, "equilibrium-spacious", 1);
+            } else if (!knownBoxes
+                    && !GroundUtils.heightExists(oldBox - oldVertical, true)) {
+                IrregularMovements.cancel(p, from, prevention, "*equilibrium-abstract", 2);
+            } else {
+                IrregularMovements.cancel(p, from, prevention, "*equilibrium-predictable", 3);
+            }
         }
 
-        if (p.getCooldowns(IrregularMovements.check).has("jump-start")) {
-            p.debug(false, false, airTicks, onGroundCustom, vertical);
-        }
     }
 }

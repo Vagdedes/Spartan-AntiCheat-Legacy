@@ -2,8 +2,10 @@ package me.vagdedes.spartan.utils.gameplay;
 
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,11 +19,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MoveUtils {
 
-    public static final double[] falling = new double[]{0.07840, 0.07544, 0.09800},
+    public static final double[]
             jumping = new double[]{0.08307, 0.42f, 0.0001}, // Last one is jump value precision
             climbing = new double[]{0.03684, 0.07531, 0.11215, 0.11760, 0.12529, 0.15, 0.15444}; // Attention to 'climbingScaffoldingMax'
 
     public static final double
+            postJumpPreFall = 0.00301,
+            gravityAcceleration = 0.0784,
+            terminalVelocity = 3.92,
+            drag = gravityAcceleration / terminalVelocity,
+            dragComplement = 1.0 - drag,
             highPrecision = 0.0019,
             lowPrecision = highPrecision * 2.0,
             nearMaxFallingMotion = 3.87,
@@ -38,6 +45,7 @@ public class MoveUtils {
 
     private static final Map<UUID, SpartanLocation> loc = new ConcurrentHashMap<>(Config.getMaxPlayers());
     private static final Set<Double> jumps = new HashSet<>(jumpingMotions);
+    private static final Map<Integer, Double> gravity = new HashMap<>();
 
     static {
         jumps.add(jumping[1]); // 0.41999
@@ -59,6 +67,24 @@ public class MoveUtils {
         }
         maxJumpingMotionDifference = maxJumpingMotionDifferenceLocal;
 
+        // Separator
+        double fall = 0.0;
+        int counter = 0;
+
+        while (true) {
+            fall = (fall * dragComplement) + gravityAcceleration;
+
+            if ((terminalVelocity - fall) < highPrecision) {
+                AwarenessNotifications.forcefullySend(StringUtils.toString(gravity.values().toArray(new Double[0])));
+                AwarenessNotifications.forcefullySend(getFallingTick(-0.15444) + "");
+                break;
+            }
+            gravity.put(counter, fall);
+            counter++;
+        }
+
+        // Separator
+
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             List<World> worlds = Bukkit.getWorlds();
 
@@ -77,38 +103,57 @@ public class MoveUtils {
         }
     }
 
-    public static void run(SpartanPlayer p) {
-        if (p.canRunChecks(false) || p.isFlying()) {
-            SpartanLocation to = p.getLocation(),
-                    from = getCachedLocation(p, true);
-
-            if (from != null) {
-                p.setCustomDistance(to.distance(from));
-                p.setCustomHorizontalDistance(AlgebraUtils.getHorizontalDistance(to, from));
-                p.setCustomVerticalDistance(to.getY() - from.getY());
-            }
-            loc.put(p.getUniqueId(), to); // Always last
-        } else {
-            remove(p);
-        }
-    }
-
     // Base
 
-    public static void remove(SpartanPlayer p) {
-        loc.remove(p.getUniqueId());
-        p.setCustomDistance(0.0);
-        p.setCustomHorizontalDistance(0.0);
-        p.setCustomVerticalDistance(0.0);
-        p.setNmsDistance(0.0);
-        p.setNmsHorizontalDistance(0.0);
-        p.setNmsVerticalDistance(0.0);
+     static SpartanLocation trackLocation(SpartanPlayer p) {
+        SpartanLocation to = p.getLocation(),
+                from = getCachedLocation(p, true);
+
+        if (from != null) {
+            p.setCustomDistance(to.distance(from));
+            p.setCustomHorizontalDistance(AlgebraUtils.getHorizontalDistance(to, from));
+            p.setCustomVerticalDistance(to.getY() - from.getY());
+        }
+        loc.put(p.getUniqueId(), to); // Always last
+        return to;
+    }
+
+    // Falling
+
+    public static int getFallingTick(double d) {
+        if (d < 0.0) {
+            d = (0.0 - d);
+            double min = Double.MAX_VALUE;
+
+            for (Map.Entry<Integer, Double> entry : gravity.entrySet()) {
+                double newMin = Math.abs(entry.getValue() - d);
+
+                if (newMin < min) {
+                    min = newMin;
+                } else {
+                    if (min < lowPrecision) {
+                        return entry.getKey();
+                    } else {
+                        return -1;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static double getFallingMotion(int tick) {
+        return gravity.get(Math.min(gravity.size() - 1, tick));
     }
 
     // Jumping
 
+    public static double getJumpingPrecision(SpartanPlayer p) {
+        return p.isBedrockPlayer() ? MoveUtils.highPrecision : MoveUtils.jumping[2];
+    }
+
     public static boolean isJumping(double d, double diff) {
-        if (d > 0.083 && d < 0.42 && !GroundUtils.heightExists(d, true)) {
+        if (d > MoveUtils.jumping[0] && d < 0.42 && !GroundUtils.heightExists(d, true)) {
             double original = jumping[1];
 
             for (double value : jumps) {

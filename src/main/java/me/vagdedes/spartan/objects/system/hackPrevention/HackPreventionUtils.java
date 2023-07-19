@@ -88,7 +88,7 @@ public class HackPreventionUtils {
                             if (vertical == 0.0 || vertical >= MoveUtils.nearMaxFallingMotion) {
                                 preventVelocity(p, 5);
                                 p.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                                p.setVelocity(loc.getDirection().setY(MoveUtils.falling[1]));
+                                p.setVelocity(loc.getDirection().setY(MoveUtils.gravityAcceleration));
                             }
                         }
                     }
