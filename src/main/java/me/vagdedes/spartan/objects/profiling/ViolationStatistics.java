@@ -50,6 +50,12 @@ public class ViolationStatistics {
         }
     }
 
+    public static void remove(Enums.HackType hackType) {
+        synchronized (statistics) {
+            statistics.remove(hackType);
+        }
+    }
+
     static IndividualWarmup getComparables(String detection, Collection<ViolationStatistics> data) {
         List<Double> list = individualWarmup.get(detection);
 

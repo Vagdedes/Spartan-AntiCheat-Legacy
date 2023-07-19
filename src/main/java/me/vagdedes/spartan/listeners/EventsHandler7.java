@@ -60,7 +60,7 @@ public class EventsHandler7 implements Listener {
 
     private static final long damageTime = PlayerVelocity.maximumCollection * 50L;
     private static final String str = "movement-listeners=";
-    private static final String[] cache = new String[]{(str + "ver"), (str + "hor"), (str + "rem"), (str + "ver-diff")};
+    private static final String[] cache = new String[]{(str + "ver"), (str + "hor"), (str + "rem")};
     public static final String verticalCache = cache[0];
     private static final Map<UUID, PlayerMoveEvent> hm = new LinkedHashMap<>(Config.getMaxPlayers());
     private static boolean heavyMovementChecks = false;
@@ -301,13 +301,12 @@ public class EventsHandler7 implements Listener {
 
         if (heavyMovementChecks) {
             String vehicleKey = hasVehicle ? Integer.toString(vehicle.getEntityId()) : "";
-            double oVer = decimals.get(verticalCache + vehicleKey, 0.0),
-                    verDiff = ver - oVer;
 
             if (checkPlayer && (firstTick || repetition || tick <= 3)) {
-                double oVerDiff = decimals.get(cache[3] + vehicleKey, 0.0),
-                        oHor = decimals.get(cache[1] + vehicleKey, 0.0),
-                        oRem = decimals.get(cache[2] + vehicleKey, 0.0);
+                double oHor = decimals.get(cache[1] + vehicleKey, 0.0),
+                        oRem = decimals.get(cache[2] + vehicleKey, 0.0),
+                        oVer = decimals.get(verticalCache + vehicleKey, 0.0),
+                        verDiff = ver - oVer;
 
                 // Detections
                 if (firstTick || repetition) {
@@ -316,7 +315,7 @@ public class EventsHandler7 implements Listener {
                         NoSlowdown.run(p, to, from, ver, hor, oHor); // Repetitive (Optimised)
                         EntityMove.run(p, to, from, hor, ver, oVer, rem, oRem, air); // Repetitive (Optimised)
                     }
-                    IrregularMovements.run(p, to, from, ver, oVer, verDiff, oVerDiff, hor, rem, oRem, air); // Repetitive (Optimised)
+                    IrregularMovements.run(p, to, from, ver, oVer, verDiff, hor, rem, oRem, air); // Repetitive (Optimised)
                 }
                 Speed.run(p, to, from, ver, hor, air, rem, oVer, oHor, oRem, crawling); // Important (Optimised)
                 WaterSpeed.run(p, to, from, ver, oVer, rem, hor, air); // Repetitive (Optimised)
@@ -325,7 +324,6 @@ public class EventsHandler7 implements Listener {
             decimals.set(cache[0] + vehicleKey, ver);
             decimals.set(cache[1] + vehicleKey, hor);
             decimals.set(cache[2] + vehicleKey, rem);
-            decimals.set(cache[3] + vehicleKey, verDiff);
         } else {
             clear(p, decimals);
         }

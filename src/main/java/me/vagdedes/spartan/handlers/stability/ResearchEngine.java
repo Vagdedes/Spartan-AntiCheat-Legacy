@@ -650,6 +650,10 @@ public class ResearchEngine {
                     }
                 }
             }
+
+            // Separator
+            SpartanMenu.refresh();
+            ViolationStatistics.remove(hackType);
         });
     }
 

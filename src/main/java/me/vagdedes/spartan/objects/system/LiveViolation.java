@@ -98,7 +98,7 @@ public class LiveViolation {
     }
 
     public boolean hasCancelledLevel() {
-        return getCancelledLevel() > 0;
+        return getRawCancelledLevel() > 0;
     }
 
     public boolean hasMaxCancelledLevel() {

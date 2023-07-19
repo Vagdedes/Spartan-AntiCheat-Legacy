@@ -57,9 +57,6 @@ public class IrregularMovements {
             fullOffGroundTicks = 20;
     private static final int offGroundTicks = 12;
 
-    // Math
-    static final int desiredDecimalAccuracy = (8 + 16) / 2;
-
     public static void remove(SpartanPlayer p) {
         oldFrom.remove(p.getUniqueId());
     }
@@ -70,7 +67,7 @@ public class IrregularMovements {
 
     // Re-enable Fly & IrregularMovements checks
     public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
-                           double vertical, double oldVertical, double verticalDifference, double oldVerticalDifference,
+                           double vertical, double oldVertical, double verticalDifference,
                            double horizontal, double box, double oldBox,
                            int airTicks) {
         boolean bedrockPlayer = p.isBedrockPlayer();
@@ -267,7 +264,7 @@ public class IrregularMovements {
                 checkFall = true;
             } else if (p.isOnFire()
                     || p.isFrozen()
-                    || FloorProtection.hasCooldown(p)
+                    || FloorProtection.hasCooldown(p, true)
                     || PlayerData.hasBadPotionEffects(p)
                     || PatternUtils.isBlockPattern(interactiveAndPassable, to, false, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;
@@ -333,7 +330,7 @@ public class IrregularMovements {
                     + ", jump/fall: " + (canJump && canFall ? 1 : !canJump && !canFall ? 0 : (canJump ? 1 : 0) + "/" + (canFall ? 1 : 0))
                     + (vertical == oldVertical ? ", motion/old-motion: " + vertical : ", motion: " + vertical + ", old-motion: " + oldVertical)
                     + (box == oldBox ? ", box/old-box: " + box : ", box: " + box + ", old-box: " + oldBox)
-                    + ", air: " + airTicks + ", horizontal: " + horizontal;
+                    + ", air: " + airTicks + ", motion-acceleration: " + verticalDifference + ", horizontal: " + horizontal;
 
             // Do not process if the player is not in a water elevator or water block but has liquid cooldown
             if (!waterElevator && !liquidBlocks && wasInLiquids) {
@@ -403,7 +400,7 @@ public class IrregularMovements {
             // Has important counters, so put it first regardless
             IrregularMovementsMotion.run(p,
                     to, from,
-                    vertical, oldVertical, verticalDifference, oldVerticalDifference,
+                    vertical, oldVertical, verticalDifference,
                     box, oldBox,
                     knownBoxes, knownBoxesNew, knownBoxesOld,
                     onGround, onGroundCustom,

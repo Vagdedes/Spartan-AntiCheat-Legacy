@@ -368,7 +368,7 @@ public class CommandExecution implements CommandExecutor {
                         boolean exists = false;
 
                         for (Enums.HackType hackType : Enums.hackTypes()) {
-                            if (hackType.toString().equalsIgnoreCase(check)) {
+                            if (hackType.getCheck().getName().equalsIgnoreCase(check)) {
                                 check = hackType.toString();
                                 exists = true;
                                 break;
@@ -614,8 +614,10 @@ public class CommandExecution implements CommandExecutor {
                         boolean noSeconds = args.length == 3;
 
                         if (noSeconds || args.length == 4) {
+                            Enums.HackType[] hackTypes = Enums.hackTypes();
+                            int maxHackTypes = hackTypes.length;
                             SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
-                            String[] checks = args[2].split(",");
+                            String[] checks = args[2].split(",", maxHackTypes);
                             String sec = noSeconds ? null : args[3];
 
                             if (isPlayer && !Permissions.has((Player) sender, Permission.use_bypass)) {
@@ -626,12 +628,11 @@ public class CommandExecution implements CommandExecutor {
                                 sender.sendMessage(Messages.get("player_not_found_message"));
                                 return true;
                             }
-                            Enums.HackType[] hackTypes = Enums.hackTypes();
-                            List<Enums.HackType> found = new ArrayList<>(hackTypes.length);
+                            List<Enums.HackType> found = new ArrayList<>(maxHackTypes);
 
-                            for (Enums.HackType hackType : hackTypes) {
-                                for (String check : checks) {
-                                    if (hackType.toString().equalsIgnoreCase(check)) {
+                            for (String check : checks) {
+                                for (Enums.HackType hackType : hackTypes) {
+                                    if (hackType.getCheck().getName().equalsIgnoreCase(check)) {
                                         found.add(hackType);
                                         break;
                                     }

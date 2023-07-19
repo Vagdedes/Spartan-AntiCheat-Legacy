@@ -14,17 +14,26 @@ import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 public class IrregularMovementsMotion {
 
     private static final double
+            criticalUpwardsLimit = Math.sqrt(MoveUtils.chunk),
             postJumpPreFallPrecision = MoveUtils.jumping[2] * 7, // 0.0007
-            criticalStepLimit = 0.5 * Math.round((GroundUtils.maxPlayerStep * 2.0) / 0.5); // 1.5
+            criticalStepLimit = GroundUtils.maxPlayerStep * 2.0; // 1.325
     private static final int criticalTickDifference = MoveUtils.jumpingMotions * 3; // 15
 
     private static final String
             upwardsProgressiveKey = "upwards-progressive",
+            upwardsAccelerationKey = "upwards-acceleration",
+            upwardsDecelerationKey = "upwards-deceleration",
             downwardsDifferenceKey = "downwards-difference",
             downwardsPredictionKey = "downwards-prediction",
             downwardsUnexpectedKey = "downwards-unexpected";
 
     private static void clear(SpartanPlayer p, Decimals decimals) {
+        IrregularMovements.clear(p, upwardsDecelerationKey);
+        // no Decimals usage
+
+        IrregularMovements.clear(p, upwardsAccelerationKey);
+        // no Decimals usage
+
         IrregularMovements.clear(p, upwardsProgressiveKey);
         // no Decimals usage
 
@@ -40,7 +49,7 @@ public class IrregularMovementsMotion {
 
     static void run(SpartanPlayer p,
                     SpartanLocation to, SpartanLocation from,
-                    double vertical, double oldVertical, double verticalDifference, double oldVerticalDifference,
+                    double vertical, double oldVertical, double verticalDifference,
                     double box, double oldBox,
                     boolean knownBoxes, boolean knownBoxesNew, boolean knownBoxesOld,
                     boolean onGroundVanilla, boolean onGroundCustom,
@@ -72,20 +81,25 @@ public class IrregularMovementsMotion {
                         boolean abstractScenario = groundInteractionScenario || velocityScenario;
 
                         if (stepLimit > 0.0) {
-                            if (abstractScenario) {
-                                //todo fix limit
-                            }
-                            if (vertical > stepLimit) {
+                            double upwardsLimit = abstractScenario ? Math.max(stepLimit, criticalUpwardsLimit) : stepLimit;
+
+                            if (vertical > upwardsLimit) {
                                 IrregularMovements.cancel(p, from, prevention,
-                                        "upwards-instant", "limit: " + stepLimit,
+                                        "upwards-instant", "limit: " + upwardsLimit,
                                         1, 0);
                             }
                         }
+                        if (verticalDifference <= -0.1) {
+                            IrregularMovements.cancel(p, from, prevention,
+                                    upwardsDecelerationKey, null,
+                                    5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                        }
                         if (abstractScenario) {
-                            // todo finish by checking acceleration
-                            p.debug(false, true,
-                                    vertical, verticalDifference
-                            );
+                            if (verticalDifference >= vertical) {
+                                IrregularMovements.cancel(p, from, prevention,
+                                        upwardsAccelerationKey, null,
+                                        5, AlgebraUtils.pow2(IrregularMovements.defaultBufferTime));
+                            }
                         } else {
                             IrregularMovements.cancel(p, from, prevention,
                                     upwardsProgressiveKey, null,
@@ -170,6 +184,7 @@ public class IrregularMovementsMotion {
                                 velocityScenario ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                     } else if (vertical < MoveUtils.gravityAcceleration) {
                         //todo step down known
+                        p.debug(false, true, vertical, oldVertical, verticalDifference, airTicks, oldBox);
                     }
                 }
             }

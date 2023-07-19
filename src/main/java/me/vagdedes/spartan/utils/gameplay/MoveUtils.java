@@ -2,10 +2,8 @@ package me.vagdedes.spartan.utils.gameplay;
 
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -75,8 +73,6 @@ public class MoveUtils {
             fall = (fall * dragComplement) + gravityAcceleration;
 
             if ((terminalVelocity - fall) < highPrecision) {
-                AwarenessNotifications.forcefullySend(StringUtils.toString(gravity.values().toArray(new Double[0])));
-                AwarenessNotifications.forcefullySend(getFallingTick(-0.15444) + "");
                 break;
             }
             gravity.put(counter, fall);

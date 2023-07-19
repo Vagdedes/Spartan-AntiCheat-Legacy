@@ -45,7 +45,7 @@ public class EntityMove {
             pigMinimumHorizontal = 0.15, pigCarrotMinimumHorizontal = 0.3,
             boatMotionPrecision = 0.001;
 
-    private static final Map<UUID, Long> validity = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private static final Map<UUID, Long[]> validity = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final int[] entityIDs = new int[]{
             horseID, boatID, pigID, llamaID, camelID
     };
@@ -54,10 +54,13 @@ public class EntityMove {
             ice = new double[][]{
             {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max},
             {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
+    }, web = new double[][]{
+            {1, -1, 0},
+            {1, 0, 1},
+            {1, 1, 1}
     };
 
-    private static final Material water = MaterialUtils.get("water"),
-            lava = MaterialUtils.get("lava"),
+    private static final Material
             piston = MaterialUtils.get("piston"),
             sticky_piston = MaterialUtils.get("sticky_piston"),
             piston_extension = MaterialUtils.get("piston_extension"),
@@ -71,16 +74,17 @@ public class EntityMove {
         Entity vehicle = p.getVehicle();
 
         if (vehicle != null) {
-            int entityID = canDo(p, to, vehicle);
+            long entityLongID = canDo(p, to, vehicle);
 
-            if (entityID != 0) {
-                Long time = validity.get(uuid);
+            if (entityLongID != 0) {
+                Long[] cache = validity.get(uuid);
 
-                if (time == null) {
-                    validity.put(uuid, System.currentTimeMillis());
+                if (cache == null || cache[0] != entityLongID) {
+                    validity.put(uuid, new Long[]{entityLongID, System.currentTimeMillis()});
                     return;
                 }
-                time = System.currentTimeMillis() - time;
+                int entityID = (int) entityLongID;
+                long time = System.currentTimeMillis() - cache[1];
                 SpartanLocation locM1 = to.clone().add(0, -1, 0);
                 List<SpartanLocation> liquidBlocks = getLiquidBlocks(to, locM1);
                 boolean unstableLiquids = cacheBoolean(p, false, "unstable-liquids", liquidCacheTicks),
@@ -159,7 +163,8 @@ public class EntityMove {
                                             cancel(p, vehicle, from, "abstract-upwards", messageCopy);
                                         } else if (!liquids && vertical > oldVertical) {
                                             if (oldVertical < 0.0) {
-                                                if (!oldKnownBoxes) {
+                                                if (!oldKnownBoxes
+                                                        && !PatternUtils.isBlockPattern(web, to, true, BlockUtils.web)) {
                                                     cancel(p, vehicle, from, "illegal-upwards", messageCopy);
                                                 }
                                             } else {
@@ -199,7 +204,8 @@ public class EntityMove {
                                         cancel(p, vehicle, from, "abstract-upwards", messageCopy);
                                     } else if (verticalDifference >= (damage ? 0.5 : 0.2)) {
                                         cancel(p, vehicle, from, "irregular-upwards", messageCopy);
-                                    } else if (vertical >= oldVertical && vertical != 0.0 && oldVertical != 0.0) {
+                                    } else if (vertical >= oldVertical && vertical != 0.0 && oldVertical != 0.0
+                                            && !PatternUtils.isBlockPattern(web, to, true, BlockUtils.web)) {
                                         cancel(p, vehicle, from, "illegal-upwards", messageCopy);
                                     }
                                 }
@@ -322,7 +328,7 @@ public class EntityMove {
         }
     }
 
-    private static int canDo(SpartanPlayer p, SpartanLocation loc, Entity entity) {
+    private static long canDo(SpartanPlayer p, SpartanLocation loc, Entity entity) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && p.canRunCheck(check, true)
                 && !p.getHandlers().has(Handlers.HandlerType.Explosion) && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && !MyPet.isUsing(p)) {
