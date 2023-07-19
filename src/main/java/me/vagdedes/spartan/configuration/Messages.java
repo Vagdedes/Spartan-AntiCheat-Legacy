@@ -50,6 +50,7 @@ public class Messages {
         ConfigUtils.add(file, "player_ip_limit_kick_message", "&8[&2" + prefix + "&8]&c The player limit of your IP has been reached.");
 
         // Violations
+        ConfigUtils.add(file, "check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");
         ConfigUtils.add(file, "player_violation_reset_message", "&8[&2" + prefix + "&8]&a Violations successfully reset for player&8: &2{player}");
         ConfigUtils.add(file, "player_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for player&8: &2{player}");
         ConfigUtils.add(file, "detection_notification", "&8[&2" + prefix + "&8] "
