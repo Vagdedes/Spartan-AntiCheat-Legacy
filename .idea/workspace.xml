@@ -11,8 +11,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e6ebaee8-396d-4981-85de-c5da14d6b39c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Messages.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/gui/configuration/ManageOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/gui/configuration/ManageOptions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/LiveViolation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/LiveViolation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/hackPrevention/HackPrevention.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/hackPrevention/HackPrevention.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

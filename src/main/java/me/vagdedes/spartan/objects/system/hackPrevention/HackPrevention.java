@@ -264,7 +264,6 @@ public class HackPrevention {
                     if (!CheckProtection.hasCooldown(uuid, playerViolation)) {
                         Player realPlayer = player.getPlayer();
                         PlayerProfile playerProfile = player.getProfile();
-                        int cancelledViolations = violationsObject.getCancelledLevel();
                         boolean canPrevent, canPreventAlternative, falsePositive,
                                 suspectedOrHacker = playerProfile.isSuspectedOrHacker(hackType);
 
@@ -281,7 +280,6 @@ public class HackPrevention {
 
                             if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, !playerProfile.isHacker())) {
                                 falsePositive = true;
-                                cancelledViolations += 1;
                             } else {
                                 falsePositive = false;
                                 violations += 1;
@@ -309,7 +307,6 @@ public class HackPrevention {
 
                             if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, true)) {
                                 falsePositive = true;
-                                cancelledViolations += 1;
                             } else {
                                 falsePositive = false;
                                 violations += 1;
@@ -332,8 +329,8 @@ public class HackPrevention {
                         if (playerViolationEvent == null || !playerViolationEvent.isCancelled()) {
                             if (falsePositive) {
                                 violationsObject.removeMaxLevel(information);
-                                violationsObject.setCancelledLevel(cancelledViolations);
-                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, cancelledViolations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
+                                violationsObject.increaseCancelledLevel();
+                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violationsObject.getCancelledLevel(), false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                             } else {
                                 switch (hp.violation) {
                                     case 2:

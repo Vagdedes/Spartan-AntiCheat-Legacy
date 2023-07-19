@@ -8,6 +8,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
+import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -45,15 +46,15 @@ public class LiveViolation {
 
     private final UUID uuid;
     private final Enums.HackType hackType;
-    private long cycleExpiration, lastViolation;
-    private int level, cancelledLevel;
+    private long cycleExpiration, lastViolation, cancelledLevel;
+    private int level;
     private boolean cancelled;
 
     public LiveViolation(Enums.HackType hackType) {
         this.uuid = SpartanBukkit.uuid;
         this.hackType = hackType;
         this.level = 0;
-        this.cancelledLevel = 0;
+        this.cancelledLevel = 0L;
         this.lastViolation = 0L;
         this.cancelled = false;
     }
@@ -62,7 +63,7 @@ public class LiveViolation {
         this.uuid = uuid;
         this.hackType = hackType;
         this.level = 0;
-        this.cancelledLevel = 0;
+        this.cancelledLevel = 0L;
         this.lastViolation = 0L;
         this.cancelled = false;
         reset(); // Do not make it local as it takes part in object initiation and is not important
@@ -75,9 +76,13 @@ public class LiveViolation {
         return level;
     }
 
+    private int getRawCancelledLevel() {
+        long time = cancelledLevel - System.currentTimeMillis();
+        return time > 0L ? AlgebraUtils.integerRound(time / 1000.0) : 0;
+    }
+
     public int getCancelledLevel() {
-        timeReset();
-        return cancelledLevel;
+        return Math.min(getRawCancelledLevel(), hackType.getCheck().getMaxCancelledViolations());
     }
 
     public boolean isLastLevelCancelled() {
@@ -97,7 +102,7 @@ public class LiveViolation {
     }
 
     public boolean hasMaxCancelledLevel() {
-        return getCancelledLevel() == hackType.getCheck().getMaxCancelledViolations();
+        return getRawCancelledLevel() >= hackType.getCheck().getMaxCancelledViolations();
     }
 
     public void setLevel(int amount) {
@@ -122,14 +127,15 @@ public class LiveViolation {
         }
     }
 
-    public void setCancelledLevel(int amount) {
-        timeReset();
-        this.cancelledLevel = Math.min(
-                hackType.getCheck().getMaxCancelledViolations(),
-                amount
-        );
+    public void increaseCancelledLevel() {
+        long time = System.currentTimeMillis();
+
+        if (cancelledLevel < time) {
+            this.cancelledLevel = time + 1_000L;
+        } else {
+            this.cancelledLevel += 1_000L;
+        }
         this.cancelled = true;
-        timeReset(); // Always after changing the level
     }
 
     public void setMaxLevel(String message) {
@@ -179,12 +185,10 @@ public class LiveViolation {
         if (event == null || !event.isCancelled()) {
             maxLevel.remove(this);
             this.level = 0;
-            this.cancelledLevel = 0;
             this.cancelled = false;
         } else if ((System.currentTimeMillis() - this.cycleExpiration) > Check.violationCycleSeconds) { // Forceful reset to keep potential developer API usage within hardcoded thresholds
             maxLevel.remove(this);
             this.level = 0;
-            this.cancelledLevel = 0;
             this.cancelled = false;
         }
         this.cycleExpiration = System.currentTimeMillis() + Check.violationCycleSeconds;
