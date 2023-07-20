@@ -141,7 +141,7 @@ public class SpartanPlayer {
     private long
             lastOffSprint,
             lastFall,
-            lastJump, oldLastJump,
+            lastJump,
             walking, jumpWalking,
             sprintingTime, jumpSprinting,
             swimmingTime,
@@ -420,7 +420,6 @@ public class SpartanPlayer {
         this.lastFall = 0L;
         this.lastOffSprint = 0L;
         this.lastJump = 0L;
-        this.oldLastJump = 0L;
         this.airTicks = 0;
         this.oldAirTicks = 0;
         this.fallingTicks = 0;
@@ -1453,8 +1452,6 @@ public class SpartanPlayer {
                     || x > 3.0E7 || y == Double.MAX_VALUE || z > 3.0E7 || loc.getBlockY() == Integer.MAX_VALUE) {
                 return false;
             }
-            GroundUtils.clear(this); // Attention
-
             if (getWorld() == loc.getWorld()) {
                 SpartanLocation to = getLocation();
                 return teleport(new SpartanLocation(this, loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), to.getYaw(), to.getPitch()));
@@ -1482,12 +1479,11 @@ public class SpartanPlayer {
         if (BlockUtils.isSolid(locationP1) && !(BlockUtils.areWalls(locationP1) || BlockUtils.canClimb(locationP1))) {
             return false;
         }
-        GroundUtils.clear(this); // Attention
         float countedDamage = 0.0f;
         double startY = location.getY(),
                 box = startY - location.getBlockY();
 
-        if (!GroundUtils.heightExists(box, true)) {
+        if (!GroundUtils.heightExists(box)) {
             box = 0.0;
         }
 
@@ -1498,7 +1494,7 @@ public class SpartanPlayer {
             if (BlockUtils.canClimb(material) || BlockUtils.areWalls(material) || !BlockUtils.isSolid(material)) {
                 countedDamage++;
             } else {
-                double blockBox = GroundUtils.getHeight(material);
+                double blockBox = GroundUtils.getMaxHeight(material);
 
                 if (blockBox == 0.0 || blockBox == 0.5) {
                     loopLocation.setY(Math.floor(progressiveY) + 1.0);
@@ -1583,14 +1579,6 @@ public class SpartanPlayer {
 
     public void setLastJump() {
         this.lastJump = System.currentTimeMillis();
-    }
-
-    public long getOldLastJump() {
-        return System.currentTimeMillis() - oldLastJump;
-    }
-
-    public void setOldLastJump() {
-        this.oldLastJump = lastJump;
     }
 
     public boolean isFalling(double dy) {

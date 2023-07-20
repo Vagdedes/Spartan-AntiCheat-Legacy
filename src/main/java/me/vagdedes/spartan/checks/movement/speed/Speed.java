@@ -237,7 +237,7 @@ public class Speed {
             } else {
                 dm = cacheLimit(decimals, dm, ypos, 0);
             }
-        } else if ((box >= 0.084 && box <= 0.15 || box >= 0.75 || GroundUtils.heightExists(box, true))
+        } else if ((box >= 0.084 && box <= 0.15 || box >= 0.75 || GroundUtils.heightExists(box))
                 && ver == 0.0 && !BlockUtils.isGroundFree(p, to, 0.2, 0, 0.2) && (groundVanilla || groundCustom)) {
             reason = "ground";
 

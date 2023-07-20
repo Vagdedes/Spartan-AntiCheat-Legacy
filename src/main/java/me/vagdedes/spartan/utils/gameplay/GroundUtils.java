@@ -1,10 +1,6 @@
 package me.vagdedes.spartan.utils.gameplay;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.protections.Building;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
-import me.vagdedes.spartan.handlers.stability.Moderation;
-import me.vagdedes.spartan.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
@@ -12,28 +8,22 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
-import org.bukkit.entity.*;
-import org.bukkit.util.BoundingBox;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Shulker;
+import org.bukkit.entity.Sniffer;
 
 import java.util.*;
 
 public class GroundUtils {
 
-    private static final Set<Double>
-            abstractHeights = new HashSet<>(),
-            predictableHeights = new HashSet<>(),
-            allHeights; // Attention
-    private static final Set<Material> solidBlocks = new HashSet<>();
+    private static final Set<Double> heights = new HashSet<>();
     private static final Map<Material, double[]> specificHeights = new LinkedHashMap<>();
 
     private static final boolean
             v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9),
             v1_15 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15),
             v1_20 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20);
-    private static final double
-            fallingMotion = MoveUtils.gravityAcceleration,
-            jumpingMotion = MoveUtils.jumping[1],
-            jumpingStartMotion = MoveUtils.jumping[0];
     public static final double
             hitbox = 0.305,
             bedStep = 0.5625,
@@ -45,64 +35,32 @@ public class GroundUtils {
             inaccuracyKey = "ground-utils=utility-inaccuracy";
     private static final String
             setOnGroundKey = "ground-utils=set-on-ground",
-            setOffGroundKey = "ground-utils=set-off-ground",
-            blockedJumpingKey = "ground-utils=blocked-jumping";
-
-    private static final Material web = MaterialUtils.get("web");
-
-    private static final double[][]
-            jumpMovement = new double[][]{
-            {1, -2, 1},
-            {1, -1, 1},
-            {1, 0, 1},
-    };
-
-    private static final double[]
-            minus_0_6 = new double[]{
-            BlockUtils.hitbox_max, -0.6, BlockUtils.hitbox_max
-    }, run = new double[]{
-            hitbox, 0, hitbox
-    }, blockedJumping = new double[]{
-            BlockUtils.hitbox, 2, BlockUtils.hitbox
-    };
+            setOffGroundKey = "ground-utils=set-off-ground";
 
     static {
-        abstractHeights.add(maxPlayerStep);
-        abstractHeights.add(bedStep);
-
-        abstractHeights.add(0.1875);
-        abstractHeights.add(0.8125);
-        abstractHeights.add(maxPossibleStep);
-        abstractHeights.add(0.375);
-        abstractHeights.add(0.0625);
-        abstractHeights.add(0.125);
-        abstractHeights.add(0.4375);
-        abstractHeights.add(0.875);
-        abstractHeights.add(0.6875);
-        abstractHeights.add(0.09375);
-        abstractHeights.add(0.3125);
-        abstractHeights.add(0.625);
-        abstractHeights.add(minPossibleStep);
-
-        predictableHeights.add(0.0);
-        predictableHeights.add(0.25);
-        predictableHeights.add(0.75);
-        predictableHeights.add(0.5);
-
-        allHeights = new HashSet<>(abstractHeights.size() + predictableHeights.size());
-        allHeights.addAll(abstractHeights);
-        allHeights.addAll(predictableHeights);
+        heights.add(maxPlayerStep);
+        heights.add(bedStep);
+        heights.add(maxPossibleStep);
+        heights.add(minPossibleStep);
+        heights.add(0.1875);
+        heights.add(0.8125);
+        heights.add(0.375);
+        heights.add(0.0625);
+        heights.add(0.125);
+        heights.add(0.4375);
+        heights.add(0.875);
+        heights.add(0.6875);
+        heights.add(0.09375);
+        heights.add(0.3125);
+        heights.add(0.625);
+        heights.add(0.0);
+        heights.add(0.25);
+        heights.add(0.75);
+        heights.add(0.5);
 
         // Separator
 
         for (Material m : Material.values()) {
-            if (BlockUtils.isSolid(m) || BlockUtils.areFenceGates(m)
-                    || BlockUtils.areTrapdoors(m) || BlockUtils.isScaffoldingBlock(m)
-                    || BlockUtils.isInteractiveAndPassable(m)) {
-                solidBlocks.add(m);
-            }
-
-            // Separator
 
             if (BlockUtils.areSlabs(m) || BlockUtils.areStairs(m) || BlockUtils.areCobbleWalls(m) || BlockUtils.areDoors(m)
                     || BlockUtils.areFences(m) || BlockUtils.areFenceGates(m) || m == MaterialUtils.get("cake")
@@ -222,133 +180,76 @@ public class GroundUtils {
     // Method
 
     public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y, boolean liquid, boolean climbable) {
-        boolean player = p != null,
-                original = y == 0.0,
-                reset = player && original;
-        double locY = loc.getY(),
-                remaining = locY - loc.getBlockY(),
-                nmsVerticalDistance;
-        Cooldowns cooldowns;
-        int airTicks;
+        boolean original = y == 0;
+        Cooldowns cooldowns = p.getCooldowns();
 
-        if (player) { // reset #1
-            cooldowns = p.getCooldowns();
-            airTicks = p.getTicksOnAir();
-            nmsVerticalDistance = p.getNmsVerticalDistance();
-
-            if (!cooldowns.canDo(setOffGroundKey)) {
-                return false;
-            }
-            if (!cooldowns.canDo(setOnGroundKey)) {
-                if (original) {
-                    p.setAirTicks(0);
-                }
-                return true;
-            }
-            if (original) { // reset #2
-                if (p.getVehicle() != null) {
-                    if (allHeights.contains(remaining)) { // When a vehicle is used, the player's object location changes partly to the vehicle. Due to some vehicles having larger areas of collision, we allow them to be checked by heights purely.
-                        p.setAirTicks(0);
-                        return true;
-                    }
-                } else if (!allHeights.contains(remaining)) { // Standardized heights are sufficient to cause a further analysis.
-                    double oldNmsVerticalDistance = p.getDecimals().get(EventsHandler7.verticalCache);
-
-                    if (nmsVerticalDistance < 0.0 || oldNmsVerticalDistance > 0.0 // collision [player goes down until not anymore (and then repels)]
-                            || !allHeights.contains(Math.abs(nmsVerticalDistance))) { //  step-to-block/fall-from-block (distance moved is a standardized height)
-                        return false;
-                    }
-                }
-                if (isBlockedJumping(p, loc, cooldowns, nmsVerticalDistance, remaining, airTicks)) {
-                    p.setAirTicks(0);
-                    setOnGround(p, 3); // 3 specifically for 0.2, 0.1216 & 0.0784
-                    return true;
-                }
-            }
-        } else {
-            cooldowns = null;
-            airTicks = Integer.MAX_VALUE;
-            nmsVerticalDistance = 0.0;
+        if (!cooldowns.canDo(setOffGroundKey)) {
+            return false;
         }
-        boolean onGroundVanilla = !player || p.isOnGround(),
-                boats = false;
-
-        if (player
-                && ((boats = stepsOnBoats(p, cooldowns, original ? loc : p.getLocation()))
-                || p.getHandlers().has(Handlers.HandlerType.Piston)
-                || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p)))
-
-                || onGroundVanilla && isCobblestoneWall(p, loc, remaining)) {
-            if (reset && !boats) {
+        if (!cooldowns.canDo(setOnGroundKey)) {
+            if (original) {
                 p.setAirTicks(0);
             }
             return true;
         }
+        if (original) {
+            double vertical = p.getNmsVerticalDistance(),
+                    oldVertical = p.getOld_NmsVerticalDistance();
 
-        for (SpartanLocation loopLocation : getLocations(
-                p,
-                loc,
-                player ? p.getVehicle() : null,
-                player ? Math.max(getCalculatedFallingDistance(p), fallingMotion) : fallingMotion,
-                remaining,
-                nmsVerticalDistance)) {
-            if (!original || Math.abs(locY - loopLocation.getY()) <= 1.5) {
-                SpartanBlock block = loopLocation.getBlock();
+            if ((vertical - oldVertical) < 0.0
+                    && p.isFalling(vertical)
+                    && p.isFalling(oldVertical)) {
+                return false;
+            }
+        }
+        if (p.getHandlers().has(Handlers.HandlerType.Piston)
+                || stepsOnBoats(p, cooldowns, original ? loc : p.getLocation())
+                || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
+            if (original) {
+                p.setAirTicks(0);
+            }
+            return true;
+        }
+        SpartanBlock block = loc.getBlock();
 
-                if (liquid && block.isLiquid()) {
-                    if (reset) {
-                        p.setAirTicks(0);
-                    }
-                    return true;
-                }
-                Material material = block.getType();
+        if (liquid && block.isLiquid()
+                || climbable && BlockUtils.canClimb(block.getType())) {
+            if (original) {
+                p.setAirTicks(0);
+            }
+            return true;
+        }
+        original &= p.getVehicle() == null;
+        double box = loc.getY() - loc.getBlockY();
 
-                if (climbable && (BlockUtils.canClimb(material) || material == web)
-                        || v1_15 && material == Material.HONEY_BLOCK) {
-                    if (reset) {
-                        p.setAirTicks(0);
-                    }
-                    return true;
-                }
-                if (reset && nmsVerticalDistance <= 0.0) {
-                    if (nmsVerticalDistance > -0.1) {
-                        if (loopLocation.clone().add(0, 1, 0).getBlock().getType() == web
-                                || loopLocation.clone().add(0, 2, 0).getBlock().getType() == web) {
+        for (SpartanLocation loopLocation : loc.getSurroundingLocations(GroundUtils.hitbox, 0, GroundUtils.hitbox)) {
+            for (double position : new double[]{-(box + minPossibleStep), 0.0}) {
+                Material type = loopLocation.clone().add(0.0, position, 0.0).getBlock().getType();
+
+                if (BlockUtils.isSolid(type)) {
+                    if (original) {
+                        double[] heights = specificHeights.get(type);
+
+                        if (heights != null) {
+                            if (heights.length == 1) {
+                                if (heights[0] == -1.0 || heights[0] == box) {
+                                    p.setAirTicks(0);
+                                    return true;
+                                }
+                            } else {
+                                for (double height : heights) {
+                                    if (height == box) {
+                                        p.setAirTicks(0);
+                                        return true;
+                                    }
+                                }
+                            }
+                        } else if (box == 0.0) {
                             p.setAirTicks(0);
-                            return true;
-                        }
-                    } else if (v1_15 && nmsVerticalDistance > -0.128) {
-                        if (loopLocation.clone().add(0, 1, 0).getBlock().getType() == Material.HONEY_BLOCK
-                                || loopLocation.clone().add(0, 2, 0).getBlock().getType() == Material.HONEY_BLOCK) {
-                            p.setAirTicks(0);
-                            return true;
-                        }
-                    }
-                }
-                if (solidBlocks.contains(material)) {
-                    if (!original && airTicks <= 12 || player && p.isBedrockPlayer()) { // Extra Location
-                        return true;
-                    }
-                    double[] heights = specificHeights.getOrDefault(material, new double[]{0.0});
-
-                    if (heights.length == 1) {
-                        if (isValidHeight(
-                                heights[0], remaining, nmsVerticalDistance,
-                                p,
-                                reset
-                        )) {
                             return true;
                         }
                     } else {
-                        for (double height : heights) {
-                            if (isValidHeight(
-                                    height, remaining, nmsVerticalDistance,
-                                    p,
-                                    reset
-                            )) {
-                                return true;
-                            }
-                        }
+                        return true;
                     }
                 }
             }
@@ -356,75 +257,7 @@ public class GroundUtils {
         return false;
     }
 
-    // Base
-
-    private static List<SpartanLocation> getLocations(SpartanPlayer p, SpartanLocation loc, Entity vehicle,
-                                                      double motion, double remaining, double vertical) {
-        if (p == null) {
-            p = loc.getPlayer();
-        }
-        // Protection
-        motion = Math.max(motion, 1.0);
-
-        // Array
-        List<SpartanLocation> array = new ArrayList<>(10);
-
-        // Coordinates
-        double correctY = 0.0;
-
-        if (isZeroMiscalculation(remaining)
-                || vertical > 0.0 && vertical < MoveUtils.lowPrecision
-                || p != null && p.isFalling(vertical)) {
-            correctY = -motion;
-        } else if (remaining == 0.5) {
-            array.add(loc.clone().add(0, -(remaining + motion), 0));
-        }
-        double box = heightExists(remaining, false) ? GroundUtils.hitbox : BlockUtils.hitbox_max;
-
-        if (vehicle != null) {
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
-                BoundingBox boundingBox = vehicle.getBoundingBox();
-                box = Math.max(
-                        Math.max(
-                                boundingBox.getMaxX() - boundingBox.getMinX(),
-                                boundingBox.getMaxZ() - boundingBox.getMinZ()
-                        ),
-                        box
-                );
-            } else if (vehicle instanceof LivingEntity) {
-                box = Math.max(CombatUtils.getWidthAndHeight((LivingEntity) vehicle)[0], box);
-            }
-        }
-        for (SpartanLocation surroundingLocation : loc.getSurroundingLocations(box, correctY, box)) { // Attention: removed "all" argument that was set to "true" recently
-            array.add(surroundingLocation);
-        }
-        return array;
-    }
-
-    private static boolean isValidHeight(double height, double remaining, double nmsVerticalDistance,
-                                         SpartanPlayer p,
-                                         boolean reset) {
-        if (remaining == height
-                || height == -1.0
-                || height > 0.0 && (remaining % height) == 0.0
-                || height == 0.0 && isZeroMiscalculation(remaining)) {
-            if (reset) {
-                p.setAirTicks(0);
-            }
-            return true;
-        } else if (predictableHeights.contains(height)) {
-            double jumpingPrecision = p == null ? MoveUtils.jumping[2] : MoveUtils.getJumpingPrecision(p);
-
-            if (Math.abs(jumpingMotion - nmsVerticalDistance) < jumpingPrecision
-                    || Math.abs(jumpingMotion - remaining) < jumpingPrecision) {
-                if (reset) {
-                    p.setAirTicks(0);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
+    // Utils
 
     public static Set<Double> getHeights(Material m) {
         double[] heights = specificHeights.get(m);
@@ -441,7 +274,7 @@ public class GroundUtils {
         }
     }
 
-    public static double getHeight(Material m) {
+    public static double getMaxHeight(Material m) {
         double[] heights = specificHeights.getOrDefault(m, new double[]{0.0});
 
         if (heights.length == 1) {
@@ -456,28 +289,24 @@ public class GroundUtils {
         }
     }
 
-    // Utils
-
-    public static boolean heightExists(double d, boolean all) {
-        return all ? allHeights.contains(d) : abstractHeights.contains(d);
+    public static boolean heightExists(double d) {
+        return heights.contains(d);
     }
 
+    // Entities
+
     public static boolean stepsOnBoats(SpartanPlayer p, Cooldowns cooldowns, SpartanLocation to) {
-        double hitbox = (to.getY() - MoveUtils.getCachedLocation(p).getY()) < 0.0
-                || BlockUtils.isLiquid(to)
-                || BlockUtils.isLiquid(to.clone().add(0, -1, 0)) ? 2.5 : 1.5; // 2.5 is extra
-        List<Entity> entities = p.getNearbyEntities(hitbox, hitbox, hitbox);
+        List<Entity> entities = p.getNearbyEntities(2.0, 2.0, 2.0);
 
         if (entities.size() > 0) {
             for (Entity entity : entities) {
                 if (entity instanceof Boat) {
                     p.setAirTicks(0);
-                    cooldowns.add("ground-utils=boat-stepping", 4);
                     return true;
                 }
             }
         }
-        return !cooldowns.canDo("ground-utils=boat-stepping");
+        return false;
     }
 
     private static boolean stepsOnShulkers(SpartanPlayer p) {
@@ -508,86 +337,9 @@ public class GroundUtils {
         return false;
     }
 
-    private static double getCalculatedFallingDistance(SpartanPlayer p) {
-        double vanilla = p.getNmsVerticalDistance();
-
-        if (p.getDecimals().has(vanilla) && vanilla < 0.0) {
-            vanilla -= fallingMotion;
-            double calculated = fallingMotion * (p.getTicksOnAir() + 1);
-            return Math.abs(calculated - Math.abs(vanilla)) <= 1.0 ? vanilla : calculated;
-        }
-        return 0.0;
-    }
-
     // Patches
 
     public static boolean isZeroMiscalculation(double dbl) {
         return dbl < 0.0001;
-    }
-
-    public static boolean isBlockedJumping(SpartanPlayer p, SpartanLocation to, Cooldowns cooldowns, double vertical, double remaining, int airTicks) {
-        boolean hasCooldown = cooldowns != null;
-
-        if (airTicks <= 12
-                && p.getLastJump() >= 1_000L
-                && (isZeroMiscalculation(vertical - 0.2) || isZeroMiscalculation(remaining - 0.2))
-                && PatternUtils.isBlockPattern(blockedJumping, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-            vertical = Math.abs(vertical - remaining);
-
-            for (double height : allHeights) {
-                if (isZeroMiscalculation(vertical - height)) {
-                    if (hasCooldown) {
-                        cooldowns.add(blockedJumpingKey, 5);
-                    }
-                    return true;
-                }
-            }
-        }
-        return hasCooldown && !cooldowns.canDo(blockedJumpingKey);
-    }
-
-    public static void runOnJumpMovement(SpartanPlayer p, SpartanLocation loc, int airTicks) {
-        if (airTicks > 11
-                && !p.getProfile().isSuspectedOrHacker()
-                && p.getCooldowns().canDo("ground-utils=set-off-ground")
-                && PatternUtils.isBlockPattern(jumpMovement, loc, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-            setOnGround(p, 1);
-        }
-    }
-
-    private static boolean isCobblestoneWall(SpartanPlayer p, SpartanLocation loc, double remaining) {
-        if (remaining == 0.5) {
-            double dx = loc.getX() - loc.getBlockX();
-
-            if (dx < 0.3 || dx > 0.7) {
-                return !solidBlocks.contains(loc.getBlock().getType()) && (p == null || PatternUtils.isBlockPattern(minus_0_6, loc, true, BlockUtils.walls));
-            }
-            double dz = loc.getZ() - loc.getBlockZ();
-
-            if (dz < 0.3 || dz > 0.7) {
-                return !solidBlocks.contains(loc.getBlock().getType()) && (p == null || PatternUtils.isBlockPattern(minus_0_6, loc, true, BlockUtils.walls));
-            }
-        }
-        return false;
-    }
-
-    static void trackInaccuracy(SpartanPlayer p, SpartanLocation to, SpartanLocation from, boolean ground) {
-        int blockY = to.getBlockY();
-
-        if ((blockY + 0.5) >= from.getBlockY() && to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ()
-                && !LagLeniencies.hasInconsistencies(p, "tps") && !LagLeniencies.hasHighLatency(p, LagLeniencies.badPing) // Base
-                && !Building.hasCooldown(p)
-                && !BlockUtils.canClimb(to) && !BlockUtils.canClimb(from)
-                && PatternUtils.isBlockPattern(run, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-            if ((!ground || !p.isOnGround())
-                    && (to.getY() - blockY) != 0.5
-                    && !Moderation.wasDetected(p)
-                    && p.getNmsVerticalDistance() > jumpingStartMotion
-                    && p.getBuffer().increase(inaccuracyKey, 1) >= 12) {
-                setOffGround(p, 1);
-            }
-        } else {
-            p.getBuffer().remove(inaccuracyKey);
-        }
     }
 }

@@ -4,6 +4,7 @@ import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
+import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
@@ -46,6 +47,35 @@ public class PatternUtils {
     public static Boolean getCached(SpartanLocation location, Enums.HackType hackType, String key) {
         Map<Integer, Boolean> childMap = memory.get(location.getIdentifier());
         return childMap != null ? childMap.get(customHash(hackType, key)) : null;
+    }
+
+    // Separator
+
+    @SafeVarargs
+    public static boolean collides(SpartanLocation location,
+                                   boolean top,
+                                   boolean aboveTop,
+                                   double horizontalBox,
+                                   Set<Material>... sets) {
+        if (top) {
+            double verticalBox;
+
+            if (aboveTop) {
+                SpartanPlayer player = location.getPlayer();
+                verticalBox = player != null ? player.getEyeHeight() + (location.getY() - location.getBlockY()) : 1.0;
+            } else {
+                verticalBox = 0.0;
+            }
+            return isBlockPattern(new double[][]{
+                    {horizontalBox, 0.0, horizontalBox},
+                    {horizontalBox, 1.0, horizontalBox, aboveTop ? 1.0 : 0.0},
+                    {horizontalBox, verticalBox, horizontalBox, verticalBox > 2.0 ? 1.0 : 0.0}
+            }, location, horizontalBox > 0.0, sets);
+        } else {
+            return isBlockPattern(new double[]{
+                    horizontalBox, 0.0, horizontalBox
+            }, location, horizontalBox > 0.0, sets);
+        }
     }
 
     // Separator

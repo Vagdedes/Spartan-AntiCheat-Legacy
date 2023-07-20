@@ -16,7 +16,10 @@ public class IrregularMovementsBouncing {
 
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
                     double vertical, double oldVertical, double box,
-                    boolean knownBoxes, boolean offGround, boolean airTicksOffGround, boolean heightExistsHalf, boolean canGoUp, boolean canGoDown, boolean jumping, boolean falling,
+                    boolean knownBoxes, boolean offGround, boolean airTicksOffGround, boolean heightExistsHalf,
+                    boolean canGoUp, boolean canGoDown,
+                    boolean jumping, boolean falling,
+                    boolean levitationEffect,
                     int airTicks,
                     String prevention, String scenario) {
         if (IrregularMovements.check.getCheck().getBooleanOption("check_bouncing_blocks", true)) {
@@ -31,16 +34,21 @@ public class IrregularMovementsBouncing {
                                 double verticalRemaining = vertical - Math.floor(vertical);
 
                                 if (canBounce) {
-                                    if (airTicks > 0 && verticalRemaining != box && verticalRemaining != (box - GroundUtils.bedStep)) { // Bounce must always match the hitboxes of the block
+                                    if (!levitationEffect
+                                            && airTicks > 0
+                                            && verticalRemaining != box
+                                            && verticalRemaining != (box - GroundUtils.bedStep)) { // Bounce must always match the hitboxes of the block
                                         IrregularMovements.cancel(p, from, prevention, "up-illegal-" + scenario, null, 2, -IrregularMovements.defaultBufferTime);
                                     }
-                                } else if (GroundUtils.heightExists(box, true) && (canBounceLive = BouncingBlocks.isLiveBelow(p, to))) { // Block boxes can rarely be met when bouncing
+                                } else if (GroundUtils.heightExists(box)
+                                        && (canBounceLive = BouncingBlocks.isLiveBelow(p, to))) { // Block boxes can rarely be met when bouncing
                                     IrregularMovements.cancel(p, from, prevention, "box-" + scenario, 2);
                                 }
                             } else {
                                 double difference = Math.abs(vertical - oldVertical); // Measure the difference and prevent abnormal movements
 
-                                if (difference < 0.08) {
+                                if (!levitationEffect
+                                        && difference < 0.08) {
                                     IrregularMovements.cancel(p, from, prevention, "up-below-" + scenario, 3);
                                 } else if (difference > 0.16) {
                                     IrregularMovements.cancel(p, from, prevention, "up-above-" + scenario, 3);

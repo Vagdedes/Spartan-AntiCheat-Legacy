@@ -73,7 +73,6 @@ public class PlayerData {
             SpartanLocation to = MoveUtils.trackLocation(p),
                     from = MoveUtils.getCachedLocation(p);
             boolean ground = p.refreshOnGroundCustom(from);
-            GroundUtils.trackInaccuracy(p, to, from, ground);
 
             if (ground) {
                 p.setAirTicks(0);

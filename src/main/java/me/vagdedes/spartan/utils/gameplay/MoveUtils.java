@@ -101,7 +101,7 @@ public class MoveUtils {
 
     // Base
 
-     static SpartanLocation trackLocation(SpartanPlayer p) {
+    static SpartanLocation trackLocation(SpartanPlayer p) {
         SpartanLocation to = p.getLocation(),
                 from = getCachedLocation(p, true);
 
@@ -149,7 +149,7 @@ public class MoveUtils {
     }
 
     public static boolean isJumping(double d, double diff) {
-        if (d > MoveUtils.jumping[0] && d < 0.42 && !GroundUtils.heightExists(d, true)) {
+        if (d > MoveUtils.jumping[0] && d < 0.42 && !GroundUtils.heightExists(d)) {
             double original = jumping[1];
 
             for (double value : jumps) {
@@ -175,8 +175,7 @@ public class MoveUtils {
     // Location
 
     public static SpartanLocation getCachedLocation(SpartanPlayer p, boolean returnNull) {
-        SpartanLocation location = loc.get(p.getUniqueId());
-        return returnNull ? location : (location == null ? p.getLocation() : location);
+        return loc.getOrDefault(p.getUniqueId(), returnNull ? null : p.getLocation());
     }
 
     public static SpartanLocation getCachedLocation(SpartanPlayer p) {

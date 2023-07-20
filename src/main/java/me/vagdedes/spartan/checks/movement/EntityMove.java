@@ -94,8 +94,8 @@ public class EntityMove {
                                 PatternUtils.isBlockPattern(ice, to, true, BlockUtils.ice),
                                 "ice-blocks", iceCacheTicks),
                         damage = Damage.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.Explosion),
-                        knownBoxes = GroundUtils.heightExists(box, true),
-                        oldKnownBoxes = GroundUtils.heightExists(oldBox, true),
+                        knownBoxes = GroundUtils.heightExists(box),
+                        oldKnownBoxes = GroundUtils.heightExists(oldBox),
                         checkVertical = check.getCheck().getBooleanOption("check_vertical", true),
                         checkHorizontal = check.getCheck().getBooleanOption("check_horizontal", true);
                 double verticalDifference = Math.abs(oldVertical - vertical);

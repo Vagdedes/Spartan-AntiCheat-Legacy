@@ -11,7 +11,6 @@ import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.entity.Entity;
@@ -42,9 +41,7 @@ public class MovementProcessing {
             if (!groundGliding) {
                 // Jump/Fall Identifier
                 if (Math.abs(MoveUtils.jumping[1] - ver) < MoveUtils.getJumpingPrecision(p)) { // Last Jump
-                    p.setOldLastJump();
                     p.setLastJump();
-                    GroundUtils.runOnJumpMovement(p, to, airTicks);
                 } else if (p.isFalling(ver)) { // Last Fall
                     p.setLastFall();
                 }

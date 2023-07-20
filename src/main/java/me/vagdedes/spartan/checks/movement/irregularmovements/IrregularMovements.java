@@ -41,16 +41,6 @@ public class IrregularMovements {
             waterElevatorKey = "water-elevator";
     static final String liquidsKey = "liquids";
 
-    // Patterns
-    private static final double[][]
-            interactiveAndPassable = new double[][]{
-            {0, 0, 0},
-            {0, 1, 0},
-    }, liquid = new double[][]{
-            {0, 0, 0},
-            {0, 1, 0},
-    };
-
     // Detections
     static final int
             defaultBufferTime = 20,
@@ -82,7 +72,7 @@ public class IrregularMovements {
             double allowedUp = 0.0, allowedDown = 0.0;
             boolean canGoUp, canGoDown,
                     canJump, canFall,
-                    groundInteractionScenario = false, // Real
+                    groundInteractionScenario = false, climbScenario = false, slowFallingScenario = false, // Real
                     velocityScenario = false; // Combinations
             String scenario;
 
@@ -101,7 +91,7 @@ public class IrregularMovements {
                     waterElevator = p.getHandlers().has(Handlers.HandlerType.WaterElevator);
 
             if (waterElevator
-                    || PatternUtils.isBlockPattern(liquid, to, false, BlockUtils.liquid)) {
+                    || PatternUtils.collides(to, true, true, 0.0, BlockUtils.liquid)) {
                 liquidBlocks = true;
             } else if (vertical < 0.0) {
                 if (BlockUtils.isLiquid(to.clone().add(0, vertical, 0))) {
@@ -142,12 +132,11 @@ public class IrregularMovements {
                     onGround = p.isOnGround(),
                     onGroundCustom = p.isOnGroundCustom(),
                     offGround = !onGroundCustom || !onGround && !liquidBlocks,
-                    knownBoxesNew = GroundUtils.heightExists(box, true),
-                    knownBoxesOld = GroundUtils.heightExists(oldBox, true),
+                    knownBoxesNew = GroundUtils.heightExists(box),
+                    knownBoxesOld = GroundUtils.heightExists(oldBox),
                     knownBoxes = knownBoxesNew || knownBoxesOld,
-                    bouncingBlocks = (!knownBoxes || airTicks > 0) && BouncingBlocks.isBelow(p),
+                    bouncingBlocks = BouncingBlocks.isBelow(p),
                     jumpEffect = p.hasPotionEffect(PotionEffectType.JUMP),
-                    slowFalling = PlayerData.hasSlowFallingEffect(p),
                     threwTrident = p.getHandlers().has(Handlers.HandlerType.Trident),
                     explosion = p.getHandlers().has(Handlers.HandlerType.Explosion),
                     falling = p.isFalling(vertical),
@@ -221,12 +210,7 @@ public class IrregularMovements {
                 checkJump = true;
                 checkDown = true;
                 checkFall = true;
-            } else if (PatternUtils.isBlockPattern(new double[][]{
-                    {BlockUtils.hitbox, 0, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, 1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, -0.1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, p.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox}
-            }, to, true, BlockUtils.web)) { // Cobwebs
+            } else if (PatternUtils.collides(to, true, true, BlockUtils.hitbox, BlockUtils.web)) { // Cobwebs
                 scenario = "cobweb";
                 canGoUp = forcefulUp;
                 canGoDown = !forcefulUp;
@@ -235,12 +219,9 @@ public class IrregularMovements {
 
                 constructDetection = true; // all
                 minimumUp = 0.022;
-            } else if (PatternUtils.isBlockPattern(new double[][]{
-                    {BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max},
-                    {BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max},
-                    {BlockUtils.hitbox_max, -box, BlockUtils.hitbox_max},
-                    {BlockUtils.hitbox_max, -1, BlockUtils.hitbox_max, onGround || onGroundCustom ? 1 : 0}
-            }, to, true, BlockUtils.climbable)) { // Ladder/Vine Climbing
+            } else if (PatternUtils.collides(to, true, true, 0.62, BlockUtils.climbable)) { // Ladder/Vine Climbing
+                climbScenario = true;
+
                 scenario = "climb";
                 canGoUp = true;
                 canGoDown = !forcefulUp;
@@ -271,7 +252,7 @@ public class IrregularMovements {
                     || p.isFrozen()
                     || FloorProtection.hasCooldown(p, true)
                     || PlayerData.hasBadPotionEffects(p)
-                    || PatternUtils.isBlockPattern(interactiveAndPassable, to, false, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
+                    || PatternUtils.collides(to, true, true, 0.0, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;
 
                 scenario = "ground-interaction";
@@ -279,7 +260,9 @@ public class IrregularMovements {
                 canGoDown = !forcefulUp;
                 canJump = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (slowFalling) { // Slow Falling
+            } else if (PlayerData.hasSlowFallingEffect(p)) { // Slow Falling
+                slowFallingScenario = true;
+
                 scenario = "slow-falling";
                 canGoUp = true;
                 canGoDown = !forcefulUp;
@@ -381,7 +364,10 @@ public class IrregularMovements {
                         if (canRunDetection(bedrockPlayer)) {
                             IrregularMovementsBouncing.run(p, to, from,
                                     vertical, oldVertical, box,
-                                    knownBoxes, offGround, airTicksOffGround, heightExists, canGoUp, canGoDown, jumping, falling,
+                                    knownBoxes, offGround, airTicksOffGround, heightExists,
+                                    canGoUp, canGoDown,
+                                    jumping, falling,
+                                    levitationEffect,
                                     airTicks,
                                     prevention, scenario);
                         }
@@ -413,8 +399,8 @@ public class IrregularMovements {
                     box, oldBox,
                     knownBoxes, knownBoxesNew, knownBoxesOld,
                     onGroundCustom,
-                    oldFalling,
-                    constructDetection, groundInteractionScenario, velocityScenario,
+                    oldFalling, levitationEffect,
+                    constructDetection, groundInteractionScenario, velocityScenario, changedScenario, climbScenario, slowFallingScenario,
                     canGoUp && checkUp, canGoDown && checkDown,
                     canJump && checkJump, canFall && checkFall, checkHorizontal,
                     airTicks,

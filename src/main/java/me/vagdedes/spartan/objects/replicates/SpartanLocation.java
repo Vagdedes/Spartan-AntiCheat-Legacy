@@ -24,6 +24,7 @@ import org.bukkit.util.Vector;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanLocation {
@@ -575,6 +576,77 @@ public class SpartanLocation {
     // Surrounding
 
     public SpartanLocation[] getSurroundingLocations(double x, double y, double z, boolean all) {
+        if (all) {
+            return new SpartanLocation[]{
+                    y == 0.0 ? this.clone() : this.clone().add(0, y, 0),
+                    this.clone().add(x, y, 0),
+                    this.clone().add(-x, y, 0),
+                    this.clone().add(0, y, z),
+                    this.clone().add(0, y, -z),
+                    this.clone().add(x, y, z),
+                    this.clone().add(-x, y, -z),
+                    this.clone().add(x, y, -z),
+                    this.clone().add(-x, y, z)
+            };
+        } else {
+            Map<Double, double[]> distances = new TreeMap<>();
+
+            for (double[] positions : new double[][]{
+                    {this.x, this.z},
+                    {this.x + x, this.z},
+                    {this.x - x, this.z},
+                    {this.x, this.z + z},
+                    {this.x, this.z - z},
+                    {this.x + x, this.z + z},
+                    {this.x - x, this.z - z},
+                    {this.x + x, this.z - z},
+                    {this.x - x, this.z + z}
+            }) {
+                distances.put(Math.sqrt(
+                        AlgebraUtils.getPreDistance(this.x, Math.floor(positions[0]))
+                                + AlgebraUtils.getPreDistance(this.z, Math.floor(positions[1]))
+                ), positions);
+            }
+            y += this.y;
+            Iterator<double[]> iterator = distances.values().iterator();
+            double[] positions1 = iterator.next();
+
+            if (iterator.hasNext()) {
+                double[] positions2 = iterator.next();
+
+                if (iterator.hasNext()) {
+                    double[] positions3 = iterator.next();
+
+                    if (iterator.hasNext()) {
+                        double[] positions4 = iterator.next();
+                        return new SpartanLocation[]{
+                                new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch),
+                                new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch),
+                                new SpartanLocation(player, serverWorld, positions3[0], y, positions3[1], yaw, pitch),
+                                new SpartanLocation(player, serverWorld, positions4[0], y, positions4[1], yaw, pitch)
+                        };
+                    } else {
+                        return new SpartanLocation[]{
+                                new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch),
+                                new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch),
+                                new SpartanLocation(player, serverWorld, positions3[0], y, positions3[1], yaw, pitch)
+                        };
+                    }
+                } else {
+                    return new SpartanLocation[]{
+                            new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch),
+                            new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch)
+                    };
+                }
+            } else {
+                return new SpartanLocation[]{
+                        new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch)
+                };
+            }
+        }
+    }
+
+    private SpartanLocation[] getSurroundingLocationsOld(double x, double y, double z, boolean all) {
         SpartanLocation[] array;
 
         if (x > 0.0 || z > 0.0) {
@@ -670,6 +742,7 @@ public class SpartanLocation {
                     LiveViolation liveViolation = playerProfile.getLastInteraction();
                     return getSurroundingLocations(x, y, z,
                             liveViolation.hasLevel()
+                                    || liveViolation.hasCancelledLevel()
                                     || liveViolation.getLastViolation(true) <= Check.violationCycleSeconds
                     );
                 }

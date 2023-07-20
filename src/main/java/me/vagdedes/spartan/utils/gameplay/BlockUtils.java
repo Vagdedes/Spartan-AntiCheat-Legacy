@@ -1689,22 +1689,25 @@ public class BlockUtils {
             if (p.isOnGroundCustom()) {
                 return loc.getBlock().getType() == Material.SLIME_BLOCK;
             } else {
-                int y = loc.getBlockY();
                 SpartanLocation loopLocation = loc.clone();
 
-                for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
-                    Material m = loopLocation.add(0, -1, 0).getBlock().getType();
+                if (!isSolid(loopLocation.getBlock().getType())) {
+                    int y = loc.getBlockY();
 
-                    if (m == Material.SLIME_BLOCK) {
-                        return true;
-                    } else if (isSolid(m)
-                            && m != Material.SNOW
-                            && !areCarpets(m)
-                            && !areSlabs(m)
-                            && !areStairs(m)
-                            && !areWalls(m)
-                            && !canClimb(m)) {
-                        break;
+                    for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
+                        Material m = loopLocation.add(0, -1, 0).getBlock().getType();
+
+                        if (m == Material.SLIME_BLOCK) {
+                            return true;
+                        } else if (isSolid(m)
+                                && m != Material.SNOW
+                                && !areCarpets(m)
+                                && !areSlabs(m)
+                                && !areStairs(m)
+                                && !areWalls(m)
+                                && !canClimb(m)) {
+                            break;
+                        }
                     }
                 }
             }
@@ -1717,16 +1720,19 @@ public class BlockUtils {
             if (p.isOnGroundCustom()) {
                 return areBeds(loc.getBlock().getType());
             } else {
-                int y = loc.getBlockY();
                 SpartanLocation loopLocation = loc.clone();
 
-                for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
-                    Material m = loopLocation.add(0, -1, 0).getBlock().getType();
+                if (!isSolid(loopLocation.getBlock().getType())) {
+                    int y = loc.getBlockY();
 
-                    if (areBeds(m)) {
-                        return true;
-                    } else if (isSolid(m)) {
-                        break;
+                    for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
+                        Material m = loopLocation.add(0, -1, 0).getBlock().getType();
+
+                        if (areBeds(m)) {
+                            return true;
+                        } else if (isSolid(m)) {
+                            break;
+                        }
                     }
                 }
             }

@@ -10,12 +10,6 @@ import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 
 public class IrregularMovementsClimb {
 
-    private static final double[][]
-            scaffolding = new double[][]{
-            {0, 0, 0},
-            {0, 1, 0}
-    };
-
     static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns,
                     double vertical, double oldVertical, double box,
                     boolean knownBoxes, boolean canGoUp, boolean canGoDown, boolean canJump, boolean bouncingBlocks, boolean jumping,
@@ -31,8 +25,9 @@ public class IrregularMovementsClimb {
                         IrregularMovements.cancel(p, from, prevention, "jump-" + scenario, 1);
                     }
                 } else if (!p.isClimbing(vertical)) {
-                    boolean scaffolding = PatternUtils.isBlockPattern(IrregularMovementsClimb.scaffolding, to, false, BlockUtils.scaffolding);
-                    double max = (scaffolding ? MoveUtils.climbingScaffoldingMax : MoveUtils.getClimbingMotionEdges()[1]) + MoveUtils.lowPrecision;
+                    boolean scaffolding = PatternUtils.collides(to, true, true, 0.0, BlockUtils.scaffolding);
+                    double jumpEffectExtra = p.getExtraMovementFromJumpEffect(),
+                            max = (scaffolding ? MoveUtils.climbingScaffoldingMax : MoveUtils.getClimbingMotionEdges()[1]) + (jumpEffectExtra > 0 ? jumpEffectExtra + 0.1 : MoveUtils.lowPrecision);
 
                     if (canGoUp && vertical >= max) {
                         IrregularMovements.cancel(p, from, prevention, "up-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, bouncingBlocks || knownBoxes ? 8 : 3, IrregularMovements.defaultBufferTime);

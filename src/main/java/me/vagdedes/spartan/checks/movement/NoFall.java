@@ -214,7 +214,8 @@ public class NoFall {
     private static void checkSpoof(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
                                    double vertical,
                                    int airTicks) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && check.getCheck().getBooleanOption("check_spoof", true)
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                && check.getCheck().getBooleanOption("check_spoof", true)
                 && (airTicks >= 20 || airTicks >= 12 && p.isFalling(vertical))
                 && p.isOnGround() && !p.isOnGroundCustom() && p.isGroundSpoofing()
                 && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)

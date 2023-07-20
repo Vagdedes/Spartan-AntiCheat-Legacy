@@ -3,6 +3,7 @@ package me.vagdedes.spartan.checks.world;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
@@ -151,20 +152,20 @@ public class ImpossibleActions {
                         || PlayerData.isOnGround(p, to, 0, -1, 0)
                         || PlayerData.isOnGround(p, to, 0, -(1 + box), 0)
                         || p.getTicksOnAir() <= 11)) { // Ensure the player is on ground or close to it
-                SpartanLocation blockLocation = b.getLocation();
-                double verticalDistance = blockY - blockLocation.getBlockY();
+                    SpartanLocation blockLocation = b.getLocation();
+                    double verticalDistance = blockY - blockLocation.getBlockY();
 
-                if (verticalDistance >= 0 && verticalDistance <= 2) { // Ensure the block is below or at max 2 blocks away vertically
-                    double horizontalDistance = AlgebraUtils.getHorizontalDistance(to, blockAgainstLocation);
-                    boolean scaffold = blockFace != BlockFace.DOWN && blockFace != BlockFace.UP
-                            && blockLocation.getSurroundingSolidBlockCount(1, 1, 2) <= 1;
-                    boolean access;
+                    if (verticalDistance >= 0 && verticalDistance <= 2) { // Ensure the block is below or at max 2 blocks away vertically
+                        double horizontalDistance = AlgebraUtils.getHorizontalDistance(to, blockAgainstLocation);
+                        boolean scaffold = blockFace != BlockFace.DOWN && blockFace != BlockFace.UP
+                                && blockLocation.getSurroundingSolidBlockCount(1, 1, 2) <= 1;
+                        boolean access;
 
-                    if (scaffold) {
-                        access = check.getCheck().getBooleanOption("check_scaffold", true)
-                                && blockY == (blockAgainst.getY() + 1) && horizontalDistance < 1.5;
-                    } else {
-                        if (check.getCheck().getBooleanOption("check_tower", true)) {
+                        if (scaffold) {
+                            access = check.getCheck().getBooleanOption("check_scaffold", true)
+                                    && blockY == (blockAgainst.getY() + 1) && horizontalDistance < 1.5;
+                        } else if (check.getCheck().getBooleanOption("check_tower", true)
+                                && !BouncingBlocks.isBelow(p)) {
                             UUID uuid = p.getUniqueId();
                             TowerPosition object = memory.get(uuid);
 
@@ -178,32 +179,31 @@ public class ImpossibleActions {
                         } else {
                             access = false;
                         }
-                    }
 
-                    if (access) {
-                        Buffer buffer = p.getBuffer(check);
-                        String scenario = scaffold ? "scaffold" : "tower";
-                        String key = scenario;
+                        if (access) {
+                            Buffer buffer = p.getBuffer(check);
+                            String scenario = scaffold ? "scaffold" : "tower";
+                            String key = scenario;
 
-                        if (buffer.start(key, 20) >= (!scaffold ? 4 : 5)) {
-                            buffer.remove(key);
-                            new HackPrevention(p, check, "type: " + scenario
-                                    + ", block: " + BlockUtils.materialToString(blockType)
-                                    + ", block-against: " + BlockUtils.materialToString(blockAgainstType)
-                                    + ", hand-item: " + BlockUtils.materialToString(itemStackType)
-                                    + ", block-face: " + blockFace
-                                    + ", vertical-distance: " + verticalDistance
-                                    + ", horizontal-distance: " + horizontalDistance
-                                    + ", box: " + box,
-                                    20);
+                            if (buffer.start(key, 20) >= (!scaffold ? 4 : 5)) {
+                                buffer.remove(key);
+                                new HackPrevention(p, check, "type: " + scenario
+                                        + ", block: " + BlockUtils.materialToString(blockType)
+                                        + ", block-against: " + BlockUtils.materialToString(blockAgainstType)
+                                        + ", hand-item: " + BlockUtils.materialToString(itemStackType)
+                                        + ", block-face: " + blockFace
+                                        + ", vertical-distance: " + verticalDistance
+                                        + ", horizontal-distance: " + horizontalDistance
+                                        + ", box: " + box,
+                                        20);
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-}
+    }
 
     public static void runBreak(SpartanPlayer p, SpartanBlock b) {
         if (p.canRunCheck(check, true)) {

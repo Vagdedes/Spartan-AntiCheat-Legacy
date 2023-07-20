@@ -31,8 +31,8 @@ public class IrregularMovementsLevitation {
                     double modifiedBox = AlgebraUtils.cut(box, 5),
                             modifiedOldBox = AlgebraUtils.cut(oldBox, 5);
                     boolean modifiedHeightExists = IrregularMovements.cacheBoolean(cooldowns,
-                            GroundUtils.heightExists(modifiedBox, true)
-                                    || GroundUtils.heightExists(modifiedOldBox, true)
+                            GroundUtils.heightExists(modifiedBox)
+                                    || GroundUtils.heightExists(modifiedOldBox)
                                     || modifiedBox == 0.2
                                     || modifiedOldBox == 0.2,
                             "modified-height-exists", 10);
