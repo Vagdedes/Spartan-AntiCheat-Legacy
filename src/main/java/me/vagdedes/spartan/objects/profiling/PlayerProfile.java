@@ -18,6 +18,7 @@ import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -87,7 +88,7 @@ public class PlayerProfile {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory(hackType, getDataType());
         }
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {
-            this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
+            this.miningHistory[ore.ordinal()] = new MiningHistory(ore, 0, 1);
         }
     }
 
@@ -114,7 +115,7 @@ public class PlayerProfile {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory(hackType, getDataType());
         }
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {
-            this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
+            this.miningHistory[ore.ordinal()] = new MiningHistory(ore, 0, 1);
         }
     }
 
@@ -275,17 +276,20 @@ public class PlayerProfile {
                     Map<Enums.MiningOre, Integer> suspectedOres = new LinkedHashMap<>(Enums.miningOreLength);
 
                     for (MiningHistory miningHistory : getMiningHistory()) {
-                        double mines = miningHistory.getMines();
+                        for (World.Environment environment : World.Environment.values()) {
+                            double mines = miningHistory.getMines(environment);
 
-                        if (mines > 0) {
-                            int days = miningHistory.getDays();
-                            mines = (mines + punishmentHistory.getReportCount(hackType, 0)) / ((double) days);
-                            double globalAverage = Math.abs(ResearchEngine.getMiningHistoryAverage(miningHistory.getOre(), XRay.lenientStatisticalRatio)), // When below zero, it means data is not yet coming from player profiles but backup variables
-                                    miningRatio = mines / globalAverage;
+                            if (mines > 0) {
+                                int days = miningHistory.getDays();
+                                mines = (mines + punishmentHistory.getReportCount(hackType, 0)) / ((double) days);
+                                double globalAverage = Math.abs(ResearchEngine.getMiningHistoryAverage(miningHistory.getOre(), XRay.lenientStatisticalRatio)), // When below zero, it means data is not yet coming from player profiles but backup variables
+                                        miningRatio = mines / globalAverage;
 
-                            if (miningRatio > 1.0) { // We inform earlier in the inventory menu while the violation we want to be accurate
-                                suspectedOres.put(miningHistory.getOre(), AlgebraUtils.integerRound(miningRatio * 100.0));
+                                if (miningRatio > 1.0) { // We inform earlier in the inventory menu while the violation we want to be accurate
+                                    suspectedOres.put(miningHistory.getOre(), AlgebraUtils.integerRound(miningRatio * 100.0));
+                                }
                             }
+                            break;
                         }
                     }
 
@@ -449,14 +453,13 @@ public class PlayerProfile {
     }
 
     public MiningHistory getOverallMiningHistory() {
-        int mines = 0;
-        int days = 0;
+        int mines = 0, days = 0;
 
         for (MiningHistory miningHistory : getMiningHistory()) {
             mines += miningHistory.getMines();
             days += miningHistory.getDays();
         }
-        return new MiningHistory(null, mines, days);
+        return new MiningHistory(null, mines, Math.max(days, 1));
     }
 
     public MiningHistory getMiningHistory(Enums.MiningOre ore) {

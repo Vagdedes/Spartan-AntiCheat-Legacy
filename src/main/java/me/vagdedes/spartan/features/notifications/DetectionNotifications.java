@@ -18,9 +18,11 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
+import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 
 import java.util.*;
 
@@ -152,12 +154,11 @@ public class DetectionNotifications {
 
             if (ore != null) {
                 SpartanLocation location = player.getLocation();
+                World.Environment environment = location.getWorld().getEnvironment();
                 int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ(), amount = 1;
-                String key = ore.getString();
-                String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
-
-                // Log Message
-                String log = player.getName() + " found " + amount + " " + (amount > 1 ? pluralKey : key) + " on " + x + ", " + y + ", " + z;
+                String key = ore.getString(),
+                        log = player.getName() + " found " + amount + " " + key
+                                + " on " + x + ", " + y + ", " + z + ", " + BlockUtils.environmentToString(environment);
 
                 // API Event
                 PlayerFoundOreEvent event;
@@ -186,8 +187,10 @@ public class DetectionNotifications {
                         MiningHistory miningHistory = player.getProfile().getMiningHistory(ore);
 
                         if (miningHistory != null) {
-                            miningHistory.increaseMines(amount);
+                            String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
+                            miningHistory.increaseMines(environment, amount);
                             XRay.run(player,
+                                    environment,
                                     miningHistory,
                                     ore, pluralKey);
                         }

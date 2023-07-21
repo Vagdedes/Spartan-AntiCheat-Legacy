@@ -12,6 +12,7 @@ import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.BanManagement;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
@@ -32,6 +33,7 @@ import me.vagdedes.spartan.utils.java.TimeUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -978,11 +980,11 @@ public class ResearchEngine {
                             if (index > -1 && index != (dataLength - 1)) {
                                 data = data.substring(index + 2);
                             }
-                            int greatestSplitPosition = 4;
-                            String[] split = data.split(" ", greatestSplitPosition + 2);
+                            int greatestSplitPosition = 10; // Attention
+                            String[] split = data.split(" ", greatestSplitPosition + 1);
 
                             if (data.contains(Moderation.criticalHitMessage)) {
-                                if (split.length >= 10) {
+                                if (split.length >= greatestSplitPosition) {
                                     Material material = Material.getMaterial(split[6].replace("-", "_").toUpperCase());
 
                                     if (material != null) {
@@ -1254,15 +1256,24 @@ public class ResearchEngine {
                                     }
                                 }
                             } else if (data.contains(" found ")) {
-                                if (split.length >= 3) {
+                                if (split.length >= 9) {
                                     String name = split[0].toLowerCase();
 
-                                    for (Enums.MiningOre ore : Enums.MiningOre.values()) {
-                                        if (ore.getString().equals(name)) {
+                                    try {
+                                        Enums.MiningOre ore = DetectionNotifications.getMiningOre(
+                                                Material.getMaterial(
+                                                        split[3].toUpperCase().replace("-", "_")
+                                                )
+                                        );
+
+                                        if (ore != null) {
                                             MiningHistory miningHistory = getPlayerProfile(name).getMiningHistory(ore);
 
                                             if (miningHistory != null) {
-                                                miningHistory.increaseMines(1);
+                                                World.Environment environment = World.Environment.valueOf(
+                                                        split[8].toUpperCase().replace("-", "_")
+                                                );
+                                                miningHistory.increaseMines(environment, 1);
 
                                                 // Separator
                                                 Set<String> days = miningDays.get(name);
@@ -1276,8 +1287,8 @@ public class ResearchEngine {
                                                     miningHistory.increaseDays();
                                                 }
                                             }
-                                            break;
                                         }
+                                    } catch (Exception ignored) {
                                     }
                                 }
                             }

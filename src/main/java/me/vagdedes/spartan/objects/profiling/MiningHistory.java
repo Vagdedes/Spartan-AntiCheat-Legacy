@@ -1,22 +1,23 @@
 package me.vagdedes.spartan.objects.profiling;
 
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.World;
 
 public class MiningHistory {
 
     private final Enums.MiningOre ore;
-    private int mines, days;
+    private final int[] mines;
+    private int days;
 
-    public MiningHistory(Enums.MiningOre ore, int mines, int days) {
-        this.ore = ore;
-        this.mines = mines;
-        this.days = Math.max(days, 1);
-    }
+    MiningHistory(Enums.MiningOre ore, int mines, int days) {
+        World.Environment[] environments = World.Environment.values();
+        this.mines = new int[environments.length];
 
-    MiningHistory(Enums.MiningOre ore) {
+        for (World.Environment environment : environments) {
+            this.mines[environment.ordinal()] = mines;
+        }
         this.ore = ore;
-        this.mines = 0;
-        this.days = 1;
+        this.days = days;
     }
 
     public Enums.MiningOre getOre() {
@@ -24,11 +25,20 @@ public class MiningHistory {
     }
 
     public int getMines() {
-        return mines;
+        int total = 0;
+
+        for (int mines : this.mines) {
+            total += mines;
+        }
+        return total;
     }
 
-    public int increaseMines(int amount) {
-        return mines += amount;
+    public int getMines(World.Environment environment) {
+        return mines[environment.ordinal()];
+    }
+
+    public int increaseMines(World.Environment environment, int amount) {
+        return mines[environment.ordinal()] += amount;
     }
 
     public int getDays() {

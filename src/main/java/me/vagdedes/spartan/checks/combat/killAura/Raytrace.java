@@ -71,6 +71,7 @@ public class Raytrace {
                                                 + ", raytrace: " + raytrace
                                                 + ", diagonal-distance: " + distance
                                                 + ", distance-to-block: " + distanceToBlock
+                                                + ", entity-to-block-distance: " + block.getLocation().distance(entityLocation)
                                                 + ", block: " + BlockUtils.blockToString(block)
                                                 + ", damaged-entity: " + CombatUtils.entityToString(entity)
                                                 + ", nearby-entities: " + nearbyEntitiesSize);

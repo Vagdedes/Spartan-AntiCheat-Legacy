@@ -1444,12 +1444,20 @@ public class BlockUtils {
 
     // Separator
 
+    public static String environmentToString(World.Environment e) {
+        return toString(e);
+    }
+
     public static String blockToString(SpartanBlock b) {
-        return materialToString(b.getBlock().getType());
+        return toString(b.getBlock().getType());
     }
 
     public static String materialToString(Material m) {
-        return m.toString().toLowerCase().replace("_", "-");
+        return toString(m);
+    }
+
+    private static String toString(Object obj) {
+        return obj.toString().toLowerCase().replace("_", "-");
     }
 
     // Separator

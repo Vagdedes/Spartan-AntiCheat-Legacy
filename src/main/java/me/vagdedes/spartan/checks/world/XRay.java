@@ -11,6 +11,7 @@ import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
+import org.bukkit.World;
 import org.bukkit.WorldType;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -48,14 +49,15 @@ public class XRay {
         }
     }
 
-    public static void run(SpartanPlayer p, MiningHistory miningHistory, Enums.MiningOre ore, String pluralKey) {
+    public static void run(SpartanPlayer p, World.Environment environment,
+                           MiningHistory miningHistory, Enums.MiningOre ore, String pluralKey) {
         if (!p.canRunCheck(check, false)
                 || !p.canDo(true)
                 || p.getWorld().getWorldType() == WorldType.FLAT
                 || check.getCheck().getViolations(p).hasLevel()) {
             return;
         }
-        int mines = miningHistory.getMines();
+        int mines = miningHistory.getMines(environment);
 
         if (mines > 0) {
             double globalAverage = ResearchEngine.getMiningHistoryAverage(ore, strictStatisticalRatio);
