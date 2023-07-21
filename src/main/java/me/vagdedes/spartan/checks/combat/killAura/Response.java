@@ -36,7 +36,6 @@ public class Response {
                 if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 5) == 2) {
                     buffer.remove(key);
                     KillAura.violate(player, "type: response"
-                            + ", angle-ticks: " + angleTicks
                             + ", width: " + width
                             + ", entity-width: " + entityWidth
                             + ", diagonal-distance: " + distance
@@ -60,21 +59,14 @@ public class Response {
                             double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
                             if (utility != null) {
-                                double entityWidth = CombatUtils.getWidthAndHeight(entity)[0];
+                                String removeKey = key + "=remove";
 
-                                if (utility[2] > Math.max(entityWidth + 0.1, KillAura.normalWidthToPlayerView)) { // We don't want the player being inside the entity in any way, also we want a minimum required width in this case
-                                    double width = utility[0];
-                                    String removeKey = key + "=remove";
-
-                                    if (Math.abs(width) <= (entityWidth * 1.5)) {
-                                        buffer.remove(removeKey);
-                                        buffer.start(key, bufferTicksMemory);
-                                        buffer.setRemainingTicks(key, bufferTicksMemory);
-                                    } else if (buffer.start(removeKey, bufferTicksMemory) >= bufferFails) {
-                                        buffer.remove(removeKey);
-                                        buffer.remove(key);
-                                    }
-                                } else {
+                                if (Math.abs(utility[0]) <= (CombatUtils.getWidthAndHeight(entity)[0] * 1.5)) {
+                                    buffer.remove(removeKey);
+                                    buffer.start(key, bufferTicksMemory);
+                                    buffer.setRemainingTicks(key, bufferTicksMemory);
+                                } else if (buffer.start(removeKey, bufferTicksMemory) >= bufferFails) {
+                                    buffer.remove(removeKey);
                                     buffer.remove(key);
                                 }
                             } else {

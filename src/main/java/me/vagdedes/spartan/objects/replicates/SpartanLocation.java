@@ -143,8 +143,9 @@ public class SpartanLocation {
         }
     }
 
-    public SpartanLocation(SpartanPlayer player, World world, double x, double y, double z, float yaw, float pitch) { // Used globally
+    public SpartanLocation(SpartanPlayer player, World world, double x, double y, double z, float yaw, float pitch, SpartanLocation nearby) { // Used globally
         this(player, world, null, x, y, z, yaw, pitch, null);
+        this.retrieveDataFrom(nearby);
     }
 
     public SpartanLocation(SpartanPlayer player, Location loc) { // Used globally
@@ -620,33 +621,34 @@ public class SpartanLocation {
                     if (iterator.hasNext()) {
                         double[] positions4 = iterator.next();
                         return new SpartanLocation[]{
-                                new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch),
-                                new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch),
-                                new SpartanLocation(player, serverWorld, positions3[0], y, positions3[1], yaw, pitch),
-                                new SpartanLocation(player, serverWorld, positions4[0], y, positions4[1], yaw, pitch)
+                                new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch, this),
+                                new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch, this),
+                                new SpartanLocation(player, serverWorld, positions3[0], y, positions3[1], yaw, pitch, this),
+                                new SpartanLocation(player, serverWorld, positions4[0], y, positions4[1], yaw, pitch, this)
                         };
                     } else {
                         return new SpartanLocation[]{
-                                new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch),
-                                new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch),
-                                new SpartanLocation(player, serverWorld, positions3[0], y, positions3[1], yaw, pitch)
+                                new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch, this),
+                                new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch, this),
+                                new SpartanLocation(player, serverWorld, positions3[0], y, positions3[1], yaw, pitch, this)
                         };
                     }
                 } else {
                     return new SpartanLocation[]{
-                            new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch),
-                            new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch)
+                            new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch, this),
+                            new SpartanLocation(player, serverWorld, positions2[0], y, positions2[1], yaw, pitch, this)
                     };
                 }
             } else {
                 return new SpartanLocation[]{
-                        new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch)
+                        new SpartanLocation(player, serverWorld, positions1[0], y, positions1[1], yaw, pitch, this)
                 };
             }
         }
     }
 
-    private SpartanLocation[] getSurroundingLocationsOld(double x, double y, double z, boolean all) {
+    @Deprecated
+    private SpartanLocation[] getSurroundingLocations_DEPRECATED(double x, double y, double z, boolean all) {
         SpartanLocation[] array;
 
         if (x > 0.0 || z > 0.0) {
@@ -759,10 +761,6 @@ public class SpartanLocation {
                 this.clone().add(-x, 0, 0),
                 this.clone().add(0, 0, z),
                 this.clone().add(0, 0, -z),
-                /*loc.clone().add(x, 0, z),
-                loc.clone().add(-x, 0, -z),
-                loc.clone().add(x, 0, -z),
-                loc.clone().add(-x, 0, z)*/
         }) {
             if (BlockUtils.isSolid(location.getBlock().getType())) {
                 count++;

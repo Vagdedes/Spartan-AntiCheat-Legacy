@@ -338,7 +338,6 @@ public class EventsHandler7 implements Listener {
         }
         // Object
         p.resetLocationData();
-        p.setWorld(n.getWorld());
         p.setPlayerWeather(n.getPlayerWeather());
 
         // Detections

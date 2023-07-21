@@ -323,10 +323,12 @@ public class IrregularMovementsMotion {
                         {1, 1, 1},
                 };
 
-                if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
+                if (levitationEffect) {
+                    IrregularMovements.cancel(p, from, prevention, "equilibrium-levitation", MoveUtils.jumpingMotions);
+                } else if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                         && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                     IrregularMovements.cancel(p, from, prevention, "equilibrium-spacious",
-                           jumpEffect || velocityScenario ? 2 : 1);
+                            jumpEffect || velocityScenario ? 2 : 1);
                 } else if (!knownBoxes
                         && !GroundUtils.heightExists(oldBox - oldVertical)) {
                     IrregularMovements.cancel(p, from, prevention, "*equilibrium-abstract", 2);

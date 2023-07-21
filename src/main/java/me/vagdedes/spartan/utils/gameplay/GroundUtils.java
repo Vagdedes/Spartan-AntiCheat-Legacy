@@ -162,21 +162,6 @@ public class GroundUtils {
         }
     }
 
-    public static void clear(SpartanPlayer p) {
-        p.getBuffer().remove(inaccuracyKey);
-    }
-
-    // Runnables
-
-    public static void setOnGround(SpartanPlayer p, int ticks) {
-        p.getCooldowns().add(setOnGroundKey, ticks);
-        p.setAirTicks(0);
-    }
-
-    public static void setOffGround(SpartanPlayer p, int ticks) {
-        p.getCooldowns().add(setOffGroundKey, ticks);
-    }
-
     // Method
 
     public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y, boolean liquid, boolean climbable) {
@@ -201,14 +186,12 @@ public class GroundUtils {
                     && p.isFalling(oldVertical)) {
                 return false;
             }
-        }
-        if (p.getHandlers().has(Handlers.HandlerType.Piston)
-                || stepsOnBoats(p, cooldowns, original ? loc : p.getLocation())
-                || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
-            if (original) {
+            if (p.getHandlers().has(Handlers.HandlerType.Piston)
+                    || stepsOnBoats(p)
+                    || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
                 p.setAirTicks(0);
+                return true;
             }
-            return true;
         }
         SpartanBlock block = loc.getBlock();
 
@@ -257,6 +240,17 @@ public class GroundUtils {
         return false;
     }
 
+    // Runnables
+
+    public static void setOnGround(SpartanPlayer p, int ticks) {
+        p.getCooldowns().add(setOnGroundKey, ticks);
+        p.setAirTicks(0);
+    }
+
+    public static void setOffGround(SpartanPlayer p, int ticks) {
+        p.getCooldowns().add(setOffGroundKey, ticks);
+    }
+
     // Utils
 
     public static Set<Double> getHeights(Material m) {
@@ -283,7 +277,9 @@ public class GroundUtils {
             double max = 0.0;
 
             for (double height : heights) {
-                max = Math.max(max, height);
+                if (height > max) {
+                    max = height;
+                }
             }
             return max;
         }
@@ -295,7 +291,7 @@ public class GroundUtils {
 
     // Entities
 
-    public static boolean stepsOnBoats(SpartanPlayer p, Cooldowns cooldowns, SpartanLocation to) {
+    public static boolean stepsOnBoats(SpartanPlayer p) {
         List<Entity> entities = p.getNearbyEntities(2.0, 2.0, 2.0);
 
         if (entities.size() > 0) {
@@ -335,11 +331,5 @@ public class GroundUtils {
             }
         }
         return false;
-    }
-
-    // Patches
-
-    public static boolean isZeroMiscalculation(double dbl) {
-        return dbl < 0.0001;
     }
 }

@@ -245,12 +245,6 @@ public class AlgebraUtils {
 
     // Separator
 
-    public static boolean hasExponent(double d) {
-        return Math.abs(Math.getExponent(d)) == Double.MAX_EXPONENT;
-    }
-
-    // Separator
-
     public static boolean validIntegerHeavy(String s) {
         if (s == null) {
             return false;

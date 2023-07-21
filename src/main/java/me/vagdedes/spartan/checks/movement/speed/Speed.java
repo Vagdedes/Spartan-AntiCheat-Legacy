@@ -448,7 +448,7 @@ public class Speed {
                         } else if (hor > 0.335 && fallDistance > 0.0f && (!groundVanilla || !groundCustom) && !BlockUtils.isSemiSolid(locM1)) {
                             cancel(p, from, "type: fall-distance(normal), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver);
 
-                        } else if (groundCustom && hor >= 0.36 && fallDistance == 0.0f && GroundUtils.isZeroMiscalculation(box)) {
+                        } else if (groundCustom && hor >= 0.36 && fallDistance == 0.0f && box == 0.0) {
                             if (buffer.start("fall-distance", 10) == 2) {
                                 buffer.remove("fall-distance");
                                 cancel(p, from, "type: fall-distance(ground), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver);
@@ -567,7 +567,7 @@ public class Speed {
     }
 
     private static Object[] getDynamicLimit(SpartanPlayer p, SpartanLocation to, SpartanLocation loc1, Buffer buffer, Decimals decimals, Cooldowns cooldowns,
-                                            double d, double od, double dy, double remaining, double oremaining, int air_ticks,
+                                            double d, double od, double dy, double box, double oremaining, int air_ticks,
                                             boolean jumping, boolean extremelyPushed, boolean fairlyPushed, boolean aboveBlocks, boolean groundCustom, boolean selfHit, boolean piston,
                                             double dm, String reason) {
         boolean iceBlocks = false;
@@ -592,7 +592,7 @@ public class Speed {
 
         // Limit
         if ((p.isSprinting() || p.isSprintJumping())
-                && (jumping || dy == 0.375 || dy >= 0.5 && dy < 0.6 || Math.abs(remaining - oremaining) == 0.5)
+                && (jumping || dy == 0.375 || dy >= 0.5 && dy < 0.6 || Math.abs(box - oremaining) == 0.5)
 
                 && (groundCustom
                 || PlayerData.isOnGround(p, to, 0, -1, 0)
@@ -658,7 +658,7 @@ public class Speed {
 
         // Limit
         if (dm != upwards && (dm == air || dm == ground_block_speed)
-                && GroundUtils.isZeroMiscalculation(remaining) && dy == 0.0 && p.isSprinting()
+                && box == 0.0 && dy == 0.0 && p.isSprinting()
                 && cooldowns.canDo("skip-ground-jump-limit")) {
             reason = "ground";
             dm = cacheLimit(decimals, dm, ground_jump_speed, 10);
@@ -666,8 +666,8 @@ public class Speed {
 
         // Limit
         if (PatternUtils.isBlockPattern(new double[][]{
-                {1, -remaining, 1},
-                {BlockUtils.hitbox, -remaining, BlockUtils.hitbox}
+                {1, -box, 1},
+                {BlockUtils.hitbox, -box, BlockUtils.hitbox}
         }, to, true, BlockUtils.bed)) {
             cooldowns.add("bed", 10);
             reason = "bed";

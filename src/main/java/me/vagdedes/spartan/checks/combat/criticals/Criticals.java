@@ -10,7 +10,10 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.utils.gameplay.*;
+import me.vagdedes.spartan.utils.gameplay.BlockUtils;
+import me.vagdedes.spartan.utils.gameplay.CombatUtils;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
+import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
@@ -34,7 +37,7 @@ public class Criticals {
     };
 
     private static final double[] aboveBlock = new double[]{
-        BlockUtils.hitbox_max, 2.0, BlockUtils.hitbox_max
+            BlockUtils.hitbox_max, 2.0, BlockUtils.hitbox_max
     };
 
     // Handlers
@@ -108,7 +111,7 @@ public class Criticals {
                     if (expectedDamage > 0.0 && player.getTicksOnAir() == 0) {
                         double additional = sharpnessDamage + smiteDamage;
 
-                        if (GroundUtils.isZeroMiscalculation((expectedDamage * 1.5) + additional - damage)) {
+                        if (((expectedDamage * 1.5) + additional - damage) == 0.0) {
                             Set<Map.Entry<Enchantment, Integer>> enchantments =
                                     !isEmptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants() ?
                                             itemStack.getEnchantments().entrySet() : new HashSet<>();

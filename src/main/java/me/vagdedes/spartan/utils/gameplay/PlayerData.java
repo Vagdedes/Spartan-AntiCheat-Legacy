@@ -509,7 +509,7 @@ public class PlayerData {
     // Ground
 
     public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double x, double y, double z) {
-        return x == 0.0 && GroundUtils.isZeroMiscalculation(y) && z == 0.0 ?
+        return x == 0.0 && y == 0.0 && z == 0.0 ?
                 (p.isOnGroundCustom() || isOnGround(p, loc.clone().add(x, y, z), y))
                 : isOnGround(p, loc.clone().add(x, y, z), y);
     }

@@ -102,7 +102,6 @@ public class SpartanPlayer {
     private int maximumNoDamageTicks;
     private float fallDistance;
     private int foodLevel;
-    private World world;
     private boolean onGroundCustom;
     private long lastHeadMovement;
 
@@ -302,7 +301,6 @@ public class SpartanPlayer {
                             p.setFlying(n.isFlying(), n.getAllowFlight());
                             p.setFoodLevel(n.getFoodLevel(), false);
                             p.setDead(n.isDead());
-                            p.setWorld(n.getWorld());
                             p.setLastDamageCause(n.getLastDamageCause(), n.getLastDamage(), n.getMaximumNoDamageTicks());
 
                             // Check Allowance Cache
@@ -404,7 +402,6 @@ public class SpartanPlayer {
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
         this.ping = Latency.ping(p);
-        this.world = p.getWorld();
         this.frozen = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && p.isFrozen();
         this.lastPlayed = p.getLastPlayed();
         this.firstPlayed = p.getFirstPlayed();
@@ -1029,11 +1026,7 @@ public class SpartanPlayer {
     }
 
     public World getWorld() {
-        return world;
-    }
-
-    public void setWorld(World world) {
-        this.world = world;
+        return getLocation().getWorld();
     }
 
     public SpartanBlock getTargetBlock(double distance) {
@@ -1444,17 +1437,12 @@ public class SpartanPlayer {
 
     public boolean safeTeleport(SpartanLocation loc) {
         if (!isSleeping()) {
-            double x = Math.abs(loc.getX()),
-                    y = Math.abs(loc.getY()),
-                    z = Math.abs(loc.getZ());
-
-            if (AlgebraUtils.hasExponent(x) || AlgebraUtils.hasExponent(y) || AlgebraUtils.hasExponent(z)
-                    || x > 3.0E7 || y == Double.MAX_VALUE || z > 3.0E7 || loc.getBlockY() == Integer.MAX_VALUE) {
-                return false;
-            }
             if (getWorld() == loc.getWorld()) {
                 SpartanLocation to = getLocation();
-                return teleport(new SpartanLocation(this, loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), to.getYaw(), to.getPitch()));
+                to.setX(loc.getX());
+                to.setY(loc.getY());
+                to.setZ(loc.getZ());
+                return teleport(loc);
             }
             return teleport(getLocation());
         }
@@ -1487,7 +1475,7 @@ public class SpartanPlayer {
             box = 0.0;
         }
 
-        for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
+        for (double progressiveY = startY; startY > BlockUtils.getMinHeight(getWorld()); progressiveY--) {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
             Material material = loopLocation.getBlock().getType();
 
@@ -1684,7 +1672,7 @@ public class SpartanPlayer {
     // Environment
 
     public boolean stepsOnBoats() {
-        return GroundUtils.stepsOnBoats(this, getCooldowns(), getLocation());
+        return GroundUtils.stepsOnBoats(this);
     }
 
     // Falling
