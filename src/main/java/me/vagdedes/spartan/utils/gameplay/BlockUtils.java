@@ -930,7 +930,6 @@ public class BlockUtils {
             helper.add(Material.MOVING_PISTON);
             helper.add(Material.DANDELION);
             helper.add(Material.POPPY);
-            helper.add(Material.SUGAR_CANE);
             helper.add(Material.TALL_GRASS);
             helper.add(Material.POTATOES);
             helper.add(Material.CARROTS);
@@ -972,16 +971,6 @@ public class BlockUtils {
                 }
             }
         } else {
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)) {
-                        helper.add(Material.STRUCTURE_VOID);
-                    }
-                    helper.add(Material.BEETROOT_SEEDS);
-                    helper.add(Material.END_GATEWAY);
-                }
-                helper.add(Material.ARMOR_STAND);
-            }
             helper.add(Material.getMaterial("REDSTONE_TORCH_ON"));
             helper.add(Material.getMaterial("REDSTONE_TORCH_OFF"));
             helper.add(Material.getMaterial("SEEDS"));
@@ -1010,6 +999,16 @@ public class BlockUtils {
             if (endsWith(s, "_SIGN") && !contains(s, "_HANGING_")) {
                 helper.add(m);
             }
+        }
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)) {
+                    helper.add(Material.STRUCTURE_VOID);
+                }
+                helper.add(Material.BEETROOT_SEEDS);
+                helper.add(Material.END_GATEWAY);
+            }
+            helper.add(Material.ARMOR_STAND);
         }
         helper.add(Material.SUGAR_CANE);
         helper.add(Material.AIR);
@@ -1435,7 +1434,7 @@ public class BlockUtils {
     }
 
     public static boolean isFullSolid(Material m) {
-        return solid.contains(m) && !isSemiSolid(m);
+        return solid.contains(m) && !semi_solid.contains(m);
     }
 
     public static boolean isSemiSolid(Material m) {
