@@ -1244,7 +1244,11 @@ public class ResearchEngine {
                                                     int violation = getDetectionViolationLevel(data);
 
                                                     if (violation != -1) {
-                                                        SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                                        SimpleDateFormat sdf = new SimpleDateFormat(
+                                                                fullDate.contains(AntiCheatLogs.dateFormatChanger) ?
+                                                                        AntiCheatLogs.usualDateFormat :
+                                                                        AntiCheatLogs.dateFormat
+                                                        );
                                                         playerProfile.getViolationHistory(hackType).increaseViolations(
                                                                 new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation, isLowTPS(data))
                                                         );

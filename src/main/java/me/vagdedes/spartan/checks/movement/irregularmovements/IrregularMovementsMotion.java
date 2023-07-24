@@ -129,7 +129,7 @@ public class IrregularMovementsMotion {
                                     upwardsDecelerationKey, null,
                                     5, extendedDefaultBufferTime);
                         }
-                        if (jumpEffect || abstractScenario) {
+                        if (jumpEffectASYNC || abstractScenario) {
                             if (verticalDifference >= vertical) {
                                 IrregularMovements.cancel(p, from, prevention,
                                         upwardsAccelerationKey, null,
@@ -143,6 +143,7 @@ public class IrregularMovementsMotion {
                     }
                 } else if ((checkDownASYNC || checkFallASYNC)
                         && !slowFallingScenario
+                        && !jumpEffectASYNC
                         && !climbScenario) {
                     if (vertical < 0.0) {
                         if (constructDetection || velocityScenarioASYNC) {
@@ -161,35 +162,33 @@ public class IrregularMovementsMotion {
                                 decimals.remove(downwardsDifferenceKey);
                             }
                         }
-                        if (!jumpEffect) {
-                            int expectedTick = MoveUtils.getFallingTick(vertical);
+                        int expectedTick = MoveUtils.getFallingTick(vertical);
 
-                            if (expectedTick != -1) {
-                                int predictedExpectedTick = AlgebraUtils.integerRound(
-                                        decimals.get(downwardsPredictionKey, -1.0)
+                        if (expectedTick != -1) {
+                            int predictedExpectedTick = AlgebraUtils.integerRound(
+                                    decimals.get(downwardsPredictionKey, -1.0)
+                            );
+
+                            if (predictedExpectedTick != -1) {
+                                int inaccuracy = AlgebraUtils.integerRound(
+                                        Math.abs(expectedTick - predictedExpectedTick)
                                 );
 
-                                if (predictedExpectedTick != -1) {
-                                    int inaccuracy = AlgebraUtils.integerRound(
-                                            Math.abs(expectedTick - predictedExpectedTick)
-                                    );
-
-                                    if (inaccuracy > 1) {
-                                        IrregularMovements.cancel(p, from,
-                                                prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
-                                                5, extendedDefaultBufferTime);
-                                    }
+                                if (inaccuracy > 1) {
+                                    IrregularMovements.cancel(p, from,
+                                            prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
+                                            5, extendedDefaultBufferTime);
                                 }
-                                decimals.set(
-                                        downwardsPredictionKey,
-                                        MoveUtils.getFallingTick((vertical * MoveUtils.dragComplement) - MoveUtils.gravityAcceleration)
-                                );
-                            } else {
-                                decimals.remove(downwardsPredictionKey);
-                                IrregularMovements.cancel(p, from,
-                                        prevention, downwardsUnexpectedKey, null,
-                                        5, extendedDefaultBufferTime);
                             }
+                            decimals.set(
+                                    downwardsPredictionKey,
+                                    MoveUtils.getFallingTick((vertical * MoveUtils.dragComplement) - MoveUtils.gravityAcceleration)
+                            );
+                        } else {
+                            decimals.remove(downwardsPredictionKey);
+                            IrregularMovements.cancel(p, from,
+                                    prevention, downwardsUnexpectedKey, null,
+                                    5, extendedDefaultBufferTime);
                         }
                     }
                 } else {
@@ -328,7 +327,7 @@ public class IrregularMovementsMotion {
                 } else if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                         && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                     IrregularMovements.cancel(p, from, prevention, "equilibrium-spacious",
-                            jumpEffect || velocityScenario ? 2 : 1);
+                            jumpEffectASYNC || velocityScenarioASYNC ? 2 : 1);
                 } else if (!knownBoxes
                         && !GroundUtils.heightExists(oldBox - oldVertical)) {
                     IrregularMovements.cancel(p, from, prevention, "*equilibrium-abstract", 2);

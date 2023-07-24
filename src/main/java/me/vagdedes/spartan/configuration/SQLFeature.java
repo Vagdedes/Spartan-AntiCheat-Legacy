@@ -2,6 +2,7 @@ package me.vagdedes.spartan.configuration;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.API;
+import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.moderation.BanManagement;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
@@ -21,6 +22,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -361,7 +364,7 @@ public class SQLFeature {
         update(
                 "CREATE TABLE IF NOT EXISTS " + table + " (" +
                         "id INT(11) NOT NULL AUTO_INCREMENT, " +
-                        "creation_date VARCHAR(26), " +
+                        "creation_date VARCHAR(30), " +
 
                         "plugin_version VARCHAR(16), " +
                         "server_version VARCHAR(7), " +
@@ -404,7 +407,7 @@ public class SQLFeature {
                     + ", type, information"
                     + ", player_uuid, player_latency, player_x, player_y, player_z"
                     + ", functionality, violation_level, cancel_violation) "
-                    + "VALUES (" + syntaxForColumn(new Timestamp(System.currentTimeMillis()))
+                    + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
                     + ", " + syntaxForColumn(API.getVersion())
                     + ", " + syntaxForColumn(MultiVersion.versionString())
                     + ", " + syntaxForColumn(TPS.get(p, false))

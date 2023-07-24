@@ -21,7 +21,10 @@ import java.time.format.DateTimeFormatter;
 
 public class AntiCheatLogs {
 
-    public static final String dateFormat = "yyyy/MM/dd HH:mm:ss";
+    public static final String
+            dateFormatChanger = ".",
+            usualDateFormat = "yyyy/MM/dd HH:mm:ss",
+            dateFormat = "yyyy/MM/dd HH:mm:ss" + dateFormatChanger + "SSSSSSSSS";
     private static final String logsFolder = Register.plugin.getDataFolder() + "/logs";
 
     private static int id = 1;

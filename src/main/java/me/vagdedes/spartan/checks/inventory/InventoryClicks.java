@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.checks.inventory;
 
+import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Timer;
@@ -19,7 +20,8 @@ public class InventoryClicks {
     public static void run(SpartanPlayer p, ItemStack item, ClickType click) {
         if (!p.canRunCheck(check, true)
                 || click.isCreativeAction() || click.isKeyboardClick()
-                || item == null || item.getItemMeta() == null) {
+                || item == null || item.getItemMeta() == null
+                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) {
             return;
         }
         Material material = item.getType();
