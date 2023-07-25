@@ -37,26 +37,6 @@
       <option name="url" value="https://repo.opencollab.dev/maven-snapshots/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="viaversion-repo" />
-      <option name="name" value="viaversion-repo" />
-      <option name="url" value="https://repo.viaversion.com" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="teamvk-repo" />
-      <option name="name" value="teamvk-repo" />
-      <option name="url" value="https://raw.githubusercontent.com/TeamVK/maven-repository/master/release/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="crazycrew-releases" />
-      <option name="name" value="CrazyCrew Repository" />
-      <option name="url" value="https://repo.crazycrew.us/releases" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="spigot-repo" />
-      <option name="name" value="spigot-repo" />
-      <option name="url" value="https://hub.spigotmc.org/nexus/content/repositories/snapshots/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="essentials-repo" />
       <option name="name" value="essentials-repo" />
       <option name="url" value="https://repo.essentialsx.net" />
@@ -75,11 +55,6 @@
       <option name="id" value="maven-public" />
       <option name="name" value="maven-public" />
       <option name="url" value="https://repo.auxilor.io/repository/maven-public/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="Sparky" />
-      <option name="name" value="Sparky" />
-      <option name="url" value="https://nexus.sparky.ac/repository/Sparky/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="nexus" />
