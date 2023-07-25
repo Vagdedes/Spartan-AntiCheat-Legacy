@@ -103,6 +103,7 @@ public class ConfigUtils {
         String worldName = p.getWorld().getName();
         message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(p, false), 2)));
         message = replace(message, "{player}", p.getName());
+        message = replace(message, "{player:type}", p.getDataType().toString());
         message = replace(message, "{uuid}", uuid.toString());
         message = replace(message, "{ping}", String.valueOf(p.getPing()));
         message = replace(message, "{vls}", String.valueOf(Check.getViolationCount(uuid)));
@@ -153,6 +154,7 @@ public class ConfigUtils {
             if (p != null) {
                 SpartanLocation loc = p.getLocation();
                 String worldName = p.getWorld().getName();
+                message = replace(message, "{player:type}", p.getDataType().toString());
                 message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(p, false), 2)));
                 message = replace(message, "{ping}", String.valueOf(p.getPing()));
                 message = replace(message, "{world}", worldName);
@@ -183,6 +185,7 @@ public class ConfigUtils {
                     message = replace(message, "{detection:category:adverb}", (category.endsWith("ly") ? category : category + "ly"));
                 }
             } else if (hasHackType) {
+                message = replace(message, "{player:type}", ResearchEngine.DataType.Java.toString());
                 message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
             }
         } else if (hasHackType) {
