@@ -832,6 +832,7 @@ public class Speed {
 
     static boolean canDo(SpartanPlayer p, SpartanLocation to) { // Attention, part of the Sprint class too
         return p.canRunCheck(check, true)
+                && p.getVehicle() == null
                 && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && !MoveUtils.isInWaterTunnel(p, to);

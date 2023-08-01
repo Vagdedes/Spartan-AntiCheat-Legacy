@@ -3,6 +3,7 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
+import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
@@ -272,12 +273,14 @@ public class IrregularMovementsMotion {
                                 IrregularMovements.cancel(p, from, prevention, "jump-up-skip", 1);
                             } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
                                 IrregularMovements.cancel(p, from, prevention, "jump-up-equilibrium",
-                                        groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                             }
                         }
                     } else if (!jumpEffect
                             && !onGround
-                            && p.isJumping(oldVertical)) {
+                            && !climbScenario
+                            && p.isJumping(oldVertical)
+                            && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)) {
                         double jumpingPrecision = MoveUtils.getJumpingPrecision(p);
 
                         if (Math.abs(oldVertical - MoveUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
@@ -300,10 +303,10 @@ public class IrregularMovementsMotion {
 
                             if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
                                 IrregularMovements.cancel(p, from, prevention, "jump-down-skip",
-                                        groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                             } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
                                 IrregularMovements.cancel(p, from, prevention, "jump-down-equilibrium",
-                                        groundInteractionScenario ? MoveUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                             }
                         } else if (!onGroundCustom
                                 && !GroundUtils.heightExists(Math.abs(box - vertical))
@@ -315,19 +318,22 @@ public class IrregularMovementsMotion {
             } else if (checkHorizontalASYNC
                     && !changedScenario
                     && !climbScenario
-                    && !onGround) { // Equilibrium
+                    && !onGround
+                    && horizontalDifference >= 0.0001) { // Equilibrium
                 double[][] positions = new double[][]{
                         {1, 0, 1},
                         {1, -(box + GroundUtils.minPossibleStep), 1},
                         {1, 1, 1},
                 };
 
-                if (levitationEffect) {
+                if (velocityScenarioASYNC) {
+                    IrregularMovements.cancel(p, from, prevention, "equilibrium-velocity", MoveUtils.jumpingMotions);
+                } else if (levitationEffect) {
                     IrregularMovements.cancel(p, from, prevention, "equilibrium-levitation", MoveUtils.jumpingMotions);
                 } else if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                         && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                     IrregularMovements.cancel(p, from, prevention, "equilibrium-spacious",
-                            jumpEffectASYNC || velocityScenarioASYNC ? 2 : 1);
+                            jumpEffectASYNC ? 2 : 1);
                 } else if (!knownBoxes
                         && !GroundUtils.heightExists(oldBox - oldVertical)) {
                     IrregularMovements.cancel(p, from, prevention, "*equilibrium-abstract", 2);

@@ -70,8 +70,8 @@ public class PlayerData {
             Buffer buffer = p.getBuffer();
 
             // Separator
-            SpartanLocation to = MoveUtils.trackLocation(p),
-                    from = MoveUtils.getCachedLocation(p);
+            SpartanLocation from = MoveUtils.getCachedLocation(p);
+            MoveUtils.trackLocation(p);
             boolean ground = p.refreshOnGroundCustom(from);
 
             if (ground) {
@@ -134,7 +134,8 @@ public class PlayerData {
 
             // Separator
 
-            Entity entity = p.getVehicle();
+            Entity entity = n.getVehicle();
+            p.setVehicle(entity);
 
             if (entity != null) {
                 p.getBuffer().remove(GroundUtils.inaccuracyKey);

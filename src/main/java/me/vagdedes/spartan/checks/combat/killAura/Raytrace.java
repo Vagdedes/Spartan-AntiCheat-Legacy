@@ -2,6 +2,7 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of hitting entities behind other entities or blocks
 
+import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -10,6 +11,7 @@ import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
@@ -34,6 +36,7 @@ public class Raytrace {
 
                 if (nearbyEntitiesSize <= maxEntities) {
                     PlayerProfile playerProfile = player.getProfile();
+                    Handlers handlers = player.getHandlers();
                     boolean hasNearbyEntities = nearbyEntitiesSize > 0, fullSolid = false;
 
                     SpartanLocation playerEyeHeightLocation = location.clone().add(0.0, player.getEyeHeight(), 0.0);
@@ -59,8 +62,10 @@ public class Raytrace {
                                     || raytracedLocationZ != block.getZ()) {
                                 block = raytracedLocation.getBlock();
                                 distanceToBlock = raytracedLocation.distance(block.getLocation());
+                                Material type = block.getType();
                                 fullSolid = (playerProfile.isSuspectedOrHacker(KillAura.check) || distanceToBlock <= 1.0)
-                                        && BlockUtils.isFullSolid(block.getType());
+                                        && (!handlers.has(Handlers.HandlerType.BlockBreak) || !BlockUtils.isSensitive(player, type))
+                                        && BlockUtils.isFullSolid(type);
                             } else {
                                 distanceToBlock = 0.0;
                             }

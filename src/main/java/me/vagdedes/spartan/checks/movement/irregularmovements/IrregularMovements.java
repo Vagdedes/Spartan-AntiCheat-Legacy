@@ -522,7 +522,8 @@ public class IrregularMovements {
 
     private static boolean canDo(SpartanPlayer p, SpartanLocation to, boolean bedrockPlayer) {
         return p.canRunCheck(check, true)
-                && !p.getHandlers().has(Handlers.HandlerType.ElytraUse) && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && (!bedrockPlayer || to.getBlockY() > BlockUtils.getMinHeight(p.getWorld()));
     }
 

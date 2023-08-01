@@ -124,7 +124,8 @@ public class SpartanPlayer {
     private long locationTime;
     private long chasing;
 
-    List<Entity> nearbyEntities;
+    private Entity vehicle;
+    private List<Entity> nearbyEntities;
     private double nearbyEntitiesDistance;
 
     private final boolean[] runChecks;
@@ -434,6 +435,7 @@ public class SpartanPlayer {
         this.detectionTick = new DetectionTick();
         this.playerProfile = ResearchEngine.getPlayerProfile(this);
         this.clickData = new ClickData();
+        this.vehicle = p.getVehicle();
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             this.gliding = p.isGliding();
@@ -655,21 +657,23 @@ public class SpartanPlayer {
         if (vehicle != null) {
             return vehicle;
         } else {
-            long ms = System.currentTimeMillis();
+            if (SpartanBukkit.isSynchronised()) {
+                long ms = System.currentTimeMillis();
 
-            if ((ms - this.locationTime) > TPS.tickTime) {
-                this.locationTime = ms;
-                Player p = getPlayer();
+                if ((ms - this.locationTime) > TPS.tickTime) {
+                    this.locationTime = ms;
+                    Player p = getPlayer();
 
-                if (p != null) {
-                    SpartanLocation from = this.location.clone();
-                    this.location = new SpartanLocation(this, p.getLocation());
+                    if (p != null) {
+                        SpartanLocation from = this.location.clone();
+                        this.location = new SpartanLocation(this, p.getLocation());
 
-                    if (from != null) {
-                        this.location.retrieveDataFrom(from);
+                        if (from != null) {
+                            this.location.retrieveDataFrom(from);
+                        }
+                    } else {
+                        this.location = new SpartanLocation();
                     }
-                } else {
-                    this.location = new SpartanLocation();
                 }
             }
             return location;
@@ -870,7 +874,7 @@ public class SpartanPlayer {
     }
 
     public boolean isVanillaSprinting() {
-        return sprinting ;
+        return sprinting;
     }
 
     public boolean isSprinting() {
@@ -1047,9 +1051,12 @@ public class SpartanPlayer {
         return null;
     }
 
+    public void setVehicle(Entity vehicle) {
+        this.vehicle = vehicle;
+    }
+
     public Entity getVehicle() {
-        Player p = this.getPlayer();
-        return p == null || !p.isOnline() ? null : p.getVehicle();
+        return vehicle;
     }
 
     public float getWalkSpeed() {

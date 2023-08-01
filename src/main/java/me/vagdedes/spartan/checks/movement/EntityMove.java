@@ -58,6 +58,9 @@ public class EntityMove {
             {1, -1, 0},
             {1, 0, 1},
             {1, 1, 1}
+    }, pig = new double[][]{
+            {1, -1, 0},
+            {1, 0, 1},
     };
 
     private static final Material
@@ -79,8 +82,12 @@ public class EntityMove {
             if (entityLongID != 0) {
                 Long[] cache = validity.get(uuid);
 
-                if (cache == null || cache[0] != entityLongID) {
+                if (cache == null) {
                     validity.put(uuid, new Long[]{entityLongID, System.currentTimeMillis()});
+                    return;
+                } else if (cache[0] != entityLongID) {
+                    validity.put(uuid, new Long[]{entityLongID, System.currentTimeMillis()});
+                    check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 4);
                     return;
                 }
                 int entityID = (int) entityLongID;
@@ -196,13 +203,16 @@ public class EntityMove {
 
                             if (!Damage.hasCooldown(p)) {
                                 String messageCopy = message;
+                                boolean notStepping = (!knownBoxes
+                                        || !oldKnownBoxes
+                                        || !PatternUtils.isBlockPattern(pig, to, true, BlockUtils.solid, BlockUtils.semi_solid));
 
                                 if (checkVertical) {
-                                    if (vertical >= (damage ? 0.5 : 0.1)) {
+                                    if (notStepping && vertical >= (damage ? 0.5 : 0.1)) {
                                         cancel(p, vehicle, from, "rapid-upwards", messageCopy);
                                     } else if (vertical > 0.0 && airTicks >= (damage ? 20 : 12)) {
                                         cancel(p, vehicle, from, "abstract-upwards", messageCopy);
-                                    } else if (verticalDifference >= (damage ? 0.5 : 0.2)) {
+                                    } else if (notStepping && verticalDifference >= (damage ? 0.5 : 0.2)) {
                                         cancel(p, vehicle, from, "irregular-upwards", messageCopy);
                                     } else if (vertical >= oldVertical && vertical != 0.0 && oldVertical != 0.0
                                             && !PatternUtils.isBlockPattern(web, to, true, BlockUtils.web)) {

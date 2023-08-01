@@ -1246,8 +1246,8 @@ public class ResearchEngine {
                                                     if (violation != -1) {
                                                         SimpleDateFormat sdf = new SimpleDateFormat(
                                                                 fullDate.contains(AntiCheatLogs.dateFormatChanger) ?
-                                                                        AntiCheatLogs.usualDateFormat :
-                                                                        AntiCheatLogs.dateFormat
+                                                                        AntiCheatLogs.dateFormat :
+                                                                        AntiCheatLogs.usualDateFormat
                                                         );
                                                         playerProfile.getViolationHistory(hackType).increaseViolations(
                                                                 new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation, isLowTPS(data))
@@ -1787,6 +1787,22 @@ public class ResearchEngine {
     // Separator
 
     public enum DataType {
-        Java, Bedrock, Universal
+        Java, Bedrock, Universal;
+
+        public final String lowerCase;
+
+        DataType() {
+            switch (this.ordinal()) {
+                case 0:
+                    lowerCase = "java";
+                    break;
+                case 1:
+                    lowerCase = "bedrock";
+                    break;
+                default:
+                    lowerCase = "universal";
+                    break;
+            }
+        }
     }
 }

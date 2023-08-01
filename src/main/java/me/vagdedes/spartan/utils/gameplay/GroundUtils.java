@@ -202,7 +202,7 @@ public class GroundUtils {
             }
             return true;
         }
-        original &= p.getVehicle() == null;
+        original &= p.getVehicle() == null && !p.isBedrockPlayer();
         double box = loc.getY() - loc.getBlockY();
 
         for (SpartanLocation loopLocation : loc.getSurroundingLocations(GroundUtils.hitbox, 0, GroundUtils.hitbox)) {
