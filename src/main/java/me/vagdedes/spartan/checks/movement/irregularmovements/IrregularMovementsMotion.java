@@ -33,6 +33,11 @@ public class IrregularMovementsMotion {
             downwardsPredictionKey = "downwards-prediction",
             downwardsUnexpectedKey = "downwards-unexpected";
 
+    private static final double[][] honey = new double[][]{
+            {1, 1, 1},
+            {1, 0, 1},
+    };
+
     private static void clearGeneralCache(Cooldowns cooldowns) {
         IrregularMovements.forgetBoolean(cooldowns, motionJumpKey);
         IrregularMovements.forgetBoolean(cooldowns, motionVelocityKey);
@@ -116,7 +121,8 @@ public class IrregularMovementsMotion {
                             if (jumpEffect) {
                                 upwardsLimit += p.getExtraMovementFromJumpEffect();
                             }
-                            if (abstractScenario) {
+                            if (abstractScenario
+                                    || PatternUtils.isBlockPattern(honey, to, true, BlockUtils.honey_block)) {
                                 upwardsLimit = Math.max(upwardsLimit, criticalUpwardsLimit);
                             }
                             if (vertical > upwardsLimit) {
@@ -175,7 +181,7 @@ public class IrregularMovementsMotion {
                                         Math.abs(expectedTick - predictedExpectedTick)
                                 );
 
-                                if (inaccuracy > 1) {
+                                if (inaccuracy >= 3) {
                                     IrregularMovements.cancel(p, from,
                                             prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
                                             5, extendedDefaultBufferTime);
@@ -285,10 +291,11 @@ public class IrregularMovementsMotion {
 
                         if (Math.abs(oldVertical - MoveUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
                                 && !PatternUtils.isBlockPattern(new double[][]{
+                                {1, 3, 1},
+                                {1, 2, 1},
                                 {1, 2 - box, 1},
-                                {1, 2 - oldBox, 1},
+                                {1, 2 - oldBox, 1, oldBox != box ? 1 : 0},
                                 {1, 1, 1},
-                                {1, 2, 1}
                         }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                             IrregularMovements.cancel(p, from, prevention, "jump-end",
                                     groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
@@ -319,7 +326,7 @@ public class IrregularMovementsMotion {
                     && !changedScenario
                     && !climbScenario
                     && !onGround
-                    && horizontalDifference >= 0.0001) { // Equilibrium
+                    && Math.abs(horizontalDifference) >= 0.0001) { // Equilibrium
                 double[][] positions = new double[][]{
                         {1, 0, 1},
                         {1, -(box + GroundUtils.minPossibleStep), 1},

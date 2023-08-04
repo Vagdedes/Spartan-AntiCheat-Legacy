@@ -148,8 +148,8 @@ public class MoveUtils {
         return p.isBedrockPlayer() || PlayerData.hasJumpEffect(p) ? MoveUtils.highPrecision : MoveUtils.jumping[2];
     }
 
-    public static boolean isJumping(double d, double diff) {
-        if (d > MoveUtils.jumping[0] && d < 0.42 && !GroundUtils.heightExists(d)) {
+    public static boolean isJumping(double d, double diff, double offDiff) {
+        if (d > (MoveUtils.jumping[0] - offDiff) && d < (0.42 + offDiff) && !GroundUtils.heightExists(d)) {
             double original = jumping[1];
 
             for (double value : jumps) {

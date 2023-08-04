@@ -9,30 +9,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eeca6878-94f8-4e49-8aa7-f063615e0302" name="Changes" comment="Added bedrock player configuration syntax.">
+    <list default="true" id="eeca6878-94f8-4e49-8aa7-f063615e0302" name="Changes" comment="Fixed crash issue and false positives.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/combat/killAura/Raytrace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/combat/killAura/Raytrace.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/EntityMove.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/EntityMove.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/speed/Speed.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/speed/Speed.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/stability/ResearchEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/handlers/stability/ResearchEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/profiling/PlayerViolation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/profiling/PlayerViolation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/Check.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/Check.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/GroundUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/GroundUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/PlayerData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/PlayerData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/server/ConfigUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/server/ConfigUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/MoveUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/MoveUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/killAura/Raytrace.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/killAura/Raytrace.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/EntityMove.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/EntityMove.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/speed/Speed.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/speed/Speed.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/synchronicity/SpartanEdition.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/synchronicity/SpartanEdition.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/handlers/stability/ResearchEngine$DataType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/handlers/stability/ResearchEngine$DataType.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/handlers/stability/ResearchEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/handlers/stability/ResearchEngine.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Piracy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Piracy.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/GroundUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/GroundUtils.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/server/ConfigUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/server/ConfigUtils.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -137,7 +128,15 @@
       <option name="project" value="LOCAL" />
       <updated>1690306570177</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Fixed crash issue and false positives.">
+      <option name="closed" value="true" />
+      <created>1690904789495</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1690904789495</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -154,7 +153,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="I updated IntelliJ and it broke, how much JetBrains is this" />
     <MESSAGE value="Added bedrock player configuration syntax." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added bedrock player configuration syntax." />
+    <MESSAGE value="Fixed crash issue and false positives." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed crash issue and false positives." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

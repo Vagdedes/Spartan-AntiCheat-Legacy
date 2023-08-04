@@ -504,7 +504,7 @@ public class IrregularMovements {
             instance = sharedInstance ? instance.substring(1) : instance.split("=", 2)[0]; // Remove potential variables and special characters
             new HackPrevention(p,
                     check,
-                    "instance: " + instance + "(" + buffer + (hasBuffer ? "/" + time + "/" + bufferAmount : "") + "), "
+                    "type: " + instance + "(" + buffer + (hasBuffer ? "/" + time + "/" + bufferAmount : "") + "), "
                             + information + (extra == null ? "" : ", extra: 1, " + extra),
                     violate ? from : null,
                     0,

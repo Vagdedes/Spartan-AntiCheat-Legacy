@@ -761,7 +761,7 @@ public class SpartanPlayer {
         return getFireTicks() > -20 && !hasPotionEffect(PotionEffectType.FIRE_RESISTANCE);
     }
 
-    public void setFireTicks(int fireTicks) {
+    public synchronized void setFireTicks(int fireTicks) {
         this.fireTicks = fireTicks;
     }
 
@@ -790,7 +790,7 @@ public class SpartanPlayer {
         return playerWeather;
     }
 
-    public void setPlayerWeather(WeatherType weatherType) {
+    public synchronized void setPlayerWeather(WeatherType weatherType) {
         playerWeather = weatherType;
     }
 
@@ -815,11 +815,11 @@ public class SpartanPlayer {
         return System.currentTimeMillis() - lastLiquidTime <= 750L;
     }
 
-    public void setLastLiquidTime() {
+    public synchronized void setLastLiquidTime() {
         lastLiquidTime = System.currentTimeMillis();
     }
 
-    public void setFlying(boolean flying, boolean allowFlight) {
+    public synchronized void setFlying(boolean flying, boolean allowFlight) {
         if (!flying) {
             flying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && gameMode == GameMode.SPECTATOR;
         }
@@ -844,7 +844,7 @@ public class SpartanPlayer {
         return dead;
     }
 
-    public void setDead(boolean dead) {
+    public synchronized void setDead(boolean dead) {
         this.dead = dead;
     }
 
@@ -852,11 +852,11 @@ public class SpartanPlayer {
         return sleeping;
     }
 
-    public void setSleeping(boolean sleeping) {
+    public synchronized void setSleeping(boolean sleeping) {
         this.sleeping = sleeping;
     }
 
-    public void setLastHeadMovement() {
+    public synchronized void setLastHeadMovement() {
         this.lastHeadMovement = System.currentTimeMillis();
     }
 
@@ -881,7 +881,7 @@ public class SpartanPlayer {
         return sprinting || isCustomSprinting();
     }
 
-    public void setSprinting(boolean sprinting) {
+    public synchronized void setSprinting(boolean sprinting) {
         this.sprinting = sprinting;
     }
 
@@ -889,7 +889,7 @@ public class SpartanPlayer {
         return sneaking;
     }
 
-    public void setSneaking(boolean sneaking) {
+    public synchronized void setSneaking(boolean sneaking) {
         this.sneaking = sneaking;
     }
 
@@ -1025,7 +1025,7 @@ public class SpartanPlayer {
         return playerProfile;
     }
 
-    public void setProfile(PlayerProfile playerProfile) {
+    public synchronized void setProfile(PlayerProfile playerProfile) {
         this.playerProfile = playerProfile;
     }
 
@@ -1051,7 +1051,7 @@ public class SpartanPlayer {
         return null;
     }
 
-    public void setVehicle(Entity vehicle) {
+    public synchronized void setVehicle(Entity vehicle) {
         this.vehicle = vehicle;
     }
 
@@ -1063,7 +1063,7 @@ public class SpartanPlayer {
         return walkSpeed;
     }
 
-    public void setWalkSpeed(float walkSpeed) {
+    public synchronized void setWalkSpeed(float walkSpeed) {
         this.walkSpeed = walkSpeed;
     }
 
@@ -1071,7 +1071,7 @@ public class SpartanPlayer {
         return flySpeed;
     }
 
-    public void setFlySpeed(float flySpeed) {
+    public synchronized void setFlySpeed(float flySpeed) {
         this.flySpeed = flySpeed;
     }
 
@@ -1079,7 +1079,7 @@ public class SpartanPlayer {
         return invulnerable;
     }
 
-    public void setInvulnerable(boolean invulnerable) {
+    public synchronized void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
     }
 
@@ -1087,7 +1087,7 @@ public class SpartanPlayer {
         return foodLevel;
     }
 
-    public void setFoodLevel(int foodLevel, boolean modify) {
+    public synchronized void setFoodLevel(int foodLevel, boolean modify) {
         if (modify) {
             Player p = getPlayer();
 
@@ -1104,7 +1104,7 @@ public class SpartanPlayer {
         return health;
     }
 
-    public void setHealth(double health) {
+    public synchronized void setHealth(double health) {
         this.health = health;
     }
 
@@ -1112,7 +1112,7 @@ public class SpartanPlayer {
         return fallDistance;
     }
 
-    public void setFallDistance(float fallDistance, boolean modify) {
+    public synchronized void setFallDistance(float fallDistance, boolean modify) {
         if (modify) {
             Player p = getPlayer();
 
@@ -1129,7 +1129,7 @@ public class SpartanPlayer {
         return gameMode;
     }
 
-    public void setGameMode(GameMode gameMode) {
+    public synchronized void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
     }
 
@@ -1137,7 +1137,7 @@ public class SpartanPlayer {
         return eyeHeight;
     }
 
-    public void setEyeHeight(double eyeHeight) {
+    public synchronized void setEyeHeight(double eyeHeight) {
         this.eyeHeight = eyeHeight;
     }
 
@@ -1153,11 +1153,11 @@ public class SpartanPlayer {
         return frozen;
     }
 
-    public void setFrozen(boolean frozen) {
+    public synchronized void setFrozen(boolean frozen) {
         this.frozen = frozen;
     }
 
-    public void setGliding(boolean gliding, boolean modify) {
+    public synchronized void setGliding(boolean gliding, boolean modify) {
         this.gliding = gliding;
 
         if (modify && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
@@ -1173,7 +1173,7 @@ public class SpartanPlayer {
         return swimming || swimmingTime >= System.currentTimeMillis();
     }
 
-    public void setSwimming(boolean swimming, int ticks) {
+    public synchronized void setSwimming(boolean swimming, int ticks) {
         this.swimming = swimming;
 
         if (ticks != -1L) {
@@ -1213,7 +1213,7 @@ public class SpartanPlayer {
         return false;
     }
 
-    public void setVelocity(Vector vector) {
+    public synchronized void setVelocity(Vector vector) {
         Player p = getPlayer();
 
         if (p != null && p.isOnline()) {
@@ -1243,7 +1243,7 @@ public class SpartanPlayer {
         return usingItem;
     }
 
-    public void setUsingItem(boolean usingItem) {
+    public synchronized void setUsingItem(boolean usingItem) {
         this.usingItem = usingItem;
     }
 
@@ -1267,7 +1267,7 @@ public class SpartanPlayer {
         return lastDamageCause == null ? new EntityDamageEvent(getPlayer(), EntityDamageEvent.DamageCause.CUSTOM, 0) : lastDamageCause;
     }
 
-    public void setLastDamageCause(EntityDamageEvent lastDamageCause, double lastDamage, int maximumNoDamageTicks) {
+    public synchronized void setLastDamageCause(EntityDamageEvent lastDamageCause, double lastDamage, int maximumNoDamageTicks) {
         this.lastDamageCause = lastDamageCause;
         this.lastDamage = lastDamage;
         this.maximumNoDamageTicks = maximumNoDamageTicks;
@@ -1293,7 +1293,7 @@ public class SpartanPlayer {
         return potionEffects;
     }
 
-    public void setActivePotionEffects(Collection<PotionEffect> potionEffects) {
+    public synchronized void setActivePotionEffects(Collection<PotionEffect> potionEffects) {
         this.potionEffects.clear();
         this.potionEffects.addAll(potionEffects);
     }
@@ -1349,7 +1349,7 @@ public class SpartanPlayer {
         return inventory;
     }
 
-    public void setInventory(PlayerInventory inv, InventoryView openInventory) {
+    public synchronized void setInventory(PlayerInventory inv, InventoryView openInventory) {
         this.inventory = new SpartanInventory(inv.getContents(),
                 new ItemStack[]{inv.getHelmet(), inv.getChestplate(), inv.getLeggings(), inv.getBoots()},
                 inv.getItemInHand(), MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? inv.getItemInOffHand() : null);
@@ -1565,14 +1565,19 @@ public class SpartanPlayer {
     // Jumping
 
     public boolean isJumping(double d) {
-        return MoveUtils.isJumping(d - getExtraMovementFromJumpEffect(), MoveUtils.getJumpingPrecision(this));
+        double precision = MoveUtils.getJumpingPrecision(this);
+        return MoveUtils.isJumping(
+                d - getExtraMovementFromJumpEffect(),
+                precision,
+                bedrockPlayer ? precision : 0.0
+        );
     }
 
     public long getLastJump() {
         return System.currentTimeMillis() - lastJump;
     }
 
-    public void setLastJump() {
+    public synchronized void setLastJump() {
         this.lastJump = System.currentTimeMillis();
     }
 
@@ -1697,7 +1702,7 @@ public class SpartanPlayer {
         return System.currentTimeMillis() - lastFall;
     }
 
-    public void setLastFall() {
+    public synchronized void setLastFall() {
         this.lastFall = System.currentTimeMillis();
     }
 
@@ -1719,7 +1724,7 @@ public class SpartanPlayer {
         return System.currentTimeMillis() - lastOffSprint;
     }
 
-    public void setLastOffSprint() {
+    public synchronized void setLastOffSprint() {
         this.lastOffSprint = System.currentTimeMillis();
     }
 
@@ -1729,7 +1734,7 @@ public class SpartanPlayer {
         return customDistance;
     }
 
-    public void setCustomDistance(double distance) {
+    public synchronized void setCustomDistance(double distance) {
         this.customDistance = distance;
     }
 
@@ -1737,7 +1742,7 @@ public class SpartanPlayer {
         return customHorizontalDistance;
     }
 
-    public void setCustomHorizontalDistance(double distance) {
+    public synchronized void setCustomHorizontalDistance(double distance) {
         this.customHorizontalDistance = distance;
     }
 
@@ -1745,7 +1750,7 @@ public class SpartanPlayer {
         return customVerticalDistance;
     }
 
-    public void setCustomVerticalDistance(double distance) {
+    public synchronized void setCustomVerticalDistance(double distance) {
         this.customVerticalDistance = distance;
     }
 
@@ -1753,7 +1758,7 @@ public class SpartanPlayer {
         return getCustomDistance() == 0.0 ? 0.0 : nmsDistance;
     }
 
-    public void setNmsDistance(double distance) {
+    public synchronized void setNmsDistance(double distance) {
         this.oldNmsDistance = this.nmsDistance;
         this.nmsDistance = distance;
     }
@@ -1762,42 +1767,26 @@ public class SpartanPlayer {
         return getCustomDistance() == 0.0 ? 0.0 : oldNmsDistance;
     }
 
-    public void setOld_NmsDistance(double distance) {
-        this.oldNmsDistance = distance;
-    }
-
     public double getNmsHorizontalDistance() {
         return getCustomDistance() == 0.0 ? 0.0 : nmsHorizontalDistance;
     }
 
-    public void setNmsHorizontalDistance(double distance) {
+    public synchronized void setNmsHorizontalDistance(double distance) {
         this.oldNmsHorizontalDistance = this.nmsHorizontalDistance;
         this.nmsHorizontalDistance = distance;
-    }
-
-    public double getOld_NmsHorizontalDistance() {
-        return getCustomDistance() == 0.0 ? 0.0 : oldNmsHorizontalDistance;
-    }
-
-    public void setOld_NmsHorizontalDistance(double distance) {
-        this.oldNmsHorizontalDistance = distance;
     }
 
     public double getNmsVerticalDistance() {
         return getCustomDistance() == 0.0 ? 0.0 : nmsVerticalDistance;
     }
 
-    public void setNmsVerticalDistance(double distance) {
+    public synchronized void setNmsVerticalDistance(double distance) {
         this.oldNmsVerticalDistance = this.nmsVerticalDistance;
         this.nmsVerticalDistance = distance;
     }
 
     public double getOld_NmsVerticalDistance() {
         return getCustomDistance() == 0.0 ? 0.0 : oldNmsVerticalDistance;
-    }
-
-    public void setOld_NmsVerticalDistance(double distance) {
-        this.oldNmsVerticalDistance = distance;
     }
 
     // Direction
@@ -1866,7 +1855,7 @@ public class SpartanPlayer {
         return isUsingItem() ? 0 : extraPackets;
     }
 
-    public void setExtraPackets(int number) {
+    public synchronized void setExtraPackets(int number) {
         this.extraPackets = number;
     }
 
@@ -1874,7 +1863,7 @@ public class SpartanPlayer {
         return airTicks;
     }
 
-    public void setAirTicks(int number) {
+    public synchronized void setAirTicks(int number) {
         if (airTicks > 0) {
             setOldAirTicks(airTicks);
         }
@@ -1889,7 +1878,7 @@ public class SpartanPlayer {
         return oldAirTicks;
     }
 
-    public void setOldAirTicks(int number) {
+    public synchronized void setOldAirTicks(int number) {
         this.oldAirTicks = number;
     }
 
@@ -1897,7 +1886,7 @@ public class SpartanPlayer {
         return fallingTicks;
     }
 
-    public void setFallingTicks(int number) {
+    public synchronized void setFallingTicks(int number) {
         this.fallingTicks = number;
     }
 
@@ -1905,7 +1894,7 @@ public class SpartanPlayer {
         return groundTicks;
     }
 
-    public void setGroundTicks(int number) {
+    public synchronized void setGroundTicks(int number) {
         this.groundTicks = number;
 
         if (number > 0) {
@@ -1919,7 +1908,7 @@ public class SpartanPlayer {
         return sprintingTime > System.currentTimeMillis();
     }
 
-    public void setSprinting(int ticks) {
+    public synchronized void setSprinting(int ticks) {
         this.sprintingTime = System.currentTimeMillis() + (ticks * 50L);
     }
 
@@ -1927,7 +1916,7 @@ public class SpartanPlayer {
         return walking > System.currentTimeMillis();
     }
 
-    public void setWalking(int ticks) {
+    public synchronized void setWalking(int ticks) {
         this.walking = System.currentTimeMillis() + (ticks * 50L);
     }
 
@@ -1935,7 +1924,7 @@ public class SpartanPlayer {
         return jumpWalking > System.currentTimeMillis();
     }
 
-    public void setJumpWalking(int ticks) {
+    public synchronized void setJumpWalking(int ticks) {
         this.jumpWalking = System.currentTimeMillis() + (ticks * 50L);
     }
 
@@ -1943,7 +1932,7 @@ public class SpartanPlayer {
         return jumpSprinting > System.currentTimeMillis();
     }
 
-    public void setJumpSprinting(int ticks) {
+    public synchronized void setJumpSprinting(int ticks) {
         this.jumpSprinting = System.currentTimeMillis() + (ticks * 50L);
     }
 

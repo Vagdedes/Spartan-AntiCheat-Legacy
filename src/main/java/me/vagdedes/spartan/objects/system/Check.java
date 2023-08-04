@@ -940,7 +940,7 @@ public class Check {
 
                 for (String key : configuration.getKeys(true)) {
                     if (key.split("\\.", 2)[0].equalsIgnoreCase(hackTypeString)) {
-                        Object option = configuration.get(key);
+                        Object option = configuration.get(key, null);
 
                         if (option != null) {
                             set.add(new String[]{key, option.toString()});
@@ -1015,13 +1015,13 @@ public class Check {
         return getOption(option, def, true).toString();
     }
 
-    public boolean getBooleanOption(String option, boolean def) {
+    public boolean getBooleanOption(String option, Boolean def) {
         Object object = getOption(option, def, true);
         return object instanceof Boolean ? (boolean) object :
                 object instanceof String ? Boolean.parseBoolean(object.toString().toLowerCase()) :
                         object instanceof Long || object instanceof Integer || object instanceof Short ? ((long) object) > 0L :
                                 object instanceof Double || object instanceof Float ? ((double) object) > 0.0 :
-                                        def;
+                                        def != null && def;
     }
 
     public int getNumericalOption(String option, int def) {
