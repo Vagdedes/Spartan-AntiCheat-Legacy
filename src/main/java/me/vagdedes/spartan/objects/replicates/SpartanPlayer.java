@@ -346,7 +346,7 @@ public class SpartanPlayer {
         Enums.HackType[] hackTypes = Enums.hackTypes();
         ItemStack itemInHand = p.getItemInHand();
 
-        this.location = new SpartanLocation();
+        this.location = new SpartanLocation(this, p.getLocation());
         this.locationTime = 0L;
         this.nearbyEntities = null;
         this.nearbyEntitiesDistance = 0;
@@ -1477,12 +1477,13 @@ public class SpartanPlayer {
         float countedDamage = 0.0f;
         double startY = location.getY(),
                 box = startY - location.getBlockY();
+        World world = getWorld();
 
         if (!GroundUtils.heightExists(box)) {
             box = 0.0;
         }
 
-        for (double progressiveY = startY; startY > BlockUtils.getMinHeight(getWorld()); progressiveY--) {
+        for (double progressiveY = Math.min(BlockUtils.getMaxHeight(world), startY); startY > BlockUtils.getMinHeight(world); progressiveY--) {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
             Material material = loopLocation.getBlock().getType();
 

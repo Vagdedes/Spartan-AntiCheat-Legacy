@@ -96,7 +96,7 @@ public class Settings {
         ConfigUtils.add(file, "Important.refresh_inventory_menu", true);
         ConfigUtils.add(file, "Important.enable_developer_api", true);
         ConfigUtils.add(file, showEcosystemOption, true);
-        ConfigUtils.add(file, "Important.bedrock_player_prefix", "*");
+        ConfigUtils.add(file, "Important.bedrock_player_prefix", ".");
         ConfigUtils.add(file, "Important.inventory_menu_empty_heads", true);
 
         ConfigUtils.add(file, "Cloud.server_name", "specify server name");

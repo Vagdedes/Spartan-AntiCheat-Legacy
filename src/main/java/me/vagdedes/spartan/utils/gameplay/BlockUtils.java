@@ -1232,6 +1232,10 @@ public class BlockUtils {
         return -1.0f;
     }
 
+    public static int getMaxHeight(World world) {
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMaxHeight() : 256;
+    }
+
     public static int getMinHeight(World world) {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMinHeight() : 0;
     }

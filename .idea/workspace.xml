@@ -9,21 +9,51 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eeca6878-94f8-4e49-8aa7-f063615e0302" name="Changes" comment="Fixed crash issue and false positives.">
+    <list default="true" id="eeca6878-94f8-4e49-8aa7-f063615e0302" name="Changes" comment="Fixed false positives concerning the IrregularMovements check">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/profiling/PlayerViolation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/profiling/PlayerViolation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Settings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/Check.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/system/Check.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/MoveUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/MoveUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/BlockUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/utils/gameplay/BlockUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/EntityMove.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/EntityMove.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovements.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/synchronicity/SpartanEdition.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/synchronicity/SpartanEdition.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/FastBow.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/FastBow.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/VelocityCheck.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/VelocityCheck.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/criticals/Criticals.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/criticals/Criticals.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/fastClicks/FastClicks.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/fastClicks/FastClicks.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/killAura/KillAura.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/combat/killAura/KillAura.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/Chat.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/Chat.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/ElytraGlideSpam.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/ElytraGlideSpam.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/HeadPosition.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/HeadPosition.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/IllegalElytraPacket.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/IllegalElytraPacket.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/RapidDisallowedBuilding.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/RapidDisallowedBuilding.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/UndetectedMovement.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/exploits/UndetectedMovement.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/inventory/ImpossibleInventory.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/inventory/ImpossibleInventory.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/MorePackets.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/MorePackets.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/NoFall.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/NoFall.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/NoSlowdown.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/NoSlowdown.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsBouncing.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsBouncing.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsClimb.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsClimb.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsCobweb.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsCobweb.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsInsideBlocks.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsInsideBlocks.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsLevitation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsLevitation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsLiquids.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsLiquids.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/speed/SprintSpeed.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/speed/SprintSpeed.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/speed/WaterSpeed.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/movement/speed/WaterSpeed.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/player/NoSwing.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/player/NoSwing.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/FastBreak.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/FastBreak.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/FastPlace.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/FastPlace.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/GhostHand.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/GhostHand.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/ImpossibleActions.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/checks/world/ImpossibleActions.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/configuration/Settings.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/protections/ServerFlying.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/features/protections/ServerFlying.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/profiling/PlayerViolation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/profiling/PlayerViolation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/replicates/SpartanPlayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/replicates/SpartanPlayer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/system/Check.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/objects/system/Check.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Piracy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/system/Piracy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/BlockUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/BlockUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/MoveUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/MoveUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/PlayerData.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/vagdedes/spartan/utils/gameplay/PlayerData.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -136,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1690904789495</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Fixed false positives concerning the IrregularMovements check">
+      <option name="closed" value="true" />
+      <created>1691130356253</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1691130356253</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -154,7 +192,8 @@
     <MESSAGE value="I updated IntelliJ and it broke, how much JetBrains is this" />
     <MESSAGE value="Added bedrock player configuration syntax." />
     <MESSAGE value="Fixed crash issue and false positives." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed crash issue and false positives." />
+    <MESSAGE value="Fixed false positives concerning the IrregularMovements check" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed false positives concerning the IrregularMovements check" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

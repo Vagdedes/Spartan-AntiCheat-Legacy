@@ -337,15 +337,21 @@ public class IrregularMovementsMotion {
                     IrregularMovements.cancel(p, from, prevention, "equilibrium-velocity", MoveUtils.jumpingMotions);
                 } else if (levitationEffect) {
                     IrregularMovements.cancel(p, from, prevention, "equilibrium-levitation", MoveUtils.jumpingMotions);
-                } else if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
-                        && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-                    IrregularMovements.cancel(p, from, prevention, "equilibrium-spacious",
-                            jumpEffectASYNC ? 2 : 1);
-                } else if (!knownBoxes
-                        && !GroundUtils.heightExists(oldBox - oldVertical)) {
-                    IrregularMovements.cancel(p, from, prevention, "*equilibrium-abstract", 2);
                 } else {
-                    IrregularMovements.cancel(p, from, prevention, "*equilibrium-predictable", 3);
+                    Handlers handlers = p.getHandlers();
+
+                    if (!handlers.has(Handlers.HandlerType.BlockPlace)
+                            && !handlers.has(Handlers.HandlerType.Building)
+                            && !PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
+                            && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
+                        IrregularMovements.cancel(p, from, prevention, "equilibrium-spacious",
+                                jumpEffectASYNC ? 2 : 1);
+                    } else if (!knownBoxes
+                            && !GroundUtils.heightExists(oldBox - oldVertical)) {
+                        IrregularMovements.cancel(p, from, prevention, "*equilibrium-abstract", 2);
+                    } else {
+                        IrregularMovements.cancel(p, from, prevention, "*equilibrium-predictable", 3);
+                    }
                 }
             }
         });
