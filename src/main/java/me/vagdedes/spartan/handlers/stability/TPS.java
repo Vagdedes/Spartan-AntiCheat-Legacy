@@ -63,7 +63,7 @@ public class TPS {
 
     private static int getHash(SpartanPlayer player) {
         SpartanLocation location = player.getLocation();
-        int hash = SpartanBukkit.hashCodeMultiplier + player.getWorld().getUID().hashCode();
+        int hash = SpartanBukkit.hashCodeMultiplier + player.getWorld().hashCode();
         hash = (SpartanBukkit.hashCodeMultiplier * hash) + location.getChunkX();
         return (SpartanBukkit.hashCodeMultiplier * hash) + location.getBlockZ();
     }

@@ -88,7 +88,7 @@ public class SpartanLocation {
     // Utilities
 
     private SpartanBlock loadBlock(Material material, byte data, boolean liquid, boolean waterLogged) {
-        return this.block = new SpartanBlock(this.player, this.serverWorld, this.chunk, material, data, identifier, getBlockX(), getBlockY(), getBlockZ(), liquid, waterLogged);
+        return this.block = new SpartanBlock(this.player, this.serverWorld, this.chunk, material, data, this.identifier, getBlockX(), getBlockY(), getBlockZ(), liquid, waterLogged);
     }
 
     private void loadEmptyBlock(boolean air) {
@@ -109,12 +109,11 @@ public class SpartanLocation {
         this.yaw = yaw;
         this.pitch = pitch;
         this.vector = null;
-        this.block = null;
-        this.identifier = Chunks.locationIdentifier(serverWorld.getUID().hashCode(), getBlockX(), getBlockY(), getBlockZ());
     }
 
     SpartanLocation() { // Used as a backup
         this(null, Bukkit.getWorlds().get(0), null, 0, 0, 0, 0, 0);
+        this.identifier = Chunks.locationIdentifier(serverWorld.hashCode(), 0, 0, 0);
         loadEmptyBlock(false);
     }
 
@@ -126,6 +125,7 @@ public class SpartanLocation {
         } else {
             this.block = null;
         }
+        this.identifier = Chunks.locationIdentifier(serverWorld.hashCode(), getBlockX(), getBlockY(), getBlockZ());
     }
 
     // Native
@@ -140,7 +140,10 @@ public class SpartanLocation {
             } else {
                 loadEmptyBlock(false);
             }
+        } else {
+            this.block = null;
         }
+        this.identifier = Chunks.locationIdentifier(serverWorld.hashCode(), getBlockX(), getBlockY(), getBlockZ());
     }
 
     public SpartanLocation(SpartanPlayer player, World world, double x, double y, double z, float yaw, float pitch, SpartanLocation nearby) { // Used globally
@@ -156,16 +159,7 @@ public class SpartanLocation {
         this(loc.player, loc.serverWorld, loc.chunk, loc.x, loc.y, loc.z, loc.yaw, loc.pitch);
         this.block = loc.block;
         this.vector = loc.vector;
-    }
-
-    private SpartanLocation(SpartanLocation loc, boolean ceilX, boolean floorX, boolean ceilZ, boolean floorZ) { // Used for searching
-        this(loc.player, loc.serverWorld, loc.chunk,
-                ceilX ? Math.ceil(loc.x) : floorX ? Math.floor(loc.x) : loc.x,
-                loc.y,
-                ceilZ ? Math.ceil(loc.z) : floorZ ? Math.floor(loc.z) : loc.z,
-                loc.yaw, loc.pitch);
-        this.block = loc.block;
-        this.vector = loc.vector;
+        this.identifier = loc.identifier;
     }
 
     // Methods
@@ -395,7 +389,7 @@ public class SpartanLocation {
             if (startX != getChunkX() || startZ != getChunkZ()) {
                 this.chunk = null;
             }
-            this.identifier = Chunks.locationIdentifier(serverWorld.getUID().hashCode(), getBlockX(), getBlockY(), getBlockZ());
+            this.identifier = Chunks.locationIdentifier(serverWorld.hashCode(), getBlockX(), getBlockY(), getBlockZ());
         } else {
             int startX = getBlockX(),
                     startY = getBlockY(),
@@ -414,7 +408,7 @@ public class SpartanLocation {
                 if ((startX >> 4) != getChunkX() || (startZ >> 4) != getChunkZ()) {
                     this.chunk = null;
                 }
-                this.identifier = Chunks.locationIdentifier(serverWorld.getUID().hashCode(), blockX, blockY, blockZ);
+                this.identifier = Chunks.locationIdentifier(serverWorld.hashCode(), blockX, blockY, blockZ);
             }
         }
         return this;
@@ -447,7 +441,7 @@ public class SpartanLocation {
             if (v_1_17 ?
                     blockY >= serverWorld.getMinHeight() && blockY <= serverWorld.getMaxHeight() :
                     blockY >= 0 && blockY <= MoveUtils.height) {
-                if (SpartanBukkit.isSynchronised() || Chunks.isLoaded(serverWorld.getUID(), serverWorld, getBlockX() >> 4, getBlockZ() >> 4)) {
+                if (SpartanBukkit.isSynchronised() || Chunks.isLoaded(serverWorld, getBlockX() >> 4, getBlockZ() >> 4)) {
                     BlockCache cache = memory.get(identifier);
 
                     if (cache != null) {

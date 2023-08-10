@@ -64,7 +64,7 @@ public class SpartanPlayer {
 
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
-    private static final Map<UUID, List<Entity>> worldEntities = new ConcurrentHashMap<>(Math.max(Bukkit.getWorlds().size(), 1));
+    private static final Map<World, List<Entity>> worldEntities = new ConcurrentHashMap<>(Math.max(Bukkit.getWorlds().size(), 1));
 
     final String name;
     private final UUID uuid;
@@ -197,7 +197,7 @@ public class SpartanPlayer {
     }
 
     public static void cacheEntity(Entity entity) {
-        List<Entity> collection = worldEntities.get(entity.getWorld().getUID());
+        List<Entity> collection = worldEntities.get(entity.getWorld());
 
         if (collection != null) {
             collection.add(entity);
@@ -218,7 +218,7 @@ public class SpartanPlayer {
                 if (hasPlayers) {
                     for (World world : Bukkit.getWorlds()) {
                         worldEntities.put(
-                                world.getUID(),
+                                world,
                                 MultiVersion.folia ? world.getEntities() : new CopyOnWriteArrayList<>(world.getEntities())
                         );
                     }
@@ -233,7 +233,7 @@ public class SpartanPlayer {
                     if (hasPlayers) {
                         for (World world : Bukkit.getWorlds()) {
                             worldEntities.put(
-                                    world.getUID(),
+                                    world,
                                     MultiVersion.folia ? world.getEntities() : new CopyOnWriteArrayList<>(world.getEntities())
                             );
                         }
@@ -1379,7 +1379,7 @@ public class SpartanPlayer {
                     nearbyEntities = (nearbyEntitiesThreadSafe = new CopyOnWriteArrayList<>(p.getNearbyEntities(x, y, z)));
                 } else {
                     SpartanLocation loc = this.getLocation();
-                    List<Entity> entities = worldEntities.get(loc.getWorld().getUID());
+                    List<Entity> entities = worldEntities.get(loc.getWorld());
 
                     if (entities != null && entities.size() > 0) {
                         nearbyEntitiesThreadSafe = new CopyOnWriteArrayList<>();

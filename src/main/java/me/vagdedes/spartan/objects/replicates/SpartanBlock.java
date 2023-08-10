@@ -43,7 +43,7 @@ public class SpartanBlock {
         this.x = block.getX();
         this.y = (short) block.getY();
         this.z = block.getZ();
-        this.identifier = Chunks.locationIdentifier(world.getUID().hashCode(), x, y, z);
+        this.identifier = Chunks.locationIdentifier(world.hashCode(), x, y, z);
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             Object blockData = block.getBlockData();
@@ -103,14 +103,11 @@ public class SpartanBlock {
     }
 
     public boolean isLiquid() {
-        return liquid
-                || waterLogged
-                || this.material == Material.WATER || this.material == Material.LAVA;
+        return liquid || waterLogged;
     }
 
     public boolean isNonWaterLoggedLiquid() {
-        return liquid && !waterLogged
-                || this.material == Material.WATER || this.material == Material.LAVA;
+        return liquid && !waterLogged;
     }
 
     public SpartanLocation getLocation() {

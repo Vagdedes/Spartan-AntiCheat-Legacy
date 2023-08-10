@@ -7,13 +7,12 @@ import org.bukkit.World;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Chunks {
 
-    private static final Map<UUID, List<Integer>> loadedChunks = new ConcurrentHashMap<>();
+    private static final Map<World, List<Integer>> loadedChunks = new ConcurrentHashMap<>();
     private static boolean looping = false;
 
     public static void reload(boolean enabledPlugin) {
@@ -47,13 +46,13 @@ public class Chunks {
         return (SpartanBukkit.hashCodeMultiplier * x) + z;
     }
 
-    private static void add(List<Integer> list, boolean isNull, UUID uuid, int hash) {
+    private static void add(List<Integer> list, boolean isNull, World world, int hash) {
         if (isNull) {
-            list = loadedChunks.get(uuid);
+            list = loadedChunks.get(world);
 
             if (list == null) {
                 list = new CopyOnWriteArrayList<>();
-                loadedChunks.put(uuid, list);
+                loadedChunks.put(world, list);
             }
         }
         if (looping) {
@@ -65,8 +64,8 @@ public class Chunks {
 
     // Separator
 
-    public static boolean isLoaded(UUID uuid, World world, int x, int z) {
-        List<Integer> list = loadedChunks.get(uuid);
+    public static boolean isLoaded(World world, int x, int z) {
+        List<Integer> list = loadedChunks.get(world);
         boolean isNull = list == null;
         int hash = chunkIdentifier(x, z);
 
@@ -75,7 +74,7 @@ public class Chunks {
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             if (chunk.getX() == x && chunk.getZ() == z) {
-                add(list, isNull, uuid, hash);
+                add(list, isNull, world, hash);
                 return true;
             }
         }
@@ -85,19 +84,18 @@ public class Chunks {
     // Separator
 
     public static void load(World world, Chunk chunk) {
-        UUID uuid = world.getUID();
-        List<Integer> list = loadedChunks.get(uuid);
+        List<Integer> list = loadedChunks.get(world);
 
         if (list == null) {
             list = new CopyOnWriteArrayList<>();
-            loadedChunks.put(uuid, list);
+            loadedChunks.put(world, list);
         }
         list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
     }
 
     private static void load(World world) {
         List<Integer> list = new CopyOnWriteArrayList<>();
-        loadedChunks.put(world.getUID(), list);
+        loadedChunks.put(world, list);
 
         for (Chunk chunk : world.getLoadedChunks()) {
             list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
@@ -107,7 +105,7 @@ public class Chunks {
     // Separator
 
     public static void unload(World world, Chunk chunk) {
-        List<Integer> list = loadedChunks.get(world.getUID());
+        List<Integer> list = loadedChunks.get(world);
 
         if (list != null) {
             list.remove((Object) chunkIdentifier(chunk.getX(), chunk.getZ()));
