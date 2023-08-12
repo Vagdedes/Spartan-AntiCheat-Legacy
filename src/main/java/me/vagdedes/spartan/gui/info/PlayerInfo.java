@@ -52,7 +52,7 @@ public class PlayerInfo {
         }
         SpartanPlayer t = SpartanBukkit.getPlayer(name);
         boolean isOnline = t != null;
-        PlayerProfile playerProfile = isOnline ? t.getProfile() : ResearchEngine.getPlayerProfileAdvanced(name);
+        PlayerProfile playerProfile = isOnline ? t.getProfile() : ResearchEngine.getPlayerProfileAdvanced(name, true);
 
         if (playerProfile == null) {
             p.sendInventoryCloseMessage(Messages.get("player_not_found_message"));
@@ -105,7 +105,7 @@ public class PlayerInfo {
             lore.add("§7CPS (Clicks Per Second)§8:§a " + t.getClickData().getCount());
             lore.add("§7Player Latency§8:§a " + t.getPing() + "ms");
             lore.add("§7Overall Violations§8:§a " + violations);
-            lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + (t.isBedrockPlayer() ? "Bedrock" : "Java") + ")");
+            lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + t.getDataType() + ")");
             InventoryUtils.add(inv, "§2Information", lore, new ItemStack(Material.BOOK, Math.max(1, Math.min(violations, 64))), information);
 
             lore.clear();
@@ -116,7 +116,7 @@ public class PlayerInfo {
         } else {
             lore.clear();
             lore.add("");
-            lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + (playerProfile.isBedrockPlayer() ? "Bedrock" : "Java") + ")");
+            lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + playerProfile.getDataType() + ")");
             InventoryUtils.add(inv, "§2Information", lore, new ItemStack(Material.BOOK), information);
 
             lore.clear();

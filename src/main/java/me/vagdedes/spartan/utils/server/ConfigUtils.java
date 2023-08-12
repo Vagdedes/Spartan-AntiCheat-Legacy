@@ -5,9 +5,9 @@ import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
+import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.profiling.PunishmentHistory;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -186,7 +186,11 @@ public class ConfigUtils {
                     message = replace(message, "{detection:category:adverb}", (category.endsWith("ly") ? category : category + "ly"));
                 }
             } else if (hasHackType) {
-                message = replace(message, "{player:type}", SpartanEdition.getVersion().lowerCase);
+                PlayerProfile profile = ResearchEngine.getPlayerProfileAdvanced(name, false);
+
+                if (profile != null) {
+                    message = replace(message, "{player:type}", profile.getDataType().lowerCase);
+                }
                 message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
             }
         } else if (hasHackType) {

@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.handlers.stability;
 
-import me.vagdedes.spartan.compatibility.own.UltimateStatistics;
+import me.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;

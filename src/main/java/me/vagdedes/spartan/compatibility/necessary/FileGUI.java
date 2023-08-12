@@ -1,13 +1,12 @@
-package me.vagdedes.spartan.compatibility.own;
+package me.vagdedes.spartan.compatibility.necessary;
 
 import me.vagdedes.spartan.utils.server.PluginUtils;
 
-public class AntiAltAccount {
+public class FileGUI {
 
-    public static final String name = "AntiAltAccount";
+    public static final String name = "FileGUI", permission = "filegui.modify";
 
     public static boolean isEnabled() {
         return PluginUtils.exists(name.toLowerCase());
     }
-
 }

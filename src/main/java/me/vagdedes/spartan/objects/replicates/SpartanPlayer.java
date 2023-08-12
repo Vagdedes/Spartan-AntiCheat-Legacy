@@ -1474,16 +1474,16 @@ public class SpartanPlayer {
         if (BlockUtils.isSolid(locationP1) && !(BlockUtils.areWalls(locationP1) || BlockUtils.canClimb(locationP1))) {
             return false;
         }
-        float countedDamage = 0.0f;
-        double startY = location.getY(),
-                box = startY - location.getBlockY();
         World world = getWorld();
+        float countedDamage = 0.0f;
+        double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY()),
+                box = startY - Math.floor(startY);
 
         if (!GroundUtils.heightExists(box)) {
             box = 0.0;
         }
 
-        for (double progressiveY = Math.min(BlockUtils.getMaxHeight(world), startY); startY > BlockUtils.getMinHeight(world); progressiveY--) {
+        for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
             Material material = loopLocation.getBlock().getType();
 

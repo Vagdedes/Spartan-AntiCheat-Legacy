@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.compatibility.own;
+package me.vagdedes.spartan.compatibility.necessary;
 
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;

@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.features.synchronicity.cloud;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.compatibility.own.AntiAltAccount;
+import me.vagdedes.spartan.compatibility.necessary.AntiAltAccount;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Messages;

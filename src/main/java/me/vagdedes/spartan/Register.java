@@ -10,7 +10,6 @@ import me.vagdedes.spartan.features.protections.ReconnectCooldown;
 import me.vagdedes.spartan.handlers.commands.CommandExecution;
 import me.vagdedes.spartan.handlers.commands.CommandTab;
 import me.vagdedes.spartan.handlers.connection.DiscordMemberCount;
-import me.vagdedes.spartan.handlers.connection.PluginServerCount;
 import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import me.vagdedes.spartan.listeners.*;
 import me.vagdedes.spartan.system.Cache;
@@ -60,7 +59,6 @@ public class Register extends JavaPlugin {
 
         // Pre Cache
         DiscordMemberCount.get();
-        PluginServerCount.get();
 
         // Base
         Settings.runOnLogin();

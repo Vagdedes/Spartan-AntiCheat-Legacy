@@ -2,7 +2,7 @@ package me.vagdedes.spartan.gui.configuration;
 
 import com.vagdedes.filegui.api.FileGUIAPI;
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.compatibility.own.FileGUI;
+import me.vagdedes.spartan.compatibility.necessary.FileGUI;
 import me.vagdedes.spartan.configuration.*;
 import me.vagdedes.spartan.features.configuration.ConfigurationDiagnostics;
 import me.vagdedes.spartan.features.important.MultiVersion;

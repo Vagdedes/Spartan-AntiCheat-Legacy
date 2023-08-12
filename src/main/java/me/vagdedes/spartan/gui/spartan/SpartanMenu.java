@@ -1,9 +1,9 @@
 package me.vagdedes.spartan.gui.spartan;
 
 import com.vagdedes.filegui.api.FileGUIAPI;
-import me.vagdedes.spartan.compatibility.own.AntiAltAccount;
-import me.vagdedes.spartan.compatibility.own.FileGUI;
-import me.vagdedes.spartan.compatibility.own.UltimateStatistics;
+import me.vagdedes.spartan.compatibility.necessary.AntiAltAccount;
+import me.vagdedes.spartan.compatibility.necessary.FileGUI;
+import me.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Messages;
@@ -17,7 +17,6 @@ import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import me.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.handlers.connection.DiscordMemberCount;
-import me.vagdedes.spartan.handlers.connection.PluginServerCount;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.stability.TestServer;
@@ -69,7 +68,6 @@ public class SpartanMenu {
                                 if (title.startsWith(menuName)) {
                                     ManageConfiguration.clear();
                                     DiscordMemberCount.ignore();
-                                    PluginServerCount.ignore();
                                     open(p);
                                 }
                             }
@@ -230,7 +228,6 @@ public class SpartanMenu {
 
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
-        int pluginServerCount = PluginServerCount.get();
         Runtime runtime = Runtime.getRuntime();
         List<String> warnings = AntiCheatUpdates.getWarnings(true);
 
@@ -262,9 +259,6 @@ public class SpartanMenu {
                     + (!preview && SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Java) ? "§a" : "§c") + ResearchEngine.DataType.Java
                     + " §8/ "
                     + (!preview && SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Bedrock) ? "§a" : "§c") + ResearchEngine.DataType.Bedrock);
-        }
-        if (pluginServerCount > 0) {
-            lore.add("§7Past & Present Servers Running Spartan§8: §a" + pluginServerCount);
         }
         lore.add("");
         lore.add("§7Left click to §amanage checks§7.");
@@ -382,13 +376,11 @@ public class SpartanMenu {
                     if (itemPage < currentPage) {
                         if (PlayerStateLists.previousPage(uuid)) {
                             DiscordMemberCount.ignore();
-                            PluginServerCount.ignore();
                             open(p);
                         }
                     } else if (itemPage > currentPage) {
                         if (PlayerStateLists.nextPage(uuid)) {
                             DiscordMemberCount.ignore();
-                            PluginServerCount.ignore();
                             open(p);
                         }
                     }

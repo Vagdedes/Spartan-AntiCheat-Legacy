@@ -556,18 +556,20 @@ public class ResearchEngine {
         return playerProfile;
     }
 
-    public static PlayerProfile getPlayerProfileAdvanced(String name) {
+    public static PlayerProfile getPlayerProfileAdvanced(String name, boolean deep) {
         PlayerProfile profile = playerProfiles.get(name);
 
         if (profile != null) {
             return profile;
         }
-        Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
+        if (deep) {
+            Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
-        if (playerProfiles.size() > 0) {
-            for (PlayerProfile playerProfile : playerProfiles) {
-                if (playerProfile.getName().equalsIgnoreCase(name)) {
-                    return playerProfile;
+            if (playerProfiles.size() > 0) {
+                for (PlayerProfile playerProfile : playerProfiles) {
+                    if (playerProfile.getName().equalsIgnoreCase(name)) {
+                        return playerProfile;
+                    }
                 }
             }
         }
