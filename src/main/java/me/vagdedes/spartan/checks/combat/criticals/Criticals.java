@@ -102,7 +102,7 @@ public class Criticals {
                                 && (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? !attackCooldown : // Collect data only when there is no attack cooldown
                                 damageDecimals == 0.0 || damageDecimals == 0.5)) { // When method is not available, check the validity of the damage
                             double originalDamage = damage - sharpnessDamage - smiteDamage;
-                            CriticalsUtils.cache(player.getUniqueId(), itemType, originalDamage);
+                            CriticalsUtils.cache(player.getName(), itemType, originalDamage);
                             AntiCheatLogs.silentLogInfo(player.getName() + Moderation.criticalHitMessage + BlockUtils.materialToString(itemType) + " and " + originalDamage + " damage");
                         }
                     }

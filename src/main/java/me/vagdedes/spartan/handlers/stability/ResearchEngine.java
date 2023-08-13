@@ -8,7 +8,6 @@ import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.SQLFeature;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
-import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.BanManagement;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
@@ -31,6 +30,7 @@ import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.TimeUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.utils.server.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -61,8 +61,8 @@ public class ResearchEngine {
     public static final DataType[] usableDataTypes = new DataType[]{DataType.Java, DataType.Bedrock};
     private static final double minimumAverageMining = 16.0;
     // Base
-    private static final ConcurrentHashMap<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>(Config.getMaxPlayers());
-    private static final Set<String> skulls = new HashSet<>(logRequirement);
+    private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>(Config.getMaxPlayers());
+    private static final Map<String, ItemStack> skulls = new ConcurrentHashMap<>(logRequirement);
     // Detections
     private static final Map<Integer, Set<Integer>> falsePositives = new LinkedHashMap<>(Enums.hackTypes().length * (DataType.values().length - 1));
     private static final Map<String, Double> globalVelocityOccurrences = new LinkedHashMap<>();
@@ -98,17 +98,21 @@ public class ResearchEngine {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (players.size() > 0) {
-                boolean added = skulls.size() >= logRequirement;
+                boolean added = !Settings.getBoolean("Important.load_player_head_textures") || skulls.size() == logRequirement;
                 Inventory inv = Bukkit.createInventory(players.get(0).getPlayer(), 9, "");
 
                 for (PlayerProfile playerProfile : playerProfiles) {
                     playerProfile.getCombat().runFights();
 
-                    if (!added
-                            && !playerProfile.isBedrockPlayer()
-                            && skulls.add(playerProfile.getName())) {
-                        added = true;
-                        inv.addItem(playerProfile.getSkull());
+                    if (!added && !playerProfile.isBedrockPlayer()) {
+                        String name = playerProfile.getName();
+
+                        if (!skulls.containsKey(name)) {
+                            ItemStack skull = playerProfile.getSkull();
+                            inv.addItem(skull);
+                            skulls.put(name, skull);
+                            added = true;
+                        }
                     }
                 }
             }
@@ -233,8 +237,7 @@ public class ResearchEngine {
     }
 
     public static ItemStack getSkull(String name) {
-        return skulls.contains(name) ? getPlayerProfile(name).getSkull() :
-                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? new ItemStack(Material.PLAYER_HEAD) : new ItemStack(Material.getMaterial("SKULL_ITEM")));
+        return skulls.getOrDefault(name, InventoryUtils.getHead());
     }
 
     // Separator
@@ -671,14 +674,14 @@ public class ResearchEngine {
         });
     }
 
-    public static void resetData(UUID uuid, String playerName) {
+    public static void resetData(String playerName) {
         if (playerName != null) {
             PlayerProfile playerProfile = playerProfiles.get(playerName);
 
             if (playerProfile != null) {
                 if (isStorageMode()) {
                     // Clear Violations
-                    SpartanPlayer p = SpartanBukkit.getPlayer(uuid);
+                    SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
                     boolean foundPlayer = p != null;
 
                     if (foundPlayer) {
@@ -706,7 +709,7 @@ public class ResearchEngine {
                             p.setProfile(newPlayerProfile);
                         }
                         if (SQLFeature.isEnabled()) {
-                            SQLFeature.update("DELETE FROM " + SQLFeature.getTable() + " WHERE player_uuid = '" + uuid + "' OR information LIKE '%" + playerName + "%';");
+                            SQLFeature.update("DELETE FROM " + SQLFeature.getTable() + " WHERE information LIKE '%" + playerName + "%';");
                         }
                         Collection<File> files = getFiles();
 
@@ -735,7 +738,7 @@ public class ResearchEngine {
                     suspectedPlayers.remove(playerProfile);
                     legitimatePlayers.remove(playerProfile);
                     ViolationStatistics.remove(playerProfile);
-                    SpartanPlayer p = SpartanBukkit.getPlayer(uuid);
+                    SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
 
                     if (p != null) {
                         PlayerProfile newPlayerProfile = getPlayerProfile(p);
@@ -746,7 +749,7 @@ public class ResearchEngine {
                 }
                 enoughData = false;
                 SpartanMenu.refresh();
-                PlayerInfo.refresh(uuid);
+                PlayerInfo.refresh(playerName);
             }
         }
     }
@@ -993,11 +996,7 @@ public class ResearchEngine {
                                         Double decimal = AlgebraUtils.returnValidDecimal(split[8]);
 
                                         if (decimal != null) {
-                                            UUID uuid = getPlayerProfile(split[0]).getUniqueId();
-
-                                            if (uuid != null) {
-                                                CriticalsUtils.cache(uuid, material, decimal);
-                                            }
+                                            CriticalsUtils.cache(split[0], material, decimal);
                                         }
                                     }
                                 }

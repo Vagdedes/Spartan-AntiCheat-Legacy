@@ -19,7 +19,7 @@ public class UnbanCommand {
                         String name = playerProfile.getName();
 
                         if (name.equalsIgnoreCase(arg)) {
-                            ResearchEngine.resetData(playerProfile.getUniqueId(), name);
+                            ResearchEngine.resetData(name);
                             return;
                         }
                     }

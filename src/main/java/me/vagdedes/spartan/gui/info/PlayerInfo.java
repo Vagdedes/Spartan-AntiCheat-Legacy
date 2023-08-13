@@ -28,7 +28,6 @@ import me.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -369,13 +368,12 @@ public class PlayerInfo {
                     String message = Messages.get("player_violation_reset_message").replace("{player}", t.getName());
                     p.sendMessage(message);
                 } else {
-                    OfflinePlayer ot = Bukkit.getOfflinePlayer(playerName);
-                    String name = ot.getName();
+                    String name = Bukkit.getOfflinePlayer(playerName).getName();
 
                     if (name == null) {
                         p.sendMessage(Messages.get("player_not_found_message"));
                     } else {
-                        ResearchEngine.resetData(ot.getUniqueId(), name);
+                        ResearchEngine.resetData(name);
                         p.sendMessage(Messages.get("player_stored_data_delete_message").replace("{player}", name));
                     }
                 }

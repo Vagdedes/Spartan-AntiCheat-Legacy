@@ -14,7 +14,7 @@ import java.util.*;
 
 public class CriticalsUtils {
 
-    static final Map<UUID, List<CriticalsItem>> memory = new LinkedHashMap<>(Config.getMaxPlayers());
+    static final Map<String, List<CriticalsItem>> memory = new LinkedHashMap<>(Config.getMaxPlayers());
 
     // Objects
 
@@ -57,14 +57,14 @@ public class CriticalsUtils {
         return 0.0;
     }
 
-    public static void cache(UUID uuid, Material itemType, double damage) {
+    public static void cache(String name, Material itemType, double damage) {
         itemType = manipulateItem(itemType);
-        List<CriticalsItem> list = memory.get(uuid);
+        List<CriticalsItem> list = memory.get(name);
 
         if (list == null) {
             list = new ArrayList<>();
             list.add(new CriticalsUtils.CriticalsItem(itemType, damage));
-            memory.put(uuid, list);
+            memory.put(name, list);
         } else {
             list.add(new CriticalsUtils.CriticalsItem(itemType, damage));
         }
@@ -75,18 +75,18 @@ public class CriticalsUtils {
             itemType = manipulateItem(itemType);
             double collection = 0.0;
             int total = 0;
-            Set<UUID> providers = new HashSet<>();
+            Set<String> providers = new HashSet<>();
 
-            for (Map.Entry<UUID, List<CriticalsUtils.CriticalsItem>> entry : memory.entrySet()) {
-                UUID uuid = entry.getKey();
-                SpartanPlayer player = SpartanBukkit.getPlayer(uuid);
+            for (Map.Entry<String, List<CriticalsUtils.CriticalsItem>> entry : memory.entrySet()) {
+                String name = entry.getKey();
+                SpartanPlayer player = SpartanBukkit.getPlayer(name);
 
                 if (player != null && canCollectFrom(player)) {
                     for (CriticalsUtils.CriticalsItem object : entry.getValue()) {
                         if (object.material == itemType) {
                             collection += object.damage;
                             total++;
-                            providers.add(uuid);
+                            providers.add(name);
                         }
                     }
                 }

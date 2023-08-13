@@ -98,6 +98,7 @@ public class Settings {
         ConfigUtils.add(file, showEcosystemOption, true);
         ConfigUtils.add(file, "Important.bedrock_player_prefix", ".");
         ConfigUtils.add(file, "Important.inventory_menu_empty_heads", true);
+        ConfigUtils.add(file, "Important.load_player_head_textures", false);
 
         ConfigUtils.add(file, "Cloud.server_name", "specify server name");
         ConfigUtils.add(file, "Cloud.synchronise_files", true);
