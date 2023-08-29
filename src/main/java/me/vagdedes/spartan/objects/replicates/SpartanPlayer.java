@@ -65,6 +65,7 @@ public class SpartanPlayer {
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
     private static final Map<World, List<Entity>> worldEntities = new ConcurrentHashMap<>(Math.max(Bukkit.getWorlds().size(), 1));
+    private static final Object nearbyEntitiesLock = new Object();
 
     final String name;
     private final UUID uuid;
@@ -246,8 +247,10 @@ public class SpartanPlayer {
                     if (clearCache) {
                         Cache.clearCheckCache(p);
                     }
+                    synchronized (nearbyEntitiesLock) {
+                        p.nearbyEntities = null;
+                    }
                     p.locationTime = 0L;
-                    p.nearbyEntities = null;
                     p.runCheck.clear();
                     p.runCheckAccountLag.clear();
 
@@ -1365,70 +1368,88 @@ public class SpartanPlayer {
     }
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        double d = Math.max(Math.max(x, y), z);
+        x = Math.max(Math.max(x, y), z);
 
-        // Caching
-        if (nearbyEntities == null || d > nearbyEntitiesDistance) {
-            Player p = this.getPlayer();
+        synchronized (nearbyEntitiesLock) {
+            boolean isNull = nearbyEntities == null;
 
-            if (p != null) {
-                nearbyEntitiesDistance = d;
+            // Caching
+            if (isNull || x > nearbyEntitiesDistance) {
+                Player p = this.getPlayer();
 
-                if (SpartanBukkit.isSynchronised()) {
-                    return nearbyEntities = new CopyOnWriteArrayList<>(p.getNearbyEntities(x, y, z));
-                } else {
-                    SpartanLocation loc = this.getLocation();
-                    List<Entity> entities = worldEntities.getOrDefault(loc.getWorld(), new ArrayList<>(0));
+                if (p != null) {
+                    nearbyEntitiesDistance = x;
 
-                    if (!entities.isEmpty()) {
-                        Entity vehicle = this.getVehicle();
-
-                        if (vehicle != null) {
-                            entities.remove(vehicle);
+                    if (SpartanBukkit.isSynchronised()) {
+                        if (isNull) {
+                            return nearbyEntities = new CopyOnWriteArrayList<>(p.getNearbyEntities(x, y, z));
+                        } else {
+                            nearbyEntities.clear();
+                            nearbyEntities.addAll(p.getNearbyEntities(x, y, z));
+                            return nearbyEntities;
                         }
-                        entities.remove(p);
-                        Iterator<Entity> iterator = entities.iterator();
+                    } else {
+                        SpartanLocation loc = this.getLocation();
+                        List<Entity> entities = worldEntities.getOrDefault(loc.getWorld(), new ArrayList<>(0));
 
-                        while (iterator.hasNext()) {
-                            Entity entity = iterator.next();
+                        if (!entities.isEmpty()) {
+                            Entity vehicle = this.getVehicle();
 
-                            if (entity instanceof LivingEntity ? entity.isDead() : !(entity instanceof Vehicle)
-                                    || loc.distance(entity.getLocation()) > d) {
-                                iterator.remove();
+                            if (vehicle != null) {
+                                entities.remove(vehicle);
+                            }
+                            entities.remove(p);
+                            Iterator<Entity> iterator = entities.iterator();
+
+                            while (iterator.hasNext()) {
+                                Entity entity = iterator.next();
+
+                                if (entity instanceof LivingEntity ? entity.isDead() : !(entity instanceof Vehicle)
+                                        || loc.distance(entity.getLocation()) > x) {
+                                    iterator.remove();
+                                }
                             }
                         }
+                        if (isNull) {
+                            return nearbyEntities = new CopyOnWriteArrayList<>(entities);
+                        } else {
+                            nearbyEntities.clear();
+                            nearbyEntities.addAll(entities);
+                            return nearbyEntities;
+                        }
                     }
-                    return nearbyEntities = new CopyOnWriteArrayList<>(entities);
+                } else {
+                    return new ArrayList<>(0);
                 }
+            } else if (!nearbyEntities.isEmpty()) {
+                SpartanLocation loc = this.getLocation();
+                List<Entity> entities = new ArrayList<>(nearbyEntities);
+                Entity vehicle = this.getVehicle();
+
+                if (vehicle != null) {
+                    entities.remove(vehicle);
+                }
+                Iterator<Entity> iterator = entities.iterator();
+
+                while (iterator.hasNext()) {
+                    Entity entity = iterator.next();
+
+                    if (entity instanceof LivingEntity && entity.isDead()
+                            || loc.distance(entity.getLocation()) > x) {
+                        iterator.remove();
+                    }
+                }
+                nearbyEntities.clear();
+                nearbyEntities.addAll(entities);
+                return nearbyEntities;
             } else {
-                return new ArrayList<>(0);
+                return nearbyEntities;
             }
-        } else if (!nearbyEntities.isEmpty()) {
-            SpartanLocation loc = this.getLocation();
-            List<Entity> entities = new ArrayList<>(nearbyEntities);
-            Entity vehicle = this.getVehicle();
-
-            if (vehicle != null) {
-                entities.remove(vehicle);
-            }
-            Iterator<Entity> iterator = entities.iterator();
-
-            while (iterator.hasNext()) {
-                Entity entity = iterator.next();
-
-                if (entity instanceof LivingEntity && entity.isDead()
-                        || loc.distance(entity.getLocation()) > d) {
-                    iterator.remove();
-                }
-            }
-            return nearbyEntities = new CopyOnWriteArrayList<>(entities);
-        } else {
-            return nearbyEntities;
         }
     }
 
     public boolean hasNearbyEntities(double x, double y, double z) {
-        return getNearbyEntities(x, y, z).size() > 0;
+        return !getNearbyEntities(x, y, z).isEmpty();
     }
 
     // Custom
