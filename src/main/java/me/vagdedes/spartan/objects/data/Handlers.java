@@ -79,9 +79,24 @@ public class Handlers {
         }
     }
 
+    private boolean has(long time) {
+        return time == -1L || time >= System.currentTimeMillis();
+    }
+
+    public boolean has() {
+        if (!enable.isEmpty()) {
+            for (Long time : enable.values()) {
+                if (has(time)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean has(HandlerType handlerType) {
         Long time = enable.get(handlerType);
-        return time != null && (time == -1L || time >= System.currentTimeMillis());
+        return time != null && has(time);
     }
 
     public boolean has(HandlerType handlerType, String key) {

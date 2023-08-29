@@ -351,7 +351,7 @@ public class Config {
         CheckProtection.cancel(20, 0);
 
         for (HackType hackType : Enums.hackTypes()) {
-            hackType.getCheck().setEnabled(true);
+            hackType.getCheck().setEnabled(null, true);
         }
     }
 
@@ -359,7 +359,7 @@ public class Config {
         CheckProtection.cancel(20, 0);
 
         for (HackType hackType : Enums.hackTypes()) {
-            hackType.getCheck().setEnabled(false);
+            hackType.getCheck().setEnabled(null, false);
         }
     }
 

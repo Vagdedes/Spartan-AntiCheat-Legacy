@@ -46,7 +46,7 @@ public class Sensitivity {
             Decimals decimals = player.getDecimals(KillAura.check);
 
             if (Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
-                List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, 1);
+                List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
                 if (entities.size() == 1) {
                     float pitch = location.getPitch();

@@ -18,10 +18,7 @@ import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.GroundUtils;
-import me.vagdedes.spartan.utils.gameplay.PatternUtils;
-import me.vagdedes.spartan.utils.gameplay.PlayerData;
+import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -92,10 +89,12 @@ public class EntityMove {
                 }
                 int entityID = (int) entityLongID;
                 long time = System.currentTimeMillis() - cache[1];
-                SpartanLocation locM1 = to.clone().add(0, -1, 0);
-                List<SpartanLocation> liquidBlocks = getLiquidBlocks(to, locM1);
+                List<SpartanLocation> liquidBlocks = getLiquidBlocks(
+                        to,
+                        Math.max(CombatUtils.getWidthAndHeight(vehicle)[0], BlockUtils.hitbox)
+                );
                 boolean unstableLiquids = cacheBoolean(p, false, "unstable-liquids", liquidCacheTicks),
-                        liquidsLocal = liquidBlocks.size() > 0,
+                        liquidsLocal = !liquidBlocks.isEmpty(),
                         liquids = cacheBoolean(p, liquidsLocal, "liquids", liquidCacheTicks) || p.wasInLiquids(),
                         iceBlocks = cacheBoolean(p,
                                 PatternUtils.isBlockPattern(ice, to, true, BlockUtils.ice),
@@ -164,11 +163,11 @@ public class EntityMove {
                                                 cancel(p, vehicle, from, "rapid-upwards", messageCopy);
                                             }
                                         }
-                                    } else {
+                                    } else if (!liquids) {
                                         if (vertical > verticalLimit) {
                                             messageCopy += ", extra: " + verticalLimit;
                                             cancel(p, vehicle, from, "abstract-upwards", messageCopy);
-                                        } else if (!liquids && vertical > oldVertical) {
+                                        } else if (vertical > oldVertical) {
                                             if (oldVertical < 0.0) {
                                                 if (!oldKnownBoxes
                                                         && !PatternUtils.isBlockPattern(web, to, true, BlockUtils.web)) {
@@ -426,14 +425,17 @@ public class EntityMove {
         return result;
     }
 
-    private static List<SpartanLocation> getLiquidBlocks(SpartanLocation loc, SpartanLocation locM1) {
-        List<SpartanLocation> positives = new ArrayList<>(2);
+    private static List<SpartanLocation> getLiquidBlocks(SpartanLocation loc, double hitbox) {
+        List<SpartanLocation> positives = new ArrayList<>(18); // 9 * 2
 
-        if (loc.getBlock().isNonWaterLoggedLiquid()) {
-            positives.add(loc);
-        }
-        if (locM1.getBlock().isNonWaterLoggedLiquid()) {
-            positives.add(locM1);
+        for (int y = -1; y <= 0; y++) {
+            SpartanLocation[] locations = loc.getSurroundingLocations(hitbox, y, hitbox);
+
+            for (SpartanLocation location : locations) {
+                if (location.getBlock().isNonWaterLoggedLiquid()) {
+                    positives.add(loc);
+                }
+            }
         }
         return positives;
     }

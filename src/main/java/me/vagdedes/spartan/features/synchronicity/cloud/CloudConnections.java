@@ -460,7 +460,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Name: ").append(checkName)
                         .append(newLine);
-                softwareInformation.append("Enabled: ").append(check.isEnabled(null, null))
+                softwareInformation.append("Enabled: ").append(check.isEnabled(null, null, null))
                         .append(newLine);
                 softwareInformation.append("Preventions: ").append(!check.isSilent(null, null))
                         .append(newLine);

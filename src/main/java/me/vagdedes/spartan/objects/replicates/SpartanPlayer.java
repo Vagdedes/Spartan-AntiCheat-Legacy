@@ -745,7 +745,7 @@ public class SpartanPlayer {
                 return bool;
             }
             bool = SpartanEdition.supportsCheck(dataType, hackType)
-                    && hackType.getCheck().isEnabled(this.getWorld().getName(), this.getUniqueId())
+                    && hackType.getCheck().isEnabled(this.getDataType(), this.getWorld().getName(), this.getUniqueId())
                     && !Permissions.isBypassing(this, hackType);
             map.put(hackType, bool);
             return bool;
@@ -1301,7 +1301,7 @@ public class SpartanPlayer {
     public PotionEffect getPotionEffect(PotionEffectType type) {
         if (potionEffects.size() > 0) {
             for (PotionEffect potionEffect : potionEffects) {
-                if (potionEffect.getType().equals(type)) {
+                if (potionEffect != null && potionEffect.getType().equals(type)) {
                     return potionEffect;
                 }
             }
@@ -1364,9 +1364,8 @@ public class SpartanPlayer {
         }
     }
 
-    public List<Entity> getNearbyEntities(double x, double y, double z, int limit) {
+    public List<Entity> getNearbyEntities(double x, double y, double z) {
         double d = Math.max(Math.max(x, y), z);
-        List<Entity> nearbyEntitiesThreadSafe;
 
         // Caching
         if (nearbyEntities == null || d > nearbyEntitiesDistance) {
@@ -1376,66 +1375,60 @@ public class SpartanPlayer {
                 nearbyEntitiesDistance = d;
 
                 if (SpartanBukkit.isSynchronised()) {
-                    nearbyEntities = (nearbyEntitiesThreadSafe = new CopyOnWriteArrayList<>(p.getNearbyEntities(x, y, z)));
+                    return nearbyEntities = new CopyOnWriteArrayList<>(p.getNearbyEntities(x, y, z));
                 } else {
                     SpartanLocation loc = this.getLocation();
-                    List<Entity> entities = worldEntities.get(loc.getWorld());
+                    List<Entity> entities = worldEntities.getOrDefault(loc.getWorld(), new ArrayList<>(0));
 
-                    if (entities != null && entities.size() > 0) {
-                        nearbyEntitiesThreadSafe = new CopyOnWriteArrayList<>();
+                    if (!entities.isEmpty()) {
+                        Entity vehicle = this.getVehicle();
+
+                        if (vehicle != null) {
+                            entities.remove(vehicle);
+                        }
                         entities.remove(p);
+                        Iterator<Entity> iterator = entities.iterator();
 
-                        for (Entity entity : entities) {
-                            if ((entity instanceof Vehicle
-                                    || !(entity instanceof LivingEntity)
-                                    || !entity.isDead())
+                        while (iterator.hasNext()) {
+                            Entity entity = iterator.next();
 
-                                    && loc.distance(entity.getLocation()) <= d) {
-                                nearbyEntitiesThreadSafe.add(entity);
+                            if (entity instanceof LivingEntity ? entity.isDead() : !(entity instanceof Vehicle)
+                                    || loc.distance(entity.getLocation()) > d) {
+                                iterator.remove();
                             }
                         }
-                        return nearbyEntities = nearbyEntitiesThreadSafe;
-                    } else {
-                        return nearbyEntities = new ArrayList<>(0);
                     }
+                    return nearbyEntities = new CopyOnWriteArrayList<>(entities);
                 }
             } else {
                 return new ArrayList<>(0);
             }
-        } else {
-            nearbyEntitiesThreadSafe = nearbyEntities;
-        }
-
-        // Retrieving
-        int size = nearbyEntitiesThreadSafe.size();
-
-        if (size > 0) {
-            int counter = 0;
-            List<Entity> result = new ArrayList<>(size);
+        } else if (!nearbyEntities.isEmpty()) {
             SpartanLocation loc = this.getLocation();
-            nearbyEntitiesThreadSafe.remove(getVehicle());
+            List<Entity> entities = new ArrayList<>(nearbyEntities);
+            Entity vehicle = this.getVehicle();
 
-            for (Entity entity : nearbyEntitiesThreadSafe) {
-                if (loc.distance(entity.getLocation()) <= d) {
-                    result.add(entity);
-                    counter++;
+            if (vehicle != null) {
+                entities.remove(vehicle);
+            }
+            Iterator<Entity> iterator = entities.iterator();
 
-                    if (counter == limit) {
-                        break;
-                    }
+            while (iterator.hasNext()) {
+                Entity entity = iterator.next();
+
+                if (entity instanceof LivingEntity && entity.isDead()
+                        || loc.distance(entity.getLocation()) > d) {
+                    iterator.remove();
                 }
             }
-            return result;
+            return nearbyEntities = new CopyOnWriteArrayList<>(entities);
+        } else {
+            return nearbyEntities;
         }
-        return nearbyEntitiesThreadSafe;
-    }
-
-    public List<Entity> getNearbyEntities(double x, double y, double z) {
-        return getNearbyEntities(x, y, z, 0);
     }
 
     public boolean hasNearbyEntities(double x, double y, double z) {
-        return getNearbyEntities(x, y, z, 1).size() > 0;
+        return getNearbyEntities(x, y, z).size() > 0;
     }
 
     // Custom
@@ -1478,6 +1471,8 @@ public class SpartanPlayer {
         float countedDamage = 0.0f;
         double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY()),
                 box = startY - Math.floor(startY);
+        int iterations = 0,
+                maxIterations = MoveUtils.chunkInt;
 
         if (!GroundUtils.heightExists(box)) {
             box = 0.0;
@@ -1487,8 +1482,12 @@ public class SpartanPlayer {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
             Material material = loopLocation.getBlock().getType();
 
-            if (BlockUtils.canClimb(material) || BlockUtils.areWalls(material) || !BlockUtils.isSolid(material)) {
+            if (iterations != maxIterations
+                    && (BlockUtils.canClimb(material)
+                    || BlockUtils.areWalls(material)
+                    || !BlockUtils.isSolid(material))) {
                 countedDamage++;
+                iterations++;
             } else {
                 double blockBox = GroundUtils.getMaxHeight(material);
 

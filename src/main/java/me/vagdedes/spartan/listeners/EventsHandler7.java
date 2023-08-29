@@ -127,7 +127,7 @@ public class EventsHandler7 implements Listener {
                         EntityMove.check,
                         Speed.check,
                         MorePackets.check}) {
-            if (hackType.getCheck().isEnabled(null, null)) {
+            if (hackType.getCheck().isEnabled(null, null, null)) {
                 heavyMovementChecks = true;
                 break;
             }

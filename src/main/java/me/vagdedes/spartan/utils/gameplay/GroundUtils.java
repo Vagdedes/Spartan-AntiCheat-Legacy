@@ -205,7 +205,7 @@ public class GroundUtils {
         original &= p.getVehicle() == null && !p.isBedrockPlayer();
         double box = loc.getY() - loc.getBlockY();
 
-        for (SpartanLocation loopLocation : loc.getSurroundingLocations(GroundUtils.hitbox, 0, GroundUtils.hitbox)) {
+        for (SpartanLocation loopLocation : loc.getSurroundingLocations(hitbox, 0, hitbox)) {
             for (double position : new double[]{-(box + minPossibleStep), 0.0}) {
                 Material type = loopLocation.clone().add(0.0, position, 0.0).getBlock().getType();
 

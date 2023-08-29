@@ -53,7 +53,7 @@ public class ManageChecks {
 
     private static void addCheck(SpartanPlayer p, Inventory inv, HackType hackType) {
         Check check = hackType.getCheck();
-        boolean enabled = check.isEnabled(null, null),
+        boolean enabled = check.isEnabled(null, null, null),
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(p, hackType);
         String[] disabledDetections = CloudFeature.getDisabledDetections(hackType);
@@ -259,10 +259,10 @@ public class ManageChecks {
         Check check = Config.getCheckByName(item);
 
         if (check != null) {
-            if (check.isEnabled(null, null)) {
-                check.setEnabled(false);
+            if (check.isEnabled(null, null, null)) {
+                check.setEnabled(null, false);
             } else {
-                check.setEnabled(true);
+                check.setEnabled(null, true);
             }
         }
         open(p);

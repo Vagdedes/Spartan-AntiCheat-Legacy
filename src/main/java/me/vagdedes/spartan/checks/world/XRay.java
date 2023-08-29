@@ -26,7 +26,7 @@ public class XRay {
             strictStatisticalRatio = 2.0 - lenientStatisticalRatio;
 
     static {
-        if (check.getCheck().isEnabled(null, null)
+        if (check.getCheck().isEnabled(null, null, null)
                 && Settings.getBoolean("Important.modify_server_configuration")) {
             String key = "settings.world-settings.default.anti-xray";
             File file = new File(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) ? "/config/paper-global.yml" : "paper.yml");

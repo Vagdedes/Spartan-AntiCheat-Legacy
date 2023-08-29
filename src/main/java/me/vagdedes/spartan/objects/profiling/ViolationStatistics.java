@@ -104,7 +104,7 @@ public class ViolationStatistics {
                     for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {
                         Enums.HackType hackType = violationHistory.getHackType();
 
-                        if (hackType.getCheck().isEnabled(null, null)) {
+                        if (hackType.getCheck().isEnabled(null, null, null)) {
                             if (hasNoStatistics || playerProfile.shouldCalculateEvidence()) {
                                 List<PlayerViolation> data = violationHistory.getViolationsList();
                                 int size = data.size();

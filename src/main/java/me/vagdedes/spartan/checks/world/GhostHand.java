@@ -3,7 +3,6 @@ package me.vagdedes.spartan.checks.world;
 import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import me.vagdedes.spartan.compatibility.manual.entity.Vehicles;
-import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
@@ -21,7 +20,6 @@ public class GhostHand {
                 || action != Action.RIGHT_CLICK_BLOCK
                 || !canDo(p, b)
                 || !check.getCheck().getBooleanOption("check_player_interactions", true)
-                || p.getHandlers().has(Handlers.HandlerType.BlockBreak)
                 || !BlockUtils.isChangeable(b.getLocation()) && !BlockUtils.areEggs(p.getItemInHand().getType())) {
             return;
         }
@@ -32,8 +30,8 @@ public class GhostHand {
                 || BlockUtils.isFullSolid(itb.getType()))) {
             new HackPrevention(p, check,
                     "type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
-                    null, 0, false, 0.0,
-                    p.getCooldowns(check).canDo("break-protection"));
+                    null, 0, false, 0.0, false);
+            HackPrevention.cancel(p, check, 1);
         }
     }
 
@@ -50,7 +48,8 @@ public class GhostHand {
                     || BlockUtils.isFullSolid(itb.getType()))) {
                 new HackPrevention(p, check,
                         "type: break, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
-                        10);
+                        null, 0, false, 0.0, false);
+                HackPrevention.cancel(p, check, 1);
             }
         }
     }

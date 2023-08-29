@@ -101,7 +101,7 @@ public class Time {
     }
 
     private static String flag(SpartanPlayer player, LivingEntity entity, int ticks, int entityRequirement) {
-        List<Entity> nearbyEntities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, entityRequirement * 2);
+        List<Entity> nearbyEntities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
         int nearbyEntitiesCount = nearbyEntities.size();
 
         if (nearbyEntitiesCount > 0) {

@@ -91,7 +91,7 @@ public class Pattern {
 
         // Separator
 
-        List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, maxStoredEntities);
+        List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
         if (entities.size() > 0) {
             Map<Integer, Location> linkedMap = entityLocations.get(uuid);

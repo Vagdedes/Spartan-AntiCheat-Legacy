@@ -3,6 +3,7 @@ package me.vagdedes.spartan.features.synchronicity;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
@@ -25,7 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CrossServerInformation {
 
-    private static int max = 600, ticks = 0, importantTicks = 0;
+
+    private static int max = 200, ticks = 0, importantTicks = 0;
     private static final char colorSyntaxCharacter = '&';
     private static long cooldown = 0L;
     private static String serverName = null;
@@ -45,7 +47,6 @@ public class CrossServerInformation {
             SpartanBukkit.runRepeatingTask(() -> {
                 if (IDs.isValid()) {
                     if (ticks == 0) {
-                        max = 200;
                         ticks = max;
 
                         SpartanBukkit.connectionThread.execute(() -> {

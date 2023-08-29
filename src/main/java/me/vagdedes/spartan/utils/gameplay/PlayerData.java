@@ -117,6 +117,7 @@ public class PlayerData {
                 }
             } else {
                 ExtremeCollision.run(p);
+                BouncingBlocks.runMove(p);
             }
         } else {
             if (n.isSprinting()) {
@@ -339,6 +340,14 @@ public class PlayerData {
         return item != null && item.getType().isEdible();
     }
 
+    public static boolean isUsable(Material type) {
+        return CombatUtils.isSword(type)
+                || CombatUtils.isBow(type)
+                || type.isEdible()
+                || type == Material.FISHING_ROD
+                || type == Material.POTION;
+    }
+
     public static boolean isSpadeItem(Material m) {
         return m == diamond_spade
                 || m == iron_spade
@@ -421,7 +430,7 @@ public class PlayerData {
 
     public static double getNearbyCollisions(SpartanPlayer p) {
         int max = 30;
-        List<Entity> entities = p.getNearbyEntities(1.0, 1.0, 1.0, max);
+        List<Entity> entities = p.getNearbyEntities(1.0, 1.0, 1.0);
 
         if (entities.size() > 0) {
             SpartanLocation location = p.getLocation();
@@ -493,7 +502,7 @@ public class PlayerData {
         int i = 0;
         boolean pusherFound = false;
 
-        for (Entity e : p.getNearbyEntities(distance, distance, distance, limit)) {
+        for (Entity e : p.getNearbyEntities(distance, distance, distance)) {
             if (e instanceof LivingEntity && (!(e instanceof Player) || p.canSee((Player) e))) {
                 if (findPusher && (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && e.getPassengers().size() > 0 || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && e.getPassenger() != null)) {
                     pusherFound = true;
@@ -518,4 +527,6 @@ public class PlayerData {
     public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y) {
         return GroundUtils.isOnGround(p, loc, y, true, true);
     }
+
+
 }

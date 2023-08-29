@@ -9,6 +9,8 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class IrregularMovementsMotion {
 
@@ -286,7 +288,8 @@ public class IrregularMovementsMotion {
                             && !onGround
                             && !climbScenario
                             && p.isJumping(oldVertical)
-                            && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)) {
+                            && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)
+                            && (vertical != 0.0 || !PlayerData.isUsable(p.getItemInHand().getType()))) {
                         double jumpingPrecision = MoveUtils.getJumpingPrecision(p);
 
                         if (Math.abs(oldVertical - MoveUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere

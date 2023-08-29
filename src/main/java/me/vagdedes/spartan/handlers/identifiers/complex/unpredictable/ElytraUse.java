@@ -19,31 +19,39 @@ public class ElytraUse {
             ItemStack i = p.getInventory().getChestplate();
 
             if (i != null) {
-                if (i.getDurability() < 432 && i.getType() == Material.ELYTRA) {
-                    if (!event || !ElytraGlideSpam.run(p)) {
-                        p.setGliding(gliding, false);
-                        Handlers handlers = p.getHandlers();
-                        handlers.add(Handlers.HandlerType.ElytraWear, 2);
+                if (i.getType() == Material.ELYTRA) {
+                    if (i.getDurability() < 432) {
+                        if (!event || !ElytraGlideSpam.run(p)) {
+                            p.setGliding(gliding, false);
+                            Handlers handlers = p.getHandlers();
+                            handlers.add(Handlers.HandlerType.ElytraWear, 2);
+
+                            if (gliding) {
+                                handlers.add(Handlers.HandlerType.ElytraUse, hasIncreasedSpeed(p) ? 20 : 10);
+                            }
+                        }
+                    } else {
+                        p.setGliding(false, gliding);
 
                         if (gliding) {
-                            handlers.add(Handlers.HandlerType.ElytraUse, hasIncreasedSpeed(p) ? 20 : 10);
+                            IllegalElytraPacket.run(p, 2, 2);
                         }
                     }
                 } else {
-                    IllegalElytraPacket.run(p, 2);
+                    p.setGliding(false, gliding);
                 }
             } else {
                 p.setGliding(false, gliding);
 
                 if (gliding && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)) {
-                    IllegalElytraPacket.run(p, 2);
+                    IllegalElytraPacket.run(p, 3, 2);
                 }
             }
         } else {
             p.setGliding(false, gliding);
 
             if (gliding) {
-                IllegalElytraPacket.run(p, 1);
+                IllegalElytraPacket.run(p, 1, 0);
             }
         }
     }

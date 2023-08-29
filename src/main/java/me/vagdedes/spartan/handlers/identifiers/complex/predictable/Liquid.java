@@ -17,7 +17,8 @@ public class Liquid {
         if (action == Action.RIGHT_CLICK_BLOCK && !p.getProfile().isHacker()) {
             ItemStack itemStack = p.getItemInHand();
 
-            if (itemStack != null && itemStack.getType() == Material.WATER_BUCKET) {
+            if (itemStack != null
+                    && itemStack.getType() == Material.WATER_BUCKET) {
                 add(p);
             }
         }

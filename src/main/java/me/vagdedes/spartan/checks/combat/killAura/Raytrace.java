@@ -30,7 +30,7 @@ public class Raytrace {
             double entityWidth = CombatUtils.getWidthAndHeight(entity)[0];
 
             if (distance > entityWidth) {
-                List<Entity> nearbyEntities = player.getNearbyEntities(distance, distance, distance, maxEntities + 1);
+                List<Entity> nearbyEntities = player.getNearbyEntities(distance, distance, distance);
                 nearbyEntities.remove(entity);
                 int nearbyEntitiesSize = nearbyEntities.size();
 

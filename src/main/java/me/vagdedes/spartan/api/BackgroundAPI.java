@@ -116,7 +116,7 @@ public class BackgroundAPI {
     }
 
     static boolean isEnabled(HackType HackType) {
-        return HackType.getCheck().isEnabled(null, null);
+        return HackType.getCheck().isEnabled(null, null, null);
     }
 
     static boolean isSilent(HackType HackType) {
@@ -182,13 +182,13 @@ public class BackgroundAPI {
 
     static void enableCheck(HackType HackType) {
         if (Settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setEnabled(true);
+            HackType.getCheck().setEnabled(null, true);
         }
     }
 
     static void disableCheck(HackType HackType) {
         if (Settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setEnabled(false);
+            HackType.getCheck().setEnabled(null, false);
         }
     }
 

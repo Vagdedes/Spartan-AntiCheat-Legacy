@@ -177,9 +177,8 @@ public class Check {
     private short silent;
     private int cancelViolation;
     private final int defaultCancelViolation, maxCancelledViolations;
-    private boolean
-            enabled,
-            hasCancelViolation;
+    private boolean hasCancelViolation;
+    private final boolean[] enabled;
     private final boolean
             canPunish, canPunishByDefault,
             canBeSilent,
@@ -477,7 +476,6 @@ public class Check {
         for (int position = (commands.size() + 1); position <= maxCommands; position++) {
             commands.add("");
         }
-        Object enabled = getOption("enabled", true, false);
         Object silent;
 
         if (hackType != Enums.HackType.AutoRespawn) { // Can Be Silent
@@ -490,18 +488,32 @@ public class Check {
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
+        Object oldOptionValue = getOption("enabled", null, false);
+        boolean hasOldOption = oldOptionValue instanceof Boolean;
 
-        this.enabled = enabled instanceof Boolean ? (boolean) enabled :
-                enabled instanceof Long || enabled instanceof Integer || enabled instanceof Short ? ((long) enabled) > 0L :
-                        enabled instanceof Double || enabled instanceof Float ? ((double) enabled) > 0.0 :
-                                Boolean.parseBoolean(enabled.toString().toLowerCase());
+        if (hasOldOption) {
+            setOption("enabled", null, false);
+        }
+        this.enabled = new boolean[ResearchEngine.DataType.values().length - 1]; // -1 because of the universal
+
+        for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+            Object optionValue = getOption(
+                    "enabled." + dataType.lowerCase,
+                    hasOldOption ? oldOptionValue : true,
+                    false
+            );
+            this.enabled[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+                    optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
+                            optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
+                                    Boolean.parseBoolean(optionValue.toString().toLowerCase());
+        }
 
         if (hasPunishCapabilities(hackType)) {
             if (legacy) {
                 this.commands = new String[]{};
                 this.canPunishByDefault = canPunishByDefault(hackType);
                 ConfigurationSection section = Register.plugin.getConfig().getConfigurationSection(hackType + ".punishments");
-                this.canPunish = section != null && section.getKeys(false).size() > 0;
+                this.canPunish = section != null && !section.getKeys(false).isEmpty();
 
                 if (!this.canPunish && this.canPunishByDefault) {
                     File file = Config.getFile();
@@ -737,7 +749,7 @@ public class Check {
     }
 
     public LiveViolation getViolations(UUID uuid) {
-        if (!isEnabled(null, null) || !SpartanBukkit.isPlayer(uuid)) {
+        if (!isEnabled(null, null, null) || !SpartanBukkit.isPlayer(uuid)) {
             return new LiveViolation(uuid, this.hackType);
         }
         LiveViolation violations = this.violations.get(uuid);
@@ -785,34 +797,53 @@ public class Check {
         }
     }
 
-    public boolean isEnabled(String world, UUID player) {
-        return enabled
-                && (world == null || isEnabledOnWorld(world))
+    public boolean isEnabled(ResearchEngine.DataType dataType, String world, UUID player) {
+        if (dataType == null) {
+            boolean enabled = false;
+
+            for (ResearchEngine.DataType type : ResearchEngine.getDynamicUsableDataTypes(false)) {
+                if (this.enabled[type.ordinal()]) {
+                    enabled = true;
+                    break;
+                }
+            }
+
+            if (!enabled) {
+                return false;
+            }
+        } else if (!this.enabled[dataType.ordinal()]) {
+            return false;
+        }
+        return (world == null || isEnabledOnWorld(world))
                 && (player == null || getDisabledCause(player) == null);
     }
 
-    public void setEnabled(boolean b) {
-        if (enabled != b) {
-            CheckToggleEvent event;
+    public void setEnabled(ResearchEngine.DataType dataType, boolean b) {
+        for (ResearchEngine.DataType type : (dataType == null ? ResearchEngine.getDynamicUsableDataTypes(false) : new ResearchEngine.DataType[]{dataType})) {
+            int ordinal = type.ordinal();
 
-            if (Settings.getBoolean("Important.enable_developer_api")) {
-                event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.Enable : Enums.ToggleAction.Disable);
-                Register.manager.callEvent(event);
-            } else {
-                event = null;
-            }
+            if (enabled[ordinal] != b) {
+                CheckToggleEvent event;
 
-            if (event == null || !event.isCancelled()) {
-                this.enabled = b;
-
-                if (b) {
-                    CloudFeature.refresh(true);
+                if (Settings.getBoolean("Important.enable_developer_api")) {
+                    event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.Enable : Enums.ToggleAction.Disable);
+                    Register.manager.callEvent(event);
                 } else {
-                    clearConfigurationCache();
-                    clearViolations();
-                    clearCancelCauses();
+                    event = null;
                 }
-                setOption("enabled", b, false);
+
+                if (event == null || !event.isCancelled()) {
+                    this.enabled[ordinal] = b;
+
+                    if (b) {
+                        CloudFeature.refresh(true);
+                    } else {
+                        clearConfigurationCache();
+                        clearViolations();
+                        clearCancelCauses();
+                    }
+                    setOption("enabled." + type.lowerCase, b, false);
+                }
             }
         }
     }

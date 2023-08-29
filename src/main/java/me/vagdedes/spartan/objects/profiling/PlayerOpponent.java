@@ -113,27 +113,19 @@ public class PlayerOpponent {
     // Separator
 
     public long getHitTimeAverage() {
-        return hitTimeAverage < 0L ?
-                Math.abs(hitTimeAverage) :
-                hitTimeAverage / Math.max(hits, 1);
+        return Math.abs(hitTimeAverage);
     }
 
     public double getReachAverage() {
-        return reachAverage < 0.0 ?
-                Math.abs(reachAverage) :
-                reachAverage / ((double) Math.max(hits, 1));
+        return Math.abs(reachAverage);
     }
 
     public float getYawRateAverage() {
-        return yawRateAverage < 0.0 ?
-                Math.abs(yawRateAverage) :
-                yawRateAverage / ((float) Math.max(hits, 1));
+        return Math.abs(yawRateAverage);
     }
 
     public float getPitchRateAverage() {
-        return pitchRateAverage < 0.0 ?
-                Math.abs(pitchRateAverage) :
-                pitchRateAverage / ((float) Math.max(hits, 1));
+        return Math.abs(pitchRateAverage);
     }
 
     // Separator
@@ -164,11 +156,11 @@ public class PlayerOpponent {
             previousLastHit = lastHit;
             this.lastHit = System.currentTimeMillis();
 
-            reachAverage += distance;
-            yawRateAverage += CombatProcessing.getDecimal(p, CombatProcessing.yawDifference, 0.0);
-            pitchRateAverage += CombatProcessing.getDecimal(p, CombatProcessing.pitchDifference, 0.0);
             hits++;
             hitCombo++;
+            reachAverage = (reachAverage + distance) / ((double) hits);
+            yawRateAverage = (yawRateAverage + ((float) CombatProcessing.getDecimal(p, CombatProcessing.yawDifference, 0.0))) / ((float) hits);
+            pitchRateAverage = (pitchRateAverage + ((float) CombatProcessing.getDecimal(p, CombatProcessing.pitchDifference, 0.0))) / ((float) hits);
             updateData(p, entities, false);
         }
     }

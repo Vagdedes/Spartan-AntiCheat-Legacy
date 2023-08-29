@@ -378,13 +378,13 @@ public class CommandExecution implements CommandExecutor {
                             Enums.HackType type = Enums.HackType.valueOf(check);
                             Check checkObj = type.getCheck();
 
-                            if (checkObj.isEnabled(null, null)) {
-                                checkObj.setEnabled(false);
+                            if (checkObj.isEnabled(null, null, null)) {
+                                checkObj.setEnabled(null, false);
                                 String message = Messages.get("check_disable_message");
                                 message = ConfigUtils.replaceWithSyntax(isPlayer ? (Player) sender : null, message, type);
                                 sender.sendMessage(message);
                             } else {
-                                checkObj.setEnabled(true);
+                                checkObj.setEnabled(null, true);
                                 String message = Messages.get("check_enable_message");
                                 message = ConfigUtils.replaceWithSyntax(isPlayer ? (Player) sender : null, message, type);
                                 sender.sendMessage(message);

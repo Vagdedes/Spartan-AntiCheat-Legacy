@@ -243,7 +243,7 @@ public class Aim {
 
     static void runMove(SpartanPlayer player, SpartanLocation to, SpartanLocation from, Buffer buffer) {
         if (player.isMoving(true) && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
-            List<Entity> entities = player.getNearbyEntities(maxObservableDistance, maxObservableDistance, maxObservableDistance, maxEntities + 1);
+            List<Entity> entities = player.getNearbyEntities(maxObservableDistance, maxObservableDistance, maxObservableDistance);
 
             if (entities.size() <= maxEntities) {
                 UUID uuid = player.getUniqueId();

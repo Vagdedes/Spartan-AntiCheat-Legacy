@@ -722,29 +722,27 @@ public class SpartanLocation {
     }
 
     public SpartanLocation[] getSurroundingLocations(double x, double y, double z) {
-        if (x < 1.0 || z < 1.0) {
-            if (player == null
-                    || player.isBedrockPlayer()
-                    || player.getVehicle() != null
-                    || player.getActivePotionEffects().size() > 0
-                    || BlockUtils.isSolid(player.getItemInHand().getType())) {
+        if (player == null
+                || player.isBedrockPlayer()
+                || player.getVehicle() != null
+                || player.getHandlers().has()
+                || !player.getActivePotionEffects().isEmpty()
+                || BlockUtils.isSolid(player.getItemInHand().getType())) {
+            return getSurroundingLocations(x, y, z, true);
+        } else {
+            PlayerProfile playerProfile = player.getProfile();
+
+            if (playerProfile.isSuspectedOrHacker()) {
                 return getSurroundingLocations(x, y, z, true);
             } else {
-                PlayerProfile playerProfile = player.getProfile();
-
-                if (playerProfile.isSuspectedOrHacker()) {
-                    return getSurroundingLocations(x, y, z, true);
-                } else {
-                    LiveViolation liveViolation = playerProfile.getLastInteraction();
-                    return getSurroundingLocations(x, y, z,
-                            liveViolation.hasLevel()
-                                    || liveViolation.hasCancelledLevel()
-                                    || liveViolation.getLastViolation(true) <= Check.violationCycleSeconds
-                    );
-                }
+                LiveViolation liveViolation = playerProfile.getLastInteraction();
+                return getSurroundingLocations(x, y, z,
+                        liveViolation.hasLevel()
+                                || liveViolation.hasCancelledLevel()
+                                || liveViolation.getLastViolation(true) <= Check.violationCycleSeconds
+                );
             }
         }
-        return getSurroundingLocations(x, y, z, false);
     }
 
     public int getSurroundingSolidBlockCount(double x, double z, int cap) {

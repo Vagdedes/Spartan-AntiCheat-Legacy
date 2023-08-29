@@ -24,17 +24,18 @@ public class Response {
 
         if (distance > entityWidth // We want the player in a certain distance, otherwise we risk having easily low width, also this is the opposite of the loop
                 && Math.abs(width) <= (Math.min(entityWidth, KillAura.normalWidthToPlayerView) / (player.getProfile().isSuspectedOrHacker(KillAura.check) ? 1.0 : 2.0)) // The width must be appropriate, otherwise it's the purpose of another detection to cover this
-                && player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, maxEntities + 1).size() <= maxEntities) {
+                && player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance).size() <= maxEntities) {
             Buffer buffer = player.getBuffer(KillAura.check);
             String key = Response.key + "=" + entity.getEntityId();
             int angleTicks = buffer.get(key);
             buffer.set(key, angleTicks + 1);
 
             if (angleTicks == 0) {
-                key += "=violate";
+                int bufferTicks = CombatUtils.getFightTicks(player) * 5;
 
-                if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 5) == 2) {
-                    buffer.remove(key);
+                if (buffer.start(Buffer.BufferType.Combat, key + "=run", bufferTicks) == 1
+                        && buffer.start(Buffer.BufferType.Combat, Response.key, bufferTicks) == 2) {
+                    buffer.clear(Response.key);
                     KillAura.violate(player, "type: response"
                             + ", width: " + width
                             + ", entity-width: " + entityWidth
@@ -47,7 +48,7 @@ public class Response {
 
     static void runMove(SpartanPlayer player, Buffer buffer) {
         if (buffer.start(key + "=tick", 1) == Math.max(LagLeniencies.getDelay(player), 1)) { // This algorithm runs regardless of combat, so makes sure it runs once per tick or one's latency
-            List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, maxEntities * 5);
+            List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
             if (entities.size() > 0) {
                 for (Entity nearbyEntity : entities) {

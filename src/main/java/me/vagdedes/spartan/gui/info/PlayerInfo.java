@@ -261,7 +261,7 @@ public class PlayerInfo {
         String worldName = p.getWorld().getName();
         Check check = hackType.getCheck();
 
-        if (!check.isEnabled(worldName, null)) { // Do not put player because we calculate it below
+        if (!check.isEnabled(null, worldName, null)) { // Do not put player because we calculate it below
             return returnNull ? null : "Disabled";
         }
         UUID uuid = p.getUniqueId();

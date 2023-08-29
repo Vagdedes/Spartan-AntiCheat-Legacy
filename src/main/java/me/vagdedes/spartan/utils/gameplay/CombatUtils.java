@@ -75,7 +75,7 @@ public class CombatUtils {
         return 100.0 - Math.min((Math.abs(hitWidth) / (entityWidth / 2.0)) * 100.0, 100.0);
     }
 
-    public static double[] getWidthAndHeight(LivingEntity entity) {
+    public static double[] getWidthAndHeight(Entity entity) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
             BoundingBox boundingBox = entity.getBoundingBox();
             return new double[]{boundingBox.getMaxX() - boundingBox.getMinX(), entity.getHeight()};
@@ -159,7 +159,7 @@ public class CombatUtils {
             case OCELOT:
                 return new double[]{0.6, 0.7};
             default:
-                return new double[]{0.0, MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) ? entity.getHeight() : entity.getEyeHeight()};
+                return new double[]{0.0, !(entity instanceof LivingEntity) || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) ? entity.getHeight() : ((LivingEntity) entity).getEyeHeight()};
         }
     }
 
@@ -264,6 +264,11 @@ public class CombatUtils {
                 || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && type == Material.NETHERITE_SWORD;
     }
 
+    public static boolean isBow(Material type) {
+        return type == Material.BOW
+                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && type == Material.CROSSBOW;
+    }
+
     public static boolean isNewPvPMechanic(SpartanPlayer p, Entity entity) {
         if (newPvPMechanicsEnabled() && !p.hasAttackCooldown() && isSword(p.getItemInHand().getType())) {
             double distance = 4.0;
@@ -289,7 +294,7 @@ public class CombatUtils {
         int i = 0;
         boolean hitAnEntity = PlayerData.hitAPlayer(p);
 
-        for (Entity e : p.getNearbyEntities(distance, distance, distance, limit)) {
+        for (Entity e : p.getNearbyEntities(distance, distance, distance)) {
             if (e instanceof Monster) {
                 i++;
             } else if (e instanceof Player) {
