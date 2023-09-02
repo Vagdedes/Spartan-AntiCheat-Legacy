@@ -3,7 +3,6 @@ package me.vagdedes.spartan.features.synchronicity;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Settings;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;

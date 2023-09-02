@@ -159,13 +159,10 @@ public class PlayerInfo {
         // Separator
 
         double delayNumber = isOnline ? LagLeniencies.getDelaySimplified(LagLeniencies.getDelay(p)) : 0.0; // Base
-        boolean bedrockPlayer = playerProfile.isBedrockPlayer();
         ResearchEngine.DataType dataType = isOnline ? p.getDataType() : playerProfile.getDataType();
         boolean tpsDropping = isOnline && LagLeniencies.hasInconsistencies(p, "tps"),
                 latencyLag = isOnline && LagLeniencies.hasInconsistencies(p, "ping"),
                 notChecked = isOnline && !MaximumCheckedPlayers.isChecked(p.getUniqueId()),
-                javaPlayerNotChecked = !bedrockPlayer && !SpartanEdition.hasDetectionsEnabled(dataType, true),
-                bedrockPlayerNotChecked = bedrockPlayer && !SpartanEdition.hasDetectionsEnabled(dataType, true),
                 detectionsNotAvailable = SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
         String cancellableCompatibility = isOnline ? p.getCancellableCompatibility() : null;
@@ -178,9 +175,8 @@ public class PlayerInfo {
                 boolean hasViolations = violations > 0,
                         hasData = playerProfile.isSuspectedOrHacker() && playerProfile.getEvidence().has(hackType);
 
-                String state = getDetectionState(p, hackType, cancellableCompatibility, delayNumber, isOnline,
-                        tpsDropping, latencyLag, notChecked, javaPlayerNotChecked, bedrockPlayerNotChecked,
-                        detectionsNotAvailable, !SpartanEdition.supportsCheck(dataType, hackType),
+                String state = getDetectionState(p, hackType, dataType, cancellableCompatibility, delayNumber, isOnline,
+                        tpsDropping, latencyLag, notChecked, detectionsNotAvailable, !SpartanEdition.supportsCheck(dataType, hackType),
                         !hasViolations && !hasData);
 
                 if (hasViolations || hasData || state != null) {
@@ -204,24 +200,23 @@ public class PlayerInfo {
                                  List<String> lore) {
         lore.clear();
         lore.add("");
-        int violations = !isOnline ? 0 : hackType.getCheck().getViolations(p).getLevel();
+        Check check = hackType.getCheck();
+        int violations = !isOnline ? 0 : check.getViolations(p).getLevel();
         ItemStack item = isOnline && violations > 0 ?
                 new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(violations, 64), (short) 14) :
                 new ItemStack(Material.QUARTZ_BLOCK);
-        boolean bedrockPlayer = playerProfile.isBedrockPlayer(),
-                hasViolations = violations > 0,
+        boolean hasViolations = violations > 0,
                 hasData = playerProfile.isSuspectedOrHacker() && playerProfile.getEvidence().has(hackType);
         ResearchEngine.DataType dataType = isOnline ? p.getDataType() : playerProfile.getDataType();
         String state = getDetectionState(p,
                 hackType,
+                dataType,
                 isOnline ? p.getCancellableCompatibility() : null,
                 isOnline ? LagLeniencies.getDelaySimplified(LagLeniencies.getDelay(p)) : 0.0,
                 isOnline,
                 isOnline && LagLeniencies.hasInconsistencies(p, "tps"),
                 isOnline && LagLeniencies.hasInconsistencies(p, "ping"),
                 isOnline && !MaximumCheckedPlayers.isChecked(p.getUniqueId()),
-                !bedrockPlayer && !SpartanEdition.hasDetectionsEnabled(dataType, true),
-                bedrockPlayer && !SpartanEdition.hasDetectionsEnabled(dataType, true),
                 SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
                 !SpartanEdition.supportsCheck(dataType, hackType),
                 !hasViolations && !hasData);
@@ -240,15 +235,13 @@ public class PlayerInfo {
         InventoryUtils.add(inv, "§2" + hackType.getCheck().getName() + " Check", lore, item, slot);
     }
 
-    private static String getDetectionState(SpartanPlayer p, HackType hackType,
+    private static String getDetectionState(SpartanPlayer p, HackType hackType, ResearchEngine.DataType dataType,
                                             String cancellableCompatibility,
                                             double delayNumber,
                                             boolean hasPlayer,
                                             boolean tpsDropping,
                                             boolean latencyIncreasing,
                                             boolean notChecked,
-                                            boolean javaPlayerNotChecked,
-                                            boolean bedrockPlayerNotChecked,
                                             boolean detectionMissing,
                                             boolean detectionUnsupported,
                                             boolean returnNull) {
@@ -258,26 +251,28 @@ public class PlayerInfo {
         if (!hasPlayer) {
             return returnNull ? null : "Offline";
         }
+        if (detectionUnsupported) {
+            return "Detection Unsupported";
+        }
+        if (detectionMissing) {
+            return "Detection Missing";
+        }
         String worldName = p.getWorld().getName();
         Check check = hackType.getCheck();
 
-        if (!check.isEnabled(null, worldName, null)) { // Do not put player because we calculate it below
-            return returnNull ? null : "Disabled";
+        if (!check.isEnabled(dataType, worldName, null)) { // Do not put player because we calculate it below
+            return returnNull ? null : "Disabled"; //todo
         }
         UUID uuid = p.getUniqueId();
         String delay = delayNumber == 0.0 ? "" : " (" + (Math.floor(delayNumber) == delayNumber ? String.valueOf((int) delayNumber) : String.valueOf(delayNumber)) + ")";
         CancelCause disabledCause = check.getDisabledCause(uuid);
         return Permissions.isBypassing(p, hackType) ? "Permission Bypass" :
-                detectionUnsupported ? "Detection Unsupported" :
-                        detectionMissing ? "Detection Missing" :
-                                javaPlayerNotChecked ? "Disabled " + ResearchEngine.DataType.Java + " Detections" :
-                                        bedrockPlayerNotChecked ? "Disabled " + ResearchEngine.DataType.Bedrock + " Detections" :
-                                                cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
-                                                        notChecked ? "Temporarily Not Checked" :
-                                                                tpsDropping ? "Server Lag" + delay :
-                                                                        latencyIncreasing ? "Latency Lag" + delay :
-                                                                                disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                                                                                        (returnNull ? null : (check.isSilent(worldName, uuid) ? "Silent " : "") + "Checking" + delay);
+                cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
+                        notChecked ? "Temporarily Not Checked" :
+                                tpsDropping ? "Server Lag" + delay :
+                                        latencyIncreasing ? "Latency Lag" + delay :
+                                                disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
+                                                        (returnNull ? null : (check.isSilent(worldName, uuid) ? "Silent " : "") + "Checking" + delay);
     }
 
     public static void refresh(UUID uuid) {

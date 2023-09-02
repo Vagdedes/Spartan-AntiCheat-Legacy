@@ -189,7 +189,7 @@ public class PlayerStateLists {
                     lore.add("");
                     lore.add("§cEmpty items like this will be filled with");
                     lore.add("§cuseful information about your players");
-                    lore.add("§cas Spartan learns more your server.");
+                    lore.add("§cas Spartan learns more about your server.");
                 }
 
                 for (int i = listSize; i < limit; i++) {

@@ -310,7 +310,6 @@ public class SpartanPlayer {
                             // Check Allowance Cache
                             if (TPS.getTick(p) <= 100
                                     || !MaximumCheckedPlayers.isChecked(p.getUniqueId())
-                                    || !SpartanEdition.hasDetectionsEnabled(p.dataType, false)
                                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && p.getGameMode() == GameMode.SPECTATOR
                                     || IDs.isPreview()
                                     || p.getCancellableCompatibility() != null) {
@@ -1390,7 +1389,7 @@ public class SpartanPlayer {
                         }
                     } else {
                         SpartanLocation loc = this.getLocation();
-                        List<Entity> entities = worldEntities.getOrDefault(loc.getWorld(), new ArrayList<>(0));
+                        List<Entity> entities = new ArrayList<>(worldEntities.getOrDefault(loc.getWorld(), new ArrayList<>(0)));
 
                         if (!entities.isEmpty()) {
                             Entity vehicle = this.getVehicle();

@@ -9,9 +9,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eeca6878-94f8-4e49-8aa7-f063615e0302" name="Changes" comment="Implemented a new settings.yml option">
+    <list default="true" id="eeca6878-94f8-4e49-8aa7-f063615e0302" name="Changes" comment="Made the nearby-entities method thread-safe.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/checks/movement/irregularmovements/IrregularMovementsMotion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/configuration/Settings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/CrossServerInformation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/CrossServerInformation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/features/synchronicity/SpartanEdition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/gui/helpers/PlayerStateLists.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/gui/helpers/PlayerStateLists.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/gui/info/PlayerInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/gui/info/PlayerInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/objects/replicates/SpartanPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/vagdedes/spartan/system/Piracy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +163,15 @@
       <option name="project" value="LOCAL" />
       <updated>1691952328968</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Made the nearby-entities method thread-safe.">
+      <option name="closed" value="true" />
+      <created>1693316936414</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1693316936414</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -176,7 +192,8 @@
     <MESSAGE value="Fixed false positives concerning the IrregularMovements check" />
     <MESSAGE value="Minor improvements and unnecessary feature removals" />
     <MESSAGE value="Implemented a new settings.yml option" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented a new settings.yml option" />
+    <MESSAGE value="Made the nearby-entities method thread-safe." />
+    <option name="LAST_COMMIT_MESSAGE" value="Made the nearby-entities method thread-safe." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

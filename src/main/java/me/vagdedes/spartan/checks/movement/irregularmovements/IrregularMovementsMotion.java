@@ -9,8 +9,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 public class IrregularMovementsMotion {
 

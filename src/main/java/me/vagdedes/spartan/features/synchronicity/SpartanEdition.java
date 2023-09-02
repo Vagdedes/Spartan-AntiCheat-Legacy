@@ -11,10 +11,7 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.IDs;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.StringUtils;
-import me.vagdedes.spartan.utils.server.ConfigUtils;
-import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,32 +60,10 @@ public class SpartanEdition {
                 )) {
                     alternativeVersion = true;
                 }
-                refreshConfiguration(Settings.getFile());
+                for (Enums.HackType hackType : Enums.hackTypes()) {
+                    hackType.resetCheck(false);
+                }
             });
-        }
-    }
-
-    // Configuration
-
-    public static void refreshConfiguration(File file) {
-        if (freeAlternativeVersion) {
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-
-            for (ResearchEngine.DataType dataType : ResearchEngine.usableDataTypes) {
-                String optionName = getOptionName(dataType);
-
-                if (configuration.getBoolean(optionName)) {
-                    ConfigUtils.set(file, optionName, null);
-                }
-            }
-        } else {
-            ResearchEngine.DataType missingDetection = getMissingDetection();
-
-            if (missingDetection == null) {
-                for (ResearchEngine.DataType dataType : ResearchEngine.usableDataTypes) {
-                    ConfigUtils.add(file, getOptionName(dataType), true);
-                }
-            }
         }
     }
 
@@ -144,21 +119,6 @@ public class SpartanEdition {
         }
     }
 
-    public static boolean hasDetectionsEnabled(ResearchEngine.DataType dataType, boolean ignorePurchase) {
-        switch (dataType) {
-            case Java:
-            case Bedrock:
-                String optionName = getOptionName(dataType);
-                return freeAlternativeVersion ?
-                        (!Settings.exists(optionName) || Settings.getBoolean(optionName)) :
-
-                        (ignorePurchase || hasDetectionsPurchased(dataType))
-                                && (!Settings.exists(optionName) || Settings.getBoolean(optionName));
-            default:
-                return false;
-        }
-    }
-
     public static ResearchEngine.DataType getMissingDetection() {
         return hasDetectionsPurchased(ResearchEngine.DataType.Java) ?
                 (hasDetectionsPurchased(ResearchEngine.DataType.Bedrock) ? null : ResearchEngine.DataType.Bedrock) :
@@ -206,10 +166,6 @@ public class SpartanEdition {
         return cloudFeature ?
                 getProductID(ResearchEngine.DataType.Java) :
                 "Spartan: " + ResearchEngine.DataType.Java + " & " + ResearchEngine.DataType.Bedrock + " Edition";
-    }
-
-    private static String getOptionName(ResearchEngine.DataType dataType) {
-        return "Detections.enable_" + dataType.toString().toLowerCase() + "_detections";
     }
 
     // Notifications

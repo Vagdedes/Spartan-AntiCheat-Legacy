@@ -7,7 +7,6 @@ import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.performance.MaximumCheckedPlayers;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.DiscordWebhooks;
-import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.handlers.commands.CommandExecution;
 import me.vagdedes.spartan.handlers.commands.RawCommands;
 import me.vagdedes.spartan.handlers.stability.TestServer;
@@ -107,7 +106,6 @@ public class Settings {
         ConfigUtils.add(file, "Detections.fall_damage_on_teleport", false); // test server
         ConfigUtils.add(file, "Detections.allow_cancelled_hit_checking", false); // test server alternative
         ConfigUtils.add(file, "Detections.update_blocks_upon_violation", false);
-        SpartanEdition.refreshConfiguration(file);
 
         ConfigUtils.add(file, "Performance.enable_false_positive_detection", true); // test server
         ConfigUtils.add(file, "Performance.use_vanilla_ground_method", false); // test server
