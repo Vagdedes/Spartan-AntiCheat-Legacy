@@ -488,24 +488,37 @@ public class Check {
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
-        Object oldOptionValue = getOption("enabled", null, false);
-        boolean hasOldOption = oldOptionValue instanceof Boolean;
-
-        if (hasOldOption) {
-            setOption("enabled", null, false);
-        }
         this.enabled = new boolean[ResearchEngine.DataType.values().length - 1]; // -1 because of the universal
 
-        for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
-            Object optionValue = getOption(
-                    "enabled." + dataType.lowerCase,
-                    hasOldOption ? oldOptionValue : true,
-                    false
-            );
-            this.enabled[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+        if (legacy) {
+            Object optionValue = getOption("enabled", true, false);
+            boolean boolValue = optionValue instanceof Boolean ? (boolean) optionValue :
                     optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
+
+            for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+                this.enabled[dataType.ordinal()] = boolValue;
+            }
+        } else {
+            Object oldOptionValue = getOption("enabled", null, false);
+            boolean hasOldOption = oldOptionValue instanceof Boolean;
+
+            if (hasOldOption) {
+                setOption("enabled", null, false);
+            }
+
+            for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+                Object optionValue = getOption(
+                        "enabled." + dataType.lowerCase,
+                        hasOldOption ? oldOptionValue : true,
+                        false
+                );
+                this.enabled[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+                        optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
+                                optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
+                                        Boolean.parseBoolean(optionValue.toString().toLowerCase());
+            }
         }
 
         if (hasPunishCapabilities(hackType)) {
