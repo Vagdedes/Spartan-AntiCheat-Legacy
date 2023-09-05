@@ -65,7 +65,9 @@ public class SpartanPlayer {
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
     private static final Map<World, List<Entity>> worldEntities = new ConcurrentHashMap<>(Math.max(Bukkit.getWorlds().size(), 1));
-    private static final Object nearbyEntitiesLock = new Object();
+    private static final Object
+            nearbyEntitiesLock = new Object(),
+            potionEffectLock = new Object();
 
     final String name;
     private final UUID uuid;
@@ -1292,19 +1294,25 @@ public class SpartanPlayer {
     }
 
     public Collection<PotionEffect> getActivePotionEffects() {
-        return potionEffects;
+        synchronized (potionEffectLock) {
+            return new ArrayList<>(potionEffects);
+        }
     }
 
-    public synchronized void setActivePotionEffects(Collection<PotionEffect> potionEffects) {
-        this.potionEffects.clear();
-        this.potionEffects.addAll(potionEffects);
+    public void setActivePotionEffects(Collection<PotionEffect> potionEffects) {
+        synchronized (potionEffectLock) {
+            this.potionEffects.clear();
+            this.potionEffects.addAll(potionEffects);
+        }
     }
 
     public PotionEffect getPotionEffect(PotionEffectType type) {
-        if (potionEffects.size() > 0) {
-            for (PotionEffect potionEffect : potionEffects) {
-                if (potionEffect != null && potionEffect.getType().equals(type)) {
-                    return potionEffect;
+        if (!potionEffects.isEmpty()) {
+            synchronized (potionEffectLock) {
+                for (PotionEffect potionEffect : potionEffects) {
+                    if (potionEffect != null && potionEffect.getType().equals(type)) {
+                        return potionEffect;
+                    }
                 }
             }
         }
@@ -1312,11 +1320,13 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType[] potionEffectTypes) {
-        if (potionEffects.size() > 0) {
-            for (PotionEffect potionEffect : potionEffects) {
-                for (PotionEffectType potionEffectType : potionEffectTypes) {
-                    if (potionEffect.getType().equals(potionEffectType)) {
-                        return true;
+        if (!potionEffects.isEmpty()) {
+            synchronized (potionEffectLock) {
+                for (PotionEffect potionEffect : potionEffects) {
+                    for (PotionEffectType potionEffectType : potionEffectTypes) {
+                        if (potionEffect.getType().equals(potionEffectType)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -1325,10 +1335,12 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType potionEffectType) {
-        if (potionEffects.size() > 0) {
-            for (PotionEffect potionEffect : potionEffects) {
-                if (potionEffect.getType().equals(potionEffectType)) {
-                    return true;
+        if (!potionEffects.isEmpty()) {
+            synchronized (potionEffectLock) {
+                for (PotionEffect potionEffect : potionEffects) {
+                    if (potionEffect.getType().equals(potionEffectType)) {
+                        return true;
+                    }
                 }
             }
         }
