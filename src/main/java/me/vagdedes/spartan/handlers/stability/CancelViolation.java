@@ -37,7 +37,7 @@ public class CancelViolation {
                     memory.put(key, check.getCancelViolation());
                 } else {
                     int defaultCancelViolation = check.getDefaultCancelViolation();
-                    memory.put(key, defaultCancelViolation + (defaultCancelViolation * check.getProblematicDetectionsCount()));
+                    memory.put(key, defaultCancelViolation + (defaultCancelViolation * check.getProblematicDetections()));
                 }
             }
         }

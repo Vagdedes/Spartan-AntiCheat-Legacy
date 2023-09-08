@@ -609,7 +609,7 @@ public class CloudConnections {
                         .append(newLine)
                         .append("Low TPS Percentage: ").append((lowTPS / (double) entriesSize) * 100.0)
                         .append(newLine)
-                        .append("Problematic Detections: ").append(check.getProblematicDetectionsCount());
+                        .append("Problematic Detections: ").append(check.getProblematicDetections());
 
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + " " + CloudFeature.identification

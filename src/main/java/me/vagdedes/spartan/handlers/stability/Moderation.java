@@ -254,15 +254,14 @@ public class Moderation {
 
             // Logs
             if (log) {
-                int shownViolations = falsePositive ? 0 : level;
                 SpartanLocation location = detectedPlayer.getLocation();
                 String cancelViolationString = (canPrevent ? "-" : "") + cancelViolation + (check.hasCancelViolation() ? "*" : ""),
                         information = (falsePositive ? "(False Positive) " : "")
-                                + Config.getConstruct() + name + " failed " + hackType + " (VL: " + shownViolations + ") " +
+                                + Config.getConstruct() + name + " failed " + hackType + " (VL: " + level + ") " +
                                 "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString() + "), (C-V: " + cancelViolationString + ") (Silent: " + check.isSilent(world, uuid) + "), " +
                                 "(Ping: " + detectedPlayer.getPing() + "ms), (TPS: " + AlgebraUtils.cut(TPS.get(detectedPlayer, false), 3) + "), (Hacker: " + hacker + "), (Online: " + playerCount + "), " +
                                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), (" + info + ")]";
-                AntiCheatLogs.logInfo(detectedPlayer, information, consoleLog ? shorterMessage : null, null, hackType, falsePositive, true, shownViolations, cancelViolation);
+                AntiCheatLogs.logInfo(detectedPlayer, information, consoleLog ? shorterMessage : null, null, hackType, falsePositive, true, level, cancelViolation);
             }
 
             // Local Notifications

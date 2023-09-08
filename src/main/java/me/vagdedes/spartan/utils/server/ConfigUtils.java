@@ -128,8 +128,10 @@ public class ConfigUtils {
 
         if (hackType != null) {
             LiveViolation liveViolation = hackType.getCheck().getViolations(p);
-            int violations = liveViolation.getLevel();
-            String category = liveViolation.isLastLevelCancelled() ? Enums.PunishmentCategory.minimum.getString() : Check.getCategoryFromViolations(violations, hackType, p.getDataType(), p.getProfile().isSuspectedOrHacker(hackType)).getString();
+            int lastLevel = liveViolation.getLastCancelledLevel();
+            boolean cancelled = lastLevel != 0;
+            int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
+            String category = cancelled ? Enums.PunishmentCategory.minimum.getString() : Check.getCategoryFromViolations(violations, hackType, p.getDataType(), p.getProfile().isSuspectedOrHacker(hackType)).getString();
             message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, uuid)));
             message = replace(message, "{vls:detection}", String.valueOf(violations));
             message = replace(message, "{category:detection}", category);
@@ -178,8 +180,10 @@ public class ConfigUtils {
 
                 if (hasHackType) {
                     LiveViolation liveViolation = hackType.getCheck().getViolations(uuid, p.getDataType());
-                    int violations = liveViolation.getLevel();
-                    String category = liveViolation.isLastLevelCancelled() ? Enums.PunishmentCategory.minimum.getString() : Check.getCategoryFromViolations(violations, hackType, p.getDataType(), p.getProfile().isSuspectedOrHacker(hackType)).getString();
+                    int lastLevel = liveViolation.getLastCancelledLevel();
+                    boolean cancelled = lastLevel != 0;
+                    int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
+                    String category = cancelled ? Enums.PunishmentCategory.minimum.getString() : Check.getCategoryFromViolations(violations, hackType, p.getDataType(), p.getProfile().isSuspectedOrHacker(hackType)).getString();
                     message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, uuid)));
                     message = replace(message, "{vls:detection}", String.valueOf(violations));
                     message = replace(message, "{category:detection}", category);

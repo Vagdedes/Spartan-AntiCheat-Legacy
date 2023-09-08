@@ -58,7 +58,7 @@ public class ManageChecks {
         String[] disabledDetections = CloudFeature.getDisabledDetections(hackType);
         int falsePositives = ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal),
                 cancelViolation = check.getDefaultCancelViolation();
-        int problematicDetections = check.getProblematicDetectionsCount();
+        int problematicDetections = check.getProblematicDetections();
 
         String enabledOption;
         String silentOption = null;

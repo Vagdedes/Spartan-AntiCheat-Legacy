@@ -1128,23 +1128,6 @@ public class Check {
 
     // Separator
 
-    public int getProblematicDetectionsCount() {
-        if (!maxCancelledViolations.isEmpty()) {
-            int count = 0;
-
-            for (int level : maxCancelledViolations.values()) {
-                if (level >= getCancelViolation()) {
-                    count++;
-                }
-            }
-            return count;
-        } else {
-            return 0;
-        }
-    }
-
-    // Separator
-
     public Map<UUID, CancelCause> copySilentUsers() {
         synchronized (silentUsers) {
             return new HashMap<>(silentUsers);
@@ -1319,6 +1302,26 @@ public class Check {
         return defaultCancelViolation == maximumDefaultCancelViolation;
     }
 
+    // Separator
+
+    public int getProblematicDetections() {
+        if (!maxCancelledViolations.isEmpty()) {
+            synchronized (maxCancelledViolations) {
+                int count = 0,
+                        cancelViolation = getCancelViolation();
+
+                for (int level : maxCancelledViolations.values()) {
+                    if (level >= cancelViolation) {
+                        count++;
+                    }
+                }
+                return count;
+            }
+        } else {
+            return 0;
+        }
+    }
+
     public void setMaxCancelledViolations(ResearchEngine.DataType dataType, Map<Integer, Double> map) {
         synchronized (maxCancelledViolations) {
             maxCancelledViolations.clear();
@@ -1327,7 +1330,7 @@ public class Check {
                 for (Map.Entry<Integer, Double> entry : map.entrySet()) {
                     maxCancelledViolations.put(
                             (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + entry.getKey(),
-                            AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be safe
+                            AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest
                     );
                 }
             }
@@ -1350,10 +1353,12 @@ public class Check {
         synchronized (maxCancelledViolations) {
             return maxCancelledViolations.getOrDefault(
                     (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + hash,
-                    Integer.MAX_VALUE
+                    0
             );
         }
     }
+
+    // Separator
 
     public int getDefaultCancelViolation() {
         return defaultCancelViolation;

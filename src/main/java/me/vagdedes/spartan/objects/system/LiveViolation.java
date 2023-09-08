@@ -73,8 +73,7 @@ public class LiveViolation {
     private final Enums.HackType hackType;
     private long cycleExpiration, lastViolation;
     private final Map<Integer, Long> cancelledLevel;
-    private int level;
-    private boolean cancelled;
+    private int level, lastCancelledLevel;
     private final LoopLevelCache cancelledLevelCache, maxCancelledLevelCache;
 
     public LiveViolation(Enums.HackType hackType, ResearchEngine.DataType dataType) {
@@ -84,7 +83,7 @@ public class LiveViolation {
         this.level = 0;
         this.cancelledLevel = MultiVersion.folia ? new HashMap<>() : new ConcurrentHashMap<>();
         this.lastViolation = 0L;
-        this.cancelled = false;
+        this.lastCancelledLevel = 0;
         this.cancelledLevelCache = new LoopLevelCache();
         this.maxCancelledLevelCache = new LoopLevelCache();
     }
@@ -96,7 +95,7 @@ public class LiveViolation {
         this.level = 0;
         this.cancelledLevel = MultiVersion.folia ? new HashMap<>() : new ConcurrentHashMap<>();
         this.lastViolation = 0L;
-        this.cancelled = false;
+        this.lastCancelledLevel = 0;
         this.cancelledLevelCache = new LoopLevelCache();
         this.maxCancelledLevelCache = new LoopLevelCache();
         reset(); // Do not make it local as it takes part in object initiation and is not important
@@ -122,8 +121,8 @@ public class LiveViolation {
         }
     }
 
-    public boolean isLastLevelCancelled() {
-        return cancelled;
+    public int getLastCancelledLevel() {
+        return lastCancelledLevel;
     }
 
     public boolean hasLevel() {
@@ -178,8 +177,10 @@ public class LiveViolation {
     public boolean hasMaxCancelledLevel(int hash) {
         Long time = cancelledLevel.get(hash);
 
-        if (time != null && time > 0L) {
-            return (time - System.currentTimeMillis()) / 1000.0 >= (hackType.getCheck().getMaxCancelledViolations(dataType, hash) - 1); // -1 so we don't ceil the number
+        if (time != null) {
+            time -= System.currentTimeMillis();
+            return time > 0L
+                    && (time / 1000.0) >= (hackType.getCheck().getMaxCancelledViolations(dataType, hash) - 1); // -1 so we don't ceil the number
         } else {
             return false;
         }
@@ -194,7 +195,7 @@ public class LiveViolation {
             this.level = amount;
             increaseCancelledLevel(hash); // Increase it in case a player has reached the max level and is still cheating
         }
-        this.cancelled = false;
+        this.lastCancelledLevel = 0;
         timeReset(); // Always after changing the level
 
         // Always last
@@ -207,21 +208,25 @@ public class LiveViolation {
         }
     }
 
-    public void increaseCancelledLevel(int hash) {
+    public int increaseCancelledLevel(int hash) {
+        this.lastCancelledLevel = hash;
         Long time = cancelledLevel.get(hash);
 
         if (time == null) {
             cancelledLevel.put(hash, System.currentTimeMillis() + 1_000L);
+            return 1;
         } else {
             long current = System.currentTimeMillis();
 
             if (time < current) {
                 this.cancelledLevel.put(hash, current + 1_000L);
+                return 1;
             } else {
-                this.cancelledLevel.put(hash, time + 1_000L);
+                time += 1_000L;
+                this.cancelledLevel.put(hash, time);
+                return AlgebraUtils.integerCeil(time / 1000.0);
             }
         }
-        this.cancelled = true;
     }
 
     public void setMaxLevel(String message) {
@@ -271,11 +276,11 @@ public class LiveViolation {
         if (event == null || !event.isCancelled()) {
             maxLevel.remove(this);
             this.level = 0;
-            this.cancelled = false;
+            this.lastCancelledLevel = 0;
         } else if ((System.currentTimeMillis() - this.cycleExpiration) > Check.violationCycleSeconds) { // Forceful reset to keep potential developer API usage within hardcoded thresholds
             maxLevel.remove(this);
             this.level = 0;
-            this.cancelled = false;
+            this.lastCancelledLevel = 0;
         }
         this.cycleExpiration = System.currentTimeMillis() + Check.violationCycleSeconds;
 

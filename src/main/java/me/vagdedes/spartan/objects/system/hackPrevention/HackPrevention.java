@@ -322,8 +322,8 @@ public class HackPrevention {
                         if (playerViolationEvent == null || !playerViolationEvent.isCancelled()) {
                             if (falsePositive) {
                                 violationsObject.removeMaxLevel(information);
-                                violationsObject.increaseCancelledLevel(playerViolation.getSimilarityIdentity());
-                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violationsObject.getCancelledLevel(playerViolation.getSimilarityIdentity()), false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
+                                violations = violationsObject.increaseCancelledLevel(playerViolation.getSimilarityIdentity());
+                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                             } else {
                                 switch (hp.violation) {
                                     case 2:
