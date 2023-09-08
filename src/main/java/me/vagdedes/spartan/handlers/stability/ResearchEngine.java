@@ -12,6 +12,7 @@ import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.BanManagement;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
+import me.vagdedes.spartan.features.performance.FalsePositiveDetection;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
@@ -626,7 +627,7 @@ public class ResearchEngine {
             for (DataType dataType : getDynamicUsableDataTypes(false)) {
                 falsePositives.remove(getStorageKey(hackType, dataType));
             }
-            hackType.getCheck().clearProblematicDetections();
+            hackType.getCheck().clearMaxCancelledViolations();
             CancelViolation.clear(hackType);
 
             // Separator
@@ -1421,43 +1422,29 @@ public class ResearchEngine {
 
             // Separator (Find False Positives)
 
-            Map<Integer, Set<Integer>> localFalsePositives = new LinkedHashMap<>();
-            Map<Integer, Integer> loopFalsePositives = new LinkedHashMap<>();
-            Set<Integer> playerFalsePositives = new HashSet<>();
-            Map<String, Integer> detectionViolationCount = new LinkedHashMap<>();
-            Map<Integer, String> detectionCorrelations = new LinkedHashMap<>();
-
             for (Enums.HackType hackType : hackTypes) {
-                Check check = hackType.getCheck();
-                check.clearProblematicDetections();
-
                 for (DataType dataType : dataTypes) {
-                    double totalFalsePositiveProfiles = 0.0;
                     boolean bedrock = dataType == DataType.Bedrock;
+                    Map<Long, Collection<PlayerViolation>> orderedMap = new TreeMap<>();
 
                     for (PlayerProfile playerProfile : playerProfiles) {
                         if (bedrock == playerProfile.isBedrockPlayer()
                                 && playerProfile.isTrustWorthy(false)
                                 && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
-                            totalFalsePositiveProfiles++;
-                            Collection<Map.Entry<PlayerViolation, Integer>> data = playerProfile.getViolationHistory(hackType).getViolationCounts();
+                            List<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getViolationsList();
 
-                            if (!data.isEmpty()) {
-                                playerFalsePositives.clear();
-
-                                for (Map.Entry<PlayerViolation, Integer> entry : data) {
-                                    PlayerViolation playerViolation = entry.getKey();
-
+                            if (!list.isEmpty()) {
+                                for (PlayerViolation playerViolation : list) {
                                     if (playerViolation.isDetectionEnabled()) {
-                                        int hash = playerViolation.getSimilarityIdentity();
-                                        String detection = playerViolation.getDetection();
+                                        long time = playerViolation.getTime();
+                                        Collection<PlayerViolation> playerViolations = orderedMap.get(time);
 
-                                        if (playerFalsePositives.add(hash)) {
-                                            loopFalsePositives.put(hash, loopFalsePositives.getOrDefault(hash, 0) + 1);
-                                            detectionCorrelations.putIfAbsent(hash, detection);
-                                        }
-                                        if (playerProfile.isLegitimate()) { // We specify only legitimate players because we now use only the detection name and not its information
-                                            detectionViolationCount.put(detection, detectionViolationCount.getOrDefault(detection, 0) + entry.getValue());
+                                        if (playerViolations == null) {
+                                            playerViolations = new ArrayList<>();
+                                            playerViolations.add(playerViolation);
+                                            orderedMap.put(time, playerViolations);
+                                        } else {
+                                            playerViolations.add(playerViolation);
                                         }
                                     }
                                 }
@@ -1465,73 +1452,56 @@ public class ResearchEngine {
                         }
                     }
 
-                    if (!loopFalsePositives.isEmpty()) {
-                        if (totalFalsePositiveProfiles > 0) {
-                            Iterator<Map.Entry<Integer, Integer>> iterator = loopFalsePositives.entrySet().iterator();
+                    if (!orderedMap.isEmpty()) {
+                        double duration = 1000.0; // 1 second
+                        Map<Integer, FalsePositiveDetection.TimePeriod> averages = new HashMap<>();
 
-                            while (iterator.hasNext()) {
-                                Map.Entry<Integer, Integer> entry = iterator.next();
-                                int uniqueCount = entry.getValue();
+                        for (Collection<PlayerViolation> playerViolations : orderedMap.values()) {
+                            for (PlayerViolation playerViolation : playerViolations) {
+                                int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
+                                FalsePositiveDetection.TimePeriod timePeriod = averages.get(timeMoment);
 
-                                if (uniqueCount < profileRequirement // At least 10 profiles
-                                        || (uniqueCount / totalFalsePositiveProfiles) < 0.01) { // at least 1%
-                                    iterator.remove();
-                                    detectionCorrelations.remove(entry.getKey());
+                                if (timePeriod == null) {
+                                    timePeriod = new FalsePositiveDetection.TimePeriod(duration);
+                                    timePeriod.add(playerViolation);
+                                    averages.put(timeMoment, timePeriod);
+                                } else {
+                                    timePeriod.add(playerViolation);
                                 }
                             }
-
-                            if (!loopFalsePositives.isEmpty()) {
-                                localFalsePositives.put(getStorageKey(hackType, dataType), loopFalsePositives.keySet());
-                            }
-                        } else { // No need to continue when no profiles were found
-                            loopFalsePositives.clear();
-                            detectionViolationCount.clear();
-                            detectionCorrelations.clear();
-                            continue;
                         }
-                    } else { // No need to continue when no violations were found
-                        detectionViolationCount.clear();
-                        detectionCorrelations.clear();
-                        continue;
-                    }
 
-                    // Separator (Calculate problematic detections using a pie equation)
+                        // Separator
 
-                    int detections = detectionViolationCount.size();
+                        HashMap<Integer, Double> violationAverages = new HashMap<>();
+                        HashMap<Integer, Integer> violationAveragesDivisor = new HashMap<>();
 
-                    if (detections > 0) {
-                        double totalViolations = 0.0;
-                        Collection<String> falsePositiveDetections = detectionCorrelations.values();
-                        Iterator<Map.Entry<String, Integer>> iterator = detectionViolationCount.entrySet().iterator();
-
-                        while (iterator.hasNext()) {
-                            Map.Entry<String, Integer> entry = iterator.next();
-
-                            if (falsePositiveDetections.contains(entry.getKey())) {
-                                totalViolations += entry.getValue();
-                            } else {
-                                iterator.remove();
-                                detections--;
+                        for (FalsePositiveDetection.TimePeriod timePeriod : averages.values()) {
+                            for (Map.Entry<Integer, Double> individualViolationAverages : timePeriod.getAverageViolations().entrySet()) {
+                                int hash = individualViolationAverages.getKey();
+                                violationAverages.put(
+                                        hash,
+                                        violationAverages.getOrDefault(hash, 0.0) + individualViolationAverages.getValue()
+                                );
+                                violationAveragesDivisor.put(
+                                        hash,
+                                        violationAveragesDivisor.getOrDefault(hash, 0) + 1
+                                );
                             }
                         }
 
-                        if (detections > 0) {
-                            double maxExpectedPieSize = (1.0 / ((double) detections)) * (check.getDefaultCancelViolation() + 1);
+                        // Separator
+                        duration = Check.violationCycleSeconds / duration;
 
-                            if (totalViolations >= Check.maxViolations) { // At least a good amount of violations
-                                for (Map.Entry<String, Integer> entry : detectionViolationCount.entrySet()) {
-                                    if ((entry.getValue() / totalViolations) >= maxExpectedPieSize) {
-                                        check.setProblematicDetection(dataType, entry.getKey());
-                                    }
-                                }
-                                detectionViolationCount.clear();
-                            }
+                        for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
+                            entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * duration);
                         }
+                        hackType.getCheck().setMaxCancelledViolations(dataType, violationAverages);
+                    } else {
+                        hackType.getCheck().clearMaxCancelledViolations();
                     }
                 }
             }
-            ResearchEngine.falsePositives.clear();
-            ResearchEngine.falsePositives.putAll(localFalsePositives);
 
             // Separator (Calculate mining statistics)
 

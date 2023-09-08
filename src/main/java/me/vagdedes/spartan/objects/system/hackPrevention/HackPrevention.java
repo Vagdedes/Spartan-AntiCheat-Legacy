@@ -257,7 +257,7 @@ public class HackPrevention {
                 ResearchEngine.DataType dataType = player.getDataType();
 
                 if (disableCause == null || !disableCause.pointerMatches(information)) {
-                    LiveViolation violationsObject = check.getViolations(uuid);
+                    LiveViolation violationsObject = check.getViolations(uuid, dataType);
                     int violations = violationsObject.getLevel();
                     PlayerViolation playerViolation = new PlayerViolation(player.getName(), hackType, hp.time, information, violations + 1, TPS.get(player, false) < TPS.minimum);
 
@@ -276,13 +276,6 @@ public class HackPrevention {
                             } else {
                                 canPrevent = false;
                                 canPreventAlternative = false;
-                            }
-
-                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, !playerProfile.isHacker())) {
-                                falsePositive = true;
-                            } else {
-                                falsePositive = false;
-                                violations += 1;
                             }
                         } else {
                             if (CancelViolation.isForced(player, hackType, violationsObject, playerViolation.getSimilarityIdentity())
@@ -303,15 +296,14 @@ public class HackPrevention {
                                         && playerProfile.getLastInteraction().getLastViolation(true) <= Check.violationCycleSeconds
                                         && !SpartanBukkit.isProductionServer()
                                         && DetectionNotifications.isEnabled(player)
-                                        && ResearchEngine.getFalsePositives(hackType, dataType).size() == 0;
+                                        && ResearchEngine.getFalsePositives(hackType, dataType).isEmpty();
                             }
-
-                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, true)) {
-                                falsePositive = true;
-                            } else {
-                                falsePositive = false;
-                                violations += 1;
-                            }
+                        }
+                        if (FalsePositiveDetection.canCorrect(playerViolation, violationsObject)) {
+                            falsePositive = true;
+                        } else {
+                            falsePositive = false;
+                            violations += 1;
                         }
 
                         violationsObject.setLastViolation(); // Always after false-positive check

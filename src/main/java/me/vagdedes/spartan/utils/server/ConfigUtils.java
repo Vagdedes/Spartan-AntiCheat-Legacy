@@ -127,7 +127,7 @@ public class ConfigUtils {
         message = replace(message, "{reports}", String.valueOf(punishmentHistory.getReports().size()));
 
         if (hackType != null) {
-            LiveViolation liveViolation = hackType.getCheck().getViolations(uuid);
+            LiveViolation liveViolation = hackType.getCheck().getViolations(p);
             int violations = liveViolation.getLevel();
             String category = liveViolation.isLastLevelCancelled() ? Enums.PunishmentCategory.minimum.getString() : Check.getCategoryFromViolations(violations, hackType, p.getDataType(), p.getProfile().isSuspectedOrHacker(hackType)).getString();
             message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, uuid)));
@@ -177,7 +177,7 @@ public class ConfigUtils {
                 message = replace(message, "{reports}", String.valueOf(punishmentHistory.getReports().size()));
 
                 if (hasHackType) {
-                    LiveViolation liveViolation = hackType.getCheck().getViolations(uuid);
+                    LiveViolation liveViolation = hackType.getCheck().getViolations(uuid, p.getDataType());
                     int violations = liveViolation.getLevel();
                     String category = liveViolation.isLastLevelCancelled() ? Enums.PunishmentCategory.minimum.getString() : Check.getCategoryFromViolations(violations, hackType, p.getDataType(), p.getProfile().isSuspectedOrHacker(hackType)).getString();
                     message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, uuid)));

@@ -1,10 +1,8 @@
 package me.vagdedes.spartan.features.performance;
 
 import me.vagdedes.spartan.configuration.Settings;
-import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
-import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
@@ -20,8 +18,8 @@ public class FalsePositiveDetection {
         private final Set<Integer> players;
         private final Map<Integer, Integer> violations;
 
-        public TimePeriod(long duration) {
-            this.ticks = (int) (duration / TPS.tickTimeInteger);
+        public TimePeriod(double duration) {
+            this.ticks = (int) (duration / TPS.tickTimeDecimal);
             this.players = new HashSet<>();
             this.violations = new HashMap<>();
         }
@@ -34,15 +32,20 @@ public class FalsePositiveDetection {
             );
         }
 
-        public Map<Integer, Integer> getAverageViolations() {
-            if (!violations.isEmpty()) {
+        public Map<Integer, Double> getAverageViolations() {
+            int size = this.violations.size();
+
+            if (size > 0) {
+                Map<Integer, Double> violations = new HashMap<>(size);
                 double players = this.players.size();
 
-                for (Map.Entry<Integer, Integer> entry : violations.entrySet()) {
-                    entry.setValue(AlgebraUtils.integerCeil(entry.getValue() / players / ticks)); // Ceil to be safe
+                for (Map.Entry<Integer, Integer> entry : this.violations.entrySet()) {
+                    violations.put(entry.getKey(), entry.getValue() / players / ticks);
                 }
+                return violations;
+            } else {
+                return new HashMap<>(0);
             }
-            return violations;
         }
     }
 
@@ -71,12 +74,8 @@ public class FalsePositiveDetection {
         return hash;
     }
 
-    public static boolean canCorrect(Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
-                                     PlayerViolation playerViolation, LiveViolation liveViolation,
-                                     boolean problematicDetections) {
-        return canFunction() // 1
-                && !liveViolation.hasMaxCancelledLevel(playerViolation.getSimilarityIdentity()) // 2
-                && (problematicDetections && check.isProblematicDetection(dataType, playerViolation.getDetection()) // 3
-                || ResearchEngine.getFalsePositives(hackType, dataType).contains(playerViolation.getSimilarityIdentity())); // 3
+    public static boolean canCorrect(PlayerViolation playerViolation, LiveViolation liveViolation) {
+        return canFunction()
+                && !liveViolation.hasMaxCancelledLevel(playerViolation.getSimilarityIdentity());
     }
 }

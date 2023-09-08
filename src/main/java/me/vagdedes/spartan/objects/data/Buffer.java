@@ -3,6 +3,7 @@ package me.vagdedes.spartan.objects.data;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
+import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
@@ -44,9 +45,10 @@ public class Buffer {
     // Runnable
 
     public void run(SpartanPlayer p) {
-        if (hm.size() > 0) {
+        if (!hm.isEmpty()) {
             boolean staticTruth = TestServer.isIdentified() || Settings.getBoolean("Detections.allow_cancelled_hit_checking");
             UUID uuid = p.getUniqueId();
+            ResearchEngine.DataType dataType = p.getDataType();
 
             for (BufferChild bufferChild : hm.values()) {
                 if (bufferChild.type == BufferType.Combat && bufferChild.ticks > 0L) {
@@ -60,7 +62,7 @@ public class Buffer {
                             Check check = hackType.getCheck();
 
                             if (check.getCheckType() == Enums.CheckType.Combat
-                                    && check.getViolations(uuid).getLastViolation(true) <= 55L) {
+                                    && check.getViolations(uuid, dataType).getLastViolation(true) <= 55L) {
                                 bufferChild.ticks -= 1L;
                                 break;
                             }

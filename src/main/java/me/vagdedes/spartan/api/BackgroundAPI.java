@@ -124,7 +124,13 @@ public class BackgroundAPI {
     }
 
     static int getVL(Player p, HackType HackType) {
-        return HackType.getCheck().getViolations(p.getUniqueId()).getLevel();
+        SpartanPlayer player = SpartanBukkit.getPlayer(p);
+
+        if (player != null) {
+            return HackType.getCheck().getViolations(player).getLevel();
+        } else {
+            return 0;
+        }
     }
 
     @Deprecated
@@ -254,8 +260,12 @@ public class BackgroundAPI {
 
     static void resetVL(Player p) {
         if (Settings.getBoolean("Important.enable_developer_api")) {
-            for (HackType hackType : Enums.hackTypes()) {
-                hackType.getCheck().getViolations(p.getUniqueId()).reset();
+            SpartanPlayer player = SpartanBukkit.getPlayer(p);
+
+            if (player != null) {
+                for (HackType hackType : Enums.hackTypes()) {
+                    hackType.getCheck().getViolations(player).reset();
+                }
             }
         }
     }

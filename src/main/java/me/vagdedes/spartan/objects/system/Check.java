@@ -195,7 +195,6 @@ public class Check {
             disabledUsers,
             silentUsers;
     private final Map<UUID, LiveViolation> violations;
-    private final Map<Integer, String> problematicDetections;
 
     // Object Methods
 
@@ -205,7 +204,6 @@ public class Check {
                 new HashMap<>(Config.getMaxPlayers()), // Not concurrent as it is accessed specifically and rapidly
                 new HashMap<>(Config.getMaxPlayers()), // Not concurrent as it is accessed specifically and rapidly
                 MultiVersion.folia ? new HashMap<>(Config.getMaxPlayers()) : new ConcurrentHashMap<>(Config.getMaxPlayers()),
-                new HashMap<>(), // Not concurrent as it is accessed specifically and rapidly
                 new HashMap<>() // Not concurrent as it is accessed specifically and rapidly
         );
     }
@@ -214,7 +212,6 @@ public class Check {
                  Map<UUID, CancelCause> disabledUsers,
                  Map<UUID, CancelCause> silentUsers,
                  Map<UUID, LiveViolation> violations,
-                 Map<Integer, String> problematicDetections,
                  Map<Integer, Integer> maxCancelledViolations) {
         switch (hackType) {
             case FastBow:
@@ -470,7 +467,6 @@ public class Check {
         this.disabledUsers = disabledUsers;
         this.silentUsers = silentUsers;
         this.violations = violations;
-        this.problematicDetections = problematicDetections;
         this.maxCancelledViolations = maxCancelledViolations;
 
         // Separator
@@ -747,7 +743,6 @@ public class Check {
         clearConfigurationCache();
         clearViolations();
         clearCancelCauses();
-        clearProblematicDetections();
         clearMaxCancelledViolations();
     }
 
@@ -764,29 +759,29 @@ public class Check {
         return new ConcurrentHashMap<>(violations);
     }
 
-    private LiveViolation getLocalViolations(UUID uuid) {
-        return this.violations.getOrDefault(uuid, new LiveViolation(uuid, this.hackType));
+    private LiveViolation getLocalViolations(UUID uuid, ResearchEngine.DataType dataType) {
+        return this.violations.getOrDefault(uuid, new LiveViolation(uuid, dataType, this.hackType));
     }
 
     private LiveViolation getLocalOrEmptyViolations(UUID uuid) {
         return this.violations.get(uuid);
     }
 
-    public LiveViolation getViolations(UUID uuid) {
+    public LiveViolation getViolations(UUID uuid, ResearchEngine.DataType dataType) {
         if (!isEnabled(null, null, null) || !SpartanBukkit.isPlayer(uuid)) {
-            return new LiveViolation(uuid, this.hackType);
+            return new LiveViolation(uuid, dataType, this.hackType);
         }
         LiveViolation violations = this.violations.get(uuid);
 
         if (violations == null) {
-            violations = new LiveViolation(uuid, this.hackType);
+            violations = new LiveViolation(uuid, dataType, this.hackType);
             this.violations.put(uuid, violations);
         }
         return violations;
     }
 
     public LiveViolation getViolations(SpartanPlayer player) {
-        return getViolations(player.getUniqueId());
+        return getViolations(player.getUniqueId(), player.getDataType());
     }
 
     // Separator
@@ -811,7 +806,7 @@ public class Check {
             if (cancelCause != null) {
                 cancelCause.merge(new CancelCause(reason, pointer, ticks));
             } else if (SpartanBukkit.isPlayer(uuid)) {
-                    disabledUsers.put(uuid, new CancelCause(reason, pointer, ticks));
+                disabledUsers.put(uuid, new CancelCause(reason, pointer, ticks));
             }
             PlayerInfo.refresh(uuid);
         }
@@ -1133,44 +1128,18 @@ public class Check {
 
     // Separator
 
-    public Map<Integer, String> copyProblematicDetections() {
-        synchronized (problematicDetections) {
-            return new HashMap<>(problematicDetections);
-        }
-    }
-
-    public Set<String> getProblematicDetections() {
-        synchronized (problematicDetections) {
-            return new HashSet<>(problematicDetections.values());
-        }
-    }
-
     public int getProblematicDetectionsCount() {
-        synchronized (problematicDetections) {
-            return getProblematicDetections().size();
-        }
-    }
+        if (!maxCancelledViolations.isEmpty()) {
+            int count = 0;
 
-    public void clearProblematicDetections() {
-        synchronized (problematicDetections) {
-            problematicDetections.clear();
-        }
-    }
-
-    public boolean isProblematicDetection(ResearchEngine.DataType dataType, String detection) {
-        synchronized (problematicDetections) {
-            return problematicDetections.containsKey(
-                    (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode()
-            );
-        }
-    }
-
-    public void setProblematicDetection(ResearchEngine.DataType dataType, String detection) {
-        synchronized (problematicDetections) {
-            problematicDetections.put(
-                    (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode(),
-                    detection
-            );
+            for (int level : maxCancelledViolations.values()) {
+                if (level >= getCancelViolation()) {
+                    count++;
+                }
+            }
+            return count;
+        } else {
+            return 0;
         }
     }
 
@@ -1350,10 +1319,18 @@ public class Check {
         return defaultCancelViolation == maximumDefaultCancelViolation;
     }
 
-    public void setMaxCancelledViolations(Map<Integer, Integer> map) {
+    public void setMaxCancelledViolations(ResearchEngine.DataType dataType, Map<Integer, Double> map) {
         synchronized (maxCancelledViolations) {
             maxCancelledViolations.clear();
-            maxCancelledViolations.putAll(map);
+
+            if (!map.isEmpty()) {
+                for (Map.Entry<Integer, Double> entry : map.entrySet()) {
+                    maxCancelledViolations.put(
+                            (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + entry.getKey(),
+                            AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be safe
+                    );
+                }
+            }
         }
     }
 
@@ -1369,9 +1346,12 @@ public class Check {
         }
     }
 
-    public int getMaxCancelledViolations(int hash) {
+    public int getMaxCancelledViolations(ResearchEngine.DataType dataType, int hash) {
         synchronized (maxCancelledViolations) {
-            return maxCancelledViolations.getOrDefault(hash, Integer.MAX_VALUE);
+            return maxCancelledViolations.getOrDefault(
+                    (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + hash,
+                    Integer.MAX_VALUE
+            );
         }
     }
 

@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ManageChecks {
 
@@ -59,7 +58,7 @@ public class ManageChecks {
         String[] disabledDetections = CloudFeature.getDisabledDetections(hackType);
         int falsePositives = ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal),
                 cancelViolation = check.getDefaultCancelViolation();
-        Set<String> problematicDetections = check.getProblematicDetections();
+        int problematicDetections = check.getProblematicDetectionsCount();
 
         String enabledOption;
         String silentOption = null;
@@ -117,13 +116,8 @@ public class ManageChecks {
         if (falsePositives > 0) {
             lore.add("§7False Positives§8:§c " + falsePositives);
         }
-        if (problematicDetections.size() > 0) {
-            lore.add("");
-            lore.add("§7Problematic Detections§8:");
-
-            for (String detection : problematicDetections) {
-                lore.add("§c" + detection);
-            }
+        if (problematicDetections > 0) {
+            lore.add("§7Problematic Detections§8: " + problematicDetections);
         }
 
         // Separator

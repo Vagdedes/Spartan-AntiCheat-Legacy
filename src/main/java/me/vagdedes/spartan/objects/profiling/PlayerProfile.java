@@ -56,7 +56,6 @@ public class PlayerProfile {
         this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
-        this.lastInteraction = isNull ? null : new LiveViolation(hackTypes[0]);
 
         // Separator
         if (isNull) {
@@ -64,6 +63,7 @@ public class PlayerProfile {
             this.bedrockPlayer = false;
             this.bedrockPlayerCheck = true;
             this.lastPlayed = 0L;
+            this.lastInteraction = null;
         } else {
             SpartanPlayer player = this.getSpartanPlayer();
 
@@ -78,6 +78,10 @@ public class PlayerProfile {
                 this.bedrockPlayerCheck = bedrockPlayer;
                 this.lastPlayed = 0L;
             }
+            this.lastInteraction = new LiveViolation(
+                    hackTypes[0],
+                    bedrockPlayer ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java
+            );
         }
 
         // Separator
@@ -106,7 +110,7 @@ public class PlayerProfile {
         this.staff = Permissions.isStaff(player);
         this.bedrockPlayerCheck = true;
         this.lastPlayed = player.getLastPlayed();
-        this.lastInteraction = new LiveViolation(hackTypes[0]);
+        this.lastInteraction = new LiveViolation(hackTypes[0], player.getDataType());
 
         this.violationHistory = new ViolationHistory[Enums.hackTypeLength];
         this.miningHistory = new MiningHistory[Enums.miningOreLength];
