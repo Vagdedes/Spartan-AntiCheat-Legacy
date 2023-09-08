@@ -474,8 +474,6 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Important Violations: ").append(violationHistory.getImportantViolations(false))
                         .append(newLine);
-                softwareInformation.append("False Positives: ").append(ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal))
-                        .append(newLine);
                 softwareInformation.append("Days of Data: ").append(violationHistory.getDays())
                         .append(newLine).append(newLine); // 1 line
 

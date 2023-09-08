@@ -21,7 +21,6 @@ import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.gui.spartan.SupportIncompatibleItems;
 import me.vagdedes.spartan.handlers.stability.Moderation;
-import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
@@ -467,7 +466,7 @@ public class CommandExecution implements CommandExecutor {
                             Set<Enums.HackType> set = new HashSet<>(hackTypes.length);
 
                             for (Enums.HackType hackType : hackTypes) {
-                                if (ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal) >= Check.getCategoryPunishment(hackType, ResearchEngine.DataType.Universal, Check.analysisMultiplierCategory)) {
+                                if (hackType.getCheck().getProblematicDetections() > 0) {
                                     set.add(hackType);
                                 }
                             }

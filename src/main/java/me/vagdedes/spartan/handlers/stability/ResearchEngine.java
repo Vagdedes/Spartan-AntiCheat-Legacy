@@ -65,7 +65,6 @@ public class ResearchEngine {
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>(Config.getMaxPlayers());
     private static final Map<String, ItemStack> skulls = new ConcurrentHashMap<>(logRequirement);
     // Detections
-    private static final Map<Integer, Set<Integer>> falsePositives = new LinkedHashMap<>(Enums.hackTypes().length * (DataType.values().length - 1));
     private static final Map<String, Double> globalVelocityOccurrences = new LinkedHashMap<>();
 
     // Averages
@@ -384,48 +383,6 @@ public class ResearchEngine {
         return -1.0;
     }
 
-    public static int getTotalFalsePositives() {
-        int sum = 0;
-
-        for (DataType dataType : getDynamicUsableDataTypes(false)) {
-            for (Enums.HackType hackType : Enums.hackTypes()) {
-                Set<Integer> set = falsePositives.get(getStorageKey(hackType, dataType));
-
-                if (set != null) {
-                    sum += set.size();
-                }
-            }
-        }
-        return sum;
-    }
-
-    // Separator
-
-    public static int getTotalFalsePositives(Enums.HackType hackType, DataType dataType) {
-        int sum = 0;
-
-        if (dataType == DataType.Universal) {
-            for (DataType loopDataType : getDynamicUsableDataTypes(false)) {
-                Set<Integer> set = falsePositives.get(getStorageKey(hackType, loopDataType));
-
-                if (set != null) {
-                    sum += set.size();
-                }
-            }
-        } else {
-            Set<Integer> set = falsePositives.get(getStorageKey(hackType, dataType));
-
-            if (set != null) {
-                sum = set.size();
-            }
-        }
-        return sum;
-    }
-
-    public static Set<Integer> getFalsePositives(Enums.HackType hackType, DataType dataType) {
-        return falsePositives.getOrDefault(getStorageKey(hackType, dataType), new HashSet<>());
-    }
-
     public static List<PlayerReport> getReports(Enums.HackType hackType, int days, boolean checkIfDismissed) {
         List<PlayerReport> reports = new LinkedList<>();
 
@@ -623,10 +580,6 @@ public class ResearchEngine {
                 // Wait here until the caching is finished
             }
             String hackTypeString = hackType.toString();
-
-            for (DataType dataType : getDynamicUsableDataTypes(false)) {
-                falsePositives.remove(getStorageKey(hackType, dataType));
-            }
             hackType.getCheck().clearMaxCancelledViolations();
             CancelViolation.clear(hackType);
 
@@ -1541,7 +1494,6 @@ public class ResearchEngine {
             hackerPlayers.clear();
             playerFights.clear();
             statisticalProgress = new StatisticalProgress();
-            falsePositives.clear();
             hackerFreePlayerProfiles.clear();
             averageMining.clear();
             ViolationStatistics.clear();

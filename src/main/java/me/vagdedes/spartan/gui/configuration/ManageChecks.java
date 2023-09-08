@@ -56,8 +56,7 @@ public class ManageChecks {
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(p, hackType);
         String[] disabledDetections = CloudFeature.getDisabledDetections(hackType);
-        int falsePositives = ResearchEngine.getTotalFalsePositives(hackType, ResearchEngine.DataType.Universal),
-                cancelViolation = check.getDefaultCancelViolation();
+        int cancelViolation = check.getDefaultCancelViolation();
         int problematicDetections = check.getProblematicDetections();
 
         String enabledOption;
@@ -112,9 +111,6 @@ public class ManageChecks {
 
         for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
             lore.add("§7§l" + dataType.toString() + " §r§7Cancel Violation§8:§c " + Math.max(cancelViolation, CancelViolation.get(hackType, dataType)));
-        }
-        if (falsePositives > 0) {
-            lore.add("§7False Positives§8:§c " + falsePositives);
         }
         if (problematicDetections > 0) {
             lore.add("§7Problematic Detections§8: " + problematicDetections);

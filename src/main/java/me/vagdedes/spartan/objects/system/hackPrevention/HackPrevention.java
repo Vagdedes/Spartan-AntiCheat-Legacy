@@ -295,8 +295,7 @@ public class HackPrevention {
                                         && !check.hasMaximumDefaultCancelViolation()
                                         && playerProfile.getLastInteraction().getLastViolation(true) <= Check.violationCycleSeconds
                                         && !SpartanBukkit.isProductionServer()
-                                        && DetectionNotifications.isEnabled(player)
-                                        && ResearchEngine.getFalsePositives(hackType, dataType).isEmpty();
+                                        && DetectionNotifications.isEnabled(player);
                             }
                         }
                         if (FalsePositiveDetection.canCorrect(playerViolation, violationsObject)) {

@@ -43,7 +43,6 @@ public class AntiCheatUpdates {
                     int hackers = ResearchEngine.getHackers().size(),
                             suspectedPlayers = ResearchEngine.getSuspectedPlayers().size(),
                             legitimates = ResearchEngine.getLegitimatePlayers().size(),
-                            falsePositives = ResearchEngine.getTotalFalsePositives(),
                             activeReports = ResearchEngine.getReports(null, 0, true).size(),
                             allReports = ResearchEngine.getReports(null, 0, false).size(),
                             bans = object.getBans(), kicks = object.getKicks(), warnings = object.getWarnings(),
@@ -60,9 +59,6 @@ public class AntiCheatUpdates {
                     }
                     if (legitimates > 0) {
                         statisticsArray.add("§c" + Math.max(AlgebraUtils.cut((legitimates / players) * 100.0, 2), 0.01) + "§r§c% §7of players are §clegitimate");
-                    }
-                    if (falsePositives > 0) {
-                        statisticsArray.add("§c" + falsePositives + " false " + (falsePositives == 1 ? "positive" : "positives") + " §7have been identified");
                     }
                     if (allReports > 0) {
                         statisticsArray.add("§c" + Math.max(AlgebraUtils.cut(((allReports - activeReports) / ((double) allReports)) * 100.0, 2), 0.01) + "§r§c% §7of reports have been §chandled");
