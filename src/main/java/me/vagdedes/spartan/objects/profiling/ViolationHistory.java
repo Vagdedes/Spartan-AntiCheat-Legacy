@@ -98,7 +98,7 @@ public class ViolationHistory {
 
     // Separator
 
-    public Set<Map.Entry<PlayerViolation, Integer>> getViolationCounts() {
+    public Collection<Map.Entry<PlayerViolation, Integer>> getViolationCounts() {
         int violationsSize = violationsMap.size();
 
         if (violationsSize > 0) {
@@ -109,7 +109,21 @@ public class ViolationHistory {
             }
             return map.entrySet();
         }
-        return new HashSet<>(0);
+        return new ArrayList<>(0);
+    }
+
+    public Map<Long, PlayerViolation> getViolationsByTime() {
+        if (!violationsMap.isEmpty()) {
+            Map<Long, PlayerViolation> map = new TreeMap<>();
+
+            for (List<PlayerViolation> list : violationsMap.values()) {
+                for (PlayerViolation violation : list) {
+                    map.put(violation.getTime(), violation);
+                }
+            }
+            return map;
+        }
+        return new HashMap<>(0);
     }
 
     public List<PlayerViolation> getViolationsList() {

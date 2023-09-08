@@ -259,7 +259,7 @@ public class HackPrevention {
                 if (disableCause == null || !disableCause.pointerMatches(information)) {
                     LiveViolation violationsObject = check.getViolations(uuid);
                     int violations = violationsObject.getLevel();
-                    PlayerViolation playerViolation = new PlayerViolation(hackType, hp.time, information, violations + 1, TPS.get(player, false) < TPS.minimum);
+                    PlayerViolation playerViolation = new PlayerViolation(player.getName(), hackType, hp.time, information, violations + 1, TPS.get(player, false) < TPS.minimum);
 
                     if (!CheckProtection.hasCooldown(uuid, playerViolation)) {
                         Player realPlayer = player.getPlayer();

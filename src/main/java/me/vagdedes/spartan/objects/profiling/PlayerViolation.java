@@ -12,12 +12,13 @@ public class PlayerViolation {
     private final Enums.HackType hackType;
     private final long time;
     private final String information, date, detection;
-    private final int level, similarityIdentity;
+    private final int level, similarityIdentity, playerIdentity;
     final int divisionIdentity;
     private final boolean lowTPS, isOption;
     private final Collection<Number> numbers;
 
-    public PlayerViolation(Enums.HackType hackType, long time, String information, int level, boolean lowTPS) {
+    public PlayerViolation(String name, Enums.HackType hackType, long time, String information, int level, boolean lowTPS) {
+        this.playerIdentity = name.hashCode();
         this.hackType = hackType;
         this.time = time;
         this.date = new Timestamp(time).toString().substring(0, 10);
@@ -34,6 +35,10 @@ public class PlayerViolation {
         int divisionIdentity = (information.hashCode() * SpartanBukkit.hashCodeMultiplier) + level;
         divisionIdentity = (divisionIdentity * SpartanBukkit.hashCodeMultiplier) + Boolean.hashCode(lowTPS);
         this.divisionIdentity = divisionIdentity;
+    }
+
+    public int getPlayerIdentity() {
+        return playerIdentity;
     }
 
     public Enums.HackType getHackType() {

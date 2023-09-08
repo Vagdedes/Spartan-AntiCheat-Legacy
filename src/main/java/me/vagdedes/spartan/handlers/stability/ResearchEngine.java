@@ -1251,7 +1251,7 @@ public class ResearchEngine {
                                                                         AntiCheatLogs.usualDateFormat
                                                         );
                                                         playerProfile.getViolationHistory(hackType).increaseViolations(
-                                                                new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation, isLowTPS(data))
+                                                                new PlayerViolation(name, hackType, sdf.parse(fullDate).getTime(), detection, violation, isLowTPS(data))
                                                         );
                                                     }
                                                 }
@@ -1397,7 +1397,7 @@ public class ResearchEngine {
             int staffOffline = 0;
             List<SpartanPlayer> staffOnline = SpartanBukkit.getPlayers();
 
-            if (staffOnline.size() > 0) {
+            if (!staffOnline.isEmpty()) {
                 Iterator<SpartanPlayer> iterator = staffOnline.iterator();
 
                 while (iterator.hasNext()) {
@@ -1410,7 +1410,7 @@ public class ResearchEngine {
                     }
                 }
             }
-            if (playerProfilesCopy.size() > 0) {
+            if (!playerProfilesCopy.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfilesCopy) {
                     if (playerProfile.wasStaff()) {
                         staffOffline++;
@@ -1440,9 +1440,9 @@ public class ResearchEngine {
                                 && playerProfile.isTrustWorthy(false)
                                 && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
                             totalFalsePositiveProfiles++;
-                            Set<Map.Entry<PlayerViolation, Integer>> data = playerProfile.getViolationHistory(hackType).getViolationCounts();
+                            Collection<Map.Entry<PlayerViolation, Integer>> data = playerProfile.getViolationHistory(hackType).getViolationCounts();
 
-                            if (data.size() > 0) {
+                            if (!data.isEmpty()) {
                                 playerFalsePositives.clear();
 
                                 for (Map.Entry<PlayerViolation, Integer> entry : data) {
@@ -1465,7 +1465,7 @@ public class ResearchEngine {
                         }
                     }
 
-                    if (loopFalsePositives.size() > 0) {
+                    if (!loopFalsePositives.isEmpty()) {
                         if (totalFalsePositiveProfiles > 0) {
                             Iterator<Map.Entry<Integer, Integer>> iterator = loopFalsePositives.entrySet().iterator();
 

@@ -449,7 +449,7 @@ public class CloudConnections {
                 if (violationHistory == null) {
                     violationHistory = new ViolationHistory(hackType, ResearchEngine.DataType.Universal, new HashMap<>(0), new ArrayList<>(0), 1);
                 }
-                Set<Map.Entry<PlayerViolation, Integer>> entries = violationHistory.getViolationCounts();
+                Collection<Map.Entry<PlayerViolation, Integer>> entries = violationHistory.getViolationCounts();
 
                 String comma = ", ", newLine = "\n";
                 StringBuilder softwareInformation = new StringBuilder();

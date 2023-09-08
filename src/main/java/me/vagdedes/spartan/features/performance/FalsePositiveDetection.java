@@ -2,6 +2,7 @@ package me.vagdedes.spartan.features.performance;
 
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
+import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
@@ -9,11 +10,41 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class FalsePositiveDetection {
+
+    public static class TimePeriod {
+
+        private final long ticks;
+        private final Set<Integer> players;
+        private final Map<Integer, Integer> violations;
+
+        public TimePeriod(long duration) {
+            this.ticks = (int) (duration / TPS.tickTimeInteger);
+            this.players = new HashSet<>();
+            this.violations = new HashMap<>();
+        }
+
+        public void add(PlayerViolation playerViolation) {
+            players.add(playerViolation.getPlayerIdentity());
+            violations.put(
+                    playerViolation.getSimilarityIdentity(),
+                    violations.getOrDefault(playerViolation.getSimilarityIdentity(), 0) + 1
+            );
+        }
+
+        public Map<Integer, Integer> getAverageViolations() {
+            if (!violations.isEmpty()) {
+                double players = this.players.size();
+
+                for (Map.Entry<Integer, Integer> entry : violations.entrySet()) {
+                    entry.setValue(AlgebraUtils.integerCeil(entry.getValue() / players / ticks)); // Ceil to be safe
+                }
+            }
+            return violations;
+        }
+    }
 
     private static final int
             integerNearest = 5,
