@@ -116,7 +116,7 @@ public class LiveViolation {
         } else {
             time -= System.currentTimeMillis();
             return time > 0L
-                    ? Math.min(AlgebraUtils.integerCeil(time / 1000.0), hackType.getCheck().getMaxCancelledViolations(dataType, hash))
+                    ? Math.min(AlgebraUtils.integerCeil(time / 1000.0), Check.maxViolations)
                     : 0;
         }
     }

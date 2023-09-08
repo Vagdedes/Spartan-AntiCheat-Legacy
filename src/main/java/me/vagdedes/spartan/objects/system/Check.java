@@ -1322,10 +1322,10 @@ public class Check {
         }
     }
 
+
+
     public void setMaxCancelledViolations(ResearchEngine.DataType dataType, Map<Integer, Double> map) {
         synchronized (maxCancelledViolations) {
-            maxCancelledViolations.clear();
-
             if (!map.isEmpty()) {
                 for (Map.Entry<Integer, Double> entry : map.entrySet()) {
                     maxCancelledViolations.put(

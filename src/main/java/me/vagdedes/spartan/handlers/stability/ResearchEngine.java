@@ -1423,6 +1423,8 @@ public class ResearchEngine {
             // Separator (Find False Positives)
 
             for (Enums.HackType hackType : hackTypes) {
+                hackType.getCheck().clearMaxCancelledViolations();
+
                 for (DataType dataType : dataTypes) {
                     boolean bedrock = dataType == DataType.Bedrock;
                     Map<Long, Collection<PlayerViolation>> orderedMap = new TreeMap<>();
@@ -1544,6 +1546,10 @@ public class ResearchEngine {
             averageMining.clear();
             ViolationStatistics.clear();
             CancelViolation.clear();
+
+            for (Enums.HackType hackType : Enums.hackTypes()) {
+                hackType.getCheck().clearMaxCancelledViolations();
+            }
         }
     }
 
