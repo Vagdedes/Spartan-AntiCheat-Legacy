@@ -441,7 +441,9 @@ public class SpartanLocation {
             if (v_1_17 ?
                     blockY >= serverWorld.getMinHeight() && blockY <= serverWorld.getMaxHeight() :
                     blockY >= 0 && blockY <= MoveUtils.height) {
-                if (SpartanBukkit.isSynchronised() || Chunks.isLoaded(serverWorld, getBlockX() >> 4, getBlockZ() >> 4)) {
+                if (MultiVersion.folia
+                        || SpartanBukkit.isSynchronised()
+                        || Chunks.isLoaded(serverWorld, getBlockX() >> 4, getBlockZ() >> 4)) {
                     BlockCache cache = memory.get(identifier);
 
                     if (cache != null) {

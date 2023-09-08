@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.handlers.stability;
 
+import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -16,15 +17,17 @@ public class Chunks {
     private static boolean looping = false;
 
     public static void reload(boolean enabledPlugin) {
-        loadedChunks.clear();
+        if (!MultiVersion.folia) {
+            loadedChunks.clear();
 
-        if (enabledPlugin) {
-            looping = true;
+            if (enabledPlugin) {
+                looping = true;
 
-            for (World world : Bukkit.getWorlds()) {
-                load(world);
+                for (World world : Bukkit.getWorlds()) {
+                    load(world);
+                }
+                looping = false;
             }
-            looping = false;
         }
     }
 

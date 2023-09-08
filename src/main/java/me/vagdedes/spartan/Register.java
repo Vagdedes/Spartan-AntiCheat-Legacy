@@ -79,8 +79,10 @@ public class Register extends JavaPlugin {
         enable(new EventsHandler9(), EventsHandler9.class);
         enable(new EventsHandler10(), EventsHandler10.class);
         enable(new Piracy(), Piracy.class);
-        NetworkUtils.register();
 
+        if (!MultiVersion.folia) {
+            enable(new EventsHandler_non_folia(), EventsHandler_non_folia.class);
+        }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             enable(new EventsHandler_1_9(), EventsHandler_1_9.class);
 
@@ -91,6 +93,7 @@ public class Register extends JavaPlugin {
         if (!MultiVersion.fork().equals("Unknown")) {
             enable(new EventHandler_Incompatible(), EventHandler_Incompatible.class);
         }
+        NetworkUtils.register();
 
         // Commands
         String command = plugin.getName().toLowerCase();
