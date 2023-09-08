@@ -278,14 +278,15 @@ public class HackPrevention {
                                 canPreventAlternative = false;
                             }
 
-                            if (FalsePositiveDetection.canCorrect(uuid, check, hackType, dataType, playerViolation, violationsObject, !playerProfile.isHacker())) {
+                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, !playerProfile.isHacker())) {
                                 falsePositive = true;
                             } else {
                                 falsePositive = false;
                                 violations += 1;
                             }
                         } else {
-                            if (CancelViolation.isForced(player, hackType, violationsObject) || bypassCancelViolation(dataType, hackType, violations, hp.damage)) {
+                            if (CancelViolation.isForced(player, hackType, violationsObject, playerViolation.getSimilarityIdentity())
+                                    || bypassCancelViolation(dataType, hackType, violations, hp.damage)) {
                                 CancelCause silentCause = check.getSilentCause(uuid);
 
                                 if (silentCause == null || !silentCause.pointerMatches(information)) {
@@ -305,7 +306,7 @@ public class HackPrevention {
                                         && ResearchEngine.getFalsePositives(hackType, dataType).size() == 0;
                             }
 
-                            if (FalsePositiveDetection.canCorrect(uuid, check, hackType, dataType, playerViolation, violationsObject, true)) {
+                            if (FalsePositiveDetection.canCorrect(check, hackType, dataType, playerViolation, violationsObject, true)) {
                                 falsePositive = true;
                             } else {
                                 falsePositive = false;
@@ -329,8 +330,8 @@ public class HackPrevention {
                         if (playerViolationEvent == null || !playerViolationEvent.isCancelled()) {
                             if (falsePositive) {
                                 violationsObject.removeMaxLevel(information);
-                                violationsObject.increaseCancelledLevel();
-                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violationsObject.getCancelledLevel(), false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
+                                violationsObject.increaseCancelledLevel(playerViolation.getSimilarityIdentity());
+                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violationsObject.getCancelledLevel(playerViolation.getSimilarityIdentity()), false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                             } else {
                                 switch (hp.violation) {
                                     case 2:
@@ -338,7 +339,7 @@ public class HackPrevention {
                                         break;
                                     case 1:
                                         playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
-                                        violationsObject.setLevel(violations);
+                                        violationsObject.setLevel(playerViolation.getSimilarityIdentity(), violations);
                                         playerProfile.setLastInteraction(violationsObject); // Always after interacting with object
                                         Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         Moderation.performPunishments(player, hackType, violations, dataType);

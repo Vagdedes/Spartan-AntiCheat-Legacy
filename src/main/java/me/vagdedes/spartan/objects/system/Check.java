@@ -5,6 +5,7 @@ import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
@@ -31,7 +32,9 @@ public class Check {
 
     // Static Values
 
-    public static final long violationCycleSeconds = 60_000L;
+    public static final long
+            violationCycleSeconds = 60_000L,
+            recentViolationSeconds = 10_000L;
 
     public static final int
             maxCommands = 10,
@@ -176,8 +179,9 @@ public class Check {
     private final Map<String, Object> options;
     private short silent;
     private int cancelViolation;
-    private final int defaultCancelViolation, maxCancelledViolations;
+    private final int defaultCancelViolation;
     private boolean hasCancelViolation;
+    private final Map<Integer, Integer> maxCancelledViolations;
     private final boolean[] enabled;
     private final boolean
             canPunish, canPunishByDefault,
@@ -198,10 +202,11 @@ public class Check {
     public Check(Enums.HackType hackType) {
         this(
                 hackType,
-                new ConcurrentHashMap<>(Config.getMaxPlayers()),
-                new ConcurrentHashMap<>(Config.getMaxPlayers()),
-                new ConcurrentHashMap<>(Config.getMaxPlayers()),
-                new ConcurrentHashMap<>()
+                new HashMap<>(Config.getMaxPlayers()), // Not concurrent as it is accessed specifically and rapidly
+                new HashMap<>(Config.getMaxPlayers()), // Not concurrent as it is accessed specifically and rapidly
+                MultiVersion.folia ? new HashMap<>(Config.getMaxPlayers()) : new ConcurrentHashMap<>(Config.getMaxPlayers()),
+                new HashMap<>(), // Not concurrent as it is accessed specifically and rapidly
+                new HashMap<>() // Not concurrent as it is accessed specifically and rapidly
         );
     }
 
@@ -209,7 +214,8 @@ public class Check {
                  Map<UUID, CancelCause> disabledUsers,
                  Map<UUID, CancelCause> silentUsers,
                  Map<UUID, LiveViolation> violations,
-                 Map<Integer, String> problematicDetections) {
+                 Map<Integer, String> problematicDetections,
+                 Map<Integer, Integer> maxCancelledViolations) {
         switch (hackType) {
             case FastBow:
             case FastHeal:
@@ -465,7 +471,7 @@ public class Check {
         this.silentUsers = silentUsers;
         this.violations = violations;
         this.problematicDetections = problematicDetections;
-        this.maxCancelledViolations = (defaultCancelViolation + 1) * (defaultCancelViolation + 1);
+        this.maxCancelledViolations = maxCancelledViolations;
 
         // Separator
 
@@ -729,8 +735,12 @@ public class Check {
     }
 
     public void clearCancelCauses() {
-        disabledUsers.clear();
-        silentUsers.clear();
+        synchronized (disabledUsers) {
+            disabledUsers.clear();
+        }
+        synchronized (silentUsers) {
+            silentUsers.clear();
+        }
     }
 
     public void clearCache() {
@@ -738,6 +748,7 @@ public class Check {
         clearViolations();
         clearCancelCauses();
         clearProblematicDetections();
+        clearMaxCancelledViolations();
     }
 
     // Separator
@@ -781,23 +792,29 @@ public class Check {
     // Separator
 
     public Map<UUID, CancelCause> copyDisabledUsers() {
-        return new ConcurrentHashMap<>(disabledUsers);
+        synchronized (disabledUsers) {
+            return new HashMap<>(disabledUsers);
+        }
     }
 
     public CancelCause getDisabledCause(UUID uuid) {
-        CancelCause cancelCause = disabledUsers.get(uuid);
-        return cancelCause != null && !cancelCause.hasExpired() ? cancelCause : null;
+        synchronized (disabledUsers) {
+            CancelCause cancelCause = disabledUsers.get(uuid);
+            return cancelCause != null && !cancelCause.hasExpired() ? cancelCause : null;
+        }
     }
 
     public void addDisabledUser(UUID uuid, String reason, String pointer, int ticks) {
-        CancelCause cancelCause = disabledUsers.get(uuid);
+        synchronized (disabledUsers) {
+            CancelCause cancelCause = disabledUsers.get(uuid);
 
-        if (cancelCause != null) {
-            cancelCause.merge(new CancelCause(reason, pointer, ticks));
-        } else if (SpartanBukkit.isPlayer(uuid)) {
-            disabledUsers.put(uuid, new CancelCause(reason, pointer, ticks));
+            if (cancelCause != null) {
+                cancelCause.merge(new CancelCause(reason, pointer, ticks));
+            } else if (SpartanBukkit.isPlayer(uuid)) {
+                    disabledUsers.put(uuid, new CancelCause(reason, pointer, ticks));
+            }
+            PlayerInfo.refresh(uuid);
         }
-        PlayerInfo.refresh(uuid);
     }
 
     public void addDisabledUser(UUID uuid, String reason, int ticks) {
@@ -805,8 +822,10 @@ public class Check {
     }
 
     public void removeDisabledUser(UUID uuid) {
-        if (disabledUsers.remove(uuid) != null) {
-            PlayerInfo.refresh(uuid);
+        synchronized (disabledUsers) {
+            if (disabledUsers.remove(uuid) != null) {
+                PlayerInfo.refresh(uuid);
+            }
         }
     }
 
@@ -1115,54 +1134,72 @@ public class Check {
     // Separator
 
     public Map<Integer, String> copyProblematicDetections() {
-        return new ConcurrentHashMap<>(problematicDetections);
+        synchronized (problematicDetections) {
+            return new HashMap<>(problematicDetections);
+        }
     }
 
     public Set<String> getProblematicDetections() {
-        return new HashSet<>(problematicDetections.values());
+        synchronized (problematicDetections) {
+            return new HashSet<>(problematicDetections.values());
+        }
     }
 
     public int getProblematicDetectionsCount() {
-        return getProblematicDetections().size();
+        synchronized (problematicDetections) {
+            return getProblematicDetections().size();
+        }
     }
 
     public void clearProblematicDetections() {
-        problematicDetections.clear();
+        synchronized (problematicDetections) {
+            problematicDetections.clear();
+        }
     }
 
     public boolean isProblematicDetection(ResearchEngine.DataType dataType, String detection) {
-        return problematicDetections.containsKey(
-                (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode()
-        );
+        synchronized (problematicDetections) {
+            return problematicDetections.containsKey(
+                    (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode()
+            );
+        }
     }
 
     public void setProblematicDetection(ResearchEngine.DataType dataType, String detection) {
-        problematicDetections.put(
-                (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode(),
-                detection
-        );
+        synchronized (problematicDetections) {
+            problematicDetections.put(
+                    (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode(),
+                    detection
+            );
+        }
     }
 
     // Separator
 
     public Map<UUID, CancelCause> copySilentUsers() {
-        return new ConcurrentHashMap<>(silentUsers);
+        synchronized (silentUsers) {
+            return new HashMap<>(silentUsers);
+        }
     }
 
     public CancelCause getSilentCause(UUID uuid) {
-        CancelCause cancelCause = silentUsers.get(uuid);
-        return cancelCause != null && !cancelCause.hasExpired() ? cancelCause : null;
+        synchronized (silentUsers) {
+            CancelCause cancelCause = silentUsers.get(uuid);
+            return cancelCause != null && !cancelCause.hasExpired() ? cancelCause : null;
+        }
     }
 
     public void addSilentUser(UUID uuid, String reason, String pointer, int ticks) {
-        CancelCause cancelCause = silentUsers.get(uuid);
+        synchronized (silentUsers) {
+            CancelCause cancelCause = silentUsers.get(uuid);
 
-        if (cancelCause != null) {
-            cancelCause.merge(new CancelCause(reason, pointer, ticks));
-        } else if (SpartanBukkit.isPlayer(uuid)) {
-            silentUsers.put(uuid, new CancelCause(reason, pointer, ticks));
+            if (cancelCause != null) {
+                cancelCause.merge(new CancelCause(reason, pointer, ticks));
+            } else if (SpartanBukkit.isPlayer(uuid)) {
+                silentUsers.put(uuid, new CancelCause(reason, pointer, ticks));
+            }
+            PlayerInfo.refresh(uuid);
         }
-        PlayerInfo.refresh(uuid);
     }
 
     public void addSilentUser(UUID uuid, String reason, int ticks) {
@@ -1170,8 +1207,10 @@ public class Check {
     }
 
     public void removeSilentUser(UUID uuid) {
-        if (silentUsers.remove(uuid) != null) {
-            PlayerInfo.refresh(uuid);
+        synchronized (silentUsers) {
+            if (silentUsers.remove(uuid) != null) {
+                PlayerInfo.refresh(uuid);
+            }
         }
     }
 
@@ -1311,8 +1350,29 @@ public class Check {
         return defaultCancelViolation == maximumDefaultCancelViolation;
     }
 
-    public int getMaxCancelledViolations() {
-        return maxCancelledViolations;
+    public void setMaxCancelledViolations(Map<Integer, Integer> map) {
+        synchronized (maxCancelledViolations) {
+            maxCancelledViolations.clear();
+            maxCancelledViolations.putAll(map);
+        }
+    }
+
+    public void clearMaxCancelledViolations() {
+        synchronized (maxCancelledViolations) {
+            maxCancelledViolations.clear();
+        }
+    }
+
+    public Map<Integer, Integer> copyMaxCancelledViolations() {
+        synchronized (maxCancelledViolations) {
+            return new HashMap<>(maxCancelledViolations);
+        }
+    }
+
+    public int getMaxCancelledViolations(int hash) {
+        synchronized (maxCancelledViolations) {
+            return maxCancelledViolations.getOrDefault(hash, Integer.MAX_VALUE);
+        }
     }
 
     public int getDefaultCancelViolation() {

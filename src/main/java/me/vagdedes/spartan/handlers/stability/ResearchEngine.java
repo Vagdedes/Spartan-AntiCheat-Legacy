@@ -1480,9 +1480,8 @@ public class ResearchEngine {
                                 }
                             }
 
-                            if (loopFalsePositives.size() > 0) {
-                                localFalsePositives.put(getStorageKey(hackType, dataType), new HashSet<>(loopFalsePositives.keySet()));
-                                loopFalsePositives.clear();
+                            if (!loopFalsePositives.isEmpty()) {
+                                localFalsePositives.put(getStorageKey(hackType, dataType), loopFalsePositives.keySet());
                             }
                         } else { // No need to continue when no profiles were found
                             loopFalsePositives.clear();
@@ -1536,7 +1535,7 @@ public class ResearchEngine {
 
             // Separator (Calculate mining statistics)
 
-            if (hackerFreePlayerProfiles.size() > 0) {
+            if (!hackerFreePlayerProfiles.isEmpty()) {
                 for (Enums.MiningOre ore : Enums.MiningOre.values()) {
                     double average = 0.0, total = 0.0;
 

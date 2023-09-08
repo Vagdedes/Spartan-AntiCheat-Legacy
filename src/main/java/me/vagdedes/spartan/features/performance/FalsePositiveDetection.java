@@ -26,7 +26,7 @@ public class FalsePositiveDetection {
     public static int getSimplifiedNumber(Enums.HackType hackType, String detection, Collection<Number> numbers) {
         int hash = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
 
-        if (numbers.size() > 0) {
+        if (!numbers.isEmpty()) {
             for (Number number : numbers) {
                 if (number instanceof Double) {
                     hash = (hash * SpartanBukkit.hashCodeMultiplier)
@@ -40,31 +40,12 @@ public class FalsePositiveDetection {
         return hash;
     }
 
-    public static boolean canCorrect(UUID uuid,
-                                     Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
+    public static boolean canCorrect(Check check, Enums.HackType hackType, ResearchEngine.DataType dataType,
                                      PlayerViolation playerViolation, LiveViolation liveViolation,
                                      boolean problematicDetections) {
-        if (canFunction() // 1
-                && (problematicDetections && check.isProblematicDetection(dataType, playerViolation.getDetection()) // 2
-                || ResearchEngine.getFalsePositives(hackType, dataType).contains(playerViolation.getSimilarityIdentity())) // 2
-                && !liveViolation.hasMaxCancelledLevel()) { // 3
-            List<LiveViolation> violationList = Check.getViolationsObjects(uuid);
-            violationList.remove(liveViolation);
-            int count = 0;
-
-            if (violationList.size() > 0) {
-                for (LiveViolation loopLiveViolation : violationList) {
-                    if (loopLiveViolation.hasMaxCancelledLevel()) {
-                        count++;
-
-                        if (count == Check.hackerCheckAmount) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+        return canFunction() // 1
+                && !liveViolation.hasMaxCancelledLevel(playerViolation.getSimilarityIdentity()) // 2
+                && (problematicDetections && check.isProblematicDetection(dataType, playerViolation.getDetection()) // 3
+                || ResearchEngine.getFalsePositives(hackType, dataType).contains(playerViolation.getSimilarityIdentity())); // 3
     }
 }

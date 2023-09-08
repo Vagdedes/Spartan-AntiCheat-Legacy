@@ -3,6 +3,7 @@ package me.vagdedes.spartan.objects.system;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.ViolationResetEvent;
 import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
@@ -11,6 +12,8 @@ import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +25,7 @@ public class LiveViolation {
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                if (maxLevel.size() > 0) {
+                if (!maxLevel.isEmpty()) {
                     for (Map.Entry<LiveViolation, String> entry : maxLevel.entrySet()) {
                         LiveViolation violations = entry.getKey();
                         SpartanPlayer player = violations.getPlayer();
@@ -44,28 +47,54 @@ public class LiveViolation {
         }
     }
 
+    private static class LoopLevelCache {
+        private long expiration;
+        private boolean result;
+
+        private LoopLevelCache() {
+            this.expiration = 0L;
+            this.result = false;
+        }
+
+        private boolean isValid() {
+            return expiration >= System.currentTimeMillis();
+        }
+
+        private boolean setResult(boolean result) {
+            this.result = result;
+            this.expiration = System.currentTimeMillis() + 1_000L;
+            return result;
+        }
+    }
+
     private final UUID uuid;
     private final Enums.HackType hackType;
-    private long cycleExpiration, lastViolation, cancelledLevel;
+    private long cycleExpiration, lastViolation;
+    private final Map<Integer, Long> cancelledLevel;
     private int level;
     private boolean cancelled;
+    private final LoopLevelCache cancelledLevelCache, maxCancelledLevelCache;
 
     public LiveViolation(Enums.HackType hackType) {
         this.uuid = SpartanBukkit.uuid;
         this.hackType = hackType;
         this.level = 0;
-        this.cancelledLevel = 0L;
+        this.cancelledLevel = MultiVersion.folia ? new HashMap<>() : new ConcurrentHashMap<>();
         this.lastViolation = 0L;
         this.cancelled = false;
+        this.cancelledLevelCache = new LoopLevelCache();
+        this.maxCancelledLevelCache = new LoopLevelCache();
     }
 
     public LiveViolation(UUID uuid, Enums.HackType hackType) {
         this.uuid = uuid;
         this.hackType = hackType;
         this.level = 0;
-        this.cancelledLevel = 0L;
+        this.cancelledLevel = MultiVersion.folia ? new HashMap<>() : new ConcurrentHashMap<>();
         this.lastViolation = 0L;
         this.cancelled = false;
+        this.cancelledLevelCache = new LoopLevelCache();
+        this.maxCancelledLevelCache = new LoopLevelCache();
         reset(); // Do not make it local as it takes part in object initiation and is not important
     }
 
@@ -76,13 +105,17 @@ public class LiveViolation {
         return level;
     }
 
-    private int getRawCancelledLevel() {
-        long time = cancelledLevel - System.currentTimeMillis();
-        return time > 0L ? AlgebraUtils.integerCeil(time / 1000.0) : 0;
-    }
+    public int getCancelledLevel(int hash) {
+        Long time = cancelledLevel.get(hash);
 
-    public int getCancelledLevel() {
-        return Math.min(getRawCancelledLevel(), hackType.getCheck().getMaxCancelledViolations());
+        if (time == null) {
+            return 0;
+        } else {
+            time -= System.currentTimeMillis();
+            return time > 0L
+                    ? Math.min(AlgebraUtils.integerCeil(time / 1000.0), hackType.getCheck().getMaxCancelledViolations(hash))
+                    : 0;
+        }
     }
 
     public boolean isLastLevelCancelled() {
@@ -98,21 +131,64 @@ public class LiveViolation {
     }
 
     public boolean hasCancelledLevel() {
-        return cancelledLevel > System.currentTimeMillis();
+        if (cancelledLevelCache.isValid()) {
+            return cancelledLevelCache.result;
+        } else if (!cancelledLevel.isEmpty()) {
+            Iterator<Long> iterator = cancelledLevel.values().iterator();
+            long current = System.currentTimeMillis();
+
+            while (iterator.hasNext()) {
+                if (iterator.next() > current) {
+                    return cancelledLevelCache.setResult(true);
+                } else {
+                    iterator.remove();
+                }
+            }
+        }
+        return cancelledLevelCache.setResult(false);
     }
 
     public boolean hasMaxCancelledLevel() {
-        return getRawCancelledLevel() >= hackType.getCheck().getMaxCancelledViolations();
+        if (maxCancelledLevelCache.isValid()) {
+            return maxCancelledLevelCache.result;
+        } else if (!cancelledLevel.isEmpty()) {
+            Iterator<Map.Entry<Integer, Long>> iterator = cancelledLevel.entrySet().iterator();
+            long current = System.currentTimeMillis();
+
+            while (iterator.hasNext()) {
+                Map.Entry<Integer, Long> entry = iterator.next();
+                long time = entry.getValue() - current;
+
+                if (time > 0L) {
+                    if (time / 1000.0 >= (hackType.getCheck().getMaxCancelledViolations(entry.getKey()) - 1)) { // Minus one so we don't ceil each loop number
+                        return maxCancelledLevelCache.setResult(true);
+                    }
+                } else {
+                    iterator.remove();
+                }
+            }
+        }
+        return maxCancelledLevelCache.setResult(false);
     }
 
-    public void setLevel(int amount) {
+    public boolean hasMaxCancelledLevel(int hash) {
+        Long time = cancelledLevel.get(hash);
+
+        if (time != null && time > 0L) {
+            return (time - System.currentTimeMillis()) / 1000.0 >= (hackType.getCheck().getMaxCancelledViolations(hash) - 1); // -1 so we don't ceil the number
+        } else {
+            return false;
+        }
+    }
+
+    public void setLevel(int hash, int amount) {
         timeReset();
         int previousLevel = level;
 
         // Violations
         if (amount < Check.maxViolations) {
             this.level = amount;
-            increaseCancelledLevel();
+            increaseCancelledLevel(hash); // Increase it in case a player has reached the max level and is still cheating
         }
         this.cancelled = false;
         timeReset(); // Always after changing the level
@@ -127,13 +203,19 @@ public class LiveViolation {
         }
     }
 
-    public void increaseCancelledLevel() {
-        long time = System.currentTimeMillis();
+    public void increaseCancelledLevel(int hash) {
+        Long time = cancelledLevel.get(hash);
 
-        if (cancelledLevel < time) {
-            this.cancelledLevel = time + 1_000L;
+        if (time == null) {
+            cancelledLevel.put(hash, System.currentTimeMillis() + 1_000L);
         } else {
-            this.cancelledLevel += 1_000L;
+            long current = System.currentTimeMillis();
+
+            if (time < current) {
+                this.cancelledLevel.put(hash, current + 1_000L);
+            } else {
+                this.cancelledLevel.put(hash, time + 1_000L);
+            }
         }
         this.cancelled = true;
     }

@@ -39,7 +39,7 @@ public class DetectionTick {
             if (liveViolations.size() > 0) {
                 for (LiveViolation liveViolation : liveViolations) {
                     if (liveViolation.hasMaxCancelledLevel()
-                            || liveViolation.getLastViolation(true) <= 10_000L) {
+                            || liveViolation.getLastViolation(true) <= Check.recentViolationSeconds) {
                         return false;
                     }
                 }

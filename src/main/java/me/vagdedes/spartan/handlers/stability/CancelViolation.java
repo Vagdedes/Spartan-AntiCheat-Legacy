@@ -45,8 +45,9 @@ public class CancelViolation {
 
     // Separator
 
-    public static boolean isForced(SpartanPlayer player, Enums.HackType hackType, LiveViolation liveViolation) {
-        return liveViolation.hasMaxCancelledLevel()
+    public static boolean isForced(SpartanPlayer player, Enums.HackType hackType,
+                                   LiveViolation liveViolation, int hash) {
+        return liveViolation.hasMaxCancelledLevel(hash)
                 || !player.getCooldowns().canDo(masterKey + hackType.ordinal())
                 || UltimateStatistics.isSuspected(player.getUniqueId());
     }
