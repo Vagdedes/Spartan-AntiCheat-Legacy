@@ -183,10 +183,9 @@ public class ImpossibleActions {
                         if (access) {
                             Buffer buffer = p.getBuffer(check);
                             String scenario = scaffold ? "scaffold" : "tower";
-                            String key = scenario;
 
-                            if (buffer.start(key, 20) >= (!scaffold ? 4 : 5)) {
-                                buffer.remove(key);
+                            if (buffer.start(scenario, 20) >= (!scaffold ? 4 : 5)) {
+                                buffer.remove(scenario);
                                 new HackPrevention(p, check, "type: " + scenario
                                         + ", block: " + BlockUtils.materialToString(blockType)
                                         + ", block-against: " + BlockUtils.materialToString(blockAgainstType)
@@ -209,7 +208,8 @@ public class ImpossibleActions {
         if (p.canRunCheck(check, true)) {
             SpartanLocation bloc = b.getLocation();
 
-            if (check.getCheck().getBooleanOption("check_item_usage", true) && !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7) && !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
+            if (check.getCheck().getBooleanOption("check_item_usage", true)
+                    && !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7) && !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
                     && p.isUsingItem() && !BlockUtils.isSensitive(p, bloc)) {
                 new HackPrevention(p, check, "type: item-usage, event: break, block: " + BlockUtils.blockToString(b));
             } else if (check.getCheck().getBooleanOption("check_liquids", true) && !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {

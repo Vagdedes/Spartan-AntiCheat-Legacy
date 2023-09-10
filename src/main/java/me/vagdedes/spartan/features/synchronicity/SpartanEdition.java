@@ -27,12 +27,13 @@ public class SpartanEdition {
             StringUtils.decodeBase64("U3BhcnRhbkZ1bGxFZGl0aW9u"), // Full
             "Spartan", // Last because it is contained in all previous names
     };
+    private static final String productLink = StringUtils.decodeBase64("aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC92aWV3UHJvZHVjdC8/aWQ9");
     private static final String
             type = "{type}",
             productID = "{product-id}",
             notificationKey = "alternative-version",
             notificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat."
-                    + (SpartanBukkit.canAdvertise ? "\nClick §nhttps://vagdedes.com/viewProduct/?id=" + productID + " §r§cto fix this." : "")
+                    + (SpartanBukkit.canAdvertise ? "\nClick §n" + productLink + productID + " §r§cto fix this." : "")
                     + "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Settings.getFile().getName() + "' to disable this notification.";
     private static final boolean javaEdition;
     public static final boolean freeAlternativeVersion;
