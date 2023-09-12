@@ -30,7 +30,7 @@ public class SupportIncompatibleItems {
     private static final int menuSize = 54;
 
     public static void open(SpartanPlayer p) {
-        if (!Permissions.has(p, Enums.Permission.manage)) {
+        if (!Permissions.has(p, Enums.Permission.MANAGE)) {
             p.sendInventoryCloseMessage(Messages.get("no_permission"));
             return;
         }

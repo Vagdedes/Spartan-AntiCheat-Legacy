@@ -70,7 +70,7 @@ public class HackPrevention {
                         hm.put(hackType, ms);
                     }
                 } else {
-                    hm = new ConcurrentHashMap<>(Enums.hackTypes().length);
+                    hm = new ConcurrentHashMap<>(Enums.HackType.values().length);
                     hm.put(hackType, ms);
                     hc.put(uuid, hm);
                 }
@@ -86,7 +86,7 @@ public class HackPrevention {
             Check check = hackType.getCheck();
             Enums.CheckType checkType = check.getCheckType();
 
-            if (checkType != Enums.CheckType.Combat) { // Moderate movement violations/preventions
+            if (checkType != Enums.CheckType.COMBAT) { // Moderate movement violations/preventions
                 List<HackPrevention> preventions = hm.get(player.getUniqueId());
 
                 if (preventions != null && preventions.size() > 0) {
@@ -113,7 +113,7 @@ public class HackPrevention {
             this.groundTeleport = groundTeleport;
             this.damage = damage;
 
-            if (violation == 1 && checkType == Enums.CheckType.Movement) {
+            if (violation == 1 && checkType == Enums.CheckType.MOVEMENT) {
                 if (VehicleAccess.hasExitCooldown(player, hackType)) {
                     this.violation = 0;
                 } else {

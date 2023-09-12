@@ -18,11 +18,11 @@ public class Teleport {
             UUID uuid = p.getUniqueId();
 
             if (Settings.getBoolean("Protections.use_teleport_protection")) {
-                for (Enums.HackType hackType : Enums.hackTypes()) {
+                for (Enums.HackType hackType : Enums.HackType.values()) {
                     hackType.getCheck().addSilentUser(uuid, reason, ticks);
                 }
             } else {
-                for (Enums.HackType hackType : Enums.hackTypes()) {
+                for (Enums.HackType hackType : Enums.HackType.values()) {
                     Check check = hackType.getCheck();
 
                     if (!check.hasMaximumDefaultCancelViolation()) {

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+// Props to the 16-year-old me for thinking of this creative class name
 public class API {
 
     public static String licenseID() {

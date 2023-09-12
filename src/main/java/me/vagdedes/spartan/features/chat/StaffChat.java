@@ -16,7 +16,7 @@ import java.util.List;
 public class StaffChat {
 
     public static boolean run(SpartanPlayer p, String msg) {
-        if (Permissions.has(p, Enums.Permission.staff_chat) && (!Authentication.isEnabled() || (System.currentTimeMillis() - p.getCreationTime()) > 60_000L)) {
+        if (Permissions.has(p, Enums.Permission.STAFF_CHAT) && (!Authentication.isEnabled() || (System.currentTimeMillis() - p.getCreationTime()) > 60_000L)) {
             String character = Settings.getString("Chat.staff_chat_character");
 
             if (character != null && character.length() > 0 && msg.startsWith(character.toLowerCase())) {
@@ -28,7 +28,7 @@ public class StaffChat {
 
                 if (players.size() > 0) {
                     for (SpartanPlayer o : players) {
-                        if (Permissions.has(o, Enums.Permission.staff_chat)) {
+                        if (Permissions.has(o, Enums.Permission.STAFF_CHAT)) {
                             o.sendMessage(message);
                         }
                     }

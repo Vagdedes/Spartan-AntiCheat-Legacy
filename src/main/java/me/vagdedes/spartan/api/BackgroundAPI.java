@@ -56,7 +56,7 @@ public class BackgroundAPI {
                     player.getProfile().isSuspectedOrHacker(hackType)
             ).getString();
         }
-        return Enums.PunishmentCategory.minimum.getString();
+        return Enums.PunishmentCategory.MINIMUM.getString();
     }
 
     @Deprecated
@@ -232,7 +232,7 @@ public class BackgroundAPI {
         if (Settings.getBoolean("Important.enable_developer_api")) { // Keep the null pointer protection to prevent the method from acting differently
             UUID uuid = p.getUniqueId();
 
-            for (HackType hackType : Enums.hackTypes()) {
+            for (HackType hackType : Enums.HackType.values()) {
                 hackType.getCheck().addDisabledUser(uuid, "Developer-API", string, ticks);
             }
         }
@@ -252,7 +252,7 @@ public class BackgroundAPI {
 
     static void resetVL() {
         if (Settings.getBoolean("Important.enable_developer_api")) {
-            for (HackType hackType : Enums.hackTypes()) {
+            for (HackType hackType : Enums.HackType.values()) {
                 hackType.getCheck().clearViolations();
             }
         }
@@ -263,7 +263,7 @@ public class BackgroundAPI {
             SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
             if (player != null) {
-                for (HackType hackType : Enums.hackTypes()) {
+                for (HackType hackType : Enums.HackType.values()) {
                     hackType.getCheck().getViolations(player).reset();
                 }
             }

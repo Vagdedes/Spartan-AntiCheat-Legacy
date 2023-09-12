@@ -3,44 +3,38 @@ package me.vagdedes.spartan.features.moderation;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Messages;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Debug {
 
-    private static final Map<UUID, Map<UUID, String>> hm = new LinkedHashMap<>(Config.getMaxPlayers());
+    private static final Map<UUID, Map<UUID, Collection<Enums.Debug>>> hm = new LinkedHashMap<>(Config.getMaxPlayers());
 
     public static void clear() {
         hm.clear();
     }
 
-    public static boolean has(SpartanPlayer p, SpartanPlayer t, String s) {
-        Map<UUID, String> map = hm.get(p.getUniqueId());
+    public static boolean has(SpartanPlayer p, SpartanPlayer t, Enums.Debug debug) {
+        Map<UUID, Collection<Enums.Debug>> map = hm.get(p.getUniqueId());
 
         if (map != null) {
-            String data = map.get(t.getUniqueId());
-            return data != null && data.contains("[" + s + "]");
+            Collection<Enums.Debug> data = map.get(t.getUniqueId());
+            return data != null && data.contains(debug);
         }
         return false;
     }
 
     public static boolean has(SpartanPlayer p, SpartanPlayer t) {
-        Map<UUID, String> map = hm.get(p.getUniqueId());
-
-        if (map != null) {
-            String data = map.get(t.getUniqueId());
-            return data != null;
-        }
-        return false;
+        Map<UUID, Collection<Enums.Debug>> map = hm.get(p.getUniqueId());
+        return map != null && map.containsKey(t.getUniqueId());
     }
 
     public static void remove(SpartanPlayer p, SpartanPlayer t) {
-        final UUID uuid = p.getUniqueId();
-        final UUID target = t.getUniqueId();
-        final Map<UUID, String> map = hm.get(uuid);
+        UUID uuid = p.getUniqueId(),
+                target = t.getUniqueId();
+        final Map<UUID, Collection<Enums.Debug>> map = hm.get(uuid);
 
         if (map != null && map.containsKey(target)) {
             hm.get(uuid).remove(target);
@@ -54,66 +48,57 @@ public class Debug {
         }
     }
 
-    public static void add(SpartanPlayer p, SpartanPlayer t, String s) {
-        boolean enable = false;
-        final UUID uuid = p.getUniqueId();
-        final UUID target = t.getUniqueId();
-        Map<UUID, String> map = hm.get(uuid);
+    public static void add(SpartanPlayer p, SpartanPlayer t, Enums.Debug s) {
+        boolean enable;
+        UUID uuid = p.getUniqueId(),
+                target = t.getUniqueId();
+        Map<UUID, Collection<Enums.Debug>> map = hm.get(uuid);
 
         if (map == null) {
+            enable = true;
             map = new LinkedHashMap<>();
+            Collection<Enums.Debug> data = new HashSet<>(Enums.Debug.values().length);
+            data.add(s);
+            map.put(target, data);
             hm.put(uuid, map);
-        }
-        String data = map.get(target);
+        } else {
+            Collection<Enums.Debug> data = map.get(target);
 
-        if (data != null) {
-            if (data.contains("[" + s + "]")) {
-                hm.get(uuid).put(target, data = data.replace("[" + s + "]", ""));
+            if (data != null) {
+                if (data.add(s)) {
+                    enable = true;
+                } else {
+                    enable = false;
 
-                if (data.length() == 0) {
-                    hm.get(uuid).remove(target);
-
-                    if ((map.keySet().size() - 1) == 0) {
-                        hm.remove(uuid);
+                    if (data.remove(s) && data.isEmpty()) {
+                        map.remove(target);
                     }
                 }
             } else {
-                hm.get(uuid).put(target, data + "[" + s + "]");
                 enable = true;
+                data = new HashSet<>(Enums.Debug.values().length);
+                data.add(s);
+                map.put(target, data);
             }
-        } else {
-            hm.get(uuid).put(target, "[" + s + "]");
-            enable = true;
         }
         String msg = Messages.get(enable ? "debug_enable_message" : "debug_disable_message");
         msg = msg.replace("{player}", t.getName());
-        msg = msg.replace("{type}", s);
+        msg = msg.replace("{type}", s.getString());
         p.getPlayer().sendMessage(msg);
     }
 
-    public static void runMove(SpartanPlayer p, String s) {
-        inform(p, "Movement", s);
-    }
+    public static void inform(SpartanPlayer p, Enums.Debug t, String s) {
+        for (Map.Entry<UUID, Map<UUID, Collection<Enums.Debug>>> entry : hm.entrySet()) {
+            Collection<Enums.Debug> data = entry.getValue().get(p.getUniqueId());
 
-    public static void runCombat(SpartanPlayer p, String s) {
-        inform(p, "Combat", s);
-    }
-
-    public static void runMisc(SpartanPlayer p, String s) {
-        inform(p, "Misc", s);
-    }
-
-    private static void inform(SpartanPlayer p, String t, String s) {
-        for (Map.Entry<UUID, Map<UUID, String>> entry : hm.entrySet()) {
-            String data = entry.getValue().get(p.getUniqueId());
-
-            if (data != null && data.contains("[" + t + "]")) {
+            if (data != null
+                    && data.contains(t)) {
                 SpartanPlayer owner = SpartanBukkit.getPlayer(entry.getKey());
 
                 if (owner != null) {
                     String msg = Messages.get("debug_player_message");
                     msg = msg.replace("{player}", p.getName());
-                    msg = msg.replace("{type}", t);
+                    msg = msg.replace("{type}", t.getString());
                     msg = msg.replace("{info}", s.toLowerCase().replace("_", "-"));
                     owner.sendMessage(msg);
                 }

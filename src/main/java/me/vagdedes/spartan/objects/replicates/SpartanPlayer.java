@@ -28,7 +28,7 @@ import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.handlers.tracking.ClickData;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
-import me.vagdedes.spartan.listeners.EventsHandler7;
+import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.data.*;
 import me.vagdedes.spartan.objects.profiling.PlayerFight;
@@ -347,7 +347,7 @@ public class SpartanPlayer {
                 openInventory.countSlots(),
                 openInventory.getTopInventory().getContents(),
                 openInventory.getBottomInventory().getContents());
-        Enums.HackType[] hackTypes = Enums.hackTypes();
+        Enums.HackType[] hackTypes = Enums.HackType.values();
         ItemStack itemInHand = p.getItemInHand();
 
         this.location = new SpartanLocation(this, p.getLocation());

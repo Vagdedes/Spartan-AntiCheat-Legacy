@@ -29,7 +29,7 @@ public class SpartanBukkit {
             for (String option : new String[]{
                     Bukkit.getResourcePack(), Bukkit.getResourcePackHash(), Bukkit.getResourcePackPrompt()
             }) {
-                if (option.length() > 0) {
+                if (!option.isEmpty()) {
                     result = true;
                     break;
                 }

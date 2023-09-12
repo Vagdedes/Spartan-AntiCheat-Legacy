@@ -436,7 +436,7 @@ public class CloudConnections {
             name = discordTag[0];
         }
 
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             Check check = hackType.getCheck();
             String checkName = check.getName();
 

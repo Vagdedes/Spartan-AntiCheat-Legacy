@@ -45,7 +45,7 @@ public class ConfigurationDiagnostics {
                             p.sendMessage(ChatColor.DARK_GREEN + s.substring(0, s.length() - 1) + ":");
                         }
 
-                        for (Enums.HackType hackType : Enums.hackTypes()) {
+                        for (Enums.HackType hackType : Enums.HackType.values()) {
                             Check check = hackType.getCheck();
 
                             if (check.hasCancelViolation()) {

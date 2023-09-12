@@ -141,11 +141,11 @@ public class ResearchEngine {
         }
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {
             switch (ore) {
-                case Diamond:
+                case DIAMOND:
                     defaultAverageMining.put(ore, -32.0);
                     break;
-                case Emerald:
-                case AncientDebris:
+                case EMERALD:
+                case ANCIENT_DEBRIS:
                     defaultAverageMining.put(ore, -minimumAverageMining);
                     break;
                 case Gold:
@@ -639,7 +639,7 @@ public class ResearchEngine {
                     boolean foundPlayer = p != null;
 
                     if (foundPlayer) {
-                        for (Enums.HackType hackType : Enums.hackTypes()) {
+                        for (Enums.HackType hackType : Enums.HackType.values()) {
                             hackType.getCheck().getViolations(p).reset();
                         }
                     }
@@ -1190,7 +1190,7 @@ public class ResearchEngine {
                                         String hackTypeString = split[2];
                                         PlayerProfile playerProfile = getPlayerProfile(name);
 
-                                        for (Enums.HackType hackType : Enums.hackTypes()) {
+                                        for (Enums.HackType hackType : Enums.HackType.values()) {
                                             if (hackTypeString.equals(hackType.toString())) {
                                                 // Separator
                                                 String detection = getDetectionInformation(data);
@@ -1322,7 +1322,7 @@ public class ResearchEngine {
         int size = playerProfiles.size();
 
         if (size > 0) {
-            Enums.HackType[] hackTypes = Enums.hackTypes();
+            Enums.HackType[] hackTypes = Enums.HackType.values();
             DataType[] dataTypes = getDynamicUsableDataTypes(false);
             List<PlayerProfile> playerProfilesCopy = new ArrayList<>(playerProfiles);
             int mines = 0, logs = 0, reports = 0,
@@ -1499,7 +1499,7 @@ public class ResearchEngine {
             ViolationStatistics.clear();
             CancelViolation.clear();
 
-            for (Enums.HackType hackType : Enums.hackTypes()) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
                 hackType.getCheck().clearMaxCancelledViolations();
             }
         }

@@ -24,7 +24,7 @@ public class PlayerReport {
         String reasonModified = reason.toLowerCase();
         Set<Enums.HackType> relations = new HashSet<>();
 
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             if (reasonModified.contains(hackType.toString().toLowerCase())
                     || reasonModified.contains(hackType.getCheck().getName().toLowerCase())
                     || hasProfile && playerProfile.isSuspectedOrHacker() && playerProfile.getEvidence().has(hackType)) {

@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners;
+package me.vagdedes.spartan.interfaces.listeners;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

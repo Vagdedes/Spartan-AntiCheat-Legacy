@@ -30,13 +30,13 @@ public class ManageChecks {
     private static final String menu = "§0Manage Checks".substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
 
     public static void open(SpartanPlayer p) {
-        if (!Permissions.has(p, Permission.manage)) {
+        if (!Permissions.has(p, Permission.MANAGE)) {
             p.sendInventoryCloseMessage(Messages.get("no_permission"));
             return;
         }
         Inventory inv = p.createInventory(54, menu);
 
-        for (HackType check : Enums.hackTypes()) {
+        for (HackType check : Enums.HackType.values()) {
             addCheck(p, inv, check);
         }
         InventoryUtils.add(inv, "§cDisable silent checking for all checks", null, new ItemStack(MaterialUtils.get("lead")), 46);
@@ -203,7 +203,7 @@ public class ManageChecks {
         if (enabled && silent) {
             item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inv, colour + check.getName() + " " + secondColour + check.getCheckType().toString() + " Check", lore, item, -1);
+        InventoryUtils.add(inv, colour + check.getName() + " " + secondColour + check.getCheckType().getName() + " Check", lore, item, -1);
     }
 
     public static boolean run(SpartanPlayer p, ItemStack i, String title, ClickType click) {
@@ -213,7 +213,7 @@ public class ManageChecks {
         String item = i.getItemMeta().getDisplayName();
         item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (!Permissions.has(p, Permission.manage)) {
+        if (!Permissions.has(p, Permission.MANAGE)) {
             p.sendInventoryCloseMessage(Messages.get("no_permission"));
             return true;
         }

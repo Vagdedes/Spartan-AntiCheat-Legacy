@@ -32,7 +32,6 @@ public class LagLeniencies {
     // instability: situations where a detection's calculations stop being reliable
 
     public static final int
-            nativePing = 10,
             excellentPing = 50,
             goodPing = 75,
             mediocrePing = 150,
@@ -43,10 +42,13 @@ public class LagLeniencies {
             maxAllowedPing = 1000,
             maxServerPing = 5000;
 
-    public static final int cooldownTicks = 20;
+    private static final int
+            cooldownTicks = 20,
+            criticalDifference = 33,
+            maxDifference = (criticalDifference * 3) + 1;
     private static final double testServerMaximumDelay = TPS.maximum / 4.0;
 
-    private static final Map<UUID, LagLeniency> hm = new LinkedHashMap<>(Enums.hackTypes().length);
+    private static final Map<UUID, LagLeniency> hm = new LinkedHashMap<>(Enums.HackType.values().length);
 
     public static void clear() {
         hm.clear();
@@ -63,7 +65,7 @@ public class LagLeniencies {
     public static void cache() {
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-        if (players.size() > 0) {
+        if (!players.isEmpty()) {
             for (SpartanPlayer p : players) {
                 add(p);
             }
@@ -104,7 +106,7 @@ public class LagLeniencies {
             return false;
         }
         int ping = p.getPing();
-        return ping >= i && ping <= Latency.maxPing && !hasPingExemption(p);
+        return ping >= i && ping <= maxAllowedPing && !hasPingExemption(p);
     }
 
     // Separator
@@ -122,7 +124,7 @@ public class LagLeniencies {
             } else {
                 pingDelay = Math.min(
                         hasInconsistencies(p, "ping") ? Math.max(badPing, latency) : latency,
-                        Math.min(Settings.getInteger("Protections.max_supported_player_latency"), Latency.maxPing)
+                        Math.min(Settings.getInteger("Protections.max_supported_player_latency"), maxAllowedPing)
                 );
             }
         }
@@ -191,8 +193,8 @@ public class LagLeniencies {
                             int previous = data.getPing();
 
                             if (previous > 0 // Ensure the previous latency has been calculated
-                                    && current >= (previous + Latency.criticalDifference) // Check if the threshold has been exceeded
-                                    && (current - previous) <= Latency.maxDifference) { // Limit the threshold to account for ping-spoof
+                                    && current >= (previous + criticalDifference) // Check if the threshold has been exceeded
+                                    && (current - previous) <= maxDifference) { // Limit the threshold to account for ping-spoof
                                 p.getCooldowns().add(structure + "ping", cooldownTicks);
                                 result = true;
                             }
@@ -204,7 +206,7 @@ public class LagLeniencies {
             }
             return false;
         }
-        return key.length() == 0 ? (TPS.areDropping(p) || !p.getCooldowns().canDo(structure + "ping")) :
+        return key.isEmpty() ? (TPS.areDropping(p) || !p.getCooldowns().canDo(structure + "ping")) :
                 (key.equals("tps") ? TPS.areDropping(p) : !p.getCooldowns().canDo(structure + key));
     }
 }

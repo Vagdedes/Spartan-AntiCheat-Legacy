@@ -12,7 +12,7 @@ import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.notifications.clickablemessage.ClickableMessage;
 import me.vagdedes.spartan.features.protections.Teleport;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.listeners.EventsHandler7;
+import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

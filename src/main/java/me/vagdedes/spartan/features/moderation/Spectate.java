@@ -21,27 +21,37 @@ import java.util.Set;
 
 public class Spectate {
 
-    private static final Map<SpartanPlayer, SpartanPlayer> target = new LinkedHashMap<>(Config.getMaxPlayers());
-    private static final Map<SpartanPlayer, SpartanLocation> initialLocation = new LinkedHashMap<>(Config.getMaxPlayers());
+    private static class Properties {
+
+        private final SpartanPlayer target;
+        private final SpartanLocation initialLocation;
+
+        public Properties(SpartanPlayer target, SpartanLocation initialLocation) {
+            this.target = target;
+            this.initialLocation = initialLocation;
+        }
+    }
+
+    private static final Map<SpartanPlayer, Properties> memory = new LinkedHashMap<>(Config.getMaxPlayers());
 
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                Set<Map.Entry<SpartanPlayer, SpartanPlayer>> entries = target.entrySet();
+                Set<Map.Entry<SpartanPlayer, Properties>> entries = memory.entrySet();
                 int size = entries.size();
 
                 if (size > 0) {
                     Map<SpartanPlayer, Boolean> toRemove = new LinkedHashMap<>(size);
 
-                    for (Map.Entry<SpartanPlayer, SpartanPlayer> entry : entries) {
+                    for (Map.Entry<SpartanPlayer, Properties> entry : entries) {
                         SpartanPlayer p = entry.getKey();
 
                         SpartanBukkit.runTask(p, () -> {
-                            if (!Permissions.has(p, Enums.Permission.info)
-                                    && !Permissions.has(p, Enums.Permission.manage)) {
+                            if (!Permissions.has(p, Enums.Permission.INFO)
+                                    && !Permissions.has(p, Enums.Permission.MANAGE)) {
                                 toRemove.put(p, true);
                             } else {
-                                SpartanPlayer t = entry.getValue();
+                                SpartanPlayer t = entry.getValue().target;
 
                                 if (t == null) {
                                     toRemove.put(p, true);
@@ -69,11 +79,10 @@ public class Spectate {
     }
 
     public static void clear() {
-        for (SpartanPlayer p : target.keySet()) {
+        for (SpartanPlayer p : memory.keySet()) {
             appearance(p, true);
         }
-        target.clear();
-        initialLocation.clear();
+        memory.clear();
     }
 
     public static boolean isTarget(SpartanPlayer p, SpartanPlayer t) {
@@ -86,18 +95,17 @@ public class Spectate {
     }
 
     public static SpartanPlayer getTarget(SpartanPlayer p) {
-        return target.get(p);
+        Properties properties = memory.get(p);
+        return properties == null ? null : properties.target;
     }
 
     public static void remove(SpartanPlayer p, boolean teleport) {
-        SpartanLocation location = initialLocation.get(p);
+        Properties properties = memory.remove(p);
 
-        if (location != null) {
+        if (properties != null) {
             if (teleport) {
-                p.teleport(location);
+                p.teleport(properties.initialLocation);
             }
-            initialLocation.remove(p);
-            target.remove(p);
             appearance(p, true);
 
             String message = ConfigUtils.replaceWithSyntax(p, Messages.get("spectating_ended"), null);
@@ -107,15 +115,8 @@ public class Spectate {
 
     public static void run(SpartanPlayer p, SpartanPlayer t) {
         if (!p.equals(t)) {
-            SpartanLocation location = initialLocation.get(p);
-
-            if (location != null) {
-                initialLocation.put(p, location);
-            } else {
-                initialLocation.put(p, p.getLocation());
-            }
-
-            target.put(p, t);
+            Properties properties = memory.get(p);
+            memory.put(p, new Properties(t, properties != null ? properties.initialLocation : p.getLocation()));
             p.teleport(t.getLocation());
             appearance(p, false);
 
@@ -134,7 +135,7 @@ public class Spectate {
         }
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-        if (players.size() > 0) {
+        if (!players.isEmpty()) {
             for (SpartanPlayer so : players) {
                 if (!so.equals(p)) {
                     if (show) {
@@ -148,4 +149,5 @@ public class Spectate {
             }
         }
     }
+
 }

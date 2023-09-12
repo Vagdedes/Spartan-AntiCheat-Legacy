@@ -3,7 +3,7 @@ package me.vagdedes.spartan.compatibility.manual.damage;
 import com.frash23.smashhit.AsyncPreDamageEvent;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import me.vagdedes.spartan.listeners.EventsHandler6;
+import me.vagdedes.spartan.interfaces.listeners.EventsHandler6;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;

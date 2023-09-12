@@ -50,7 +50,7 @@ public class PlayerViolationEvent extends Event implements Cancellable {
 
     public String getCategory() {
         SpartanPlayer player = SpartanBukkit.getPlayer(p);
-        return player == null ? Enums.PunishmentCategory.minimum.getString() :
+        return player == null ? Enums.PunishmentCategory.MINIMUM.getString() :
                 Check.getCategoryFromViolations(v, h, player.getDataType(), player.getProfile().isSuspectedOrHacker(h)).getString();
     }
 

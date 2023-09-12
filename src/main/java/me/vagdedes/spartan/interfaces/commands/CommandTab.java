@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.handlers.commands;
+package me.vagdedes.spartan.interfaces.commands;
 
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -19,25 +19,25 @@ public class CommandTab implements TabCompleter {
     private static final Map<String, Enums.Permission[]> commands = new LinkedHashMap<>(18); // Attention
 
     static {
-        commands.put("menu", new Enums.Permission[]{Enums.Permission.info, Enums.Permission.manage});
-        commands.put("toggle", new Enums.Permission[]{Enums.Permission.manage});
-        commands.put("rl", new Enums.Permission[]{Enums.Permission.reload});
-        commands.put("reload", new Enums.Permission[]{Enums.Permission.reload});
-        commands.put("notifications", new Enums.Permission[]{Enums.Permission.notifications});
-        commands.put("info", new Enums.Permission[]{Enums.Permission.info});
-        commands.put("kick", new Enums.Permission[]{Enums.Permission.kick});
-        commands.put("warn", new Enums.Permission[]{Enums.Permission.warn});
-        commands.put("bypass", new Enums.Permission[]{Enums.Permission.use_bypass});
-        commands.put("ban", new Enums.Permission[]{Enums.Permission.ban});
-        commands.put("unban", new Enums.Permission[]{Enums.Permission.unban});
-        commands.put("ban-info", new Enums.Permission[]{Enums.Permission.ban, Enums.Permission.unban});
-        commands.put("wave add", new Enums.Permission[]{Enums.Permission.wave});
-        commands.put("wave remove", new Enums.Permission[]{Enums.Permission.wave});
-        commands.put("wave clear", new Enums.Permission[]{Enums.Permission.wave});
-        commands.put("wave run", new Enums.Permission[]{Enums.Permission.wave});
-        commands.put("wave list", new Enums.Permission[]{Enums.Permission.wave});
-        commands.put("report", new Enums.Permission[]{Enums.Permission.report});
-        commands.put("customer-support", new Enums.Permission[]{Enums.Permission.admin});
+        commands.put("menu", new Enums.Permission[]{Enums.Permission.INFO, Enums.Permission.MANAGE});
+        commands.put("toggle", new Enums.Permission[]{Enums.Permission.MANAGE});
+        commands.put("rl", new Enums.Permission[]{Enums.Permission.RELOAD});
+        commands.put("reload", new Enums.Permission[]{Enums.Permission.RELOAD});
+        commands.put("notifications", new Enums.Permission[]{Enums.Permission.NOTIFICATIONS});
+        commands.put("info", new Enums.Permission[]{Enums.Permission.INFO});
+        commands.put("kick", new Enums.Permission[]{Enums.Permission.KICK});
+        commands.put("warn", new Enums.Permission[]{Enums.Permission.WARN});
+        commands.put("bypass", new Enums.Permission[]{Enums.Permission.USE_BYPASS});
+        commands.put("ban", new Enums.Permission[]{Enums.Permission.BAN});
+        commands.put("unban", new Enums.Permission[]{Enums.Permission.UNBAN});
+        commands.put("ban-info", new Enums.Permission[]{Enums.Permission.BAN, Enums.Permission.UNBAN});
+        commands.put("wave add", new Enums.Permission[]{Enums.Permission.WAVE});
+        commands.put("wave remove", new Enums.Permission[]{Enums.Permission.WAVE});
+        commands.put("wave clear", new Enums.Permission[]{Enums.Permission.WAVE});
+        commands.put("wave run", new Enums.Permission[]{Enums.Permission.WAVE});
+        commands.put("wave list", new Enums.Permission[]{Enums.Permission.WAVE});
+        commands.put("report", new Enums.Permission[]{Enums.Permission.REPORT});
+        commands.put("customer-support", new Enums.Permission[]{Enums.Permission.ADMIN});
     }
 
     @Override
@@ -77,7 +77,7 @@ public class CommandTab implements TabCompleter {
         } else if (length > 1) {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            if (players.size() > 0) {
+            if (!players.isEmpty()) {
                 String argAbstract = args[length - 1].toLowerCase();
                 boolean player = sender instanceof Player;
                 SpartanPlayer p = player ? SpartanBukkit.getPlayer((Player) sender) : null;

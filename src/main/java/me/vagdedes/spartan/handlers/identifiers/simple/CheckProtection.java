@@ -19,14 +19,14 @@ public class CheckProtection {
     private static long delay = 0L;
 
     static {
-        Enums.HackType[] hackTypes = Enums.hackTypes();
+        Enums.HackType[] hackTypes = Enums.HackType.values();
         List<Enums.HackType> checksAffectedByCombatArray = new ArrayList<>(hackTypes.length);
 
         for (Enums.HackType hackType : hackTypes) {
             switch (hackType.getCheck().getCheckType()) {
-                case Movement:
-                case Combat:
-                case Exploits:
+                case MOVEMENT:
+                case COMBAT:
+                case EXPLOITS:
                     checksAffectedByCombatArray.add(hackType);
                     break;
                 default:

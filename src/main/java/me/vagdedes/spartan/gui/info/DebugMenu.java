@@ -5,6 +5,7 @@ import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.server.InventoryUtils;
@@ -24,26 +25,26 @@ public class DebugMenu {
         // Separator
         ItemStack i = new ItemStack(Material.IRON_SWORD);
 
-        if (Debug.has(p, t, "Combat")) {
+        if (Debug.has(p, t, Enums.Debug.COMBAT)) {
             i.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inv, "§7Combat", null, i, 10);
+        InventoryUtils.add(inv, "§7" + Enums.Debug.COMBAT.getString(), null, i, 10);
 
         // Separator
         i = new ItemStack(MaterialUtils.get("gold_boots"));
 
-        if (Debug.has(p, t, "Movement")) {
+        if (Debug.has(p, t, Enums.Debug.MOVEMENT)) {
             i.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inv, "§7Movement", null, i, 12);
+        InventoryUtils.add(inv, "§7" + Enums.Debug.MOVEMENT.getString(), null, i, 12);
 
         // Separator
         i = new ItemStack(Material.COMPASS);
 
-        if (Debug.has(p, t, "Misc")) {
+        if (Debug.has(p, t, Enums.Debug.MISC)) {
             i.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inv, "§7Misc", null, i, 14);
+        InventoryUtils.add(inv, "§7" + Enums.Debug.MISC.getString(), null, i, 14);
 
         // Separator
         InventoryUtils.add(inv, "§cDisable", null, new ItemStack(Material.ARROW), 16);
@@ -64,10 +65,15 @@ public class DebugMenu {
             Debug.remove(p, t);
             p.sendInventoryCloseMessage(null);
         } else {
-            if (!Permissions.has(p, Permission.info) && !Permissions.has(p, Permission.manage)) {
+            if (!Permissions.has(p, Permission.INFO) && !Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
             } else {
-                Debug.add(p, t, item);
+                for (Enums.Debug debug : Enums.Debug.values()) {
+                    if (debug.getString().equals(item)) {
+                        Debug.add(p, t, debug);
+                        break;
+                    }
+                }
                 p.sendInventoryCloseMessage(null);
             }
         }

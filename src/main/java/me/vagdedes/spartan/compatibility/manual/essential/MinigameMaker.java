@@ -90,7 +90,7 @@ public class MinigameMaker implements Listener {
                 String[] hackTypesStringSplit = hackTypesString.replace("-", "_").split("\\|");
                 Set<Enums.HackType> hackTypes = new LinkedHashSet<>(hackTypesStringSplit.length);
 
-                for (Enums.HackType original : Enums.hackTypes()) {
+                for (Enums.HackType original : Enums.HackType.values()) {
                     String originalString = original.toString();
 
                     for (String hackTypeString : hackTypesStringSplit) {

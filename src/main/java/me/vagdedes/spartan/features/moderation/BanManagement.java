@@ -8,7 +8,7 @@ import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.handlers.commands.CommandExecution;
+import me.vagdedes.spartan.interfaces.commands.CommandExecution;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -154,7 +154,7 @@ public class BanManagement {
     public static String getBanListString() {
         List<UUID> uuids = getBanList();
 
-        if (uuids.size() > 0) {
+        if (!uuids.isEmpty()) {
             String comma = ChatColor.GRAY + ", ";
             StringBuilder list = new StringBuilder();
 

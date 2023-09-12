@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners;
+package me.vagdedes.spartan.interfaces.listeners;
 
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

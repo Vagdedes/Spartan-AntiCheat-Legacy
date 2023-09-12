@@ -58,10 +58,10 @@ public class Buffer {
                             || CombatUtils.getEnemiesNumber(p, CombatUtils.maxHitDistance, true, 1) > 0) {
                         bufferChild.ticks -= 1L;
                     } else {
-                        for (Enums.HackType hackType : Enums.hackTypes()) {
+                        for (Enums.HackType hackType : Enums.HackType.values()) {
                             Check check = hackType.getCheck();
 
-                            if (check.getCheckType() == Enums.CheckType.Combat
+                            if (check.getCheckType() == Enums.CheckType.COMBAT
                                     && check.getViolations(uuid, dataType).getLastViolation(true) <= 55L) {
                                 bufferChild.ticks -= 1L;
                                 break;

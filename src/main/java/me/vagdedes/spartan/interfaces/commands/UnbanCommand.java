@@ -13,7 +13,7 @@ public class UnbanCommand {
         if (Permissions.isStaff(p) && (executed(m, "unban") || executed(m, "pardon"))) {
             List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
-            if (playerProfiles.size() > 0) {
+            if (!playerProfiles.isEmpty()) {
                 for (String arg : m.split(" ")) {
                     for (PlayerProfile playerProfile : playerProfiles) {
                         String name = playerProfile.getName();

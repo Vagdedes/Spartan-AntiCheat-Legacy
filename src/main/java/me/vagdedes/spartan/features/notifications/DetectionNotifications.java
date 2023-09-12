@@ -67,7 +67,7 @@ public class DetectionNotifications {
     }
 
     public static boolean hasPermission(SpartanPlayer p) {
-        return Permissions.has(p, Enums.Permission.notifications);
+        return Permissions.has(p, Enums.Permission.NOTIFICATIONS);
     }
 
     public static Integer getDivisor(SpartanPlayer p, boolean absolute) {
@@ -119,17 +119,17 @@ public class DetectionNotifications {
     public static Enums.MiningOre getMiningOre(Material material) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
             if (material == Material.ANCIENT_DEBRIS) {
-                return Enums.MiningOre.AncientDebris;
+                return Enums.MiningOre.ANCIENT_DEBRIS;
             }
             if (material == Material.GILDED_BLACKSTONE || material == Material.NETHER_GOLD_ORE) {
                 return Enums.MiningOre.Gold;
             }
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
                 if (material == Material.DEEPSLATE_DIAMOND_ORE) {
-                    return Enums.MiningOre.Diamond;
+                    return Enums.MiningOre.DIAMOND;
                 }
                 if (material == Material.DEEPSLATE_EMERALD_ORE) {
-                    return Enums.MiningOre.Emerald;
+                    return Enums.MiningOre.EMERALD;
                 }
                 if (material == Material.DEEPSLATE_GOLD_ORE) {
                     return Enums.MiningOre.Gold;
@@ -138,9 +138,9 @@ public class DetectionNotifications {
         }
         switch (material) {
             case DIAMOND_ORE:
-                return Enums.MiningOre.Diamond;
+                return Enums.MiningOre.DIAMOND;
             case EMERALD_ORE:
-                return Enums.MiningOre.Emerald;
+                return Enums.MiningOre.EMERALD;
             case GOLD_ORE:
                 return Enums.MiningOre.Gold;
         }

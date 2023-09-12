@@ -61,7 +61,7 @@ public class SpartanEdition {
                 )) {
                     alternativeVersion = true;
                 }
-                for (Enums.HackType hackType : Enums.hackTypes()) {
+                for (Enums.HackType hackType : Enums.HackType.values()) {
                     hackType.resetCheck(false);
                 }
             });

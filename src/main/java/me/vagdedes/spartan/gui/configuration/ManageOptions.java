@@ -26,7 +26,7 @@ public class ManageOptions {
         int amount = options.size();
 
         if (amount > 0) {
-            if (!Permissions.has(p, Permission.manage)) {
+            if (!Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
                 return;
             }
@@ -75,7 +75,7 @@ public class ManageOptions {
         String item = i.getItemMeta().getDisplayName();
         item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (!Permissions.has(p, Permission.manage)) {
+        if (!Permissions.has(p, Permission.MANAGE)) {
             p.sendInventoryCloseMessage(Messages.get("no_permission"));
             return true;
         }
@@ -87,7 +87,7 @@ public class ManageOptions {
             if (split.length == 2) {
                 String hackTypeString = split[1];
 
-                for (HackType hackType : Enums.hackTypes()) {
+                for (HackType hackType : Enums.HackType.values()) {
                     String name = hackType.getCheck().getName();
 
                     if (name.equals(hackTypeString)) { // Do not use name, this is configuration based
@@ -106,7 +106,7 @@ public class ManageOptions {
                 String hackTypeString = split[0],
                         option = item.substring(hackTypeString.length() + 1);
 
-                for (HackType hackType : Enums.hackTypes()) {
+                for (HackType hackType : Enums.HackType.values()) {
                     if (hackType.toString().equals(hackTypeString)) { // Do not use name, this is configuration based
                         Check check = hackType.getCheck();
                         Object value = check.getOption(option, null, true);

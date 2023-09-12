@@ -45,7 +45,7 @@ public class Check {
             maximumDefaultCancelViolation = 6,
             hackerCheckAmount = 3;
 
-    public static final Enums.PunishmentCategory analysisMultiplierCategory = Enums.PunishmentCategory.normal;
+    public static final Enums.PunishmentCategory analysisMultiplierCategory = Enums.PunishmentCategory.NORMAL;
     public static final double analysisMultiplier = analysisMultiplierCategory.getMultiplier();
 
     // Static Methods
@@ -68,7 +68,7 @@ public class Check {
                 }
             }
         }
-        return Enums.PunishmentCategory.maximum;
+        return Enums.PunishmentCategory.MAXIMUM;
     }
 
     // Separator
@@ -84,7 +84,7 @@ public class Check {
     // Separator
 
     public static Set<Map.Entry<Enums.HackType, Integer>> getViolationsEntry(UUID uuid) {
-        Enums.HackType[] hackTypes = Enums.hackTypes();
+        Enums.HackType[] hackTypes = Enums.HackType.values();
         Map<Enums.HackType, Integer> map = new LinkedHashMap<>(hackTypes.length);
 
         for (Enums.HackType hackType : hackTypes) {
@@ -100,7 +100,7 @@ public class Check {
     // Separator
 
     public static List<LiveViolation> getViolationsObjects(UUID uuid) {
-        Enums.HackType[] hackTypes = Enums.hackTypes();
+        Enums.HackType[] hackTypes = Enums.HackType.values();
         List<LiveViolation> list = new ArrayList<>(hackTypes.length);
 
         for (Enums.HackType hackType : hackTypes) {
@@ -118,7 +118,7 @@ public class Check {
     public static int getViolationCount(UUID uuid) {
         int sum = 0;
 
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             LiveViolation violations = hackType.getCheck().getLocalOrEmptyViolations(uuid);
 
             if (violations != null) {
@@ -129,7 +129,7 @@ public class Check {
     }
 
     public static boolean hasViolations(UUID uuid) {
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             LiveViolation violations = hackType.getCheck().getLocalOrEmptyViolations(uuid);
 
             if (violations != null && violations.hasLevel()) {
@@ -142,7 +142,7 @@ public class Check {
     // Separator
 
     public static boolean isUsingCustomCheckNames() {
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             if (!hackType.getCheck().getName().equals(hackType.toString())) {
                 return true;
             }
@@ -154,7 +154,7 @@ public class Check {
         List<World> worlds = Bukkit.getWorlds();
 
         if (worlds.size() > 0) {
-            for (Enums.HackType hackType : Enums.hackTypes()) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
                 Check check = hackType.getCheck();
 
                 for (World worldObject : worlds) {
@@ -407,21 +407,21 @@ public class Check {
             case FastClicks:
             case HitReach:
             case Velocity:
-                this.checkType = Enums.CheckType.Combat;
+                this.checkType = Enums.CheckType.COMBAT;
                 break;
             case Exploits:
-                this.checkType = Enums.CheckType.Exploits;
+                this.checkType = Enums.CheckType.EXPLOITS;
                 break;
             case ImpossibleInventory:
             case InventoryClicks:
             case ItemDrops:
-                this.checkType = Enums.CheckType.Inventory;
+                this.checkType = Enums.CheckType.INVENTORY;
                 break;
             case AutoRespawn:
             case FastEat:
             case FastHeal:
             case NoSwing:
-                this.checkType = Enums.CheckType.Player;
+                this.checkType = Enums.CheckType.PLAYER;
                 break;
             case Speed:
             case EntityMove:
@@ -429,7 +429,7 @@ public class Check {
             case MorePackets:
             case NoSlowdown:
             case NoFall:
-                this.checkType = Enums.CheckType.Movement;
+                this.checkType = Enums.CheckType.MOVEMENT;
                 break;
             case FastPlace:
             case FastBreak:
@@ -437,7 +437,7 @@ public class Check {
             case GhostHand:
             case XRay:
             case ImpossibleActions:
-                this.checkType = Enums.CheckType.World;
+                this.checkType = Enums.CheckType.WORLD;
                 break;
             default:
                 this.checkType = null;
@@ -853,7 +853,7 @@ public class Check {
                 CheckToggleEvent event;
 
                 if (Settings.getBoolean("Important.enable_developer_api")) {
-                    event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.Enable : Enums.ToggleAction.Disable);
+                    event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
                     Register.manager.callEvent(event);
                 } else {
                     event = null;
@@ -920,7 +920,7 @@ public class Check {
         if (name.length() > 32) {
             name = name.substring(0, 32);
         }
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             if (!hackType.equals(this.hackType) && name.equalsIgnoreCase(hackType.toString())) {
                 return;
             }
@@ -1201,7 +1201,7 @@ public class Check {
                 case "dynamic":
                     if (silent != 2) {
                         if (Settings.getBoolean("Important.enable_developer_api")) {
-                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.Enable);
+                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.ENABLE);
                             Register.manager.callEvent(event);
 
                             if (event.isCancelled()) {
@@ -1215,7 +1215,7 @@ public class Check {
                 case "true":
                     if (silent != 1) {
                         if (Settings.getBoolean("Important.enable_developer_api")) {
-                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.Enable);
+                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.ENABLE);
                             Register.manager.callEvent(event);
 
                             if (event.isCancelled()) {
@@ -1229,7 +1229,7 @@ public class Check {
                 case "false":
                     if (silent != 0) {
                         if (Settings.getBoolean("Important.enable_developer_api")) {
-                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.Disable);
+                            CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.DISABLE);
                             Register.manager.callEvent(event);
 
                             if (event.isCancelled()) {

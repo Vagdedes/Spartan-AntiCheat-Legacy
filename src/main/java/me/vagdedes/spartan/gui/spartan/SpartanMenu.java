@@ -111,7 +111,7 @@ public class SpartanMenu {
     }
 
     public static boolean hasPermission(SpartanPlayer p) {
-        return Permissions.has(p, Permission.manage) || Permissions.has(p, Permission.info);
+        return Permissions.has(p, Permission.MANAGE) || Permissions.has(p, Permission.INFO);
     }
 
     public static boolean open(SpartanPlayer p) {
@@ -323,7 +323,7 @@ public class SpartanMenu {
             p.sendMessage("");
 
         } else if (item.equals("Compatibilities")) {
-            if (!Permissions.has(p, Permission.manage)) {
+            if (!Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
             } else {
                 if (FileGUI.isEnabled()) {
@@ -340,7 +340,7 @@ public class SpartanMenu {
             }
 
         } else if (item.equals("Configuration")) {
-            if (!Permissions.has(p, Permission.manage)) {
+            if (!Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
             } else {
                 if (clickType == ClickType.LEFT) {
@@ -348,7 +348,7 @@ public class SpartanMenu {
                 } else if (clickType == ClickType.RIGHT) {
                     ManageConfiguration.open(p);
                 } else if (clickType.isShiftClick()) {
-                    if (!Permissions.has(p, Permission.reload)) {
+                    if (!Permissions.has(p, Permission.RELOAD)) {
                         p.sendInventoryCloseMessage(Messages.get("no_permission"));
                         return true;
                     } else {

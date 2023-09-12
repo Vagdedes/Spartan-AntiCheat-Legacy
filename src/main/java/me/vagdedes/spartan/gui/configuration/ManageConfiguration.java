@@ -72,7 +72,7 @@ public class ManageConfiguration {
             p.sendInventoryCloseMessage(ChatColor.RED + "This menu is not available to versions prior to 1.9.");
             return;
         }
-        if (!Permissions.has(p, Enums.Permission.manage)) {
+        if (!Permissions.has(p, Enums.Permission.MANAGE)) {
             p.sendInventoryCloseMessage(Messages.get("no_permission"));
             return;
         }
@@ -135,7 +135,7 @@ public class ManageConfiguration {
     }
 
     private static void openChild(SpartanPlayer p, String s, int slot, List<String> list) {
-        if (!Permissions.has(p, Enums.Permission.manage)) {
+        if (!Permissions.has(p, Enums.Permission.MANAGE)) {
             p.sendInventoryCloseMessage(Messages.get("no_permission"));
             return;
         }
@@ -217,7 +217,7 @@ public class ManageConfiguration {
                 open(p);
             }
         } else if (item.equals("Configuration Diagnostics")) {
-            if (!Permissions.has(p, Enums.Permission.manage)) {
+            if (!Permissions.has(p, Enums.Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
                 return true;
             }
@@ -312,7 +312,7 @@ public class ManageConfiguration {
 
     public static void reload(boolean resetChecks) {
         if (!resetChecks) { // Do not run because their cache will be cleared by the Config method
-            for (Enums.HackType hackType : Enums.hackTypes()) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
                 hackType.getCheck().clearConfigurationCache();
             }
         }

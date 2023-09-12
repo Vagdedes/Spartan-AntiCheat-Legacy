@@ -20,8 +20,11 @@ import java.util.List;
 public class PlayerReports {
 
     private static final String menu = "Report: ";
-    public static final String[] reasons = new String[]{"Hacking", "Offensive Comments", "Bad Sportsmanship", "Mechanism Abuse", "Chat Spam",
-            "Ruining Gameplay", "Threats", "Advertise", "Filter Bypass", "Suicide Encouragement", "Hackusation", "Stalking"};
+    public static final String[] reasons = new String[]{
+            "Hacking", "Offensive Comments", "Bad Sportsmanship", "Mechanism Abuse",
+            "Chat Spam", "Ruining Gameplay", "Threats", "Advertise", "Filter Bypass",
+            "Suicide Encouragement", "Hackusation", "Stalking"
+    };
     public static final String separator = ", ";
 
     public static void menu(SpartanPlayer p, SpartanPlayer t) {
@@ -46,7 +49,7 @@ public class PlayerReports {
     }
 
     public static boolean run(SpartanPlayer p, ItemStack i, String title) {
-        if (i.getItemMeta() == null || i.getItemMeta().getDisplayName() == null || !title.startsWith(menu)) {
+        if (!title.startsWith(menu)) {
             return false;
         }
         String item = i.getItemMeta().getDisplayName();
@@ -63,10 +66,6 @@ public class PlayerReports {
     }
 
     public static List<PlayerReport> getList() {
-        return ResearchEngine.getReports(null, 4, true);
-    }
-
-    public static ItemStack getItem() {
-        return new ItemStack(Material.TRAPPED_CHEST);
+        return ResearchEngine.getReports(null, 7, true);
     }
 }

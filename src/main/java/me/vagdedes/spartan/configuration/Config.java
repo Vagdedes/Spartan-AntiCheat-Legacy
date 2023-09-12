@@ -14,7 +14,7 @@ import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.handlers.stability.Chunks;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
-import me.vagdedes.spartan.listeners.EventsHandler7;
+import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
@@ -94,7 +94,7 @@ public class Config {
 
     public static int getMaxPunishmentViolation(HackType hackType, ResearchEngine.DataType dataType) {
         if (!Config.isLegacy()) {
-            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.maximum);
+            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.MAXIMUM);
         }
         Check check = hackType.getCheck();
 
@@ -110,7 +110,7 @@ public class Config {
 
     public static int getMinPunishmentViolation(HackType hackType, ResearchEngine.DataType dataType) {
         if (!Config.isLegacy()) {
-            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.minimum);
+            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.MINIMUM);
         }
         Check check = hackType.getCheck();
 
@@ -127,7 +127,7 @@ public class Config {
     // Separator
 
     public static Check getCheckByName(String s) {
-        for (HackType hackType : Enums.hackTypes()) {
+        for (HackType hackType : Enums.HackType.values()) {
             Check check = hackType.getCheck();
             String checkName = check.getName();
 
@@ -188,7 +188,7 @@ public class Config {
 
         // Check Cache
         if (clearChecksCache) {
-            for (HackType hackType : Enums.hackTypes()) {
+            for (HackType hackType : Enums.HackType.values()) {
                 hackType.resetCheck(true);
             }
         }
@@ -313,7 +313,7 @@ public class Config {
     public static boolean hasCancelAfterViolationOption() {
         boolean cancelAfterViolation = false;
 
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             if (hackType.getCheck().hasCancelViolation()) {
                 cancelAfterViolation = true;
                 break;
@@ -350,7 +350,7 @@ public class Config {
     public static void enableChecks() {
         CheckProtection.cancel(20, 0);
 
-        for (HackType hackType : Enums.hackTypes()) {
+        for (HackType hackType : Enums.HackType.values()) {
             hackType.getCheck().setEnabled(null, true);
         }
     }
@@ -358,7 +358,7 @@ public class Config {
     public static void disableChecks() {
         CheckProtection.cancel(20, 0);
 
-        for (HackType hackType : Enums.hackTypes()) {
+        for (HackType hackType : Enums.HackType.values()) {
             hackType.getCheck().setEnabled(null, false);
         }
     }
@@ -368,7 +368,7 @@ public class Config {
     public static void enableSilentChecking() {
         CheckProtection.cancel(20, 0);
 
-        for (HackType hackType : Enums.hackTypes()) {
+        for (HackType hackType : Enums.HackType.values()) {
             hackType.getCheck().setSilent("true");
         }
     }
@@ -376,7 +376,7 @@ public class Config {
     public static void disableSilentChecking() {
         CheckProtection.cancel(20, 0);
 
-        for (HackType hackType : Enums.hackTypes()) {
+        for (HackType hackType : Enums.HackType.values()) {
             hackType.getCheck().setSilent("false");
         }
     }

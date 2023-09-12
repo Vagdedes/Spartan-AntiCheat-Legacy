@@ -17,9 +17,9 @@ public class Permissions {
     private static final Map<UUID, Map<Enums.HackType, Boolean>> bypass = new LinkedHashMap<>(Config.getMaxPlayers());
     private static boolean API = false;
 
-    private static final Enums.Permission[] staffPermissions = new Enums.Permission[]{Enums.Permission.staff_chat, Enums.Permission.wave,
-            Enums.Permission.warn, Enums.Permission.admin, Enums.Permission.kick, Enums.Permission.notifications,
-            Enums.Permission.use_bypass, Enums.Permission.manage, Enums.Permission.info, Enums.Permission.unban, Enums.Permission.ban};
+    private static final Enums.Permission[] staffPermissions = new Enums.Permission[]{Enums.Permission.STAFF_CHAT, Enums.Permission.WAVE,
+            Enums.Permission.WARN, Enums.Permission.ADMIN, Enums.Permission.KICK, Enums.Permission.NOTIFICATIONS,
+            Enums.Permission.USE_BYPASS, Enums.Permission.MANAGE, Enums.Permission.INFO, Enums.Permission.UNBAN, Enums.Permission.BAN};
 
     public static boolean isCacheEnabled() {
         return Settings.getBoolean("Important.use_permission_cache");
@@ -37,11 +37,11 @@ public class Permissions {
         API = true;
         UUID uuid = p.getUniqueId();
 
-        if (permission == Enums.Permission.bypass) {
+        if (permission == Enums.Permission.BYPASS) {
             Map<Enums.HackType, Boolean> map = bypass.get(uuid);
 
             if (map == null) {
-                map = new LinkedHashMap<>(Enums.hackTypes().length);
+                map = new LinkedHashMap<>(Enums.HackType.values().length);
                 map.put(null, true);
                 bypass.put(uuid, map);
             } else {
@@ -84,13 +84,13 @@ public class Permissions {
     }
 
     public static boolean has(Player p, Enums.Permission permission) {
-        if (permission == Enums.Permission.bypass) {
+        if (permission == Enums.Permission.BYPASS) {
             return isBypassing(p, null);
         }
         if (Settings.exists("Important.enable_permissions") && !Settings.getBoolean("Important.enable_permissions")) {
             return true;
         }
-        Enums.Permission admin = Enums.Permission.admin;
+        Enums.Permission admin = Enums.Permission.ADMIN;
 
         if (TestServer.isIdentified() || !isCacheEnabled()) {
             if (p.hasPermission(permission.getKey())) {
@@ -110,7 +110,7 @@ public class Permissions {
                     }
                 }
             }
-            if (permission != admin ? p.hasPermission(Enums.Permission.admin.getKey()) || p.hasPermission(alternativeAdminKey) :
+            if (permission != admin ? p.hasPermission(Enums.Permission.ADMIN.getKey()) || p.hasPermission(alternativeAdminKey) :
                     p.hasPermission(alternativeAdminKey)) { // If it's the admin permission and it's false (at this stage it is), then we check the other admin permission
                 setStaff(p, permission);
                 return true;
@@ -144,7 +144,7 @@ public class Permissions {
             Boolean bool = map.get(admin);
 
             if (bool == null) {
-                hasPermission = p.hasPermission(Enums.Permission.admin.getKey()) || p.hasPermission(alternativeAdminKey);
+                hasPermission = p.hasPermission(Enums.Permission.ADMIN.getKey()) || p.hasPermission(alternativeAdminKey);
                 map.put(admin, hasPermission);
             } else {
                 hasPermission = bool;
@@ -174,7 +174,7 @@ public class Permissions {
         if (Settings.exists("Important.enable_permissions") && !Settings.getBoolean("Important.enable_permissions")) {
             return true;
         }
-        String key = Enums.Permission.bypass.getKey() + (hackType != null ? "." + hackType.toString().toLowerCase() : "");
+        String key = Enums.Permission.BYPASS.getKey() + (hackType != null ? "." + hackType.toString().toLowerCase() : "");
 
         if (TestServer.isIdentified() || !isCacheEnabled()) {
             if (p.hasPermission(key)) {
@@ -197,7 +197,7 @@ public class Permissions {
                 return map.get(hackType);
             }
         } else {
-            map = new LinkedHashMap<>(Enums.hackTypes().length);
+            map = new LinkedHashMap<>(Enums.HackType.values().length);
             bypass.put(uuid, map);
         }
         boolean has = p.hasPermission(key);

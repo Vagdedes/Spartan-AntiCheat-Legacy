@@ -3,7 +3,7 @@ package me.vagdedes.spartan.objects.system.hackPrevention;
 import me.vagdedes.spartan.checks.movement.speed.Speed;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.Moderation;
-import me.vagdedes.spartan.listeners.EventsHandler7;
+import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

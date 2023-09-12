@@ -32,7 +32,7 @@ public class SuspicionNotifications {
     public static void run() {
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-        if (players.size() > 0) {
+        if (!players.isEmpty()) {
             for (SpartanPlayer p : players) {
                 SpartanBukkit.runTask(p, () -> run(p, true));
             }
@@ -86,7 +86,7 @@ public class SuspicionNotifications {
                         if (profile.isHacker()) {
                             Set<Map.Entry<Enums.HackType, Integer>> violationEntries = Check.getViolationsEntry(detectedUUID);
 
-                            if (violationEntries.size() > 0) {
+                            if (!violationEntries.isEmpty()) {
                                 shouldList = false;
                                 PlayerEvidence evidence = profile.getEvidence();
 
@@ -106,7 +106,7 @@ public class SuspicionNotifications {
                         } else if (profile.isSuspected()) {
                             Set<Map.Entry<Enums.HackType, Integer>> violationEntries = Check.getViolationsEntry(detectedUUID);
 
-                            if (violationEntries.size() > 0) {
+                            if (!violationEntries.isEmpty()) {
                                 shouldList = false;
                                 ResearchEngine.DataType dataType = player.getDataType();
                                 PlayerEvidence evidence = profile.getEvidence();
@@ -151,7 +151,7 @@ public class SuspicionNotifications {
                                 StringBuilder evidence = new StringBuilder();
                                 Collection<Enums.HackType> evidenceDetails = profile.getEvidence().getKnowledgeList();
 
-                                if (evidenceDetails.size() > 0) {
+                                if (!evidenceDetails.isEmpty()) {
                                     size++;
                                     players.append(player.getName()).append(comma);
 

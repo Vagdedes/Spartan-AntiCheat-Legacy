@@ -23,7 +23,7 @@ public class ReconnectCooldown {
     public static void run(Player p, PlayerLoginEvent e) {
         int config_cooldown = Settings.getInteger("reconnect_cooldown");
 
-        if (config_cooldown > 0 && !Permissions.has(p, Enums.Permission.reconnect)) {
+        if (config_cooldown > 0 && !Permissions.has(p, Enums.Permission.RECONNECT)) {
             Long ms = cooldown.get(p.getUniqueId());
 
             if (ms != null) {

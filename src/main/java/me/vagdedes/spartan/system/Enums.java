@@ -5,6 +5,7 @@ import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.objects.system.CancelCause;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
+import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 
 import java.util.Map;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Enums {
 
+    // Should have used capital letters but won't change them now so to not break the dozen APIs who use these enums
     public enum HackType {
         XRay, Exploits, EntityMove, NoSwing, IrregularMovements, ImpossibleActions, ItemDrops, AutoRespawn, InventoryClicks,
         NoSlowdown, Criticals, GhostHand, BlockReach, FastBow, FastClicks, FastHeal, ImpossibleInventory, HitReach, FastBreak,
@@ -40,12 +42,12 @@ public class Enums {
     }
 
     public enum MiningOre {
-        AncientDebris, Diamond, Emerald, Gold;
+        ANCIENT_DEBRIS, DIAMOND, EMERALD, Gold;
 
         private final String string;
 
         MiningOre() {
-            string = this.ordinal() == 0 ? "ancient-debris" : this.toString().toLowerCase();
+            string = this.toString().toLowerCase().replace("_", "-");
         }
 
         public String getString() {
@@ -54,31 +56,28 @@ public class Enums {
     }
 
     public enum PunishmentCategory {
-        minimum, unsafe, normal, safe, maximum;
+        MINIMUM, UNSAFE, NORMAL, SAFE, MAXIMUM;
 
         private final String string;
         private final double multiplier;
 
         PunishmentCategory() {
+            string = this.name().toLowerCase();
+
             switch (this.ordinal()) {
                 case 0:
-                    string = "unlikely";
                     multiplier = 1.0;
                     break;
                 case 1:
-                    string = "potential";
                     multiplier = 2.0;
                     break;
                 case 2:
-                    string = "certain";
                     multiplier = 3.5;
                     break;
                 case 3:
-                    string = "definite";
                     multiplier = 5.5;
                     break;
                 default:
-                    string = "absolute";
                     multiplier = 8.0;
                     break;
             }
@@ -94,8 +93,9 @@ public class Enums {
     }
 
     public enum Permission {
-        condition, report, staff_chat, wave, reconnect, admin, reload, kick, bypass, manage, info,
-        chat_protection, warn, use_bypass, ban, unban, notifications;
+        CONDITION, REPORT, STAFF_CHAT, WAVE, RECONNECT, ADMIN, RELOAD,
+        KICK, BYPASS, MANAGE, INFO, CHAT_PROTECTION, WARN, USE_BYPASS,
+        BAN, UNBAN, NOTIFICATIONS;
 
         private final String key;
 
@@ -109,20 +109,60 @@ public class Enums {
     }
 
     public enum ToggleAction {
-        Enable, Disable
+        ENABLE, DISABLE
+    }
+
+    public enum Debug {
+        COMBAT, MOVEMENT, MISC;
+
+        private final String string;
+
+        Debug() {
+            string = this.toString().toLowerCase();
+        }
+
+        public String getString() {
+            return string;
+        }
     }
 
     public enum CheckType {
-        Combat, Movement, Exploits, Player, World, Inventory
+        COMBAT, MOVEMENT, EXPLOITS, PLAYER, WORLD, INVENTORY;
+
+        private final String string;
+
+        CheckType() {
+            switch (this.ordinal()) {
+                case 0:
+                    string = "Combat";
+                    break;
+                case 1:
+                    string = "Movement";
+                    break;
+                case 2:
+                    string = "Exploits";
+                    break;
+                case 3:
+                    string = "Player";
+                    break;
+                case 4:
+                    string = "World";
+                    break;
+                default:
+                    string = "Inventory";
+                    break;
+            }
+        }
+
+        public String getName() {
+            return string;
+        }
+
     }
 
     // Separator
 
-    public static HackType[] hackTypes() {
-        return HackType.values();
-    }
-
     public static final int
-            hackTypeLength = hackTypes().length,
+            hackTypeLength = HackType.values().length,
             miningOreLength = MiningOre.values().length;
 }

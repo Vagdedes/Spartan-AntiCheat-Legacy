@@ -29,7 +29,7 @@ public class CloudFeature {
     public static final String downloadWebsite = "aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC9kb3dubG9hZEZpbGUvP3Rva2VuPQ==";
 
     // Cache
-    private static final Map<Enums.HackType, String[]> disabledDetections = new LinkedHashMap<>(Enums.hackTypes().length);
+    private static final Map<Enums.HackType, String[]> disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
     static final CopyOnWriteArrayList<UUID> punishedPlayers = new CopyOnWriteArrayList<>(),
             updatedPunishedPlayers = new CopyOnWriteArrayList<>();
 
@@ -384,7 +384,7 @@ public class CloudFeature {
 
                                     for (String detection : data.split("\\|")) {
                                         if (hackType == null) {
-                                            for (Enums.HackType original : Enums.hackTypes()) {
+                                            for (Enums.HackType original : Enums.HackType.values()) {
                                                 if (detection.equalsIgnoreCase(original.toString())) {
                                                     hackType = original;
                                                     break;

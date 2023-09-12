@@ -39,11 +39,11 @@ public class Building {
     };
 
     static {
-        Enums.HackType[] hackTypes = Enums.hackTypes();
+        Enums.HackType[] hackTypes = Enums.HackType.values();
         concerningHackTypes = new HashSet<>(hackTypes.length);
 
         for (Enums.HackType hackType : hackTypes) {
-            if (hackType.getCheck().getCheckType() == Enums.CheckType.World) {
+            if (hackType.getCheck().getCheckType() == Enums.CheckType.WORLD) {
                 concerningHackTypes.add(hackType);
             }
         }

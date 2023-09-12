@@ -53,7 +53,7 @@ public class ChatProtection {
     }
 
     public static boolean runChat(SpartanPlayer p, String msg) {
-        if (Permissions.has(p.getPlayer(), Enums.Permission.chat_protection)) {
+        if (Permissions.has(p.getPlayer(), Enums.Permission.CHAT_PROTECTION)) {
             return false;
         }
         UUID uuid = p.getUniqueId();
@@ -100,7 +100,7 @@ public class ChatProtection {
     }
 
     public static boolean runCommand(SpartanPlayer p, String msg, boolean tab) {
-        if (Permissions.has(p, Enums.Permission.chat_protection)) {
+        if (Permissions.has(p, Enums.Permission.CHAT_PROTECTION)) {
             return false;
         }
         if (!p.getCooldowns().canDo("command=cooldown=delay") && !tab) {

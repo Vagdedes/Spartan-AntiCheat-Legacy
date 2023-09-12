@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.handlers.commands;
+package me.vagdedes.spartan.interfaces.commands;
 
 import io.signality.utils.system.Events;
 import me.vagdedes.spartan.Register;
@@ -93,10 +93,10 @@ public class CommandExecution implements CommandExecutor {
         if (spartanMessage(sender, isPlayer)) {
             String command = Register.plugin.getName().toLowerCase();
 
-            boolean ban = !isPlayer || Permissions.has(player, Permission.ban),
-                    unban = !isPlayer || Permissions.has(player, Permission.unban);
-            boolean info = !isPlayer || Permissions.has(player, Enums.Permission.info),
-                    manage = !isPlayer || Permissions.has(player, Enums.Permission.manage);
+            boolean ban = !isPlayer || Permissions.has(player, Permission.BAN),
+                    unban = !isPlayer || Permissions.has(player, Permission.UNBAN);
+            boolean info = !isPlayer || Permissions.has(player, Enums.Permission.INFO),
+                    manage = !isPlayer || Permissions.has(player, Enums.Permission.MANAGE);
 
             switch (list) {
                 case "default":
@@ -104,7 +104,7 @@ public class CommandExecution implements CommandExecutor {
                         buildCommand(sender, ChatColor.GREEN, "/" + command + " menu",
                                 "Click this command to open the plugin's inventory menu.");
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.admin)) {
+                    if (!isPlayer || Permissions.has(player, Permission.ADMIN)) {
                         ClickableMessage.sendCommand(sender, ChatColor.GREEN + "/" + command + " customer-support <discord-tag>", "This command can be used to provide crucial details to the developers about problematic detections.", null);
                         ClickableMessage.sendCommand(sender, ChatColor.GREEN + "/" + command + " customer-support <check> <discord-tag> [explanation]", "This command can be used to provide crucial details to the developers about a check.", null);
                     }
@@ -112,20 +112,20 @@ public class CommandExecution implements CommandExecutor {
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " toggle <check>",
                                 "This command can be used to enable/disable a check and its detections.", null);
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.reload)) {
+                    if (!isPlayer || Permissions.has(player, Permission.RELOAD)) {
                         buildCommand(sender, ChatColor.RED, "/" + command + " reload",
                                 "Click this command to reload the plugin's cache.");
                     }
                     if (!isPlayer || ban || unban || info
-                            || Permissions.has(player, Permission.kick)
-                            || Permissions.has(player, Permission.warn)
-                            || Permissions.has(player, Permission.use_bypass)
-                            || Permissions.has(player, Permission.wave)
-                            || Permissions.has(player, Permission.report)) {
+                            || Permissions.has(player, Permission.KICK)
+                            || Permissions.has(player, Permission.WARN)
+                            || Permissions.has(player, Permission.USE_BYPASS)
+                            || Permissions.has(player, Permission.WAVE)
+                            || Permissions.has(player, Permission.REPORT)) {
                         buildCommand(sender, ChatColor.RED, "/" + command + " moderation",
                                 "Click this command to view a list of moderation commands.");
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.condition)) {
+                    if (!isPlayer || Permissions.has(player, Permission.CONDITION)) {
                         buildCommand(sender, ChatColor.RED, "/" + command + " conditions",
                                 "Click this command to view a list of conditional commands.");
                     }
@@ -141,17 +141,17 @@ public class CommandExecution implements CommandExecutor {
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " info [player]",
                                 "This command can be used to view useful information about a player and execute actions upon them.", null);
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.use_bypass)) {
+                    if (!isPlayer || Permissions.has(player, Permission.USE_BYPASS)) {
                         permission = true;
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " bypass <player> <check> [seconds]",
                                 "This command can be used to cause a player to temporarily bypass a check and its detections.", null);
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.warn)) {
+                    if (!isPlayer || Permissions.has(player, Permission.WARN)) {
                         permission = true;
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " warn <player> <reason>",
                                 "This command can be used to individually warn a player about something important.", null);
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.kick)) {
+                    if (!isPlayer || Permissions.has(player, Permission.KICK)) {
                         permission = true;
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " kick <player> <reason>",
                                 "This command can be used to kick players from the server for a specific reason.", null);
@@ -170,7 +170,7 @@ public class CommandExecution implements CommandExecutor {
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " ban-info [player]",
                                 "This command can be used to view information about permanently/temporarily banned players.", null);
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.wave)) {
+                    if (!isPlayer || Permissions.has(player, Permission.WAVE)) {
                         permission = true;
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " wave <add/remove/clear/run/list> [player] [command]",
                                 "This command can be used to add a player to a list with a command representing their punishment. " +
@@ -179,12 +179,12 @@ public class CommandExecution implements CommandExecutor {
                                         + "\n\n"
                                         + "Example: /" + command + " wave add playerName ban {player} You have been banned for hacking!", null);
                     }
-                    if (isPlayer && Permissions.has(player, Permission.report)) {
+                    if (isPlayer && Permissions.has(player, Permission.REPORT)) {
                         permission = true;
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " report <player> [reason]",
                                 "This command can be used by players to report other players for specific reasons.", null);
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.admin)) {
+                    if (!isPlayer || Permissions.has(player, Permission.ADMIN)) {
                         permission = true;
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " proxy-command <command>",
                                 "This command can be used to transfer commands to the proxy/network of servers. (Example: BungeeCord)", null);
@@ -195,7 +195,7 @@ public class CommandExecution implements CommandExecutor {
                     }
                     break;
                 case "conditions":
-                    if (!isPlayer || Permissions.has(player, Permission.condition)) {
+                    if (!isPlayer || Permissions.has(player, Permission.CONDITION)) {
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> equals <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> contains <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <number> is-less-than <result> do <command>");
@@ -240,7 +240,7 @@ public class CommandExecution implements CommandExecutor {
                     completeMessage(sender, args[0].toLowerCase());
 
                 } else if (args[0].equalsIgnoreCase("Ban-info")) {
-                    if (isPlayer && (!Permissions.has((Player) sender, Permission.ban) && !Permissions.has((Player) sender, Permission.unban))) {
+                    if (isPlayer && (!Permissions.has((Player) sender, Permission.BAN) && !Permissions.has((Player) sender, Permission.UNBAN))) {
                         sender.sendMessage(Messages.get("no_permission"));
                         return true;
                     }
@@ -248,14 +248,14 @@ public class CommandExecution implements CommandExecutor {
                     sender.sendMessage(BanManagement.getBanListString());
 
                 } else if (args[0].equalsIgnoreCase("Reload") || args[0].equalsIgnoreCase("Rl")) {
-                    if (isPlayer && !Permissions.has((Player) sender, Permission.reload)) {
+                    if (isPlayer && !Permissions.has((Player) sender, Permission.RELOAD)) {
                         sender.sendMessage(Messages.get("no_permission"));
                         return true;
                     }
                     Config.reload(sender);
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                    if (!Permissions.has((Player) sender, Permission.info)) {
+                    if (!Permissions.has((Player) sender, Permission.INFO)) {
                         sender.sendMessage(Messages.get("no_permission"));
                         return true;
                     }
@@ -269,7 +269,7 @@ public class CommandExecution implements CommandExecutor {
                     DetectionNotifications.toggle(player, 0);
 
                 } else if (Compatibility.CompatibilityType.MinigameMaker.isFunctional() && args[0].equalsIgnoreCase("Add-Incompatible-Item")) {
-                    if (isPlayer && !Permissions.has((Player) sender, Permission.manage)) {
+                    if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
                         sender.sendMessage(Messages.get("no_permission"));
                         return true;
                     }
@@ -305,7 +305,7 @@ public class CommandExecution implements CommandExecutor {
                 }
             } else if (args.length >= 2) {
                 if (args[0].equalsIgnoreCase("Proxy-Command")) {
-                    if (isPlayer && !Permissions.has((Player) sender, Permission.admin)) {
+                    if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
                         sender.sendMessage(Messages.get("no_permission"));
                         return true;
                     }
@@ -328,7 +328,7 @@ public class CommandExecution implements CommandExecutor {
                     if (args[0].equalsIgnoreCase("Wave")) {
                         String command = args[1];
 
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.wave)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.WAVE)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -351,7 +351,7 @@ public class CommandExecution implements CommandExecutor {
                         }
 
                     } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                        if (!Permissions.has((Player) sender, Permission.info)) {
+                        if (!Permissions.has((Player) sender, Permission.INFO)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -360,13 +360,13 @@ public class CommandExecution implements CommandExecutor {
                     } else if (args[0].equalsIgnoreCase("Toggle")) {
                         String check = args[1];
 
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.manage)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
                         boolean exists = false;
 
-                        for (Enums.HackType hackType : Enums.hackTypes()) {
+                        for (Enums.HackType hackType : Enums.HackType.values()) {
                             if (hackType.getCheck().getName().equalsIgnoreCase(check)) {
                                 check = hackType.toString();
                                 exists = true;
@@ -395,7 +395,7 @@ public class CommandExecution implements CommandExecutor {
                     } else if (isPlayer && args[0].equalsIgnoreCase("Report")) {
                         SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
 
-                        if (!Permissions.has((Player) sender, Permission.report)) {
+                        if (!Permissions.has((Player) sender, Permission.REPORT)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -408,7 +408,7 @@ public class CommandExecution implements CommandExecutor {
                     } else if (args[0].equalsIgnoreCase("Unban")) {
                         OfflinePlayer t = Bukkit.getOfflinePlayer(args[1]);
 
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.unban)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.UNBAN)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -427,7 +427,7 @@ public class CommandExecution implements CommandExecutor {
                     } else if (args[0].equalsIgnoreCase("Ban-info")) {
                         OfflinePlayer t = Bukkit.getOfflinePlayer(args[1]);
 
-                        if (isPlayer && (!Permissions.has((Player) sender, Permission.ban) && !Permissions.has((Player) sender, Permission.unban))) {
+                        if (isPlayer && (!Permissions.has((Player) sender, Permission.BAN) && !Permissions.has((Player) sender, Permission.UNBAN))) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -455,14 +455,14 @@ public class CommandExecution implements CommandExecutor {
                         }
 
                     } else if (args[0].equalsIgnoreCase("Customer-Support")) {
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.admin)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
                         AwarenessNotifications.forcefullySend(sender, "Please wait...");
 
                         SpartanBukkit.connectionThread.execute(() -> {
-                            Enums.HackType[] hackTypes = Enums.hackTypes();
+                            Enums.HackType[] hackTypes = Enums.HackType.values();
                             Set<Enums.HackType> set = new HashSet<>(hackTypes.length);
 
                             for (Enums.HackType hackType : hackTypes) {
@@ -481,7 +481,7 @@ public class CommandExecution implements CommandExecutor {
                                     );
                                 }
                             } else {
-                                AwarenessNotifications.forcefullySend(sender, "No problematic checks found, please specify a check name instead. (Example: /spartan customer-support " + Enums.hackTypes()[0] + " DiscordName#0001 Explanation)");
+                                AwarenessNotifications.forcefullySend(sender, "No problematic checks found, please specify a check name instead. (Example: /spartan customer-support " + Enums.HackType.values()[0] + " DiscordName#0001 Explanation)");
                             }
                         });
 
@@ -523,7 +523,7 @@ public class CommandExecution implements CommandExecutor {
                     if (args[0].equalsIgnoreCase("Kick")) {
                         SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
 
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.kick)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.KICK)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -540,7 +540,7 @@ public class CommandExecution implements CommandExecutor {
                     } else if (args[0].equalsIgnoreCase("Warn")) {
                         SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
 
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.warn)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.WARN)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -555,7 +555,7 @@ public class CommandExecution implements CommandExecutor {
                         Moderation.warn(sender, t, argumentsToString);
 
                     } else if (args[0].equalsIgnoreCase("Ban")) {
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.ban)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.BAN)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -595,7 +595,7 @@ public class CommandExecution implements CommandExecutor {
                     } else if (isPlayer && args[0].equalsIgnoreCase("Report")) {
                         SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
 
-                        if (!Permissions.has((Player) sender, Permission.report)) {
+                        if (!Permissions.has((Player) sender, Permission.REPORT)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -613,13 +613,13 @@ public class CommandExecution implements CommandExecutor {
                         boolean noSeconds = args.length == 3;
 
                         if (noSeconds || args.length == 4) {
-                            Enums.HackType[] hackTypes = Enums.hackTypes();
+                            Enums.HackType[] hackTypes = Enums.HackType.values();
                             int maxHackTypes = hackTypes.length;
                             SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
                             String[] checks = args[2].split(",", maxHackTypes);
                             String sec = noSeconds ? null : args[3];
 
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.use_bypass)) {
+                            if (isPlayer && !Permissions.has((Player) sender, Permission.USE_BYPASS)) {
                                 sender.sendMessage(Messages.get("no_permission"));
                                 return true;
                             }
@@ -664,7 +664,7 @@ public class CommandExecution implements CommandExecutor {
                         String command = args[1];
                         OfflinePlayer t = Bukkit.getOfflinePlayer(args[2]);
 
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.wave)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.WAVE)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -705,7 +705,7 @@ public class CommandExecution implements CommandExecutor {
                         }
 
                     } else if (args.length == 3 && args[0].equalsIgnoreCase("Customer-Support")) {
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.admin)) {
+                        if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
                             sender.sendMessage(Messages.get("no_permission"));
                             return true;
                         }
@@ -724,7 +724,7 @@ public class CommandExecution implements CommandExecutor {
                         argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                         if (args[0].equalsIgnoreCase("Customer-Support")) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.admin)) {
+                            if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
                                 sender.sendMessage(Messages.get("no_permission"));
                                 return true;
                             }
@@ -742,7 +742,7 @@ public class CommandExecution implements CommandExecutor {
                             });
 
                         } else if (args[0].equalsIgnoreCase("Tempban")) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.ban)) {
+                            if (isPlayer && !Permissions.has((Player) sender, Permission.BAN)) {
                                 sender.sendMessage(Messages.get("no_permission"));
                                 return true;
                             }
@@ -789,7 +789,7 @@ public class CommandExecution implements CommandExecutor {
 
                         } else if (Compatibility.CompatibilityType.MinigameMaker.isFunctional() && args[0].equalsIgnoreCase("Add-Incompatible-Item")) {
                             if (args.length == 6) {
-                                if (isPlayer && !Permissions.has((Player) sender, Permission.manage)) {
+                                if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
                                     sender.sendMessage(Messages.get("no_permission"));
                                     return true;
                                 }
@@ -805,7 +805,7 @@ public class CommandExecution implements CommandExecutor {
                                     Bukkit.dispatchCommand(sender, "spartan add-incompatible-item");
                                 }
                             } else if (args.length == 5) {
-                                if (isPlayer && !Permissions.has((Player) sender, Permission.manage)) {
+                                if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
                                     sender.sendMessage(Messages.get("no_permission"));
                                     return true;
                                 }
@@ -824,7 +824,7 @@ public class CommandExecution implements CommandExecutor {
                                 Bukkit.dispatchCommand(sender, "spartan add-incompatible-item");
                             }
                         } else if (args.length >= 7) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.condition)) {
+                            if (isPlayer && !Permissions.has((Player) sender, Permission.CONDITION)) {
                                 sender.sendMessage(Messages.get("no_permission"));
                                 return true;
                             }

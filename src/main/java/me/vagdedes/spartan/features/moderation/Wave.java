@@ -147,7 +147,7 @@ public class Wave {
             } else {
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-                if (players.size() > 0) {
+                if (!players.isEmpty()) {
                     String message = Messages.get("wave_start_message");
 
                     for (SpartanPlayer o : players) {
@@ -191,7 +191,7 @@ public class Wave {
         } else {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            if (players.size() > 0) {
+            if (!players.isEmpty()) {
                 String message = Messages.get("wave_end_message").replace("{total}", String.valueOf(total));
 
                 for (SpartanPlayer o : players) {

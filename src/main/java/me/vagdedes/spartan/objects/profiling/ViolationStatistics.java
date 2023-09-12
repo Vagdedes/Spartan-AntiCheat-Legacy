@@ -14,7 +14,7 @@ public class ViolationStatistics {
     private static final GlobalWarmup[] globalWarmups = new GlobalWarmup[Enums.hackTypeLength];
 
     static {
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             globalWarmups[hackType.ordinal()] = new GlobalWarmup(false, 0, null);
         }
     }
@@ -93,7 +93,7 @@ public class ViolationStatistics {
                 // Create Existence
 
                 if (hasNoStatistics) {
-                    for (Enums.HackType hackType : Enums.hackTypes()) {
+                    for (Enums.HackType hackType : Enums.HackType.values()) {
                         newStatistics.computeIfAbsent(hackType, map -> new LinkedHashMap<>());
                     }
                 }

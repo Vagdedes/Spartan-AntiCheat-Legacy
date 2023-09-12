@@ -96,7 +96,7 @@ public class RawCommands {
 
     static boolean runReport(SpartanPlayer p, String cmd) {
         if (RawCommands.isCommand(cmd, "/" + reportCommand[1]) && Settings.getBoolean(reportCommand[0])) {
-            if (!Permissions.has(p, Enums.Permission.report)) {
+            if (!Permissions.has(p, Enums.Permission.REPORT)) {
                 p.sendMessage(Messages.get("no_permission"));
             } else {
                 String[] args = cmd.split(" ");

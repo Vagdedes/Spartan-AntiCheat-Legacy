@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.listeners;
+package me.vagdedes.spartan.interfaces.listeners;
 
 import me.vagdedes.spartan.handlers.stability.Chunks;
 import org.bukkit.event.EventHandler;

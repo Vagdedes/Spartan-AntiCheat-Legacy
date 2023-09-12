@@ -23,7 +23,7 @@ import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
-import me.vagdedes.spartan.listeners.EventsHandler7;
+import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.data.CooldownUtils;
@@ -40,7 +40,7 @@ public class Cache {
     public static final boolean enoughRAM = (Runtime.getRuntime().maxMemory() / gradeDivisor / gradeDivisor) >= 900;
 
     public static void clearCheckCache(SpartanPlayer p) {
-        for (Enums.HackType hackType : Enums.hackTypes()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             p.getBuffer(hackType).clear();
             p.getTimer(hackType).clear();
             p.getDecimals(hackType).clear();

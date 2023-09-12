@@ -45,7 +45,7 @@ public class PlayerProfile {
     // Separator
 
     public PlayerProfile(String name) {
-        Enums.HackType[] hackTypes = Enums.hackTypes();
+        Enums.HackType[] hackTypes = Enums.HackType.values();
         boolean isNull = name == null;
 
         // Separator
@@ -97,7 +97,7 @@ public class PlayerProfile {
     }
 
     public PlayerProfile(SpartanPlayer player) {
-        Enums.HackType[] hackTypes = Enums.hackTypes();
+        Enums.HackType[] hackTypes = Enums.HackType.values();
         this.uuid = player.getUniqueId();
         this.name = player.getName();
         this.offlinePlayer = player.getPlayer(); // Attention

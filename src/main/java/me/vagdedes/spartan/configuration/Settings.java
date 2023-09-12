@@ -7,7 +7,7 @@ import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.performance.MaximumCheckedPlayers;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.DiscordWebhooks;
-import me.vagdedes.spartan.handlers.commands.CommandExecution;
+import me.vagdedes.spartan.interfaces.commands.CommandExecution;
 import me.vagdedes.spartan.handlers.commands.RawCommands;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -242,7 +242,7 @@ public class Settings {
             return usingCustomPunishmentCommands == 1;
         }
         if (Config.isLegacy()) {
-            for (Enums.HackType hackType : Enums.hackTypes()) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
                 Check check = hackType.getCheck();
 
                 for (int i = 1; i < Check.maxViolations; i++) {
@@ -259,7 +259,7 @@ public class Settings {
                 }
             }
         } else {
-            for (Enums.HackType hackType : Enums.hackTypes()) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
                 String[] commands = hackType.getCheck().getCommands();
 
                 if (commands.length > 0) {

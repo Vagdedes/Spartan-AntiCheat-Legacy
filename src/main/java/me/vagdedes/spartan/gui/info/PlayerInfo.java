@@ -45,7 +45,7 @@ public class PlayerInfo {
     private static final String documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
 
     public static void open(SpartanPlayer p, String name, boolean back) {
-        if (!Permissions.has(p, Permission.info) && !Permissions.has(p, Permission.manage)) {
+        if (!Permissions.has(p, Permission.INFO) && !Permissions.has(p, Permission.MANAGE)) {
             p.sendInventoryCloseMessage(Messages.get("no_permission"));
             return;
         }
@@ -63,7 +63,7 @@ public class PlayerInfo {
         int i = 10;
 
         for (Enums.CheckType checkType : Enums.CheckType.values()) {
-            if (checkType == Enums.CheckType.Exploits) {
+            if (checkType == Enums.CheckType.EXPLOITS) {
                 addCheck(HackType.Exploits, 15, isOnline, t, inv, playerProfile, lore);
             } else {
                 addChecks(i, isOnline, t, inv, playerProfile, lore, checkType);
@@ -138,7 +138,7 @@ public class PlayerInfo {
         lore.clear();
         lore.add("");
         int violations = 0;
-        HackType[] hackTypes = Enums.hackTypes();
+        HackType[] hackTypes = Enums.HackType.values();
 
         if (isOnline) {
             for (HackType hackType : hackTypes) {
@@ -324,7 +324,7 @@ public class PlayerInfo {
         item = item.startsWith("§") ? item.substring(2) : item;
 
         if (item.equals("Debug")) {
-            if (!Permissions.has(p, Permission.info) && !Permissions.has(p, Permission.manage)) {
+            if (!Permissions.has(p, Permission.INFO) && !Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
             } else {
                 String playerName = title.substring(menu.length());
@@ -337,7 +337,7 @@ public class PlayerInfo {
                 }
             }
         } else if (item.equals("Spectate")) {
-            if (!Permissions.has(p, Permission.info) && !Permissions.has(p, Permission.manage)) {
+            if (!Permissions.has(p, Permission.INFO) && !Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
             } else {
                 String playerName = title.substring(menu.length());
@@ -352,13 +352,13 @@ public class PlayerInfo {
         } else if (item.equals("Reset")) {
             String playerName = title.substring(menu.length());
 
-            if (!Permissions.has(p, Permission.manage)) {
+            if (!Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Messages.get("no_permission"));
             } else {
                 SpartanPlayer t = SpartanBukkit.getPlayer(playerName);
 
                 if (t != null && clickType.isLeftClick()) {
-                    for (HackType hackType : Enums.hackTypes()) {
+                    for (HackType hackType : Enums.HackType.values()) {
                         hackType.getCheck().getViolations(t).reset();
                     }
                     String message = Messages.get("player_violation_reset_message").replace("{player}", t.getName());

@@ -91,7 +91,7 @@ public class PlayerLimitPerIP {
                 if (i > 0) {
                     int limit = Settings.getInteger("Protections.player_limit_per_ip");
 
-                    if (limit > 0 && i >= limit && !Permissions.has(p, Enums.Permission.reconnect)) {
+                    if (limit > 0 && i >= limit && !Permissions.has(p, Enums.Permission.RECONNECT)) {
                         kick.put(p, delayInTicks);
                         return true;
                     }
