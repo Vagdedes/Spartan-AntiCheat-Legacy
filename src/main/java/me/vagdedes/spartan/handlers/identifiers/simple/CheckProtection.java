@@ -37,10 +37,10 @@ public class CheckProtection {
     }
 
     public static void cancel(UUID uuid, int ticks, boolean ignoreNumbers) {
-        CooldownUtils.add(uuid, "check=protection", ticks);
+        CooldownUtils.store.add(uuid + "=check=protection", ticks);
 
         if (ignoreNumbers) {
-            CooldownUtils.add(uuid, "check=protection=ignore-numbers", ticks);
+            CooldownUtils.store.add(uuid + "=check=protection=ignore-numbers", ticks);
         }
     }
 
@@ -63,8 +63,8 @@ public class CheckProtection {
     }
 
     public static boolean hasCooldown(UUID uuid, PlayerViolation playerViolation) {
-        if (cooldown >= System.currentTimeMillis() || !CooldownUtils.canDo(uuid, "check=protection")) { // has cooldown
-            if (CooldownUtils.canDo(uuid, "check=protection=ignore-numbers")) {
+        if (cooldown >= System.currentTimeMillis() || !CooldownUtils.store.canDo(uuid + "=check=protection")) { // has cooldown
+            if (CooldownUtils.store.canDo(uuid + "=check=protection=ignore-numbers")) {
                 List<Number> numbers = playerViolation.getNumbersList();
 
                 if (numbers.size() > 0) {

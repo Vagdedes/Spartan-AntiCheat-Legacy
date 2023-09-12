@@ -35,53 +35,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Cache {
 
-    // Management
     private static final List<Object> memory = new CopyOnWriteArrayList<>();
-
-    // Calculations
     public static final int gradeDivisor = 1024;
     public static final boolean enoughRAM = (Runtime.getRuntime().maxMemory() / gradeDivisor / gradeDivisor) >= 900;
 
-    public static Set<String> getCheckKeys(Set<String> set, String id) {
-        Set<String> newSet = new HashSet<>(set.size());
-        boolean bigID = id.length() == 2;
-        char id0 = id.charAt(0);
-        char id1 = bigID ? id.charAt(1) : '0';
-
-        for (String name : set) {
-            int length = name.length();
-
-            if (length >= 3) {
-                if (name.charAt(1) == '=') {
-                    if (!bigID && name.charAt(0) == id0) {
-                        newSet.add(name);
-                    }
-                } else if (name.charAt(2) == '=') {
-                    if (bigID && name.charAt(0) == id0 && name.charAt(1) == id1) {
-                        newSet.add(name);
-                    }
-                }
-            } else if (length == 2) {
-                if (bigID) {
-                    if (name.charAt(0) == id0 && name.charAt(1) == id1) {
-                        newSet.add(name);
-                    }
-                } else if (name.charAt(1) == '=' && name.charAt(0) == id0) {
-                    newSet.add(name);
-                }
-            } else if (!bigID && length == 1 && name.charAt(0) == id0) {
-                newSet.add(name);
-            }
-        }
-        return newSet;
-    }
-
     public static void clearCheckCache(SpartanPlayer p) {
-        clearCheckCache(p, Enums.hackTypes());
-    }
-
-    public static void clearCheckCache(SpartanPlayer p, Enums.HackType[] hackTypes) {
-        for (Enums.HackType hackType : hackTypes) {
+        for (Enums.HackType hackType : Enums.hackTypes()) {
             p.getBuffer(hackType).clear();
             p.getTimer(hackType).clear();
             p.getDecimals(hackType).clear();
@@ -90,50 +49,23 @@ public class Cache {
         }
     }
 
-    public static void clearCheckCache(SpartanPlayer p, Collection<Enums.HackType> hackTypes) {
+    public static void clearCheckCache(SpartanPlayer p, Iterable<Enums.HackType> hackTypes) {
         for (Enums.HackType hackType : hackTypes) {
             p.getBuffer(hackType).clear();
             p.getTimer(hackType).clear();
             p.getDecimals(hackType).clear();
             p.getCooldowns(hackType).clear();
             p.getTracker(hackType).clear();
-        }
-    }
-
-    public static void clearCheckCache(SpartanPlayer p, Enums.CheckType checkType) {
-        for (Enums.HackType hackType : Enums.hackTypes()) {
-            if (hackType.getCheck().getCheckType() == checkType) {
-                p.getBuffer(hackType).clear();
-                p.getTimer(hackType).clear();
-                p.getDecimals(hackType).clear();
-                p.getCooldowns(hackType).clear();
-                p.getTracker(hackType).clear();
-            }
-        }
-    }
-
-    public static void clearCheckCache(SpartanPlayer p, Enums.CheckType[] checkTypes) {
-        for (Enums.HackType hackType : Enums.hackTypes()) {
-            for (Enums.CheckType checkType : checkTypes) {
-                if (hackType.getCheck().getCheckType() == checkType) {
-                    p.getBuffer(hackType).clear();
-                    p.getTimer(hackType).clear();
-                    p.getDecimals(hackType).clear();
-                    p.getCooldowns(hackType).clear();
-                    p.getTracker(hackType).clear();
-                    break;
-                }
-            }
         }
     }
 
     public static void clearStorage(boolean clear) {
-        if (memory.size() > 0) {
+        if (!memory.isEmpty()) {
             for (Object object : memory) {
                 if (object instanceof Map) {
-                    ((Map) object).clear();
-                } else if (object instanceof Collection) {
-                    ((Collection) object).clear();
+                    ((Map<?, ?>) object).clear();
+                } else {
+                    ((Collection<?>) object).clear();
                 }
             }
             if (clear) {
@@ -225,7 +157,7 @@ public class Cache {
         SpartanBukkit.clear();
 
         // Utilities
-        CooldownUtils.clear();
+        CooldownUtils.store.clear();
 
         // Features
         DetectionNotifications.clear();

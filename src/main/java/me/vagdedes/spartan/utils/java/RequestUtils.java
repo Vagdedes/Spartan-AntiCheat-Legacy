@@ -13,7 +13,8 @@ import java.util.List;
 
 public class RequestUtils {
 
-    public static final int defaultTimeOut = 30_000,
+    public static final int
+            defaultTimeOut = 30_000,
             minimumTimeOut = defaultTimeOut / 10;
 
     public static String[] get(String link, String method, String message, int timeOut) throws Exception {

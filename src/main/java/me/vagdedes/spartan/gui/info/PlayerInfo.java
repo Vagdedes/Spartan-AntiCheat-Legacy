@@ -286,8 +286,9 @@ public class PlayerInfo {
     public static void refresh(String targetName) {
         String key = "player-info=inventory-menu";
 
-        if (Settings.getBoolean("Important.refresh_inventory_menu") && CooldownUtils.canDo(SpartanBukkit.uuid, key)) {
-            CooldownUtils.add(SpartanBukkit.uuid, key, 1);
+        if (Settings.getBoolean("Important.refresh_inventory_menu")
+                && CooldownUtils.store.canDo(SpartanBukkit.uuid + "=" + key)) {
+            CooldownUtils.store.add(SpartanBukkit.uuid + "=" + key, 1);
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (players.size() > 0) {

@@ -14,18 +14,6 @@ public class MemoryUtils {
         return size - index - 1;
     }
 
-    public static int sizeKB(Object object) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(object);
-            oos.close();
-            return baos.size() / Cache.gradeDivisor;
-        } catch (IOException ignored) {
-        }
-        return 0;
-    }
-
     public static <E> int fastHashCode(Collection<E> collection) {
         int size = collection.size();
         return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
