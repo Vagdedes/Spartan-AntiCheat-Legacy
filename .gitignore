@@ -1,6 +1,4 @@
 .DS_Store
 /target
 .idea
-/src/main/java/me/vagdedes/spartan/checks/
-/src/main/java/me/vagdedes/spartan/features/synchronicity
-SpartanEdition.java
+*.iml
