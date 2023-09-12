@@ -1,11 +1,7 @@
 package me.vagdedes.spartan.utils.java;
 
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.SpartanBukkit;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Collection;
 
 public class MemoryUtils {

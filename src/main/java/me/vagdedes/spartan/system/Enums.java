@@ -5,7 +5,6 @@ import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.objects.system.CancelCause;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
-import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 
 import java.util.Map;
 import java.util.UUID;
@@ -118,7 +117,17 @@ public class Enums {
         private final String string;
 
         Debug() {
-            string = this.toString().toLowerCase();
+            switch (this.ordinal()) {
+                case 0:
+                    string = "Combat";
+                    break;
+                case 1:
+                    string = "Movement";
+                    break;
+                default:
+                    string = "Misc";
+                    break;
+            }
         }
 
         public String getString() {

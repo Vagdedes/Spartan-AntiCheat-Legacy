@@ -64,7 +64,7 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer getPlayer(String name) {
-        if (players.size() > 0) {
+        if (!players.isEmpty()) {
             name = name.toLowerCase();
 
             for (SpartanPlayer p : players.values()) {

@@ -34,16 +34,13 @@ public class Debug {
     public static void remove(SpartanPlayer p, SpartanPlayer t) {
         UUID uuid = p.getUniqueId(),
                 target = t.getUniqueId();
-        final Map<UUID, Collection<Enums.Debug>> map = hm.get(uuid);
+        Map<UUID, Collection<Enums.Debug>> map = hm.get(uuid);
 
-        if (map != null && map.containsKey(target)) {
-            hm.get(uuid).remove(target);
-
-            if ((map.size() - 1) == 0) {
+        if (map != null && map.remove(target) != null) {
+            if (map.isEmpty()) {
                 hm.remove(uuid);
             }
-            String msg = Messages.get("debug_disable_all_message");
-            msg = msg.replace("{player}", t.getName());
+            String msg = Messages.get("debug_disable_all_message").replace("{player}", t.getName());
             p.getPlayer().sendMessage(msg);
         }
     }

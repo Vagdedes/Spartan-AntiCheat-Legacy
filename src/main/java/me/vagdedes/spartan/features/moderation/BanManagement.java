@@ -8,8 +8,8 @@ import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.interfaces.commands.CommandExecution;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
+import me.vagdedes.spartan.interfaces.commands.CommandExecution;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
@@ -283,11 +283,8 @@ public class BanManagement {
 
     public static boolean isBanned(UUID uuid) {
         String expiration = get(uuid, keys[3]);
-        return (expiration == null
-                || System.currentTimeMillis() <= Long.parseLong(expiration))
-                && get(uuid, keys[0]) != null
-                && get(uuid, keys[1]) != null
-                && get(uuid, keys[2]) != null;
+        return (expiration == null || System.currentTimeMillis() <= Long.parseLong(expiration))
+                && get(uuid, keys[0]) != null;
     }
 
 

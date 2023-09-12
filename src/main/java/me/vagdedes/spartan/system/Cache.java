@@ -30,7 +30,10 @@ import me.vagdedes.spartan.utils.data.CooldownUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Cache {
