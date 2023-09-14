@@ -3,7 +3,7 @@ package me.vagdedes.spartan.interfaces.commands;
 import io.signality.utils.system.Events;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.checks.exploits.Chat;
+import me.vagdedes.spartan.checks.implementation.exploits.Chat;
 import me.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
@@ -493,7 +493,7 @@ public class CommandExecution implements CommandExecutor {
                         String divisorString = args[1];
 
                         if (AlgebraUtils.validInteger(divisorString)) {
-                            int divisor = Math.min(Integer.parseInt(divisorString), Check.maxViolations);
+                            int divisor = Math.min(Integer.parseInt(divisorString), Check.maxViolationsPerCycle);
 
                             if (divisor > 0) {
                                 Integer cachedDivisor = DetectionNotifications.getDivisor(player, true);

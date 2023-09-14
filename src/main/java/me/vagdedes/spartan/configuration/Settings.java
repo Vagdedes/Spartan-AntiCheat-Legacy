@@ -245,7 +245,7 @@ public class Settings {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 Check check = hackType.getCheck();
 
-                for (int i = 1; i < Check.maxViolations; i++) {
+                for (int i = 1; i < Check.maxViolationsPerCycle; i++) {
                     String[] commands = check.getLegacyCommands(i);
 
                     if (commands.length > 0) {

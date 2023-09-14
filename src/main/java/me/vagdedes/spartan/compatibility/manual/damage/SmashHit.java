@@ -5,7 +5,6 @@ import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.interfaces.listeners.EventsHandler6;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.entity.Entity;
@@ -26,8 +25,11 @@ public class SmashHit implements Listener {
             // Detections
             EventsHandler6.runDealDamage(p, e.getEntity(), e.getDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK, e.isCancelled());
 
-            if (HackPrevention.canCancel(p, new Enums.HackType[]{Enums.HackType.KillAura, Enums.HackType.Criticals,
-                    Enums.HackType.NoSwing, Enums.HackType.FastClicks, Enums.HackType.Velocity})) {
+            if (p.getViolations(Enums.HackType.KillAura).process()
+                    || p.getViolations(Enums.HackType.Criticals).process()
+                    || p.getViolations(Enums.HackType.NoSwing).process()
+                    || p.getViolations(Enums.HackType.FastClicks).process()
+                    || p.getViolations(Enums.HackType.Velocity).process()) {
                 e.setCancelled(true);
             }
         }

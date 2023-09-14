@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.configuration;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.checks.movement.speed.Speed;
+import me.vagdedes.spartan.checks.implementation.movement.speed.Speed;
 import me.vagdedes.spartan.compatibility.manual.abilities.*;
 import me.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import me.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShotPlus;

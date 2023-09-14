@@ -150,7 +150,7 @@ public class Piracy implements Listener {
     private static void collectAdministrators() {
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-        if (players.size() > 0) {
+        if (!players.isEmpty()) {
             for (SpartanPlayer p : players) {
                 if (p != null) {
                     if (Permissions.isStaff(p)) {

@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.FastBow;
-import me.vagdedes.spartan.checks.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.player.NoSwing;
+import me.vagdedes.spartan.checks.implementation.combat.FastBow;
+import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.implementation.player.NoSwing;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.protections.Teleport;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -13,7 +13,6 @@ import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
@@ -102,7 +101,7 @@ public class EventsHandler2 implements Listener {
                 // Protections
                 Damage.runBow(entity, projectile);
 
-                if (HackPrevention.canCancel(p, Enums.HackType.FastBow)) {
+                if (p.getViolations(Enums.HackType.FastBow).process()) {
                     e.setCancelled(true);
                 }
             }

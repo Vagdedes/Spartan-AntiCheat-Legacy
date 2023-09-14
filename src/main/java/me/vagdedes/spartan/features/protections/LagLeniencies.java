@@ -9,11 +9,15 @@ import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LagLeniency;
+import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class LagLeniencies {
 
@@ -80,20 +84,16 @@ public class LagLeniencies {
                 || p.getExtraPackets() >= TPS.maximum;
 
         if (!pingException) {
-            Set<Map.Entry<Enums.HackType, Integer>> set = Check.getViolationsEntry(p.getUniqueId());
+            int cancelViolations = 0;
+            ResearchEngine.DataType dataType = p.getDataType();
 
-            if (set.size() > 0) {
-                int cancelViolations = 0;
-                ResearchEngine.DataType dataType = p.getDataType();
+            for (LiveViolation liveViolation : p.getViolations()) {
+                if (liveViolation.getLevel() >= CancelViolation.get(liveViolation.getHackType(), dataType)) {
+                    cancelViolations += 1;
 
-                for (Map.Entry<Enums.HackType, Integer> entry : set) {
-                    if (entry.getValue() >= CancelViolation.get(entry.getKey(), dataType)) {
-                        cancelViolations += 1;
-
-                        if (cancelViolations >= Check.hackerCheckAmount) {
-                            pingException = true;
-                            break;
-                        }
+                    if (cancelViolations >= Check.hackerCheckAmount) {
+                        pingException = true;
+                        break;
                     }
                 }
             }

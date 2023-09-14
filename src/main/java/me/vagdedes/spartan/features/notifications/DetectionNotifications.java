@@ -2,7 +2,7 @@ package me.vagdedes.spartan.features.notifications;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.PlayerFoundOreEvent;
-import me.vagdedes.spartan.checks.world.XRay;
+import me.vagdedes.spartan.checks.implementation.world.XRay;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Messages;
 import me.vagdedes.spartan.configuration.Settings;
@@ -179,7 +179,7 @@ public class DetectionNotifications {
                             XRay.check,
                             false,
                             true,
-                            XRay.check.getCheck().getViolations(player).getLevel(),
+                            player.getViolations(XRay.check).getLevel(),
                             CancelViolation.get(XRay.check, player.getDataType()));
 
 

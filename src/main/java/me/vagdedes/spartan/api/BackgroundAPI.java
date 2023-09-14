@@ -50,7 +50,7 @@ public class BackgroundAPI {
 
         if (player != null) {
             return Check.getCategoryFromViolations(
-                    hackType.getCheck().getViolations(player).getLevel(),
+                    player.getViolations(hackType).getLevel(),
                     hackType,
                     player.getDataType(),
                     player.getProfile().isSuspectedOrHacker(hackType)
@@ -123,11 +123,11 @@ public class BackgroundAPI {
         return HackType.getCheck().isSilent(null, null);
     }
 
-    static int getVL(Player p, HackType HackType) {
+    static int getVL(Player p, HackType hackType) {
         SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
         if (player != null) {
-            return HackType.getCheck().getViolations(player).getLevel();
+            return player.getViolations(hackType).getLevel();
         } else {
             return 0;
         }
@@ -140,7 +140,13 @@ public class BackgroundAPI {
     }
 
     static int getVL(Player p) {
-        return Check.getViolationCount(p.getUniqueId());
+        SpartanPlayer player = SpartanBukkit.getPlayer(p);
+
+        if (player != null) {
+            return player.getViolationCount();
+        } else {
+            return 0;
+        }
     }
 
     @Deprecated
@@ -252,8 +258,12 @@ public class BackgroundAPI {
 
     static void resetVL() {
         if (Settings.getBoolean("Important.enable_developer_api")) {
-            for (HackType hackType : Enums.HackType.values()) {
-                hackType.getCheck().clearViolations();
+            HackType[] hackTypes = Enums.HackType.values();
+
+            for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
+                for (HackType hackType : hackTypes) {
+                    player.getViolations(hackType).reset();
+                }
             }
         }
     }
@@ -264,7 +274,7 @@ public class BackgroundAPI {
 
             if (player != null) {
                 for (HackType hackType : Enums.HackType.values()) {
-                    hackType.getCheck().getViolations(player).reset();
+                    player.getViolations(hackType).reset();
                 }
             }
         }

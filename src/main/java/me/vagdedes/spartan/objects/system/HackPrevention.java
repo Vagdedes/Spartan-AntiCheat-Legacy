@@ -1,0 +1,127 @@
+package me.vagdedes.spartan.objects.system;
+
+import me.vagdedes.spartan.checks.implementation.movement.speed.Speed;
+import me.vagdedes.spartan.features.protections.Teleport;
+import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
+import me.vagdedes.spartan.handlers.stability.DetectionLocation;
+import me.vagdedes.spartan.objects.data.Cooldowns;
+import me.vagdedes.spartan.objects.data.Handlers;
+import me.vagdedes.spartan.objects.replicates.SpartanLocation;
+import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.utils.gameplay.MoveUtils;
+import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+
+public class HackPrevention {
+
+    final String information;
+    final SpartanLocation location;
+    final int violation;
+    final boolean groundTeleport;
+    final double damage;
+    final long time;
+    long expiration;
+
+    private static final Cooldowns cooldowns = new Cooldowns(false);
+
+    // Separator
+
+    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose,
+                          SpartanLocation location, int cancelTicks, boolean groundTeleport,
+                          double damage, int violation) {
+        // Object Data
+        this.time = System.currentTimeMillis();
+        this.expiration = cancelTicks == 0 ? 0L : this.time + (cancelTicks * 50L);
+        this.information = verbose;
+        this.location = location;
+        this.groundTeleport = groundTeleport;
+        this.damage = damage;
+
+        // Redundancy
+        Check check = hackType.getCheck();
+
+        if (violation == 1 && check.getCheckType() == Enums.CheckType.MOVEMENT) {
+            if (VehicleAccess.hasExitCooldown(player, hackType)) {
+                this.violation = 0;
+            } else {
+                CancelCause silentCause = hackType.getCheck().getSilentCause(player.getUniqueId());
+
+                if (silentCause != null && silentCause.getReason().equals(Teleport.reason)) {
+                    this.violation = 0;
+                } else {
+                    this.violation = violation;
+                }
+            }
+        } else {
+            this.violation = violation;
+        }
+        player.getViolations(hackType).queue(this, check);
+    }
+
+    public void cancel(int ticks) {
+        this.expiration = System.currentTimeMillis() + (ticks * 50L);
+    }
+
+    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location, int cancelTicks, boolean groundTeleport, double damage) {
+        this(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, 1);
+    }
+
+    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location, int cancelTicks, boolean groundTeleport) {
+        this(player, hackType, verbose, location, cancelTicks, groundTeleport, 0.0, 1);
+    }
+
+    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location, int cancelTicks) {
+        this(player, hackType, verbose, location, cancelTicks, false, 0.0, 1);
+    }
+
+    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location) {
+        this(player, hackType, verbose, location, 0, false, 0.0, 1);
+    }
+
+    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose) {
+        this(player, hackType, verbose, null, 0, false, 0.0, 1);
+    }
+
+    void handle(SpartanPlayer player, Enums.HackType hackType) {
+        SpartanLocation loc = player.getLocation();
+        SpartanLocation preventionFrom = this.location;
+        boolean teleported = false;
+
+        if (preventionFrom != null) {
+            SpartanLocation fromLocation = DetectionLocation.get(player, false);
+
+            if (fromLocation != null) {
+                preventionFrom = fromLocation;
+            }
+            if (player.safeTeleport(preventionFrom)) { // Attention First
+                teleported = true;
+            }
+        }
+        if (this.groundTeleport && player.groundTeleport(true)) {
+            teleported = true;
+        }
+        if (teleported) {
+            String key = player.getUniqueId() + "velocity";
+
+            if (cooldowns.canDo(key)
+                    && (hackType == Enums.HackType.IrregularMovements
+                    || hackType == Enums.HackType.Speed && this.information.contains(Speed.strongPrevention))) {
+                SpartanLocation from = player.getEventFromLocation();
+
+                if (AlgebraUtils.getHorizontalDistance(loc, from) <= 0.75) {
+                    double vertical = Math.abs(loc.getY() - from.getY());
+
+                    if (vertical == 0.0 || vertical >= MoveUtils.nearMaxFallingMotion) {
+                        cooldowns.add(key, 5);
+                        player.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
+                        player.setVelocity(loc.getDirection().setY(MoveUtils.gravityAcceleration));
+                    }
+                }
+            }
+        }
+
+        if (damage > 0.0) {
+            player.applyFallDamage(damage);
+        }
+    }
+}

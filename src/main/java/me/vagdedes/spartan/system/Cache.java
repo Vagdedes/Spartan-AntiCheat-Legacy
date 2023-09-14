@@ -1,13 +1,13 @@
 package me.vagdedes.spartan.system;
 
-import me.vagdedes.spartan.checks.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.exploits.ChunkUpdates;
-import me.vagdedes.spartan.checks.movement.MorePackets;
-import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
-import me.vagdedes.spartan.checks.movement.speed.Speed;
-import me.vagdedes.spartan.checks.world.ImpossibleActions;
+import me.vagdedes.spartan.checks.implementation.combat.VelocityCheck;
+import me.vagdedes.spartan.checks.implementation.combat.criticals.Criticals;
+import me.vagdedes.spartan.checks.implementation.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.implementation.exploits.ChunkUpdates;
+import me.vagdedes.spartan.checks.implementation.movement.MorePackets;
+import me.vagdedes.spartan.checks.implementation.movement.irregularmovements.IrregularMovements;
+import me.vagdedes.spartan.checks.implementation.movement.speed.Speed;
+import me.vagdedes.spartan.checks.implementation.world.ImpossibleActions;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.moderation.Spectate;
@@ -23,7 +23,6 @@ import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
-import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.data.CooldownUtils;
@@ -86,9 +85,6 @@ public class Cache {
         }
 
         // Handlers
-        if (!leave) {
-            EventsHandler7.clear(p);
-        }
         if (distance) {
             if (newLocation != null) {
                 DetectionLocation.update(p, newLocation, false);

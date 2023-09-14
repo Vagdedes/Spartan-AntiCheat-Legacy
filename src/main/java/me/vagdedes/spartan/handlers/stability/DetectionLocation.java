@@ -3,7 +3,6 @@ package me.vagdedes.spartan.handlers.stability;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 
@@ -13,7 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DetectionLocation {
 
-    private static final Map<UUID, SpartanLocation> loc = new ConcurrentHashMap<>(Config.getMaxPlayers());
+    private static final Map<UUID, SpartanLocation>
+            loc = new ConcurrentHashMap<>(Config.getMaxPlayers()),
+            set = new ConcurrentHashMap<>(Config.getMaxPlayers());
 
     public static void run(SpartanPlayer p) {
         UUID uuid = p.getUniqueId();
@@ -29,8 +30,8 @@ public class DetectionLocation {
 
                     && (greatDistance
                     || p.getTimer().get("from-location=protection") > 10_000L
-                    || p.getProfile().getLastInteraction().getLastViolation(false) > 1_000L
-                    || !Check.hasViolations(uuid))) {
+                    || p.getLastViolation().getLastViolation(false) > 1_000L
+                    || !p.hasViolations())) {
                 update(p, location, greatDistance);
             }
         } else {
@@ -43,7 +44,12 @@ public class DetectionLocation {
     }
 
     public static SpartanLocation get(SpartanPlayer p, boolean replaceNull) {
-        SpartanLocation location = loc.get(p.getUniqueId());
+        UUID uuid = p.getUniqueId();
+        SpartanLocation location = set.remove(uuid);
+
+        if (location == null) {
+            location = loc.get(uuid);
+        }
         return location != null ? location : (replaceNull ? MoveUtils.getCachedLocation(p) : null);
     }
 
@@ -57,5 +63,9 @@ public class DetectionLocation {
             loc.put(p.getUniqueId(), location);
             p.getTimer().set("from-location=protection");
         }
+    }
+
+    public static void set(SpartanPlayer p, SpartanLocation location) {
+        set.put(p.getUniqueId(), location);
     }
 }

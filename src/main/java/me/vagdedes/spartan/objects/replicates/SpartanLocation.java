@@ -737,7 +737,7 @@ public class SpartanLocation {
             if (playerProfile.isSuspectedOrHacker()) {
                 return getSurroundingLocations(x, y, z, true);
             } else {
-                LiveViolation liveViolation = playerProfile.getLastInteraction();
+                LiveViolation liveViolation = player.getLastViolation();
                 return getSurroundingLocations(x, y, z,
                         liveViolation.hasLevel()
                                 || liveViolation.hasCancelledLevel()

@@ -18,11 +18,8 @@ import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.Cache;
-import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.*;
 import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.system.IDs;
-import me.vagdedes.spartan.system.Piracy;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
 import me.vagdedes.spartan.utils.server.PluginUtils;
 import org.bukkit.Bukkit;
@@ -98,7 +95,7 @@ public class Config {
         }
         Check check = hackType.getCheck();
 
-        for (int i = 1; i <= Check.maxViolations; i++) {
+        for (int i = 1; i <= Check.maxViolationsPerCycle; i++) {
             for (String s : check.getLegacyCommands(i)) {
                 if (s != null) {
                     return i;
@@ -114,7 +111,7 @@ public class Config {
         }
         Check check = hackType.getCheck();
 
-        for (int i = 1; i <= Check.maxViolations; i++) {
+        for (int i = 1; i <= Check.maxViolationsPerCycle; i++) {
             for (String s : check.getLegacyCommands(i)) {
                 if (s != null) {
                     return i;
@@ -188,8 +185,20 @@ public class Config {
 
         // Check Cache
         if (clearChecksCache) {
-            for (HackType hackType : Enums.HackType.values()) {
-                hackType.resetCheck(true);
+            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+
+            if (!players.isEmpty()) {
+                for (HackType hackType : Enums.HackType.values()) {
+                    hackType.resetCheck();
+
+                    for (SpartanPlayer p : players) {
+                        p.getViolations(hackType).reset();
+                    }
+                }
+            } else {
+                for (HackType hackType : Enums.HackType.values()) {
+                    hackType.resetCheck();
+                }
             }
         }
     }

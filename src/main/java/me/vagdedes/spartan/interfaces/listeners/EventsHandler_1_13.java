@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.TridentUse;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;

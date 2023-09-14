@@ -150,7 +150,7 @@ public class ManageChecks {
         }*/
 
         if (Config.isLegacy()) {
-            for (int i = 1; i <= Check.maxViolations; i++) {
+            for (int i = 1; i <= Check.maxViolationsPerCycle; i++) {
                 int counter = 0;
 
                 for (String s : check.getLegacyCommands(i)) {

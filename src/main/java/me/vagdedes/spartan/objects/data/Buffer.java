@@ -6,7 +6,6 @@ import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
@@ -59,10 +58,8 @@ public class Buffer {
                         bufferChild.ticks -= 1L;
                     } else {
                         for (Enums.HackType hackType : Enums.HackType.values()) {
-                            Check check = hackType.getCheck();
-
-                            if (check.getCheckType() == Enums.CheckType.COMBAT
-                                    && check.getViolations(uuid, dataType).getLastViolation(true) <= 55L) {
+                            if (hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
+                                    && p.getViolations(hackType).getLastViolation(true) <= 55L) {
                                 bufferChild.ticks -= 1L;
                                 break;
                             }

@@ -1,18 +1,18 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.FastBow;
-import me.vagdedes.spartan.checks.combat.fastClicks.FastClicks;
-import me.vagdedes.spartan.checks.exploits.Chat;
-import me.vagdedes.spartan.checks.exploits.SignLineLength;
-import me.vagdedes.spartan.checks.inventory.ItemDrops;
-import me.vagdedes.spartan.checks.movement.NoFall;
-import me.vagdedes.spartan.checks.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.player.FastEat;
-import me.vagdedes.spartan.checks.player.NoSwing;
-import me.vagdedes.spartan.checks.world.BlockReach;
-import me.vagdedes.spartan.checks.world.FastBreak;
-import me.vagdedes.spartan.checks.world.GhostHand;
-import me.vagdedes.spartan.checks.world.ImpossibleActions;
+import me.vagdedes.spartan.checks.implementation.combat.FastBow;
+import me.vagdedes.spartan.checks.implementation.combat.fastClicks.FastClicks;
+import me.vagdedes.spartan.checks.implementation.exploits.Chat;
+import me.vagdedes.spartan.checks.implementation.exploits.SignLineLength;
+import me.vagdedes.spartan.checks.implementation.inventory.ItemDrops;
+import me.vagdedes.spartan.checks.implementation.movement.NoFall;
+import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.implementation.player.FastEat;
+import me.vagdedes.spartan.checks.implementation.player.NoSwing;
+import me.vagdedes.spartan.checks.implementation.world.BlockReach;
+import me.vagdedes.spartan.checks.implementation.world.FastBreak;
+import me.vagdedes.spartan.checks.implementation.world.GhostHand;
+import me.vagdedes.spartan.checks.implementation.world.ImpossibleActions;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.features.chat.ChatProtection;
 import me.vagdedes.spartan.features.chat.StaffChat;
@@ -27,7 +27,6 @@ import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.GameMode;
@@ -168,7 +167,7 @@ public class EventsHandler3 implements Listener {
         // Detections
         SignLineLength.run(p, e.getLines());
 
-        if (HackPrevention.canCancel(p, Enums.HackType.Exploits)) {
+        if (p.getViolations(Enums.HackType.Exploits).process()) {
             e.setCancelled(true);
         }
     }
@@ -229,7 +228,8 @@ public class EventsHandler3 implements Listener {
             }
             FastBow.runInteract(p, action);
 
-            if (HackPrevention.canCancel(p, new Enums.HackType[]{Enums.HackType.GhostHand, Enums.HackType.FastClicks})) {
+            if (p.getViolations(Enums.HackType.GhostHand).process()
+                    || p.getViolations(Enums.HackType.FastClicks).process()) {
                 e.setCancelled(true);
             }
         }

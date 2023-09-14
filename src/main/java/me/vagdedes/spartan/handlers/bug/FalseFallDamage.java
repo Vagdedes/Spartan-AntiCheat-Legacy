@@ -26,8 +26,8 @@ public class FalseFallDamage {
                     && dmg == EntityDamageEvent.DamageCause.FALL
 
                     && !Moderation.wasDetected(p)
-                    && p.getProfile().getLastInteraction().getLastViolation(false) > 500L
-                    && Check.hasViolations(uuid)
+                    && p.getLastViolation().getLastViolation(false) > 500L
+                    && p.hasViolations()
 
                     && !p.getHandlers().has(Handlers.HandlerType.Explosion)) {
                 ItemStack itemStack = p.getItemInHand();

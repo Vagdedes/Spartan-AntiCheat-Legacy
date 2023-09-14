@@ -1,11 +1,11 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
-import me.vagdedes.spartan.checks.movement.MorePackets;
-import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
-import me.vagdedes.spartan.checks.player.AutoRespawn;
-import me.vagdedes.spartan.checks.world.ImpossibleActions;
+import me.vagdedes.spartan.checks.implementation.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.implementation.inventory.ImpossibleInventory;
+import me.vagdedes.spartan.checks.implementation.movement.MorePackets;
+import me.vagdedes.spartan.checks.implementation.movement.irregularmovements.IrregularMovements;
+import me.vagdedes.spartan.checks.implementation.player.AutoRespawn;
+import me.vagdedes.spartan.checks.implementation.world.ImpossibleActions;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.chat.ChatProtection;
@@ -23,7 +23,6 @@ import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.objects.profiling.PlayerCombat;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.entity.Player;
@@ -90,9 +89,6 @@ public class EventsHandler1 implements Listener {
         Permissions.remove(p);
         PlayerLimitPerIP.remove(p);
 
-        // Handlers
-        EventsHandler7.remove(p);
-
         // Features
         ManageConfiguration.save(p, true);
         ReconnectCooldown.remove(n);
@@ -100,7 +96,6 @@ public class EventsHandler1 implements Listener {
 
         // System
         LagLeniencies.remove(p);
-        HackPrevention.remove(p);
         Cache.clear(p, n, true, true, false, null);
     }
 

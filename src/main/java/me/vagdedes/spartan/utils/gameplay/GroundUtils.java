@@ -66,7 +66,7 @@ public class GroundUtils {
                     || BlockUtils.areFences(m) || BlockUtils.areFenceGates(m) || m == MaterialUtils.get("cake")
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && (m == Material.AZALEA || m == Material.FLOWERING_AZALEA)) {
                 specificHeights.put(m, new double[]{0.0, 0.5});
-            } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) && (m == Material.SCULK_SENSOR || m == Material.SCULK_SHRIEKER)) { //todo calibrated sensor
+            } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) && (m == Material.SCULK_SENSOR || m == Material.SCULK_SHRIEKER)) { // Attention: calibrated sensor is missing
                 specificHeights.put(m, new double[]{0.5});
             } else if (BlockUtils.areHeads(m)) {
                 specificHeights.put(m, new double[]{0.0, 0.5, 0.75});

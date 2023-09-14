@@ -1,11 +1,11 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.movement.MorePackets;
-import me.vagdedes.spartan.checks.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.player.FastEat;
-import me.vagdedes.spartan.checks.player.FastHeal;
-import me.vagdedes.spartan.checks.player.NoSwing;
-import me.vagdedes.spartan.checks.world.*;
+import me.vagdedes.spartan.checks.implementation.movement.MorePackets;
+import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.implementation.player.FastEat;
+import me.vagdedes.spartan.checks.implementation.player.FastHeal;
+import me.vagdedes.spartan.checks.implementation.player.NoSwing;
+import me.vagdedes.spartan.checks.implementation.world.*;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
@@ -16,7 +16,6 @@ import me.vagdedes.spartan.handlers.identifiers.simple.BlockBreak;
 import me.vagdedes.spartan.handlers.identifiers.simple.BlockPlace;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -57,7 +56,8 @@ public class EventsHandler5 implements Listener {
                 NoSlowdown.runFood(p, lvl);
                 FastHeal.runFood(p, lvl);
 
-                if (HackPrevention.canCancel(p, new Enums.HackType[]{Enums.HackType.FastEat, Enums.HackType.NoSlowdown})) {
+                if (p.getViolations(Enums.HackType.FastEat).process()
+                        || p.getViolations(Enums.HackType.NoSlowdown).process()) {
                     e.setCancelled(true);
                     p.setFoodLevel(n.getFoodLevel(), false);
                 } else {
@@ -86,7 +86,7 @@ public class EventsHandler5 implements Listener {
                 // Detections
                 FastHeal.run(p, e.getRegainReason());
 
-                if (HackPrevention.canCancel(p, Enums.HackType.FastHeal)) {
+                if (p.getViolations(Enums.HackType.FastHeal).process()) {
                     e.setCancelled(true);
                 }
             }
@@ -124,9 +124,12 @@ public class EventsHandler5 implements Listener {
             // Detections
             DetectionNotifications.runMining(p, b);
 
-            if (HackPrevention.canCancel(p, new Enums.HackType[]{Enums.HackType.NoSwing, Enums.HackType.BlockReach,
-                    Enums.HackType.ImpossibleActions, Enums.HackType.FastBreak, Enums.HackType.GhostHand,
-                    Enums.HackType.XRay})) {
+            if (p.getViolations(Enums.HackType.NoSwing).process()
+                    || p.getViolations(Enums.HackType.BlockReach).process()
+                    || p.getViolations(Enums.HackType.ImpossibleActions).process()
+                    || p.getViolations(Enums.HackType.FastBreak).process()
+                    || p.getViolations(Enums.HackType.GhostHand).process()
+                    || p.getViolations(Enums.HackType.XRay).process()) {
                 e.setCancelled(true);
             }
         }
@@ -179,8 +182,9 @@ public class EventsHandler5 implements Listener {
                         + "block-face: " + blockFace);
             }
 
-            if (HackPrevention.canCancel(p, new Enums.HackType[]{Enums.HackType.FastPlace, Enums.HackType.BlockReach,
-                    Enums.HackType.ImpossibleActions})) {
+            if (p.getViolations(Enums.HackType.FastPlace).process()
+                    || p.getViolations(Enums.HackType.BlockReach).process()
+                    || p.getViolations(Enums.HackType.ImpossibleActions).process()) {
                 e.setCancelled(true);
             }
         } else if (!ItemsAdder.is(nb)) {

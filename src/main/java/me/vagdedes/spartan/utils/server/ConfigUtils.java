@@ -107,7 +107,7 @@ public class ConfigUtils {
         message = replace(message, "{player:type}", p.getDataType().lowerCase);
         message = replace(message, "{uuid}", uuid.toString());
         message = replace(message, "{ping}", String.valueOf(p.getPing()));
-        message = replace(message, "{vls}", String.valueOf(Check.getViolationCount(uuid)));
+        message = replace(message, "{vls}", String.valueOf(p.getViolationCount()));
         message = replace(message, "{world}", worldName);
         message = replace(message, "{health}", String.valueOf(p.getHealth()));
         message = replace(message, "{gamemode}", p.getGameMode().toString().toLowerCase());
@@ -127,7 +127,7 @@ public class ConfigUtils {
         message = replace(message, "{reports}", String.valueOf(punishmentHistory.getReports().size()));
 
         if (hackType != null) {
-            LiveViolation liveViolation = hackType.getCheck().getViolations(p);
+            LiveViolation liveViolation = p.getViolations(hackType);
             int lastLevel = liveViolation.getLastCancelledLevel();
             boolean cancelled = lastLevel != 0;
             int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
@@ -149,7 +149,6 @@ public class ConfigUtils {
             message = replace(message, "{player}", name);
         }
         message = replace(message, "{uuid}", uuid.toString());
-        message = replace(message, "{vls}", String.valueOf(Check.getViolationCount(uuid)));
 
         if (off.isOnline()) {
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) off);
@@ -157,6 +156,7 @@ public class ConfigUtils {
             if (p != null) {
                 SpartanLocation loc = p.getLocation();
                 String worldName = p.getWorld().getName();
+                message = replace(message, "{vls}", String.valueOf(p.getViolationCount()));
                 message = replace(message, "{player:type}", p.getDataType().lowerCase);
                 message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(p, false), 2)));
                 message = replace(message, "{ping}", String.valueOf(p.getPing()));
@@ -179,7 +179,7 @@ public class ConfigUtils {
                 message = replace(message, "{reports}", String.valueOf(punishmentHistory.getReports().size()));
 
                 if (hasHackType) {
-                    LiveViolation liveViolation = hackType.getCheck().getViolations(uuid, p.getDataType());
+                    LiveViolation liveViolation = p.getViolations(hackType);
                     int lastLevel = liveViolation.getLastCancelledLevel();
                     boolean cancelled = lastLevel != 0;
                     int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();

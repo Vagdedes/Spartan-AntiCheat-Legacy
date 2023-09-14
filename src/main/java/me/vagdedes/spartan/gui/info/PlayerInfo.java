@@ -98,7 +98,7 @@ public class PlayerInfo {
         InventoryUtils.add(inv, "§2Mining History", lore, item, 16);
 
         if (isOnline) {
-            int violations = Check.getViolationCount(t.getUniqueId());
+            int violations = t.getViolationCount();
             lore.clear();
             lore.add("");
             lore.add("§7CPS (Clicks Per Second)§8:§a " + t.getClickData().getCount());
@@ -142,10 +142,8 @@ public class PlayerInfo {
 
         if (isOnline) {
             for (HackType hackType : hackTypes) {
-                Check check = hackType.getCheck();
-
-                if (check.getCheckType() == checkType) {
-                    violations += check.getViolations(p).getLevel();
+                if (hackType.getCheck().getCheckType() == checkType) {
+                    violations += p.getViolations(hackType).getLevel();
                 }
             }
         }
@@ -168,10 +166,8 @@ public class PlayerInfo {
         String cancellableCompatibility = isOnline ? p.getCancellableCompatibility() : null;
 
         for (HackType hackType : hackTypes) {
-            Check check = hackType.getCheck();
-
-            if (check.getCheckType() == checkType) {
-                violations = isOnline ? check.getViolations(p).getLevel() : 0;
+            if (hackType.getCheck().getCheckType() == checkType) {
+                violations = isOnline ? p.getViolations(hackType).getLevel() : 0;
                 boolean hasViolations = violations > 0,
                         hasData = playerProfile.isSuspectedOrHacker() && playerProfile.getEvidence().has(hackType);
 
@@ -200,8 +196,7 @@ public class PlayerInfo {
                                  List<String> lore) {
         lore.clear();
         lore.add("");
-        Check check = hackType.getCheck();
-        int violations = !isOnline ? 0 : check.getViolations(p).getLevel();
+        int violations = !isOnline ? 0 : p.getViolations(hackType).getLevel();
         ItemStack item = isOnline && violations > 0 ?
                 new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(violations, 64), (short) 14) :
                 new ItemStack(Material.QUARTZ_BLOCK);
@@ -261,7 +256,7 @@ public class PlayerInfo {
         Check check = hackType.getCheck();
 
         if (!check.isEnabled(dataType, worldName, null)) { // Do not put player because we calculate it below
-            return returnNull ? null : "Disabled"; //todo
+            return returnNull ? null : "Disabled";
         }
         UUID uuid = p.getUniqueId();
         String delay = delayNumber == 0.0 ? "" : " (" + (Math.floor(delayNumber) == delayNumber ? String.valueOf((int) delayNumber) : String.valueOf(delayNumber)) + ")";
@@ -359,7 +354,7 @@ public class PlayerInfo {
 
                 if (t != null && clickType.isLeftClick()) {
                     for (HackType hackType : Enums.HackType.values()) {
-                        hackType.getCheck().getViolations(t).reset();
+                        t.getViolations(hackType).reset();
                     }
                     String message = Messages.get("player_violation_reset_message").replace("{player}", t.getName());
                     p.sendMessage(message);

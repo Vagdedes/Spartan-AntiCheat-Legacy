@@ -43,7 +43,7 @@ public class MoveUtils {
 
     private static final Map<UUID, SpartanLocation> loc = new ConcurrentHashMap<>(Config.getMaxPlayers());
     private static final Set<Double> jumps = new HashSet<>(jumpingMotions);
-    private static final Map<Integer, Double> gravity = new HashMap<>();
+    private static final Map<Integer, Double> gravity = new LinkedHashMap<>();
 
     static {
         jumps.add(jumping[1]); // 0.41999

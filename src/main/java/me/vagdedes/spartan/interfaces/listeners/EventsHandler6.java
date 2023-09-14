@@ -1,11 +1,11 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.HitReach;
-import me.vagdedes.spartan.checks.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.inventory.ItemDrops;
-import me.vagdedes.spartan.checks.player.NoSwing;
+import me.vagdedes.spartan.checks.implementation.combat.HitReach;
+import me.vagdedes.spartan.checks.implementation.combat.VelocityCheck;
+import me.vagdedes.spartan.checks.implementation.combat.criticals.Criticals;
+import me.vagdedes.spartan.checks.implementation.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.implementation.inventory.ItemDrops;
+import me.vagdedes.spartan.checks.implementation.player.NoSwing;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -29,7 +29,6 @@ import me.vagdedes.spartan.objects.profiling.PlayerFight;
 import me.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -90,7 +89,7 @@ public class EventsHandler6 implements Listener {
         // System
         if (!TestServer.isIdentified() && Settings.getBoolean("Important.violations_reset_on_kick")) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
-                hackType.getCheck().getViolations(p).reset();
+                p.getViolations(hackType).reset();
             }
         }
     }
@@ -219,8 +218,11 @@ public class EventsHandler6 implements Listener {
                     runDealDamage(p, e.getEntity(), e.getDamage(), e.getCause(), e.isCancelled());
                 }
 
-                if (HackPrevention.canCancel(p, new Enums.HackType[]{Enums.HackType.KillAura, Enums.HackType.Criticals,
-                        Enums.HackType.NoSwing, Enums.HackType.HitReach, Enums.HackType.FastClicks, Enums.HackType.Velocity})) {
+                if (p.getViolations(Enums.HackType.KillAura).process()
+                        || p.getViolations(Enums.HackType.Criticals).process()
+                        || p.getViolations(Enums.HackType.NoSwing).process()
+                        || p.getViolations(Enums.HackType.FastClicks).process()
+                        || p.getViolations(Enums.HackType.Velocity).process()) {
                     e.setCancelled(true);
                 }
             }

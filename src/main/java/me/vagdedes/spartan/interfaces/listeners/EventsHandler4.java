@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
-import me.vagdedes.spartan.checks.inventory.InventoryClicks;
-import me.vagdedes.spartan.checks.inventory.ItemDrops;
+import me.vagdedes.spartan.checks.implementation.inventory.ImpossibleInventory;
+import me.vagdedes.spartan.checks.implementation.inventory.InventoryClicks;
+import me.vagdedes.spartan.checks.implementation.inventory.ItemDrops;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.moderation.PlayerReports;
 import me.vagdedes.spartan.features.moderation.Spectate;
@@ -16,7 +16,6 @@ import me.vagdedes.spartan.gui.spartan.SupportIncompatibleItems;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Piston;
 import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.StringUtils;
@@ -55,7 +54,7 @@ public class EventsHandler4 implements Listener {
             // Detections
             ItemDrops.run(p);
 
-            if (HackPrevention.canCancel(p, Enums.HackType.ItemDrops)) {
+            if (p.getViolations(Enums.HackType.ItemDrops).process()) {
                 e.setCancelled(true);
             }
         } else {
@@ -116,7 +115,8 @@ public class EventsHandler4 implements Listener {
                     | ManageOptions.run(p, item, title) | PlayerInfo.run(p, item, title, click)
                     | DebugMenu.run(p, item, title) | ManageConfiguration.run(p, item, title, click, slot) |
                     PlayerReports.run(p, item, title) | SupportIncompatibleItems.run(p, item, title, click))
-                    | HackPrevention.canCancel(p, new Enums.HackType[]{Enums.HackType.ImpossibleInventory, Enums.HackType.InventoryClicks})) {
+                    | p.getViolations(Enums.HackType.ImpossibleInventory).process()
+                    | p.getViolations(Enums.HackType.InventoryClicks).process()) {
                 e.setCancelled(true);
             }
         }

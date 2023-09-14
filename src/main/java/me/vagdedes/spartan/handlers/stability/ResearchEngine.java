@@ -2,8 +2,8 @@ package me.vagdedes.spartan.handlers.stability;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.checks.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
+import me.vagdedes.spartan.checks.implementation.combat.criticals.Criticals;
+import me.vagdedes.spartan.checks.implementation.combat.criticals.CriticalsUtils;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.SQLFeature;
 import me.vagdedes.spartan.configuration.Settings;
@@ -53,7 +53,7 @@ public class ResearchEngine {
     // Constants
     public static final int
             maxDataLength = 4096,
-            logRequirement = Check.maxViolations,
+            logRequirement = Check.maxViolationsPerCycle,
             profileRequirement = logRequirement / 10;
     public static final double downloadedVersion = Double.parseDouble(API.getVersion().substring(6));
     public static final int
@@ -526,7 +526,7 @@ public class ResearchEngine {
         if (deep) {
             Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
-            if (playerProfiles.size() > 0) {
+            if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     if (playerProfile.getName().equalsIgnoreCase(name)) {
                         return playerProfile;
@@ -640,7 +640,7 @@ public class ResearchEngine {
 
                     if (foundPlayer) {
                         for (Enums.HackType hackType : Enums.HackType.values()) {
-                            hackType.getCheck().getViolations(p).reset();
+                            p.getViolations(hackType).reset();
                         }
                     }
 
@@ -755,7 +755,7 @@ public class ResearchEngine {
                 String[] incomingInformation = CloudConnections.getCrossServerInformation("log", crossServerInformationOption);
 
                 if (incomingInformation != null && incomingInformation.length > 0) {
-                    String key = AntiCheatLogs.syntaxDate(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now()), AlgebraUtils.randomInteger(1, Check.maxViolations - 1));
+                    String key = AntiCheatLogs.syntaxDate(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now()), AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1));
 
                     for (String information : incomingInformation) {
                         if (isLogValid(information)) {
@@ -790,7 +790,7 @@ public class ResearchEngine {
 
                             if (isLogValid(data)) {
                                 Timestamp t = rs.getTimestamp("creation_date");
-                                String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolations - 1) + ")[" + TimeUtils.getYearMonthDay(t) + " " + TimeUtils.getTime(t) + "]";
+                                String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1) + ")[" + TimeUtils.getYearMonthDay(t) + " " + TimeUtils.getTime(t) + "]";
                                 cache.put(date, data);
                                 byteSize += date.length() + data.length();
 

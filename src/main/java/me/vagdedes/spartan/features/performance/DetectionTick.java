@@ -7,7 +7,6 @@ import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 
-import java.util.List;
 import java.util.UUID;
 
 public class DetectionTick {
@@ -34,14 +33,10 @@ public class DetectionTick {
                 && !MaximumCheckedPlayers.isActive()
                 && !profile.isSuspectedOrHacker()
                 && !player.hasNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance)) {
-            List<LiveViolation> liveViolations = Check.getViolationsObjects(uuid);
-
-            if (liveViolations.size() > 0) {
-                for (LiveViolation liveViolation : liveViolations) {
-                    if (liveViolation.hasMaxCancelledLevel()
-                            || liveViolation.getLastViolation(true) <= Check.recentViolationSeconds) {
-                        return false;
-                    }
+            for (LiveViolation liveViolation : player.getViolations()) {
+                if (liveViolation.hasMaxCancelledLevel()
+                        || liveViolation.getLastViolation(true) <= Check.recentViolationSeconds) {
+                    return false;
                 }
             }
             return true;

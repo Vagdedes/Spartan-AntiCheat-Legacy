@@ -10,16 +10,12 @@ import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.notifications.clickablemessage.ClickableMessage;
-import me.vagdedes.spartan.features.protections.Teleport;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
-import me.vagdedes.spartan.objects.system.hackPrevention.HackPrevention;
-import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.StringUtils;
@@ -47,40 +43,20 @@ public class Moderation {
             dismissedReportMessage = "Dismissed report against ",
             criticalHitMessage = " landed a critical hit with ";
 
-    public static boolean runTeleportCooldown(SpartanPlayer p) {
-        if (HackPrevention.getCooldown(p, EventsHandler7.handledChecks) != null) {
-            Enums.HackType.Speed.getCheck().addDisabledUser(
-                    p.getUniqueId(),
-                    "Teleport-Cooldown",
-                    "sprint",
-                    Teleport.ticks
-            );
-            return true;
-        }
-        return false;
-    }
-
     private static boolean isDetected(SpartanPlayer p, long ms) {
-        return p.getProfile().getLastInteraction().getLastViolation(true) <= ms
-                || HackPrevention.hasCooldown(p.getUniqueId());
+        LiveViolation liveViolation = p.getLastViolation();
+        return liveViolation.getLastViolation(true) <= ms
+                || liveViolation.hasQueue();
     }
 
     private static boolean isDetectedAndPrevented(SpartanPlayer p, long ms) {
         UUID uuid = p.getUniqueId();
-        List<LiveViolation> liveViolations = Check.getViolationsObjects(uuid);
+        String world = p.getWorld().getName();
 
-        if (liveViolations.size() > 0) {
-            String world = p.getWorld().getName();
-
-            for (LiveViolation liveViolation : liveViolations) {
-                if (liveViolation.getLastViolation(true) <= ms) {
-                    HackType hackType = liveViolation.getHackType();
-
-                    if (!hackType.getCheck().isSilent(world, uuid)
-                            || HackPrevention.getCooldown(p, hackType) != null) {
-                        return true;
-                    }
-                }
+        for (LiveViolation liveViolation : p.getViolations()) {
+            if (liveViolation.getLastViolation(true) <= ms
+                    && !liveViolation.getHackType().getCheck().isSilent(world, uuid)) {
+                return true;
             }
         }
         return false;
@@ -173,7 +149,7 @@ public class Moderation {
         } else {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            if (players.size() > 0) {
+            if (!players.isEmpty()) {
                 for (SpartanPlayer o : players) {
                     if (DetectionNotifications.hasPermission(o)) {
                         o.sendMessage(announcement);
@@ -204,7 +180,7 @@ public class Moderation {
                                  int level,
                                  boolean log, boolean falsePositive, boolean canPrevent, boolean hacker,
                                  ResearchEngine.DataType dataType) {
-        if (level < Check.maxViolations) {
+        if (level < Check.maxViolationsPerCycle) {
             // Variables
             String name = detectedPlayer.getName(),
                     world = detectedPlayer.getWorld().getName();

@@ -81,51 +81,31 @@ public class SuspicionNotifications {
 
                     if (isNull || detectedUUID != staffUUID) {
                         PlayerProfile profile = player.getProfile();
-                        boolean shouldList, hacker;
+                        boolean hacker;
+                        boolean shouldList = false;
 
                         if (profile.isHacker()) {
-                            Set<Map.Entry<Enums.HackType, Integer>> violationEntries = Check.getViolationsEntry(detectedUUID);
+                            PlayerEvidence evidence = profile.getEvidence();
 
-                            if (!violationEntries.isEmpty()) {
-                                shouldList = false;
-                                PlayerEvidence evidence = profile.getEvidence();
-
-                                for (Map.Entry<Enums.HackType, Integer> violationEntry : violationEntries) {
-                                    Enums.HackType hackType = violationEntry.getKey();
-
-                                    if (evidence.has(hackType)
-                                            && violationEntry.getValue() >= hackType.getCheck().getDefaultCancelViolation()) {
-                                        shouldList = true;
-                                        break;
-                                    }
+                            for (Enums.HackType hackType : evidence.getKnowledgeList()) {
+                                if (player.getViolations(hackType).getLevel() >= hackType.getCheck().getDefaultCancelViolation()) {
+                                    shouldList = true;
+                                    break;
                                 }
-                            } else {
-                                shouldList = false;
                             }
                             hacker = true;
                         } else if (profile.isSuspected()) {
-                            Set<Map.Entry<Enums.HackType, Integer>> violationEntries = Check.getViolationsEntry(detectedUUID);
+                            ResearchEngine.DataType dataType = player.getDataType();
+                            PlayerEvidence evidence = profile.getEvidence();
 
-                            if (!violationEntries.isEmpty()) {
-                                shouldList = false;
-                                ResearchEngine.DataType dataType = player.getDataType();
-                                PlayerEvidence evidence = profile.getEvidence();
-
-                                for (Map.Entry<Enums.HackType, Integer> violationEntry : violationEntries) {
-                                    Enums.HackType hackType = violationEntry.getKey();
-
-                                    if (evidence.has(hackType)
-                                            && violationEntry.getValue() >= CancelViolation.get(hackType, dataType)) {
-                                        shouldList = true;
-                                        break;
-                                    }
+                            for (Enums.HackType hackType : evidence.getKnowledgeList()) {
+                                if (player.getViolations(hackType).getLevel() >= CancelViolation.get(hackType, dataType)) {
+                                    shouldList = true;
+                                    break;
                                 }
-                            } else {
-                                shouldList = false;
                             }
                             hacker = false;
                         } else {
-                            shouldList = false;
                             hacker = false;
                         }
 

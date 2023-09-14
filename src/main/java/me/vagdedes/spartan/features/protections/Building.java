@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.protections;
 
-import me.vagdedes.spartan.checks.exploits.RapidDisallowedBuilding;
+import me.vagdedes.spartan.checks.implementation.exploits.RapidDisallowedBuilding;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
@@ -22,14 +22,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class Building {
 
     private static final String key = "building=protection";
     public static final double maxMovingSpeed = 0.15;
-    private static final Collection<Enums.HackType> concerningHackTypes;
+    private static final Enums.HackType[] concerningHackTypes;
 
     private static final double[]
             current = new double[]{
@@ -40,13 +39,14 @@ public class Building {
 
     static {
         Enums.HackType[] hackTypes = Enums.HackType.values();
-        concerningHackTypes = new HashSet<>(hackTypes.length);
+        ArrayList<Enums.HackType> list = new ArrayList<>(hackTypes.length);
 
         for (Enums.HackType hackType : hackTypes) {
             if (hackType.getCheck().getCheckType() == Enums.CheckType.WORLD) {
-                concerningHackTypes.add(hackType);
+                list.add(hackType);
             }
         }
+        concerningHackTypes = list.toArray(new Enums.HackType[0]);
     }
 
     public static void runInteract(SpartanPlayer p, SpartanBlock clicked, Action action) {
@@ -83,7 +83,7 @@ public class Building {
             long ms = timer.get(key);
 
             if ((ms <= 50L || blockFace == BlockFace.SELF)
-                    && (Enums.HackType.FastPlace.getCheck().getViolations(p).hasLevel()
+                    && (p.getViolations(Enums.HackType.FastPlace).hasLevel()
                     || p.getBuffer().start("building=protection=attempts", 20) >= 5)) {
                 handlers.remove(Handlers.HandlerType.Building);
                 handlers.add(Handlers.HandlerType.Building, "cooldown", 10);
