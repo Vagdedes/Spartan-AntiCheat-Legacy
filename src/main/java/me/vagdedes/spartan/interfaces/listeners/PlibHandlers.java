@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.movement.NoSlowdown;
 import me.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Cooldowns;
@@ -82,7 +82,7 @@ public class PlibHandlers {
                                             || bow && (newType == Material.BOW || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && newType == Material.CROSSBOW) && p.getInventory().contains(Material.ARROW)
                                             || potion && newType == Material.POTION
                                             || shield && PlayerData.hasItemInHands(p, Material.SHIELD)) {
-                                        NoSlowdown.runUse("packets", true, 1, p, loc, MoveUtils.getCachedLocation(p), 0, 0, 0);
+                                        NoSlowdown.runUse("packets", true, 1, p, MoveUtils.getCachedLocation(p), 0, 0, 0);
                                     }
                                 }
                             }, delay);

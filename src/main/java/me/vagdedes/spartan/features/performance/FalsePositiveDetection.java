@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.performance;
 
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.system.LiveViolation;
@@ -54,7 +54,7 @@ public class FalsePositiveDetection {
             decimalPoint = 1;
 
     public static boolean canFunction() {
-        return Settings.getBoolean("Performance.enable_false_positive_detection");
+        return Config.settings.getBoolean("Performance.enable_false_positive_detection");
     }
 
     public static int getSimplifiedNumber(Enums.HackType hackType, String detection, Collection<Number> numbers) {

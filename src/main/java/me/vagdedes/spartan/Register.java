@@ -1,7 +1,6 @@
 package me.vagdedes.spartan;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
@@ -61,7 +60,7 @@ public class Register extends JavaPlugin {
         DiscordMemberCount.get();
 
         // Base
-        Settings.runOnLogin();
+        Config.settings.runOnLogin();
         LagLeniencies.cache();
         PlayerLimitPerIP.cache();
         ReconnectCooldown.loadCooldowns();

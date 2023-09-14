@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.features.synchronicity;
 
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
@@ -34,7 +35,7 @@ public class SpartanEdition {
             notificationKey = "alternative-version",
             notificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat."
                     + (SpartanBukkit.canAdvertise ? "\nClick §n" + productLink + productID + " §r§cto fix this." : "")
-                    + "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Settings.getFile().getName() + "' to disable this notification.";
+                    + "\nSet '" + Config.settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Config.settings.getFile().getName() + "' to disable this notification.";
     private static final boolean javaEdition;
     public static final boolean freeAlternativeVersion;
     private static boolean notify = false, alternativeVersion;
@@ -55,7 +56,7 @@ public class SpartanEdition {
 
     public static void refresh() {
         if (SpartanBukkit.canAdvertise && !alternativeVersion) {
-            SpartanBukkit.connectionThread.execute(() -> {
+            Runnable runnable = () -> {
                 if (CloudConnections.ownsProduct(
                         getProductID(getOppositeVersion())
                 )) {
@@ -64,7 +65,13 @@ public class SpartanEdition {
                 for (Enums.HackType hackType : Enums.HackType.values()) {
                     hackType.resetCheck();
                 }
-            });
+            };
+
+            if (SpartanBukkit.isSynchronised()) {
+                SpartanBukkit.connectionThread.execute(runnable);
+            } else {
+                runnable.run();
+            }
         }
     }
 
@@ -175,7 +182,7 @@ public class SpartanEdition {
         if (!IDs.isPreview()) {
             ResearchEngine.DataType missingDetection = getMissingDetection();
 
-            if (missingDetection != null && Settings.getBoolean(Settings.showEcosystemOption)) {
+            if (missingDetection != null && Config.settings.getBoolean(Settings.showEcosystemOption)) {
                 if (notify) {
                     sendNotification(player, missingDetection);
                 } else {

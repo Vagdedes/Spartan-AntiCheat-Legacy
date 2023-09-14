@@ -1,8 +1,7 @@
 package me.vagdedes.spartan.features.chat;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
@@ -32,7 +31,7 @@ public class ChatProtection {
     }
 
     private static boolean isBlocked(String string, String type) {
-        String keysString = Settings.getString("Chat." + type);
+        String keysString = Config.settings.getString("Chat." + type);
 
         if (keysString != null && keysString.contains(", ")) {
             string = string.toLowerCase();
@@ -70,27 +69,27 @@ public class ChatProtection {
 
         if (!p.getCooldowns().canDo("chat=cooldown=delay")) {
             double seconds = (double) p.getCooldowns().get("chat=cooldown=delay") / 20.0;
-            String message = Messages.get("chat_cooldown_message").replace("{time}", String.valueOf(seconds));
+            String message = Config.messages.getColorfulString("chat_cooldown_message").replace("{time}", String.valueOf(seconds));
             p.sendMessage(ConfigUtils.replaceWithSyntax(p, message, null));
             return true;
         }
         if (isBlocked(msg, "blocked_words")) {
-            String message = Messages.get("blocked_word_message");
+            String message = Config.messages.getColorfulString("blocked_word_message");
             p.sendMessage(ConfigUtils.replaceWithSyntax(p, message, null));
             return true;
         }
-        if (Settings.getBoolean("Chat.prevent_same_message")) {
+        if (Config.settings.getBoolean("Chat.prevent_same_message")) {
             String previousMessage = previous.get(uuid);
 
             if (previousMessage != null
                     && doubleLessMsg.length() > 0
                     && previousMessage.equalsIgnoreCase(doubleLessMsg.toString())) {
-                String message = Messages.get("same_message_warning");
+                String message = Config.messages.getColorfulString("same_message_warning");
                 p.sendMessage(ConfigUtils.replaceWithSyntax(p, message, null));
                 return true;
             }
         }
-        int seconds = Settings.getInteger("Chat.message_cooldown");
+        int seconds = Config.settings.getInteger("Chat.message_cooldown");
 
         if (seconds > 0) {
             p.getCooldowns().add("chat=cooldown=delay", Math.min(60, seconds) * 20);
@@ -105,12 +104,12 @@ public class ChatProtection {
         }
         if (!p.getCooldowns().canDo("command=cooldown=delay") && !tab) {
             double seconds = (double) p.getCooldowns().get("command=cooldown=delay") / 20.0;
-            String message = Messages.get("command_cooldown_message").replace("{time}", String.valueOf(seconds));
+            String message = Config.messages.getColorfulString("command_cooldown_message").replace("{time}", String.valueOf(seconds));
             p.sendMessage(ConfigUtils.replaceWithSyntax(p, message, null));
             return true;
         }
         if (!tab) {
-            int seconds = Settings.getInteger("Chat.command_cooldown");
+            int seconds = Config.settings.getInteger("Chat.command_cooldown");
 
             if (seconds > 0) {
                 p.getCooldowns().add("command=cooldown=delay", Math.min(seconds, 60) * 20);
@@ -118,7 +117,7 @@ public class ChatProtection {
         }
         if (isBlocked(me.vagdedes.spartan.utils.java.StringUtils.substring(msg, 1, msg.length()), "blocked_commands")) {
             if (!tab) {
-                p.sendMessage(ConfigUtils.replaceWithSyntax(p, Messages.get("blocked_command_message"), null));
+                p.sendMessage(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("blocked_command_message"), null));
             }
             return true;
         }
@@ -127,7 +126,7 @@ public class ChatProtection {
 
     public static boolean runConsoleCommand(CommandSender s, String msg) {
         if (isBlocked(me.vagdedes.spartan.utils.java.StringUtils.substring(msg, 1, msg.length()), "blocked_commands")) {
-            s.sendMessage(Messages.get("blocked_command_message"));
+            s.sendMessage(Config.messages.getColorfulString("blocked_command_message"));
             return true;
         }
         return false;

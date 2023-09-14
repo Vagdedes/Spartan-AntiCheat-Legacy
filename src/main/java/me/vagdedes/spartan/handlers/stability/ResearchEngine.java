@@ -2,11 +2,9 @@ package me.vagdedes.spartan.handlers.stability;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.checks.implementation.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.implementation.combat.criticals.CriticalsUtils;
+import me.vagdedes.spartan.checks.combat.criticals.Criticals;
+import me.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.SQLFeature;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.BanManagement;
@@ -98,7 +96,7 @@ public class ResearchEngine {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (players.size() > 0) {
-                boolean added = !Settings.getBoolean("Important.load_player_head_textures") || skulls.size() == logRequirement;
+                boolean added = !Config.settings.getBoolean("Important.load_player_head_textures") || skulls.size() == logRequirement;
                 Inventory inv = Bukkit.createInventory(players.get(0).getPlayer(), 9, "");
 
                 for (PlayerProfile playerProfile : playerProfiles) {
@@ -187,7 +185,7 @@ public class ResearchEngine {
     }
 
     public static boolean isStorageMode() {
-        return Settings.getBoolean("Logs.log_file") || isDatabaseMode();
+        return Config.settings.getBoolean("Logs.log_file") || isDatabaseMode();
     }
 
     public static DataType[] getDynamicUsableDataTypes(boolean universal) {
@@ -200,7 +198,7 @@ public class ResearchEngine {
     // Separator
 
     public static boolean isDatabaseMode() {
-        return SQLFeature.isEnabled();
+        return Config.sql.isEnabled();
     }
 
     public static boolean enoughData() {
@@ -246,7 +244,7 @@ public class ResearchEngine {
         if (!enabledPlugin || !isCaching()) {
             // Complete Storage
             AntiCheatLogs.refresh();
-            SQLFeature.refreshDatabase();
+            Config.sql.refreshDatabase();
             Criticals.clear();
 
             if (enabledPlugin) {
@@ -596,8 +594,8 @@ public class ResearchEngine {
 
             // Separator
 
-            if (SQLFeature.isEnabled()) {
-                SQLFeature.update("DELETE FROM " + SQLFeature.getTable() + " WHERE functionality = '" + hackTypeString + "';");
+            if (Config.sql.isEnabled()) {
+                Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE functionality = '" + hackTypeString + "';");
             }
 
             // Separator
@@ -662,8 +660,8 @@ public class ResearchEngine {
                             legitimatePlayers.add(newPlayerProfile);
                             p.setProfile(newPlayerProfile);
                         }
-                        if (SQLFeature.isEnabled()) {
-                            SQLFeature.update("DELETE FROM " + SQLFeature.getTable() + " WHERE information LIKE '%" + playerName + "%';");
+                        if (Config.sql.isEnabled()) {
+                            Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
                         }
                         Collection<File> files = getFiles();
 
@@ -779,10 +777,10 @@ public class ResearchEngine {
 
         // Separator
 
-        if (SQLFeature.isEnabled()) {
+        if (Config.sql.isEnabled()) {
             if (!isFull) {
                 try {
-                    ResultSet rs = SQLFeature.query("SELECT creation_date, information FROM " + SQLFeature.getTable() + " ORDER BY id DESC LIMIT " + maxSize + ";");
+                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + maxSize + ";");
 
                     if (rs != null) {
                         while (rs.next()) {

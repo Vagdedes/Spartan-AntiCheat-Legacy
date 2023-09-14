@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.handlers.identifiers.complex.unpredictable;
 
-import me.vagdedes.spartan.checks.implementation.exploits.ElytraGlideSpam;
-import me.vagdedes.spartan.checks.implementation.exploits.IllegalElytraPacket;
+import me.vagdedes.spartan.checks.exploits.ElytraGlideSpam;
+import me.vagdedes.spartan.checks.exploits.IllegalElytraPacket;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

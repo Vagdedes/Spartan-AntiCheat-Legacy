@@ -2,9 +2,6 @@ package me.vagdedes.spartan.features.moderation;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.SQLFeature;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
@@ -68,9 +65,9 @@ public class BanManagement {
 
         // Separator
 
-        if (SQLFeature.isEnabled()) {
+        if (Config.sql.isEnabled()) {
             SpartanBukkit.storageThread.execute(() -> {
-                SQLFeature.update("CREATE TABLE IF NOT EXISTS " + BanManagement.table + " (" +
+                Config.sql.update("CREATE TABLE IF NOT EXISTS " + BanManagement.table + " (" +
                         "id INT(11) NOT NULL AUTO_INCREMENT, " +
 
                         "creation BIGINT(20), " +
@@ -82,7 +79,7 @@ public class BanManagement {
                         "primary key (id));");
 
                 try {
-                    ResultSet rs = SQLFeature.query("SELECT * FROM " + table + " ORDER BY id DESC LIMIT " + ResearchEngine.maxSize + ";");
+                    ResultSet rs = Config.sql.query("SELECT * FROM " + table + " ORDER BY id DESC LIMIT " + ResearchEngine.maxSize + ";");
 
                     if (rs != null) {
                         while (rs.next()) {
@@ -169,22 +166,22 @@ public class BanManagement {
             }
             return list.substring(0, list.length() - comma.length());
         }
-        return Messages.get("empty_ban_list");
+        return Config.messages.getColorfulString("empty_ban_list");
     }
 
     // Runnables
 
     public static void ban(UUID uuid, CommandSender punisher, String reason, long time) {
         long creation = System.currentTimeMillis();
-        String punisherName = punisher instanceof ConsoleCommandSender ? Messages.get("console_name") : punisher.getName(),
+        String punisherName = punisher instanceof ConsoleCommandSender ? Config.messages.getColorfulString("console_name") : punisher.getName(),
                 expiration,
                 creationDate = new Timestamp(creation).toString().substring(0, 10);
         boolean hasExpiration = time != 0L;
 
-        if (SQLFeature.isEnabled()) {
+        if (Config.sql.isEnabled()) {
             SpartanBukkit.storageThread.execute(() -> {
-                SQLFeature.update("DELETE FROM " + table + " WHERE punished = '" + uuid + "';");
-                SQLFeature.update("INSERT INTO " + table
+                Config.sql.update("DELETE FROM " + table + " WHERE punished = '" + uuid + "';");
+                Config.sql.update("INSERT INTO " + table
                         + " (punished, punisher, reason, creation, expiration)" +
                         " VALUES ('" + uuid + "', '" + punisherName + "', '" + reason + "', '" + time + "', " + (hasExpiration ? "'" + time + "'" : "NULL") + ");");
             });
@@ -206,14 +203,14 @@ public class BanManagement {
 
         // Separator
 
-        String message = Messages.get("ban_broadcast_message")
+        String message = Config.messages.getColorfulString("ban_broadcast_message")
                 .replace("{reason}", reason)
                 .replace("{punisher}", punisherName)
                 .replace("{creation}", creationDate)
                 .replace("{expiration}", expiration);
         message = ConfigUtils.replaceWithSyntax(p, message, null);
 
-        if (Settings.getBoolean("Punishments.broadcast_on_punishment")) {
+        if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
             Bukkit.broadcastMessage(message);
         } else {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
@@ -246,7 +243,7 @@ public class BanManagement {
 
         // Separator
 
-        String kick = Messages.get("ban_reason")
+        String kick = Config.messages.getColorfulString("ban_reason")
                 .replace("{reason}", reason)
                 .replace("{punisher}", punisherName)
                 .replace("{creation}", creationDate)
@@ -266,8 +263,8 @@ public class BanManagement {
     }
 
     public static void unban(UUID uuid, boolean force) {
-        if (SQLFeature.isEnabled()) {
-            SpartanBukkit.storageThread.execute(() -> SQLFeature.update("DELETE FROM " + table + " WHERE punished = '" + uuid + "';"));
+        if (Config.sql.isEnabled()) {
+            SpartanBukkit.storageThread.execute(() -> Config.sql.update("DELETE FROM " + table + " WHERE punished = '" + uuid + "';"));
         }
         if (force || isBanned(uuid)) {
             for (String key : keys) {
@@ -345,7 +342,7 @@ public class BanManagement {
         if (isBanned(uuid)) {
             String creation = get(uuid, keys[2]),
                     expiration = get(uuid, keys[3]),
-                    kick = Messages.get("ban_reason")
+                    kick = Config.messages.getColorfulString("ban_reason")
                             .replace("{reason}", getProtected(uuid, keys[0]))
                             .replace("{punisher}", getProtected(uuid, keys[1]))
                             .replace("{expiration}", expiration != null ? new Timestamp(Long.parseLong(expiration)).toString().substring(0, 10) : "Never")

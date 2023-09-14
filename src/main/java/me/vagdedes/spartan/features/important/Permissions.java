@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.features.important;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
@@ -22,7 +21,7 @@ public class Permissions {
             Enums.Permission.USE_BYPASS, Enums.Permission.MANAGE, Enums.Permission.INFO, Enums.Permission.UNBAN, Enums.Permission.BAN};
 
     public static boolean isCacheEnabled() {
-        return Settings.getBoolean("Important.use_permission_cache");
+        return Config.settings.getBoolean("Important.use_permission_cache");
     }
 
     public static void clear() {
@@ -87,7 +86,7 @@ public class Permissions {
         if (permission == Enums.Permission.BYPASS) {
             return isBypassing(p, null);
         }
-        if (Settings.exists("Important.enable_permissions") && !Settings.getBoolean("Important.enable_permissions")) {
+        if (Config.settings.exists("Important.enable_permissions") && !Config.settings.getBoolean("Important.enable_permissions")) {
             return true;
         }
         Enums.Permission admin = Enums.Permission.ADMIN;
@@ -162,7 +161,7 @@ public class Permissions {
 
     public static boolean isBypassing(SpartanPlayer p, Enums.HackType hackType) {
         if (p.isOp()) {
-            return Settings.getBoolean("Important.op_bypass");
+            return Config.settings.getBoolean("Important.op_bypass");
         }
         Player n = p.getPlayer();
         return n != null && n.isOnline()
@@ -171,7 +170,7 @@ public class Permissions {
     }
 
     public static boolean isBypassing(Player p, Enums.HackType hackType) {
-        if (Settings.exists("Important.enable_permissions") && !Settings.getBoolean("Important.enable_permissions")) {
+        if (Config.settings.exists("Important.enable_permissions") && !Config.settings.getBoolean("Important.enable_permissions")) {
             return true;
         }
         String key = Enums.Permission.BYPASS.getKey() + (hackType != null ? "." + hackType.toString().toLowerCase() : "");

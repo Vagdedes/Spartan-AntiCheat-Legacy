@@ -1,8 +1,7 @@
 package me.vagdedes.spartan.features.configuration;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.configuration.SQLFeature;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -90,12 +89,12 @@ public class AntiCheatLogs {
         boolean playerRelated = p != null;
 
         if (console != null
-                && Settings.getBoolean("Logs.log_console")
+                && Config.settings.getBoolean("Logs.log_console")
                 && (!playerRelated
                 || DetectionNotifications.getPlayers(true).size() == 0)) {
             Bukkit.getConsoleSender().sendMessage(console);
         }
-        if (Settings.getBoolean("Logs.log_file")) {
+        if (Config.settings.getBoolean("Logs.log_file")) {
             Timestamp now = new Timestamp(System.currentTimeMillis());
 
             if (savedFile == null || fileConfiguration == null || time.getDay() != now.getDay()) {
@@ -128,9 +127,9 @@ public class AntiCheatLogs {
             }
         }
         if (cloudFeature) { // When the Cloud feature is not used, it's when incoming Cloud data is locally stored, so we don't send it to the Cloud or to the SQL database to avoid redundancy
-            if (SQLFeature.isEnabled()) {
+            if (Config.sql.isEnabled()) {
                 boolean miningNotification = playerRelated && material != null;
-                SQLFeature.logInfo(p, information, material, hackType, falsePositive, miningNotification, violations, cancelViolation);
+                Config.sql.logInfo(p, information, material, hackType, falsePositive, miningNotification, violations, cancelViolation);
             }
             CrossServerInformation.queueLog(information);
         }

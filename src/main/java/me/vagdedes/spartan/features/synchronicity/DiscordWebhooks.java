@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.synchronicity;
 
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,7 +13,7 @@ public class DiscordWebhooks {
     public static final String configurationSection = "Discord";
 
     public static boolean isUsing() {
-        File file = Settings.getFile();
+        File file = Config.settings.getFile();
 
         if (file.exists()) {
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -24,7 +24,7 @@ public class DiscordWebhooks {
                     if (key.endsWith("_url")) {
                         key = configurationSection + "." + key;
 
-                        if (Settings.exists(key) && Settings.getString(key).length() > 0) {
+                        if (Config.settings.exists(key) && Config.settings.getString(key).length() > 0) {
                             return true;
                         }
                     }

@@ -39,6 +39,10 @@ public class Config {
     private static String construct = defaultConstruct;
     private static boolean legacyFile = false;
     private static int maxPlayers = 20;
+    public static Settings settings = new Settings();
+    public static SQLFeature sql = new SQLFeature();
+    public static Messages messages = new Messages();
+    public static Compatibility compatibility = new Compatibility();
 
     static {
         refreshVariables(false);
@@ -215,9 +219,9 @@ public class Config {
                 CrossServerInformation.sendConfiguration(file);
             }
         }
-        Settings.create(local); // Always Second (Research Engine File Logs)
-        SQLFeature.create(local); // Always Third (Research Engine SQL Logs)
-        Messages.create(local);
+        settings.create(local); // Always Second (Research Engine File Logs)
+        sql.create(local); // Always Third (Research Engine SQL Logs)
+        messages.create(local);
         Compatibility.create(local);
         BanManagement.create(local);
         Wave.create(local);
@@ -235,10 +239,10 @@ public class Config {
         if (enabledPlugin) {
             createConfigurations(false); // Always First
         } else {
-            Settings.clear();
-            SQLFeature.refreshConfiguration();
-            Messages.clear();
-            Compatibility.clear();
+            settings.clear();
+            sql.refreshConfiguration();
+            messages.clear();
+            compatibility.clear();
             BanManagement.clear();
             Wave.clearCache();
         }
@@ -297,7 +301,7 @@ public class Config {
     }
 
     public static void reload(Object sender) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             SpartanReloadEvent event = new SpartanReloadEvent();
             Register.manager.callEvent(event);
 
@@ -306,7 +310,7 @@ public class Config {
             }
         }
         if (sender != null) {
-            String message = Messages.get("config_reload");
+            String message = Config.messages.getColorfulString("config_reload");
 
             if (sender instanceof CommandSender) {
                 ((CommandSender) sender).sendMessage(message);

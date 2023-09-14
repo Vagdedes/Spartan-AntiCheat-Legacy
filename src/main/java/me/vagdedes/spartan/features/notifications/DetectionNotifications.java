@@ -2,10 +2,8 @@ package me.vagdedes.spartan.features.notifications;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.PlayerFoundOreEvent;
-import me.vagdedes.spartan.checks.implementation.world.XRay;
+import me.vagdedes.spartan.checks.world.XRay;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
@@ -84,7 +82,7 @@ public class DetectionNotifications {
                 || !SpartanBukkit.isProductionServer()
                 || !ResearchEngine.enoughData()
                 || divisor >= 1
-                || Settings.getBoolean("Notifications.individual_only_notifications"))
+                || Config.settings.getBoolean("Notifications.individual_only_notifications"))
                 && hasPermission(p));
     }
 
@@ -95,7 +93,7 @@ public class DetectionNotifications {
             change(p, i, false);
         } else {
             notifications.remove(p.getUniqueId());
-            p.sendMessage(Messages.get("notifications_disable").replace("{type}", ""));
+            p.sendMessage(Config.messages.getColorfulString("notifications_disable").replace("{type}", ""));
         }
     }
 
@@ -105,13 +103,13 @@ public class DetectionNotifications {
                 change(p, i, false);
             }
         } else if (notifications.remove(p.getUniqueId()) != null) {
-            p.sendMessage(Messages.get("notifications_disable").replace("{type}", "Verbose"));
+            p.sendMessage(Config.messages.getColorfulString("notifications_disable").replace("{type}", "Verbose"));
         }
     }
 
     public static void change(SpartanPlayer p, int i, boolean change) {
         notifications.put(p.getUniqueId(), i);
-        p.sendMessage(Messages.get(change ? "notifications_modified" : "notifications_enable").replace("{type}", ""));
+        p.sendMessage(Config.messages.getColorfulString(change ? "notifications_modified" : "notifications_enable").replace("{type}", ""));
     }
 
     // Handlers
@@ -163,7 +161,7 @@ public class DetectionNotifications {
                 // API Event
                 PlayerFoundOreEvent event;
 
-                if (Settings.getBoolean("Important.enable_developer_api")) {
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     event = new PlayerFoundOreEvent(player.getPlayer(), log, location.getLimitedBukkitLocation(), material);
                     Register.manager.callEvent(event);
                 } else {

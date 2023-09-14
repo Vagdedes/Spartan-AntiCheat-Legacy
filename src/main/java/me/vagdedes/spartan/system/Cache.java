@@ -1,13 +1,13 @@
 package me.vagdedes.spartan.system;
 
-import me.vagdedes.spartan.checks.implementation.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.implementation.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.implementation.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.implementation.exploits.ChunkUpdates;
-import me.vagdedes.spartan.checks.implementation.movement.MorePackets;
-import me.vagdedes.spartan.checks.implementation.movement.irregularmovements.IrregularMovements;
-import me.vagdedes.spartan.checks.implementation.movement.speed.Speed;
-import me.vagdedes.spartan.checks.implementation.world.ImpossibleActions;
+import me.vagdedes.spartan.checks.combat.VelocityCheck;
+import me.vagdedes.spartan.checks.combat.criticals.Criticals;
+import me.vagdedes.spartan.checks.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.exploits.ChunkUpdates;
+import me.vagdedes.spartan.checks.movement.MorePackets;
+import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
+import me.vagdedes.spartan.checks.movement.speed.Speed;
+import me.vagdedes.spartan.checks.world.ImpossibleActions;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.moderation.Spectate;

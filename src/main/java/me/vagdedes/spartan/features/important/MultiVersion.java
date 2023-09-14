@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.important;
 
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
 import org.bukkit.Bukkit;
@@ -92,9 +92,9 @@ public class MultiVersion {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        ConfigUtils.add(Settings.getFile(), "Important.server_version", "Configure this if the plugin is unable to detect your server's version.");
+        ConfigUtils.add(Config.settings.getFile(), "Important.server_version", "Configure this if the plugin is unable to detect your server's version.");
         String option = "Important.server_version";
-        String custom = Settings.getString(option);
+        String custom = Config.settings.getString(option);
 
         if (custom != null) {
             String[] split = custom.split("\\.");
@@ -103,7 +103,7 @@ public class MultiVersion {
                 try {
                     return MultiVersion.detectedVersion = MCVersion.valueOf("V" + split[0] + "_" + split[1]);
                 } catch (Exception ex) {
-                    AwarenessNotifications.forcefullySend("Invalid settings.yml " + option + " configured value.");
+                    AwarenessNotifications.forcefullySend("Invalid Config.settings.yml " + option + " configured value.");
                 }
             }
         }

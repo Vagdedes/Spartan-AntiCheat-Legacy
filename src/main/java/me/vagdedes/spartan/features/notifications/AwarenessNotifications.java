@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.features.notifications;
 
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.IDs;
 import me.vagdedes.spartan.system.SpartanBukkit;
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class AwarenessNotifications {
 
     private static final Map<UUID, Map<String, Long>> map = new LinkedHashMap<>();
-    private static final String disableMessage = " You can disable Awareness Notifications via " + Settings.getFile().getName() + ".";
+    private static final String disableMessage = " You can disable Awareness Notifications via " + Config.settings.getFile().getName() + ".";
 
     public static void clear() {
         map.clear();
@@ -26,7 +25,7 @@ public class AwarenessNotifications {
     }
 
     public static boolean areEnabled() {
-        return Settings.getBoolean("Notifications.awareness_notifications") && !IDs.isPreview();
+        return Config.settings.getBoolean("Notifications.awareness_notifications") && !IDs.isPreview();
     }
 
     public static boolean canSend(UUID uuid, String key, int secondsCooldown) {
@@ -69,7 +68,7 @@ public class AwarenessNotifications {
     }
 
     public static String getNotification(String s, boolean disableMessage) {
-        return Messages.get("awareness_notification").replace(":", "§8:§7").replace("{info}", s)
+        return Config.messages.getColorfulString("awareness_notification").replace(":", "§8:§7").replace("{info}", s)
                 + (disableMessage ? AwarenessNotifications.disableMessage : "");
     }
 

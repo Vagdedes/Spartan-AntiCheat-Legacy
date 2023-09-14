@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.implementation.combat.FastBow;
-import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.implementation.player.NoSwing;
+import me.vagdedes.spartan.checks.combat.FastBow;
+import me.vagdedes.spartan.checks.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.player.NoSwing;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.protections.Teleport;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;

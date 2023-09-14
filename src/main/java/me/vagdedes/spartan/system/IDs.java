@@ -9,10 +9,12 @@ import java.util.Objects;
 
 public class IDs {
 
-    private static final String user = "%%__USER__%%";
+    private static final String
+            user = "%%__USER__%%",
+            defaultLocalID = "0";
     private static String
             nonce = "%%__NONCE__%%",
-            localID = "0";
+            localID = defaultLocalID;
 
     public static final boolean
             hasUserIDByDefault = !user.startsWith("%%__");
@@ -57,7 +59,7 @@ public class IDs {
             return true;
         }
         String user = user();
-        return !user.equals("0") && user.equals(resource());
+        return !user.equals(defaultLocalID) && user.equals(resource());
     }
 
     public static void setPlatform(int id) {

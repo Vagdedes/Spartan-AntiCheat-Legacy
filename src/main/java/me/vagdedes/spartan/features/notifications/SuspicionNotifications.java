@@ -1,8 +1,7 @@
 package me.vagdedes.spartan.features.notifications;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
@@ -52,7 +51,7 @@ public class SuspicionNotifications {
                 if (!TestServer.isIdentified()
                         && SpartanBukkit.isProductionServer()
                         && ResearchEngine.enoughData()
-                        && !Settings.getBoolean("Notifications.individual_only_notifications")) {
+                        && !Config.settings.getBoolean("Notifications.individual_only_notifications")) {
                     Integer divisor = DetectionNotifications.getDivisor(p, false);
 
                     if (divisor == null || divisor != 0) {
@@ -63,7 +62,7 @@ public class SuspicionNotifications {
                 }
             }
         } else {
-            send = !Settings.getBoolean("Notifications.individual_only_notifications")
+            send = !Config.settings.getBoolean("Notifications.individual_only_notifications")
                     && DetectionNotifications.hasPermission(p);
         }
 
@@ -154,7 +153,7 @@ public class SuspicionNotifications {
 
                 // Separator
                 if (size > 0) {
-                    String message = Messages.get("suspicion_notification")
+                    String message = Config.messages.getColorfulString("suspicion_notification")
                             .replace("{size}", String.valueOf(size))
                             .replace("{players}", players.substring(0, players.length() - comma.length()));
 

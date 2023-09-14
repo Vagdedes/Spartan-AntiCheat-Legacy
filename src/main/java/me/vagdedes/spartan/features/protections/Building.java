@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.features.protections;
 
-import me.vagdedes.spartan.checks.implementation.exploits.RapidDisallowedBuilding;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.checks.exploits.RapidDisallowedBuilding;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -88,7 +88,7 @@ public class Building {
                 handlers.remove(Handlers.HandlerType.Building);
                 handlers.add(Handlers.HandlerType.Building, "cooldown", 10);
 
-                if (TestServer.isIdentified() || Settings.getBoolean("Protections.disallowed_building")) {
+                if (TestServer.isIdentified() || Config.settings.getBoolean("Protections.disallowed_building")) {
                     teleport(p, loc);
                     p.groundTeleport(false);
                 }
@@ -121,7 +121,7 @@ public class Building {
             }
 
             if (cases == 1 && cancelled) {
-                if (TestServer.isIdentified() || Settings.getBoolean("Protections.disallowed_building")) {
+                if (TestServer.isIdentified() || Config.settings.getBoolean("Protections.disallowed_building")) {
                     handlers.add(Handlers.HandlerType.Building, 10);
                     teleport(p, loc);
                 } else {

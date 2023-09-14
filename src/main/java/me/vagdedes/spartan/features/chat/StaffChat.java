@@ -1,8 +1,7 @@
 package me.vagdedes.spartan.features.chat;
 
 import me.vagdedes.spartan.compatibility.semi.Authentication;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -17,11 +16,11 @@ public class StaffChat {
 
     public static boolean run(SpartanPlayer p, String msg) {
         if (Permissions.has(p, Enums.Permission.STAFF_CHAT) && (!Authentication.isEnabled() || (System.currentTimeMillis() - p.getCreationTime()) > 60_000L)) {
-            String character = Settings.getString("Chat.staff_chat_character");
+            String character = Config.settings.getString("Chat.staff_chat_character");
 
             if (character != null && character.length() > 0 && msg.startsWith(character.toLowerCase())) {
                 msg = msg.substring(1);
-                String message = Messages.get("staff_chat_message");
+                String message = Config.messages.getColorfulString("staff_chat_message");
                 message = message.replace("{message}", msg);
                 message = ConfigUtils.replaceWithSyntax(p, message, null);
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();

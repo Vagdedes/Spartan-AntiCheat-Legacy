@@ -2,7 +2,6 @@ package me.vagdedes.spartan.features.moderation;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -108,7 +107,7 @@ public class Spectate {
             }
             appearance(p, true);
 
-            String message = ConfigUtils.replaceWithSyntax(p, Messages.get("spectating_ended"), null);
+            String message = ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("spectating_ended"), null);
             p.sendMessage(message);
         }
     }
@@ -120,7 +119,7 @@ public class Spectate {
             p.teleport(t.getLocation());
             appearance(p, false);
 
-            String message = ConfigUtils.replaceWithSyntax(t, Messages.get("spectating_player"), null);
+            String message = ConfigUtils.replaceWithSyntax(t, Config.messages.getColorfulString("spectating_player"), null);
             p.sendInventoryCloseMessage(message); // Close inventory
         } else {
             p.sendInventoryCloseMessage(null);

@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.objects.profiling;
 
-import me.vagdedes.spartan.checks.implementation.combat.killAura.Analysis;
+import me.vagdedes.spartan.checks.combat.killAura.Analysis;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;

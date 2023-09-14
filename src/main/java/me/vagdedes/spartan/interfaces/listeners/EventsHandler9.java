@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.configuration.Compatibility;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.protections.PlayerLimitPerIP;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
@@ -41,7 +41,7 @@ public class EventsHandler9 implements Listener {
         PluginUtils.clear();
 
         // System
-        Compatibility.memoryRefresh();
+        Config.compatibility.fastClear();
     }
 
     @EventHandler
@@ -51,7 +51,7 @@ public class EventsHandler9 implements Listener {
         PluginUtils.clear();
 
         // System
-        Compatibility.memoryRefresh();
+        Config.compatibility.fastClear();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

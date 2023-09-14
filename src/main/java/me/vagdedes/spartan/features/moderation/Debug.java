@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.features.moderation;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
@@ -40,7 +39,7 @@ public class Debug {
             if (map.isEmpty()) {
                 hm.remove(uuid);
             }
-            String msg = Messages.get("debug_disable_all_message").replace("{player}", t.getName());
+            String msg = Config.messages.getColorfulString("debug_disable_all_message").replace("{player}", t.getName());
             p.getPlayer().sendMessage(msg);
         }
     }
@@ -78,7 +77,7 @@ public class Debug {
                 map.put(target, data);
             }
         }
-        String msg = Messages.get(enable ? "debug_enable_message" : "debug_disable_message");
+        String msg = Config.messages.getColorfulString(enable ? "debug_enable_message" : "debug_disable_message");
         msg = msg.replace("{player}", t.getName());
         msg = msg.replace("{type}", s.getString());
         p.getPlayer().sendMessage(msg);
@@ -93,7 +92,7 @@ public class Debug {
                 SpartanPlayer owner = SpartanBukkit.getPlayer(entry.getKey());
 
                 if (owner != null) {
-                    String msg = Messages.get("debug_player_message");
+                    String msg = Config.messages.getColorfulString("debug_player_message");
                     msg = msg.replace("{player}", p.getName());
                     msg = msg.replace("{type}", t.getString());
                     msg = msg.replace("{info}", s.toLowerCase().replace("_", "-"));

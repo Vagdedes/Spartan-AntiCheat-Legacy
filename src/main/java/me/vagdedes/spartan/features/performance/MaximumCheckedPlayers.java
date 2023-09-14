@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.features.performance;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
@@ -20,7 +20,7 @@ public class MaximumCheckedPlayers {
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                int optionAmount = Settings.getInteger(option);
+                int optionAmount = Config.settings.getInteger(option);
 
                 if (optionAmount > 0) {
                     if (ticks == 0) {
@@ -81,7 +81,7 @@ public class MaximumCheckedPlayers {
     }
 
     static boolean isActive() {
-        int optionAmount = Settings.getInteger(option);
+        int optionAmount = Config.settings.getInteger(option);
         return optionAmount > 0
                 && SpartanBukkit.getPlayerCount() > Math.max(optionAmount, minimumPlayers);
     }
@@ -101,12 +101,12 @@ public class MaximumCheckedPlayers {
     }
 
     public static boolean add(SpartanPlayer player) {
-        int optionAmount = Settings.getInteger(option);
+        int optionAmount = Config.settings.getInteger(option);
         return optionAmount > 0 && add(player.getUniqueId(), optionAmount);
     }
 
     public static boolean isChecked(UUID uuid) {
-        int optionAmount = Settings.getInteger(option);
+        int optionAmount = Config.settings.getInteger(option);
         return optionAmount <= 0
                 || list.contains(uuid)
                 || add(uuid, optionAmount)

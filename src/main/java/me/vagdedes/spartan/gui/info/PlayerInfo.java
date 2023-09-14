@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.gui.info;
 
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.Spectate;
@@ -46,7 +45,7 @@ public class PlayerInfo {
 
     public static void open(SpartanPlayer p, String name, boolean back) {
         if (!Permissions.has(p, Permission.INFO) && !Permissions.has(p, Permission.MANAGE)) {
-            p.sendInventoryCloseMessage(Messages.get("no_permission"));
+            p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             return;
         }
         SpartanPlayer t = SpartanBukkit.getPlayer(name);
@@ -54,7 +53,7 @@ public class PlayerInfo {
         PlayerProfile playerProfile = isOnline ? t.getProfile() : ResearchEngine.getPlayerProfileAdvanced(name, true);
 
         if (playerProfile == null) {
-            p.sendInventoryCloseMessage(Messages.get("player_not_found_message"));
+            p.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
             return;
         }
         Inventory inv = p.createInventory(36, menu + (isOnline ? t.getName() : playerProfile.getName()));
@@ -281,7 +280,7 @@ public class PlayerInfo {
     public static void refresh(String targetName) {
         String key = "player-info=inventory-menu";
 
-        if (Settings.getBoolean("Important.refresh_inventory_menu")
+        if (Config.settings.getBoolean("Important.refresh_inventory_menu")
                 && CooldownUtils.store.canDo(SpartanBukkit.uuid + "=" + key)) {
             CooldownUtils.store.add(SpartanBukkit.uuid + "=" + key, 1);
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
@@ -320,26 +319,26 @@ public class PlayerInfo {
 
         if (item.equals("Debug")) {
             if (!Permissions.has(p, Permission.INFO) && !Permissions.has(p, Permission.MANAGE)) {
-                p.sendInventoryCloseMessage(Messages.get("no_permission"));
+                p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
                 String playerName = title.substring(menu.length());
                 SpartanPlayer t = SpartanBukkit.getPlayer(playerName);
 
                 if (t == null) {
-                    p.sendInventoryCloseMessage(Messages.get("player_not_found_message"));
+                    p.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
                 } else {
                     DebugMenu.open(p, t);
                 }
             }
         } else if (item.equals("Spectate")) {
             if (!Permissions.has(p, Permission.INFO) && !Permissions.has(p, Permission.MANAGE)) {
-                p.sendInventoryCloseMessage(Messages.get("no_permission"));
+                p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
                 String playerName = title.substring(menu.length());
                 SpartanPlayer t = SpartanBukkit.getPlayer(playerName);
 
                 if (t == null) {
-                    p.sendInventoryCloseMessage(Messages.get("player_not_found_message"));
+                    p.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
                 } else {
                     Spectate.run(p, t);
                 }
@@ -348,7 +347,7 @@ public class PlayerInfo {
             String playerName = title.substring(menu.length());
 
             if (!Permissions.has(p, Permission.MANAGE)) {
-                p.sendInventoryCloseMessage(Messages.get("no_permission"));
+                p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
                 SpartanPlayer t = SpartanBukkit.getPlayer(playerName);
 
@@ -356,16 +355,16 @@ public class PlayerInfo {
                     for (HackType hackType : Enums.HackType.values()) {
                         t.getViolations(hackType).reset();
                     }
-                    String message = Messages.get("player_violation_reset_message").replace("{player}", t.getName());
+                    String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.getName());
                     p.sendMessage(message);
                 } else {
                     String name = Bukkit.getOfflinePlayer(playerName).getName();
 
                     if (name == null) {
-                        p.sendMessage(Messages.get("player_not_found_message"));
+                        p.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
                     } else {
                         ResearchEngine.resetData(name);
-                        p.sendMessage(Messages.get("player_stored_data_delete_message").replace("{player}", name));
+                        p.sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
                     }
                 }
                 p.sendInventoryCloseMessage(null);

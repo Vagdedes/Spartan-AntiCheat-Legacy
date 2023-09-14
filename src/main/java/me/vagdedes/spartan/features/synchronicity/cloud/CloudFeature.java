@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.features.synchronicity.cloud;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.synchronicity.AutoUpdater;
@@ -104,7 +104,7 @@ public class CloudFeature {
     // Separator
 
     public static boolean canSynchroniseFiles(boolean exception) {
-        return Settings.getBoolean("Cloud.synchronise_files")
+        return Config.settings.getBoolean("Cloud.synchronise_files")
                 && !IDs.isPreview()
                 && (!exception || !hasException());
     }

@@ -1,9 +1,8 @@
 package me.vagdedes.spartan.objects.data;
 
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
@@ -11,7 +10,10 @@ import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.java.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Buffer {
@@ -45,9 +47,7 @@ public class Buffer {
 
     public void run(SpartanPlayer p) {
         if (!hm.isEmpty()) {
-            boolean staticTruth = TestServer.isIdentified() || Settings.getBoolean("Detections.allow_cancelled_hit_checking");
-            UUID uuid = p.getUniqueId();
-            ResearchEngine.DataType dataType = p.getDataType();
+            boolean staticTruth = TestServer.isIdentified() || Config.settings.getBoolean("Detections.allow_cancelled_hit_checking");
 
             for (BufferChild bufferChild : hm.values()) {
                 if (bufferChild.type == BufferType.Combat && bufferChild.ticks > 0L) {

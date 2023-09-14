@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.features.protections;
 
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -41,8 +42,8 @@ public class Explosion {
     // Separator
 
     private static void run(SpartanPlayer p) {
-        if (!Settings.exists(Settings.explosionOption)) {
-            Settings.setOption(Settings.explosionOption, Explosion.defaultTicks / 20);
+        if (!Config.settings.exists(Settings.explosionOption)) {
+            Config.settings.setOption(Settings.explosionOption, Explosion.defaultTicks / 20);
         }
         p.getHandlers().add(
                 Handlers.HandlerType.Explosion, getTime()
@@ -93,6 +94,6 @@ public class Explosion {
 
     private static int getTime() {
         return TestServer.isIdentified() ? defaultTicks :
-                (Math.max(Settings.getInteger(Settings.explosionOption), defaultTicks) * 20);
+                (Math.max(Config.settings.getInteger(Config.settings.explosionOption), defaultTicks) * 20);
     }
 }

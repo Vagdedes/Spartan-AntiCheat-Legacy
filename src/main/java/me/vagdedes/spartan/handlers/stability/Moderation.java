@@ -3,8 +3,6 @@ package me.vagdedes.spartan.handlers.stability;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
@@ -43,48 +41,29 @@ public class Moderation {
             dismissedReportMessage = "Dismissed report against ",
             criticalHitMessage = " landed a critical hit with ";
 
-    private static boolean isDetected(SpartanPlayer p, long ms) {
+    private static boolean isDetected(SpartanPlayer p, boolean checkSilent, long ms) {
         LiveViolation liveViolation = p.getLastViolation();
-        return liveViolation.getLastViolation(true) <= ms
-                || liveViolation.hasQueue();
-    }
-
-    private static boolean isDetectedAndPrevented(SpartanPlayer p, long ms) {
-        UUID uuid = p.getUniqueId();
-        String world = p.getWorld().getName();
-
-        for (LiveViolation liveViolation : p.getViolations()) {
-            if (liveViolation.getLastViolation(true) <= ms
-                    && !liveViolation.getHackType().getCheck().isSilent(world, uuid)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isDetected(SpartanPlayer p) {
-        return isDetected(p, 55L);
+        return (liveViolation.getLastViolation(true) <= ms
+                || liveViolation.hasQueue())
+                && (!checkSilent
+                || !liveViolation.getHackType().getCheck().isSilent(p.getWorld().getName(), p.getUniqueId()));
     }
 
     public static boolean wasDetected(SpartanPlayer p) {
-        return isDetected(p, 105L);
+        return isDetected(p, false, 105L);
     }
 
     public static boolean isDetectedAndPrevented(SpartanPlayer p) {
-        return isDetectedAndPrevented(p, 55L);
-    }
-
-    public static boolean wasDetectedAndPrevented(SpartanPlayer p) {
-        return isDetectedAndPrevented(p, 105L);
+        return isDetected(p, true, 55L);
     }
 
     public static void warn(CommandSender punisher, SpartanPlayer t, String reason) {
-        String punisherName = punisher instanceof ConsoleCommandSender ? Messages.get("console_name") : punisher.getName(),
+        String punisherName = punisher instanceof ConsoleCommandSender ? Config.messages.getColorfulString("console_name") : punisher.getName(),
                 warning = ConfigUtils.replaceWithSyntax(t,
-                        Messages.get("warning_message").replace("{reason}", reason).replace("{punisher}", punisherName),
+                        Config.messages.getColorfulString("warning_message").replace("{reason}", reason).replace("{punisher}", punisherName),
                         null),
                 feedback = ConfigUtils.replaceWithSyntax(t,
-                        Messages.get("warning_feedback_message").replace("{reason}", reason).replace("{punisher}", punisherName),
+                        Config.messages.getColorfulString("warning_feedback_message").replace("{reason}", reason).replace("{punisher}", punisherName),
                         null);
         t.sendMessage(warning);
         punisher.sendMessage(feedback);
@@ -101,10 +80,10 @@ public class Moderation {
 
     public static void report(SpartanPlayer reporter, SpartanPlayer reported, String reason) {
         if (reporter == reported) {
-            reporter.sendMessage(ConfigUtils.replaceWithSyntax(reporter, Messages.get("failed_command"), null));
+            reporter.sendMessage(ConfigUtils.replaceWithSyntax(reporter, Config.messages.getColorfulString("failed_command"), null));
             return;
         }
-        String report = Messages.get("report_message").replace("{reason}", reason).replace("{reported}", reported.getName());
+        String report = Config.messages.getColorfulString("report_message").replace("{reason}", reason).replace("{reported}", reported.getName());
         report = ConfigUtils.replaceWithSyntax(reporter, report, null);
         boolean sent = false;
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
@@ -136,15 +115,15 @@ public class Moderation {
     }
 
     public static void kick(CommandSender punisher, SpartanPlayer p, String reason) {
-        String punisherName = punisher instanceof ConsoleCommandSender ? Messages.get("console_name") : punisher.getName(),
+        String punisherName = punisher instanceof ConsoleCommandSender ? Config.messages.getColorfulString("console_name") : punisher.getName(),
                 kick = ConfigUtils.replaceWithSyntax(p,
-                        Messages.get("kick_reason").replace("{reason}", reason).replace("{punisher}", punisherName),
+                        Config.messages.getColorfulString("kick_reason").replace("{reason}", reason).replace("{punisher}", punisherName),
                         null),
                 announcement = ConfigUtils.replaceWithSyntax(p,
-                        Messages.get("kick_broadcast_message").replace("{reason}", reason).replace("{punisher}", punisherName),
+                        Config.messages.getColorfulString("kick_broadcast_message").replace("{reason}", reason).replace("{punisher}", punisherName),
                         null);
 
-        if (Settings.getBoolean("Punishments.broadcast_on_punishment")) {
+        if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
             Bukkit.broadcastMessage(announcement);
         } else {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
@@ -184,12 +163,12 @@ public class Moderation {
             // Variables
             String name = detectedPlayer.getName(),
                     world = detectedPlayer.getWorld().getName();
-            boolean individualOnlyNotifications = Settings.getBoolean("Notifications.individual_only_notifications");
+            boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
             int cancelViolation = CancelViolation.get(hackType, dataType),
                     playerCount = SpartanBukkit.getPlayerCount();
 
             // Message Preparation
-            String shorterMessage, message = Messages.get("detection_notification");
+            String shorterMessage, message = Config.messages.getColorfulString("detection_notification");
 
             if (ConfigUtils.contains(message, "{info}")) {
                 if (falsePositive) {
@@ -241,7 +220,7 @@ public class Moderation {
             }
 
             // Local Notifications
-            String command = Settings.getString("Notifications.message_clickable_command").replace("{player}", name);
+            String command = Config.settings.getString("Notifications.message_clickable_command").replace("{player}", name);
 
             if (individualOnlyNotifications) {
                 Integer divisor = DetectionNotifications.getDivisor(detectedPlayer, false);
@@ -291,7 +270,7 @@ public class Moderation {
                     SpartanLocation location = p.getLocation();
 
                     if (legacy) {
-                        boolean enabledDeveloperAPI = Settings.getBoolean("Important.enable_developer_api");
+                        boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
 
                         for (String command : commands) {
                             if (command != null) {
@@ -318,7 +297,7 @@ public class Moderation {
                         Collection<HackType> detectedHacks = Config.getPunishableHackModules(p, hackType, violation, dataType);
 
                         if (detectedHacks.size() > 0) {
-                            boolean enabledDeveloperAPI = Settings.getBoolean("Important.enable_developer_api");
+                            boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
                             HackType[] hackTypes = detectedHacks.toArray(new HackType[0]);
                             StringBuilder stringBuilder = new StringBuilder();
 

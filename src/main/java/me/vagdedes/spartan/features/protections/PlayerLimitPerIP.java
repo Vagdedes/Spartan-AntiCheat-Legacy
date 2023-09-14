@@ -2,8 +2,6 @@ package me.vagdedes.spartan.features.protections;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
@@ -32,7 +30,7 @@ public class PlayerLimitPerIP {
 
                     if (ticks == 0) {
                         Player p = entry.getKey();
-                        p.kickPlayer(ConfigUtils.replaceWithSyntax(p, Messages.get("player_ip_limit_kick_message"), null));
+                        p.kickPlayer(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("player_ip_limit_kick_message"), null));
                         iterator.remove();
                     } else {
                         entry.setValue(ticks - 1);
@@ -89,7 +87,7 @@ public class PlayerLimitPerIP {
                 }
 
                 if (i > 0) {
-                    int limit = Settings.getInteger("Protections.player_limit_per_ip");
+                    int limit = Config.settings.getInteger("Protections.player_limit_per_ip");
 
                     if (limit > 0 && i >= limit && !Permissions.has(p, Enums.Permission.RECONNECT)) {
                         kick.put(p, delayInTicks);

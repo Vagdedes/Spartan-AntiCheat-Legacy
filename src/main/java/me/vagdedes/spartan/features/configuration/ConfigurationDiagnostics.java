@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.features.configuration;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
@@ -28,7 +27,7 @@ public class ConfigurationDiagnostics {
                 if (!ResearchEngine.enoughData()) {
                     if (send) {
                         String message = ConfigUtils.replaceWithSyntax(p,
-                                Messages.get("not_enough_saved_logs").replace("{amount}", String.valueOf(ResearchEngine.logRequirement)),
+                                Config.messages.getColorfulString("not_enough_saved_logs").replace("{amount}", String.valueOf(ResearchEngine.logRequirement)),
                                 null);
                         p.sendMessage(message);
                     }

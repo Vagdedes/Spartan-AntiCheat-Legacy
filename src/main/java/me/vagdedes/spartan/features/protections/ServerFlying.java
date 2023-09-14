@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.protections;
 
-import me.vagdedes.spartan.checks.implementation.movement.irregularmovements.IrregularMovements;
+import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
 import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;

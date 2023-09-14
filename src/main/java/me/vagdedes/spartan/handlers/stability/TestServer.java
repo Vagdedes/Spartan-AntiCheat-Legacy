@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.handlers.stability;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
@@ -30,7 +30,7 @@ public class TestServer {
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                if (Settings.getBoolean("Performance.disable_test_server_detection") || isIdentified()) {
+                if (Config.settings.getBoolean("Performance.disable_test_server_detection") || isIdentified()) {
                     return;
                 }
                 int identify = identify(Bukkit.getMotd(), false);
@@ -115,7 +115,7 @@ public class TestServer {
     }
 
     public static void refresh() {
-        if (isIdentified() && Settings.getBoolean("Performance.disable_test_server_detection")) {
+        if (isIdentified() && Config.settings.getBoolean("Performance.disable_test_server_detection")) {
             identification = new int[]{};
         }
     }

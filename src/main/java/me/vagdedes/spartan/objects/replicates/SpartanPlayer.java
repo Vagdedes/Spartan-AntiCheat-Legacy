@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.objects.replicates;
 
 import me.vagdedes.spartan.Register;
-import me.vagdedes.spartan.checks.api.CheckExecutor;
-import me.vagdedes.spartan.checks.implementation.movement.NoFall;
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.checks.movement.NoFall;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import me.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
@@ -10,7 +10,7 @@ import me.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import me.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.performance.DetectionTick;
@@ -965,7 +965,7 @@ public class SpartanPlayer {
     public boolean refreshOnGroundCustom(SpartanLocation from) {
         if (!TestServer.isIdentified() && this.isOnGround()
 
-                && (Settings.getBoolean("Performance.use_vanilla_ground_method")
+                && (Config.settings.getBoolean("Performance.use_vanilla_ground_method")
                 || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                 || LagLeniencies.hasInconsistencies(this, "tps"))) {
             this.onGroundCustom = true; // Vanilla On-Ground When Necessary
@@ -1536,7 +1536,7 @@ public class SpartanPlayer {
     public boolean groundTeleport(boolean checkGround) {
         boolean testServer = TestServer.isIdentified();
 
-        if (!testServer && !Settings.getBoolean("Detections.ground_teleport_on_detection")) {
+        if (!testServer && !Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
             return false;
         }
         SpartanLocation location = getLocation();
@@ -1587,7 +1587,7 @@ public class SpartanPlayer {
         countedDamage--; // Ignoring the first check of the current location
 
         if (testServer
-                || Settings.getBoolean("Detections.fall_damage_on_teleport")) { // Damage
+                || Config.settings.getBoolean("Detections.fall_damage_on_teleport")) { // Damage
             if (countedDamage >= Math.max(fallDistance, 4.0)) { // Greater than fall
                 setFallDistance(0.0f, true);
 

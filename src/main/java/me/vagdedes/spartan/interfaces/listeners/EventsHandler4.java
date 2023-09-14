@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.implementation.inventory.ImpossibleInventory;
-import me.vagdedes.spartan.checks.implementation.inventory.InventoryClicks;
-import me.vagdedes.spartan.checks.implementation.inventory.ItemDrops;
+import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
+import me.vagdedes.spartan.checks.inventory.InventoryClicks;
+import me.vagdedes.spartan.checks.inventory.ItemDrops;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.moderation.PlayerReports;
 import me.vagdedes.spartan.features.moderation.Spectate;

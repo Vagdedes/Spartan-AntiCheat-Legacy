@@ -2,8 +2,6 @@ package me.vagdedes.spartan.api;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.BanManagement;
 import me.vagdedes.spartan.features.moderation.Wave;
@@ -38,11 +36,11 @@ public class BackgroundAPI {
     }
 
     static String getMessage(String path) {
-        return Messages.get(path);
+        return Config.messages.getColorfulString(path);
     }
 
     static boolean getSetting(String path) {
-        return Settings.getBoolean(path);
+        return Config.settings.getBoolean(path);
     }
 
     static String getCategory(Player p, HackType hackType) {
@@ -79,7 +77,7 @@ public class BackgroundAPI {
     }
 
     static void setNotifications(Player p, boolean value) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
             if (player != null) {
@@ -94,7 +92,7 @@ public class BackgroundAPI {
     }
 
     static void setNotifications(Player p, int frequency) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
             if (player != null) {
@@ -175,67 +173,67 @@ public class BackgroundAPI {
     }
 
     static void reloadConfig() {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Config.reload(null);
         }
     }
 
     static void reloadPermissions() {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Permissions.clear();
         }
     }
 
     static void reloadPermissions(Player p) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Permissions.remove(p.getUniqueId());
         }
     }
 
     static void enableCheck(HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().setEnabled(null, true);
         }
     }
 
     static void disableCheck(HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().setEnabled(null, false);
         }
     }
 
     static void enableSilentChecking(Player p, HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().addSilentUser(p.getUniqueId(), "Developer-API", 0);
         }
     }
 
     static void disableSilentChecking(Player p, HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().removeSilentUser(p.getUniqueId());
         }
     }
 
     static void enableSilentChecking(HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().setSilent("true");
         }
     }
 
     static void disableSilentChecking(HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().setSilent("false");
         }
     }
 
     static void cancelCheck(Player p, HackType HackType, int ticks) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().addDisabledUser(p.getUniqueId(), "Developer-API", ticks);
         }
     }
 
     static void cancelCheckPerVerbose(Player p, String string, int ticks) {
-        if (Settings.getBoolean("Important.enable_developer_api")) { // Keep the null pointer protection to prevent the method from acting differently
+        if (Config.settings.getBoolean("Important.enable_developer_api")) { // Keep the null pointer protection to prevent the method from acting differently
             UUID uuid = p.getUniqueId();
 
             for (HackType hackType : Enums.HackType.values()) {
@@ -245,19 +243,19 @@ public class BackgroundAPI {
     }
 
     static void startCheck(Player p, HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().addDisabledUser(p.getUniqueId(), "Developer-API", 0);
         }
     }
 
     static void stopCheck(Player p, HackType HackType) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType.getCheck().removeDisabledUser(p.getUniqueId());
         }
     }
 
     static void resetVL() {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             HackType[] hackTypes = Enums.HackType.values();
 
             for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
@@ -269,7 +267,7 @@ public class BackgroundAPI {
     }
 
     static void resetVL(Player p) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
             if (player != null) {
@@ -291,7 +289,7 @@ public class BackgroundAPI {
     }
 
     static void banPlayer(UUID uuid, String reason) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             BanManagement.ban(uuid, Bukkit.getConsoleSender(), reason, 0L);
         }
     }
@@ -301,7 +299,7 @@ public class BackgroundAPI {
     }
 
     static void unbanPlayer(UUID uuid) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             BanManagement.unban(uuid, false);
         }
     }
@@ -344,7 +342,7 @@ public class BackgroundAPI {
     }
 
     static boolean addToWave(UUID uuid, String command) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Wave.add(uuid, command);
             return true;
         }
@@ -352,19 +350,19 @@ public class BackgroundAPI {
     }
 
     static void removeFromWave(UUID uuid) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Wave.remove(uuid);
         }
     }
 
     static void clearWave() {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Wave.clear();
         }
     }
 
     static void runWave() {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Wave.start();
         }
     }
@@ -386,7 +384,7 @@ public class BackgroundAPI {
     }
 
     static void addPermission(Player p, Permission permission) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             Permissions.add(p, permission);
         }
     }
@@ -429,13 +427,13 @@ public class BackgroundAPI {
     }
 
     static void setConfiguredCheckName(HackType hackType, String name) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             hackType.getCheck().setName(name);
         }
     }
 
     static void disableVelocityProtection(Player p, int ticks) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
             if (player != null) {
@@ -447,7 +445,7 @@ public class BackgroundAPI {
     }
 
     static void setOnGround(Player p, int ticks) {
-        if (Settings.getBoolean("Important.enable_developer_api")) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
             SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
             if (player != null) {

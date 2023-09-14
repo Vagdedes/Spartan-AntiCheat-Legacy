@@ -4,7 +4,7 @@ import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.api.ViolationResetEvent;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.performance.FalsePositiveDetection;
@@ -16,7 +16,6 @@ import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
-import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
@@ -33,7 +32,6 @@ public class LiveViolation {
 
     private static final Map<LiveViolation, String> maxLevel =
             MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
-    private static final Buffer buffer = new Buffer(!MultiVersion.folia);
 
     static {
         if (Register.isPluginLoaded()) {
@@ -194,7 +192,7 @@ public class LiveViolation {
                     this.setLastViolation(); // Always after false-positive check
 
                     // API Event
-                    boolean enabledDeveloperAPI = Settings.getBoolean("Important.enable_developer_api");
+                    boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
                     PlayerViolationEvent playerViolationEvent;
 
                     if (enabledDeveloperAPI) {
@@ -395,7 +393,7 @@ public class LiveViolation {
             Player player = this.player.getPlayer();
 
             if (player != null && player.isOnline()) {
-                if (Settings.getBoolean("Important.enable_developer_api")) {
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     event = new ViolationResetEvent(player, this.getHackType());
                     Register.manager.callEvent(event);
                 } else {

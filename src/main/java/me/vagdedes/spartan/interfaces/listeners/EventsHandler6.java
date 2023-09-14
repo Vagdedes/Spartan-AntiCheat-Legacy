@@ -1,26 +1,26 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.implementation.combat.HitReach;
-import me.vagdedes.spartan.checks.implementation.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.implementation.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.implementation.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.implementation.inventory.ItemDrops;
-import me.vagdedes.spartan.checks.implementation.player.NoSwing;
+import me.vagdedes.spartan.checks.combat.HitReach;
+import me.vagdedes.spartan.checks.combat.VelocityCheck;
+import me.vagdedes.spartan.checks.combat.criticals.Criticals;
+import me.vagdedes.spartan.checks.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.inventory.ItemDrops;
+import me.vagdedes.spartan.checks.player.NoSwing;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.compatibility.manual.essential.Essentials;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.chat.ChatProtection;
+import me.vagdedes.spartan.features.commands.RawCommands;
+import me.vagdedes.spartan.features.commands.UnbanCommand;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.protections.Explosion;
-import me.vagdedes.spartan.handlers.commands.RawCommands;
-import me.vagdedes.spartan.handlers.commands.UnbanCommand;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.TestServer;
@@ -87,7 +87,7 @@ public class EventsHandler6 implements Listener {
             return;
         }
         // System
-        if (!TestServer.isIdentified() && Settings.getBoolean("Important.violations_reset_on_kick")) {
+        if (!TestServer.isIdentified() && Config.settings.getBoolean("Important.violations_reset_on_kick")) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 p.getViolations(hackType).reset();
             }
@@ -188,7 +188,7 @@ public class EventsHandler6 implements Listener {
                                            boolean cancelled) {
         if (!cancelled
                 || TestServer.isIdentified()
-                || Settings.getBoolean("Detections.allow_cancelled_hit_checking")
+                || Config.settings.getBoolean("Detections.allow_cancelled_hit_checking")
                 || PlayerData.isInActivePlayerCombat(player)) {
             boolean hasMultipleHitCooldown = !cooldowns.canDo(cooldownKey) && CombatUtils.isNewPvPMechanic(player, entity);
 

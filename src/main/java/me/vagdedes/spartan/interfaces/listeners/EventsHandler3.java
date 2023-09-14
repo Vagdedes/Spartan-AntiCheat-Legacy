@@ -1,18 +1,18 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.implementation.combat.FastBow;
-import me.vagdedes.spartan.checks.implementation.combat.fastClicks.FastClicks;
-import me.vagdedes.spartan.checks.implementation.exploits.Chat;
-import me.vagdedes.spartan.checks.implementation.exploits.SignLineLength;
-import me.vagdedes.spartan.checks.implementation.inventory.ItemDrops;
-import me.vagdedes.spartan.checks.implementation.movement.NoFall;
-import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.implementation.player.FastEat;
-import me.vagdedes.spartan.checks.implementation.player.NoSwing;
-import me.vagdedes.spartan.checks.implementation.world.BlockReach;
-import me.vagdedes.spartan.checks.implementation.world.FastBreak;
-import me.vagdedes.spartan.checks.implementation.world.GhostHand;
-import me.vagdedes.spartan.checks.implementation.world.ImpossibleActions;
+import me.vagdedes.spartan.checks.combat.FastBow;
+import me.vagdedes.spartan.checks.combat.fastClicks.FastClicks;
+import me.vagdedes.spartan.checks.exploits.Chat;
+import me.vagdedes.spartan.checks.exploits.SignLineLength;
+import me.vagdedes.spartan.checks.inventory.ItemDrops;
+import me.vagdedes.spartan.checks.movement.NoFall;
+import me.vagdedes.spartan.checks.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.player.FastEat;
+import me.vagdedes.spartan.checks.player.NoSwing;
+import me.vagdedes.spartan.checks.world.BlockReach;
+import me.vagdedes.spartan.checks.world.FastBreak;
+import me.vagdedes.spartan.checks.world.GhostHand;
+import me.vagdedes.spartan.checks.world.ImpossibleActions;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.features.chat.ChatProtection;
 import me.vagdedes.spartan.features.chat.StaffChat;
@@ -95,11 +95,11 @@ public class EventsHandler3 implements Listener {
 
             if (cancelled) {
                 // Detections
-                NoFall.manageRatio(p, dmg, damage, true);
+               p.getExecutor(Enums.HackType.NoFall).handle(e);
             } else {
                 // Detections
                 if (dmg == EntityDamageEvent.DamageCause.FALL) {
-                    NoFall.handleDamage(p);
+                    p.getExecutor(Enums.HackType.NoFall).handle(e);
                 }
 
                 // Handlers
@@ -108,7 +108,7 @@ public class EventsHandler3 implements Listener {
                 Explosion.runDamage(p, null, dmg);
 
                 // Detections
-                NoFall.manageRatio(p, dmg, e.getDamage(), false);
+                ((NoFall) p.getExecutor(Enums.HackType.NoFall)).manageRatio(dmg, e.getDamage(), false);
 
                 if (FalseFallDamage.runDamage(p, dmg)) {
                     e.setCancelled(true);

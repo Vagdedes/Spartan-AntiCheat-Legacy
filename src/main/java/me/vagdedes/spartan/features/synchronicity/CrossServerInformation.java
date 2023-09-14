@@ -2,7 +2,6 @@ package me.vagdedes.spartan.features.synchronicity;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
@@ -243,7 +242,7 @@ public class CrossServerInformation {
 
     public static String getOption() {
         for (String option : options) {
-            String value = Settings.getString(option);
+            String value = Config.settings.getString(option);
 
             if (!option.equals(value)) {
                 return option;
@@ -256,7 +255,7 @@ public class CrossServerInformation {
         if (serverName != null) {
             return serverName;
         }
-        String option = Settings.getString(getOption());
+        String option = Config.settings.getString(getOption());
         int length = option.length();
 
         if (length > 0) {

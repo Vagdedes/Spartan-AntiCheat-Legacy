@@ -4,7 +4,6 @@ import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.compatibility.necessary.AntiAltAccount;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
 import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
@@ -356,10 +355,10 @@ public class CloudConnections {
 
     public static void executeDiscordWebhook(String webhook, UUID uuid, String name, int x, int y, int z, String type, String information) { // Once
         if (!CloudFeature.recentError(System.currentTimeMillis()) && IDs.isValid()) {
-            String url = Settings.getString("Discord." + webhook + "_webhook_url");
+            String url = Config.settings.getString("Discord." + webhook + "_webhook_url");
 
             if (url.startsWith("https://") || url.startsWith("http://")) {
-                String color = Settings.getString("Discord.webhook_hex_color");
+                String color = Config.settings.getString("Discord.webhook_hex_color");
                 int length = color.length();
 
                 if (length >= 3 && length <= 6) {
@@ -381,7 +380,7 @@ public class CloudConnections {
                                             + z + CloudFeature.separator
                                             + StringUtils.getClearColorString(type) + CloudFeature.separator
                                             + StringUtils.getClearColorString(information) + CloudFeature.separator
-                                            + Settings.getBoolean(Settings.showEcosystemOption), "UTF-8"));
+                                            + Config.settings.getBoolean(Settings.showEcosystemOption), "UTF-8"));
 
                             if (results.length > 0) {
                                 String data = results[0];
@@ -492,7 +491,7 @@ public class CloudConnections {
                         .append(StringUtils.toString(Register.manager.getPlugins(), comma))
                         .append(newLine).append(newLine); // 2 lines
 
-                List<Compatibility.CompatibilityType> compatibilities = Compatibility.getActiveCompatibilities();
+                List<Compatibility.CompatibilityType> compatibilities = Config.compatibility.getActiveCompatibilities();
                 if (compatibilities.size() > 0) {
                     StringBuilder compatibilitiesNames = new StringBuilder();
 
@@ -516,7 +515,7 @@ public class CloudConnections {
                     File file = new File(dataFolder + fileName);
 
                     if (file.exists() && file.isFile()
-                            && !fileName.equals(Messages.getFile().getName())) {
+                            && !fileName.equals(Config.messages.getFile().getName())) {
                         switch (fileName) {
                             case ManageConfiguration.checksFileName:
                                 Set<Map.Entry<String, Object>> options = check.getOptions();

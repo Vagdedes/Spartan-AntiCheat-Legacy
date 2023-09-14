@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.protections;
 
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.handlers.connection.Latency;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
@@ -124,7 +124,7 @@ public class LagLeniencies {
             } else {
                 pingDelay = Math.min(
                         hasInconsistencies(p, "ping") ? Math.max(badPing, latency) : latency,
-                        Math.min(Settings.getInteger("Protections.max_supported_player_latency"), maxAllowedPing)
+                        Math.min(Config.settings.getInteger("Protections.max_supported_player_latency"), maxAllowedPing)
                 );
             }
         }
@@ -132,7 +132,7 @@ public class LagLeniencies {
         // Separator
         double tpsDelay;
 
-        if (!Settings.getBoolean(Settings.tpsProtectionOption)) {
+        if (!Config.settings.getBoolean(Config.settings.tpsProtectionOption)) {
             tpsDelay = 0.0;
         } else {
             double tps = TPS.get(p, false);
@@ -162,7 +162,7 @@ public class LagLeniencies {
         String structure = "lag-leniences=feature=";
 
         if (key == null) {
-            boolean tps = Settings.getBoolean(Settings.tpsProtectionOption),
+            boolean tps = Config.settings.getBoolean(Config.settings.tpsProtectionOption),
                     ping = Latency.canUseProtection();
 
             if (tps || ping) {

@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.gui.configuration;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Messages;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
@@ -31,7 +30,7 @@ public class ManageChecks {
 
     public static void open(SpartanPlayer p) {
         if (!Permissions.has(p, Permission.MANAGE)) {
-            p.sendInventoryCloseMessage(Messages.get("no_permission"));
+            p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             return;
         }
         Inventory inv = p.createInventory(54, menu);
@@ -214,7 +213,7 @@ public class ManageChecks {
         item = item.startsWith("§") ? item.substring(2) : item;
 
         if (!Permissions.has(p, Permission.MANAGE)) {
-            p.sendInventoryCloseMessage(Messages.get("no_permission"));
+            p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             return true;
         }
         if (item.equals("Back")) {

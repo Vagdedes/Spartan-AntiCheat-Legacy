@@ -1,19 +1,19 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.implementation.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.implementation.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.implementation.exploits.ChunkUpdates;
-import me.vagdedes.spartan.checks.implementation.exploits.HeadPosition;
-import me.vagdedes.spartan.checks.implementation.exploits.UndetectedMovement;
-import me.vagdedes.spartan.checks.implementation.inventory.ImpossibleInventory;
-import me.vagdedes.spartan.checks.implementation.movement.EntityMove;
-import me.vagdedes.spartan.checks.implementation.movement.MorePackets;
-import me.vagdedes.spartan.checks.implementation.movement.NoFall;
-import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.implementation.movement.irregularmovements.IrregularMovements;
-import me.vagdedes.spartan.checks.implementation.movement.speed.Speed;
-import me.vagdedes.spartan.checks.implementation.movement.speed.SprintSpeed;
-import me.vagdedes.spartan.checks.implementation.movement.speed.WaterSpeed;
+import me.vagdedes.spartan.checks.combat.VelocityCheck;
+import me.vagdedes.spartan.checks.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.exploits.ChunkUpdates;
+import me.vagdedes.spartan.checks.exploits.HeadPosition;
+import me.vagdedes.spartan.checks.exploits.UndetectedMovement;
+import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
+import me.vagdedes.spartan.checks.movement.EntityMove;
+import me.vagdedes.spartan.checks.movement.MorePackets;
+import me.vagdedes.spartan.checks.movement.NoFall;
+import me.vagdedes.spartan.checks.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
+import me.vagdedes.spartan.checks.movement.speed.Speed;
+import me.vagdedes.spartan.checks.movement.speed.SprintSpeed;
+import me.vagdedes.spartan.checks.movement.speed.WaterSpeed;
 import me.vagdedes.spartan.features.chat.ChatProtection;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.protections.ServerFlying;
@@ -253,8 +253,8 @@ public class EventsHandler7 implements Listener {
                 // Detections
                 if (firstTick || repetition) {
                     if (!crawling) {
-                        NoFall.run(p, to, from, ver, oVer, hor, air); // Repetitive (Optimised)
-                        NoSlowdown.run(p, to, from, ver, hor, oHor); // Repetitive (Optimised)
+                        p.getExecutor(NoFall.check).run(); // Repetitive (Optimised)
+                        NoSlowdown.run(p, from, ver, hor, oHor); // Repetitive (Optimised)
                         EntityMove.run(p, to, from, hor, ver, oVer, rem, oBox, air); // Repetitive (Optimised)
                     }
                     IrregularMovements.run(p, to, from, ver, oVer, hor, oHor, rem, oBox, air); // Repetitive (Optimised)

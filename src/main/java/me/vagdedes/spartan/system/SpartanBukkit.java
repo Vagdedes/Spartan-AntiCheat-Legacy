@@ -117,7 +117,8 @@ public class SpartanBukkit {
     // Separator
 
     public static boolean isSynchronised() {
-        return Bukkit.isPrimaryThread() || !Register.isPluginEnabled();
+        return Bukkit.isPrimaryThread()
+                || !Register.isPluginEnabled();
     }
 
     // Separator

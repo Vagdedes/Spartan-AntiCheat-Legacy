@@ -1,11 +1,11 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.implementation.movement.MorePackets;
-import me.vagdedes.spartan.checks.implementation.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.implementation.player.FastEat;
-import me.vagdedes.spartan.checks.implementation.player.FastHeal;
-import me.vagdedes.spartan.checks.implementation.player.NoSwing;
-import me.vagdedes.spartan.checks.implementation.world.*;
+import me.vagdedes.spartan.checks.movement.MorePackets;
+import me.vagdedes.spartan.checks.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.player.FastEat;
+import me.vagdedes.spartan.checks.player.FastHeal;
+import me.vagdedes.spartan.checks.player.NoSwing;
+import me.vagdedes.spartan.checks.world.*;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;

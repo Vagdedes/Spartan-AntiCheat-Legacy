@@ -4,14 +4,12 @@ import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
-import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
@@ -40,7 +38,6 @@ public class Check {
             maxCommands = 10,
             maxMath = 10,
             maxViolationsPerCycle = 100,
-            violationsPerTick = (int) (maxViolationsPerCycle / (violationCycleSeconds / TPS.tickTime)),
             sufficientViolations = (maxViolationsPerCycle / 10),
             minimumDefaultCancelViolation = 1,
             maximumDefaultCancelViolation = 6,
@@ -487,7 +484,7 @@ public class Check {
                 }
             } else {
                 this.canPunishByDefault = canPunishByDefault(hackType);
-                File file = Settings.getFile();
+                File file = Config.settings.getFile();
                 String[] commandsAfterException = new String[]{};
 
                 try {
@@ -495,9 +492,9 @@ public class Check {
                         for (int position = 1; position <= commands.size(); position++) {
                             ConfigUtils.add(file, "Punishments.Commands." + position, commands.get(position - 1));
                         }
-                        List<String> list = Settings.getPunishments();
+                        List<String> list = Config.settings.getPunishments();
 
-                        if (list.size() > 0) {
+                        if (!list.isEmpty()) {
                             commandsAfterException = list.toArray(new String[0]);
                         }
                     } else {
@@ -619,11 +616,11 @@ public class Check {
                 for (String world : worldsSplit) {
                     world = world.replace(" ", "");
 
-                    if (world.length() > 0) {
+                    if (!world.isEmpty()) {
                         set.add(world.toLowerCase());
                     }
                 }
-                if (set.size() > 0) {
+                if (!set.isEmpty()) {
                     this.disabledWorlds = set.toArray(new String[0]);
                 } else {
                     this.disabledWorlds = new String[]{};
@@ -752,7 +749,7 @@ public class Check {
             if (enabled[ordinal] != b) {
                 CheckToggleEvent event;
 
-                if (Settings.getBoolean("Important.enable_developer_api")) {
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
                     Register.manager.callEvent(event);
                 } else {
@@ -1103,7 +1100,7 @@ public class Check {
             switch (s) {
                 case "dynamic":
                     if (silent != 2) {
-                        if (Settings.getBoolean("Important.enable_developer_api")) {
+                        if (Config.settings.getBoolean("Important.enable_developer_api")) {
                             CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.ENABLE);
                             Register.manager.callEvent(event);
 
@@ -1117,7 +1114,7 @@ public class Check {
                     break;
                 case "true":
                     if (silent != 1) {
-                        if (Settings.getBoolean("Important.enable_developer_api")) {
+                        if (Config.settings.getBoolean("Important.enable_developer_api")) {
                             CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.ENABLE);
                             Register.manager.callEvent(event);
 
@@ -1131,7 +1128,7 @@ public class Check {
                     break;
                 case "false":
                     if (silent != 0) {
-                        if (Settings.getBoolean("Important.enable_developer_api")) {
+                        if (Config.settings.getBoolean("Important.enable_developer_api")) {
                             CheckSilentToggleEvent event = new CheckSilentToggleEvent(this.hackType, Enums.ToggleAction.DISABLE);
                             Register.manager.callEvent(event);
 

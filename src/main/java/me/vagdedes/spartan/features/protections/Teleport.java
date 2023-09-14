@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.protections;
 
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
@@ -17,7 +17,7 @@ public class Teleport {
         if (!p.getHandlers().isDisabled(Handlers.HandlerType.Teleport)) {
             UUID uuid = p.getUniqueId();
 
-            if (Settings.getBoolean("Protections.use_teleport_protection")) {
+            if (Config.settings.getBoolean("Protections.use_teleport_protection")) {
                 for (Enums.HackType hackType : Enums.HackType.values()) {
                     hackType.getCheck().addSilentUser(uuid, reason, ticks);
                 }

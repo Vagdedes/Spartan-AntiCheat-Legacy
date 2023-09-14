@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.gui.helpers;
 
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.moderation.PlayerReports;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
@@ -175,7 +175,7 @@ public class PlayerStateLists {
             }
 
             if (listSize != limit) {
-                boolean option = Settings.getBoolean("Important.inventory_menu_empty_heads");
+                boolean option = Config.settings.getBoolean("Important.inventory_menu_empty_heads");
 
                 if (option) {
                     InventoryUtils.prepareDescription(lore, title);

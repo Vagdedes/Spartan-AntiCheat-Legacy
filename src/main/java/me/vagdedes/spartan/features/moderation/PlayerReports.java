@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.features.moderation;
 
-import me.vagdedes.spartan.configuration.Messages;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
@@ -29,13 +28,13 @@ public class PlayerReports {
 
     public static void menu(SpartanPlayer p, SpartanPlayer t) {
         if (p.equals(t)) {
-            p.sendMessage(ConfigUtils.replaceWithSyntax(p, Messages.get("failed_command"), null));
+            p.sendMessage(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("failed_command"), null));
             return;
         }
         int counter = 0;
         int size = 54;
         Inventory inv = p.createInventory(size, menu + t.getName());
-        String option = Settings.getString("Punishments.report_reasons");
+        String option = Config.settings.getString("Punishments.report_reasons");
 
         for (String reason : (option != null ? option.split(separator) : reasons)) {
             counter++;
@@ -57,7 +56,7 @@ public class PlayerReports {
         SpartanPlayer t = SpartanBukkit.getPlayer(title.substring(menu.length()));
 
         if (t == null) {
-            p.sendInventoryCloseMessage(Messages.get("player_not_found_message"));
+            p.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
         } else {
             Moderation.report(p, t, item);
             p.sendInventoryCloseMessage(null);

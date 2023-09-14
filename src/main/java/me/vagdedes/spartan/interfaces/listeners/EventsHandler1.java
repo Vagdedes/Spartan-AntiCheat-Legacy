@@ -1,13 +1,13 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.implementation.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.implementation.inventory.ImpossibleInventory;
-import me.vagdedes.spartan.checks.implementation.movement.MorePackets;
-import me.vagdedes.spartan.checks.implementation.movement.irregularmovements.IrregularMovements;
-import me.vagdedes.spartan.checks.implementation.player.AutoRespawn;
-import me.vagdedes.spartan.checks.implementation.world.ImpossibleActions;
+import me.vagdedes.spartan.checks.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
+import me.vagdedes.spartan.checks.movement.MorePackets;
+import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
+import me.vagdedes.spartan.checks.player.AutoRespawn;
+import me.vagdedes.spartan.checks.world.ImpossibleActions;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.chat.ChatProtection;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.notifications.SuspicionNotifications;
@@ -64,7 +64,7 @@ public class EventsHandler1 implements Listener {
         SpartanBukkit.runDelayedTask(p, () -> {
             if (p != null) {
                 // Configuration
-                Settings.runOnLogin(p);
+                Config.settings.runOnLogin(p);
 
                 // Features
                 if (!SpartanMenu.notify(p)) {
