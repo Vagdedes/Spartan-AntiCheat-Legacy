@@ -1,45 +1,49 @@
 package me.vagdedes.spartan.checks.combat.killAura;
 
-import me.vagdedes.spartan.configuration.Config;
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-public class Strafe {
+public class Strafe extends DetectionExecutor {
 
-    private static final Map<UUID, Vector> directions = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private final KillAura killAura;
+
+    Strafe(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        killAura = (KillAura) executor;
+    }
+
+    private Vector oldDirection = null;
+
     private static final String
             key = Strafe.class.getName(),
             nmsKey = key + "=nms";
-    private static final double
-            differenceRequirement = 0.001;
+    private static final double differenceRequirement = 0.001;
 
-    static void remove(SpartanPlayer player) {
-        directions.remove(player.getUniqueId());
+    void remove() {
+        oldDirection = null;
     }
 
-    static void run(SpartanPlayer player, SpartanLocation location, Buffer buffer) {
-        if (player.isMoving(true) && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
+    void run(SpartanLocation location, Buffer buffer) {
+        if (player.isMoving(true)
+                && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
             List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
-            if (entities.size() > 0) {
+            if (!entities.isEmpty()) {
                 for (Entity nearbyEntity : entities) {
                     if (nearbyEntity instanceof LivingEntity) {
                         LivingEntity entity = (LivingEntity) nearbyEntity;
 
-                        if (KillAura.canRunEntity(player, entity)) {
+                        if (killAura.canRunEntity(entity)) {
                             double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
                             if (utility != null) {
@@ -49,12 +53,10 @@ public class Strafe {
 
                                 if (distance > entityWidth // We want the player in a certain distance, otherwise we risk having easily low width
                                         && Math.abs(width) <= Math.min(entityWidth + 0.1, KillAura.normalWidthToPlayerView)) {
-                                    UUID uuid = player.getUniqueId();
-                                    Vector direction = location.getDirection(),
-                                            oldDirection = directions.get(uuid);
+                                    Vector direction = location.getDirection();
 
                                     if (oldDirection != null) {
-                                        Decimals decimals = player.getDecimals(KillAura.check);
+                                        Decimals decimals = player.getDecimals(hackType);
                                         double directionalDistance = direction.distance(oldDirection),
                                                 oldDirectionalDistance = decimals.get(key, 0.0),
                                                 nmsDistance = player.getNmsDistance(),
@@ -70,7 +72,7 @@ public class Strafe {
                                             if (distanceDifference < differenceRequirement
                                                     && nmsDistanceDifference < differenceRequirement
                                                     && buffer.start(key, 20) == 7) {
-                                                KillAura.violate(player, "type: strafe"
+                                                cancel("type: strafe"
                                                         + ", directional-distance: " + directionalDistance
                                                         + ", directional-distance-difference: " + distanceDifference
                                                         + ", nms-distance: " + nmsDistance
@@ -85,7 +87,7 @@ public class Strafe {
                                         decimals.set(key, directionalDistance);
                                         decimals.set(nmsKey, nmsDistance);
                                     }
-                                    directions.put(uuid, direction);
+                                    oldDirection = direction;
                                     break; // We just need one entity in angle to run this detection, so we break the loop
                                 }
                             }

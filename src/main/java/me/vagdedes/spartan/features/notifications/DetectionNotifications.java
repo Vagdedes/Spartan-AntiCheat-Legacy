@@ -187,10 +187,8 @@ public class DetectionNotifications {
                         if (miningHistory != null) {
                             String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
                             miningHistory.increaseMines(environment, amount);
-                            XRay.run(player,
-                                    environment,
-                                    miningHistory,
-                                    ore, pluralKey);
+                            player.getExecutor(Enums.HackType.XRay).handle(
+                                    new Object[]{environment, miningHistory, ore, pluralKey});
                         }
                     }
                 }

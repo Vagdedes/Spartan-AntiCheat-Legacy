@@ -1,77 +1,102 @@
 package me.vagdedes.spartan.checks.inventory;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClicks {
+public class InventoryClicks extends CheckExecutor {
 
     private static final HackType check = HackType.InventoryClicks;
 
-    public static void run(SpartanPlayer p, ItemStack item, ClickType click) {
-        if (!p.canRunCheck(check, true)
-                || click.isCreativeAction() || click.isKeyboardClick()
-                || item == null || item.getItemMeta() == null
-                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) {
-            return;
-        }
-        Material material = item.getType();
+    public InventoryClicks(SpartanPlayer player) {
+        super(check, player);
+    }
 
-        if (BlockUtils.isSensitive(p, material)) {
-            return;
-        }
-        Buffer buffer = p.getBuffer(check);
-        String key = "";
-        boolean quick = !PlayerData.isUsingAnInventory(p, 8);
-        boolean shift = click.isShiftClick();
-        String type = BlockUtils.materialToString(material);
+    @Override
+    public boolean handle(Object object) {
+        InventoryClickEvent event = (InventoryClickEvent) object;
+        ItemStack item = event.getCurrentItem();
+        ClickType click = event.getClick();
 
-        int newHash = type.hashCode();
-        int oldHash = p.getBuffer(check).get(key + "hash");
-        buffer.set(key + "hash", newHash);
+        if (canDo()
+                && !click.isCreativeAction()
+                && !click.isKeyboardClick()
+                && item != null
+                && item.getItemMeta() != null) {
+            Material material = item.getType();
 
-        if (shift && !quick && !PlayerData.isUsingTheCursor(p) && p.getViolations(check).hasLevel()
-                && buffer.start(key + "shift", 5) > Math.min(10 + LagLeniencies.getDelay(p), 20)) { // Inventory
-            buffer.remove(key + "shift");
-            new HackPrevention(p, check, "type: shift, item: " + type);
-        } else {
-            Timer timer = p.getTimer(check);
-            long time = timer.get(key + "time");
+            if (!BlockUtils.isSensitive(player, material)) {
+                Buffer buffer = player.getBuffer(check);
+                String key = "";
+                boolean quick = !PlayerData.isUsingAnInventory(player, 8);
+                boolean shift = click.isShiftClick();
+                String type = BlockUtils.materialToString(material);
 
-            if (timer.has(time) && (!shift && !quick || newHash != oldHash)) {
-                if (time < 50L) {
-                    key += "fast";
+                int newHash = type.hashCode();
+                int oldHash = player.getBuffer(check).get(key + "hash");
+                buffer.set(key + "hash", newHash);
 
-                    if (buffer.start(key, 5) >= (time == 0L ? 4 : 2)) {
-                        buffer.remove(key);
-                        new HackPrevention(p, check, "type: fast, ms: " + time + ", item: " + type);
-                    }
-                } else if (time < 100L) {
-                    key += "average";
+                if (shift
+                        && !quick
+                        && !PlayerData.isUsingTheCursor(player)
+                        && player.getViolations(check).hasLevel()
+                        && buffer.start(key + "shift", 5) > Math.min(10 + LagLeniencies.getDelay(player), 20)) { // Inventory
+                    buffer.remove(key + "shift");
+                    cancel("type: shift, item: " + type);
+                } else {
+                    Timer timer = player.getTimer(check);
+                    long time = timer.get(key + "time");
 
-                    if (buffer.start(key, 5) >= 4) {
-                        buffer.remove(key);
-                        new HackPrevention(p, check, "type: average, ms: " + time + ", item: " + type);
-                    }
-                } else if (time < 150L) {
-                    key += "slow";
+                    if (timer.has(time)
+                            && (!shift && !quick || newHash != oldHash)) {
+                        if (time < 50L) {
+                            key += "fast";
 
-                    if (buffer.start(key, 10) >= 8) {
-                        buffer.remove(key);
-                        new HackPrevention(p, check, "type: slow, ms: " + time + ", item: " + type);
+                            if (buffer.start(key, 5) >= (time == 0L ? 4 : 2)) {
+                                buffer.remove(key);
+                                cancel("type: fast, ms: " + time + ", item: " + type);
+                            }
+                        } else if (time < 100L) {
+                            key += "average";
+
+                            if (buffer.start(key, 5) >= 4) {
+                                buffer.remove(key);
+                                cancel("type: average, ms: " + time + ", item: " + type);
+                            }
+                        } else if (time < 150L) {
+                            key += "slow";
+
+                            if (buffer.start(key, 10) >= 8) {
+                                buffer.remove(key);
+                                cancel("type: slow, ms: " + time + ", item: " + type);
+                            }
+                        }
                     }
                 }
+                player.getTimer(check).set(key + "time");
             }
         }
-        p.getTimer(check).set(key + "time");
+        return false;
+    }
+
+    @Override
+    public boolean run() {
+        return false;
+    }
+
+    @Override
+    protected boolean canDo() {
+        return player.canRunCheck(check, true)
+                && !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
     }
 }

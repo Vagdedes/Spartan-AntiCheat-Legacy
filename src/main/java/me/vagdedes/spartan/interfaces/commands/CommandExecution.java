@@ -3,7 +3,6 @@ package me.vagdedes.spartan.interfaces.commands;
 import io.signality.utils.system.Events;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.checks.exploits.Chat;
 import me.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
@@ -19,13 +18,13 @@ import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.gui.spartan.SupportIncompatibleItems;
+import me.vagdedes.spartan.handlers.connection.IDs;
+import me.vagdedes.spartan.handlers.connection.Piracy;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
-import me.vagdedes.spartan.system.IDs;
-import me.vagdedes.spartan.system.Piracy;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.TimeUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
@@ -314,7 +313,7 @@ public class CommandExecution implements CommandExecutor {
                     }
                     String argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
-                    if (isPlayer ? argumentsToString.length() > Chat.getMaxLength(player) : argumentsToString.length() > maxConnectedArgumentLength) {
+                    if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                         sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                         return true;
                     }
@@ -526,7 +525,7 @@ public class CommandExecution implements CommandExecutor {
                             sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                             return true;
                         }
-                        if (isPlayer ? argumentsToString.length() > Chat.getMaxLength(player) : argumentsToString.length() > maxConnectedArgumentLength) {
+                        if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                             sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                             return true;
                         }
@@ -543,7 +542,7 @@ public class CommandExecution implements CommandExecutor {
                             sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                             return true;
                         }
-                        if (isPlayer ? argumentsToString.length() > Chat.getMaxLength(player) : argumentsToString.length() > maxConnectedArgumentLength) {
+                        if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                             sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                             return true;
                         }
@@ -598,7 +597,7 @@ public class CommandExecution implements CommandExecutor {
                             sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                             return true;
                         }
-                        if (isPlayer ? argumentsToString.length() > Chat.getMaxLength(player) : argumentsToString.length() > maxConnectedArgumentLength) {
+                        if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                             sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                             return true;
                         }
@@ -678,7 +677,7 @@ public class CommandExecution implements CommandExecutor {
                             }
                             argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
-                            if (isPlayer ? argumentsToString.length() > Chat.getMaxLength(player) : argumentsToString.length() > maxConnectedArgumentLength) {
+                            if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                 sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                                 return true;
                             }
@@ -727,7 +726,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
-                            if (isPlayer ? argumentsToString.length() > Chat.getMaxLength(player) : argumentsToString.length() > maxConnectedArgumentLength) {
+                            if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                 sender.sendMessage(Config.messages.getColorfulString("failed_command")); // Different reply, do not change
                                 return true;
                             }
@@ -745,7 +744,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
-                            if (isPlayer ? argumentsToString.length() > Chat.getMaxLength(player) : argumentsToString.length() > maxConnectedArgumentLength) {
+                            if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                 sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                                 return true;
                             }

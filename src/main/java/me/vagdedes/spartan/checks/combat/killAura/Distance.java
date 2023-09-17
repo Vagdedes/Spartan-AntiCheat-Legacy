@@ -2,6 +2,8 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of usually legitimate but abnormally long and consistent distance
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.data.Buffer;
@@ -17,12 +19,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-public class Distance {
+public class Distance extends DetectionExecutor {
+
+    Distance(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+    }
 
     private static final String key = Distance.class.getName();
     private static final int groundBlockRequirement = 2;
 
-    static void run(SpartanPlayer player, SpartanLocation location, LivingEntity entity, double distance, boolean isFightParticipant) {
+    void run(SpartanLocation location, LivingEntity entity, double distance, boolean isFightParticipant) {
         if (!NoHitDelay.hasCooldown(player)
                 && (!isFightParticipant || PlayerData.receivedPlayerDamage(player)) // We want the player in active combat or just starting combat
                 && CombatUtils.areFacingEachOther(player, entity)
@@ -49,11 +55,11 @@ public class Distance {
                                         4.0, PotionEffectType.SPEED);
 
                         if (averageDistance >= limit) { // Make sure the player's average distance is appropriate
-                            Buffer buffer = player.getBuffer(KillAura.check);
+                            Buffer buffer = player.getBuffer(hackType);
 
                             if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 6) == 3) {
                                 buffer.remove(key);
-                                KillAura.violate(player, "type: distance"
+                                cancel("type: distance"
                                         + ", time-passed: " + timePassed
                                         + ", diagonal-distance: " + distance
                                         + ", average-distance: " + averageDistance

@@ -5,11 +5,11 @@ import me.vagdedes.spartan.configuration.Settings;
 import me.vagdedes.spartan.features.important.Permissions;
 import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
+import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.system.IDs;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.StringUtils;
 

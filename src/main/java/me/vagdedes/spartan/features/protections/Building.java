@@ -1,6 +1,6 @@
 package me.vagdedes.spartan.features.protections;
 
-import me.vagdedes.spartan.checks.exploits.RapidDisallowedBuilding;
+import me.vagdedes.spartan.checks.exploits.Exploits;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.important.Permissions;
@@ -92,7 +92,7 @@ public class Building {
                     teleport(p, loc);
                     p.groundTeleport(false);
                 }
-                RapidDisallowedBuilding.run(p);
+                p.getExecutor(Enums.HackType.Exploits).handle(Exploits.BUILDING);
             }
         }
         timer.set(key);

@@ -4,7 +4,6 @@ import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.features.protections.Building;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
@@ -14,7 +13,6 @@ import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -24,7 +22,6 @@ import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,23 +54,25 @@ public class NoFall extends CheckExecutor {
             BlockUtils.hitbox, 0, BlockUtils.hitbox
     };
 
-    // Air
+    public NoFall(SpartanPlayer player) {
+        super(check, player);
+    }
 
     private void checkAir(SpartanLocation to, SpartanLocation from,
                           float fallDistanceDifference,
                           double fallDistanceRemaining, double vertical,
                           int airTicks,
                           boolean requiresSuspicion) {
-        if (check.getCheck().getBooleanOption("check_air", true)) {
+        if (hackType.getCheck().getBooleanOption("check_air", true)) {
             String cooldownKey = "air=cooldown";
             int cooldownTicks = 10;
 
             if (airTicks > 0 && vertical > -3.5 && !player.getHandlers().has(Handlers.HandlerType.ElytraWear) && !PlayerData.hasJumpEffect(player)) {
                 if (PatternUtils.isBlockPattern(air, to, true, BlockUtils.semi_solid)) {
-                    player.getCooldowns(check).add(cooldownKey, cooldownTicks);
+                    player.getCooldowns(hackType).add(cooldownKey, cooldownTicks);
                     return;
                 }
-                if (!player.getCooldowns(check).canDo(cooldownKey)) {
+                if (!player.getCooldowns(hackType).canDo(cooldownKey)) {
                     return;
                 }
 
@@ -85,19 +84,17 @@ public class NoFall extends CheckExecutor {
                     }
                 }
             } else {
-                player.getCooldowns(check).add(cooldownKey, cooldownTicks);
+                player.getCooldowns(hackType).add(cooldownKey, cooldownTicks);
             }
         }
     }
-
-    // Pattern
 
     private void checkPattern(SpartanLocation to, SpartanLocation from,
                               Buffer buffer,
                               float fallDistanceDifference,
                               double vertical,
                               int airTicks) {
-        if (check.getCheck().getBooleanOption("check_pattern", true)
+        if (hackType.getCheck().getBooleanOption("check_pattern", true)
                 && !player.isOnGroundCustom()
                 && !PlayerData.isOnGround(player, to, 0, -1, 0)
                 && !PlayerData.hasJumpEffect(player)) {
@@ -121,19 +118,17 @@ public class NoFall extends CheckExecutor {
         }
     }
 
-    // Landing
-
     private void checkLanding(SpartanLocation to, SpartanLocation loc, double vertical, float fall) {
-        if (check.getCheck().getBooleanOption("check_landing", true)
+        if (hackType.getCheck().getBooleanOption("check_landing", true)
                 && !PlayerData.hasSpeedEffect(player, to) && !PlayerData.hasJumpEffect(player)) {
             String key = "land";
 
             if (vertical < 0.0) {
                 if (fall >= 6.0f) {
-                    player.getCooldowns(check).add(key, 10);
+                    player.getCooldowns(hackType).add(key, 10);
                 }
             } else {
-                Cooldowns cooldowns = player.getCooldowns(check);
+                Cooldowns cooldowns = player.getCooldowns(hackType);
 
                 if (!cooldowns.canDo(key)) {
                     cooldowns.remove(key);
@@ -148,13 +143,11 @@ public class NoFall extends CheckExecutor {
         }
     }
 
-    // Spoof
-
     private void checkSpoof(SpartanLocation to, SpartanLocation from,
                             double vertical,
                             int airTicks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                && check.getCheck().getBooleanOption("check_spoof", true)
+                && hackType.getCheck().getBooleanOption("check_spoof", true)
                 && (airTicks >= 20 || airTicks >= 12 && player.isFalling(vertical))
                 && player.isOnGround() && !player.isOnGroundCustom() && player.isGroundSpoofing()
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraWear)
@@ -163,7 +156,7 @@ public class NoFall extends CheckExecutor {
         }
     }
 
-    // Ratio
+    // Separator
 
     private void manageRatio(SpartanLocation to, SpartanLocation from,
                              double vertical,
@@ -171,7 +164,7 @@ public class NoFall extends CheckExecutor {
                              boolean requiresSuspicion,
                              Buffer buffer, Decimals decimals) {
         if (!player.getHandlers().has(Handlers.HandlerType.BlockBreak)) {
-            if (check.getCheck().getBooleanOption("check_ratio", true)
+            if (hackType.getCheck().getBooleanOption("check_ratio", true)
                     && !PlayerData.hasJumpEffect(player)
                     && !BouncingBlocks.isBelow(player)) {
                 if (buffer.get(ratioKey + "cancelled") != 1) {
@@ -238,14 +231,14 @@ public class NoFall extends CheckExecutor {
                             double dmg, boolean cancelled) {
         String s = "ratio=";
 
-        if (!check.getCheck().getBooleanOption("check_ratio", true) || PlayerData.hasJumpEffect(player) || cause != EntityDamageEvent.DamageCause.FALL) {
-            clearRatio(player.getBuffer(check), player.getDecimals(check));
+        if (!hackType.getCheck().getBooleanOption("check_ratio", true) || PlayerData.hasJumpEffect(player) || cause != EntityDamageEvent.DamageCause.FALL) {
+            clearRatio(player.getBuffer(hackType), player.getDecimals(hackType));
         } else if (cancelled) {
-            Buffer buffer = player.getBuffer(check);
-            clearRatio(buffer, player.getDecimals(check));
+            Buffer buffer = player.getBuffer(hackType);
+            clearRatio(buffer, player.getDecimals(hackType));
             buffer.set(s + "cancelled", 1);
         } else {
-            player.getDecimals(check).set(s + "damage", dmg);
+            player.getDecimals(hackType).set(s + "damage", dmg);
         }
     }
 
@@ -254,21 +247,16 @@ public class NoFall extends CheckExecutor {
         decimals.remove(ratioKey + "damage");
     }
 
-    // Implementation
+    // Separator
 
-    public NoFall(SpartanPlayer player) {
-        super(check, player);
+    @Override
+    public boolean handle(Object object) {
+        player.getCooldowns(hackType).add("land", 10);
+        return false;
     }
 
     @Override
-    public void handle(Event event) {
-        if (event instanceof EntityDamageEvent) {
-            player.getCooldowns(check).add("land", 10);
-        }
-    }
-
-    @Override
-    public void run() {
+    public boolean run() {
         float fallDistance = player.getFallDistance();
         int airTicks = player.getTicksOnAir();
         double vertical = player.getNmsVerticalDistance();
@@ -282,12 +270,12 @@ public class NoFall extends CheckExecutor {
                 || oldVertical != 0.0) {
             SpartanLocation to = player.getEventToLocation();
             SpartanLocation from = player.getEventFromLocation();
-            Buffer buffer = player.getBuffer(check);
-            Decimals decimals = player.getDecimals(check);
+            Buffer buffer = player.getBuffer(hackType);
+            Decimals decimals = player.getDecimals(hackType);
 
             if (canDo()) {
-                AsyncDetection.run(player, check, () -> {
-                    boolean requiresSuspicion = player.getProfile().isSuspectedOrHacker(check),
+                runAsync(() -> {
+                    boolean requiresSuspicion = player.getProfile().isSuspectedOrHacker(hackType),
                             offGround = player.getBlocksOffGround(3, true, true) >= 2;
                     boolean bouncingBlocks = BouncingBlocks.isBelow(player);
 
@@ -320,12 +308,13 @@ public class NoFall extends CheckExecutor {
                 });
             }
         }
-        player.getDecimals(check).set("old", fallDistance);
+        player.getDecimals(hackType).set("old", fallDistance);
+        return false;
     }
 
     @Override
-    public boolean canDo() {
-        if (player.canRunCheck(check, true)) {
+    protected boolean canDo() {
+        if (player.canRunCheck(hackType, true)) {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
@@ -352,14 +341,14 @@ public class NoFall extends CheckExecutor {
 
                     if (boots != null && boots.containsEnchantment(Enchantment.PROTECTION_FALL)
                             || PatternUtils.isBlockPattern(canDo, loc, true, BlockUtils.web)) {
-                        clearRatio(player.getBuffer(check), player.getDecimals(check));
+                        clearRatio(player.getBuffer(hackType), player.getDecimals(hackType));
                         return false;
                     }
                     return true;
                 }
             }
         }
-        clearRatio(player.getBuffer(check), player.getDecimals(check));
+        clearRatio(player.getBuffer(hackType), player.getDecimals(hackType));
         return false;
     }
 }

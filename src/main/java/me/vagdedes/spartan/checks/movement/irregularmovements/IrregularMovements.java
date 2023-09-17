@@ -1,8 +1,9 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.protections.Building;
 import me.vagdedes.spartan.features.protections.Explosion;
@@ -16,22 +17,45 @@ import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.*;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
-public class IrregularMovements {
+public class IrregularMovements extends CheckExecutor {
 
     // Base
     public static final HackType check = HackType.IrregularMovements;
-    private static final Map<UUID, SpartanLocation> oldFrom = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private final IrregularMovementsBouncing bouncing;
+    private final IrregularMovementsClimb climb;
+    private final IrregularMovementsCobweb cobweb;
+    private final IrregularMovementsInsideBlocks insideBlocks;
+    private final IrregularMovementsLevitation levitation;
+    private final IrregularMovementsLiquids liquids;
+    private final IrregularMovementsMotion motion;
+
+    public IrregularMovements(SpartanPlayer player) {
+        super(check, player, 7);
+        this.addDetections(new DetectionExecutor[]{
+                new IrregularMovementsBouncing(this),
+                new IrregularMovementsClimb(this),
+                new IrregularMovementsCobweb(this),
+                new IrregularMovementsInsideBlocks(this),
+                new IrregularMovementsLevitation(this),
+                new IrregularMovementsLiquids(this),
+                new IrregularMovementsMotion(this)
+        });
+        bouncing = (IrregularMovementsBouncing) detections[0];
+        climb = (IrregularMovementsClimb) detections[1];
+        cobweb = (IrregularMovementsCobweb) detections[2];
+        insideBlocks = (IrregularMovementsInsideBlocks) detections[3];
+        levitation = (IrregularMovementsLevitation) detections[4];
+        liquids = (IrregularMovementsLiquids) detections[5];
+        motion = (IrregularMovementsMotion) detections[6];
+    }
+
+    private SpartanLocation oldFrom = null;
 
     // Keys
     private static final String
@@ -46,23 +70,20 @@ public class IrregularMovements {
             fullOffGroundTicks = 20;
     private static final int offGroundTicks = 12;
 
-    public static void remove(SpartanPlayer p) {
-        oldFrom.remove(p.getUniqueId());
-    }
+    @Override
+    public boolean run() {
+        SpartanLocation to = player.getEventToLocation(),
+                from = player.getEventFromLocation();
+        double vertical = player.getNmsVerticalDistance(),
+                oldVertical = player.getOld_NmsVerticalDistance(),
+                horizontal = player.getNmsHorizontalDistance(),
+                oldHorizontal = player.getOld_NmsHorizontalDistance(),
+                box = player.getNmsBox(),
+                oldBox = player.getOld_NmsBox();
+        int airTicks = player.getTicksOnAir();
+        boolean bedrockPlayer = player.isBedrockPlayer();
 
-    public static void refresh(SpartanPlayer p, SpartanLocation loc) {
-        oldFrom.put(p.getUniqueId(), loc);
-    }
-
-    // Re-enable Fly & IrregularMovements checks
-    public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
-                           double vertical, double oldVertical,
-                           double horizontal, double oldHorizontal,
-                           double box, double oldBox,
-                           int airTicks) {
-        boolean bedrockPlayer = p.isBedrockPlayer();
-
-        if (canDo(p, to, bedrockPlayer)) {
+        if (canDo()) {
             // New Variables
             double verticalDifference = vertical - oldVertical,
                     horizontalDifference = horizontal - oldHorizontal;
@@ -87,7 +108,7 @@ public class IrregularMovements {
 
             // Early Variables
             boolean liquidBlocks,
-                    waterElevator = p.getHandlers().has(Handlers.HandlerType.WaterElevator);
+                    waterElevator = player.getHandlers().has(Handlers.HandlerType.WaterElevator);
 
             if (waterElevator
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.liquid)) {
@@ -96,7 +117,7 @@ public class IrregularMovements {
                 if (BlockUtils.isLiquid(to.clone().add(0, vertical, 0))) {
                     liquidBlocks = true;
                 } else {
-                    Boolean result = PatternUtils.getCached(to, check, "liquid-blocks");
+                    Boolean result = PatternUtils.getCached(to, hackType, "liquid-blocks");
 
                     if (result == null) {
                         for (double i = -1.0; i > Math.floor(vertical); i--) {
@@ -105,7 +126,7 @@ public class IrregularMovements {
                                 break;
                             }
                         }
-                        result = PatternUtils.cache(to, check, "liquid-blocks", result != null);
+                        result = PatternUtils.cache(to, hackType, "liquid-blocks", result != null);
                     }
                     liquidBlocks = result;
                 }
@@ -113,53 +134,50 @@ public class IrregularMovements {
                 liquidBlocks = false;
             }
 
-            UUID uuid = p.getUniqueId();
-            SpartanLocation previousFrom = oldFrom.get(uuid);
-            oldFrom.put(uuid, from);
-
             // Allow check to run when all cache is collected
-            if (previousFrom == null) {
-                return;
+            if (oldFrom == null) {
+                oldFrom = from;
+                return false;
             }
 
             // Final Variables
-            Buffer buffers = p.getBuffer(check);
-            boolean levitationEffect = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && PlayerData.hasLevitationEffect(p),
+            Buffer buffers = player.getBuffer(hackType);
+            boolean levitationEffect = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && PlayerData.hasLevitationEffect(player),
                     incompatibility = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || Compatibility.CompatibilityType.ItemAttributes.isFunctional(),
                     fullAirTicksOffGround = airTicks >= fullOffGroundTicks,
                     airTicksOffGround = fullAirTicksOffGround || airTicks >= (bedrockPlayer || incompatibility ? fullOffGroundTicks : offGroundTicks),
-                    onGround = p.isOnGround(),
-                    onGroundCustom = p.isOnGroundCustom(),
+                    onGround = player.isOnGround(),
+                    onGroundCustom = player.isOnGroundCustom(),
                     offGround = !onGroundCustom || !onGround && !liquidBlocks,
                     knownBoxesNew = GroundUtils.heightExists(box),
                     knownBoxesOld = GroundUtils.heightExists(oldBox),
                     knownBoxes = knownBoxesNew || knownBoxesOld,
-                    bouncingBlocks = BouncingBlocks.isBelow(p),
-                    jumpEffect = p.hasPotionEffect(PotionEffectType.JUMP),
-                    threwTrident = p.getHandlers().has(Handlers.HandlerType.Trident),
-                    explosion = p.getHandlers().has(Handlers.HandlerType.Explosion),
-                    falling = p.isFalling(vertical),
-                    oldFalling = p.isFalling(oldVertical),
-                    jumping = p.isJumping(vertical),
-                    oldJumping = p.isJumping(oldVertical),
-                    wasInLiquids = p.wasInLiquids();
+                    bouncingBlocks = BouncingBlocks.isBelow(player),
+                    jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP),
+                    threwTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
+                    explosion = player.getHandlers().has(Handlers.HandlerType.Explosion),
+                    falling = player.isFalling(vertical),
+                    oldFalling = player.isFalling(oldVertical),
+                    jumping = player.isJumping(vertical),
+                    oldJumping = player.isJumping(oldVertical),
+                    wasInLiquids = player.wasInLiquids();
 
             // Cache Variables
-            Cooldowns cooldowns = p.getCooldowns(check);
+            Cooldowns cooldowns = player.getCooldowns(hackType);
             boolean heightExists = cacheBoolean(cooldowns, knownBoxes, "height-exists=half", 10),
-                    building = cacheBoolean(cooldowns, Building.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.BlockPlace), "building", 20),
+                    building = cacheBoolean(cooldowns, Building.hasCooldown(player) || player.getHandlers().has(Handlers.HandlerType.BlockPlace), "building", 20),
                     pastFalling = cacheBoolean(cooldowns, falling || oldFalling, "past-falling", 20);
 
             // Combination Variables
-            boolean forcefulUp = levitationEffect || waterElevator || Explosion.justExploded(p),
+            boolean forcefulUp = levitationEffect || waterElevator || Explosion.justExploded(player),
                     forcefulUpExtended = forcefulUp || threwTrident; // Used to prevent false positives and not heavily modify detections
 
             // Scenario Identification
             if (threwTrident
-                    || PlayerData.hasNearbyCollisions(p)
-                    || NoHitDelay.hasCooldown(p)
-                    || p.getHandlers().has(Handlers.HandlerType.Piston)
-                    || FishingHook.hasCooldown(p)) { // Extreme circumstances
+                    || PlayerData.hasNearbyCollisions(player)
+                    || NoHitDelay.hasCooldown(player)
+                    || player.getHandlers().has(Handlers.HandlerType.Piston)
+                    || FishingHook.hasCooldown(player)) { // Extreme circumstances
                 velocityScenario = true;
 
                 scenario = "abstract";
@@ -181,7 +199,7 @@ public class IrregularMovements {
                 canGoUp = true;
                 canGoDown = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (explosion || Damage.hasCooldown(p)) { // Damage Or Combat
+            } else if (explosion || Damage.hasCooldown(player)) { // Damage Or Combat
                 velocityScenario = true;
 
                 scenario = "damage/explosion";
@@ -189,7 +207,7 @@ public class IrregularMovements {
                 canGoDown = !forcefulUp;
                 canJump = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (!p.isCrawling()
+            } else if (!player.isCrawling()
 
                     && (BlockUtils.isFullSolid(to)
                     && (!BlockUtils.isSolid(to.clone().add(0, 1, 0))
@@ -247,10 +265,10 @@ public class IrregularMovements {
                 checkHorizontal = true;
                 checkDown = true;
                 checkFall = true;
-            } else if (p.isOnFire()
-                    || p.isFrozen()
-                    || FloorProtection.hasCooldown(p, true)
-                    || PlayerData.hasBadPotionEffects(p)
+            } else if (player.isOnFire()
+                    || player.isFrozen()
+                    || FloorProtection.hasCooldown(player, true)
+                    || PlayerData.hasBadPotionEffects(player)
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;
 
@@ -259,7 +277,7 @@ public class IrregularMovements {
                 canGoDown = !forcefulUp;
                 canJump = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (PlayerData.hasSlowFallingEffect(p)) { // Slow Falling
+            } else if (PlayerData.hasSlowFallingEffect(player)) { // Slow Falling
                 slowFallingScenario = true;
 
                 scenario = "slow-falling";
@@ -324,98 +342,78 @@ public class IrregularMovements {
             // Do not process if the player is not in a water elevator or water block but has liquid cooldown
             if (!waterElevator && !liquidBlocks && wasInLiquids) {
                 if (!velocityScenario) {
-                    IrregularMovementsLiquids.run(p, to, from,
-                            vertical, horizontal,
-                            pastFalling, true, knownBoxes, building, jumping, oldJumping, changedScenario,
-                            liquidsKey, prevention);
+                    liquids.run(pastFalling, true, knownBoxes, building, jumping,
+                            oldJumping, changedScenario, liquidsKey, prevention);
                 }
-                return;
+                return false;
             }
 
             if (constructDetection) {
                 switch (scenario) {
                     case "climb":
                         if (!bedrockPlayer) {
-                            IrregularMovementsClimb.run(p, to, from, cooldowns,
-                                    vertical, oldVertical, box,
-                                    knownBoxes, canGoUp, canGoDown, canJump, bouncingBlocks, jumping,
-                                    prevention, scenario);
+                            climb.run(cooldowns, knownBoxes, canGoUp, canGoDown,
+                                    canJump, bouncingBlocks, jumping, prevention, scenario);
                         }
                         break;
                     case levitationKey:
-                        if (!waterElevator && !liquidBlocks && canRunDetection(bedrockPlayer)) {
-                            IrregularMovementsLevitation.run(p, to, from, cooldowns,
-                                    vertical,
-                                    canGoUp,
-                                    box, oldBox,
-                                    prevention, scenario);
+                        if (!waterElevator && !liquidBlocks && canRunDetection()) {
+                            levitation.run(cooldowns, canGoUp, prevention, scenario);
                         }
                         break;
                     case "cobweb":
-                        if (canRunDetection(bedrockPlayer)) {
-                            IrregularMovementsCobweb.run(p, to, from,
-                                    vertical, horizontal, box, oldBox,
-                                    canGoDown,
-                                    prevention, scenario);
+                        if (canRunDetection()) {
+                            cobweb.run(canGoDown, prevention, scenario);
                         }
                         break;
                     case "bouncing":
-                        if (canRunDetection(bedrockPlayer)) {
-                            IrregularMovementsBouncing.run(p, to, from,
-                                    vertical, oldVertical, box,
+                        if (canRunDetection()) {
+                            bouncing.run(
                                     knownBoxes, offGround, airTicksOffGround, heightExists,
                                     canGoUp, canGoDown,
                                     jumping, falling,
                                     levitationEffect,
-                                    airTicks,
                                     prevention, scenario);
                         }
                         break;
                     case "inside-blocks":
                         if (!bedrockPlayer) {
-                            IrregularMovementsInsideBlocks.run(p, to, from,
-                                    knownBoxes,
-                                    prevention);
+                            insideBlocks.run(knownBoxes, prevention);
                         }
                         break;
                     default:
                         if (!velocityScenario && !waterElevator) {
-                            IrregularMovementsLiquids.run(p, to, from,
-                                    vertical, horizontal,
-                                    pastFalling, !scenario.equals(liquidsKey), knownBoxes, building, jumping, oldJumping, changedScenario,
-                                    liquidsKey, prevention);
+                            liquids.run(pastFalling, !scenario.equals(liquidsKey), knownBoxes, building,
+                                    jumping, oldJumping, changedScenario, liquidsKey, prevention);
                         }
                         break;
                 }
             }
 
             // Has important counters, so put it first regardless
-            IrregularMovementsMotion.run(p,
+            motion.run(
                     cooldowns,
-                    to, from,
-                    vertical, oldVertical, verticalDifference,
+                    verticalDifference,
                     horizontalDifference,
-                    box, oldBox,
                     knownBoxes, knownBoxesNew, knownBoxesOld,
                     onGroundCustom,
                     oldFalling, levitationEffect,
                     constructDetection, groundInteractionScenario, velocityScenario, changedScenario, climbScenario, slowFallingScenario,
                     canGoUp && checkUp, canGoDown && checkDown,
                     canJump && checkJump, canFall && checkFall, checkHorizontal,
-                    airTicks,
                     prevention);
 
             if (vertical > minimumUp) {
                 if (!canGoUp
                         && vertical >= allowedUp
-                        && IrregularMovements.check.getCheck().getBooleanOption("check_upwards", true)
-                        && cancel(p, from, prevention, "illegal-up", velocityScenario ? 6 : 3)) {
-                    return;
+                        && hackType.getCheck().getBooleanOption("check_upwards", true)
+                        && cancel(prevention, "illegal-up", velocityScenario ? 6 : 3)) {
+                    return false;
                 }
                 if (jumping
                         && !canJump
-                        && IrregularMovements.check.getCheck().getBooleanOption("check_jumping", true)) {
-                    cancel(p, from, prevention, "illegal-jump", velocityScenario || forcefulUpExtended ? 6 : 3);
+                        && hackType.getCheck().getBooleanOption("check_jumping", true)) {
+                    cancel(prevention, "illegal-jump", velocityScenario || forcefulUpExtended ? 6 : 3);
                 }
             } else if (vertical < minimumDown) {
                 int illegalBufferLimit = velocityScenario || forcefulUpExtended || jumpEffect ? 6 : 3;
@@ -423,21 +421,22 @@ public class IrregularMovements {
                 if (falling || oldFalling) {
                     if (!canFall
                             && !bouncingBlocks
-                            && IrregularMovements.check.getCheck().getBooleanOption("check_fall", true)) {
-                        cancel(p, from, prevention, "illegal-fall", illegalBufferLimit);
+                            && hackType.getCheck().getBooleanOption("check_fall", true)) {
+                        cancel(prevention, "illegal-fall", illegalBufferLimit);
                     }
                 } else if (!canGoDown
                         && vertical <= -allowedDown
-                        && IrregularMovements.check.getCheck().getBooleanOption("check_downwards", true)) {
-                    cancel(p, from, prevention, "illegal-down", illegalBufferLimit);
+                        && hackType.getCheck().getBooleanOption("check_downwards", true)) {
+                    cancel(prevention, "illegal-down", illegalBufferLimit);
                 }
             }
         } else {
-            remove(p);
+            oldFrom = null;
         }
+        return false;
     }
 
-    static boolean cacheBoolean(Cooldowns cooldowns, boolean bool, String key, int ticks) {
+    boolean cacheBoolean(Cooldowns cooldowns, boolean bool, String key, int ticks) {
         if (bool) {
             cooldowns.add(key, ticks);
             return true;
@@ -446,16 +445,16 @@ public class IrregularMovements {
         }
     }
 
-    static void forgetBoolean(Cooldowns cooldowns, String key) {
+    void forgetBoolean(Cooldowns cooldowns, String key) {
         cooldowns.remove(key);
     }
 
-    static void clear(SpartanPlayer p, String instance) {
+    void clear(SpartanPlayer p, String instance) {
         boolean sharedInstance = instance.charAt(0) == '*';
-        p.getBuffer(IrregularMovements.check).remove(sharedInstance ? instance.split("-", 2)[0].substring(1) : instance);
+        p.getBuffer(hackType).remove(sharedInstance ? instance.split("-", 2)[0].substring(1) : instance);
     }
 
-    static boolean cancel(SpartanPlayer p, SpartanLocation from, String information, String instance, String extra, int buffer, int time) {
+    boolean cancel(String information, String instance, String extra, int buffer, int time) {
         boolean prevention, violate, hasBuffer,
                 sharedInstance = instance.charAt(0) == '*';
         int bufferAmount;
@@ -464,7 +463,7 @@ public class IrregularMovements {
             boolean suspected;
 
             if (time >= 0) { // Make buffer dynamic when time is equal or above zero
-                suspected = p.getProfile().isSuspectedOrHacker(check)
+                suspected = player.getProfile().isSuspectedOrHacker(hackType)
                         || !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                         && !Compatibility.CompatibilityType.ItemAttributes.isFunctional();
 
@@ -480,7 +479,7 @@ public class IrregularMovements {
                 hasBuffer = true;
             }
 
-            Buffer bufferObj = p.getBuffer(check);
+            Buffer bufferObj = player.getBuffer(hackType);
             String key = sharedInstance ? instance.split("-", 2)[0].substring(1) : instance;
             violate = (bufferAmount = bufferObj.start(key, time)) >= buffer;
 
@@ -500,12 +499,10 @@ public class IrregularMovements {
         if (prevention) {
             boolean groundTeleport = violate && !instance.contains(levitationKey) && !instance.contains(waterElevatorKey);
             instance = sharedInstance ? instance.substring(1) : instance.split("=", 2)[0]; // Remove potential variables and special characters
-            new HackPrevention(
-                    p,
-                    check,
+            cancel(
                     "type: " + instance + "(" + buffer + (hasBuffer ? "/" + time + "/" + bufferAmount : "") + "), "
                             + information + (extra == null ? "" : ", extra: 1, " + extra),
-                    violate ? from : null,
+                    violate ? player.getEventFromLocation() : null,
                     0,
                     groundTeleport
             );
@@ -514,18 +511,29 @@ public class IrregularMovements {
         return false;
     }
 
-    static boolean cancel(SpartanPlayer p, SpartanLocation from, String information, String instance, int buffer) {
-        return cancel(p, from, information, instance, null, buffer, defaultBufferTime);
+    boolean cancel(String information, String instance, int buffer) {
+        return cancel(information, instance, null, buffer, defaultBufferTime);
     }
 
-    private static boolean canDo(SpartanPlayer p, SpartanLocation to, boolean bedrockPlayer) {
-        return p.canRunCheck(check, true)
-                && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && (!bedrockPlayer || to.getBlockY() > BlockUtils.getMinHeight(p.getWorld()));
+    @Override
+    public boolean handle(Object object) {
+        if (object == null) {
+            oldFrom = null;
+        } else {
+            oldFrom = (SpartanLocation) object;
+        }
+        return false;
     }
 
-    private static boolean canRunDetection(boolean bedrockPlayer) {
-        return !SpartanEdition.freeAlternativeVersion || !bedrockPlayer;
+    @Override
+    protected boolean canDo() {
+        return player.canRunCheck(hackType, true)
+                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && (!player.isBedrockPlayer() || player.getEventToLocation().getBlockY() > BlockUtils.getMinHeight(player.getWorld()));
+    }
+
+    private boolean canRunDetection() {
+        return !SpartanEdition.freeAlternativeVersion || !player.isBedrockPlayer();
     }
 }

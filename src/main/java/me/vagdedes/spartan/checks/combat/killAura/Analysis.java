@@ -2,18 +2,25 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the data that has been collected
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.PlayerCombat;
 import me.vagdedes.spartan.objects.profiling.PlayerFight;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Analysis {
+public class Analysis extends DetectionExecutor {
+
+    private final KillAura killAura;
+
+    Analysis(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        killAura = (KillAura) executor;
+    }
 
     private static final String
             winsToLossesKey = "wins-to-losses",
@@ -46,28 +53,27 @@ public class Analysis {
         requiredScore = criteria * 2.0;
     }
 
-    private static double calculatePoints(String key, double average, double globalAverage, double globalMaxAverage) {
+    private double calculatePoints(String key, double average, double globalAverage, double globalMaxAverage) {
         return globalAverage == -1.0 || globalMaxAverage == -1.0 ? 0.0
                 : ((average / globalAverage) + (average / globalMaxAverage)) * weight.get(key);
     }
 
-    private static double calculatePointsReverse(String key, double average, double globalAverage, double globalMaxAverage) {
+    private double calculatePointsReverse(String key, double average, double globalAverage, double globalMaxAverage) {
         return globalAverage == -1.0 || globalMaxAverage == -1.0 ? 0.0
                 : ((globalAverage / average) + (globalMaxAverage / average)) * weight.get(key);
     }
 
-    public static void run(PlayerFight fight) {
+    void run() {
         if (!ResearchEngine.isCaching()) {
-            int percentage = KillAura.check.getCheck().getNumericalOption("analysis_percentage", 25);
+            int percentage = hackType.getCheck().getNumericalOption("analysis_percentage", 25);
 
             if (percentage > 0 && ResearchEngine.getFights().size() >= recordedFights) {
                 if (percentage > 1000) {
                     percentage = 1000;
                 }
                 double requiredScore = Analysis.requiredScore * (1.0 + (percentage / 100.0));
-                SpartanPlayer player = SpartanBukkit.getPlayer(fight.getWinner().getName());
 
-                if (player != null && KillAura.canRunDetection(player, null)) {
+                if (player != null) {
                     PlayerCombat combat = player.getProfile().getCombat();
 
                     if (combat.hasFights()) {
@@ -197,7 +203,7 @@ public class Analysis {
                         }
 
                         if (points >= requiredScore) {
-                            KillAura.violateAll(player, "type: analysis"
+                            killAura.violateAll("type: analysis"
                                     + ", percentage: " + percentage
                                     + ", points: " + points
                                     + ", required-points: " + requiredScore

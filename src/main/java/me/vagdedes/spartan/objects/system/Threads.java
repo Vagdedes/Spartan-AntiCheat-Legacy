@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.system;
+package me.vagdedes.spartan.objects.system;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -10,7 +10,7 @@ public class Threads {
 
     private static boolean enabled = true;
 
-    static void disable() {
+    public static void disable() {
         enabled = false;
     }
 

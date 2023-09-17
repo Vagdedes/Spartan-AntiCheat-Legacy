@@ -1,18 +1,20 @@
 package me.vagdedes.spartan.checks.player;
 
+import com.frash23.smashhit.AsyncPreDamageEvent;
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import me.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import me.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import me.vagdedes.spartan.compatibility.semi.QuickShop;
+import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -21,42 +23,113 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
-public class NoSwing {
+public class NoSwing extends CheckExecutor {
 
     private static final int refreshTime = 30 * 20;
     private static final Enums.HackType check = Enums.HackType.NoSwing;
 
-    // Detections
-
-    public static void runAnimation(SpartanPlayer p, PlayerAnimationType animation) {
-        if (!p.canRunCheck(check, true) || animation != PlayerAnimationType.ARM_SWING) {
-            clearData(p);
-        } else {
-            p.getTimer(check).set("animation");
-        }
+    public NoSwing(SpartanPlayer player) {
+        super(check, player);
     }
 
-    public static void runDamage(SpartanPlayer p, LivingEntity entity) {
-        if (!canDo(p) || !check.getCheck().getBooleanOption("check_damage", true) || p.hasAttackCooldown()
-                || PlayerData.getEntitiesNumber(p, CombatUtils.maxHitDistance, false, 4) > 3
-                || p.getHandlers().has(Handlers.HandlerType.Trident) || CombatUtils.isNewPvPMechanic(p, entity) || CombatUtils.hasBlockBehind(p, entity)) {
-            clearData(p);
+    @Override
+    public boolean handle(Object object) {
+        if (object instanceof PlayerInteractEvent) {
+            PlayerInteractEvent e = (PlayerInteractEvent) object;
+
+            if (e.getAction() == Action.LEFT_CLICK_BLOCK
+                    && player.canRunCheck(hackType, false)) {
+                player.getTimer(hackType).set("break");
+            }
+        } else if (object instanceof PlayerItemHeldEvent) {
+            hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 10);
+        } else if (object instanceof PlayerAnimationEvent) {
+            if (!player.canRunCheck(hackType, true)
+                    || ((PlayerAnimationEvent) object).getAnimationType() != PlayerAnimationType.ARM_SWING) {
+                clearData();
+            } else {
+                player.getTimer(hackType).set("animation");
+            }
+        } else if (object instanceof BlockBreakEvent) {
+            if (QuickShop.isEnabled()
+                    || !canDo()
+                    || !hackType.getCheck().getBooleanOption("check_breaking", true)
+                    || player.hasPotionEffect(PotionEffectType.FAST_DIGGING)
+                    || MineBomb.canUse(player) || AureliumSkills.canCancel(player)) {
+                clearData();
+                return false;
+            }
+            SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
+
+            if (!BlockUtils.isSensitive(player, block.getLocation())
+                    && !TreeFeller.canCancel(player, block)) {
+                ItemStack itemStack = player.getItemInHand();
+
+                if (itemStack.getEnchantmentLevel(Enchantment.DIG_SPEED) < 4) {
+                    Material material = itemStack.getType();
+
+                    if (!PlayerData.isAxeItem(material)
+                            && !PlayerData.isPickaxeItem(material)
+                            && !PlayerData.isSpadeItem(material)
+                            && !BlockUtils.isSensitive(player, material)) {
+                        Timer timer = player.getTimer(hackType);
+
+                        if (timer.get("break") > 50L) {
+                            if (!timer.has("animation")) {
+                                cancel(
+                                        "type: break"
+                                                + ", block: " + BlockUtils.blockToString(block)
+                                                + ", item: " + BlockUtils.materialToString(material));
+                            } else {
+                                clearData();
+                            }
+                        }
+                    } else {
+                        clearData();
+                    }
+                } else {
+                    clearData();
+                }
+            }
+        } else if (object instanceof EntityDamageByEntityEvent) {
+            runDamage((LivingEntity) ((EntityDamageByEntityEvent) object).getEntity());
+        } else if (Compatibility.CompatibilityType.SmashHit.isFunctional()) {
+            runDamage((LivingEntity) ((AsyncPreDamageEvent) object).getEntity());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean run() {
+        return false;
+    }
+
+    private void runDamage(LivingEntity entity) {
+        if (!canDo() || !hackType.getCheck().getBooleanOption("check_damage", true) || player.hasAttackCooldown()
+                || PlayerData.getEntitiesNumber(player, CombatUtils.maxHitDistance, false, 4) > 3
+                || player.getHandlers().has(Handlers.HandlerType.Trident) || CombatUtils.isNewPvPMechanic(player, entity) || CombatUtils.hasBlockBehind(player, entity)) {
+            clearData();
             return;
         }
         String key = "damage";
-        Cooldowns cooldowns = p.getCooldowns(check);
+        Cooldowns cooldowns = player.getCooldowns(hackType);
 
         if (!cooldowns.canDo(key)) {
             return;
         }
         cooldowns.add(key, 20);
 
-        if (!p.getTimer(check).has("animation")) {
-            Buffer buffer = p.getBuffer(check);
+        if (!player.getTimer(hackType).has("animation")) {
+            Buffer buffer = player.getBuffer(hackType);
 
             if (cooldowns.canDo("first")) {
                 cooldowns.add("first", refreshTime);
@@ -65,73 +138,23 @@ public class NoSwing {
             }
             if (buffer.start(key, refreshTime) >= 2) {
                 buffer.remove(key);
-                new HackPrevention(p, check,
-                        "type: damage"
-                                + ", entity: " + CombatUtils.entityToString(entity)
-                                + ", item: " + BlockUtils.materialToString(p.getItemInHand().getType()));
+                cancel("type: damage"
+                        + ", entity: " + CombatUtils.entityToString(entity)
+                        + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
             }
         } else {
-            clearData(p);
+            clearData();
         }
     }
 
-    public static void runBreak(SpartanPlayer p, SpartanBlock b) {
-        if (QuickShop.isEnabled() || !canDo(p) || !check.getCheck().getBooleanOption("check_breaking", true)
-                || p.hasPotionEffect(PotionEffectType.FAST_DIGGING) || BlockUtils.isSensitive(p, b.getLocation())
-                || TreeFeller.canCancel(p, b) || MineBomb.canUse(p) || AureliumSkills.canCancel(p)) {
-            clearData(p);
-            return;
-        }
-        ItemStack itemStack = p.getItemInHand();
-
-        if (itemStack.getEnchantmentLevel(Enchantment.DIG_SPEED) < 4) {
-            Material material = itemStack.getType();
-
-            if (!PlayerData.isAxeItem(material)
-                    && !PlayerData.isPickaxeItem(material)
-                    && !PlayerData.isSpadeItem(material)
-                    && !BlockUtils.isSensitive(p, material)) {
-                Timer timer = p.getTimer(check);
-
-                if (timer.get("break") > 50L) {
-                    if (!timer.has("animation")) {
-                        new HackPrevention(p, check,
-                                "type: break"
-                                        + ", block: " + BlockUtils.blockToString(b)
-                                        + ", item: " + BlockUtils.materialToString(material));
-                    } else {
-                        clearData(p);
-                    }
-                }
-            } else {
-                clearData(p);
-            }
-        } else {
-            clearData(p);
-        }
+    private void clearData() {
+        player.getTimer(hackType).remove("animation");
     }
 
-    // Handlers
-
-    private static void clearData(SpartanPlayer p) {
-        p.getTimer(check).remove("animation");
-    }
-
-    public static void runItemChange(SpartanPlayer p) {
-        check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 10);
-    }
-
-    public static void runInteract(SpartanPlayer p, Action action) {
-        if (action == Action.LEFT_CLICK_BLOCK && p.canRunCheck(check, false)) {
-            p.getTimer(check).set("break");
-        }
-    }
-
-    // Utils
-
-    private static boolean canDo(SpartanPlayer p) {
-        return p.canRunCheck(check, true)
-                && !Vehicles.has(p, "drill")
-                && !mcMMO.hasAbility(p);
+    @Override
+    public boolean canDo() {
+        return player.canRunCheck(hackType, true)
+                && !Vehicles.has(player, "drill")
+                && !mcMMO.hasAbility(player);
     }
 }

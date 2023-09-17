@@ -2,12 +2,20 @@ package me.vagdedes.spartan.checks.combat.fastClicks;
 
 // Study of the time between clicks
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.tracking.ClickData;
 import me.vagdedes.spartan.objects.data.Buffer;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-public class ClickFrequency {
+public class ClickFrequency extends DetectionExecutor {
+
+    private final FastClicks fastClicks;
+
+    ClickFrequency(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        fastClicks = (FastClicks) executor;
+    }
 
     private static final String
             key = ClickFrequency.class.getName(),
@@ -17,7 +25,7 @@ public class ClickFrequency {
             bufferFailure = 3,
             bufferTime = 5 * 20;
 
-    static void run(SpartanPlayer player, ClickData clickData, int latencyExtra, int extraLimit, double globalAverage) {
+    void run(ClickData clickData, int latencyExtra, int extraLimit, double globalAverage) {
         int count = clickData.getCount(), limit = FastClicks.suspiciousClicksPerSecond + extraLimit;
 
         if (globalAverage > limit) {
@@ -29,11 +37,11 @@ public class ClickFrequency {
             long passedTimeDifference = clickData.getPassedTimeDifference();
 
             if (passedTimeDifference <= FastClicks.suspiciousMillisecondCorrelation) {
-                Buffer buffer = player.getBuffer(FastClicks.check);
+                Buffer buffer = player.getBuffer(hackType);
 
                 if (buffer.start(key, bufferTime) == bufferThreshold) {
                     buffer.remove(key);
-                    FastClicks.violate(player,
+                    fastClicks.violate(
                             null,
                             "type: " + detection
                                     + ", count: " + count
@@ -49,7 +57,7 @@ public class ClickFrequency {
                     );
                 }
             } else {
-                player.getBuffer(FastClicks.check).decrease(key, bufferFailure);
+                player.getBuffer(hackType).decrease(key, bufferFailure);
             }
         }
     }

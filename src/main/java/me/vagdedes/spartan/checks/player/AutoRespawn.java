@@ -1,11 +1,11 @@
 package me.vagdedes.spartan.checks.player;
 
 import me.vagdedes.spartan.Register;
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.server.PluginUtils;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AutoRespawn {
+public class AutoRespawn extends CheckExecutor {
 
     private static final HackType check = HackType.AutoRespawn;
     private static final long limit = 750L;
@@ -24,18 +24,20 @@ public class AutoRespawn {
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                if (hm.size() > 0) {
+                if (!hm.isEmpty()) {
                     for (Map.Entry<UUID, Long> entry : hm.entrySet()) {
                         long time = System.currentTimeMillis() - entry.getValue();
 
                         if (time <= limit) {
                             SpartanPlayer p = SpartanBukkit.getPlayer(entry.getKey());
 
-                            SpartanBukkit.runTask(p, () -> {
-                                if (p != null && !p.isDead()) {
-                                    new HackPrevention(p, check, "type: default, ms: " + time);
-                                }
-                            });
+                            if (p != null) {
+                                SpartanBukkit.runTask(p, () -> {
+                                    if (p != null && !p.isDead()) {
+                                        p.getExecutor(check).handle(time);
+                                    }
+                                });
+                            }
                         }
                     }
                     hm.clear();
@@ -44,10 +46,29 @@ public class AutoRespawn {
         }
     }
 
-    public static void handleDeath(SpartanPlayer p) {
-        if (p.canRunCheck(check, false) && !PluginUtils.contains("respawn")
-                && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) || !p.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true)) {
-            hm.put(p.getUniqueId(), System.currentTimeMillis());
+    public AutoRespawn(SpartanPlayer player) {
+        super(check, player);
+    }
+
+    @Override
+    public boolean handle(Object object) {
+        cancel("type: default, ms: " + object);
+        return false;
+    }
+
+    @Override
+    public boolean run() {
+        if (canDo()) {
+            hm.put(player.getUniqueId(), System.currentTimeMillis());
         }
+        return false;
+    }
+
+    @Override
+    protected boolean canDo() {
+        return player.canRunCheck(hackType, false)
+                && !PluginUtils.contains("respawn")
+                && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
+                || !player.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true);
     }
 }

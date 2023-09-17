@@ -2,28 +2,33 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the head movement from before to the moment of hitting an entity, but also the activity of the direction
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
 import java.util.List;
 
-public class Rotations {
+public class Rotations extends DetectionExecutor {
+
+    Rotations(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+    }
 
     private static final String key = Rotations.class.getName() + "=";
     private static final int requiredStoredValues = 5;
 
-    static void run(SpartanPlayer player, LivingEntity entity, double width) {
+    void run(LivingEntity entity, double width) {
         if (!CombatUtils.hasBlockBehind(player, entity)) {
             List<Double> yawList = CombatProcessing.getAllValues(player, CombatProcessing.yawDifference);
             int yawListSize = yawList.size();
 
             if (yawListSize >= requiredStoredValues) {
                 double entityWidth = CombatUtils.getWidthAndHeight(entity)[0],
-                        widthAccuracy = player.getProfile().isSuspectedOrHacker(KillAura.check) ? -1.0 : CombatUtils.getWidthAccuracyPercentage(width, entityWidth);
+                        widthAccuracy = player.getProfile().isSuspectedOrHacker(hackType) ? -1.0 : CombatUtils.getWidthAccuracyPercentage(width, entityWidth);
 
                 if (widthAccuracy != 0.0) { // Only check when accuracy is within the entity's width (Off-width is checked by 'Direction')
                     Vector yawDirection = CombatUtils.getDirection(player.getLocation().getYaw(), 0.0f);
@@ -50,7 +55,7 @@ public class Rotations {
                                 distanceRatio = (maxYawDistance / averageYawDistance) - extraWidth;
 
                         if (distanceRatio >= 4.0) {
-                            KillAura.violate(player,
+                            cancel(
                                     "type: rotations(yaw-max)"
                                             + ", width: " + width
                                             + ", entity-width: " + entityWidth
@@ -63,11 +68,11 @@ public class Rotations {
                                             + ", required-positions: " + requiredStoredValues
                                             + ", valid-positions: " + validPositions);
                         } else if (distanceRatio >= 2.0) {
-                            Buffer buffer = player.getBuffer(KillAura.check);
+                            Buffer buffer = player.getBuffer(hackType);
 
                             if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 5) == 2) {
                                 buffer.remove(key);
-                                KillAura.violate(player,
+                                cancel(
                                         "type: rotations(yaw-buffered)"
                                                 + ", width: " + width
                                                 + ", entity-width: " + entityWidth

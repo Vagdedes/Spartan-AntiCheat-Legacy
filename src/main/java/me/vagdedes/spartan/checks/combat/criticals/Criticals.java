@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.checks.combat.criticals;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
@@ -8,7 +9,6 @@ import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -24,9 +24,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Criticals {
+public class Criticals extends CheckExecutor {
 
     static final HackType check = HackType.Criticals;
+
+    public Criticals(SpartanPlayer player) {
+        super(check, player);
+    }
 
     private static final double[][]
             web = new double[][]{
@@ -40,38 +44,14 @@ public class Criticals {
             BlockUtils.hitbox_max, 2.0, BlockUtils.hitbox_max
     };
 
-    // Handlers
-
     public static void clear() {
         CriticalsUtils.memory.clear();
     }
 
-    public static void remove(SpartanPlayer p, boolean leave) {
-        if (leave) {
-            if (!CriticalsUtils.canCollectFrom(p)) {
-                CriticalsUtils.memory.remove(p.getUniqueId());
-            }
-        } else {
-            CriticalsUtils.memory.remove(p.getUniqueId());
-        }
-    }
-
-    public static void run(SpartanPlayer p, SpartanLocation location, double damage, LivingEntity entity) {
-        if (canDo(p, location)) {
-            if (!p.hasAttackCooldown() && !p.isSprinting()) {
-                float fallDistance = p.getFallDistance();
-                checkPosition(p, location); // Always first
-                checkMiniJump(p, location, fallDistance);
-                checkLocation(p, location, fallDistance);
-            }
-            checkDamage(p, damage, entity);
-        }
-    }
-
     // Detections
 
-    private static void checkDamage(SpartanPlayer player, double damage, LivingEntity entity) {
-        if (check.getCheck().getBooleanOption("check_damage", true)
+    private void checkDamage(double damage, LivingEntity entity) {
+        if (hackType.getCheck().getBooleanOption("check_damage", true)
                 && !player.isBedrockPlayer()
                 && !player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)
                 && !CombatUtils.isNewPvPMechanic(player, entity)) {
@@ -125,7 +105,7 @@ public class Criticals {
                                 }
                                 enchantmentsString = new StringBuilder(enchantmentsString.substring(0, enchantmentsString.length() - 2));
                             }
-                            new HackPrevention(player, check, "type: damage, amount: " + damage
+                            cancel("type: damage, amount: " + damage
                                     + ", expected-amount: " + expectedDamage + ", additional-amount: " + additional
                                     + ", ground: " + (vanillaGround + "/" + customGround) + ", item: " + BlockUtils.materialToString(itemType)
                                     + ", old-air-ticks: " + player.getOldTicksOnAir() + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]"));
@@ -136,56 +116,67 @@ public class Criticals {
         }
     }
 
-    private static void checkLocation(SpartanPlayer p, SpartanLocation location, float fallDistance) {
-        if (check.getCheck().getBooleanOption("check_location", true)
-                && !p.isOnGround() && fallDistance > 0.0f && location.getY() % 1.0 == 0.0
-                && p.getBuffer(check).start("location=attempts", 14 * 11) >= 2) {
-            new HackPrevention(p, check, "type: location, fall-distance: " + fallDistance);
+    private void checkLocation() {
+        if (hackType.getCheck().getBooleanOption("check_location", true)
+                && !player.isOnGround()
+                && player.getLocation().getY() % 1.0 == 0.0) {
+            float fallDistance = player.getFallDistance();
+
+            if (fallDistance > 0.0f
+                    && player.getBuffer(hackType).start("location=attempts", 14 * 11) >= 2) {
+                cancel("type: location, fall-distance: " + fallDistance);
+            }
         }
     }
 
-    private static void checkMiniJump(SpartanPlayer p, SpartanLocation location, float fallDistance) {
-        if (check.getCheck().getBooleanOption("check_mini_jump", true)
-                && fallDistance > 0.0f && fallDistance <= 0.07f
-                && !p.isSneaking() && p.getSneakingCount() == 0
-                && isBlockFree(p, location, 1.0)
+    private void checkMiniJump() {
+        if (hackType.getCheck().getBooleanOption("check_mini_jump", true)
+                && !player.isSneaking() && player.getSneakingCount() == 0
+                && isBlockFree(1.0)) {
+            float fallDistance = player.getFallDistance();
 
-                && (PlayerData.isOnGround(p, location, 0, -fallDistance, 0)
-                || PlayerData.isOnGround(p, location, 0, -(fallDistance + 0.1), 0))) {
-            new HackPrevention(p, check, "type: mini-jump, fall-distance: " + fallDistance);
+            if (fallDistance > 0.0f && fallDistance <= 0.07f) {
+                SpartanLocation location = player.getLocation();
+
+                if (PlayerData.isOnGround(player, location, 0, -fallDistance, 0)
+                        || PlayerData.isOnGround(player, location, 0, -(fallDistance + 0.1), 0)) {
+                    cancel("type: mini-jump, fall-distance: " + fallDistance);
+                }
+            }
         }
     }
 
-    private static void checkPosition(SpartanPlayer p, SpartanLocation location) {
-        if (check.getCheck().getBooleanOption("check_position", true)
-                && PlayerData.getPotionLevel(p, PotionEffectType.JUMP) < 250 // Error Jump Effect
-                && isBlockFree(p, location, BlockUtils.hitbox_max)
-                && !p.isOnGround()
-                && !p.isOnGroundCustom()) {
-            Decimals decimals = p.getDecimals(check);
+    private void checkPosition() {
+        if (hackType.getCheck().getBooleanOption("check_position", true)
+                && PlayerData.getPotionLevel(player, PotionEffectType.JUMP) < 250 // Error Jump Effect
+                && isBlockFree(BlockUtils.hitbox_max)
+                && !player.isOnGround()
+                && !player.isOnGroundCustom()) {
+            Decimals decimals = player.getDecimals(hackType);
+            SpartanLocation location = player.getLocation();
             double box = location.getY() - location.getBlockY();
 
-            if (p.getTicksOnAir() >= 20 && box >= 0.15 && box <= 0.75) {
+            if (player.getTicksOnAir() >= 20 && box >= 0.15 && box <= 0.75) {
                 double oldBox = decimals.get("position");
 
                 if (decimals.has(oldBox) && oldBox == box) {
-                    new HackPrevention(p, check, "type: position, box: " + box);
+                    cancel("type: position, box: " + box);
                 }
             }
             decimals.set("position", box);
         }
     }
 
-    private static boolean isBlockFree(SpartanPlayer p, SpartanLocation loc, double box) {
-        if (p.getCooldowns(check).canDo("block-free=" + box)) {
-            boolean onGroundCustom = p.isOnGroundCustom();
+    private boolean isBlockFree(double box) {
+        if (player.getCooldowns(hackType).canDo("block-free=" + box)) {
+            boolean onGroundCustom = player.isOnGroundCustom();
 
             if (PatternUtils.isBlockPattern(new double[][]{
                     {box, 0, box},
                     {box, 1, box},
                     {box, 2, box}
-            }, loc, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-                p.getCooldowns(check).add("block-free=" + box, onGroundCustom ? 40 : 60);
+            }, player.getLocation(), true, BlockUtils.solid, BlockUtils.semi_solid)) {
+                player.getCooldowns(hackType).add("block-free=" + box, onGroundCustom ? 40 : 60);
                 return false;
             }
             return true;
@@ -193,15 +184,48 @@ public class Criticals {
         return false;
     }
 
-    private static boolean canDo(SpartanPlayer p, SpartanLocation location) {
-        return p.canRunCheck(check, true)
-                && !p.wasFlying()
-                && !p.wasInLiquids()
-                && !p.hasPotionEffect(PotionEffectType.BLINDNESS)
-                && p.getBlocksOffGround(3, true, true) <= 2
-                && !p.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && !BouncingBlocks.isBelow(p)
-                && !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid, BlockUtils.semi_solid)
-                && !PatternUtils.isBlockPattern(web, location, true, BlockUtils.web);
+    @Override
+    protected boolean canDo() {
+        if (player.canRunCheck(hackType, true)
+                && !player.wasFlying()
+                && !player.wasInLiquids()
+                && !player.hasPotionEffect(PotionEffectType.BLINDNESS)
+                && player.getBlocksOffGround(3, true, true) <= 2
+                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !BouncingBlocks.isBelow(player)) {
+            SpartanLocation location = player.getLocation();
+            return !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid, BlockUtils.semi_solid)
+                    && !PatternUtils.isBlockPattern(web, location, true, BlockUtils.web);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean run() {
+        if (!player.hasAttackCooldown()
+                && !player.isSprinting()) {
+            checkPosition(); // Always first
+            checkMiniJump();
+            checkLocation();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean handle(Object object) {
+        if (object instanceof Boolean) {
+            if ((boolean) object) {
+                if (!CriticalsUtils.canCollectFrom(player)) {
+                    CriticalsUtils.memory.remove(player.getName());
+                }
+            } else {
+                CriticalsUtils.memory.remove(player.getName());
+            }
+        } else if (canDo()) {
+            Object[] objects = (Object[]) object;
+            run();
+            checkDamage((double) objects[0], (LivingEntity) objects[1]);
+        }
+        return false;
     }
 }

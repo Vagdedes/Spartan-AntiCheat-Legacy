@@ -1,6 +1,7 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
-import me.vagdedes.spartan.features.performance.AsyncDetection;
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -8,37 +9,50 @@ import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.gameplay.PatternUtils;
 
-public class IrregularMovementsClimb {
+public class IrregularMovementsClimb extends DetectionExecutor {
 
-    static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from, Cooldowns cooldowns,
-                    double vertical, double oldVertical, double box,
-                    boolean knownBoxes, boolean canGoUp, boolean canGoDown, boolean canJump, boolean bouncingBlocks, boolean jumping,
-                    String prevention, String scenario) {
-        if (IrregularMovements.check.getCheck().getBooleanOption("check_climbing", true)) {
-            AsyncDetection.run(p, IrregularMovements.check, () -> {
+    private final IrregularMovements irregularMovements;
+
+    IrregularMovementsClimb(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        irregularMovements = (IrregularMovements) executor;
+    }
+
+    void run(Cooldowns cooldowns,
+             boolean knownBoxes, boolean canGoUp, boolean canGoDown,
+             boolean canJump, boolean bouncingBlocks, boolean jumping,
+             String prevention, String scenario) {
+        if (hackType.getCheck().getBooleanOption("check_climbing", true)) {
+            SpartanPlayer player = irregularMovements.player;
+            SpartanLocation to = player.getEventToLocation();
+            double vertical = player.getNmsVerticalDistance(),
+                    oldVertical = player.getOld_NmsVerticalDistance(),
+                    box = player.getNmsBox();
+
+            runAsync(() -> {
                 if (jumping) {
-                    if (canJump && !knownBoxes && p.isClimbing(oldVertical)
+                    if (canJump && !knownBoxes && player.isClimbing(oldVertical)
 
                             // Attention, added recently
-                            && (Math.abs(vertical - MoveUtils.jumping[1]) >= MoveUtils.getJumpingPrecision(p) // Not first jump motion
+                            && (Math.abs(vertical - MoveUtils.jumping[1]) >= MoveUtils.getJumpingPrecision(player) // Not first jump motion
                             || Math.abs(vertical - box) >= MoveUtils.highPrecision)) { // Vertical & box are not correlated
-                        IrregularMovements.cancel(p, from, prevention, "jump-" + scenario, 1);
+                        irregularMovements.cancel(prevention, "jump-" + scenario, 1);
                     }
-                } else if (!p.isClimbing(vertical)) {
+                } else if (!player.isClimbing(vertical)) {
                     boolean scaffolding = PatternUtils.collides(to, true, true, 0.0, BlockUtils.scaffolding);
-                    double jumpEffectExtra = p.getExtraMovementFromJumpEffect(),
+                    double jumpEffectExtra = player.getExtraMovementFromJumpEffect(),
                             max = (scaffolding ? MoveUtils.climbingScaffoldingMax : MoveUtils.getClimbingMotionEdges()[1]) + (jumpEffectExtra > 0 ? jumpEffectExtra + 0.1 : MoveUtils.lowPrecision);
 
                     if (canGoUp && vertical >= max) {
-                        IrregularMovements.cancel(p, from, prevention, "up-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, bouncingBlocks || knownBoxes ? 8 : 3, IrregularMovements.defaultBufferTime);
+                        irregularMovements.cancel(prevention, "up-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, bouncingBlocks || knownBoxes ? 8 : 3, IrregularMovements.defaultBufferTime);
                     } else if (canGoDown && vertical <= -max
-                            && !p.isFalling(vertical) && p.getLastFall() >= 1_000L) {
-                        boolean nonClimbable = IrregularMovements.cacheBoolean(cooldowns,
+                            && !player.isFalling(vertical) && player.getLastFall() >= 1_000L) {
+                        boolean nonClimbable = irregularMovements.cacheBoolean(cooldowns,
                                 !BlockUtils.canClimb(to)
                                         || !BlockUtils.canClimb(to.clone().add(0, 1, 0))
                                         || !BlockUtils.canClimb(to.clone().add(0, -1, 0)),
                                 "climb=non-climbable", 10);
-                        IrregularMovements.cancel(p, from, prevention, "down-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, nonClimbable ? 8 : 3, 10);
+                        irregularMovements.cancel(prevention, "down-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, nonClimbable ? 8 : 3, 10);
                     }
                 }
             });

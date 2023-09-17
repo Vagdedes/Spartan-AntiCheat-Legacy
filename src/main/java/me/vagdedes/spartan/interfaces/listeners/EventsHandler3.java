@@ -1,18 +1,6 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.FastBow;
-import me.vagdedes.spartan.checks.combat.fastClicks.FastClicks;
-import me.vagdedes.spartan.checks.exploits.Chat;
-import me.vagdedes.spartan.checks.exploits.SignLineLength;
-import me.vagdedes.spartan.checks.inventory.ItemDrops;
 import me.vagdedes.spartan.checks.movement.NoFall;
-import me.vagdedes.spartan.checks.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.player.FastEat;
-import me.vagdedes.spartan.checks.player.NoSwing;
-import me.vagdedes.spartan.checks.world.BlockReach;
-import me.vagdedes.spartan.checks.world.FastBreak;
-import me.vagdedes.spartan.checks.world.GhostHand;
-import me.vagdedes.spartan.checks.world.ImpossibleActions;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.features.chat.ChatProtection;
 import me.vagdedes.spartan.features.chat.StaffChat;
@@ -62,7 +50,7 @@ public class EventsHandler3 implements Listener {
             String msg = e.getMessage();
 
             // Protections
-            if (Chat.run(p, msg)  // Detections
+            if (p.getExecutor(Enums.HackType.Exploits).handle(msg) // Detections
                     || StaffChat.run(p, msg) // Features
                     || ChatProtection.runChat(p, msg)) { // Features
                 e.setCancelled(true);
@@ -165,7 +153,7 @@ public class EventsHandler3 implements Listener {
             return;
         }
         // Detections
-        SignLineLength.run(p, e.getLines());
+        p.getExecutor(Enums.HackType.Exploits).handle(e.getLines());
 
         if (p.getViolations(Enums.HackType.Exploits).process()) {
             e.setCancelled(true);
@@ -198,13 +186,13 @@ public class EventsHandler3 implements Listener {
 
                 // Detections
                 if (!customBlock) {
-                    BlockReach.runInteract(p, b);
-                    ImpossibleActions.runInteract(p, action, b);
-                    FastBreak.runInteract(p, action, b);
+                    p.getExecutor(Enums.HackType.BlockReach).handle(e);
+                    p.getExecutor(Enums.HackType.FastBreak).handle(e);
+                    p.getExecutor(Enums.HackType.ImpossibleActions).handle(e);
                 }
-                FastEat.runInteract(p, b, action);
-                NoSlowdown.runCake(p, b, action);
-                ItemDrops.runInteract(p, b, action);
+                p.getExecutor(Enums.HackType.FastEat).handle(e);
+                p.getExecutor(Enums.HackType.NoSlowdown).handle(e);
+                p.getExecutor(Enums.HackType.ItemDrops).handle(e);
 
                 // Protections
                 if (!cancelled) {
@@ -212,21 +200,21 @@ public class EventsHandler3 implements Listener {
                         e.setCancelled(true);
                     } else if (!customBlock) {
                         // Detections
-                        GhostHand.runInteract(p, b, action);
+                        p.getExecutor(Enums.HackType.GhostHand).handle(e);
                         Liquid.runInteract(p, action);
                     }
                     Building.runInteract(p, b, action);
                 }
             } else {
                 // Detections
-                FastClicks.run(p, action);
-                FastEat.runInteract(p, null, action);
+                p.getExecutor(Enums.HackType.FastClicks).handle(e);
+                p.getExecutor(Enums.HackType.FastEat).handle(e);
             }
             // Detections
             if (!customBlock) {
-                NoSwing.runInteract(p, action);
+                p.getExecutor(Enums.HackType.NoSwing).handle(e);
             }
-            FastBow.runInteract(p, action);
+            p.getExecutor(Enums.HackType.FastBow).handle(e);
 
             if (p.getViolations(Enums.HackType.GhostHand).process()
                     || p.getViolations(Enums.HackType.FastClicks).process()) {

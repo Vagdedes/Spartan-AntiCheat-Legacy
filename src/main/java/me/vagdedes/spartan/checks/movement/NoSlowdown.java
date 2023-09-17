@@ -1,132 +1,139 @@
 package me.vagdedes.spartan.checks.movement;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Handlers;
-import me.vagdedes.spartan.objects.replicates.SpartanBlock;
-import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
-import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
-public class NoSlowdown {
+public class NoSlowdown extends CheckExecutor {
 
     public static final HackType check = HackType.NoSlowdown;
     private static final Material cakeMaterial = MaterialUtils.get("cake");
+    public static final byte PACKETS = 0;
 
-    public static void run(SpartanPlayer p, SpartanLocation from, double ver, double hor, double oHor) {
-        if (check.getCheck().getBooleanOption("check_item_usage", true)
-                && !PlayerData.isInActivePlayerCombat(p)) {
-            runUse("item-use", p.isUsingItem(), 6, p, from, hor, oHor, ver);
+    public NoSlowdown(SpartanPlayer player) {
+        super(check, player);
+    }
+
+    @Override
+    public boolean run() {
+        if (hackType.getCheck().getBooleanOption("check_item_usage", true)
+                && !PlayerData.isInActivePlayerCombat(player)) {
+            return runUse("item-use", player.isUsingItem(), 6);
+        } else {
+            return false;
         }
     }
 
-    public static void runPotion(SpartanPlayer p) {
-        ItemStack item;
-
-        if (check.getCheck().getBooleanOption("check_potion", true) && !LagLeniencies.hasHighLatency(p, LagLeniencies.badPing) // Item
-                && (item = p.getItemInHand()) != null && item.getType() == Material.POTION) {
-            runUse("potion", true, 1, p, MoveUtils.getCachedLocation(p),
-                    p.getNmsHorizontalDistance(), 0, p.getNmsVerticalDistance());
-        }
-    }
-
-    // Food protection
-
-    public static void runCake(SpartanPlayer p, SpartanBlock b, Action action) {
-        if (action == Action.RIGHT_CLICK_BLOCK && canDo(p)
-                && check.getCheck().getBooleanOption("check_food_eating", true)
-                && b.getType() == cakeMaterial) {
-            p.getCooldowns(check).add("food-eating", 10);
-        }
-    }
-
-    public static void runFood(SpartanPlayer p, int lvl) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
-                || !canDo(p) || !check.getCheck().getBooleanOption("check_food_eating", true)
-                || p.getWorld().getDifficulty() == Difficulty.PEACEFUL
-                || p.hasPotionEffect(PotionEffectType.SATURATION)
-                || !p.getCooldowns(check).canDo("food-eating") || lvl <= p.getFoodLevel()
-                || LagLeniencies.hasHighLatency(p, LagLeniencies.badPing)) { // Item
-            return;
-        }
-        GameMode gameMode = p.getGameMode();
-
-        if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE) {
-            return;
-        }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            ItemStack item = p.getItemInHand();
-
-            if (item != null && item.getType() == Material.DRIED_KELP) {
-                return;
+    @Override
+    public boolean handle(Object object) {
+        if (object instanceof EntityPotionEffectEvent) {
+            if (hackType.getCheck().getBooleanOption("check_potion", true)
+                    && !LagLeniencies.hasHighLatency(player, LagLeniencies.badPing) // Item
+                    && player.getItemInHand().getType() == Material.POTION) {
+                runUse("potion", true, 1);
             }
-        }
-        int cases = getMovementCase(p, false);
+        } else if (object instanceof PlayerInteractEvent) {
+            PlayerInteractEvent e = (PlayerInteractEvent) object;
 
-        if (cases != 0) {
-            new HackPrevention(p, check, "type: food-eating, case: " + cases, p.getLocation(), 10, true);
-        }
-    }
+            if (e.getAction() == Action.RIGHT_CLICK_BLOCK
+                    && canDo()
+                    && hackType.getCheck().getBooleanOption("check_food_eating", true)
+                    && e.getClickedBlock().getType() == cakeMaterial) {
+                player.getCooldowns(hackType).add("food-eating", 10);
+            }
+        } else if (object instanceof EntityShootBowEvent) {
+            Check check = hackType.getCheck();
 
-    // Bow protection
+            if (!check.isSilent(player.getWorld().getName(), player.getUniqueId())
+                    && check.getBooleanOption("check_bow_shots", true)
+                    && !PlayerData.hasJumpEffect(player)
+                    && getMovementCase(player, true) != 0) {
+                return canDo() && !PlayerData.hasSpeedEffect(player, player.getLocation());
+            }
+        } else if (object instanceof FoodLevelChangeEvent) {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
+                    || !canDo() || !hackType.getCheck().getBooleanOption("check_food_eating", true)
+                    || player.getWorld().getDifficulty() == Difficulty.PEACEFUL
+                    || player.hasPotionEffect(PotionEffectType.SATURATION)
+                    || !player.getCooldowns(hackType).canDo("food-eating")
+                    || ((FoodLevelChangeEvent) object).getFoodLevel() <= player.getFoodLevel()
+                    || LagLeniencies.hasHighLatency(player, LagLeniencies.badPing)) { // Item
+                return false;
+            }
+            GameMode gameMode = player.getGameMode();
 
-    public static boolean runBow(SpartanPlayer p) {
-        Check check = NoSlowdown.check.getCheck();
+            if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE) {
+                return false;
+            }
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+                ItemStack item = player.getItemInHand();
 
-        if (!check.isSilent(p.getWorld().getName(), p.getUniqueId())
-                && check.getBooleanOption("check_bow_shots", true)
-                && !PlayerData.hasJumpEffect(p)
-                && getMovementCase(p, true) != 0) {
-            SpartanLocation loc = p.getLocation();
-            return canDo(p)
-                    && !PlayerData.hasSpeedEffect(p, loc);
+                if (item != null && item.getType() == Material.DRIED_KELP) {
+                    return false;
+                }
+            }
+            int cases = getMovementCase(player, false);
+
+            if (cases != 0) {
+                cancel("type: food-eating, case: " + cases, player.getLocation(), 10, true);
+            }
+        } else if (object instanceof PlayerItemHeldEvent) {
+            player.getCooldowns(hackType).add("held", 3);
+        } else {
+            runUse("packets", true, 1);
         }
         return false;
     }
 
-    // Use protection
+    private boolean runUse(String reason, boolean itemUsage, int limit) {
+        double horizontal = player.getNmsHorizontalDistance(),
+                oldHorizontal = player.getOld_NmsHorizontalDistance(),
+                vertical = player.getNmsVerticalDistance();
 
-    public static void runUse(String reason, boolean itemUsage, int limit,
-                              SpartanPlayer p, SpartanLocation from,
-                              double horizontal, double oldHorizontal, double vertical) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                 && itemUsage
-                && canDo(p)
-                && p.getCooldowns(check).canDo("held")
-                && p.getFoodLevel() < 20
+                && canDo()
+                && player.getCooldowns(hackType).canDo("held")
+                && player.getFoodLevel() < 20
                 && horizontal >= 0.16
 
                 && (oldHorizontal == 0.0
                 || horizontal >= oldHorizontal
-                || p.isOnGroundCustom()
-                || !p.hasShield()
-                && !PlayerData.holdsFood(p)
-                && p.getItemInHand().getType() != Material.POTION)) {
-            int cases = getMovementCase(p, false);
+                || player.isOnGroundCustom()
+                || !player.hasShield()
+                && !PlayerData.holdsFood(player)
+                && player.getItemInHand().getType() != Material.POTION)) {
+            int cases = getMovementCase(player, false);
 
             if (cases != 0) {
                 Material[] materials = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ?
-                        new Material[]{p.getItemInHand().getType(), p.getInventory().getItemInOffHand().getType()} :
-                        new Material[]{p.getItemInHand().getType()};
+                        new Material[]{player.getItemInHand().getType(), player.getInventory().getItemInOffHand().getType()} :
+                        new Material[]{player.getItemInHand().getType()};
                 StringBuilder items = new StringBuilder();
                 boolean allAir = true;
 
                 for (Material material : materials) {
                     if (material == Material.FISHING_ROD) {
-                        return;
+                        return false;
                     } else {
                         items.append(items.length() == 0 ? "" : ", ").append(BlockUtils.materialToString(material));
 
@@ -137,7 +144,7 @@ public class NoSlowdown {
                 }
 
                 if (!allAir) {
-                    Buffer buffer = p.getBuffer(check);
+                    Buffer buffer = player.getBuffer(hackType);
                     String key = "use=" + reason;
 
                     if (limit == 1 || buffer.start(key, 10) == limit) {
@@ -145,29 +152,26 @@ public class NoSlowdown {
                         String verbose = "type: " + reason
                                 + ", holding: " + items
                                 + ", case: " + cases
-                                + ", last-sprint: " + p.getLastOffSprint()
+                                + ", last-sprint: " + player.getLastOffSprint()
                                 + ", horizontal: " + horizontal
                                 + ", vertical: " + vertical;
-                        new HackPrevention(p, check, verbose, from, 10, true);
+                        cancel(verbose, player.getEventFromLocation(), 10, true);
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
 
-    public static void runItemChange(SpartanPlayer p) {
-        p.getCooldowns(check).add("held", 3);
+    @Override
+    protected boolean canDo() {
+        return player.canRunCheck(hackType, true) && !player.isSwimming() && !player.wasInLiquids()
+                && !player.getHandlers().has(Handlers.HandlerType.Vehicle) && !player.getHandlers().has(Handlers.HandlerType.Explosion)
+                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse);
     }
 
-    // Basic Utils
-
-    private static boolean canDo(SpartanPlayer p) {
-        return p.canRunCheck(check, true) && !p.isSwimming() && !p.wasInLiquids()
-                && !p.getHandlers().has(Handlers.HandlerType.Vehicle) && !p.getHandlers().has(Handlers.HandlerType.Explosion)
-                && !p.getHandlers().has(Handlers.HandlerType.ElytraUse);
-    }
-
-    private static int getMovementCase(SpartanPlayer p, boolean lenient) {
+    private int getMovementCase(SpartanPlayer p, boolean lenient) {
         return (lenient ? p.isCustomSprinting() : p.isSprinting()) ? 1 :
                 p.isWalking() ? 2 :
                         p.isSprintJumping() ? 3 :

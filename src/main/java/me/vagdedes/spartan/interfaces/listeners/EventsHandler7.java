@@ -1,10 +1,6 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.exploits.ChunkUpdates;
-import me.vagdedes.spartan.checks.exploits.HeadPosition;
-import me.vagdedes.spartan.checks.exploits.UndetectedMovement;
+import me.vagdedes.spartan.checks.exploits.Exploits;
 import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
 import me.vagdedes.spartan.checks.movement.EntityMove;
 import me.vagdedes.spartan.checks.movement.MorePackets;
@@ -12,13 +8,12 @@ import me.vagdedes.spartan.checks.movement.NoFall;
 import me.vagdedes.spartan.checks.movement.NoSlowdown;
 import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
 import me.vagdedes.spartan.checks.movement.speed.Speed;
-import me.vagdedes.spartan.checks.movement.speed.SprintSpeed;
-import me.vagdedes.spartan.checks.movement.speed.WaterSpeed;
 import me.vagdedes.spartan.features.chat.ChatProtection;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.protections.ServerFlying;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
+import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;
@@ -29,7 +24,6 @@ import me.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import me.vagdedes.spartan.objects.profiling.PlayerVelocity;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -62,7 +56,7 @@ public class EventsHandler7 implements Listener {
             Speed.check,
             MorePackets.check,
             ImpossibleInventory.check,
-            Enums.HackType.Exploits
+            Exploits.check
     };
 
     static {
@@ -199,16 +193,16 @@ public class EventsHandler7 implements Listener {
             }
         } else if (Damage.getLastReceived(p) <= damageTime
                 && p.getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            VelocityCheck.collectEntity(p, to);
+            p.getExecutor(Enums.HackType.Velocity).handle(to);
         }
 
         // Detections
         if (checkPlayer && !crawling) {
-            HeadPosition.run(p, to, from); // Optimised
-            ImpossibleInventory.runCursorUsage(p, from, ver); // Optimised
-            KillAura.runOnMovement(p, to, from); // Optimised
+            p.getExecutor(Enums.HackType.Exploits).handle(Exploits.HEAD); // Optimised
+            p.getExecutor(Enums.HackType.ImpossibleInventory).run(); // Optimised
+            p.getExecutor(Enums.HackType.KillAura).run(); // Optimised
         }
-        UndetectedMovement.runMove(p, dis);
+        p.getExecutor(Enums.HackType.Exploits).handle(dis);
 
         if (!repetitionDistance
                 && (dis == 0.0 || dis < 0.01 && ver == 0.0)
@@ -240,29 +234,25 @@ public class EventsHandler7 implements Listener {
             if (firstTick) {
                 ServerFlying.run(p);
             }
-            ChunkUpdates.run(p, to, from, vehicle); // Optimised
-            SprintSpeed.run(p, to, from, ver, hor); // Optimised
+            p.getExecutor(Enums.HackType.Exploits).handle(Exploits.CHUNK); // Optimised
+            p.getExecutor(Enums.HackType.Speed).handle(Speed.SPRINT); // Optimised
         }
 
         if (heavyMovementChecks) {
             if (checkPlayer && (firstTick || repetition || tick <= 3)) {
-                double oHor = p.getOld_NmsHorizontalDistance(),
-                        oBox = p.getOld_NmsBox(),
-                        oVer = p.getOld_NmsVerticalDistance();
-
                 // Detections
                 if (firstTick || repetition) {
                     if (!crawling) {
-                        p.getExecutor(NoFall.check).run(); // Repetitive (Optimised)
-                        NoSlowdown.run(p, from, ver, hor, oHor); // Repetitive (Optimised)
-                        EntityMove.run(p, to, from, hor, ver, oVer, rem, oBox, air); // Repetitive (Optimised)
+                        p.getExecutor(Enums.HackType.NoFall).run(); // Repetitive (Optimised)
+                        p.getExecutor(Enums.HackType.NoSlowdown).run(); // Repetitive (Optimised)
+                        p.getExecutor(Enums.HackType.EntityMove).run(); // Repetitive (Optimised)
                     }
-                    IrregularMovements.run(p, to, from, ver, oVer, hor, oHor, rem, oBox, air); // Repetitive (Optimised)
+                    p.getExecutor(Enums.HackType.IrregularMovements).run(); // Repetitive (Optimised)
                 }
-                Speed.run(p, to, from, ver, hor, air, rem, oVer, oHor, oBox, crawling); // Important (Optimised)
-                WaterSpeed.run(p, to, from, ver, oVer, rem, hor, air); // Repetitive (Optimised)
+                p.getExecutor(Enums.HackType.Speed).run(); // Important (Optimised)
+                p.getExecutor(Enums.HackType.Speed).handle(Speed.WATER); // Repetitive (Optimised)
             }
-            MorePackets.run(p, to, hor, ver); // Required (Let the check run in all circumstances to accurately count the packets)
+            p.getExecutor(Enums.HackType.MorePackets).run(); // Required (Let the check run in all circumstances to accurately count the packets)
         }
     }
 

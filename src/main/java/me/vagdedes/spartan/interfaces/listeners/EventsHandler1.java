@@ -1,11 +1,6 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.killAura.KillAura;
 import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
-import me.vagdedes.spartan.checks.movement.MorePackets;
-import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
-import me.vagdedes.spartan.checks.player.AutoRespawn;
-import me.vagdedes.spartan.checks.world.ImpossibleActions;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.chat.ChatProtection;
@@ -20,10 +15,11 @@ import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
+import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.objects.profiling.PlayerCombat;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Cache;
+import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -109,11 +105,10 @@ public class EventsHandler1 implements Listener {
         }
         // Detections
         Cache.clearCheckCache(p);
-        MorePackets.remove(p);
-        KillAura.remove(p);
-        AutoRespawn.handleDeath(p);
-        ImpossibleActions.handleDeath(p);
-        ImpossibleInventory.checkAutoTotem(p);
+        p.getExecutor(Enums.HackType.KillAura).handle(null);
+        p.getExecutor(Enums.HackType.ImpossibleActions).run();
+        p.getExecutor(Enums.HackType.AutoRespawn).run();
+        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(ImpossibleInventory.DEATH);
 
         // Protections
         p.resetHandlers(); // Always First
@@ -144,9 +139,8 @@ public class EventsHandler1 implements Listener {
         }
         // Detections
         Cache.clearCheckCache(p);
-        MorePackets.remove(p);
-        KillAura.remove(p);
-        IrregularMovements.remove(p);
+        p.getExecutor(Enums.HackType.KillAura).handle(null);
+        p.getExecutor(Enums.HackType.IrregularMovements).handle(null);
 
         // Utils
         DetectionLocation.remove(p);

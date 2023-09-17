@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.system;
+package me.vagdedes.spartan.handlers.connection;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.features.important.Permissions;
@@ -6,6 +6,7 @@ import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.RequestUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;

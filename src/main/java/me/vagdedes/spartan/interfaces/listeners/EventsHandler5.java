@@ -1,11 +1,5 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.movement.MorePackets;
-import me.vagdedes.spartan.checks.movement.NoSlowdown;
-import me.vagdedes.spartan.checks.player.FastEat;
-import me.vagdedes.spartan.checks.player.FastHeal;
-import me.vagdedes.spartan.checks.player.NoSwing;
-import me.vagdedes.spartan.checks.world.*;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
@@ -52,9 +46,9 @@ public class EventsHandler5 implements Listener {
                 int lvl = e.getFoodLevel();
 
                 // Detections
-                FastEat.runFood(p, lvl);
-                NoSlowdown.runFood(p, lvl);
-                FastHeal.runFood(p, lvl);
+                p.getExecutor(Enums.HackType.FastEat).handle(e);
+                p.getExecutor(Enums.HackType.NoSlowdown).handle(e);
+                p.getExecutor(Enums.HackType.FastHeal).handle(e);
 
                 if (p.getViolations(Enums.HackType.FastEat).process()
                         || p.getViolations(Enums.HackType.NoSlowdown).process()) {
@@ -84,7 +78,7 @@ public class EventsHandler5 implements Listener {
 
             if (!e.isCancelled()) {
                 // Detections
-                FastHeal.run(p, e.getRegainReason());
+                p.getExecutor(Enums.HackType.NoSwing).handle(e);
 
                 if (p.getViolations(Enums.HackType.FastHeal).process()) {
                     e.setCancelled(true);
@@ -107,11 +101,11 @@ public class EventsHandler5 implements Listener {
         if (!cancelled) {
             // Detections
             if (!ItemsAdder.is(nb)) {
-                NoSwing.runBreak(p, b);
-                ImpossibleActions.runBreak(p, b);
-                BlockReach.runBreak(p, b);
-                FastBreak.run(p, b);
-                GhostHand.runBreak(p, b, e.isCancelled());
+                p.getExecutor(Enums.HackType.NoSwing).handle(e);
+                p.getExecutor(Enums.HackType.BlockReach).handle(e);
+                p.getExecutor(Enums.HackType.FastBreak).handle(e);
+                p.getExecutor(Enums.HackType.GhostHand).handle(e);
+                p.getExecutor(Enums.HackType.ImpossibleActions).handle(e);
             }
 
             // Features
@@ -138,7 +132,7 @@ public class EventsHandler5 implements Listener {
         BlockBreak.run(p, cancelled, b);
 
         // Detections
-        MorePackets.handleMining(p, b);
+        p.getExecutor(Enums.HackType.MorePackets).handle(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -168,9 +162,9 @@ public class EventsHandler5 implements Listener {
         if (!cancelled) {
             // Detections
             if (!ItemsAdder.is(nb)) {
-                ImpossibleActions.runPlace(p, b, ba, blockFace);
-                FastPlace.run(p, b, true, true, true);
-                BlockReach.runPlace(p, b, ba);
+                p.getExecutor(Enums.HackType.ImpossibleActions).handle(e);
+                p.getExecutor(Enums.HackType.BlockReach).handle(e);
+                p.getExecutor(Enums.HackType.FastPlace).handle(e);
             }
 
             // Feature
@@ -187,8 +181,6 @@ public class EventsHandler5 implements Listener {
                     || p.getViolations(Enums.HackType.ImpossibleActions).process()) {
                 e.setCancelled(true);
             }
-        } else if (!ItemsAdder.is(nb)) {
-            FastPlace.run(p, b, false, false, true);
         }
     }
 

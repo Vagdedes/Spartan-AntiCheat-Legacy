@@ -1,31 +1,33 @@
 package me.vagdedes.spartan.checks.movement;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
-import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.data.*;
-import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import org.bukkit.block.Block;
+import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.UUID;
 
-public class MorePackets {
+public class MorePackets extends CheckExecutor {
 
     public static final HackType check = HackType.MorePackets;
-    private static final Map<UUID, SpartanLocation> initialLocation = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers())); // Do not make the map weak, as it takes long for cycles to complete
+
+    public MorePackets(SpartanPlayer player) {
+        super(check, player);
+    }
+
+    private SpartanLocation initialLocation = null;
 
     private static final int
             maxTicks = AlgebraUtils.integerRound(TPS.maximum),
@@ -40,64 +42,67 @@ public class MorePackets {
             refreshLocationKey = "refresh-location",
             instantMotionKey = "instant-motion";
 
-    public static void remove(SpartanPlayer p) {
-        initialLocation.remove(p.getUniqueId());
-    }
+    @Override
+    public boolean handle(Object object) {
+        if (object == null) {
+            initialLocation = null;
+        } else if (object instanceof BlockBreakEvent) {
+            Block block = ((BlockBreakEvent) object).getBlock();
 
-    public static void refresh(SpartanPlayer p, SpartanLocation loc) {
-        initialLocation.put(p.getUniqueId(), loc);
-    }
-
-    public static void handleMining(SpartanPlayer p, SpartanBlock b) {
-        if (BlockUtils.areOres(b.getType())) {
-            check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 5);
+            if (BlockUtils.areOres(block.getType())) {
+                hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 5);
+            }
+        } else {
+            initialLocation = ((SpartanLocation) object);
         }
+        return false;
     }
 
-    public static void run(SpartanPlayer p, SpartanLocation to, double horizontal, double vertical) {
-        if (canDo(p)) {
-            Timer timer = p.getTimer(check);
-            Buffer buffer = p.getBuffer(check);
-            Cooldowns cooldowns = p.getCooldowns(check);
-            Decimals decimals = p.getDecimals(check);
+    @Override
+    public boolean run() {
+        if (canDo()) {
+            Timer timer = player.getTimer(hackType);
+            Buffer buffer = player.getBuffer(hackType);
+            Cooldowns cooldowns = player.getCooldowns(hackType);
+            Decimals decimals = player.getDecimals(hackType);
+            SpartanLocation to = player.getEventToLocation();
 
             // Last tick
             long lastTick = timer.get(dataKey);
             timer.set(dataKey);
 
             // Initial location
-            UUID uuid = p.getUniqueId();
-            SpartanLocation initialLoc = initialLocation.get(uuid);
-
-            if (initialLoc == null) { // Do not start detection if not all cache is available
-                initialLocation.put(uuid, to);
+            if (initialLocation == null) { // Do not start detection if not all cache is available
+                initialLocation = to;
                 buffer.remove(dataKey);
                 timer.remove(dataKey);
                 cooldowns.remove(new String[]{dataKey, refreshLocationKey});
                 decimals.remove(new String[]{horizontalKey, verticalKey, lastTickKey});
-                return;
+                return false;
             }
-            boolean bedrockPlayer = p.isBedrockPlayer(),
-                    hacker = p.getProfile().isSuspectedOrHacker(check);
+            boolean bedrockPlayer = player.isBedrockPlayer(),
+                    hacker = player.getProfile().isSuspectedOrHacker(hackType);
 
             // Detections
             if (timer.has(lastTick)) { // Do not start detection if not all cache is available
-                double horizontalMotionDifference = p.getCustomHorizontalDistance() - horizontal,
-                        verticalMotionDifference = p.getCustomVerticalDistance() - vertical;
+                double horizontal = player.getNmsHorizontalDistance(),
+                        vertical = player.getNmsVerticalDistance(),
+                        horizontalMotionDifference = player.getCustomHorizontalDistance() - horizontal,
+                        verticalMotionDifference = player.getCustomVerticalDistance() - vertical;
                 int tickCounter = buffer.increase(dataKey, 1);
 
                 // Instant
-                if (check.getCheck().getBooleanOption("check_instant_movements", true)
+                if (hackType.getCheck().getBooleanOption("check_instant_movements", true)
                         && lastTick < 10L) { // First stage
-                    double delay = LagLeniencies.getDelay(p);
+                    double delay = LagLeniencies.getDelay(player);
                     boolean decreasedRequirement = false,
                             canHaveDecreasedRequirement =
                                     !bedrockPlayer
-                                            && !p.isUsingItem()
-                                            && Damage.hasCooldown(p)
-                                            && !p.getHandlers().has(Handlers.HandlerType.Explosion)
-                                            && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                                            && !p.getHandlers().has(Handlers.HandlerType.Trident);
+                                            && !player.isUsingItem()
+                                            && Damage.hasCooldown(player)
+                                            && !player.getHandlers().has(Handlers.HandlerType.Explosion)
+                                            && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                                            && !player.getHandlers().has(Handlers.HandlerType.Trident);
                     int ticksRequirement = Math.min(10 + AlgebraUtils.integerRound(delay), 15),
                             first = buffer.start(instantMotionKey + "=first", 1),
                             special;
@@ -111,7 +116,7 @@ public class MorePackets {
                     // Second stage
                     if (first >= ticksRequirement // Allow the player to pass when they reach the ticks requirement
                             || canHaveDecreasedRequirement && (decreasedRequirement = first >= 2 && special > (first / 2))) { // Alternatively, allow them to pass if more than half of the recorded ticks have been instant in relative to the previous tick
-                        SpartanLocation customFrom = MoveUtils.getCachedLocation(p, true);
+                        SpartanLocation customFrom = MoveUtils.getCachedLocation(player, true);
 
                         if (customFrom != null) {
                             double overallDistance = to.distance(customFrom),
@@ -133,13 +138,13 @@ public class MorePackets {
                                 });
 
                                 boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
-                                SpartanLocation handlerFrom = DetectionLocation.get(p, true);
+                                SpartanLocation handlerFrom = DetectionLocation.get(player, true);
                                 SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
 
                                 if (instant) {
-                                    DetectionLocation.set(p, teleportLocation);
+                                    DetectionLocation.set(player, teleportLocation);
                                 }
-                                new HackPrevention(p, check, "type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", ticks-requirement: " + ticksRequirement + ", decreased-requirement: " + decreasedRequirement,
+                                cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", ticks-requirement: " + ticksRequirement + ", decreased-requirement: " + decreasedRequirement,
                                         instant ? teleportLocation : null, instant ? teleportTicks : 0);
                             }
                         }
@@ -150,11 +155,11 @@ public class MorePackets {
                 if (cooldowns.canDo(dataKey)) { // Add to the values as the moment of check they are not positively modified
                     int cycleTicks = tickCycles * maxTicks,
                             extraTicks = (tickCounter + 1) - cycleTicks,
-                            extraPackets = p.getExtraPackets();
+                            extraPackets = player.getExtraPackets();
                     double totalHorizontalMotion = decimals.get(horizontalKey, 0.0) + horizontalMotionDifference,
                             totalVerticalMotion = decimals.get(verticalKey, 0.0) + verticalMotionDifference,
                             tickAverage = (decimals.get(lastTickKey, 0.0) + lastTick) / ((double) cycleTicks),
-                            delay = LagLeniencies.getDelay(p);
+                            delay = LagLeniencies.getDelay(player);
                     boolean detected;
 
                     if ((delay < 1.0 ? Math.round(tickAverage) : tickAverage) <= 50.0 && extraTicks >= 5) {
@@ -177,13 +182,13 @@ public class MorePackets {
                             if (!instant) {
                                 if (totalHorizontalMotion >= (totalHorizontalMotionLimit * tickCycles)) {
                                     instant = true;
-                                    CancelViolation.force(p, check);
+                                    CancelViolation.force(player, hackType);
                                 }
                             } else {
-                                CancelViolation.force(p, check);
+                                CancelViolation.force(player, hackType);
                             }
-                            DetectionLocation.set(p, initialLoc);
-                            new HackPrevention(p, check, "type: horizontal(" + horizontalType + ")" + verbose, instant ? initialLoc : null, instant ? teleportTicks : 0);
+                            DetectionLocation.set(player, initialLocation);
+                            cancel("type: horizontal(" + horizontalType + ")" + verbose, instant ? initialLocation : null, instant ? teleportTicks : 0);
                             detected = true;
                         } else {
                             double totalVerticalMotionLimit = 0.5;
@@ -192,13 +197,13 @@ public class MorePackets {
                                 if (!instant) {
                                     if (totalVerticalMotion >= (totalVerticalMotionLimit * tickCycles)) {
                                         instant = true;
-                                        CancelViolation.force(p, check);
+                                        CancelViolation.force(player, hackType);
                                     }
                                 } else {
-                                    CancelViolation.force(p, check);
+                                    CancelViolation.force(player, hackType);
                                 }
-                                DetectionLocation.set(p, initialLoc);
-                                new HackPrevention(p, check, "type: vertical" + verbose, instant ? initialLoc : null, instant ? teleportTicks : 0);
+                                DetectionLocation.set(player, initialLocation);
+                                cancel("type: vertical" + verbose, instant ? initialLocation : null, instant ? teleportTicks : 0);
                                 detected = true;
                             } else {
                                 detected = false;
@@ -209,7 +214,7 @@ public class MorePackets {
                     }
 
                     if (!detected && cooldowns.canDo(refreshLocationKey)) {
-                        initialLocation.put(uuid, to);
+                        initialLocation = to;
                     } else {
                         cooldowns.add(refreshLocationKey, cycleTicks + (maxTicks / 2));
                     }
@@ -220,21 +225,23 @@ public class MorePackets {
                     decimals.set(horizontalKey, decimals.get(horizontalKey, 0.0) + horizontalMotionDifference);
                     decimals.set(lastTickKey, decimals.get(lastTickKey, 0.0) + lastTick);
 
-                    if (!p.isFalling(vertical)) { // Do not collect data when falling, it can introduce instabilities and is handled by other checks
+                    if (!player.isFalling(vertical)) { // Do not collect data when falling, it can introduce instabilities and is handled by other checks
                         decimals.set(verticalKey, decimals.get(verticalKey, 0.0) + verticalMotionDifference);
                     }
                 }
             }
         } else {
-            remove(p);
+            initialLocation = null;
         }
+        return false;
     }
 
-    private static boolean canDo(SpartanPlayer p) {
-        return p.canRunCheck(check, true)
-                && !p.getHandlers().has(Handlers.HandlerType.WaterElevator)
-                && !p.getHandlers().has(Handlers.HandlerType.BlockBreak)
-                && !p.getHandlers().has(Handlers.HandlerType.GameMode)
-                && !CrackShot.isUsingScope(p);
+    @Override
+    protected boolean canDo() {
+        return player.canRunCheck(hackType, true)
+                && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)
+                && !player.getHandlers().has(Handlers.HandlerType.BlockBreak)
+                && !player.getHandlers().has(Handlers.HandlerType.GameMode)
+                && !CrackShot.isUsingScope(player);
     }
 }

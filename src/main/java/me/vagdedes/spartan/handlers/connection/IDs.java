@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.system;
+package me.vagdedes.spartan.handlers.connection;
 
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.configuration.Config;

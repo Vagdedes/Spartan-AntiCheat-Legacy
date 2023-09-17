@@ -1,8 +1,5 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
-import me.vagdedes.spartan.checks.inventory.InventoryClicks;
-import me.vagdedes.spartan.checks.inventory.ItemDrops;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.moderation.PlayerReports;
 import me.vagdedes.spartan.features.moderation.Spectate;
@@ -52,14 +49,14 @@ public class EventsHandler4 implements Listener {
             p.setInventory(n.getInventory(), n.getOpenInventory());
 
             // Detections
-            ItemDrops.run(p);
+            p.getExecutor(Enums.HackType.ItemDrops).run();
 
             if (p.getViolations(Enums.HackType.ItemDrops).process()) {
                 e.setCancelled(true);
             }
         } else {
             // Detections
-            ItemDrops.run(p);
+            p.getExecutor(Enums.HackType.ItemDrops).run();
         }
     }
 
@@ -105,8 +102,8 @@ public class EventsHandler4 implements Listener {
                 p.setInventory(n.getInventory(), n.getOpenInventory());
 
                 // Detections
-                ImpossibleInventory.run(p, item, click);
-                InventoryClicks.run(p, item, click);
+                p.getExecutor(Enums.HackType.ImpossibleInventory).handle(e);
+                p.getExecutor(Enums.HackType.InventoryClicks).handle(e);
             }
 
             // GUIs

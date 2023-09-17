@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.checks.combat;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.checks.movement.speed.Speed;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.features.important.MultiVersion;
@@ -10,7 +11,6 @@ import me.vagdedes.spartan.objects.profiling.PlayerFight;
 import me.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -22,73 +22,106 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-public class HitReach {
+public class HitReach extends CheckExecutor {
 
-    private static final HackType check = HackType.HitReach;
+    public HitReach(SpartanPlayer player) {
+        super(HackType.HitReach, player);
+    }
+
     private static final double defaultHorizontalReach = CombatUtils.maxLegitimateHitDistance + 0.1;
 
-    public static void run(SpartanPlayer p, SpartanLocation to, LivingEntity entity, double[] utility) {
-        if (p.canRunCheck(check, true)
-                && !p.wasFlying()
-                && !NoHitDelay.hasCooldown(p)
-                && !CombatUtils.hasBlockBehind(p, entity)) {
-            GameMode gm = p.getGameMode();
+    private double getPreferredLimit(LivingEntity entity) {
+        double preferred;
 
-            if (gm == GameMode.ADVENTURE || gm == GameMode.SURVIVAL) {
-                SpartanPlayer damaged = entity instanceof Player ? SpartanBukkit.getPlayer((Player) entity) : null;
-                boolean isPlayer = damaged != null;
-                SpartanLocation entityLocation = new SpartanLocation(null, entity.getLocation());
-                double distance = AlgebraUtils.getVerticalDistance(to, entityLocation),
-                        limit = filter(check.getCheck().getDecimalOption("vertical_distance", 4.6), 4.6, 0.0);
+        if (entity != null
+                && CombatUtils.getWidthAndHeight(entity)[1] > 2.0) {
+            preferred = 5.0;
+        } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7)
+                || PlayerData.getPotionLevel(player, PotionEffectType.SPEED) > 0
+                && player.getNmsHorizontalDistance() >= Speed.ground) {
+            preferred = 4.25;
+        } else {
+            double y = player.getNmsVerticalDistance();
+            preferred = player.isJumping(y) || player.isFalling(y) ? 4.25 : defaultHorizontalReach;
+        }
+        return Math.max(ResearchEngine.getReach()[1], preferred);
+    }
 
-                if (distance >= limit && distance <= CombatUtils.maxHitDistance && !BlockUtils.canClimb(entityLocation)) {
-                    new HackPrevention(p, check, "type: vertical, distance: " + distance + ", limit: " + limit);
-                } else {
-                    distance = utility[2];
+    private double filter(double distance, double minimum, double extra) {
+        return Math.max(Math.min(CombatUtils.maxHitDistance, distance + extra), minimum);
+    }
 
-                    if (!p.isChasing()) {
-                        limit = filter(check.getCheck().getDecimalOption("horizontal_distance", 3.1), defaultHorizontalReach, 0.5);
+    @Override
+    public boolean run() {
+        return false;
+    }
 
-                        if (distance >= limit) {
-                            double preferredLimit = getPreferredLimit(p, entity);
-                            boolean minimumNotReached = distance < preferredLimit;
-                            int ticks = 10 * 11,
-                                    attempts = minimumNotReached ? 6
-                                            : p.getProfile().isSuspectedOrHacker(check)
-                                            || p.hasAttackCooldown()
-                                            || p.getNmsDistance() <= 0.1
-                                            || !PlayerData.isInActivePlayerCombat(p) ? 3 : 4;
-                            Buffer buffer = p.getBuffer(check);
+    @Override
+    public boolean handle(Object object) {
+        if (canDo()) {
+            Object[] objects = (Object[]) object;
+            LivingEntity entity = (LivingEntity) objects[0];
 
-                            if (minimumNotReached && limit < 4.0) {
-                                limit = 4.0;
+            if (!CombatUtils.hasBlockBehind(player, entity)) {
+                GameMode gm = player.getGameMode();
+
+                if (gm == GameMode.ADVENTURE
+                        || gm == GameMode.SURVIVAL) {
+                    SpartanPlayer damaged = entity instanceof Player ? SpartanBukkit.getPlayer((Player) entity) : null;
+                    boolean isPlayer = damaged != null;
+                    SpartanLocation entityLocation = new SpartanLocation(null, entity.getLocation());
+                    double distance = AlgebraUtils.getVerticalDistance(player.getEventToLocation(), entityLocation),
+                            limit = filter(hackType.getCheck().getDecimalOption("vertical_distance", 4.6), 4.6, 0.0);
+
+                    if (distance >= limit && distance <= CombatUtils.maxHitDistance && !BlockUtils.canClimb(entityLocation)) {
+                        cancel("type: vertical, distance: " + distance + ", limit: " + limit);
+                    } else {
+                        distance = ((double[]) objects[1])[2];
+
+                        if (!player.isChasing()) {
+                            limit = filter(hackType.getCheck().getDecimalOption("horizontal_distance", 3.1), defaultHorizontalReach, 0.5);
+
+                            if (distance >= limit) {
+                                double preferredLimit = getPreferredLimit(entity);
+                                boolean minimumNotReached = distance < preferredLimit;
+                                int ticks = 10 * 11,
+                                        attempts = minimumNotReached ? 6
+                                                : player.getProfile().isSuspectedOrHacker(hackType)
+                                                || player.hasAttackCooldown()
+                                                || player.getNmsDistance() <= 0.1
+                                                || !PlayerData.isInActivePlayerCombat(player) ? 3 : 4;
+                                Buffer buffer = player.getBuffer(hackType);
+
+                                if (minimumNotReached && limit < 4.0) {
+                                    limit = 4.0;
+                                }
+
+                                if (!NoHitDelay.hasCooldown(player) && (!isPlayer || !NoHitDelay.hasCooldown(damaged))
+                                        && buffer.start(Buffer.BufferType.Combat, "horizontal-short=" + minimumNotReached, ticks) >= attempts) {
+                                    buffer.remove("horizontal-long");
+                                    cancel("type: horizontal(short), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
+                                } else if (buffer.start(Buffer.BufferType.Combat, "horizontal-long", ticks * 2) >= (attempts * 2)) {
+                                    buffer.clear("horizontal-short");
+                                    cancel("type: horizontal(long), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
+                                }
                             }
 
-                            if (!NoHitDelay.hasCooldown(p) && (!isPlayer || !NoHitDelay.hasCooldown(damaged))
-                                    && buffer.start(Buffer.BufferType.Combat, "horizontal-short=" + minimumNotReached, ticks) >= attempts) {
-                                buffer.remove("horizontal-long");
-                                new HackPrevention(p, check, "type: horizontal(short), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
-                            } else if (buffer.start(Buffer.BufferType.Combat, "horizontal-long", ticks * 2) >= (attempts * 2)) {
-                                buffer.clear("horizontal-short");
-                                new HackPrevention(p, check, "type: horizontal(long), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
-                            }
-                        }
+                            // Separator
+                            if (isPlayer) {
+                                String detection = "horizontal(historical)",
+                                        key = detection + "=" + entity.getEntityId();
+                                Cooldowns cooldowns = player.getCooldowns(hackType);
 
-                        // Separator
-                        if (isPlayer) {
-                            String detection = "horizontal(historical)",
-                                    key = detection + "=" + entity.getEntityId();
-                            Cooldowns cooldowns = p.getCooldowns(check);
+                                if (cooldowns.canDo(key)) {
+                                    PlayerOpponent opponent = player.getProfile().getCombat().getCurrentFight(damaged).getOpponent(player)[0];
 
-                            if (cooldowns.canDo(key)) {
-                                PlayerOpponent opponent = p.getProfile().getCombat().getCurrentFight(damaged).getOpponent(p)[0];
+                                    if (opponent.getHits() >= PlayerFight.requiredHits) {
+                                        double reachAverage = opponent.getReachAverage();
 
-                                if (opponent.getHits() >= PlayerFight.requiredHits) {
-                                    double reachAverage = opponent.getReachAverage();
-
-                                    if (reachAverage >= limit) {
-                                        cooldowns.add(key, CombatUtils.getFightTicks(p) * PlayerFight.requiredHits);
-                                        new HackPrevention(p, check, "type: " + detection + ", distance: " + reachAverage + ", limit: " + limit);
+                                        if (reachAverage >= limit) {
+                                            cooldowns.add(key, CombatUtils.getFightTicks(player) * PlayerFight.requiredHits);
+                                            cancel("type: " + detection + ", distance: " + reachAverage + ", limit: " + limit);
+                                        }
                                     }
                                 }
                             }
@@ -97,24 +130,13 @@ public class HitReach {
                 }
             }
         }
+        return false;
     }
 
-    public static double getPreferredLimit(SpartanPlayer p, LivingEntity entity) {
-        double preferred;
-
-        if (entity != null && CombatUtils.getWidthAndHeight(entity)[1] > 2.0) {
-            preferred = 5.0;
-        } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7)
-                || PlayerData.getPotionLevel(p, PotionEffectType.SPEED) > 0 && p.getNmsHorizontalDistance() >= Speed.ground) {
-            preferred = 4.25;
-        } else {
-            double y = p.getNmsVerticalDistance();
-            preferred = p.isJumping(y) || p.isFalling(y) ? 4.25 : defaultHorizontalReach;
-        }
-        return Math.max(ResearchEngine.getReach()[1], preferred);
-    }
-
-    private static double filter(double distance, double minimum, double extra) {
-        return Math.max(Math.min(CombatUtils.maxHitDistance, distance + extra), minimum);
+    @Override
+    protected boolean canDo() {
+        return player.canRunCheck(hackType, true)
+                && !player.wasFlying()
+                && !NoHitDelay.hasCooldown(player);
     }
 }

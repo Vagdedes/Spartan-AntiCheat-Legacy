@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.features.notifications;
 
 import me.vagdedes.spartan.configuration.Config;
+import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.IDs;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

@@ -2,27 +2,31 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the GCD (Greatest Common Divisor) of pitch movement
 
-import me.vagdedes.spartan.configuration.Config;
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.entity.Entity;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-public class Sensitivity {
+public class Sensitivity extends DetectionExecutor {
 
-    private static final Map<UUID, Float>
-            direction = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers())),
-            calculations = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private final KillAura killAura;
+
+    Sensitivity(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        killAura = (KillAura) executor;
+    }
+
+    private Float
+            previousPitch = null,
+            previousPitchDifference = null;
+
     private static final String key = Sensitivity.class.getName();
     private static final double
             gcdMultiplier = Math.pow(2, 24), // 16777216
@@ -34,16 +38,15 @@ public class Sensitivity {
             requiredGCDs = 5,
             maxFailedDivisions = 3;
 
-    static void remove(SpartanPlayer player) {
-        UUID uuid = player.getUniqueId();
-        direction.remove(uuid);
-        calculations.remove(uuid);
+    void remove() {
+        previousPitch = null;
+        previousPitchDifference = null;
     }
 
-    static void run(SpartanPlayer player, SpartanLocation location, Buffer buffer) {
+    void run(SpartanLocation location, Buffer buffer) {
         if (!player.isBedrockPlayer()) {
-            boolean suspectedOrHacker = player.getProfile().isSuspectedOrHacker(KillAura.check);
-            Decimals decimals = player.getDecimals(KillAura.check);
+            boolean suspectedOrHacker = player.getProfile().isSuspectedOrHacker(hackType);
+            Decimals decimals = player.getDecimals(hackType);
 
             if (Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
                 List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
@@ -52,50 +55,46 @@ public class Sensitivity {
                     float pitch = location.getPitch();
 
                     if (Math.abs(pitch) <= 90.0f) {
-                        UUID uuid = player.getUniqueId();
-                        Float previousPitch = direction.get(uuid);
-
                         if (previousPitch != null) {
                             float pitchDifference = Math.abs(pitch - previousPitch);
 
                             if (pitchDifference > 0.0) {
-                                Float previousPitchDifference = calculations.get(uuid);
-
-                                if (previousPitchDifference != null && previousPitchDifference > 0.0) {
-                                    double gcd = AlgebraUtils.findGCD(gcdLimit, pitchDifference * gcdMultiplier, previousPitchDifference * gcdMultiplier) / gcdMultiplier;
+                                if (this.previousPitchDifference != null
+                                        && this.previousPitchDifference > 0.0) {
+                                    double gcd = AlgebraUtils.findGCD(gcdLimit, pitchDifference * gcdMultiplier, this.previousPitchDifference * gcdMultiplier) / gcdMultiplier;
 
                                     if (gcd <= minimumGCD) {
                                         if (gcd <= safeGCD ?
                                                 buffer.start(Buffer.BufferType.Combat, key + "=safe", 20) == 5 :
                                                 buffer.start(Buffer.BufferType.Combat, key, 20) == 13) { // 2/3rds
                                             buffer.remove(key);
-                                            KillAura.violateLive(player, "type: sensitivity(minimum)"
+                                            killAura.violateLive("type: sensitivity(minimum)"
                                                     + ", pitch: " + pitch
                                                     + ", previous-pitch: " + previousPitch
                                                     + ", pitch-difference: " + pitchDifference
-                                                    + ", previous-pitch-difference: " + previousPitchDifference
+                                                    + ", previous-pitch-difference: " + this.previousPitchDifference
                                                     + ", greatest-common-divisor: " + gcd
                                                     + ", limit: " + minimumGCD);
                                         }
                                     } else if (suspectedOrHacker) {
-                                        runAbstract(player, decimals, 2, gcd);
+                                        runAbstract(decimals, 2, gcd);
                                     } else { // Some players may false this due to their client, so this helps prevent it
                                         buffer.decrease(Buffer.BufferType.Combat, key, 1);
                                     }
                                 }
                             }
-                            calculations.put(uuid, pitchDifference);
+                            previousPitchDifference = pitchDifference;
                         }
-                        direction.put(uuid, pitch);
+                        previousPitch = pitch;
                     }
                 }
             } else if (suspectedOrHacker) {
-                runAbstract(player, decimals, 1, Double.MAX_VALUE);
+                runAbstract(decimals, 1, Double.MAX_VALUE);
             }
         }
     }
 
-    private static void runAbstract(SpartanPlayer player, Decimals decimals, int multiplier, double insertGCD) {
+    private void runAbstract(Decimals decimals, int multiplier, double insertGCD) {
         if (insertGCD != Double.MAX_VALUE) {
             decimals.add(key, insertGCD);
         }
@@ -148,7 +147,7 @@ public class Sensitivity {
                 gcdsSize++;
                 prevention.append(", recorded-ratio-").append(gcdsSize).append(": ").append(ratio);
             }
-            KillAura.violateLive(player, prevention.toString());
+            killAura.violateLive(prevention.toString());
         } else if (multiplier == 1) {
             decimals.remove(key);
         }

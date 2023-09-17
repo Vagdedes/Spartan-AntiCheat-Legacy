@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.checks.world;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import me.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import me.vagdedes.spartan.compatibility.manual.building.PrinterMode;
@@ -10,121 +11,136 @@ import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Strider;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
-public class BlockReach {
+public class BlockReach extends CheckExecutor {
 
     private static final HackType check = HackType.BlockReach;
     private static final double minimumLimit = 6.0;
 
-    public static void runBreak(SpartanPlayer p, SpartanBlock b) {
-        if (!canDo()) {
-            return;
-        }
-        Material item;
-
-        if (!canDo(p, b)
-                || (item = p.getItemInHand().getType()) == Material.FLINT_AND_STEEL
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && item == Material.END_CRYSTAL) {
-            return;
-        }
-        SpartanLocation to = p.getLocation();
-        SpartanLocation bloc = b.getLocation();
-        double distance = Math.min(to.distance(bloc), to.clone().add(0, p.getEyeHeight(), 0).distance(bloc)),
-                limit = Math.max(
-                        check.getCheck().getDecimalOption("overall_distance", 7.5),
-                        p.wasFlying() ? MoveUtils.chunk : minimumLimit
-                ),
-                multiplier = getMultiplier(p, b, null);
-
-        if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
-            new HackPrevention(p, check, "type: break, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
-        }
+    public BlockReach(SpartanPlayer player) {
+        super(check, player);
     }
 
-    public static void runInteract(SpartanPlayer p, SpartanBlock b) {
-        if (!canDo()) {
-            return;
-        }
-        SpartanLocation bloc;
-
-        if (!canDo(p, b) || !BlockUtils.isChangeable(bloc = b.getLocation())) {
-            return;
-        }
-        SpartanLocation to = p.getLocation();
-        double distance = Math.min(to.distance(bloc), to.clone().add(0, p.getEyeHeight(), 0).distance(bloc)),
-                limit = Math.max(
-                        check.getCheck().getDecimalOption("overall_distance", 7.5),
-                        p.wasFlying() ? MoveUtils.chunk : minimumLimit
-                ),
-                multiplier = getMultiplier(p, b, null);
-
-        if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
-            new HackPrevention(p, check, "type: interact, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
-        }
+    private double getMultiplier(SpartanBlock b) {
+        return player.isBedrockPlayer() || LagLeniencies.hasHighLatency(player, LagLeniencies.continentPing) || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && player.getVehicle() instanceof Strider ? 1.5 :
+                        BlockUtils.isSensitive(player, b.getType()) ? Math.min(1 + LagLeniencies.getDelay(player), 1.5) : 1; // Building
     }
 
-    public static void runPlace(SpartanPlayer p, SpartanBlock b, SpartanBlock ba) {
-        if (!canDo()) {
-            return;
-        }
-        Material type;
-        SpartanLocation baLoc;
+    private boolean canDo(SpartanBlock b) {
+        return !BlockUtils.isScaffoldingBlock(b.getType())
+                && !TreeFeller.canCancel(player, b);
+    }
 
-        if (!canDo(p, b)
-                || !BlockUtils.isFullSolid((baLoc = ba.getLocation()))
-                || p.getItemInHand().getType() == (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))
-                || BlockUtils.areBeds(type = b.getType()) || type == Material.BEDROCK) {
-            return;
-        }
-        SpartanLocation to = p.getLocation(), bloc = b.getLocation();
-        double ypos = bloc.getY() - to.getY(),
-                distance = Math.min(to.distance(bloc), to.clone().add(0, p.getEyeHeight(), 0).distance(bloc)),
-                ab_distance = to.distance(baLoc) + 0.4;
-        boolean incompatibility = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
+    @Override
+    public boolean handle(Object object) {
+        if (object instanceof BlockBreakEvent) {
+            if (canDo()) {
+                SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
-        if (!p.isBedrockPlayer() && p.getVehicle() == null && !incompatibility && ypos <= 0.5
-                && distance >= 1.4 && distance > ab_distance && distance <= MoveUtils.chunk) {
-            new HackPrevention(p, check, "type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos);
-        } else {
-            double limit = Math.max(
-                    check.getCheck().getDecimalOption("overall_distance", 7.5),
-                    p.wasFlying() ? MoveUtils.chunk : minimumLimit
-            ),
-                    multiplier = getMultiplier(p, b, incompatibility);
+                if (canDo(block)) {
+                    Material item = player.getItemInHand().getType();
 
-            if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
-                new HackPrevention(p, check, "type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
+                    if (item != Material.FLINT_AND_STEEL
+                            && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) || item != Material.END_CRYSTAL)) {
+                        SpartanLocation to = player.getLocation();
+                        SpartanLocation bloc = block.getLocation();
+                        double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
+                                limit = Math.max(
+                                        hackType.getCheck().getDecimalOption("overall_distance", 7.5),
+                                        player.wasFlying() ? MoveUtils.chunk : minimumLimit
+                                ),
+                                multiplier = getMultiplier(block);
+
+                        if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
+                            cancel("type: break, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
+                        }
+                    }
+                }
+            }
+        } else if (object instanceof PlayerInteractEvent) {
+            if (canDo()) {
+                SpartanBlock block = new SpartanBlock(player, ((PlayerInteractEvent) object).getClickedBlock());
+
+                if (canDo(block)) {
+                    SpartanLocation bloc = block.getLocation();
+
+                    if (BlockUtils.isChangeable(bloc)) {
+                        SpartanLocation to = player.getLocation();
+                        double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
+                                limit = Math.max(
+                                        hackType.getCheck().getDecimalOption("overall_distance", 7.5),
+                                        player.wasFlying() ? MoveUtils.chunk : minimumLimit
+                                ),
+                                multiplier = getMultiplier(block);
+
+                        if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
+                            cancel("type: interact, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
+                        }
+                    }
+                }
+            }
+        } else if (canDo()) {
+            BlockPlaceEvent event = (BlockPlaceEvent) object;
+            SpartanBlock blockAgainst = new SpartanBlock(player, event.getBlockAgainst());
+            SpartanLocation baLoc = blockAgainst.getLocation();
+
+            if (BlockUtils.isFullSolid(baLoc)
+                    && player.getItemInHand().getType() != (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))) {
+                SpartanBlock block = new SpartanBlock(player, event.getBlock());
+                Material type = block.getType();
+
+                if (!BlockUtils.areBeds(type)
+                        && type != Material.BEDROCK) {
+                    SpartanLocation to = player.getLocation(), bloc = block.getLocation();
+                    double ypos = bloc.getY() - to.getY(),
+                            distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
+                            ab_distance = to.distance(baLoc) + 0.4;
+
+                    if (!player.isBedrockPlayer()
+                            && player.getVehicle() == null
+                            && !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
+                            && ypos <= 0.5
+                            && distance >= 1.4 && distance > ab_distance && distance <= MoveUtils.chunk) {
+                        cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos);
+                    } else {
+                        double limit = Math.max(
+                                hackType.getCheck().getDecimalOption("overall_distance", 7.5),
+                                player.wasFlying() ? MoveUtils.chunk : minimumLimit
+                        ),
+                                multiplier = getMultiplier(block);
+
+                        if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
+                            cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
+                        }
+                    }
+                }
             }
         }
+        return false;
     }
 
-    // Separator
-
-    private static double getMultiplier(SpartanPlayer p, SpartanBlock b, Boolean incompatibility) {
-        return p.isBedrockPlayer() || LagLeniencies.hasHighLatency(p, LagLeniencies.continentPing) || (incompatibility != null ? incompatibility : Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
-                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && p.getVehicle() instanceof Strider ? 1.5 :
-                        BlockUtils.isSensitive(p, b.getType()) ? Math.min(1 + LagLeniencies.getDelay(p), 1.5) : 1; // Building
+    @Override
+    public boolean run() {
+        return false;
     }
 
-    private static boolean canDo() {
-        return !Compatibility.CompatibilityType.mcMMO.isFunctional();
-    }
-
-    private static boolean canDo(SpartanPlayer p, SpartanBlock b) {
-        return p.canRunCheck(check, true)
-                && !BlockUtils.isScaffoldingBlock(b.getType())
-
-                && !PrinterMode.canCancel(p)
-                && !MineBomb.canUse(p)
-                && !AureliumSkills.canCancel(p)
-                && !TreeFeller.canCancel(p, b)
-                && !MineBomb.canUse(p)
+    @Override
+    protected boolean canDo() {
+        return !Compatibility.CompatibilityType.mcMMO.isFunctional()
+                && player.canRunCheck(hackType, true)
+                && !PrinterMode.canCancel(player)
+                && !MineBomb.canUse(player)
+                && !AureliumSkills.canCancel(player)
+                && !MineBomb.canUse(player)
                 && !Compatibility.CompatibilityType.CraftBook.isFunctional();
     }
 }

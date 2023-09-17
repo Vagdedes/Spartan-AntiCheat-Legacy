@@ -1,11 +1,6 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.checks.combat.HitReach;
 import me.vagdedes.spartan.checks.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.inventory.ItemDrops;
-import me.vagdedes.spartan.checks.player.NoSwing;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -39,6 +34,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -75,7 +71,7 @@ public class EventsHandler6 implements Listener {
             UnbanCommand.run(p, msg);
 
             // Detections
-            ItemDrops.runCommand(msg);
+            p.getExecutor(Enums.HackType.ItemDrops).handle(msg);
         }
     }
 
@@ -96,7 +92,8 @@ public class EventsHandler6 implements Listener {
 
     // Separator
 
-    public static void runDealDamage(SpartanPlayer player,
+    public static void runDealDamage(Event event,
+            SpartanPlayer player,
                                      Entity defaultEntity,
                                      double damage,
                                      EntityDamageEvent.DamageCause dmg,
@@ -169,20 +166,20 @@ public class EventsHandler6 implements Listener {
                 }
 
                 // Detections
-                NoSwing.runDamage(player, entity);
-                Criticals.run(player, loc, damage, entity);
-                runDealDamageChild(player, loc, cooldowns, entity, utility, false);
+                player.getExecutor(Enums.HackType.NoSwing).handle(event);
+                player.getExecutor(Enums.HackType.Criticals).handle(new Object[]{damage, entity});
+                runDealDamageChild(player, cooldowns, entity, utility, false);
 
                 // Handlers
                 Damage.runDealtDamage(player);
             } else {
-                runDealDamageChild(player, loc, cooldowns, entity, utility, true);
+                runDealDamageChild(player, cooldowns, entity, utility, true);
             }
         }
         cooldowns.add(cooldownKey, 3);
     }
 
-    private static void runDealDamageChild(SpartanPlayer player, SpartanLocation loc, Cooldowns cooldowns,
+    private static void runDealDamageChild(SpartanPlayer player, Cooldowns cooldowns,
                                            LivingEntity entity,
                                            double[] utility,
                                            boolean cancelled) {
@@ -194,8 +191,9 @@ public class EventsHandler6 implements Listener {
 
             // Detections
             if (!hasMultipleHitCooldown) {
-                HitReach.run(player, loc, entity, utility);
-                KillAura.run(player, loc, entity, utility);
+                Object[] objects = new Object[]{entity, utility};
+                player.getExecutor(Enums.HackType.HitReach).handle(objects);
+                player.getExecutor(Enums.HackType.KillAura).handle(objects);
             }
         }
     }
@@ -215,7 +213,7 @@ public class EventsHandler6 implements Listener {
 
                 if (p.getNmsDistance() <= distance || p.getCustomDistance() <= distance) {
                     // Detections
-                    runDealDamage(p, e.getEntity(), e.getDamage(), e.getCause(), e.isCancelled());
+                    runDealDamage(e, p, e.getEntity(), e.getDamage(), e.getCause(), e.isCancelled());
                 }
 
                 if (p.getViolations(Enums.HackType.KillAura).process()
@@ -255,7 +253,7 @@ public class EventsHandler6 implements Listener {
 
                 // Detections
                 if (!(damager instanceof Player)) {
-                    VelocityCheck.refreshEntity(p);
+                    p.getExecutor(Enums.HackType.Velocity).handle(VelocityCheck.REFRESH);
                 }
             } else {
                 Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
@@ -307,7 +305,7 @@ public class EventsHandler6 implements Listener {
         PlayerAnimationType animationType = e.getAnimationType();
 
         // Detections
-        NoSwing.runAnimation(p, animationType);
+        p.getExecutor(Enums.HackType.NoSwing).handle(e);
 
         // Object
         if (animationType == PlayerAnimationType.ARM_SWING) {

@@ -1,6 +1,7 @@
 package me.vagdedes.spartan.checks.movement.irregularmovements;
 
-import me.vagdedes.spartan.features.performance.AsyncDetection;
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -10,7 +11,14 @@ import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-public class IrregularMovementsMotion {
+public class IrregularMovementsMotion extends DetectionExecutor {
+
+    private final IrregularMovements irregularMovements;
+
+    IrregularMovementsMotion(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        irregularMovements = (IrregularMovements) executor;
+    }
 
     private static final double
             criticalDecelerationLimit = -0.1,
@@ -38,47 +46,52 @@ public class IrregularMovementsMotion {
             {1, 0, 1},
     };
 
-    private static void clearGeneralCache(Cooldowns cooldowns) {
-        IrregularMovements.forgetBoolean(cooldowns, motionJumpKey);
-        IrregularMovements.forgetBoolean(cooldowns, motionVelocityKey);
+    private void clearGeneralCache(IrregularMovements executor, Cooldowns cooldowns) {
+        executor.forgetBoolean(cooldowns, motionJumpKey);
+        executor.forgetBoolean(cooldowns, motionVelocityKey);
     }
 
-    private static void clearDetectionCache(SpartanPlayer p, Decimals decimals) {
-        IrregularMovements.clear(p, upwardsDecelerationKey);
+    private void clearDetectionCache(IrregularMovements executor, Decimals decimals) {
+        executor.clear(executor.player, upwardsDecelerationKey);
         // no Decimals usage
 
-        IrregularMovements.clear(p, upwardsAccelerationKey);
+        executor.clear(executor.player, upwardsAccelerationKey);
         // no Decimals usage
 
-        IrregularMovements.clear(p, upwardsProgressiveKey);
+        executor.clear(executor.player, upwardsProgressiveKey);
         // no Decimals usage
 
-        IrregularMovements.clear(p, downwardsUnexpectedKey);
+        executor.clear(executor.player, downwardsUnexpectedKey);
         // no Decimals usage
 
-        IrregularMovements.clear(p, downwardsDifferenceKey);
+        executor.clear(executor.player, downwardsDifferenceKey);
         decimals.remove(downwardsDifferenceKey);
 
-        IrregularMovements.clear(p, downwardsPredictionKey);
+        executor.clear(executor.player, downwardsPredictionKey);
         decimals.remove(downwardsPredictionKey);
     }
 
-    static void run(SpartanPlayer p,
-                    Cooldowns cooldowns,
-                    SpartanLocation to, SpartanLocation from,
-                    double vertical, double oldVertical, double verticalDifference,
-                    double horizontalDifference,
-                    double box, double oldBox,
-                    boolean knownBoxes, boolean knownBoxesNew, boolean knownBoxesOld,
-                    boolean onGroundCustom,
-                    boolean oldFalling, boolean levitationEffect,
-                    boolean constructDetection, boolean groundInteractionScenario, boolean velocityScenario, boolean changedScenario, boolean climbScenario, boolean slowFallingScenario,
-                    boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
-                    int airTicks,
-                    String prevention) {
-        Check check = IrregularMovements.check.getCheck();
+    void run(Cooldowns cooldowns,
+             double verticalDifference,
+             double horizontalDifference,
+             boolean knownBoxes, boolean knownBoxesNew, boolean knownBoxesOld,
+             boolean onGroundCustom,
+             boolean oldFalling, boolean levitationEffect,
+             boolean constructDetection, boolean groundInteractionScenario, boolean velocityScenario, boolean changedScenario, boolean climbScenario, boolean slowFallingScenario,
+             boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
+             String prevention) {
+        SpartanPlayer player = irregularMovements.player;
+        SpartanLocation to = player.getEventToLocation(),
+                from = player.getEventFromLocation();
+        double vertical = player.getNmsVerticalDistance(),
+                oldVertical = player.getOld_NmsVerticalDistance(),
+                box = player.getNmsBox(),
+                oldBox = player.getOld_NmsBox();
+        int airTicks = player.getTicksOnAir();
+
+        Check check = hackType.getCheck();
         double stepLimit = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
-        boolean jumpEffect = PlayerData.hasJumpEffect(p),
+        boolean jumpEffect = PlayerData.hasJumpEffect(player),
                 checkHoppingASYNC = (checkUp || checkJump) && check.getBooleanOption("check_hopping", true),
                 checkUpASYNC = checkUp && check.getBooleanOption("check_upwards", true),
                 checkDownASYNC = checkDown && check.getBooleanOption("check_downwards", true),
@@ -88,22 +101,22 @@ public class IrregularMovementsMotion {
                 onGround = onGroundCustom || airTicks == 0;
 
         // Separator
-        AsyncDetection.run(p, IrregularMovements.check, () -> {
-            Decimals decimals = p.getDecimals(IrregularMovements.check);
+        runAsync(() -> {
+            Decimals decimals = player.getDecimals(hackType);
             double criticalDecelerationLimit;
             boolean jumpEffectASYNC, velocityScenarioASYNC;
 
             if (onGround) { // Ground
-                clearGeneralCache(cooldowns);
-                clearDetectionCache(p, decimals);
+                clearGeneralCache(irregularMovements, cooldowns);
+                clearDetectionCache(irregularMovements, decimals);
                 jumpEffectASYNC = jumpEffect;
                 velocityScenarioASYNC = velocityScenario;
                 criticalDecelerationLimit = jumpEffectASYNC ?
                         (IrregularMovementsMotion.criticalDecelerationLimit * 3) :
                         IrregularMovementsMotion.criticalDecelerationLimit;
             } else { // Motion
-                jumpEffectASYNC = IrregularMovements.cacheBoolean(cooldowns, jumpEffect, motionJumpKey, extendedDefaultBufferTime);
-                velocityScenarioASYNC = IrregularMovements.cacheBoolean(cooldowns, velocityScenario, motionVelocityKey, extendedDefaultBufferTime);
+                jumpEffectASYNC = irregularMovements.cacheBoolean(cooldowns, jumpEffect, motionJumpKey, extendedDefaultBufferTime);
+                velocityScenarioASYNC = irregularMovements.cacheBoolean(cooldowns, velocityScenario, motionVelocityKey, extendedDefaultBufferTime);
                 criticalDecelerationLimit = jumpEffectASYNC ?
                         (IrregularMovementsMotion.criticalDecelerationLimit * 3) :
                         IrregularMovementsMotion.criticalDecelerationLimit;
@@ -111,7 +124,7 @@ public class IrregularMovementsMotion {
                 if (vertical > 0.0) {
                     if (checkUpASYNC
                             && !knownBoxesNew
-                            && !p.isJumping(vertical)
+                            && !player.isJumping(vertical)
                             && Math.abs(vertical - MoveUtils.postJumpPreFall) >= postJumpPreFallPrecision) {
                         boolean abstractScenario = groundInteractionScenario || velocityScenarioASYNC;
 
@@ -119,31 +132,31 @@ public class IrregularMovementsMotion {
                             double upwardsLimit = Math.max(GroundUtils.maxPlayerStep, stepLimit);
 
                             if (jumpEffect) {
-                                upwardsLimit += p.getExtraMovementFromJumpEffect();
+                                upwardsLimit += player.getExtraMovementFromJumpEffect();
                             }
                             if (abstractScenario
                                     || PatternUtils.isBlockPattern(honey, to, true, BlockUtils.honey_block)) {
                                 upwardsLimit = Math.max(upwardsLimit, criticalUpwardsLimit);
                             }
                             if (vertical > upwardsLimit) {
-                                IrregularMovements.cancel(p, from, prevention,
+                                irregularMovements.cancel(prevention,
                                         "upwards-instant", "limit: " + upwardsLimit,
                                         1, 0);
                             }
                         }
                         if (verticalDifference <= criticalDecelerationLimit) {
-                            IrregularMovements.cancel(p, from, prevention,
+                            irregularMovements.cancel(prevention,
                                     upwardsDecelerationKey, null,
                                     5, extendedDefaultBufferTime);
                         }
                         if (jumpEffectASYNC || abstractScenario) {
                             if (verticalDifference >= vertical) {
-                                IrregularMovements.cancel(p, from, prevention,
+                                irregularMovements.cancel(prevention,
                                         upwardsAccelerationKey, null,
                                         5, extendedDefaultBufferTime);
                             }
                         } else {
-                            IrregularMovements.cancel(p, from, prevention,
+                            irregularMovements.cancel(prevention,
                                     upwardsProgressiveKey, null,
                                     5, extendedDefaultBufferTime);
                         }
@@ -156,11 +169,11 @@ public class IrregularMovementsMotion {
                         if (constructDetection || velocityScenarioASYNC) {
                             decimals.remove(downwardsDifferenceKey);
                         } else {
-                            int fallingToAirTicksDifference = airTicks - p.getFallingTicks(); // Do not consider when air-ticks are less than falling-ticks
+                            int fallingToAirTicksDifference = airTicks - player.getFallingTicks(); // Do not consider when air-ticks are less than falling-ticks
 
                             if (fallingToAirTicksDifference >= criticalTickDifference) {
                                 if (decimals.get(downwardsDifferenceKey) != fallingToAirTicksDifference) {
-                                    IrregularMovements.cancel(p, from, prevention,
+                                    irregularMovements.cancel(prevention,
                                             downwardsDifferenceKey, "difference: " + fallingToAirTicksDifference,
                                             5, extendedDefaultBufferTime);
                                 }
@@ -182,7 +195,7 @@ public class IrregularMovementsMotion {
                                 );
 
                                 if (inaccuracy >= 3) {
-                                    IrregularMovements.cancel(p, from,
+                                    irregularMovements.cancel(
                                             prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
                                             5, extendedDefaultBufferTime);
                                 }
@@ -193,13 +206,13 @@ public class IrregularMovementsMotion {
                             );
                         } else {
                             decimals.remove(downwardsPredictionKey);
-                            IrregularMovements.cancel(p, from,
+                            irregularMovements.cancel(
                                     prevention, downwardsUnexpectedKey, null,
                                     5, extendedDefaultBufferTime);
                         }
                     }
                 } else {
-                    clearDetectionCache(p, decimals);
+                    clearDetectionCache(irregularMovements, decimals);
                 }
             }
 
@@ -209,23 +222,23 @@ public class IrregularMovementsMotion {
                     && !constructDetection
                     && !velocityScenarioASYNC
                     && !jumpEffectASYNC
-                    && p.isJumping(vertical)) {
-                if (p.isVanillaSprinting()) {
-                    if (Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(p)) {
+                    && player.isJumping(vertical)) {
+                if (player.isVanillaSprinting()) {
+                    if (Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
-                            IrregularMovements.cancel(p, from,
+                            irregularMovements.cancel(
                                     prevention, "hopping-sprinting-deceleration", null,
                                     criticalHoppingBuffer, decreasedDefaultBufferTime);
                         }
                     } else if (horizontalDifference >= 0.03) { // Normally, is anything greater than 0.0 but this is more stable
-                        IrregularMovements.cancel(p, from,
+                        irregularMovements.cancel(
                                 prevention, "hopping-sprinting-acceleration", null,
                                 criticalHoppingBuffer, decreasedDefaultBufferTime);
                     }
                 } else {
-                    if (Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(p)) {
+                    if (Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
-                            IrregularMovements.cancel(p, from,
+                            irregularMovements.cancel(
                                     prevention, "hopping-casual-deceleration", null,
                                     criticalHoppingBuffer, decreasedDefaultBufferTime);
                         }
@@ -245,25 +258,25 @@ public class IrregularMovementsMotion {
 
                     if (vertical > 0.0) {
                         if (boxDifference > stepLimitModified) {
-                            IrregularMovements.cancel(p, from, prevention, "step-up-predictable",
+                            irregularMovements.cancel(prevention, "step-up-predictable",
                                     "box-difference: " + boxDifference + ", limit: " + stepLimitModified,
                                     !velocityScenarioASYNC && boxDifference >= criticalStepLimit ? 1 : 2,
                                     velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                         }
                     } else if (vertical < 0.0
                             && boxDifference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Anything below this threshold is likely instant, where otherwise you fall for a bit
-                        IrregularMovements.cancel(p, from, prevention, "step-down-predictable", "box-difference: " + boxDifference, 1, 0);
+                        irregularMovements.cancel(prevention, "step-down-predictable", "box-difference: " + boxDifference, 1, 0);
                     }
                 } else if (knownBoxesNew) {
                     if (vertical > stepLimitModified) {
-                        IrregularMovements.cancel(p, from, prevention, "step-up-known", "limit: " + stepLimitModified,
+                        irregularMovements.cancel(prevention, "step-up-known", "limit: " + stepLimitModified,
                                 !velocityScenarioASYNC && vertical >= criticalStepLimit ? 1 : 2,
                                 velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                     } else if (!oldFalling
                             && !velocityScenarioASYNC
                             && !jumpEffectASYNC
                             && vertical <= criticalDecelerationLimit) {
-                        IrregularMovements.cancel(p, from, prevention, "step-down-known", "limit: " + stepLimitModified,
+                        irregularMovements.cancel(prevention, "step-down-known", "limit: " + stepLimitModified,
                                 vertical <= -criticalStepLimit ? 1 : 2, IrregularMovements.defaultBufferTime);
                     }
                 }
@@ -271,24 +284,24 @@ public class IrregularMovementsMotion {
 
             if (vertical < oldVertical) { // Fall
                 if (checkJumpASYNC) {
-                    if (p.isJumping(vertical)) {
-                        if (p.isJumping(oldVertical)) {
+                    if (player.isJumping(vertical)) {
+                        if (player.isJumping(oldVertical)) {
                             double difference = Math.abs(verticalDifference);
 
                             if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
-                                IrregularMovements.cancel(p, from, prevention, "jump-up-skip", 1);
+                                irregularMovements.cancel(prevention, "jump-up-skip", 1);
                             } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
-                                IrregularMovements.cancel(p, from, prevention, "jump-up-equilibrium",
+                                irregularMovements.cancel(prevention, "jump-up-equilibrium",
                                         groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                             }
                         }
                     } else if (!jumpEffect
                             && !onGround
                             && !climbScenario
-                            && p.isJumping(oldVertical)
-                            && !p.getHandlers().has(Handlers.HandlerType.ElytraWear)
-                            && (vertical != 0.0 || !PlayerData.isUsable(p.getItemInHand().getType()))) {
-                        double jumpingPrecision = MoveUtils.getJumpingPrecision(p);
+                            && player.isJumping(oldVertical)
+                            && !player.getHandlers().has(Handlers.HandlerType.ElytraWear)
+                            && (vertical != 0.0 || !PlayerData.isUsable(player.getItemInHand().getType()))) {
+                        double jumpingPrecision = MoveUtils.getJumpingPrecision(player);
 
                         if (Math.abs(oldVertical - MoveUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
                                 && !PatternUtils.isBlockPattern(new double[][]{
@@ -298,28 +311,28 @@ public class IrregularMovementsMotion {
                                 {1, 2 - oldBox, 1, oldBox != box ? 1 : 0},
                                 {1, 1, 1},
                         }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-                            IrregularMovements.cancel(p, from, prevention, "jump-end",
+                            irregularMovements.cancel(prevention, "jump-end",
                                     groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                         }
                     }
                 }
             } else if (vertical > oldVertical) { // Ascension
-                if (p.isJumping(vertical)) {
+                if (player.isJumping(vertical)) {
                     if (checkJumpASYNC) {
-                        if (p.isJumping(oldVertical)) {
+                        if (player.isJumping(oldVertical)) {
                             double difference = Math.abs(verticalDifference);
 
                             if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
-                                IrregularMovements.cancel(p, from, prevention, "jump-down-skip",
+                                irregularMovements.cancel(prevention, "jump-down-skip",
                                         groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                             } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
-                                IrregularMovements.cancel(p, from, prevention, "jump-down-equilibrium",
+                                irregularMovements.cancel(prevention, "jump-down-equilibrium",
                                         groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                             }
                         } else if (!onGroundCustom
                                 && !GroundUtils.heightExists(Math.abs(box - vertical))
-                                && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(p)) { // Jumping must start from somewhere
-                            IrregularMovements.cancel(p, from, prevention, "jump-start", 1);
+                                && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)) { // Jumping must start from somewhere
+                            irregularMovements.cancel(prevention, "jump-start", 1);
                         }
                     }
                 }
@@ -335,23 +348,23 @@ public class IrregularMovementsMotion {
                 };
 
                 if (velocityScenarioASYNC) {
-                    IrregularMovements.cancel(p, from, prevention, "equilibrium-velocity", MoveUtils.jumpingMotions);
+                    irregularMovements.cancel(prevention, "equilibrium-velocity", MoveUtils.jumpingMotions);
                 } else if (levitationEffect) {
-                    IrregularMovements.cancel(p, from, prevention, "equilibrium-levitation", MoveUtils.jumpingMotions);
+                    irregularMovements.cancel(prevention, "equilibrium-levitation", MoveUtils.jumpingMotions);
                 } else {
-                    Handlers handlers = p.getHandlers();
+                    Handlers handlers = player.getHandlers();
 
                     if (!handlers.has(Handlers.HandlerType.BlockPlace)
                             && !handlers.has(Handlers.HandlerType.Building)
                             && !PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                             && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-                        IrregularMovements.cancel(p, from, prevention, "equilibrium-spacious",
+                        irregularMovements.cancel(prevention, "equilibrium-spacious",
                                 jumpEffectASYNC ? 2 : 1);
                     } else if (!knownBoxes
                             && !GroundUtils.heightExists(oldBox - oldVertical)) {
-                        IrregularMovements.cancel(p, from, prevention, "*equilibrium-abstract", 2);
+                        irregularMovements.cancel(prevention, "*equilibrium-abstract", 2);
                     } else {
-                        IrregularMovements.cancel(p, from, prevention, "*equilibrium-predictable", 3);
+                        irregularMovements.cancel(prevention, "*equilibrium-predictable", 3);
                     }
                 }
             }

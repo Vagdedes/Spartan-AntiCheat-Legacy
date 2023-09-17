@@ -2,12 +2,13 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the yaw movement in patterns
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.configuration.Config;
+import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.java.math.LinearRegression;
 import org.bukkit.Location;
@@ -17,12 +18,23 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Pattern {
+public class Pattern extends DetectionExecutor {
 
-    private static final Map<UUID, SpartanLocation[]> selfLocations = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
-    private static final Map<UUID, Map<Integer, Location>> entityLocations = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private final KillAura killAura;
+
+    Pattern(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        killAura = (KillAura) executor;
+    }
+
+    private SpartanLocation[] selfLocations = null;
+
+    private final Map<Integer, Location> entityLocations = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final int
             minObservations = 7,
             maxObservations = 20,
@@ -35,84 +47,69 @@ public class Pattern {
             key = Pattern.class.getName(),
             compareKey = key + "=compare";
 
-    static void remove(SpartanPlayer player) {
-        UUID uuid = player.getUniqueId();
-        selfLocations.remove(uuid);
+    void remove() {
+        selfLocations = null;
     }
 
-    static void run(SpartanPlayer player, LivingEntity entity, SpartanLocation location) {
+    void run(LivingEntity entity, SpartanLocation location) {
         if (!CombatUtils.hasBlockBehind(player, entity)
-                && (entity instanceof Player || entity instanceof Monster)) {
-            UUID uuid = player.getUniqueId();
-            SpartanLocation[] locations = selfLocations.get(uuid);
+                && (entity instanceof Player || entity instanceof Monster)
+                && selfLocations != null) {
+            int scenario = 1;
+            double previousYawDifference = 0.0;
+            Decimals decimals = player.getDecimals(hackType);
+            Vector direction = CombatUtils.getDirection(location.getYaw(), 0.0f);
 
-            if (locations != null) {
-                int scenario = 1;
-                double previousYawDifference = 0.0;
-                Decimals decimals = player.getDecimals(KillAura.check);
-                Vector direction = CombatUtils.getDirection(location.getYaw(), 0.0f);
+            for (SpartanLocation oldLocation : selfLocations) {
+                double yawDifference = direction.distance(CombatUtils.getDirection(oldLocation.getYaw(), 0.0f));
 
-                for (SpartanLocation oldLocation : locations) {
-                    double yawDifference = direction.distance(CombatUtils.getDirection(oldLocation.getYaw(), 0.0f));
+                if (Math.abs(yawDifference - previousYawDifference) > redundantDifference) {
+                    previousYawDifference = yawDifference;
 
-                    if (Math.abs(yawDifference - previousYawDifference) > redundantDifference) {
-                        previousYawDifference = yawDifference;
-
-                        if (yawDifference >= requiredDifference
-                                && detect(
-                                player,
-                                decimals,
-                                scenario,
-                                yawDifference,
-                                CombatUtils.getRotationDistance(oldLocation, getEntityLocation(uuid, entity), false)
-                        )) {
-                            break;
-                        }
+                    if (yawDifference >= requiredDifference
+                            && detect(
+                            decimals,
+                            scenario,
+                            yawDifference,
+                            CombatUtils.getRotationDistance(oldLocation, getEntityLocation(entity), false)
+                    )) {
+                        break;
                     }
-                    scenario++;
                 }
+                scenario++;
             }
         }
     }
 
-    static void runMove(SpartanPlayer player, SpartanLocation location) {
-        UUID uuid = player.getUniqueId();
-        SpartanLocation[] locations = selfLocations.get(uuid);
-
-        if (locations != null) {
-            if (locations.length > 1) {
-                selfLocations.put(uuid, new SpartanLocation[]{location, locations[0], locations[1]});
+    void runMove(SpartanLocation location) {
+        if (selfLocations != null) {
+            if (selfLocations.length > 1) {
+                selfLocations = new SpartanLocation[]{location, selfLocations[0], selfLocations[1]};
             } else {
-                selfLocations.put(uuid, new SpartanLocation[]{location, locations[0]});
+                selfLocations = new SpartanLocation[]{location, selfLocations[0]};
             }
         } else {
-            selfLocations.put(uuid, new SpartanLocation[]{location});
+            selfLocations = new SpartanLocation[]{location};
         }
 
         // Separator
 
         List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
-        if (entities.size() > 0) {
-            Map<Integer, Location> linkedMap = entityLocations.get(uuid);
-
-            if (linkedMap == null) {
-                linkedMap = new LinkedHashMap<>(maxStoredEntities);
-                entityLocations.put(uuid, linkedMap);
-            }
+        if (!entities.isEmpty()) {
             for (Entity nearbyEntity : entities) {
                 if (nearbyEntity instanceof LivingEntity) {
                     LivingEntity entity = (LivingEntity) nearbyEntity;
 
-                    if (KillAura.canRunEntity(player, entity)) {
-                        linkedMap.put(entity.getEntityId(), entity.getLocation());
+                    if (killAura.canRunEntity(entity)) {
+                        entityLocations.put(entity.getEntityId(), entity.getLocation());
                     }
                 }
             }
-            int size = linkedMap.size();
+            int size = entityLocations.size();
 
             if (size > maxStoredEntities) {
-                Iterator<Integer> iterator = linkedMap.keySet().iterator();
+                Iterator<Integer> iterator = entityLocations.keySet().iterator();
 
                 while (iterator.hasNext() && size != maxStoredEntities) {
                     size--;
@@ -121,13 +118,13 @@ public class Pattern {
                 }
             }
         } else {
-            entityLocations.remove(uuid);
+            entityLocations.clear();
         }
     }
 
-    private static boolean detect(SpartanPlayer player, Decimals decimals,
-                                  int scenario,
-                                  double reality, double prediction) {
+    private boolean detect(Decimals decimals,
+                           int scenario,
+                           double reality, double prediction) {
         String key = Pattern.key + scenario,
                 compareKey = Pattern.compareKey + scenario;
         decimals.add(key, reality);
@@ -146,7 +143,7 @@ public class Pattern {
             int observations = regression.observations;
 
             if (total >= correlation) {
-                KillAura.violateAll(player, "type: pattern(long)"
+                killAura.violateAll("type: pattern(long)"
                         + ", scenario: " + scenario
                         + ", total: " + total
                         + ", r2: " + r2
@@ -177,11 +174,11 @@ public class Pattern {
             int observations = regression.observations;
 
             if (total >= correlation) {
-                Buffer buffer = player.getBuffer(KillAura.check);
+                Buffer buffer = player.getBuffer(hackType);
 
                 if (buffer.start(key, (minObservations * 2) * CombatUtils.getFightTicks(player)) == 2) { // Once suspected, player has 2 more tries time-wise to complete the 2nd point
                     buffer.remove(key);
-                    KillAura.violate(player, "type: pattern(short)"
+                    cancel("type: pattern(short)"
                             + ", scenario: " + scenario
                             + ", total: " + total
                             + ", r2: " + r2
@@ -190,14 +187,13 @@ public class Pattern {
                             + ", required-correlation: " + correlation);
                 }
             } else {
-                player.getBuffer(KillAura.check).remove(key); // The correlation is too low to trust the algorithm with a player who doesn't reach it again
+                player.getBuffer(hackType).remove(key); // The correlation is too low to trust the algorithm with a player who doesn't reach it again
             }
         }
         return false;
     }
 
-     static Location getEntityLocation(UUID uuid, LivingEntity entity) {
-         Map<Integer, Location> linkedMap = entityLocations.get(uuid);
-        return linkedMap != null ? linkedMap.getOrDefault(entity.getEntityId(), entity.getLocation()) : entity.getLocation();
+    Location getEntityLocation(LivingEntity entity) {
+        return entityLocations.getOrDefault(entity.getEntityId(), entity.getLocation());
     }
 }

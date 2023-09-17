@@ -18,9 +18,9 @@ public class HackPrevention {
     final SpartanLocation location;
     final int violation;
     final boolean groundTeleport;
+    boolean processed;
     final double damage;
-    final long time;
-    long expiration;
+    final long time, expiration;
 
     private static final Cooldowns cooldowns = new Cooldowns(false);
 
@@ -36,6 +36,7 @@ public class HackPrevention {
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
+        this.processed = false;
 
         // Redundancy
         Check check = hackType.getCheck();
@@ -56,30 +57,6 @@ public class HackPrevention {
             this.violation = violation;
         }
         player.getViolations(hackType).queue(this, check);
-    }
-
-    public void cancel(int ticks) {
-        this.expiration = System.currentTimeMillis() + (ticks * 50L);
-    }
-
-    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location, int cancelTicks, boolean groundTeleport, double damage) {
-        this(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, 1);
-    }
-
-    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location, int cancelTicks, boolean groundTeleport) {
-        this(player, hackType, verbose, location, cancelTicks, groundTeleport, 0.0, 1);
-    }
-
-    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location, int cancelTicks) {
-        this(player, hackType, verbose, location, cancelTicks, false, 0.0, 1);
-    }
-
-    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose, SpartanLocation location) {
-        this(player, hackType, verbose, location, 0, false, 0.0, 1);
-    }
-
-    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose) {
-        this(player, hackType, verbose, null, 0, false, 0.0, 1);
     }
 
     void handle(SpartanPlayer player, Enums.HackType hackType) {

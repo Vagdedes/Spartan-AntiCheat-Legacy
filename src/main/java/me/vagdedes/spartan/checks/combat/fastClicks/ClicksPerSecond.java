@@ -2,16 +2,24 @@ package me.vagdedes.spartan.checks.combat.fastClicks;
 
 // Study of the amount of clicks in a given time
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.tracking.ClickData;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 
-public class ClicksPerSecond {
+public class ClicksPerSecond extends DetectionExecutor {
 
-    static void run(SpartanPlayer player, ClickData clickData, int limit, int latencyExtra, double globalAverage) {
+    private final FastClicks fastClicks;
+
+    ClicksPerSecond(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        fastClicks = (FastClicks) executor;
+    }
+
+    void run(ClickData clickData, int limit, int latencyExtra, double globalAverage) {
         int count = clickData.getCount();
 
         if (count >= limit) {
-            FastClicks.violate(player,
+            fastClicks.violate(
                     "clicks-per-second",
                     "type: clicks-per-second"
                             + ", count: " + count

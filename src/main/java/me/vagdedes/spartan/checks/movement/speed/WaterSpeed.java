@@ -1,8 +1,9 @@
 package me.vagdedes.spartan.checks.movement.speed;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.features.protections.Building;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
@@ -13,8 +14,6 @@ import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -28,24 +27,29 @@ import org.bukkit.entity.Llama;
 import org.bukkit.entity.Pig;
 import org.bukkit.potion.PotionEffectType;
 
-public class WaterSpeed {
+public class WaterSpeed extends DetectionExecutor {
 
-    private static final Material water = MaterialUtils.get("water");
-    private static final Material lava = MaterialUtils.get("lava");
+    WaterSpeed(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+    }
+
+    private static final Material
+            water = MaterialUtils.get("water"),
+            lava = MaterialUtils.get("lava");
     private static final String horizontalBufferKey = "buffer=horizontal";
 
     private static final int initialWaterLimit = 10;
-    private static final double minDs = 0.1;
-    private static final double out_water = 0.19, in_water = 0.225;
-    private static final double lava_fire_ticks = 0.3, out_lava = 0.15, in_lava = 0.13;
-    private static final double neutral = 0.45,
+    private static final double minDs = 0.1,
+            out_water = 0.19, in_water = 0.225,
+            lava_fire_ticks = 0.3, out_lava = 0.15, in_lava = 0.13,
+            neutral = 0.45,
             bouncing = 0.35,
             walls = 0.28,
             premature = 0.6,
             stable = 0.17, stable_extra = 0.22,
             instability = 0.3;
 
-    private static double[][] ice = new double[][]{
+    private static final double[][] ice = new double[][]{
             {0, -1, 0},
             {0, 0, 0},
             {0, 1, 0}
@@ -55,56 +59,62 @@ public class WaterSpeed {
             BlockUtils.hitbox_max, 0, BlockUtils.hitbox_max
     };
 
-    public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
-                           double vertical, double oldVertical, double box, double horizontal,
-                           int airTicks) {
+    void run() {
+        double horizontal = player.getNmsHorizontalDistance(),
+                vertical = player.getNmsVerticalDistance();
+
         if (horizontal < minDs && Math.abs(vertical) < minDs) {
             return;
         }
-        boolean selfHit = Damage.hasCooldown(p, Damage.selfHitKey);
-        Buffer buffer = p.getBuffer(Speed.check);
-        Cooldowns cooldowns = p.getCooldowns(Speed.check);
+        SpartanLocation to = player.getEventToLocation(),
+                from = player.getEventFromLocation();
+        double oldVertical = player.getOld_NmsVerticalDistance(),
+                box = player.getNmsBox();
+        int airTicks = player.getTicksOnAir();
+        boolean selfHit = Damage.hasCooldown(player, Damage.selfHitKey);
+        Buffer buffer = player.getBuffer(hackType);
+        Cooldowns cooldowns = player.getCooldowns(hackType);
         int horizontalBuffer = buffer.get(horizontalBufferKey);
         SpartanLocation loc1 = to.clone().add(0, 1, 0);
 
-        if (!canDo(p, to, loc1, cooldowns, selfHit)) {
-            freezeBuffers(p, buffer, 1);
+        if (!canDo(to, loc1, cooldowns, selfHit)) {
+            freezeBuffers(buffer, 1);
             return;
         }
         if (to.getBlock().isWaterLogged()
                 || from.getBlock().isWaterLogged()
                 || to.clone().add(0, -0.5, 0).getBlock().isWaterLogged()) {
-            freezeBuffers(p, buffer, 1);
+            freezeBuffers(buffer, 1);
             return;
         }
 
-        AsyncDetection.run(p, Speed.check, () -> {
+        runAsync(() -> {
             int horizontalBufferCopy = horizontalBuffer;
-            runTrackers(p, to, cooldowns, buffer, airTicks, vertical, box);
-            boolean boatStepping = p.stepsOnBoats();
+            runTrackers(to, cooldowns, buffer, airTicks, vertical, box);
+            boolean boatStepping = player.stepsOnBoats();
 
             if (boatStepping) {
-                horizontalBufferCopy = freezeBuffers(p, buffer, 2);
+                horizontalBufferCopy = freezeBuffers(buffer, 2);
             }
             SpartanLocation locM1 = to.clone().add(0, -1, 0),
                     locM2 = to.clone().add(0, -2, 0);
             boolean suspicion,
                     clearMovement,
-                    isSwimming = !p.getHandlers().has(Handlers.HandlerType.Vehicle, "non-boat") && p.isSwimming();
+                    isSwimming = !player.getHandlers().has(Handlers.HandlerType.Vehicle, "non-boat") && player.isSwimming();
 
-            if (p.isJumping(vertical)) {
+            if (player.isJumping(vertical)) {
                 suspicion = false;
                 clearMovement = true;
             } else {
                 suspicion = vertical >= -0.07 && !PatternUtils.isLiquidPattern(new double[]{BlockUtils.hitbox_max, 1, BlockUtils.hitbox_max}, to, true);
-                clearMovement = suspicion || p.getProfile().isSuspectedOrHacker(Speed.check);
+                clearMovement = suspicion || player.getProfile().isSuspectedOrHacker(hackType);
             }
             double limit = 0.0;
             int limitType = Integer.MIN_VALUE;
             boolean canCheckWater = false;
 
-            if (canCheck(p, water, box, to, loc1, locM1, locM2, buffer) ? (canCheckWater = true) :
-                    canCheck(p, lava, box, to, loc1, locM1, locM2, buffer)) {
+            if (canCheck(water, box, to, loc1, locM1, locM2, buffer) ? (canCheckWater = true) :
+                    canCheck(lava, box, to, loc1, locM1, locM2, buffer)) {
                 Material material = canCheckWater ? water : lava;
                 boolean wallsBelow;
                 limitType = canCheckWater ? initialWaterLimit : 0;
@@ -116,19 +126,19 @@ public class WaterSpeed {
                     wallsBelow = !cooldowns.canDo("walls-below");
                 }
 
-                if (PlayerData.getWalkSpeedDifference(p) != 0.0) {
+                if (PlayerData.getWalkSpeedDifference(player) != 0.0) {
                     limit = premature;
-                } else if (BouncingBlocks.isBelow(p)) {
+                } else if (BouncingBlocks.isBelow(player)) {
                     limit = bouncing;
                     limitType += 1;
                 } else if (wallsBelow && Math.abs(vertical - oldVertical) >= 0.01) {
                     limit = walls;
                     limitType += 2;
                 } else {
-                    int bootsLevel = PlayerData.getDepthStriderLevel(p);
+                    int bootsLevel = PlayerData.getDepthStriderLevel(player);
 
                     if (vertical == 0.0 && horizontalBufferCopy >= 10) {
-                        limit = (p.isSprinting() ? stable_extra : stable);
+                        limit = (player.isSprinting() ? stable_extra : stable);
                         limit *= bootsLevel;
                         limitType += 3;
                     } else if (to.getBlock().getType() == material) {
@@ -137,7 +147,7 @@ public class WaterSpeed {
                                 limit = in_water + (bootsLevel * 3.5);
                                 limitType += 4;
                             } else {
-                                if (!p.isOnFire()) {
+                                if (!player.isOnFire()) {
                                     limit = in_lava;
                                     limitType += 4;
                                 } else {
@@ -161,7 +171,7 @@ public class WaterSpeed {
                             limit = out_water;
                             limitType += 6;
                         } else {
-                            if (!p.isOnFire()) {
+                            if (!player.isOnFire()) {
                                 limit = out_lava;
                                 limitType += 7;
                             } else {
@@ -180,13 +190,13 @@ public class WaterSpeed {
                     }
                 }
             } else if (!suspicion && buffer.start("cannot-check-block", 20) >= 3) {
-                horizontalBufferCopy = freezeBuffers(p, buffer, 1);
+                horizontalBufferCopy = freezeBuffers(buffer, 1);
             }
-            runBuffers(p, to, locM1, horizontal, vertical, buffer);
+            runBuffers(to, locM1, horizontal, vertical, buffer);
 
             if (limit > 0.0) {
-                Entity vehicle = p.getVehicle();
-                double modifiedLimit = adjustLimit(p, to, locM1, loc1,
+                Entity vehicle = player.getVehicle();
+                double modifiedLimit = adjustLimit(to, locM1, loc1,
                         vehicle,
                         cooldowns,
                         horizontalBufferCopy,
@@ -200,22 +210,18 @@ public class WaterSpeed {
                         cancel = (horizontal - limit) >= 0.35 || buffer.start("water=safety=max", 20) >= 5;
                     } else {
                         cancel = limit != modifiedLimit
-                                || p.getViolations(Speed.check).hasLevel()
+                                || player.getViolations(hackType).hasLevel()
                                 || buffer.start("water=safety=min", 12) >= 4;
                     }
 
                     if (cancel) {
-                        new HackPrevention(
-                                p,
-                                Speed.check,
+                        cancel(
                                 "type: water, vertical: " + vertical
                                         + ", horizontal: " + horizontal
                                         + ", limit: " + limit + "(" + limitType + ")"
                                         + ", dynamic-limit: " + modifiedLimit
                                         + (vehicle != null ? ", entity: " + vehicle.getType().toString().toLowerCase().replace("_", "-") : ""),
-                                from.clone().add(0, -box, 0),
-                                0,
-                                true
+                                from.clone().add(0, -box, 0)
                         );
                     }
                 }
@@ -225,18 +231,18 @@ public class WaterSpeed {
 
     // Cache
 
-    private static int freezeBuffers(SpartanPlayer p, Buffer buffer, int divisor) {
-        int finalBuffer = -(PlayerData.getWalkSpeedDifference(p) > 0.0f ? 40 : (20 / divisor));
+    private int freezeBuffers(Buffer buffer, int divisor) {
+        int finalBuffer = -(PlayerData.getWalkSpeedDifference(player) > 0.0f ? 40 : (20 / divisor));
         buffer.set(horizontalBufferKey, finalBuffer);
         return finalBuffer;
     }
 
-    private static void runBuffers(SpartanPlayer p, SpartanLocation loc, SpartanLocation locM1,
-                                   double horizontal, double vertical,
-                                   Buffer buffer) {
+    private void runBuffers(SpartanLocation loc, SpartanLocation locM1,
+                            double horizontal, double vertical,
+                            Buffer buffer) {
         int increase;
 
-        if (vertical >= -0.07 && !p.isJumping(vertical)
+        if (vertical >= -0.07 && !player.isJumping(vertical)
 
                 && (AlgebraUtils.cut(vertical, 1) != 0.0
 
@@ -252,10 +258,10 @@ public class WaterSpeed {
         }
     }
 
-    private static void runTrackers(SpartanPlayer p, SpartanLocation to,
-                                    Cooldowns cooldowns, Buffer buffer,
-                                    int airTicks,
-                                    double dy, double remaining) {
+    private void runTrackers(SpartanLocation to,
+                             Cooldowns cooldowns, Buffer buffer,
+                             int airTicks,
+                             double dy, double remaining) {
         if (airTicks >= 100) {
             cooldowns.add("allow", 40);
         } else if (dy <= -2.0) {
@@ -266,22 +272,22 @@ public class WaterSpeed {
                     {1, 2 - remaining, 1}
             }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Blocks above
                 cooldowns.add("ice", 20);
-            } else if (p.wasInLiquids() || !Liquid.isLocation(p, to)) {
-                freezeBuffers(p, buffer, 1);
+            } else if (player.wasInLiquids() || !Liquid.isLocation(player, to)) {
+                freezeBuffers(buffer, 1);
             }
         }
     }
 
     // Base
 
-    private static boolean canCheck(SpartanPlayer p, Material m, double remaining,
-                                    SpartanLocation to, SpartanLocation loc1, SpartanLocation locM1, SpartanLocation locM2,
-                                    Buffer buffer) {
+    private boolean canCheck(Material m, double remaining,
+                             SpartanLocation to, SpartanLocation loc1, SpartanLocation locM1, SpartanLocation locM2,
+                             Buffer buffer) {
         if ((!isFullSolidFree(locM1) && !PatternUtils.isLiquidPattern(genericHitbox, to, true)
                 || !isFullSolidFree(to))
 
                 && !PatternUtils.isLiquidPattern(genericHitbox, loc1, true)) {
-            freezeBuffers(p, buffer, 1);
+            freezeBuffers(buffer, 1);
             return false;
         }
         return loc1.getBlock().getType() == m
@@ -291,32 +297,32 @@ public class WaterSpeed {
                 || !PatternUtils.isBlockPattern(genericHitbox, locM1, true, BlockUtils.solid, BlockUtils.semi_solid) && locM2.areBlocks(m, BlockUtils.hitbox_max);
     }
 
-    private static double adjustLimit(SpartanPlayer p, SpartanLocation loc, SpartanLocation locM1, SpartanLocation loc1,
-                                      Entity vehicle,
-                                      Cooldowns cooldowns,
-                                      int horizontalBuffer,
-                                      double limit, double vertical,
-                                      boolean boatStepping, boolean isSwimming, boolean selfHit) {
+    private double adjustLimit(SpartanLocation loc, SpartanLocation locM1, SpartanLocation loc1,
+                               Entity vehicle,
+                               Cooldowns cooldowns,
+                               int horizontalBuffer,
+                               double limit, double vertical,
+                               boolean boatStepping, boolean isSwimming, boolean selfHit) {
         double modifiedLimit = limit;
 
         // Separator
-        if (p.getHandlers().has(Handlers.HandlerType.Trident)) {
-            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(p), 4.5));
-        } else if (p.getHandlers().has(Handlers.HandlerType.Piston)) {
-            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(p), Speed.piston));
+        if (player.getHandlers().has(Handlers.HandlerType.Trident)) {
+            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), 4.5));
+        } else if (player.getHandlers().has(Handlers.HandlerType.Piston)) {
+            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), Speed.piston));
         } else if (boatStepping || selfHit || horizontalBuffer < 0 || vehicle instanceof Horse
-                || !cooldowns.canDo("ice") || p.getHandlers().has(Handlers.HandlerType.Explosion)) {
-            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(p), premature));
-        } else if (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || p.isBedrockPlayer() || Building.hasCooldown(p)) {
+                || !cooldowns.canDo("ice") || player.getHandlers().has(Handlers.HandlerType.Explosion)) {
+            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), premature));
+        } else if (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || player.isBedrockPlayer() || Building.hasCooldown(player)) {
             modifiedLimit = Math.max(modifiedLimit, instability);
         }
 
         // Separator
         if (limit != out_lava && limit != in_lava && limit != lava_fire_ticks) {
-            if (PlayerData.hasDolphinsGraceEffect(p)) {
-                double depthStrider = PlayerData.getDepthStriderLevel(p);
+            if (PlayerData.hasDolphinsGraceEffect(player)) {
+                double depthStrider = PlayerData.getDepthStriderLevel(player);
 
-                if (PlayerData.hasSoulSpeedEnchantment(p, loc)) {
+                if (PlayerData.hasSoulSpeedEnchantment(player, loc)) {
                     modifiedLimit += (depthStrider + 1) * 2.0;
                 } else {
                     modifiedLimit += Math.max(depthStrider, 0.5);
@@ -332,23 +338,23 @@ public class WaterSpeed {
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     && limit != in_water && limit != bouncing && limit != walls
                     && (horizontalBuffer <= 5 || vertical != 0.0)
-                    && !p.isJumping(vertical) && !p.isFalling(vertical)) {
+                    && !player.isJumping(vertical) && !player.isFalling(vertical)) {
                 modifiedLimit = Math.max(modifiedLimit, instability);
             }
         }
 
         // Separator
-        modifiedLimit = MoveUtils.calculateLimit(p, loc, modifiedLimit, 8.0, PotionEffectType.SPEED);
-        return Math.max(Speed.check.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0), modifiedLimit);
+        modifiedLimit = MoveUtils.calculateLimit(player, loc, modifiedLimit, 8.0, PotionEffectType.SPEED);
+        return Math.max(hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0), modifiedLimit);
     }
 
-    private static boolean canDo(SpartanPlayer p, SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
-        if (p.canRunCheck(Speed.check, true) && Speed.check.getCheck().getBooleanOption("check_water_speed", true)
-                && (selfHit || !Damage.hasCooldown(p)) && !PlayerData.hasNearbyCollisions(p) && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !PlayerData.hasLevitationEffect(p) && !FishingHook.hasCooldown(p) && !p.getHandlers().has(Handlers.HandlerType.BlockBreak)
-                && !VehicleAccess.hasEnterCooldown(p, Speed.check)) {
+    private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
+        if (player.canRunCheck(hackType, true) && hackType.getCheck().getBooleanOption("check_water_speed", true)
+                && (selfHit || !Damage.hasCooldown(player)) && !PlayerData.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !PlayerData.hasLevitationEffect(player) && !FishingHook.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.BlockBreak)
+                && !VehicleAccess.hasEnterCooldown(player, hackType)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                Entity vehicle = p.getVehicle();
+                Entity vehicle = player.getVehicle();
 
                 // Do not check boats, they behave much differently on water and require their own detection via the EntityMove check
                 if (vehicle != null
@@ -358,7 +364,7 @@ public class WaterSpeed {
                     return false;
                 }
             }
-            if (!BlockUtils.isClearLiquid(p, to) || !BlockUtils.isClearLiquid(p, loc1)) {
+            if (!BlockUtils.isClearLiquid(player, to) || !BlockUtils.isClearLiquid(player, loc1)) {
                 cooldowns.add("invalid=data", 10);
                 return false;
             }
@@ -369,12 +375,12 @@ public class WaterSpeed {
 
     // Utils
 
-    private static boolean isSolidAndLiquidFree(SpartanLocation loc, double x, double y, double z) {
+    private boolean isSolidAndLiquidFree(SpartanLocation loc, double x, double y, double z) {
         return !PatternUtils.isBlockPattern(new double[]{x, y, z}, loc, true, BlockUtils.solid, BlockUtils.semi_solid)
                 && !PatternUtils.isLiquidPattern(new double[]{x, y, z}, loc, true);
     }
 
-    private static boolean isFullSolidFree(SpartanLocation loc) {
+    private boolean isFullSolidFree(SpartanLocation loc) {
         return !PatternUtils.isBlockPattern(genericHitbox, loc, true, BlockUtils.solid, BlockUtils.semi_solid);
     }
 

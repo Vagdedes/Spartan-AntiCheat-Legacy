@@ -2,6 +2,8 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of amount of entities hit in a given time
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;
@@ -16,7 +18,11 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Time {
+public class Time extends DetectionExecutor {
+
+    Time(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+    }
 
     private static final String key = Time.class.getName() + "=";
     private static final int[][] criteria = new int[][]{ // Always smallest to the biggest number/s order
@@ -28,7 +34,7 @@ public class Time {
     };
     private static long dynamicMinimumTime = CombatUtils.defaultFightTicks * 50L;
 
-    static void run(SpartanPlayer player, LivingEntity entity, double width, double distance) {
+    void run(LivingEntity entity, double width, double distance) {
         if (!CombatUtils.isNewPvPMechanic(player, entity)) {
             boolean first = false;
 
@@ -47,12 +53,12 @@ public class Time {
                     }
                 }
                 int ticks = ints[0], entities = ints[1];
-                String key = flag(player, entity, ticks, entities);
+                String key = flag(entity, ticks, entities);
 
                 if (key != null) {
-                    if (key.length() > 0) { // If the length is zero, it means the required amount of nearby entities was not met, thus it's pointless to continue the loop
-                        player.getBuffer(KillAura.check).clear(key); // Clear whatever data is potentially remaining with this semi-heavy method
-                        KillAura.violate(player, "type: time(speed), ticks: " + ticks + ", entities: " + entities);
+                    if (!key.isEmpty()) { // If the length is zero, it means the required amount of nearby entities was not met, thus it's pointless to continue the loop
+                        player.getBuffer(hackType).clear(key); // Clear whatever data is potentially remaining with this semi-heavy method
+                        cancel("type: time(speed), ticks: " + ticks + ", entities: " + entities);
                     }
                     break;
                 }
@@ -79,11 +85,11 @@ public class Time {
 
                             if (time <= dynamicMinimumTime) {
                                 dynamicMinimumTime = Math.max(time, 50L);
-                                Buffer buffer = player.getBuffer(KillAura.check);
+                                Buffer buffer = player.getBuffer(hackType);
 
                                 if (buffer.start(Buffer.BufferType.Combat, subKey, 10 * ((int) dynamicMinimumTime)) == 8) {
                                     buffer.remove(subKey);
-                                    KillAura.violate(player, "type: time(consistency)"
+                                    cancel("type: time(consistency)"
                                             + ", width: " + width
                                             + ", entity-width: " + entityWidth
                                             + ", yaw-rate: " + yawRate
@@ -100,14 +106,14 @@ public class Time {
         }
     }
 
-    private static String flag(SpartanPlayer player, LivingEntity entity, int ticks, int entityRequirement) {
+    private String flag(LivingEntity entity, int ticks, int entityRequirement) {
         List<Entity> nearbyEntities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
         int nearbyEntitiesCount = nearbyEntities.size();
 
         if (nearbyEntitiesCount > 0) {
             String subKey = key + ticks + "=" + entityRequirement,
                     entityKey = subKey + "=" + entity.getEntityId();
-            Buffer buffer = player.getBuffer(KillAura.check); // Do not use the combat buffer as the passing of time is very important
+            Buffer buffer = player.getBuffer(hackType); // Do not use the combat buffer as the passing of time is very important
             int remainingTicks = buffer.getRemainingTicks(subKey);
             List<Integer> validEntities = new ArrayList<>();
 

@@ -7,8 +7,6 @@ import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 
-import java.util.UUID;
-
 public class DetectionTick {
 
     private long futureTime, tick;
@@ -17,7 +15,7 @@ public class DetectionTick {
         this.futureTime = 0L;
     }
 
-    public boolean canSkip(UUID uuid, PlayerProfile profile, int ticksCooldown, SpartanPlayer player) {
+    public boolean canSkip(PlayerProfile profile, int ticksCooldown, SpartanPlayer player) {
         boolean canSkip;
         long currentTime = System.currentTimeMillis();
 

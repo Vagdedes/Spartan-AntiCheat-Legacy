@@ -1,13 +1,6 @@
-package me.vagdedes.spartan.system;
+package me.vagdedes.spartan.handlers.stability;
 
 import me.vagdedes.spartan.checks.combat.VelocityCheck;
-import me.vagdedes.spartan.checks.combat.criticals.Criticals;
-import me.vagdedes.spartan.checks.combat.killAura.KillAura;
-import me.vagdedes.spartan.checks.exploits.ChunkUpdates;
-import me.vagdedes.spartan.checks.movement.MorePackets;
-import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
-import me.vagdedes.spartan.checks.movement.speed.Speed;
-import me.vagdedes.spartan.checks.world.ImpossibleActions;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.moderation.Debug;
 import me.vagdedes.spartan.features.moderation.Spectate;
@@ -19,12 +12,13 @@ import me.vagdedes.spartan.features.protections.ReconnectCooldown;
 import me.vagdedes.spartan.features.synchronicity.AutoUpdater;
 import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
-import me.vagdedes.spartan.handlers.stability.DetectionLocation;
-import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.objects.system.Threads;
+import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.data.CooldownUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.entity.Player;
@@ -113,21 +107,19 @@ public class Cache {
 
         // Detections
         if (newLocation != null) {
-            IrregularMovements.refresh(p, newLocation);
-            MorePackets.refresh(p, newLocation);
-            ChunkUpdates.refresh(p, newLocation);
+            p.getExecutor(Enums.HackType.MorePackets).handle(newLocation);
+            p.getExecutor(Enums.HackType.IrregularMovements).handle(newLocation);
+            p.getExecutor(Enums.HackType.Exploits).handle(newLocation);
         } else {
-            IrregularMovements.remove(p);
-            MorePackets.remove(p);
-            ChunkUpdates.remove(p);
+            p.getExecutor(Enums.HackType.MorePackets).handle(null);
+            p.getExecutor(Enums.HackType.IrregularMovements).handle(null);
+            p.getExecutor(Enums.HackType.Exploits).handle(null);
         }
         if (leave || distance) {
-            KillAura.remove(p);
+            p.getExecutor(Enums.HackType.KillAura).handle(null);
         }
-        Criticals.remove(p, leave);
-        Speed.remove(p);
-        ImpossibleActions.remove(p);
-        VelocityCheck.refreshEntity(p);
+        p.getExecutor(Enums.HackType.Criticals).handle(leave);
+        p.getExecutor(Enums.HackType.Velocity).handle(VelocityCheck.REFRESH);
     }
 
     public static <K, V> Map<K, V> store(Map<K, V> map) {

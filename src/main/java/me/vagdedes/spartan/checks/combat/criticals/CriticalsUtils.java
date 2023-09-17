@@ -71,7 +71,7 @@ public class CriticalsUtils {
     }
 
     static double getExpectedDamage(Material itemType) {
-        if (memory.size() > 0) {
+        if (!memory.isEmpty()) {
             itemType = manipulateItem(itemType);
             double collection = 0.0;
             int total = 0;

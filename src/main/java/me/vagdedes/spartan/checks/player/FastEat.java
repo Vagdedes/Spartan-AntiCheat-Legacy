@@ -1,22 +1,22 @@
 package me.vagdedes.spartan.checks.player;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Timer;
-import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
-public class FastEat {
+public class FastEat extends CheckExecutor {
 
     private static final HackType check = HackType.FastEat;
     private static final Material cake = MaterialUtils.get("cake");
@@ -25,28 +25,12 @@ public class FastEat {
     private static final long driedKelp = 550L;
     private static final int ticks = 25;
 
-    public static void runFood(SpartanPlayer p, int lvl) {
-        if (!canDo(p) || lvl <= p.getFoodLevel()) {
-            return;
-        }
-        if (checkDelay(p) || checkEating(p)) {
-            Cooldowns cooldowns = p.getCooldowns(check);
-            p.setFoodLevel(p.getFoodLevel() - (lvl - p.getFoodLevel()), true);
-
-            if (!cooldowns.canDo("regeneration")) {
-                p.removePotionEffect(PotionEffectType.REGENERATION);
-            }
-            if (!cooldowns.canDo("absorption")) {
-                p.removePotionEffect(PotionEffectType.ABSORPTION);
-            }
-            if (!cooldowns.canDo("resistance")) {
-                p.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-            }
-        }
+    public FastEat(SpartanPlayer player) {
+        super(check, player);
     }
 
-    private static long getDelay(SpartanPlayer p) {
-        for (ItemStack itemStack : new ItemStack[]{p.getItemInHand(), p.getInventory().getItemInOffHand()}) {
+    private long getDelay() {
+        for (ItemStack itemStack : new ItemStack[]{player.getItemInHand(), player.getInventory().getItemInOffHand()}) {
             if (itemStack != null) {
                 Material type = itemStack.getType();
 
@@ -61,59 +45,104 @@ public class FastEat {
         return 0L;
     }
 
-    private static boolean checkDelay(SpartanPlayer p) {
+    private boolean checkDelay() {
         boolean bool;
-        Timer timer = p.getTimer(check);
-        long time = timer.get("time");
-        long delay = getDelay(p);
+        Timer timer = player.getTimer(hackType);
+        long time = timer.get("time"),
+                delay = getDelay();
 
-        if (bool = (delay > 0L && time <= delay)) {
-            new HackPrevention(p, check, "type: eat, ms: " + time);
+        if (delay > 0L && time <= delay) {
+            cancel("type: eat, ms: " + time);
+            bool = true;
+        } else {
+            bool = false;
         }
         timer.set("time");
         return bool;
     }
 
-    private static boolean checkEating(SpartanPlayer p) {
-        long time = p.getTimer(check).get("food");
-        long delay = getDelay(p);
+    private boolean checkEating() {
+        long time = player.getTimer(hackType).get("food"),
+                delay = getDelay();
 
         if (delay > 0L && time <= delay) {
-            new HackPrevention(p, check, "type: interact, ms: " + time + ", delay: " + delay);
+            cancel("type: interact, ms: " + time + ", delay: " + delay);
             return true;
         }
         return false;
     }
 
-    public static void runInteract(SpartanPlayer p, SpartanBlock b, Action action) {
-        if (!p.isBedrockPlayer() && canDo(p)) {
-            if (action == Action.RIGHT_CLICK_BLOCK && b.getType() == cake) {
-                check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 10);
-            } else if (action == Action.RIGHT_CLICK_AIR && PlayerData.holdsFood(p)) {
-                goldenAppleEffects(p);
-                p.getTimer(check).set("food");
-            }
-        }
-    }
-
-    private static void goldenAppleEffects(SpartanPlayer p) {
+    private void goldenAppleEffects(SpartanPlayer p) {
         ItemStack item = p.getItemInHand();
 
-        if (item != null && item.getType() == Material.GOLDEN_APPLE) {
+        if (item != null
+                && item.getType() == Material.GOLDEN_APPLE) {
             if (!p.hasPotionEffect(PotionEffectType.REGENERATION)) {
-                p.getCooldowns(check).add("regeneration", ticks);
+                p.getCooldowns(hackType).add("regeneration", ticks);
             }
             if (!p.hasPotionEffect(PotionEffectType.ABSORPTION)) {
-                p.getCooldowns(check).add("absorption", ticks);
+                p.getCooldowns(hackType).add("absorption", ticks);
             }
             if (!p.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
-                p.getCooldowns(check).add("resistance", ticks);
+                p.getCooldowns(hackType).add("resistance", ticks);
             }
         }
     }
 
-    private static boolean canDo(SpartanPlayer p) {
-        return p.canRunCheck(check, true) && p.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && !p.hasPotionEffect(PotionEffectType.SATURATION) && !LagLeniencies.hasHighLatency(p, LagLeniencies.averagePing); // Item
+    @Override
+    public boolean handle(Object object) {
+        if (object instanceof FoodLevelChangeEvent) {
+            if (canDo()) {
+                int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
+
+                if (lvl > player.getFoodLevel()
+                        && (checkDelay() || checkEating())) {
+                    Cooldowns cooldowns = player.getCooldowns(hackType);
+                    player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()), true);
+
+                    if (!cooldowns.canDo("regeneration")) {
+                        player.removePotionEffect(PotionEffectType.REGENERATION);
+                    }
+                    if (!cooldowns.canDo("absorption")) {
+                        player.removePotionEffect(PotionEffectType.ABSORPTION);
+                    }
+                    if (!cooldowns.canDo("resistance")) {
+                        player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+                    }
+                }
+            }
+        } else if (!player.isBedrockPlayer() && canDo()) {
+            PlayerInteractEvent e = (PlayerInteractEvent) object;
+
+            switch (e.getAction()) {
+                case RIGHT_CLICK_BLOCK:
+                    if (e.getClickedBlock().getType() == cake) {
+                        hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 10);
+                    }
+                    break;
+                case RIGHT_CLICK_AIR:
+                    if (PlayerData.holdsFood(player)) {
+                        goldenAppleEffects(player);
+                        player.getTimer(hackType).set("food");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean run() {
+        return false;
+    }
+
+    @Override
+    protected boolean canDo() {
+        return player.canRunCheck(hackType, true)
+                && player.getWorld().getDifficulty() != Difficulty.PEACEFUL
+                && !player.hasPotionEffect(PotionEffectType.SATURATION)
+                && !LagLeniencies.hasHighLatency(player, LagLeniencies.averagePing); // Item
     }
 }

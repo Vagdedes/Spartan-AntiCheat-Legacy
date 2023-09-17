@@ -1,51 +1,32 @@
 package me.vagdedes.spartan.abstraction;
 
-import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.event.Event;
 
-public abstract class CheckExecutor {
+public abstract class CheckExecutor extends DetectionExecutor {
 
-    protected final Enums.HackType hackType;
-    protected final SpartanPlayer player;
+    protected final DetectionExecutor[] detections;
+
+    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections) {
+        super(null, hackType, player);
+        this.detections = new DetectionExecutor[detections];
+    }
 
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player) {
-        this.hackType = hackType;
-        this.player = player;
+        this(hackType, player, 0);
     }
 
-    abstract public void handle(Event event);
-
-    abstract public void run();
-
-    abstract public boolean canDo();
-
-    protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
-                                boolean groundTeleport, double damage, int violation) {
-        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, violation);
+    protected void addDetections(DetectionExecutor[] detection) {
+        for (int i = 0; i < detection.length; i++) {
+            this.detections[i] = detection[i];
+        }
     }
 
-    protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
-                                boolean groundTeleport, double damage) {
-        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, 1);
-    }
+    // Run detections when no parameters are needed
+    abstract public boolean run();
 
-    protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
-                                boolean groundTeleport) {
-        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, 0.0, 1);
-    }
+    // Run handlers or detections when parameters are needed
+    abstract public boolean handle(Object object);
 
-    protected final void cancel(String verbose, SpartanLocation location, int teleportCooldown) {
-        new HackPrevention(player, hackType, verbose, location, teleportCooldown, false, 0.0, 1);
-    }
-
-    protected final void cancel(String verbose, SpartanLocation location) {
-        new HackPrevention(player, hackType, verbose, location, 0, false, 0.0, 1);
-    }
-
-    protected final void cancel(String verbose) {
-        new HackPrevention(player, hackType, verbose, null, 0, false, 0.0, 1);
-    }
+    abstract protected boolean canDo();
 }

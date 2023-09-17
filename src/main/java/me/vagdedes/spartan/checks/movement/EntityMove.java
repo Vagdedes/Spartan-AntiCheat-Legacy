@@ -1,11 +1,10 @@
 package me.vagdedes.spartan.checks.movement;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.compatibility.manual.entity.CraftBook;
 import me.vagdedes.spartan.compatibility.manual.entity.MyPet;
 import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.performance.AsyncDetection;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.objects.data.Buffer;
@@ -14,8 +13,6 @@ import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.*;
@@ -26,9 +23,11 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class EntityMove {
+public class EntityMove extends CheckExecutor {
 
     public static final Enums.HackType check = Enums.HackType.EntityMove;
 
@@ -42,7 +41,7 @@ public class EntityMove {
             pigMinimumHorizontal = 0.15, pigCarrotMinimumHorizontal = 0.3,
             boatMotionPrecision = 0.001;
 
-    private static final Map<UUID, Long[]> validity = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private Long[] cache = null;
     private static final int[] entityIDs = new int[]{
             horseID, boatID, pigID, llamaID, camelID
     };
@@ -67,25 +66,39 @@ public class EntityMove {
             piston_moving = MaterialUtils.get("piston_moving"),
             carrotOnAStick = MaterialUtils.get("carrot_on_a_stick");
 
-    public static void run(SpartanPlayer p, SpartanLocation to, SpartanLocation from,
-                           double horizontal, double vertical, double oldVertical, double box, double oldBox,
-                           int airTicks) {
-        UUID uuid = p.getUniqueId();
-        Entity vehicle = p.getVehicle();
+    public EntityMove(SpartanPlayer player) {
+        super(check, player);
+    }
+
+    @Override
+    public boolean handle(Object object) {
+        return false;
+    }
+
+    @Override
+    public boolean run() {
+        Entity vehicle = player.getVehicle();
 
         if (vehicle != null) {
-            long entityLongID = canDo(p, to, vehicle);
+            SpartanLocation to = player.getEventToLocation();
+            SpartanLocation from = player.getEventFromLocation();
+            long entityLongID = getAllowance();
 
             if (entityLongID != 0) {
-                Long[] cache = validity.get(uuid);
+                double horizontal = player.getNmsHorizontalDistance(),
+                        vertical = player.getNmsVerticalDistance(),
+                        oldVertical = player.getOld_NmsVerticalDistance(),
+                        box = player.getNmsBox(),
+                        oldBox = player.getOld_NmsBox();
+                int airTicks = player.getTicksOnAir();
 
                 if (cache == null) {
-                    validity.put(uuid, new Long[]{entityLongID, System.currentTimeMillis()});
-                    return;
+                    cache = new Long[]{entityLongID, System.currentTimeMillis()};
+                    return false;
                 } else if (cache[0] != entityLongID) {
-                    validity.put(uuid, new Long[]{entityLongID, System.currentTimeMillis()});
-                    check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 4);
-                    return;
+                    cache = new Long[]{entityLongID, System.currentTimeMillis()};
+                    hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 4);
+                    return false;
                 }
                 int entityID = (int) entityLongID;
                 long time = System.currentTimeMillis() - cache[1];
@@ -93,17 +106,17 @@ public class EntityMove {
                         to,
                         Math.max(CombatUtils.getWidthAndHeight(vehicle)[0], BlockUtils.hitbox)
                 );
-                boolean unstableLiquids = cacheBoolean(p, false, "unstable-liquids", liquidCacheTicks),
+                boolean unstableLiquids = cacheBoolean(player, false, "unstable-liquids", liquidCacheTicks),
                         liquidsLocal = !liquidBlocks.isEmpty(),
-                        liquids = cacheBoolean(p, liquidsLocal, "liquids", liquidCacheTicks) || p.wasInLiquids(),
-                        iceBlocks = cacheBoolean(p,
+                        liquids = cacheBoolean(player, liquidsLocal, "liquids", liquidCacheTicks) || player.wasInLiquids(),
+                        iceBlocks = cacheBoolean(player,
                                 PatternUtils.isBlockPattern(ice, to, true, BlockUtils.ice),
                                 "ice-blocks", iceCacheTicks),
-                        damage = Damage.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.Explosion),
+                        damage = Damage.hasCooldown(player) || player.getHandlers().has(Handlers.HandlerType.Explosion),
                         knownBoxes = GroundUtils.heightExists(box),
                         oldKnownBoxes = GroundUtils.heightExists(oldBox),
-                        checkVertical = check.getCheck().getBooleanOption("check_vertical", true),
-                        checkHorizontal = check.getCheck().getBooleanOption("check_horizontal", true);
+                        checkVertical = hackType.getCheck().getBooleanOption("check_vertical", true),
+                        checkHorizontal = hackType.getCheck().getBooleanOption("check_horizontal", true);
                 double verticalDifference = Math.abs(oldVertical - vertical);
                 String message = "vertical: " + vertical
                         + ", old-vertical: " + oldVertical
@@ -114,12 +127,12 @@ public class EntityMove {
                         + ", air: " + airTicks
                         + ", time: " + time,
                         key = entityID + "=";
-                Decimals decimals = p.getDecimals(check);
+                Decimals decimals = player.getDecimals(hackType);
 
                 if (liquidsLocal) {
                     for (SpartanLocation liquid : liquidBlocks) {
                         if (!BlockUtils.isClearLiquid(null, liquid)) {
-                            unstableLiquids = cacheBoolean(p, true, "unstable-liquids", liquidCacheTicks);
+                            unstableLiquids = cacheBoolean(player, true, "unstable-liquids", liquidCacheTicks);
                             break;
                         }
                     }
@@ -128,10 +141,10 @@ public class EntityMove {
                 switch (entityID) {
                     case horseID:
                     case llamaID:
-                        AsyncDetection.run(p, check, () -> {
-                            clearLimitCache(p.getDecimals(check)); // Attention
+                        runAsync(() -> {
+                            clearLimitCache(player.getDecimals(hackType)); // Attention
 
-                            if (!Damage.hasCooldown(p)) {
+                            if (!Damage.hasCooldown(player)) {
                                 String messageCopy = message;
                                 AbstractHorse abstractHorse = (AbstractHorse) vehicle;
 
@@ -160,21 +173,21 @@ public class EntityMove {
 
                                             if (cases != 0) {
                                                 messageCopy += ", extra: " + cases + ", extra-1: " + verticalLimit;
-                                                cancel(p, vehicle, from, "rapid-upwards", messageCopy);
+                                                cancel(vehicle, from, "rapid-upwards", messageCopy);
                                             }
                                         }
                                     } else if (!liquids) {
                                         if (vertical > verticalLimit) {
                                             messageCopy += ", extra: " + verticalLimit;
-                                            cancel(p, vehicle, from, "abstract-upwards", messageCopy);
+                                            cancel(vehicle, from, "abstract-upwards", messageCopy);
                                         } else if (vertical > oldVertical) {
                                             if (oldVertical < 0.0) {
                                                 if (!oldKnownBoxes
                                                         && !PatternUtils.isBlockPattern(web, to, true, BlockUtils.web)) {
-                                                    cancel(p, vehicle, from, "illegal-upwards", messageCopy);
+                                                    cancel(vehicle, from, "illegal-upwards", messageCopy);
                                                 }
                                             } else {
-                                                cancelWithBuffer(p, vehicle, from, "irregular-upwards", messageCopy, key, livingEntityBufferTicks, livingEntityBufferFails);
+                                                cancelWithBuffer(player, vehicle, from, "irregular-upwards", messageCopy, key, livingEntityBufferTicks, livingEntityBufferFails);
                                             }
                                         }
                                     }
@@ -189,7 +202,7 @@ public class EntityMove {
 
                                         if (horizontal >= speedLimit) {
                                             messageCopy += ", extra: " + speedLimit + ", extra-1: " + multiplier;
-                                            cancel(p, vehicle, from, "horizontal", messageCopy);
+                                            cancel(vehicle, from, "horizontal", messageCopy);
                                         }
                                     }
                                 }
@@ -197,10 +210,10 @@ public class EntityMove {
                         });
                         break;
                     case pigID:
-                        AsyncDetection.run(p, check, () -> {
-                            clearLimitCache(p.getDecimals(check)); // Attention
+                        runAsync(() -> {
+                            clearLimitCache(player.getDecimals(hackType)); // Attention
 
-                            if (!Damage.hasCooldown(p)) {
+                            if (!Damage.hasCooldown(player)) {
                                 String messageCopy = message;
                                 boolean notStepping = (!knownBoxes
                                         || !oldKnownBoxes
@@ -208,21 +221,21 @@ public class EntityMove {
 
                                 if (checkVertical) {
                                     if (notStepping && vertical >= (damage ? 0.5 : 0.1)) {
-                                        cancel(p, vehicle, from, "rapid-upwards", messageCopy);
+                                        cancel(vehicle, from, "rapid-upwards", messageCopy);
                                     } else if (vertical > 0.0 && airTicks >= (damage ? 20 : 12)) {
-                                        cancel(p, vehicle, from, "abstract-upwards", messageCopy);
+                                        cancel(vehicle, from, "abstract-upwards", messageCopy);
                                     } else if (notStepping && verticalDifference >= (damage ? 0.5 : 0.2)) {
-                                        cancel(p, vehicle, from, "irregular-upwards", messageCopy);
+                                        cancel(vehicle, from, "irregular-upwards", messageCopy);
                                     } else if (vertical >= oldVertical && vertical != 0.0 && oldVertical != 0.0
                                             && !PatternUtils.isBlockPattern(web, to, true, BlockUtils.web)) {
-                                        cancel(p, vehicle, from, "illegal-upwards", messageCopy);
+                                        cancel(vehicle, from, "illegal-upwards", messageCopy);
                                     }
                                 }
                                 if (checkHorizontal) {
                                     double speedLimit;
 
-                                    if (p.getItemInHand().getType() == carrotOnAStick
-                                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && p.getInventory().getItemInOffHand().getType() == carrotOnAStick) {
+                                    if (player.getItemInHand().getType() == carrotOnAStick
+                                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && player.getInventory().getItemInOffHand().getType() == carrotOnAStick) {
                                         speedLimit = pigCarrotMinimumHorizontal;
                                     } else {
                                         speedLimit = pigMinimumHorizontal;
@@ -230,32 +243,31 @@ public class EntityMove {
 
                                     if (horizontal >= speedLimit) {
                                         messageCopy += ", extra: " + speedLimit;
-                                        cancel(p, vehicle, from, "horizontal", messageCopy);
+                                        cancel(vehicle, from, "horizontal", messageCopy);
                                     }
                                 }
                             }
                         });
                         break;
                     case boatID:
-                        boolean unstableLiquidsCopy = unstableLiquids,
-                                iceBlocksCopy = iceBlocks;
+                        boolean unstableLiquidsCopy = unstableLiquids;
 
-                        AsyncDetection.run(p, check, () -> {
+                        runAsync(() -> {
                             String messageCopy = message;
-                            boolean offGround = airTicks > 0 && !p.isOnGroundCustom()
-                                    && (!knownBoxes && !oldKnownBoxes || !PlayerData.isOnGround(p, to, 0, -1, 0));
+                            boolean offGround = airTicks > 0 && !player.isOnGroundCustom()
+                                    && (!knownBoxes && !oldKnownBoxes || !PlayerData.isOnGround(player, to, 0, -1, 0));
 
-                            if (checkVertical && !BouncingBlocks.isBelow(p)) {
+                            if (checkVertical && !BouncingBlocks.isBelow(player)) {
                                 if (vertical > boatMotionPrecision) { // Upwards
-                                    if (offGround && !p.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
+                                    if (offGround && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
                                         if (vertical > oldVertical) { // Elevation
                                             if (!unstableLiquidsCopy) {
-                                                cancelWithBuffer(p, vehicle, from, "elevation", messageCopy, key, boatBufferTicks, boatBufferFails);
+                                                cancelWithBuffer(player, vehicle, from, "elevation", messageCopy, key, boatBufferTicks, boatBufferFails);
                                             }
                                         } else if (vertical < oldVertical) { // Slower Elevation
-                                            cancelWithBuffer(p, vehicle, from, "slower-elevation", messageCopy, key, boatBufferTicks, boatBufferFails);
+                                            cancelWithBuffer(player, vehicle, from, "slower-elevation", messageCopy, key, boatBufferTicks, boatBufferFails);
                                         } else { // Steady Elevation
-                                            cancelWithBuffer(p, vehicle, from, "steady-elevation", messageCopy, key, boatBufferTicks, boatBufferFails);
+                                            cancelWithBuffer(player, vehicle, from, "steady-elevation", messageCopy, key, boatBufferTicks, boatBufferFails);
                                         }
                                     }
                                 } else if (vertical < -boatMotionPrecision) { // Downwards
@@ -263,34 +275,34 @@ public class EntityMove {
                                         double divisor = 0.04;
 
                                         if (!liquids && Math.abs(Math.abs(vertical % divisor) - divisor) >= boatMotionPrecision) {
-                                            cancelWithBuffer(p, vehicle, from, "modulo", messageCopy, key, boatBufferTicks, boatBufferFails);
+                                            cancelWithBuffer(player, vehicle, from, "modulo", messageCopy, key, boatBufferTicks, boatBufferFails);
                                         } else if (offGround) {
                                             double difference = oldVertical - vertical;
 
                                             if (difference > (divisor + boatMotionPrecision)) {
                                                 messageCopy += ", extra: " + difference;
-                                                cancelWithBuffer(p, vehicle, from, "difference", messageCopy, key, boatBufferTicks, boatBufferFails);
+                                                cancelWithBuffer(player, vehicle, from, "difference", messageCopy, key, boatBufferTicks, boatBufferFails);
                                             }
                                         }
                                     } else if ((vertical - oldVertical) > boatMotionPrecision) { // Slower Fall
-                                        if (!liquids && offGround && !p.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
-                                            cancelWithBuffer(p, vehicle, from, "slow-fall", messageCopy, key, boatBufferTicks, boatBufferFails);
+                                        if (!liquids && offGround && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
+                                            cancelWithBuffer(player, vehicle, from, "slow-fall", messageCopy, key, boatBufferTicks, boatBufferFails);
                                         }
                                     } else { // Steady Fall
-                                        if (!liquids && !p.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
-                                            cancelWithBuffer(p, vehicle, from, "steady-fall", messageCopy, key, boatBufferTicks, boatBufferFails);
+                                        if (!liquids && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
+                                            cancelWithBuffer(player, vehicle, from, "steady-fall", messageCopy, key, boatBufferTicks, boatBufferFails);
                                         }
                                     }
                                 } else { // Neutral
                                     if (!liquids && offGround) {
-                                        cancelWithBuffer(p, vehicle, from, "neutral", messageCopy, key, boatBufferTicks, boatBufferFails * 2);
+                                        cancelWithBuffer(player, vehicle, from, "neutral", messageCopy, key, boatBufferTicks, boatBufferFails * 2);
                                     }
                                 }
                             }
                             if (checkHorizontal) {
                                 double limit = getGreaterRepetitiveLimit(decimals, entityID) + CraftBook.getBoatLimit();
 
-                                if (iceBlocksCopy) {
+                                if (iceBlocks) {
                                     limit = cacheLimit(decimals, entityID, limit, 4.0, 20); // Actual speed is far too abstract to constantly predict
                                 } else if (offGround || liquids || BlockUtils.hasNonSolidSide(to, 1.0, -1.0, 1.0, true)) {
                                     limit = cacheLimit(decimals, entityID, limit, 0.45, 10); // 0.4 max actual speed
@@ -313,7 +325,7 @@ public class EntityMove {
 
                                 if (horizontal >= limit) {
                                     messageCopy += ", extra: " + limit;
-                                    cancelWithBuffer(p, vehicle, from, "horizontal", messageCopy, key, boatBufferTicks, Math.max(boatBufferFails - 1, 2));
+                                    cancelWithBuffer(player, vehicle, from, "horizontal", messageCopy, key, boatBufferTicks, Math.max(boatBufferFails - 1, 2));
                                 }
                             } else {
                                 clearLimitCache(decimals, entityID);
@@ -328,21 +340,31 @@ public class EntityMove {
                         break;
                 }
             } else {
-                clearLimitCache(p.getDecimals(check));
-                validity.remove(uuid);
+                clearLimitCache(player.getDecimals(hackType));
+                cache = null;
             }
         } else {
-            clearLimitCache(p.getDecimals(check));
-            validity.remove(uuid);
+            clearLimitCache(player.getDecimals(hackType));
+            cache = null;
         }
+        return false;
     }
 
-    private static long canDo(SpartanPlayer p, SpartanLocation loc, Entity entity) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && p.canRunCheck(check, true)
-                && !p.getHandlers().has(Handlers.HandlerType.Explosion) && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !MyPet.isUsing(p)) {
+    @Override
+    protected boolean canDo() {
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                && player.canRunCheck(hackType, true)
+                && !player.getHandlers().has(Handlers.HandlerType.Explosion)
+                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !MyPet.isUsing(player);
+    }
+
+    private long getAllowance() {
+        if (canDo()) {
+            Entity entity = player.getVehicle();
+
             if (entity instanceof Boat) {
-                UUID uuid = p.getUniqueId();
+                UUID uuid = player.getUniqueId();
 
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
                     List<Entity> passengers = entity.getPassengers();
@@ -358,7 +380,7 @@ public class EntityMove {
                         }
                     }
                 }
-                List<Entity> nearbyEntities = p.getNearbyEntities(0.25, 0, 0.25);
+                List<Entity> nearbyEntities = player.getNearbyEntities(0.25, 0, 0.25);
 
                 if (!nearbyEntities.isEmpty()) {
                     for (Entity nearbyEntity : nearbyEntities) {
@@ -368,7 +390,7 @@ public class EntityMove {
                         }
                     }
                 }
-                SpartanLocation loc1 = loc.clone().add(0, 1, 0);
+                SpartanLocation loc1 = player.getEventToLocation().clone().add(0, 1, 0);
 
                 if (!loc1.isBlock(Material.SLIME_BLOCK, 1)
                         && !loc1.isBlock(new Material[]{piston, sticky_piston, piston_extension, piston_moving}, 1)) {
@@ -395,13 +417,13 @@ public class EntityMove {
 
                 if (finalID != 0) {
                     if (((LivingEntity) entity).hasPotionEffect(PotionEffectType.LEVITATION)) {
-                        check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 40);
+                        hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 40);
                         return 0;
                     }
-                    if (!p.getHandlers().has(Handlers.HandlerType.Piston)
+                    if (!player.getHandlers().has(Handlers.HandlerType.Piston)
                             && !((LivingEntity) entity).isLeashed()
-                            && !Attributes.has(p, Attributes.HORSE_JUMP_STRENGTH)
-                            && !BouncingBlocks.isSlimeBelow(p)) {
+                            && !Attributes.has(player, Attributes.HORSE_JUMP_STRENGTH)
+                            && !BouncingBlocks.isSlimeBelow(player)) {
                         return finalID;
                     }
                 }
@@ -412,8 +434,8 @@ public class EntityMove {
 
     // Utilities
 
-    private static boolean cacheBoolean(SpartanPlayer p, boolean bool, String key, int ticks) {
-        Cooldowns cooldowns = p.getCooldowns(check);
+    private boolean cacheBoolean(SpartanPlayer p, boolean bool, String key, int ticks) {
+        Cooldowns cooldowns = p.getCooldowns(hackType);
         boolean result;
 
         if (bool) {
@@ -425,7 +447,7 @@ public class EntityMove {
         return result;
     }
 
-    private static List<SpartanLocation> getLiquidBlocks(SpartanLocation loc, double hitbox) {
+    private List<SpartanLocation> getLiquidBlocks(SpartanLocation loc, double hitbox) {
         List<SpartanLocation> positives = new ArrayList<>(18); // 9 * 2
 
         for (int y = -1; y <= 0; y++) {
@@ -440,29 +462,28 @@ public class EntityMove {
         return positives;
     }
 
-    private static void cancel(SpartanPlayer p, Entity entity,
-                               SpartanLocation loc,
-                               String detection, String message) {
-        boolean cancel = p.getProfile().isSuspectedOrHacker(check);
-        new HackPrevention(p, check,
-                "type: " + detection + "(" + entity.getType().toString().toLowerCase().replace("-", "") + "), " + message,
+    private void cancel(Entity entity,
+                        SpartanLocation loc,
+                        String detection, String message) {
+        boolean cancel = player.getProfile().isSuspectedOrHacker(hackType);
+        cancel("type: " + detection + "(" + entity.getType().toString().toLowerCase().replace("-", "") + "), " + message,
                 cancel ? loc : null, cancel ? 20 : 0, true);
     }
 
-    private static void cancelWithBuffer(SpartanPlayer p, Entity entity,
-                                         SpartanLocation loc,
-                                         String detection, String message, String key,
-                                         int ticks, int fails) {
-        Buffer buffer = p.getBuffer(check);
+    private void cancelWithBuffer(SpartanPlayer p, Entity entity,
+                                  SpartanLocation loc,
+                                  String detection, String message, String key,
+                                  int ticks, int fails) {
+        Buffer buffer = p.getBuffer(hackType);
         key += detection;
 
         if (buffer.start(key, ticks) == fails) {
             buffer.remove(key);
-            cancel(p, entity, loc, detection, message);
+            cancel(entity, loc, detection, message);
         }
     }
 
-    private static double cacheLimit(Decimals decimals, int entityID, double existingLimit, double newLimit, int ticks) {
+    private double cacheLimit(Decimals decimals, int entityID, double existingLimit, double newLimit, int ticks) {
         if (newLimit > existingLimit) {
             existingLimit = newLimit;
         }
@@ -481,22 +502,22 @@ public class EntityMove {
         return existingLimit;
     }
 
-    private static double getGreaterRepetitiveLimit(Decimals decimals, int entityID) {
+    private double getGreaterRepetitiveLimit(Decimals decimals, int entityID) {
         return decimals.get("repetitive-limit=" + entityID, 0.0);
     }
 
-    private static double getLimitTicks(Decimals decimals, int entityID) {
+    private double getLimitTicks(Decimals decimals, int entityID) {
         return decimals.get("ticks=" + entityID);
     }
 
-    private static void clearLimitCache(Decimals decimals, int entityID) {
+    private void clearLimitCache(Decimals decimals, int entityID) {
         decimals.remove(new String[]{
                 "repetitive-limit=" + entityID,
                 "ticks=" + entityID
         });
     }
 
-    private static void clearLimitCache(Decimals decimals) {
+    private void clearLimitCache(Decimals decimals) {
         for (int entityID : entityIDs) {
             clearLimitCache(decimals, entityID);
         }

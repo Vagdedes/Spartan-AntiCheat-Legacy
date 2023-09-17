@@ -2,13 +2,21 @@ package me.vagdedes.spartan.checks.combat.fastClicks;
 
 // Study of the time between clicks in regard to pattern
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.tracking.ClickData;
 import me.vagdedes.spartan.objects.data.Buffer;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-public class ClickPattern {
+public class ClickPattern extends DetectionExecutor {
+
+    private final FastClicks fastClicks;
+
+    ClickPattern(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        fastClicks = (FastClicks) executor;
+    }
 
     private static final String
             key = ClickPattern.class.getName(),
@@ -19,7 +27,7 @@ public class ClickPattern {
             bufferTime = 5 * 20;
     private static final double patternPrecision = (1.0 / TPS.tickTimeDecimal) * FastClicks.suspiciousMillisecondCorrelation; // Last number represents the time in milliseconds
 
-    static void run(SpartanPlayer player, ClickData clickData, int latencyExtra, int extraLimit, double globalAverage) {
+    void run(ClickData clickData, int latencyExtra, int extraLimit, double globalAverage) {
         int count = clickData.getCount(), limit = FastClicks.suspiciousClicksPerSecond + extraLimit;
 
         if (globalAverage > limit) {
@@ -35,11 +43,11 @@ public class ClickPattern {
                 double lastPattern = clickData.getLastPattern();
 
                 if (Math.abs(lastPattern - averagePattern) <= patternPrecision) {
-                    Buffer buffer = player.getBuffer(FastClicks.check);
+                    Buffer buffer = player.getBuffer(hackType);
 
                     if (buffer.start(key, bufferTime) == bufferThreshold) {
                         buffer.remove(key);
-                        FastClicks.violate(player,
+                        fastClicks.violate(
                                 null,
                                 "type: " + detection
                                         + ", count: " + count
@@ -57,7 +65,7 @@ public class ClickPattern {
                         );
                     }
                 } else {
-                    player.getBuffer(FastClicks.check).decrease(key, bufferFailure);
+                    player.getBuffer(hackType).decrease(key, bufferFailure);
                 }
             }
         }

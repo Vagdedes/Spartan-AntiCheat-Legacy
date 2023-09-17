@@ -19,11 +19,13 @@ public class SmashHit implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void DealDamage(AsyncPreDamageEvent e) {
         if (Compatibility.CompatibilityType.SmashHit.isFunctional()) {
-            Player n = e.getDamager();
-            SpartanPlayer p = SpartanBukkit.getPlayer(n.getUniqueId());
+            SpartanPlayer p = SpartanBukkit.getPlayer(e.getDamager().getUniqueId());
 
+            if (p == null) {
+                return;
+            }
             // Detections
-            EventsHandler6.runDealDamage(p, e.getEntity(), e.getDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK, e.isCancelled());
+            EventsHandler6.runDealDamage(e, p, e.getEntity(), e.getDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK, e.isCancelled());
 
             if (p.getViolations(Enums.HackType.KillAura).process()
                     || p.getViolations(Enums.HackType.Criticals).process()

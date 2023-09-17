@@ -1,31 +1,37 @@
 package me.vagdedes.spartan.checks.player;
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.features.important.MultiVersion;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.HackPrevention;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.potion.PotionEffectType;
 
-public class FastHeal {
+public class FastHeal extends CheckExecutor {
 
     private static final HackType check = HackType.FastHeal;
     private static final String checkID = Integer.toString(check.ordinal());
 
-    private static long calculate(SpartanPlayer p) {
-        boolean regeneration = p.hasPotionEffect(PotionEffectType.REGENERATION);
+    public FastHeal(SpartanPlayer player) {
+        super(check, player);
+    }
+
+    private long calculate() {
+        boolean regeneration = player.hasPotionEffect(PotionEffectType.REGENERATION);
         long i = 0L;
 
-        if (regeneration && !p.isOnFire()) {
-            int level = PlayerData.getPotionLevel(p, PotionEffectType.REGENERATION);
+        if (regeneration && !player.isOnFire()) {
+            int level = PlayerData.getPotionLevel(player, PotionEffectType.REGENERATION);
 
             if (level <= 10) {
                 i = level == 0 ? 300L : 45L;
@@ -36,45 +42,57 @@ public class FastHeal {
         return i;
     }
 
-    public static void run(SpartanPlayer p, RegainReason reason) {
-        if (!canDo(p) || reason == RegainReason.CUSTOM || reason == RegainReason.MAGIC) {
-            return;
-        }
-        Timer timer = p.getTimer(check);
-        Decimals decimals = p.getDecimals(check);
-        double health = p.getHealth();
+    @Override
+    public boolean handle(Object object) {
+        if (object instanceof EntityRegainHealthEvent) {
+            if (canDo()) {
+                RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
 
-        double previousHealth = p.getDecimals(check).get(checkID);
-        long time = p.getTimer(check).get(checkID);
+                if (reason != RegainReason.CUSTOM
+                        && reason != RegainReason.MAGIC) {
+                    Timer timer = player.getTimer(hackType);
+                    Decimals decimals = player.getDecimals(hackType);
+                    double health = player.getHealth();
 
-        if (timer.has(time) && decimals.has(previousHealth)
-                && previousHealth != health
-                && !LagLeniencies.hasHighLatency(p, LagLeniencies.mediocrePing)) { // Library
-            long limit = calculate(p);
+                    double previousHealth = player.getDecimals(hackType).get(checkID);
+                    long time = player.getTimer(hackType).get(checkID);
 
-            if (limit > 0L) {
-                Buffer buffer = p.getBuffer(check);
+                    if (timer.has(time) && decimals.has(previousHealth)
+                            && previousHealth != health
+                            && !LagLeniencies.hasHighLatency(player, LagLeniencies.mediocrePing)) { // Library
+                        long limit = calculate();
 
-                if (time < limit && buffer.start(checkID, 10) >= 3) {
-                    buffer.remove(checkID);
-                    new HackPrevention(p, check, "type: default, ms: " + time + ", limit: " + limit);
+                        if (limit > 0L) {
+                            Buffer buffer = player.getBuffer(hackType);
+
+                            if (time < limit && buffer.start(checkID, 10) >= 3) {
+                                buffer.remove(checkID);
+                                cancel("type: default, ms: " + time + ", limit: " + limit);
+                            }
+                        }
+                    }
+                    timer.set(checkID);
+                    decimals.set(checkID, health);
                 }
             }
+        } else if (canDo() && ((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()
+                && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                || player.getItemInHand().getType() != Material.DRIED_KELP)) {
+            hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 10);
         }
-        timer.set(checkID);
-        decimals.set(checkID, health);
+        return false;
     }
 
-    public static void runFood(SpartanPlayer p, int lvl) {
-        if (canDo(p) && lvl > p.getFoodLevel()
-                && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) || p.getItemInHand().getType() != Material.DRIED_KELP)) {
-            check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 10);
-        }
+    @Override
+    public boolean run() {
+        return false;
     }
 
-    private static boolean canDo(SpartanPlayer p) {
-        if (p.canRunCheck(check, true) && p.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
-            GameMode gameMode = p.getGameMode();
+    @Override
+    protected boolean canDo() {
+        if (player.canRunCheck(hackType, true)
+                && player.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
+            GameMode gameMode = player.getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         }
         return false;

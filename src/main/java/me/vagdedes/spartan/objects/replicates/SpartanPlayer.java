@@ -2,7 +2,27 @@ package me.vagdedes.spartan.objects.replicates;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.checks.combat.FastBow;
+import me.vagdedes.spartan.checks.combat.HitReach;
+import me.vagdedes.spartan.checks.combat.VelocityCheck;
+import me.vagdedes.spartan.checks.combat.criticals.Criticals;
+import me.vagdedes.spartan.checks.combat.fastClicks.FastClicks;
+import me.vagdedes.spartan.checks.combat.killAura.KillAura;
+import me.vagdedes.spartan.checks.exploits.Exploits;
+import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
+import me.vagdedes.spartan.checks.inventory.InventoryClicks;
+import me.vagdedes.spartan.checks.inventory.ItemDrops;
+import me.vagdedes.spartan.checks.movement.EntityMove;
+import me.vagdedes.spartan.checks.movement.MorePackets;
 import me.vagdedes.spartan.checks.movement.NoFall;
+import me.vagdedes.spartan.checks.movement.NoSlowdown;
+import me.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
+import me.vagdedes.spartan.checks.movement.speed.Speed;
+import me.vagdedes.spartan.checks.player.AutoRespawn;
+import me.vagdedes.spartan.checks.player.FastEat;
+import me.vagdedes.spartan.checks.player.FastHeal;
+import me.vagdedes.spartan.checks.player.NoSwing;
+import me.vagdedes.spartan.checks.world.*;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import me.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import me.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
@@ -20,14 +40,13 @@ import me.vagdedes.spartan.features.protections.PlayerLimitPerIP;
 import me.vagdedes.spartan.features.protections.Teleport;
 import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
+import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.connection.Latency;
+import me.vagdedes.spartan.handlers.connection.Piracy;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.ElytraUse;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
-import me.vagdedes.spartan.handlers.stability.DetectionLocation;
-import me.vagdedes.spartan.handlers.stability.ResearchEngine;
-import me.vagdedes.spartan.handlers.stability.TPS;
-import me.vagdedes.spartan.handlers.stability.TestServer;
+import me.vagdedes.spartan.handlers.stability.*;
 import me.vagdedes.spartan.handlers.tracking.ClickData;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
@@ -37,9 +56,11 @@ import me.vagdedes.spartan.objects.profiling.PlayerFight;
 import me.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.system.LiveViolation;
-import me.vagdedes.spartan.system.*;
+import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.utils.server.PluginUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -359,6 +380,7 @@ public class SpartanPlayer {
         Enums.HackType[] hackTypes = Enums.HackType.values();
         ItemStack itemInHand = p.getItemInHand();
 
+        this.uuid = uuid;
         this.location = new SpartanLocation(this, p.getLocation());
         this.eventTo = this.location;
         this.eventFrom = this.location;
@@ -370,43 +392,10 @@ public class SpartanPlayer {
         this.runCheckAccountLag = new LinkedHashMap<>(hackTypes.length);
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
-        this.buffer = new Buffer[hackTypes.length + 1];
-        this.timer = new Timer[hackTypes.length + 1];
-        this.decimals = new Decimals[hackTypes.length + 1];
-        this.tracker = new Tracker[hackTypes.length + 1];
-        this.cooldowns = new Cooldowns[hackTypes.length + 1];
-        this.executors = new CheckExecutor[hackTypes.length];
-        this.violations = new LiveViolation[hackTypes.length];
-
-        for (Enums.HackType hackType : hackTypes) {
-            int id = hackType.ordinal();
-            boolean async = hackType.getCheck().canBeAsynchronous();
-            this.buffer[id] = new Buffer(async);
-            this.timer[id] = new Timer(async);
-            this.decimals[id] = new Decimals(async);
-            this.tracker[id] = new Tracker(async);
-            this.cooldowns[id] = new Cooldowns(async);
-            this.violations[id] = new LiveViolation(this, dataType, hackType);
-
-            switch (hackType) {
-                case NoFall:
-                    this.executors[id] = new NoFall(this);
-                    break;
-                default:
-                    break;
-            }
-        }
-        this.lastViolation = this.violations[0];
-        this.buffer[hackTypes.length] = new Buffer(true);
-        this.timer[hackTypes.length] = new Timer(true);
-        this.decimals[hackTypes.length] = new Decimals(true);
-        this.tracker[hackTypes.length] = new Tracker(true);
-        this.cooldowns[hackTypes.length] = new Cooldowns(true);
         this.handlers = new Handlers();
 
         this.ipAddress = PlayerLimitPerIP.get(p);
         this.name = p.getName();
-        this.uuid = uuid;
         this.flying = p.isFlying();
         this.allowFlight = p.getAllowFlight();
         this.dead = p.isDead();
@@ -483,6 +472,114 @@ public class SpartanPlayer {
             this.swimming = false;
         }
         this.creationTime = System.currentTimeMillis();
+
+        this.buffer = new Buffer[hackTypes.length + 1];
+        this.timer = new Timer[hackTypes.length + 1];
+        this.decimals = new Decimals[hackTypes.length + 1];
+        this.tracker = new Tracker[hackTypes.length + 1];
+        this.cooldowns = new Cooldowns[hackTypes.length + 1];
+        this.executors = new CheckExecutor[hackTypes.length];
+        this.violations = new LiveViolation[hackTypes.length];
+
+        for (Enums.HackType hackType : hackTypes) {
+            int id = hackType.ordinal();
+            boolean async = hackType.getCheck().canBeAsynchronous();
+            this.buffer[id] = new Buffer(async);
+            this.timer[id] = new Timer(async);
+            this.decimals[id] = new Decimals(async);
+            this.tracker[id] = new Tracker(async);
+            this.cooldowns[id] = new Cooldowns(async);
+            this.violations[id] = new LiveViolation(this, dataType, hackType);
+
+            switch (hackType) {
+                case KillAura:
+                    this.executors[id] = new KillAura(this);
+                    break;
+                case Exploits:
+                    this.executors[id] = new Exploits(this);
+                    break;
+                case HitReach:
+                    this.executors[id] = new HitReach(this);
+                    break;
+                case Velocity:
+                    this.executors[id] = new VelocityCheck(this);
+                    break;
+                case Speed:
+                    this.executors[id] = new Speed(this);
+                    break;
+                case NoSwing:
+                    this.executors[id] = new NoSwing(this);
+                    break;
+                case IrregularMovements:
+                    this.executors[id] = new IrregularMovements(this);
+                    break;
+                case NoFall:
+                    this.executors[id] = new NoFall(this);
+                    break;
+                case GhostHand:
+                    this.executors[id] = new GhostHand(this);
+                    break;
+                case BlockReach:
+                    this.executors[id] = new BlockReach(this);
+                    break;
+                case FastBreak:
+                    this.executors[id] = new FastBreak(this);
+                    break;
+                case EntityMove:
+                    this.executors[id] = new EntityMove(this);
+                    break;
+                case FastClicks:
+                    this.executors[id] = new FastClicks(this);
+                    break;
+                case Criticals:
+                    this.executors[id] = new Criticals(this);
+                    break;
+                case MorePackets:
+                    this.executors[id] = new MorePackets(this);
+                    break;
+                case ImpossibleActions:
+                    this.executors[id] = new ImpossibleActions(this);
+                    break;
+                case FastPlace:
+                    this.executors[id] = new FastPlace(this);
+                    break;
+                case NoSlowdown:
+                    this.executors[id] = new NoSlowdown(this);
+                    break;
+                case AutoRespawn:
+                    this.executors[id] = new AutoRespawn(this);
+                    break;
+                case FastBow:
+                    this.executors[id] = new FastBow(this);
+                    break;
+                case FastEat:
+                    this.executors[id] = new FastEat(this);
+                    break;
+                case FastHeal:
+                    this.executors[id] = new FastHeal(this);
+                    break;
+                case ItemDrops:
+                    this.executors[id] = new ItemDrops(this);
+                    break;
+                case InventoryClicks:
+                    this.executors[id] = new InventoryClicks(this);
+                    break;
+                case ImpossibleInventory:
+                    this.executors[id] = new ImpossibleInventory(this);
+                    break;
+                case XRay:
+                    this.executors[id] = new XRay(this);
+                    break;
+                default:
+                    break;
+            }
+        }
+        this.lastViolation = this.violations[0];
+        this.buffer[hackTypes.length] = new Buffer(true);
+        this.timer[hackTypes.length] = new Timer(true);
+        this.decimals[hackTypes.length] = new Decimals(true);
+        this.tracker[hackTypes.length] = new Tracker(true);
+        this.cooldowns[hackTypes.length] = new Cooldowns(true);
     }
 
     // Separator
@@ -574,7 +671,7 @@ public class SpartanPlayer {
     }
 
     public boolean canSkipDetectionTick(int ticksCooldown) {
-        return detectionTick.canSkip(uuid, playerProfile, ticksCooldown, this);
+        return detectionTick.canSkip(playerProfile, ticksCooldown, this);
     }
 
     public int getCPS() {
@@ -647,6 +744,12 @@ public class SpartanPlayer {
 
     public void resetLocationData() {
         this.locationTime = 0L;
+    }
+
+    public int getMaxChatLength() {
+        return bedrockPlayer ? 512 :
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) || PluginUtils.exists("viaversion") || PluginUtils.exists("protocolsupport") ? 256 :
+                        100;
     }
 
     public void sendMessage(String message) {

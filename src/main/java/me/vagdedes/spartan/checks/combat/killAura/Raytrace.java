@@ -2,11 +2,12 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of hitting entities behind other entities or blocks
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
@@ -18,14 +19,20 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-public class Raytrace {
+public class Raytrace extends DetectionExecutor {
+
+    Raytrace(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+    }
+
+    private final KillAura killAura = (KillAura) executor;
 
     private static final double
             multiplication = 0.1, // 1/10th of a block at a time is enough to cover all positions while being performance friendly
             closeness = 0.075;
     private static final int maxEntities = 5; // 5 because after that there are far too many to safely check for collisions
 
-    static void run(SpartanPlayer player, SpartanLocation location, LivingEntity entity, double distance) {
+    void run(SpartanLocation location, LivingEntity entity, double distance) {
         if (!player.isBedrockPlayer()) {
             double entityWidth = CombatUtils.getWidthAndHeight(entity)[0];
 
@@ -63,7 +70,7 @@ public class Raytrace {
                                 block = raytracedLocation.getBlock();
                                 distanceToBlock = raytracedLocation.distance(block.getLocation());
                                 Material type = block.getType();
-                                fullSolid = (playerProfile.isSuspectedOrHacker(KillAura.check) || distanceToBlock <= 1.0)
+                                fullSolid = (playerProfile.isSuspectedOrHacker(hackType) || distanceToBlock <= 1.0)
                                         && (!handlers.has(Handlers.HandlerType.BlockBreak) || !BlockUtils.isSensitive(player, type))
                                         && BlockUtils.isFullSolid(type);
                             } else {
@@ -71,7 +78,7 @@ public class Raytrace {
                             }
 
                             if (fullSolid) {
-                                KillAura.violate(player,
+                                cancel(
                                         "type: raytrace(block)"
                                                 + ", raytrace: " + raytrace
                                                 + ", diagonal-distance: " + distance
@@ -83,7 +90,8 @@ public class Raytrace {
                                 return;
                             } else if (hasNearbyEntities) {
                                 for (Entity raytracedEntity : nearbyEntities) {
-                                    if (raytracedEntity instanceof LivingEntity && KillAura.canRunEntity(player, (LivingEntity) raytracedEntity)) {
+                                    if (raytracedEntity instanceof LivingEntity
+                                            && killAura.canRunEntity((LivingEntity) raytracedEntity)) {
                                         Location raytracedEntityLocation = raytracedEntity.getLocation();
                                         double entityHorizontalDistanceToRaytracedLocation = AlgebraUtils.getHorizontalDistance(raytracedEntityLocation, raytracedLocation);
 
@@ -92,7 +100,7 @@ public class Raytrace {
                                                     entityHeightY = entityY + CombatUtils.getWidthAndHeight((LivingEntity) raytracedEntity)[1];
 
                                             if (raytracedLocationY >= entityY && raytracedLocationY <= entityHeightY) { // Y coordinate must be within the entity's height
-                                                KillAura.violate(player,
+                                                cancel(
                                                         "type: raytrace(entity)"
                                                                 + ", raytrace: " + raytrace
                                                                 + ", diagonal-distance: " + distance

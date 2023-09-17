@@ -2,6 +2,8 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the utility and yaw/pitch movement when in an active fight
 
+import me.vagdedes.spartan.abstraction.CheckExecutor;
+import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.TPS;
@@ -11,7 +13,6 @@ import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Cache;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
@@ -24,7 +25,16 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class Aim {
+public class Aim extends DetectionExecutor {
+
+    private final KillAura killAura;
+
+    Aim(CheckExecutor executor) {
+        super(executor, executor.hackType, executor.player);
+        killAura = (KillAura) executor;
+    }
+
+    private final Map<Integer, DirectionData> map = new LinkedHashMap<>(Config.getMaxPlayers());
 
     private static final double
             maxObservableDistance = CombatUtils.maxHitDistance * 1.5,
@@ -39,7 +49,6 @@ public class Aim {
     private static final String
             key = Aim.class.getName(),
             compareKey = key + "=compare";
-    static final Map<UUID, Map<Integer, DirectionData>> dataMap = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
 
     // Separator
 
@@ -63,7 +72,7 @@ public class Aim {
                              long timeKept,
                              boolean countHit,
                              float yaw, float pitch) {
-            if (sides.size() > 0) {
+            if (!sides.isEmpty()) {
                 Iterator<Long> iterator = sides.keySet().iterator();
 
                 while (iterator.hasNext()) {
@@ -76,7 +85,7 @@ public class Aim {
                     }
                 }
             }
-            if (type.size() > 0) {
+            if (!type.isEmpty()) {
                 Iterator<Long> iterator = type.keySet().iterator();
 
                 while (iterator.hasNext()) {
@@ -97,8 +106,8 @@ public class Aim {
             return sides.values();
         }
 
-        public int getHits() {
-            if (type.size() > 0) {
+        private int getHits() {
+            if (!type.isEmpty()) {
                 int count = 0;
 
                 for (int hit : type.values()) {
@@ -111,7 +120,7 @@ public class Aim {
             return 0;
         }
 
-        public int getUniqueMovements() {
+        private int getUniqueMovements() {
             int size = type.size();
 
             if (size > 0) {
@@ -127,7 +136,7 @@ public class Aim {
             return 0;
         }
 
-        public int getUnusedTicks() {
+        private int getUnusedTicks() {
             int size = type.size();
 
             if (size > 2) { // Using either one is the same, but the type holds less memory
@@ -146,7 +155,7 @@ public class Aim {
                 }
                 between.remove(last);
 
-                if (between.size() > 0) {
+                if (!between.isEmpty()) {
                     int count = 0;
 
                     for (long loop = first; loop < last; loop += 50L) {
@@ -160,8 +169,8 @@ public class Aim {
             return 0;
         }
 
-        public boolean remove(TrigonometryUtils.Side side) {
-            if (sides.size() > 0) {
+        private void remove(TrigonometryUtils.Side side) {
+            if (!sides.isEmpty()) {
                 Iterator<Map.Entry<Long, TrigonometryUtils.Side>> iterator = sides.entrySet().iterator();
 
                 while (iterator.hasNext()) {
@@ -170,70 +179,52 @@ public class Aim {
                     if (next.equals(side)) {
                         type.remove(next.getKey());
                         iterator.remove();
-                        return true;
+                        break;
                     }
                 }
             }
-            return false;
         }
     }
 
-    private static DirectionData getPastDirectionData(
-            UUID uuid, LivingEntity entity,
+    private DirectionData getPastDirectionData(
+            LivingEntity entity,
             double width, double height,
             float yaw, float pitch,
             long timeKept,
             boolean countHit) {
         long time = System.currentTimeMillis();
-        DirectionData object;
-        Map<Integer, DirectionData> map = dataMap.get(uuid);
+        int id = entity.getEntityId();
+        DirectionData object = map.get(id);
 
-        if (map != null) {
-            int id = entity.getEntityId();
-            object = map.get(id);
-
-            if (object != null) {
-                object.refresh(time, width, height, timeKept, countHit, yaw, pitch);
-            } else {
-                map.put(id, object = new DirectionData(time, width, height, countHit, yaw, pitch));
-            }
+        if (object != null) {
+            object.refresh(time, width, height, timeKept, countHit, yaw, pitch);
         } else {
-            map = new LinkedHashMap<>();
-            map.put(entity.getEntityId(), object = new DirectionData(time, width, height, countHit, yaw, pitch));
-            dataMap.put(uuid, map);
+            map.put(id, object = new DirectionData(time, width, height, countHit, yaw, pitch));
         }
         return object;
     }
 
-    private static boolean remove(
-            UUID uuid, LivingEntity entity, TrigonometryUtils.Side side) {
-        Map<Integer, DirectionData> map = dataMap.get(uuid);
+    private void remove(LivingEntity entity, TrigonometryUtils.Side side) {
+        if (side == null) {
+            map.remove(entity.getEntityId());
+        } else {
+            DirectionData object = map.get(entity.getEntityId());
 
-        if (map != null) {
-            if (side == null) {
-                map.remove(entity.getEntityId());
-
-                if (map.size() == 0) {
-                    dataMap.remove(uuid);
-                }
-                return true;
-            } else {
-                DirectionData object = map.get(entity.getEntityId());
-                return object != null && object.remove(side);
+            if (object != null) {
+                object.remove(side);
             }
         }
-        return false;
     }
 
     // Separator
 
-    static void remove(SpartanPlayer player) {
-        dataMap.remove(player.getUniqueId());
+    void remove() {
+        map.clear();
     }
 
-    static void run(SpartanPlayer player, LivingEntity entity, SpartanLocation location, double width, double height) {
+    void run(LivingEntity entity, SpartanLocation location, double width, double height) {
         getPastDirectionData(
-                player.getUniqueId(), entity,
+                entity,
                 width, height,
                 location.getYaw(), location.getPitch(),
                 PlayerData.combatTimeRequirement,
@@ -241,19 +232,19 @@ public class Aim {
         );
     }
 
-    static void runMove(SpartanPlayer player, SpartanLocation to, SpartanLocation from, Buffer buffer) {
-        if (player.isMoving(true) && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
+    void runMove(SpartanLocation to, SpartanLocation from, Buffer buffer, Pattern pattern) {
+        if (player.isMoving(true)
+                && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
             List<Entity> entities = player.getNearbyEntities(maxObservableDistance, maxObservableDistance, maxObservableDistance);
 
             if (entities.size() <= maxEntities) {
-                UUID uuid = player.getUniqueId();
-                Decimals decimals = player.getDecimals(KillAura.check);
-                Timer timer = player.getTimer(KillAura.check);
+                Decimals decimals = player.getDecimals(hackType);
+                Timer timer = player.getTimer(hackType);
                 double reality = Math.toRadians(CombatProcessing.getDecimal(player, CombatProcessing.yawDifference, 0.0f));
                 int bufferTime, bufferThreshold;
 
                 if (Damage.getLastReceived(player) >= timeKept // The player hasn't been hit for a while
-                        || player.getProfile().isSuspectedOrHacker(KillAura.check)) { // There's significant data against the player already
+                        || player.getProfile().isSuspectedOrHacker(hackType)) { // There's significant data against the player already
                     bufferTime = 30;
                     bufferThreshold = 10;
                 } else {
@@ -265,7 +256,7 @@ public class Aim {
                     if (nearbyEntity instanceof LivingEntity) {
                         LivingEntity entity = (LivingEntity) nearbyEntity;
 
-                        if (KillAura.canRunEntity(player, entity)) {
+                        if (killAura.canRunEntity(entity)) {
                             double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
                             if (utility != null
@@ -278,8 +269,8 @@ public class Aim {
                                         continue;
                                     }
                                 }
-                                checkMap(uuid, player, to, entity, utility, buffer, bufferTime, bufferThreshold);
-                                checkPattern(player, from, entity, decimals, timer, reality);
+                                checkMap(to, entity, utility, buffer, bufferTime, bufferThreshold);
+                                checkPattern(from, entity, decimals, timer, reality, pattern);
                             }
                         }
                     }
@@ -288,14 +279,13 @@ public class Aim {
         }
     }
 
-    private static void checkMap(UUID uuid,
-                                 SpartanPlayer player, SpartanLocation location,
-                                 LivingEntity entity, double[] utility,
-                                 Buffer buffer,
-                                 int bufferTime, int bufferThreshold) {
+    private void checkMap(SpartanLocation location,
+                          LivingEntity entity, double[] utility,
+                          Buffer buffer,
+                          int bufferTime, int bufferThreshold) {
         double width = utility[0];
         DirectionData data = getPastDirectionData(
-                uuid, entity,
+                entity,
                 width, utility[1],
                 location.getYaw(), location.getPitch(),
                 timeKept,
@@ -364,8 +354,8 @@ public class Aim {
                                 if (averageAccuracy < 1.0) {
                                     if (buffer.start(entityKey, bufferTime) == bufferThreshold) {
                                         buffer.remove(entityKey);
-                                        remove(uuid, entity, null);
-                                        KillAura.violateLive(player,
+                                        remove(entity, null);
+                                        killAura.violateLive(
                                                 "type: aim(map)"
                                                         + ", sides: " + collectedSides
                                                         + ", average-accuracy: " + averageAccuracy
@@ -398,21 +388,22 @@ public class Aim {
                 if (buffer.start(entityOffRangeKey, 20) == 3) {
                     buffer.remove(entityOffRangeKey);
                     buffer.remove(entityKey);
-                    remove(uuid, entity, null);
+                    remove(entity, null);
                 }
             }
         }
     }
 
-    private static void checkPattern(SpartanPlayer player, SpartanLocation from,
-                                     LivingEntity entity,
-                                     Decimals decimals, Timer timer,
-                                     double reality) {
+    private void checkPattern(SpartanLocation from,
+                              LivingEntity entity,
+                              Decimals decimals, Timer timer,
+                              double reality,
+                              Pattern pattern) {
         if (reality > 0.0) {
             int id = entity.getEntityId();
             String key = Aim.key + "=" + id,
                     compareKey = Aim.compareKey + "=" + id;
-            double prediction = CombatUtils.getRotationDistance(from, Pattern.getEntityLocation(player.getUniqueId(), entity), false);
+            double prediction = CombatUtils.getRotationDistance(from, pattern.getEntityLocation(entity), false);
             decimals.add(key, reality);
             decimals.add(compareKey, prediction);
 
@@ -431,7 +422,7 @@ public class Aim {
                     long time = timer.get(Aim.key);
 
                     if (time <= maxPatternObservationsTime) {
-                        KillAura.violate(player, "type: aim(pattern)"
+                        cancel("type: aim(pattern)"
                                 + ", total: " + total
                                 + ", r2: " + r2
                                 + ", error: " + error
