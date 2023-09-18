@@ -29,7 +29,9 @@ public class CloudFeature {
     public static final String downloadWebsite = "aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC9kb3dubG9hZEZpbGUvP3Rva2VuPQ==";
 
     // Cache
-    private static final Map<Enums.HackType, String[]> disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
+    private static final Map<Enums.HackType, String[]>
+            disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length),
+            allDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
     static final CopyOnWriteArrayList<UUID> punishedPlayers = new CopyOnWriteArrayList<>(),
             updatedPunishedPlayers = new CopyOnWriteArrayList<>();
 
@@ -125,25 +127,17 @@ public class CloudFeature {
 
     // Separator
 
-    public static String[] getDisabledDetections(Enums.HackType check) {
-        return disabledDetections.getOrDefault(check, new String[]{});
+    public static String[] getShownDisabledDetections(Enums.HackType check) {
+        return disabledDetections.get(check);
     }
 
     public static boolean isInformationCancelled(Enums.HackType hackType, String info) {
-        String[] disabledDetections = CloudFeature.disabledDetections.get(hackType);
+        String[] disabledDetections = allDisabledDetections.get(hackType);
 
-        if (disabledDetections != null && disabledDetections.length > 0) {
-            if (SpartanBukkit.isProductionServer()) {
-                for (String detection : disabledDetections) {
-                    if (info.contains(detection)) {
-                        return true;
-                    }
-                }
-            } else {
-                for (String detection : disabledDetections) {
-                    if (!detection.startsWith(" ") && info.contains(detection)) {
-                        return true;
-                    }
+        if (disabledDetections != null) {
+            for (String detection : disabledDetections) {
+                if (info.contains(detection)) {
+                    return true;
                 }
             }
         }
@@ -177,6 +171,7 @@ public class CloudFeature {
     public static void clear(boolean cache) {
         if (cache) {
             disabledDetections.clear();
+            allDisabledDetections.clear();
             punishedPlayers.clear();
             updatedPunishedPlayers.clear();
         } else {
@@ -365,7 +360,9 @@ public class CloudFeature {
 
             // Separator
             if (independent) {
-                disabledDetections.clear();
+                Map<Enums.HackType, String[]>
+                        disabledDetections = new LinkedHashMap<>(),
+                        allDisabledDetections = new LinkedHashMap<>();
 
                 // Doesn't need ID validation due to its unique anti-piracy purpose
                 Runnable runnable = () -> {
@@ -380,7 +377,9 @@ public class CloudFeature {
                                     break;
                                 } else {
                                     Enums.HackType hackType = null;
-                                    Set<String> detections = new LinkedHashSet<>();
+                                    Set<String>
+                                            detections = new LinkedHashSet<>(),
+                                            allDetections = new LinkedHashSet<>();
 
                                     for (String detection : data.split("\\|")) {
                                         if (hackType == null) {
@@ -396,14 +395,30 @@ public class CloudFeature {
                                                 break;
                                             }
                                         } else {
-                                            detections.add(detection.replace("__", " "));
+                                            if (detection.startsWith(" ")) {
+                                                allDetections.add(detection.substring(1).replace("__", " "));
+                                            } else {
+                                                detection = detection.replace("__", " ");
+                                                detections.add(detection);
+                                                allDetections.add(detection);
+                                            }
                                         }
                                     }
-                                    if (detections.size() > 0) {
+                                    if (!detections.isEmpty()) {
                                         disabledDetections.put(hackType, detections.toArray(new String[0]));
+                                    }
+                                    if (!allDetections.isEmpty()) {
+                                        allDisabledDetections.put(hackType, allDetections.toArray(new String[0]));
                                     }
                                 }
                             }
+                            CloudFeature.disabledDetections.clear();
+                            CloudFeature.disabledDetections.putAll(disabledDetections);
+                            CloudFeature.allDisabledDetections.clear();
+                            CloudFeature.allDisabledDetections.putAll(allDisabledDetections);
+                        } else {
+                            CloudFeature.disabledDetections.clear();
+                            CloudFeature.allDisabledDetections.clear();
                         }
                     } catch (Exception e) {
                         throwError(e, "DD:GET");

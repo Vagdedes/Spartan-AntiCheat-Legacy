@@ -43,7 +43,7 @@ public class Moderation {
 
     private static boolean isDetected(SpartanPlayer p, boolean checkSilent, long ms) {
         LiveViolation liveViolation = p.getLastViolation();
-        return liveViolation.getLastViolation(true) <= ms
+        return liveViolation.getLastViolationTime(true) <= ms
                 && (!checkSilent
                 || !liveViolation.getHackType().getCheck().isSilent(p.getWorld().getName(), p.getUniqueId()));
     }

@@ -26,7 +26,7 @@ public class FalseFallDamage {
                     && dmg == EntityDamageEvent.DamageCause.FALL
 
                     && !Moderation.wasDetected(p)
-                    && p.getLastViolation().getLastViolation(false) > 500L
+                    && p.getLastViolation().getLastViolationTime(false) > 500L
                     && p.hasViolations()
 
                     && !p.getHandlers().has(Handlers.HandlerType.Explosion)) {

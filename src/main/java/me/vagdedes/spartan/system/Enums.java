@@ -51,7 +51,7 @@ public class Enums {
     }
 
     public enum PunishmentCategory {
-        MINIMUM, UNSAFE, NORMAL, SAFE, MAXIMUM;
+        UNLIKE, POTENTIAL, CERTAIN, DEFINITE, ABSOLUTE;
 
         private final String string;
         private final double multiplier;

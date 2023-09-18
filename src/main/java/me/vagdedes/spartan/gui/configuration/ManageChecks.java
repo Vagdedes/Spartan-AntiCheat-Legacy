@@ -54,7 +54,7 @@ public class ManageChecks {
         boolean enabled = check.isEnabled(null, null, null),
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(p, hackType);
-        String[] disabledDetections = CloudFeature.getDisabledDetections(hackType);
+        String[] disabledDetections = CloudFeature.getShownDisabledDetections(hackType);
         int cancelViolation = check.getDefaultCancelViolation();
         int problematicDetections = check.getProblematicDetections();
 
@@ -90,7 +90,7 @@ public class ManageChecks {
         }
 
         // Separator
-        if (disabledDetections.length > 0) {
+        if (disabledDetections != null) {
             List<String> extra = new ArrayList<>();
             int normalPlaceholder = 0;
             extra.add("");

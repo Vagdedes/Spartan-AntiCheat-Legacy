@@ -148,7 +148,7 @@ public class SpartanPlayer {
     private final DetectionTick detectionTick;
     private final ClickData clickData;
 
-    private SpartanLocation location, eventTo, eventFrom;
+    private SpartanLocation location, fromLocation, eventTo, eventFrom;
     private long locationTime;
     private long chasing;
 
@@ -382,6 +382,7 @@ public class SpartanPlayer {
 
         this.uuid = uuid;
         this.location = new SpartanLocation(this, p.getLocation());
+        this.fromLocation = this.location;
         this.eventTo = this.location;
         this.eventFrom = this.location;
         this.locationTime = 0L;
@@ -830,6 +831,10 @@ public class SpartanPlayer {
         }
     }
 
+    public SpartanLocation getFromLocation() {
+        return fromLocation;
+    }
+
     public SpartanLocation getEventToLocation() {
         return eventTo;
     }
@@ -936,6 +941,10 @@ public class SpartanPlayer {
     public void processLastMoveEvent(SpartanLocation to, SpartanLocation from) {
         this.eventTo = to;
         this.eventFrom = from;
+    }
+
+    public void setFromLocation(SpartanLocation loc) {
+        this.fromLocation = loc;
     }
 
     public String getCancellableCompatibility() {

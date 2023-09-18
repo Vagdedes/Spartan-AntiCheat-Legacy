@@ -43,7 +43,7 @@ public class Check {
             maximumDefaultCancelViolation = 6,
             hackerCheckAmount = 3;
 
-    public static final Enums.PunishmentCategory analysisMultiplierCategory = Enums.PunishmentCategory.NORMAL;
+    public static final Enums.PunishmentCategory analysisMultiplierCategory = Enums.PunishmentCategory.CERTAIN;
     public static final double analysisMultiplier = analysisMultiplierCategory.getMultiplier();
 
     // Static Methods
@@ -56,7 +56,7 @@ public class Check {
         return getCategoryPunishment(CancelViolation.get(hackType, dataType), category);
     }
 
-    public static Enums.PunishmentCategory getCategoryFromViolations(int violations, Enums.HackType hackType, ResearchEngine.DataType dataType, boolean suspectedOrHacker) {
+    public static Enums.PunishmentCategory getCategoryFromViolations(int violations, Enums.HackType hackType, boolean suspectedOrHacker) {
         if (!suspectedOrHacker) {
             int cancelViolation = hackType.getCheck().getDefaultCancelViolation();
 
@@ -66,7 +66,7 @@ public class Check {
                 }
             }
         }
-        return Enums.PunishmentCategory.MAXIMUM;
+        return Enums.PunishmentCategory.ABSOLUTE;
     }
 
     // Separator

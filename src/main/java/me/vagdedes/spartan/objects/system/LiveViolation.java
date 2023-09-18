@@ -6,7 +6,6 @@ import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.api.ViolationResetEvent;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.features.notifications.DetectionNotifications;
 import me.vagdedes.spartan.features.performance.FalsePositiveDetection;
 import me.vagdedes.spartan.features.protections.LagLeniencies;
@@ -182,7 +181,7 @@ public class LiveViolation {
                         canPrevent = false;
                         canPreventAlternative = violations > 0  // Testing scenario
                                 && !check.hasMaximumDefaultCancelViolation()
-                                && player.getLastViolation().getLastViolation(true) <= Check.violationCycleSeconds
+                                && player.getLastViolation().getLastViolationTime(true) <= Check.violationCycleSeconds
                                 && !SpartanBukkit.isProductionServer()
                                 && DetectionNotifications.isEnabled(player);
                     }
@@ -193,7 +192,7 @@ public class LiveViolation {
                         violations += 1;
                     }
 
-                    this.setLastViolation(hp.time); // Always after false-positive check
+                    this.setLastViolationTime(hp.time); // Always after false-positive check
 
                     if (!processed) {
                         // API Event
@@ -446,11 +445,11 @@ public class LiveViolation {
 
     // Separator
 
-    public long getLastViolation(boolean maxIfNull) {
+    public long getLastViolationTime(boolean maxIfNull) {
         return maxIfNull && this.lastViolation == 0L ? Long.MAX_VALUE : System.currentTimeMillis() - this.lastViolation;
     }
 
-    public void setLastViolation(long time) {
+    public void setLastViolationTime(long time) {
         this.lastViolation = time;
         this.player.setLastViolation(this);
     }

@@ -70,7 +70,7 @@ public class PlayerData {
             Buffer buffer = p.getBuffer();
 
             // Separator
-            SpartanLocation from = MoveUtils.getCachedLocation(p);
+            SpartanLocation from = p.getFromLocation();
             MoveUtils.trackLocation(p);
             boolean ground = p.refreshOnGroundCustom(from);
 
@@ -96,7 +96,7 @@ public class PlayerData {
             }
 
             // Separator
-            if (potionEffects.size() > 0) {
+            if (!potionEffects.isEmpty()) {
                 for (PotionEffect potionEffect : potionEffects) {
                     PotionEffectType type = potionEffect.getType();
 

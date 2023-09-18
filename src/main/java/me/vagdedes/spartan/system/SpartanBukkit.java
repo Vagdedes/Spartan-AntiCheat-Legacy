@@ -102,7 +102,8 @@ public class SpartanBukkit {
     }
 
     public static boolean isProductionServer() {
-        return !TestServer.isIdentified() && players.size() >= 7;
+        return !TestServer.isIdentified()
+                && players.size() >= 7;
     }
 
     public static int getPlayerCount() {

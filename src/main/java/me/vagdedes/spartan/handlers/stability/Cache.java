@@ -85,7 +85,7 @@ public class Cache {
             } else {
                 DetectionLocation.remove(p);
             }
-        } else {
+        } else if (leave) {
             DetectionLocation.remove(p);
         }
         p.resetHandlers();

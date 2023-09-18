@@ -60,7 +60,6 @@ public class HackPrevention {
     }
 
     void handle(SpartanPlayer player, Enums.HackType hackType) {
-        SpartanLocation loc = player.getLocation();
         SpartanLocation preventionFrom = this.location;
         boolean teleported = false;
 
@@ -74,7 +73,8 @@ public class HackPrevention {
                 teleported = true;
             }
         }
-        if (this.groundTeleport && player.groundTeleport(true)) {
+        if (this.groundTeleport
+                && player.groundTeleport(true)) {
             teleported = true;
         }
         if (teleported) {
@@ -83,15 +83,16 @@ public class HackPrevention {
             if (cooldowns.canDo(key)
                     && (hackType == Enums.HackType.IrregularMovements
                     || hackType == Enums.HackType.Speed && this.information.contains(Speed.strongPrevention))) {
-                SpartanLocation from = player.getEventFromLocation();
+                SpartanLocation to = player.getLocation(),
+                        from = player.getEventFromLocation();
 
-                if (AlgebraUtils.getHorizontalDistance(loc, from) <= 0.75) {
-                    double vertical = Math.abs(loc.getY() - from.getY());
+                if (AlgebraUtils.getHorizontalDistance(to, from) <= 0.75) {
+                    double vertical = Math.abs(to.getY() - from.getY());
 
                     if (vertical == 0.0 || vertical >= MoveUtils.nearMaxFallingMotion) {
                         cooldowns.add(key, 5);
                         player.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                        player.setVelocity(loc.getDirection().setY(MoveUtils.gravityAcceleration));
+                        player.setVelocity(to.getDirection().setY(MoveUtils.gravityAcceleration));
                     }
                 }
             }

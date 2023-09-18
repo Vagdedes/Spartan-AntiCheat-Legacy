@@ -17,8 +17,6 @@ import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.UUID;
-
 public class MorePackets extends CheckExecutor {
 
     public static final HackType check = HackType.MorePackets;
@@ -116,37 +114,34 @@ public class MorePackets extends CheckExecutor {
                     // Second stage
                     if (first >= ticksRequirement // Allow the player to pass when they reach the ticks requirement
                             || canHaveDecreasedRequirement && (decreasedRequirement = first >= 2 && special > (first / 2))) { // Alternatively, allow them to pass if more than half of the recorded ticks have been instant in relative to the previous tick
-                        SpartanLocation customFrom = MoveUtils.getCachedLocation(player, true);
+                        SpartanLocation customFrom = player.getFromLocation();
+                        double overallDistance = to.distance(customFrom),
+                                overallLimit = 1.5 + (decreasedRequirement ? 0.0 : Math.min(delay * 0.5, MoveUtils.chunk / 3.0));
+                        boolean passedLimit;
 
-                        if (customFrom != null) {
-                            double overallDistance = to.distance(customFrom),
-                                    overallLimit = 1.5 + (decreasedRequirement ? 0.0 : Math.min(delay * 0.5, MoveUtils.chunk / 3.0));
-                            boolean passedLimit;
+                        if (overallDistance >= overallLimit) {
+                            passedLimit = true;
+                            cooldowns.add(instantMotionKey + "=passed-limit", 2);
+                        } else {
+                            passedLimit = !cooldowns.canDo(instantMotionKey + "=passed-limit");
+                        }
+                        if (passedLimit
+                                && (decreasedRequirement || buffer.start(instantMotionKey + "=second", 1) >= 2)) { // Third stage
+                            buffer.remove(new String[]{
+                                    instantMotionKey + "=first",
+                                    instantMotionKey + "=first=special",
+                                    instantMotionKey + "=second"
+                            });
 
-                            if (overallDistance >= overallLimit) {
-                                passedLimit = true;
-                                cooldowns.add(instantMotionKey + "=passed-limit", 2);
-                            } else {
-                                passedLimit = !cooldowns.canDo(instantMotionKey + "=passed-limit");
+                            boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
+                            SpartanLocation handlerFrom = DetectionLocation.get(player, true);
+                            SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
+
+                            if (instant) {
+                                DetectionLocation.set(player, teleportLocation);
                             }
-                            if (passedLimit
-                                    && (decreasedRequirement || buffer.start(instantMotionKey + "=second", 1) >= 2)) { // Third stage
-                                buffer.remove(new String[]{
-                                        instantMotionKey + "=first",
-                                        instantMotionKey + "=first=special",
-                                        instantMotionKey + "=second"
-                                });
-
-                                boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
-                                SpartanLocation handlerFrom = DetectionLocation.get(player, true);
-                                SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
-
-                                if (instant) {
-                                    DetectionLocation.set(player, teleportLocation);
-                                }
-                                cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", ticks-requirement: " + ticksRequirement + ", decreased-requirement: " + decreasedRequirement,
-                                        instant ? teleportLocation : null, instant ? teleportTicks : 0);
-                            }
+                            cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", ticks-requirement: " + ticksRequirement + ", decreased-requirement: " + decreasedRequirement,
+                                    instant ? teleportLocation : null, instant ? teleportTicks : 0);
                         }
                     }
                 }

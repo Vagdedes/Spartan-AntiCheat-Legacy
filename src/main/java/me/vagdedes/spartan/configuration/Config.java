@@ -99,7 +99,7 @@ public class Config {
 
     public static int getMaxPunishmentViolation(HackType hackType, ResearchEngine.DataType dataType) {
         if (!Config.isLegacy()) {
-            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.MAXIMUM);
+            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.ABSOLUTE);
         }
         Check check = hackType.getCheck();
 
@@ -115,7 +115,7 @@ public class Config {
 
     public static int getMinPunishmentViolation(HackType hackType, ResearchEngine.DataType dataType) {
         if (!Config.isLegacy()) {
-            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.MINIMUM);
+            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.UNLIKE);
         }
         Check check = hackType.getCheck();
 

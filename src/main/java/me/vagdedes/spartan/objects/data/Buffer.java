@@ -59,7 +59,7 @@ public class Buffer {
                     } else {
                         for (Enums.HackType hackType : Enums.HackType.values()) {
                             if (hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
-                                    && p.getViolations(hackType).getLastViolation(true) <= 55L) {
+                                    && p.getViolations(hackType).getLastViolationTime(true) <= 55L) {
                                 bufferChild.ticks -= 1L;
                                 break;
                             }

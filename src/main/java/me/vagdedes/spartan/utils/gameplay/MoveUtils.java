@@ -36,7 +36,6 @@ public class MoveUtils {
 
     public static final int
             height,
-            voidDamageHeight = -64,
             fallDamageBlocks = 4,
             chunkInt = AlgebraUtils.integerRound(chunk),
             jumpingMotions = 5;
@@ -103,14 +102,14 @@ public class MoveUtils {
 
     static SpartanLocation trackLocation(SpartanPlayer p) {
         SpartanLocation to = p.getLocation(),
-                from = getCachedLocation(p, true);
+                from = p.getFromLocation();
 
         if (from != null) {
             p.setCustomDistance(to.distance(from));
             p.setCustomHorizontalDistance(AlgebraUtils.getHorizontalDistance(to, from));
             p.setCustomVerticalDistance(to.getY() - from.getY());
         }
-        loc.put(p.getUniqueId(), to); // Always last
+        p.setFromLocation(to); // Always last
         return to;
     }
 
@@ -170,16 +169,6 @@ public class MoveUtils {
             min = Math.min(min, value);
         }
         return new double[]{min, max};
-    }
-
-    // Location
-
-    public static SpartanLocation getCachedLocation(SpartanPlayer p, boolean returnNull) {
-        return loc.getOrDefault(p.getUniqueId(), returnNull ? null : p.getLocation());
-    }
-
-    public static SpartanLocation getCachedLocation(SpartanPlayer p) {
-        return getCachedLocation(p, false);
     }
 
     // Limits

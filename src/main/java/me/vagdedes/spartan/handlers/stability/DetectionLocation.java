@@ -23,14 +23,15 @@ public class DetectionLocation {
         if (old != null) {
             SpartanLocation location = p.getLocation();
             double distance = location.distance(old);
-            boolean greatDistance = distance > (MoveUtils.chunk * 2);
 
-            if (greatDistance
-                    || (distance >= 1.0
+            if (distance > (MoveUtils.chunk * 2)
+                    && !p.getProfile().isHacker()) {
+                update(p, location, true);
+            } else if (distance >= 1.0
                     && (p.getTimer().get("from-location=protection") > 10_000L
-                    || p.getLastViolation().getLastViolation(false) > 1_000L
-                    || !p.hasViolations()))) {
-                update(p, location, greatDistance);
+                    || p.getLastViolation().getLastViolationTime(false) > 1_000L
+                    || !p.hasViolations())) {
+                update(p, location, false);
             }
         } else {
             update(p, p.getLocation(), true);
@@ -50,17 +51,7 @@ public class DetectionLocation {
         if (location == null) {
             location = loc.get(uuid);
         }
-        return location != null ? location : (replaceNull ? MoveUtils.getCachedLocation(p) : null);
-    }
-
-    public static SpartanLocation getOrDefault(SpartanPlayer p, SpartanLocation def) {
-        UUID uuid = p.getUniqueId();
-        SpartanLocation location = set.remove(uuid);
-
-        if (location == null) {
-            location = loc.get(uuid);
-        }
-        return location != null ? location : def;
+        return location != null ? location : (replaceNull ? p.getEventFromLocation() : null);
     }
 
     public static void update(SpartanPlayer p, SpartanLocation location, boolean force) {

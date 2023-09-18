@@ -43,12 +43,14 @@ public class CloudConnections {
         try {
             File path = new File("plugins/");
 
-            if (path.exists() && path.isDirectory()) {
+            if (path.exists()
+                    && path.isDirectory()) {
                 File[] files = path.listFiles();
                 String pluginName = Register.plugin.getName();
                 String fileType = ".jar";
 
-                if (files != null && files.length > 0) {
+                if (files != null
+                        && files.length > 0) {
                     for (File file : files) {
                         if (file.isFile()) {
                             String name = file.getName();
@@ -60,7 +62,7 @@ public class CloudConnections {
                                     name = name.replace(jarName, "");
                                 }
 
-                                if (name.length() > 0) {
+                                if (!name.isEmpty()) {
                                     String[] reply = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.accountWebsite) + "?token=" + name);
 
                                     if (reply.length > 0) {
@@ -85,7 +87,7 @@ public class CloudConnections {
                             + "?action=get"
                             + "&data=userIdentification"
                             + "&version=" + CloudFeature.version
-                            + (CloudFeature.identification.length() > 0 ? "&" + CloudFeature.identification : ""),
+                            + (!CloudFeature.identification.isEmpty() ? "&" + CloudFeature.identification : ""),
                     RequestUtils.defaultTimeOut / 2);
 
             if (reply.length > 0) {
@@ -492,7 +494,7 @@ public class CloudConnections {
                         .append(newLine).append(newLine); // 2 lines
 
                 List<Compatibility.CompatibilityType> compatibilities = Config.compatibility.getActiveCompatibilities();
-                if (compatibilities.size() > 0) {
+                if (!compatibilities.isEmpty()) {
                     StringBuilder compatibilitiesNames = new StringBuilder();
 
                     for (Compatibility.CompatibilityType compatibility : compatibilities) {
@@ -520,7 +522,7 @@ public class CloudConnections {
                             case ManageConfiguration.checksFileName:
                                 Set<Map.Entry<String, Object>> options = check.getOptions();
 
-                                if (options.size() > 0) {
+                                if (!options.isEmpty()) {
                                     for (Map.Entry<String, Object> entry : options) {
                                         softwareInformation.append(entry.getKey()).append(": ")
                                                 .append(entry.getValue().toString().replace(newLine, "%%__line__%%"))
@@ -630,7 +632,7 @@ public class CloudConnections {
                         } else if (data.equals("true")) {
                             return "Thanks for reporting" + (name != null ? " " + name : "") + ", we will get back to you if needed. You can join our Discord server at: §n" + DiscordMemberCount.discordURL;
                         } else {
-                            return data.length() == 0 ? "No results were returned from the server, try updating and reach support if this continues." : data;
+                            return data.isEmpty() ? "No results were returned from the server, try updating and reach support if this continues." : data;
                         }
                     } else {
                         return "No results were returned from the server, try updating and reach support if this continues.";

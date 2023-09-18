@@ -50,11 +50,10 @@ public class BackgroundAPI {
             return Check.getCategoryFromViolations(
                     player.getViolations(hackType).getLevel(),
                     hackType,
-                    player.getDataType(),
                     player.getProfile().isSuspectedOrHacker(hackType)
             ).getString();
         }
-        return Enums.PunishmentCategory.MINIMUM.getString();
+        return Enums.PunishmentCategory.UNLIKE.getString();
     }
 
     @Deprecated

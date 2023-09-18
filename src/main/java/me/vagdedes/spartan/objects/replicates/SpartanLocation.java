@@ -741,7 +741,7 @@ public class SpartanLocation {
                 return getSurroundingLocations(x, y, z,
                         liveViolation.hasLevel()
                                 || liveViolation.hasCancelledLevel()
-                                || liveViolation.getLastViolation(true) <= Check.violationCycleSeconds
+                                || liveViolation.getLastViolationTime(true) <= Check.violationCycleSeconds
                 );
             }
         }

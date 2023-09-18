@@ -114,7 +114,7 @@ public class EventsHandler1 implements Listener {
         p.resetHandlers(); // Always First
 
         // Utils
-        DetectionLocation.remove(p);
+        DetectionLocation.update(p, p.getLocation(), true);
 
         // Objects
         Player killer = n.getKiller();
@@ -143,7 +143,7 @@ public class EventsHandler1 implements Listener {
         p.getExecutor(Enums.HackType.IrregularMovements).handle(null);
 
         // Utils
-        DetectionLocation.remove(p);
+        DetectionLocation.update(p, p.getLocation(), true);
 
         // Objects
         p.resetLocationData();
