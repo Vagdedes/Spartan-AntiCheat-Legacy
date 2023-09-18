@@ -114,7 +114,8 @@ public class Register extends JavaPlugin {
     // Utilities
 
     public static void enable(Listener l, Class<?> c) {
-        if (isPluginEnabled() && listeners.add(c)) {
+        if (isPluginEnabled()
+                && listeners.add(c)) {
             manager.registerEvents(l, plugin);
         }
     }
