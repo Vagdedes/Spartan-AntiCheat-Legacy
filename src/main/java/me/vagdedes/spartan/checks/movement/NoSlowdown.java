@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.checks.movement;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

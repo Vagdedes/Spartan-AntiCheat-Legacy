@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.protections.PlayerLimitPerIP;
-import me.vagdedes.spartan.features.synchronicity.cloud.CloudConnections;
+import me.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

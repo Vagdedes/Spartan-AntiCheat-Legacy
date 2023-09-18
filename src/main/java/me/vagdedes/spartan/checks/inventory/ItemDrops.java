@@ -2,7 +2,7 @@ package me.vagdedes.spartan.checks.inventory;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.abstraction.CheckExecutor;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

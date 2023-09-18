@@ -4,7 +4,7 @@ package me.vagdedes.spartan.checks.combat.fastClicks;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
-import me.vagdedes.spartan.handlers.tracking.ClickData;
+import me.vagdedes.spartan.objects.data.Clicks;
 
 public class ClicksPerSecond extends DetectionExecutor {
 
@@ -15,7 +15,7 @@ public class ClicksPerSecond extends DetectionExecutor {
         fastClicks = (FastClicks) executor;
     }
 
-    void run(ClickData clickData, int limit, int latencyExtra, double globalAverage) {
+    void run(Clicks clickData, int limit, int latencyExtra, double globalAverage) {
         int count = clickData.getCount();
 
         if (count >= limit) {

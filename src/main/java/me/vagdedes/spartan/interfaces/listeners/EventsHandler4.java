@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.moderation.PlayerReports;
-import me.vagdedes.spartan.features.moderation.Spectate;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.moderation.PlayerReports;
+import me.vagdedes.spartan.functionality.moderation.Spectate;
 import me.vagdedes.spartan.gui.configuration.ManageChecks;
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.gui.configuration.ManageOptions;

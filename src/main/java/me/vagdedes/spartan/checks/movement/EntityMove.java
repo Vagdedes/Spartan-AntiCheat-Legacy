@@ -4,7 +4,7 @@ import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.compatibility.manual.entity.CraftBook;
 import me.vagdedes.spartan.compatibility.manual.entity.MyPet;
 import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.objects.data.Buffer;

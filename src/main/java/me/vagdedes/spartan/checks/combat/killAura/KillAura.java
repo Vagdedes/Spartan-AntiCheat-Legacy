@@ -4,7 +4,7 @@ import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
 import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;

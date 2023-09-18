@@ -2,11 +2,11 @@ package me.vagdedes.spartan.configuration;
 
 import me.vagdedes.spartan.abstraction.ConfigurationBuilder;
 import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.moderation.BanManagement;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
-import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
+import me.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.moderation.BanManagement;
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;

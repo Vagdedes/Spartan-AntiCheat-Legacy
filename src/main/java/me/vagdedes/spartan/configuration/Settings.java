@@ -1,13 +1,13 @@
 package me.vagdedes.spartan.configuration;
 
 import me.vagdedes.spartan.abstraction.ConfigurationBuilder;
-import me.vagdedes.spartan.features.chat.ChatProtection;
-import me.vagdedes.spartan.features.commands.RawCommands;
-import me.vagdedes.spartan.features.moderation.PlayerReports;
-import me.vagdedes.spartan.features.notifications.DetectionNotifications;
-import me.vagdedes.spartan.features.performance.MaximumCheckedPlayers;
-import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.features.synchronicity.DiscordWebhooks;
+import me.vagdedes.spartan.functionality.chat.ChatProtection;
+import me.vagdedes.spartan.functionality.commands.RawCommands;
+import me.vagdedes.spartan.functionality.moderation.PlayerReports;
+import me.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import me.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
+import me.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
+import me.vagdedes.spartan.functionality.synchronicity.DiscordWebhooks;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.interfaces.commands.CommandExecution;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

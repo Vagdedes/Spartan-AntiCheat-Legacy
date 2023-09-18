@@ -3,9 +3,9 @@ package me.vagdedes.spartan.checks.combat.fastClicks;
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.compatibility.manual.building.PrinterMode;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
-import me.vagdedes.spartan.handlers.tracking.ClickData;
+import me.vagdedes.spartan.objects.data.Clicks;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
@@ -75,7 +75,7 @@ public class FastClicks extends CheckExecutor {
     public boolean handle(Object object) {
         if (canDo()
                 && ((PlayerInteractEvent) object).getAction() == Action.LEFT_CLICK_AIR) {
-            ClickData clickData = player.getClickData();
+            Clicks clickData = player.getClicks();
             int limit = hackType.getCheck().getNumericalOption("clicks_per_second_limit", defaultClicksPerSecondLimit),
                     latencyExtra = AlgebraUtils.integerRound(Math.min(LagLeniencies.getDelay(player), 5)),
                     extraLimit = Math.max(limit - defaultClicksPerSecondLimit, 0);

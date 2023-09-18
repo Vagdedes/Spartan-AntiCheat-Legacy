@@ -2,7 +2,7 @@ package me.vagdedes.spartan.objects.profiling;
 
 import me.vagdedes.spartan.checks.combat.killAura.KillAura;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
+import me.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;

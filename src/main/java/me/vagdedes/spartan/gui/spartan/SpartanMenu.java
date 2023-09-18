@@ -6,9 +6,10 @@ import me.vagdedes.spartan.compatibility.necessary.FileGUI;
 import me.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
+import me.vagdedes.spartan.configuration.Settings;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.configuration.ManageChecks;
 import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
@@ -53,7 +54,7 @@ public class SpartanMenu {
             Runnable runnable = () -> {
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-                if (players.size() > 0) {
+                if (!players.isEmpty()) {
                     String menuName = getMenuName();
 
                     for (SpartanPlayer p : players) {
@@ -129,7 +130,7 @@ public class SpartanMenu {
         Inventory inv = p.createInventory(54, getMenuName() + page);
 
         // Ecosystem
-        if (Config.settings.getBoolean(Config.settings.showEcosystemOption)) {
+        if (Config.settings.getBoolean(Settings.showEcosystemOption)) {
             ItemStack itemStack = new ItemStack(Material.GOLD_BLOCK);
             itemStack.setAmount(AlgebraUtils.randomInteger(1, 64));
             itemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 1);

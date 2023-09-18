@@ -2,9 +2,9 @@ package me.vagdedes.spartan.handlers.stability;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.notifications.DetectionNotifications;
-import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;

@@ -1,12 +1,12 @@
 package me.vagdedes.spartan.gui.info;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.moderation.Spectate;
-import me.vagdedes.spartan.features.performance.MaximumCheckedPlayers;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
-import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.moderation.Spectate;
+import me.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import me.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
@@ -100,7 +100,7 @@ public class PlayerInfo {
             int violations = t.getViolationCount();
             lore.clear();
             lore.add("");
-            lore.add("§7CPS (Clicks Per Second)§8:§a " + t.getClickData().getCount());
+            lore.add("§7CPS (Clicks Per Second)§8:§a " + t.getClicks().getCount());
             lore.add("§7Player Latency§8:§a " + t.getPing() + "ms");
             lore.add("§7Overall Violations§8:§a " + violations);
             lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + t.getDataType() + ")");

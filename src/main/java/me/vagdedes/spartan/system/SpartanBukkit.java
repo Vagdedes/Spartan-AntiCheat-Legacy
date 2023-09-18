@@ -3,7 +3,7 @@ package me.vagdedes.spartan.system;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.connection.Piracy;
 import me.vagdedes.spartan.handlers.stability.TPS;

@@ -2,7 +2,7 @@ package me.vagdedes.spartan.checks.world;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.data.Buffer;

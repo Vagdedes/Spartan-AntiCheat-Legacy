@@ -2,8 +2,8 @@ package me.vagdedes.spartan.compatibility.necessary.bedrock.plugins;
 
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.server.PluginUtils;

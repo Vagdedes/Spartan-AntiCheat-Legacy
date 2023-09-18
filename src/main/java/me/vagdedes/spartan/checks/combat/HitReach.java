@@ -3,7 +3,7 @@ package me.vagdedes.spartan.checks.combat;
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.checks.movement.speed.Speed;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;

@@ -1,9 +1,9 @@
 package me.vagdedes.spartan.gui.info;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.moderation.Debug;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.moderation.Debug;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;

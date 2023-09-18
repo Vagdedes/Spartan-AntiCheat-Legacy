@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.checks.combat.criticals;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
-import me.vagdedes.spartan.features.configuration.AntiCheatLogs;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.objects.data.Decimals;

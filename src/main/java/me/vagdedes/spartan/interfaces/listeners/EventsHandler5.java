@@ -1,10 +1,10 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
-import me.vagdedes.spartan.features.moderation.Debug;
-import me.vagdedes.spartan.features.notifications.DetectionNotifications;
-import me.vagdedes.spartan.features.protections.Building;
-import me.vagdedes.spartan.features.protections.Explosion;
+import me.vagdedes.spartan.functionality.moderation.Debug;
+import me.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import me.vagdedes.spartan.functionality.protections.Building;
+import me.vagdedes.spartan.functionality.protections.Explosion;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.simple.BlockBreak;
 import me.vagdedes.spartan.handlers.identifiers.simple.BlockPlace;

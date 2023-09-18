@@ -1,9 +1,9 @@
 package me.vagdedes.spartan.gui.configuration;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;

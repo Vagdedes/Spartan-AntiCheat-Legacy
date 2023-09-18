@@ -31,14 +31,14 @@ import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import me.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.performance.DetectionTick;
-import me.vagdedes.spartan.features.performance.MaximumCheckedPlayers;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
-import me.vagdedes.spartan.features.protections.PlayerLimitPerIP;
-import me.vagdedes.spartan.features.protections.Teleport;
-import me.vagdedes.spartan.features.synchronicity.SpartanEdition;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.performance.DetectionTick;
+import me.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
+import me.vagdedes.spartan.functionality.protections.Teleport;
+import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.connection.Latency;
@@ -47,7 +47,6 @@ import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.ElytraUse;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
 import me.vagdedes.spartan.handlers.stability.*;
-import me.vagdedes.spartan.handlers.tracking.ClickData;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import me.vagdedes.spartan.objects.data.Timer;
@@ -146,7 +145,7 @@ public class SpartanPlayer {
 
     private PlayerProfile playerProfile;
     private final DetectionTick detectionTick;
-    private final ClickData clickData;
+    private final Clicks clicks;
 
     private SpartanLocation location, fromLocation, eventTo, eventFrom;
     private long locationTime;
@@ -453,7 +452,7 @@ public class SpartanPlayer {
         this.lastHeadMovement = System.currentTimeMillis();
         this.detectionTick = new DetectionTick();
         this.playerProfile = ResearchEngine.getPlayerProfile(this);
-        this.clickData = new ClickData();
+        this.clicks = new Clicks();
         this.vehicle = p.getVehicle();
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
@@ -676,11 +675,11 @@ public class SpartanPlayer {
     }
 
     public int getCPS() {
-        return clickData.getCount();
+        return clicks.getCount();
     }
 
-    public ClickData getClickData() {
-        return clickData;
+    public Clicks getClicks() {
+        return clicks;
     }
 
     public void calculateClickData(Action action, boolean runRegardless) {
@@ -698,11 +697,11 @@ public class SpartanPlayer {
 
             if (action == Action.LEFT_CLICK_AIR) {
                 success = true;
-                clickData.calculate();
+                clicks.calculate();
             } else if (action == null) {
-                if (clickData.getLastCalculation() > 50L) {
+                if (clicks.getLastCalculation() > 50L) {
                     success = true;
-                    clickData.calculate();
+                    clicks.calculate();
                 } else {
                     success = false;
                 }
@@ -710,7 +709,7 @@ public class SpartanPlayer {
                 success = false;
             }
 
-            if (success && clickData.canDistributeInformation()) {
+            if (success && clicks.canDistributeInformation()) {
                 PlayerInfo.refresh(getName());
             }
         }

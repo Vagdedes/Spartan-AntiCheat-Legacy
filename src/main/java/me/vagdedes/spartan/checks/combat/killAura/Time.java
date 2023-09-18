@@ -71,7 +71,7 @@ public class Time extends DetectionExecutor {
 
                 if (distance > entityWidth // We want the player in a certain distance, otherwise we risk having easily low width
                         && Math.abs(width) <= entityWidth) {
-                    int cps = player.getClickData().getCount();
+                    int cps = player.getClicks().getCount();
 
                     if (cps >= 8) {
                         double yawRate = CombatProcessing.getDecimal(player, CombatProcessing.yawDifference, 0.0),

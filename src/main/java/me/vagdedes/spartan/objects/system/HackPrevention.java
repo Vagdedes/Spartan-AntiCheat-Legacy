@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.objects.system;
 
 import me.vagdedes.spartan.checks.movement.speed.Speed;
-import me.vagdedes.spartan.features.protections.Teleport;
+import me.vagdedes.spartan.functionality.protections.Teleport;
 import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
 import me.vagdedes.spartan.objects.data.Cooldowns;

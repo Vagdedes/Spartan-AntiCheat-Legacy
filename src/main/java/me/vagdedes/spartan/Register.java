@@ -1,11 +1,11 @@
 package me.vagdedes.spartan;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
-import me.vagdedes.spartan.features.protections.PlayerLimitPerIP;
-import me.vagdedes.spartan.features.protections.ReconnectCooldown;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
+import me.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import me.vagdedes.spartan.handlers.connection.DiscordMemberCount;
 import me.vagdedes.spartan.handlers.connection.Piracy;
 import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;

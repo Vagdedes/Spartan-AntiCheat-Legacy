@@ -5,8 +5,8 @@ package me.vagdedes.spartan.checks.combat.fastClicks;
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.handlers.stability.TPS;
-import me.vagdedes.spartan.handlers.tracking.ClickData;
 import me.vagdedes.spartan.objects.data.Buffer;
+import me.vagdedes.spartan.objects.data.Clicks;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 public class ClickPattern extends DetectionExecutor {
@@ -27,7 +27,7 @@ public class ClickPattern extends DetectionExecutor {
             bufferTime = 5 * 20;
     private static final double patternPrecision = (1.0 / TPS.tickTimeDecimal) * FastClicks.suspiciousMillisecondCorrelation; // Last number represents the time in milliseconds
 
-    void run(ClickData clickData, int latencyExtra, int extraLimit, double globalAverage) {
+    void run(Clicks clickData, int latencyExtra, int extraLimit, double globalAverage) {
         int count = clickData.getCount(), limit = FastClicks.suspiciousClicksPerSecond + extraLimit;
 
         if (globalAverage > limit) {
@@ -36,7 +36,7 @@ public class ClickPattern extends DetectionExecutor {
         limit += latencyExtra;
 
         if (count >= limit) {
-            double patternRequirement = AlgebraUtils.ceilToHalf(ClickData.pastStoredTime / (limit * TPS.tickTimeDecimal));
+            double patternRequirement = AlgebraUtils.ceilToHalf(Clicks.pastStoredTime / (limit * TPS.tickTimeDecimal));
             double averagePattern = clickData.getAveragePattern();
 
             if (averagePattern <= patternRequirement) {

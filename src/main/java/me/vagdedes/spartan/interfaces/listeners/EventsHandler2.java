@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.protections.Teleport;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.protections.Teleport;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
 import me.vagdedes.spartan.handlers.identifiers.simple.GameModeProtection;

@@ -4,7 +4,7 @@ package me.vagdedes.spartan.checks.combat.killAura;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.Entity;

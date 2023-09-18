@@ -2,11 +2,11 @@ package me.vagdedes.spartan.api;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.moderation.BanManagement;
-import me.vagdedes.spartan.features.moderation.Wave;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
-import me.vagdedes.spartan.features.notifications.DetectionNotifications;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.moderation.BanManagement;
+import me.vagdedes.spartan.functionality.moderation.Wave;
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.connection.Latency;
 import me.vagdedes.spartan.handlers.stability.*;
@@ -333,7 +333,7 @@ public class BackgroundAPI {
 
     static int getCPS(Player p) {
         SpartanPlayer player = SpartanBukkit.getPlayer(p);
-        return player == null ? 0 : player.getClickData().getCount();
+        return player == null ? 0 : player.getClicks().getCount();
     }
 
     static UUID[] getBanList() {

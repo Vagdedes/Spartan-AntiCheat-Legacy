@@ -4,7 +4,7 @@ import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import me.vagdedes.spartan.configuration.Compatibility;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;

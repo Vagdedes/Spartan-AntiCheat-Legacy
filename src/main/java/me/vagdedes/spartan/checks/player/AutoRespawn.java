@@ -3,7 +3,7 @@ package me.vagdedes.spartan.checks.player;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums.HackType;

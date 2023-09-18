@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.handlers.connection;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.entity.Player;
 

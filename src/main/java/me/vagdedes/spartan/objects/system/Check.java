@@ -4,9 +4,9 @@ import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
-import me.vagdedes.spartan.features.notifications.DetectionNotifications;
-import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
@@ -644,11 +644,11 @@ public class Check {
                 for (String world : worldsSplit) {
                     world = world.replace(" ", "");
 
-                    if (world.length() > 0) {
+                    if (!world.isEmpty()) {
                         set.add(world.toLowerCase());
                     }
                 }
-                if (set.size() > 0) {
+                if (!set.isEmpty()) {
                     this.silentWorlds = set.toArray(new String[0]);
                 } else {
                     this.silentWorlds = new String[]{};
@@ -1289,7 +1289,7 @@ public class Check {
                 categoriesFound.add(category);
             }
         }
-        boolean containsCategory = categoriesFound.size() > 0;
+        boolean containsCategory = !categoriesFound.isEmpty();
 
         if (containsCategory) {
             int defaultCancelViolation = this.getDefaultCancelViolation();
@@ -1391,7 +1391,7 @@ public class Check {
         }
 
         // Empty Handler
-        if (commandsFound.size() == 0) {
+        if (commandsFound.isEmpty()) {
             commandsLegacy.put(violation, new LinkedList<>());
         }
 

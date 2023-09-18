@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.gui.helpers;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.moderation.PlayerReports;
+import me.vagdedes.spartan.functionality.moderation.PlayerReports;
 import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;

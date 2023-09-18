@@ -2,7 +2,7 @@ package me.vagdedes.spartan.objects.profiling;
 
 import me.vagdedes.spartan.checks.world.XRay;
 import me.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
-import me.vagdedes.spartan.features.important.Permissions;
+import me.vagdedes.spartan.functionality.important.Permissions;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;

@@ -2,9 +2,9 @@ package me.vagdedes.spartan.utils.server;
 
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.important.Permissions;
-import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.Permissions;
+import me.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
@@ -116,7 +116,7 @@ public class ConfigUtils {
         message = replace(message, "{z}", String.valueOf(loc.getBlockZ()));
         message = replace(message, "{yaw}", String.valueOf(AlgebraUtils.integerRound(loc.getYaw())));
         message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
-        message = replace(message, "{cps}", String.valueOf(p.getClickData().getCount()));
+        message = replace(message, "{cps}", String.valueOf(p.getClicks().getCount()));
         message = replace(message, "{time-online}", String.valueOf(TimeUtils.getDifference(new Timestamp(p.getLastPlayed()), 1000)));
         message = replace(message, "{moving}", String.valueOf(p.isMoving(true)));
 
@@ -168,7 +168,7 @@ public class ConfigUtils {
                 message = replace(message, "{z}", String.valueOf(loc.getBlockZ()));
                 message = replace(message, "{yaw}", String.valueOf(AlgebraUtils.integerRound(loc.getYaw())));
                 message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
-                message = replace(message, "{cps}", String.valueOf(p.getClickData().getCount()));
+                message = replace(message, "{cps}", String.valueOf(p.getClicks().getCount()));
                 message = replace(message, "{time-online}", String.valueOf(TimeUtils.getDifference(new Timestamp(p.getLastPlayed()), 1000)));
                 message = replace(message, "{moving}", String.valueOf(p.getCustomDistance() > 0.0));
 

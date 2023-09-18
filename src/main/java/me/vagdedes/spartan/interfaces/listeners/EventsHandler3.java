@@ -2,11 +2,11 @@ package me.vagdedes.spartan.interfaces.listeners;
 
 import me.vagdedes.spartan.checks.movement.NoFall;
 import me.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
-import me.vagdedes.spartan.features.chat.ChatProtection;
-import me.vagdedes.spartan.features.chat.StaffChat;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.moderation.BanManagement;
-import me.vagdedes.spartan.features.protections.*;
+import me.vagdedes.spartan.functionality.chat.ChatProtection;
+import me.vagdedes.spartan.functionality.chat.StaffChat;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.moderation.BanManagement;
+import me.vagdedes.spartan.functionality.protections.*;
 import me.vagdedes.spartan.handlers.bug.FalseFallDamage;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;

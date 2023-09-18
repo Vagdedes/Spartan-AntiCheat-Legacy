@@ -2,8 +2,8 @@ package me.vagdedes.spartan.handlers.identifiers.complex.unpredictable;
 
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.important.Permissions;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.Permissions;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;

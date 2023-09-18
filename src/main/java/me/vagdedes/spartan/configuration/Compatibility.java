@@ -17,10 +17,10 @@ import me.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLi
 import me.vagdedes.spartan.compatibility.manual.vanilla.DragonPhases;
 import me.vagdedes.spartan.compatibility.manual.world.AcidRain;
 import me.vagdedes.spartan.compatibility.necessary.bedrock.plugins.Floodgate;
-import me.vagdedes.spartan.features.important.MultiVersion;
-import me.vagdedes.spartan.features.notifications.AwarenessNotifications;
-import me.vagdedes.spartan.features.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import me.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.spartan.SpartanMenu;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
 import me.vagdedes.spartan.utils.server.PluginUtils;

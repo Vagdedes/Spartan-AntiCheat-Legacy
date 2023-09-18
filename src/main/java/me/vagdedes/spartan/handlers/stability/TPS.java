@@ -3,7 +3,7 @@ package me.vagdedes.spartan.handlers.stability;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Settings;
-import me.vagdedes.spartan.features.important.MultiVersion;
+import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.SpartanBukkit;

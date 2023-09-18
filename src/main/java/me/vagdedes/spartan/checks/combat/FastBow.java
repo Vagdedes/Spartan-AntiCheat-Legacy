@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.checks.combat;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
-import me.vagdedes.spartan.features.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.replicates.SpartanInventory;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;

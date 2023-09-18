@@ -2,7 +2,7 @@ package me.vagdedes.spartan.handlers.connection;
 
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.features.synchronicity.cloud.CloudFeature;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
 import java.util.Objects;
