@@ -84,10 +84,11 @@ public class Piracy implements Listener {
         boolean b1 = domain != null && domain.length() == 12;
 
         if (b1) {
-            String[] split = domain.split("\\.");
-            boolean b2 = split.length == two
-                    && split[0].equals("vagdedes")
-                    && split[1].equals("com")
+            String[] split = domain.split("\\.", 4);
+            boolean b2 = split.length == 3
+                    && split[0].equals("www")
+                    && split[1].equals("vagdedes")
+                    && split[2].equals("com")
                     && other_site.length() == 61
                     && !AlgebraUtils.validInteger(other_site);
 
@@ -96,7 +97,7 @@ public class Piracy implements Listener {
             } else {
                 return b2;
             }
-            return other_site.equals("vagdedes.com/minecraft/cloud/verification/?id=&nonce=");
+            return other_site.equals("www.vagdedes.com/minecraft/cloud/verification/?id=&nonce=");
         }
         return b1;
     }
@@ -107,7 +108,7 @@ public class Piracy implements Listener {
                 && isSiteValid(site) && name.equalsIgnoreCase("Spartan")
                 && (description = Register.plugin.getDescription()).getVersion().startsWith("Phase " + description.getVersion().substring(6))
                 && description.getDescription().equals("Advanced cheat prevention made simple")
-                && description.getWebsite().startsWith("https://vagdedes.com/")
+                && description.getWebsite().startsWith("https://www.vagdedes.com/")
                 && description.getAuthors().toString().equalsIgnoreCase("[Evangelos Dedes @Vagdedes]");
 
         try {

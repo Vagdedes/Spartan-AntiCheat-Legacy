@@ -24,9 +24,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class CloudFeature {
 
     // URLs
-    static final String website = "aHR0cHM6Ly92YWdkZWRlcy5jb20vbWluZWNyYWZ0L2Nsb3VkLw==",
-            accountWebsite = "aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC9hcGkvdmVyaWZ5RG93bmxvYWQv";
-    public static final String downloadWebsite = "aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC9kb3dubG9hZEZpbGUvP3Rva2VuPQ==";
+    static final String website = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL21pbmVjcmFmdC9jbG91ZC8=",
+            accountWebsite = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL2FjY291bnQvYXBpL3ZlcmlmeURvd25sb2FkLw==";
+    public static final String downloadWebsite = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL2FjY291bnQvZG93bmxvYWRGaWxlLz90b2tlbj0=";
 
     // Cache
     private static final Map<Enums.HackType, String[]>
@@ -85,7 +85,7 @@ public class CloudFeature {
 
     public static String getMaximumServerLimitMessage() {
         return "You have reached your Maximum Server Limit. " +
-                "Register your account on §nhttps://vagdedes.com/account/profile§r " +
+                "Register your account on §nhttps://www.vagdedes.com/account/profile§r " +
                 "§lOR§r join the Discord server " +
                 "§lOR§r use the " + IDs.getPlatform(true) + " platform to verify";
     }

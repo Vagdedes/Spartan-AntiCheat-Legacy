@@ -49,7 +49,7 @@ public class IDs {
     }
 
     static String site() {
-        return "https://vagdedes.com/minecraft/cloud/verification/?id=&nonce=";
+        return "https://www.vagdedes.com/minecraft/cloud/verification/?id=&nonce=";
     }
 
     // Platforms

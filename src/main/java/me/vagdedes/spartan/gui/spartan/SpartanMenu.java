@@ -46,7 +46,7 @@ public class SpartanMenu {
     private static int ecosystemItem = 1;
     private static final String
             opposite = SpartanEdition.getOppositeVersion().toString(),
-            offer = "§6Get Plugins for FREE§8: §e§nhttps://vagdedes.com/account/viewOffer",
+            offer = "§6Get Plugins for FREE§8: §e§nhttps://www.vagdedes.com/account/viewOffer",
             oppositeVersion = "Spartan: " + opposite + " Edition";
 
     public static void refresh() {
@@ -428,7 +428,7 @@ public class SpartanMenu {
             switch (opposite) {
                 case Java:
                 case Bedrock:
-                    p.sendImportantMessage("§6" + oppositeVersion + "§8: §e§nhttps://vagdedes.com/account/viewProduct/?id=" + SpartanEdition.getProductID(opposite));
+                    p.sendImportantMessage("§6" + oppositeVersion + "§8: §e§nhttps://www.vagdedes.com/account/viewProduct/?id=" + SpartanEdition.getProductID(opposite));
                     break;
                 default:
                     break;

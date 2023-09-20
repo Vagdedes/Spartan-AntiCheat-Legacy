@@ -68,13 +68,7 @@ public class CommandExecution implements CommandExecutor {
             } else {
                 command += " §8" + v;
             }
-            if (isPlayer) {
-                ClickableMessage.sendURL(sender, command,
-                        "Click this command to visit the developer's official website.",
-                        "https://vagdedes.com/" + Register.plugin.getName().toLowerCase() + (IDs.isSpigotMC(true) ? "/?source=spigotmc" : ""));
-            } else {
-                sender.sendMessage(command);
-            }
+            sender.sendMessage(command);
             sender.sendMessage("§8§l<> §7Required command argument");
             sender.sendMessage("§8§l[] §7Optional command argument");
             return true;
