@@ -23,7 +23,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class BlockReach extends CheckExecutor {
 
     private static final HackType check = HackType.BlockReach;
-    private static final double minimumLimit = 6.0;
+    private static final double
+            minimumLimit = 6.0,
+            extraMinimumLimit = 10.0;
 
     public BlockReach(SpartanPlayer player) {
         super(check, player);
@@ -40,6 +42,13 @@ public class BlockReach extends CheckExecutor {
                 && !TreeFeller.canCancel(player, b);
     }
 
+    private double getLimit() {
+        return Math.max(
+                hackType.getCheck().getDecimalOption("overall_distance", 7.5),
+                player.wasFlying() ? MoveUtils.chunk : minimumLimit
+        );
+    }
+
     @Override
     public boolean handle(Object object) {
         if (object instanceof BlockBreakEvent) {
@@ -54,10 +63,7 @@ public class BlockReach extends CheckExecutor {
                         SpartanLocation to = player.getLocation();
                         SpartanLocation bloc = block.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
-                                limit = Math.max(
-                                        hackType.getCheck().getDecimalOption("overall_distance", 7.5),
-                                        player.wasFlying() ? MoveUtils.chunk : minimumLimit
-                                ),
+                                limit = getLimit(),
                                 multiplier = getMultiplier(block);
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
@@ -76,10 +82,7 @@ public class BlockReach extends CheckExecutor {
                     if (BlockUtils.isChangeable(bloc)) {
                         SpartanLocation to = player.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
-                                limit = Math.max(
-                                        hackType.getCheck().getDecimalOption("overall_distance", 7.5),
-                                        player.wasFlying() ? MoveUtils.chunk : minimumLimit
-                                ),
+                                limit = getLimit(),
                                 multiplier = getMultiplier(block);
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
@@ -112,10 +115,7 @@ public class BlockReach extends CheckExecutor {
                             && distance >= 1.4 && distance > ab_distance && distance <= MoveUtils.chunk) {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos);
                     } else {
-                        double limit = Math.max(
-                                hackType.getCheck().getDecimalOption("overall_distance", 7.5),
-                                player.wasFlying() ? MoveUtils.chunk : minimumLimit
-                        ),
+                        double limit = getLimit(),
                                 multiplier = getMultiplier(block);
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {

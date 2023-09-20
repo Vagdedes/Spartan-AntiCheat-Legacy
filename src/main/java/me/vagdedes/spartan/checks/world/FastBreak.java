@@ -8,6 +8,7 @@ import me.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import me.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import me.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import me.vagdedes.spartan.configuration.Compatibility;
+import me.vagdedes.spartan.handlers.identifiers.simple.BlockBreak;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -86,6 +87,7 @@ public class FastBreak extends CheckExecutor {
                             }
                             String prevention = "type: delay"
                                     + ", time: " + time
+                                    + ", seconds: " + (time / 1000.0)
                                     + ", original-limit: " + originalLimit
                                     + ", limit: " + limit
                                     + ", difference: " + (limit - time)

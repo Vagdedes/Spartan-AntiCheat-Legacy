@@ -31,6 +31,7 @@ public class CloudFeature {
     // Cache
     private static final Map<Enums.HackType, String[]>
             disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length),
+            hiddenDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length),
             allDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
     static final CopyOnWriteArrayList<UUID> punishedPlayers = new CopyOnWriteArrayList<>(),
             updatedPunishedPlayers = new CopyOnWriteArrayList<>();
@@ -131,9 +132,7 @@ public class CloudFeature {
         return disabledDetections.get(check);
     }
 
-    public static boolean isInformationCancelled(Enums.HackType hackType, String info) {
-        String[] disabledDetections = allDisabledDetections.get(hackType);
-
+    private static boolean isInformationCancelled(String[] disabledDetections, String info) {
         if (disabledDetections != null) {
             for (String detection : disabledDetections) {
                 if (info.contains(detection)) {
@@ -142,6 +141,14 @@ public class CloudFeature {
             }
         }
         return false;
+    }
+
+    public static boolean isInformationCancelled(Enums.HackType hackType, String info) {
+        return isInformationCancelled(hiddenDisabledDetections.get(hackType), info);
+    }
+
+    public static boolean isPublicInformationCancelled(Enums.HackType hackType, String info) {
+        return isInformationCancelled(allDisabledDetections.get(hackType), info);
     }
 
     // Separator
@@ -171,6 +178,7 @@ public class CloudFeature {
     public static void clear(boolean cache) {
         if (cache) {
             disabledDetections.clear();
+            hiddenDisabledDetections.clear();
             allDisabledDetections.clear();
             punishedPlayers.clear();
             updatedPunishedPlayers.clear();
@@ -362,6 +370,7 @@ public class CloudFeature {
             if (independent) {
                 Map<Enums.HackType, String[]>
                         disabledDetections = new LinkedHashMap<>(),
+                        hiddenDisabledDetections = new LinkedHashMap<>(),
                         allDisabledDetections = new LinkedHashMap<>();
 
                 // Doesn't need ID validation due to its unique anti-piracy purpose
@@ -379,6 +388,7 @@ public class CloudFeature {
                                     Enums.HackType hackType = null;
                                     Set<String>
                                             detections = new LinkedHashSet<>(),
+                                            hiddenDetections = new LinkedHashSet<>(),
                                             allDetections = new LinkedHashSet<>();
 
                                     for (String detection : data.split("\\|")) {
@@ -395,17 +405,21 @@ public class CloudFeature {
                                                 break;
                                             }
                                         } else {
+                                            detection = detection.replace("__", " ");
+
                                             if (detection.startsWith(" ")) {
-                                                allDetections.add(detection.substring(1).replace("__", " "));
+                                                hiddenDetections.add(detection);
                                             } else {
-                                                detection = detection.replace("__", " ");
                                                 detections.add(detection);
-                                                allDetections.add(detection);
                                             }
+                                            allDetections.add(detection);
                                         }
                                     }
                                     if (!detections.isEmpty()) {
                                         disabledDetections.put(hackType, detections.toArray(new String[0]));
+                                    }
+                                    if (!hiddenDetections.isEmpty()) {
+                                        hiddenDisabledDetections.put(hackType, hiddenDetections.toArray(new String[0]));
                                     }
                                     if (!allDetections.isEmpty()) {
                                         allDisabledDetections.put(hackType, allDetections.toArray(new String[0]));
@@ -414,10 +428,13 @@ public class CloudFeature {
                             }
                             CloudFeature.disabledDetections.clear();
                             CloudFeature.disabledDetections.putAll(disabledDetections);
+                            CloudFeature.hiddenDisabledDetections.clear();
+                            CloudFeature.hiddenDisabledDetections.putAll(hiddenDisabledDetections);
                             CloudFeature.allDisabledDetections.clear();
                             CloudFeature.allDisabledDetections.putAll(allDisabledDetections);
                         } else {
                             CloudFeature.disabledDetections.clear();
+                            CloudFeature.hiddenDisabledDetections.clear();
                             CloudFeature.allDisabledDetections.clear();
                         }
                     } catch (Exception e) {

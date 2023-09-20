@@ -37,9 +37,10 @@ public class Register extends JavaPlugin {
 
         /*PluginDescriptionFile description = plugin.getDescription();
 
-        // Separator
-        if (ReflectionUtils.classExists("com.google.gson.JsonArray") && ReflectionUtils.classExists("com.google.gson.JsonObject")
-                && ReflectionUtils.classExists("com.google.gson.JsonParser") && ReflectionUtils.classExists("com.google.gson.JsonPrimitive")) {
+        if (ReflectionUtils.classExists("com.google.gson.JsonArray")
+                && ReflectionUtils.classExists("com.google.gson.JsonObject")
+                && ReflectionUtils.classExists("com.google.gson.JsonParser")
+                && ReflectionUtils.classExists("com.google.gson.JsonPrimitive")) {
             try {
                 Metrics metrics = new Metrics(plugin, ((int) Math.pow(85, 2)) + description.getName().substring(1).length());
             } catch (Exception ex) {

@@ -6,6 +6,7 @@ import me.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.functionality.protections.LagLeniencies;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Timer;
@@ -46,13 +47,16 @@ public class FastPlace extends CheckExecutor {
                         int ticks = 20;
 
                         if (time <= 50L) {
+                            String detection = "type: fast";
+
                             if (!ResearchEngine.hasCompetitiveCPS()
+                                    && !CloudFeature.isInformationCancelled(hackType, detection)
                                     && !player.isBedrockPlayer()
                                     && hackType.getCheck().getBooleanOption("check_fast", true)
                                     && !Compatibility.CompatibilityType.VeinMiner.isFunctional()
                                     && !LagLeniencies.hasHighLatency(player, LagLeniencies.unplayablePing) // Building
                                     && buffer.start("fast", ticks) >= (LagLeniencies.hasHighLatency(player, LagLeniencies.averagePing) ? 8 : 4)) { // Building
-                                cancel("type: fast, ms: " + time + ", block: " + BlockUtils.materialToString(material),
+                                cancel(detection + ", ms: " + time + ", block: " + BlockUtils.materialToString(material),
                                         null, ticks);
                             }
                         } else if (time <= 100L) {

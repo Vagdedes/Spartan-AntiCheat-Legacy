@@ -45,13 +45,7 @@ public class NoSlowdown extends CheckExecutor {
 
     @Override
     public boolean handle(Object object) {
-        if (object instanceof EntityPotionEffectEvent) {
-            if (hackType.getCheck().getBooleanOption("check_potion", true)
-                    && !LagLeniencies.hasHighLatency(player, LagLeniencies.badPing) // Item
-                    && player.getItemInHand().getType() == Material.POTION) {
-                runUse("potion", true, 1);
-            }
-        } else if (object instanceof PlayerInteractEvent) {
+        if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             if (e.getAction() == Action.RIGHT_CLICK_BLOCK
@@ -98,8 +92,12 @@ public class NoSlowdown extends CheckExecutor {
             }
         } else if (object instanceof PlayerItemHeldEvent) {
             player.getCooldowns(hackType).add("held", 3);
-        } else {
+        } else if (object.equals(PACKETS)) {
             runUse("packets", true, 1);
+        } else if (hackType.getCheck().getBooleanOption("check_potion", true)
+                && !LagLeniencies.hasHighLatency(player, LagLeniencies.badPing) // Item
+                && player.getItemInHand().getType() == Material.POTION) {
+            runUse("potion", true, 1);
         }
         return false;
     }

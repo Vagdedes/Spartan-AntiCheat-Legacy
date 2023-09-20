@@ -137,7 +137,7 @@ public class LiveViolation {
         if (hp != null
                 && !LagLeniencies.hasInconsistencies(player, null)
                 && !player.getHandlers().has(Handlers.HandlerType.GameMode)
-                && !CloudFeature.isInformationCancelled(hackType, hp.information)) {
+                && !CloudFeature.isPublicInformationCancelled(hackType, hp.information)) {
             UUID uuid = player.getUniqueId();
             Check check = hackType.getCheck();
             CancelCause disableCause = check.getDisabledCause(uuid);

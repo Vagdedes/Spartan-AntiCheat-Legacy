@@ -2,6 +2,7 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -21,6 +22,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
     }
 
     private static final double
+            stepExtraLimit = 2.0,
             criticalDecelerationLimit = -0.1,
             criticalUpwardsLimit = Math.sqrt(MoveUtils.chunk), // 4.0
             postJumpPreFallPrecision = MoveUtils.jumping[2] * 7, // 0.0007
@@ -263,9 +265,14 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                     !velocityScenarioASYNC && boxDifference >= criticalStepLimit ? 1 : 2,
                                     velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                         }
-                    } else if (vertical < 0.0
-                            && boxDifference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Anything below this threshold is likely instant, where otherwise you fall for a bit
-                        irregularMovements.cancel(prevention, "step-down-predictable", "box-difference: " + boxDifference, 1, 0);
+                    } else if (vertical < 0.0) {
+                        double limit = MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision;
+
+                        if (boxDifference >= limit) { // Anything below this threshold is likely instant, where otherwise you fall for a bit
+                            irregularMovements.cancel(prevention, "step-down-predictable",
+                                    "box-difference: " + boxDifference + ", limit: " + limit,
+                                    1, 0);
+                        }
                     }
                 } else if (knownBoxesNew) {
                     if (vertical > stepLimitModified) {
