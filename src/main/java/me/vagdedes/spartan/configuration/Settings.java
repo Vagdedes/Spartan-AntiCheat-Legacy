@@ -16,7 +16,6 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
-import me.vagdedes.spartan.utils.server.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;

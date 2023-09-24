@@ -24,9 +24,11 @@ public class SpartanEdition {
 
     private static long checkTime = 0L;
     public static final String[] jarNames = new String[]{
-            StringUtils.decodeBase64("U3BhcnRhbkJlZHJvY2tFZGl0aW9u"), // Bedrock
+            StringUtils.decodeBase64("U3BhcnRhbjJKYXZhRWRpdGlvbg=="), // Java 2.0
+            StringUtils.decodeBase64("U3BhcnRhbkJlZHJvY2tFZGl0aW9u"), // Bedrock 1.0
+            StringUtils.decodeBase64("U3BhcnRhbjJCZWRyb2NrRWRpdGlvbg=="), // Bedrock 2.0
             StringUtils.decodeBase64("U3BhcnRhbkZ1bGxFZGl0aW9u"), // Full
-            "Spartan", // Last because it is contained in all previous names
+            "Spartan", // (Java 1.0) Last because it is contained in all previous names
     };
     private static final String productLink = StringUtils.decodeBase64("aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC92aWV3UHJvZHVjdC8/aWQ9");
     private static final String

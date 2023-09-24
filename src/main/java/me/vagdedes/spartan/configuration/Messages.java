@@ -2,7 +2,6 @@ package me.vagdedes.spartan.configuration;
 
 import me.vagdedes.spartan.abstraction.ConfigurationBuilder;
 import me.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import me.vagdedes.spartan.utils.server.ConfigUtils;
 
 import java.io.File;
 
