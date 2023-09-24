@@ -101,10 +101,12 @@ public class ViolationStatistics {
                 // Create Cache or Maintain Existing
 
                 for (PlayerProfile playerProfile : playerProfiles) {
+                    ResearchEngine.DataType dataType = playerProfile.getDataType();
+
                     for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {
                         Enums.HackType hackType = violationHistory.getHackType();
 
-                        if (hackType.getCheck().isEnabled(null, null, null)) {
+                        if (hackType.getCheck().isEnabled(dataType, null, null)) {
                             if (hasNoStatistics || playerProfile.shouldCalculateEvidence()) {
                                 List<PlayerViolation> data = violationHistory.getViolationsList();
                                 int size = data.size();

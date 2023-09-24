@@ -44,10 +44,13 @@ import java.util.UUID;
 public class SpartanMenu {
 
     private static int ecosystemItem = 1;
+    private static final ResearchEngine.DataType oppositeObject = SpartanEdition.getOppositeVersion();
     private static final String
-            opposite = SpartanEdition.getOppositeVersion().toString(),
+            opposite = oppositeObject.toString(),
             offer = "§6Get Plugins for FREE§8: §e§nhttps://www.vagdedes.com/account/viewOffer",
-            oppositeVersion = "Spartan: " + opposite + " Edition";
+            oppositeVersion = "Spartan: " + opposite + " Edition",
+            opposite_1_0_Version = "Spartan 1.0: " + opposite + " Edition",
+            opposite_2_0_Version = "Spartan 2.0: " + opposite + " Edition";
 
     public static void refresh() {
         if (Config.settings.getBoolean("Important.refresh_inventory_menu")) {
@@ -178,7 +181,8 @@ public class SpartanMenu {
             }
             lore.add("");
 
-            if (SpartanBukkit.canAdvertise && !name.equals(oppositeVersion)) {
+            if (SpartanBukkit.canAdvertise
+                    && !name.equals(oppositeVersion)) {
                 lore.add("§aGet " + name + " and receive");
 
                 switch (ecosystemItem) {
@@ -393,16 +397,16 @@ public class SpartanMenu {
                 StringBuilder builder = new StringBuilder();
 
                 for (String line : lore) {
-                    if (line.length() > 0) {
+                    if (!line.isEmpty()) {
                         builder.append(StringUtils.getClearColorString(line));
                     }
                 }
                 String reason = builder.toString();
 
-                if (reason.length() > 0) {
+                if (!reason.isEmpty()) {
                     List<PlayerReport> reports = ResearchEngine.getPlayerProfile(item).getPunishmentHistory().getReports();
 
-                    if (reports.size() > 0) {
+                    if (!reports.isEmpty()) {
                         for (PlayerReport playerReport : reports) {
                             if (!playerReport.isDismissed() && playerReport.getReason().equals(reason)) {
                                 playerReport.dismiss(name, p, true);
@@ -423,16 +427,8 @@ public class SpartanMenu {
         p.sendInventoryCloseMessage("");
 
         if (SpartanBukkit.canAdvertise) {
-            ResearchEngine.DataType opposite = SpartanEdition.getOppositeVersion();
-
-            switch (opposite) {
-                case Java:
-                case Bedrock:
-                    p.sendImportantMessage("§6" + oppositeVersion + "§8: §e§nhttps://www.vagdedes.com/account/viewProduct/?id=" + SpartanEdition.getProductID(opposite));
-                    break;
-                default:
-                    break;
-            }
+            p.sendImportantMessage("§6" + opposite_1_0_Version + "§8: §e§nhttps://www.vagdedes.com/account/viewProduct/?id=" + SpartanEdition.get1_0_ProductID(oppositeObject));
+            p.sendImportantMessage("§6" + opposite_2_0_Version + "§8: §e§nhttps://www.vagdedes.com/account/viewProduct/?id=" + SpartanEdition.get2_0_ProductID(oppositeObject));
             p.sendMessage(offer);
         } else if (IDs.isBuiltByBit()) {
             p.sendMessage("§6" + UltimateStatistics.name + "§8: §e§nhttps://builtbybit.com/resources/12576/");

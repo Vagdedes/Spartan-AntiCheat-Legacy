@@ -35,10 +35,13 @@ public class SpartanEdition {
             notificationKey = "alternative-version",
             notificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat."
                     + (SpartanBukkit.canAdvertise ? "\nClick §n" + productLink + productID + " §r§cto fix this." : "")
-                    + "\nSet '" + Config.settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Config.settings.getFile().getName() + "' to disable this notification.";
+                    + "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Config.settings.getFile().getName() + "' to disable this notification.";
     private static final boolean javaEdition;
     public static final boolean freeAlternativeVersion;
-    private static boolean notify = false, alternativeVersion;
+    private static boolean
+            notify = false,
+            v_2_0 = false,
+            alternativeVersion;
 
     static {
         if (SpartanBukkit.canAdvertise) {
@@ -58,7 +61,12 @@ public class SpartanEdition {
         if (SpartanBukkit.canAdvertise && !alternativeVersion) {
             Runnable runnable = () -> {
                 if (CloudConnections.ownsProduct(
-                        getProductID(getOppositeVersion())
+                        get2_0_ProductID(getOppositeVersion())
+                )) {
+                    alternativeVersion = true;
+                    v_2_0 = true;
+                } else if (CloudConnections.ownsProduct(
+                        get1_0_ProductID(getOppositeVersion())
                 )) {
                     alternativeVersion = true;
                 }
@@ -73,6 +81,16 @@ public class SpartanEdition {
                 runnable.run();
             }
         }
+    }
+
+    // 2.0
+
+    public static boolean is2ndGeneration() {
+        return v_2_0;
+    }
+
+    public static String getGeneration() {
+        return is2ndGeneration() ? "2.0" : "1.0";
     }
 
     // Detections
@@ -144,11 +162,27 @@ public class SpartanEdition {
     // Product
 
     public static String getProductID(ResearchEngine.DataType dataType) {
+        return is2ndGeneration() ? get2_0_ProductID(dataType) : get1_0_ProductID(dataType);
+    }
+
+
+    public static String get1_0_ProductID(ResearchEngine.DataType dataType) {
         switch (dataType) {
             case Bedrock:
                 return "16";
             case Java:
                 return "1";
+            default:
+                return null;
+        }
+    }
+
+    public static String get2_0_ProductID(ResearchEngine.DataType dataType) {
+        switch (dataType) {
+            case Bedrock:
+                return "22";
+            case Java:
+                return "21";
             default:
                 return null;
         }
@@ -162,18 +196,18 @@ public class SpartanEdition {
                 case Java:
                     return cloudFeature ?
                             getProductID(ResearchEngine.DataType.Bedrock) :
-                            "Spartan: " + ResearchEngine.DataType.Bedrock + " Edition";
+                            "Spartan " + getGeneration() + ": " + ResearchEngine.DataType.Bedrock + " Edition";
                 case Bedrock:
                     return cloudFeature ?
                             getProductID(ResearchEngine.DataType.Java) :
-                            "Spartan: " + ResearchEngine.DataType.Java + " Edition";
+                            "Spartan " + getGeneration() + ": " + ResearchEngine.DataType.Java + " Edition";
                 default:
                     break;
             }
         }
         return cloudFeature ?
                 getProductID(ResearchEngine.DataType.Java) :
-                "Spartan: " + ResearchEngine.DataType.Java + " & " + ResearchEngine.DataType.Bedrock + " Edition";
+                "Spartan " + getGeneration() + ": " + ResearchEngine.DataType.Java + " & " + ResearchEngine.DataType.Bedrock + " Edition";
     }
 
     // Notifications
@@ -217,11 +251,11 @@ public class SpartanEdition {
 
                             List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
-                            if (playerProfiles.size() > 0) {
+                            if (!playerProfiles.isEmpty()) {
                                 playerProfiles.remove(player.getProfile());
                                 playerProfiles.removeAll(checkedProfiles);
 
-                                if (playerProfiles.size() > 0) {
+                                if (!playerProfiles.isEmpty()) {
                                     for (PlayerProfile profile : playerProfiles) {
                                         if (bedrockIsMissingDetection == profile.isBedrockPlayer()) {
                                             notify = true;
@@ -241,7 +275,7 @@ public class SpartanEdition {
     private static void sendNotification(SpartanPlayer player, ResearchEngine.DataType dataType) {
         if (Permissions.isStaff(player)) {
             String message = AwarenessNotifications.getNotification(
-                    notificationMessage.replace(type, dataType.toString()).replace(productID, getProductID(dataType))
+                    notificationMessage.replace(type, dataType.toString()).replace(productID, get1_0_ProductID(dataType)) // Keep 1.0 here as it is the base product
             );
 
             if (AwarenessNotifications.canSend(player.getUniqueId(), notificationKey)) {

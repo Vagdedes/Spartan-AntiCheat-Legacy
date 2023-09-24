@@ -253,6 +253,7 @@ public class PlayerProfile {
 
     public void calculateHistoricalEvidence() {
         if (evidence.startCalculation(shouldCalculateEvidence())) {
+            ResearchEngine.DataType dataType = getDataType();
             boolean hasStatistics = ViolationStatistics.has();
 
             for (ViolationHistory violationHistory : violationHistory) {
@@ -279,7 +280,7 @@ public class PlayerProfile {
                         }
                     }
 
-                    if (suspectedOres.size() > 0) {
+                    if (!suspectedOres.isEmpty()) {
                         String separator = "§l/§r";
                         evidence.add(hackType,
                                 StringUtils.toString(suspectedOres.keySet().toArray(new Enums.MiningOre[0]), separator)
@@ -288,27 +289,25 @@ public class PlayerProfile {
                         evidence.remove(hackType);
                     }
                 } else if (hasStatistics) {
-                    ViolationStatistics.GlobalWarmup globalStatistics = ViolationStatistics.get(hackType);
+                    ViolationStatistics.GlobalWarmup globalStatistics = ViolationStatistics.get(hackType); // Already checked check & detections
 
                     if (globalStatistics.has) {
                         List<PlayerViolation> data = violationHistory.getViolationsList();
 
-                        if (data.size() > 0) {
+                        if (!data.isEmpty()) {
                             Map<String, ViolationStatistics> comparedStatistics = new LinkedHashMap<>();
 
                             // Calculate compared profile data
 
                             for (PlayerViolation playerViolation : data) {
-                                if (playerViolation.isDetectionEnabled()) {
-                                    String date = playerViolation.getDate();
-                                    ViolationStatistics statistics = comparedStatistics.get(date);
+                                String date = playerViolation.getDate();
+                                ViolationStatistics statistics = comparedStatistics.get(date);
 
-                                    if (statistics == null) {
-                                        statistics = new ViolationStatistics();
-                                        comparedStatistics.put(date, statistics);
-                                    }
-                                    statistics.count(playerViolation);
+                                if (statistics == null) {
+                                    statistics = new ViolationStatistics();
+                                    comparedStatistics.put(date, statistics);
                                 }
+                                statistics.count(playerViolation);
                             }
 
                             // Collide Compared and Global Data
