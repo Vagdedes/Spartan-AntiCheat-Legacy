@@ -235,9 +235,11 @@ public class SpartanEdition {
                             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
                             players.remove(player);
                             int size = players.size();
-                            List<PlayerProfile> checkedProfiles = new ArrayList<>(size);
+                            List<PlayerProfile> checkedProfiles;
 
                             if (size > 0) {
+                                checkedProfiles = new ArrayList<>(size);
+
                                 for (SpartanPlayer otherPlayer : players) {
                                     if (bedrockIsMissingDetection == otherPlayer.isBedrockPlayer()) {
                                         notify = true;
@@ -247,6 +249,8 @@ public class SpartanEdition {
                                         checkedProfiles.add(player.getProfile());
                                     }
                                 }
+                            } else {
+                                checkedProfiles = new ArrayList<>(0);
                             }
 
                             // Separator

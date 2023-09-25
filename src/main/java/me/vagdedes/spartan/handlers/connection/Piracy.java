@@ -79,33 +79,10 @@ public class Piracy implements Listener {
         return enabled || CloudFeature.hasToken();
     }
 
-    private static boolean isSiteValid(String other_site) {
-        String domain = RequestUtils.getDomain(other_site, true);
-        boolean b1 = domain != null && domain.length() == 12;
-
-        if (b1) {
-            String[] split = domain.split("\\.", 4);
-            boolean b2 = split.length == 3
-                    && split[0].equals("www")
-                    && split[1].equals("vagdedes")
-                    && split[2].equals("com")
-                    && other_site.length() == 61
-                    && !AlgebraUtils.validInteger(other_site);
-
-            if (b2) {
-                other_site = other_site.substring(8);
-            } else {
-                return b2;
-            }
-            return other_site.equals("www.vagdedes.com/minecraft/cloud/verification/?id=&nonce=");
-        }
-        return b1;
-    }
-
     private static boolean isValid(String site, String spigot, String nonce) {
         PluginDescriptionFile description;
         boolean b = valid
-                && isSiteValid(site) && name.equalsIgnoreCase("Spartan")
+                && name.equalsIgnoreCase("Spartan")
                 && (description = Register.plugin.getDescription()).getVersion().startsWith("Phase " + description.getVersion().substring(6))
                 && description.getDescription().equals("Advanced cheat prevention made simple")
                 && description.getWebsite().startsWith("https://www.vagdedes.com/")
