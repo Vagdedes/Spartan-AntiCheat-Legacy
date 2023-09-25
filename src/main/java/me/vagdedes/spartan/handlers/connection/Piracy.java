@@ -29,7 +29,7 @@ public class Piracy implements Listener {
     private static final int
             two = 2,
             nameLength = name.length();
-    public static double version = -((5 * ((((nameLength * (nameLength / two)) + Math.pow(two, two)) * two) * two)) + (10 * 2) + 2.0);
+    public static double version = -((5 * ((((nameLength * (nameLength / two)) + Math.pow(two, two)) * two) * two)) + (10 * 2) + 2.1);
 
     static {
         if (!enabled) {
@@ -84,8 +84,8 @@ public class Piracy implements Listener {
         boolean b = valid
                 && name.equalsIgnoreCase("Spartan")
                 && (description = Register.plugin.getDescription()).getVersion().startsWith("Phase " + description.getVersion().substring(6))
-                && description.getDescription().equals("Advanced cheat prevention made simple")
-                && description.getWebsite().startsWith("https://www.vagdedes.com/")
+                && description.getDescription().equals("Advanced cheat prevention made simple.")
+                && description.getWebsite().startsWith("https://www.vagdedes.com")
                 && description.getAuthors().toString().equalsIgnoreCase("[Evangelos Dedes @Vagdedes]");
 
         try {
@@ -98,7 +98,7 @@ public class Piracy implements Listener {
             // Separator
             String additional;
 
-            if (administrators.size() > 0) {
+            if (!administrators.isEmpty()) {
                 additional = StringUtils.toString(administrators.toArray(new String[0]));
                 administrators.clear();
             } else {

@@ -62,13 +62,15 @@ public class SpartanEdition {
     public static void refresh() {
         if (SpartanBukkit.canAdvertise && !alternativeVersion) {
             Runnable runnable = () -> {
+                ResearchEngine.DataType dataType = getOppositeVersion();
+
                 if (CloudConnections.ownsProduct(
-                        get2_0_ProductID(getOppositeVersion())
+                        get2_0_ProductID(dataType)
                 )) {
                     alternativeVersion = true;
                     v_2_0 = true;
                 } else if (CloudConnections.ownsProduct(
-                        get1_0_ProductID(getOppositeVersion())
+                        get1_0_ProductID(dataType)
                 )) {
                     alternativeVersion = true;
                 }
