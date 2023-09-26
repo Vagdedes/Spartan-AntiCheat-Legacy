@@ -3,12 +3,13 @@ package me.vagdedes.spartan.gui.configuration;
 import com.vagdedes.filegui.api.FileGUIAPI;
 import me.vagdedes.spartan.Register;
 import me.vagdedes.spartan.compatibility.necessary.FileGUI;
+import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.functionality.configuration.ConfigurationDiagnostics;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.functionality.important.Permissions;
 import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
-import me.vagdedes.spartan.gui.spartan.SpartanMenu;
+import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.java.StringUtils;
@@ -76,7 +77,7 @@ public class ManageConfiguration {
             p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             return;
         }
-        if (FileGUI.isEnabled()) {
+        if (Compatibility.CompatibilityType.FileGUI.isFunctional()) {
             Player n = p.getPlayer();
 
             if (n != null && n.isOnline() && n.hasPermission(FileGUI.permission)) {
@@ -212,7 +213,7 @@ public class ManageConfiguration {
 
         if (item.equals("Back")) {
             if (title.equals(menu)) {
-                SpartanMenu.open(p);
+                MainMenu.open(p);
             } else {
                 open(p);
             }

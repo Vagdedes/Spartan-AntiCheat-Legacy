@@ -8,7 +8,7 @@ import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import me.vagdedes.spartan.gui.configuration.ManageOptions;
 import me.vagdedes.spartan.gui.info.DebugMenu;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
-import me.vagdedes.spartan.gui.spartan.SpartanMenu;
+import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.gui.spartan.SupportIncompatibleItems;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Piston;
 import me.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
@@ -108,7 +108,7 @@ public class EventsHandler4 implements Listener {
 
             // GUIs
             if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()
-                    && (SpartanMenu.run(p, item, title, click) | ManageChecks.run(p, item, title, click)
+                    && (MainMenu.run(p, item, title, click) | ManageChecks.run(p, item, title, click)
                     | ManageOptions.run(p, item, title) | PlayerInfo.run(p, item, title, click)
                     | DebugMenu.run(p, item, title) | ManageConfiguration.run(p, item, title, click, slot) |
                     PlayerReports.run(p, item, title) | SupportIncompatibleItems.run(p, item, title, click))

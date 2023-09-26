@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,24 +78,24 @@ public class SupportIncompatibleItems {
     }
 
     public static boolean run(SpartanPlayer p, ItemStack i, String title, ClickType clickType) {
-        ItemMeta meta = i.getItemMeta();
-
-        if (meta == null || meta.getDisplayName() == null || !title.equals(menu)) {
+        if (!title.equals(menu)) {
             return false;
         }
         String item = i.getItemMeta().getDisplayName();
 
         if (i.getType() == Material.ARROW && item.equals("§4Back")) {
-            SpartanMenu.open(p);
-        } else if (i.getType() == MaterialUtils.get("redstone_torch") && item.equals("§2Add Item")) {
+            MainMenu.open(p);
+        } else if (i.getType() == MaterialUtils.get("redstone_torch")
+                && item.equals("§2Add Item")) {
             Player n = p.getPlayer();
 
-            if (n != null && n.isOnline()) {
+            if (n != null
+                    && n.isOnline()) {
                 Bukkit.dispatchCommand(n, "spartan add-incompatible-item");
                 n.closeInventory();
             }
         } else {
-            List<String> lore = meta.getLore();
+            List<String> lore = i.getItemMeta().getLore();
 
             if (lore != null) {
                 for (String line : lore) {

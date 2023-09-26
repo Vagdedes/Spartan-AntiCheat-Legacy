@@ -16,7 +16,7 @@ import me.vagdedes.spartan.functionality.notifications.clickablemessage.Clickabl
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
-import me.vagdedes.spartan.gui.spartan.SpartanMenu;
+import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.gui.spartan.SupportIncompatibleItems;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.connection.Piracy;
@@ -223,7 +223,7 @@ public class CommandExecution implements CommandExecutor {
             }
             if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
-                    SpartanMenu.open(player);
+                    MainMenu.open(player);
 
                 } else if (args[0].equalsIgnoreCase("Moderation")) {
                     completeMessage(sender, args[0].toLowerCase());
@@ -881,7 +881,7 @@ public class CommandExecution implements CommandExecutor {
                         completeMessage(sender, "default");
                     }
                 }
-            } else if (isPlayer && SpartanMenu.open(player, false)) {
+            } else if (isPlayer && MainMenu.open(player, false)) {
                 completeMessage(sender, "commands");
             } else {
                 completeMessage(sender, "default");

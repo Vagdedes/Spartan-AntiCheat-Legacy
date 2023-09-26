@@ -16,7 +16,7 @@ import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.info.PlayerInfo;
-import me.vagdedes.spartan.gui.spartan.SpartanMenu;
+import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.objects.features.StatisticalProgress;
 import me.vagdedes.spartan.objects.profiling.*;
@@ -434,7 +434,7 @@ public class ResearchEngine {
         playerFights.add(fight);
 
         if (refreshMenu) {
-            SpartanMenu.refresh();
+            MainMenu.refresh();
         }
     }
 
@@ -620,7 +620,7 @@ public class ResearchEngine {
             }
 
             // Separator
-            SpartanMenu.refresh();
+            MainMenu.refresh();
             ViolationStatistics.remove(hackType);
         });
     }
@@ -699,7 +699,7 @@ public class ResearchEngine {
                     }
                 }
                 enoughData = false;
-                SpartanMenu.refresh();
+                MainMenu.refresh();
                 PlayerInfo.refresh(playerName);
             }
         }
@@ -1311,7 +1311,7 @@ public class ResearchEngine {
                 }
             }
         }
-        SpartanMenu.refresh();
+        MainMenu.refresh();
     }
 
     private static void updateComprehensionCache() {

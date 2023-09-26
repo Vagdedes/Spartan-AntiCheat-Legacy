@@ -43,7 +43,8 @@ public class CloudFeature {
     // Frequencies, Cooldowns & Timers
     private static final int connectionRefreshFrequencyInMinutes = 10;
     private static int connectionRefreshTimer = connectionRefreshFrequencyInMinutes * 1200;
-    private static long connectionFailedCooldown = 0L, connectionRefreshCooldown = 0L;
+    private static long connectionFailedCooldown = 0L;
+    private static final long[] connectionRefreshCooldown = new long[2];
 
     // Features
     static String outdatedVersionMessage = null;
@@ -56,7 +57,7 @@ public class CloudFeature {
     public static final String separator = ">@#&!%<;=";
 
     static {
-        clear(false);
+         clear(false);
 
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
@@ -190,8 +191,8 @@ public class CloudFeature {
     public static void refresh(boolean independent) {
         long ms = System.currentTimeMillis();
 
-        if (!recentError(ms) && connectionRefreshCooldown <= ms) {
-            connectionRefreshCooldown = ms + 60_000L;
+        if (!recentError(ms) && connectionRefreshCooldown[independent ? 0 : 1] <= ms) {
+            connectionRefreshCooldown[independent ? 0 : 1] = ms + 60_000L;
             connectionRefreshTimer = connectionRefreshFrequencyInMinutes * 1200;
             boolean async = !SpartanBukkit.isSynchronised(),
                     validIDs = IDs.isValid();

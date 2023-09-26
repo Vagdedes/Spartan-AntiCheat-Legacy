@@ -60,8 +60,8 @@ public class SpartanEdition {
     // Verification
 
     public static void refresh() {
-        if (SpartanBukkit.canAdvertise && !alternativeVersion) {
-            Runnable runnable = () -> {
+        Runnable runnable = () -> {
+            if (SpartanBukkit.canAdvertise && !alternativeVersion) {
                 ResearchEngine.DataType dataType = getOppositeVersion();
 
                 if (CloudConnections.ownsProduct(
@@ -69,21 +69,27 @@ public class SpartanEdition {
                 )) {
                     alternativeVersion = true;
                     v_2_0 = true;
+                    Config.messages.clear();
                 } else if (CloudConnections.ownsProduct(
                         get1_0_ProductID(dataType)
                 )) {
                     alternativeVersion = true;
+                    Config.messages.clear();
+                } else if (CloudConnections.ownsProduct(
+                        get2_0_ProductID(getVersion())
+                )) {
+                    v_2_0 = true;
                 }
                 for (Enums.HackType hackType : Enums.HackType.values()) {
                     hackType.resetCheck();
                 }
-            };
-
-            if (SpartanBukkit.isSynchronised()) {
-                SpartanBukkit.connectionThread.execute(runnable);
-            } else {
-                runnable.run();
             }
+        };
+
+        if (SpartanBukkit.isSynchronised()) {
+            SpartanBukkit.connectionThread.execute(runnable);
+        } else {
+            runnable.run();
         }
     }
 
@@ -291,4 +297,5 @@ public class SpartanEdition {
             }
         }
     }
+
 }

@@ -1,9 +1,7 @@
 package me.vagdedes.spartan.gui.spartan;
 
 import com.vagdedes.filegui.api.FileGUIAPI;
-import me.vagdedes.spartan.compatibility.necessary.AntiAltAccount;
 import me.vagdedes.spartan.compatibility.necessary.FileGUI;
-import me.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.configuration.Config;
 import me.vagdedes.spartan.configuration.Settings;
@@ -41,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SpartanMenu {
+public class MainMenu {
 
     private static int ecosystemItem = 1;
     private static final ResearchEngine.DataType oppositeObject = SpartanEdition.getOppositeVersion();
@@ -144,7 +142,7 @@ public class SpartanMenu {
             switch (ecosystemItem) {
                 case 1:
                     InventoryUtils.prepareDescription(lore, "Compatible Plugin" + (SpartanBukkit.canAdvertise ? " Offer" : ""));
-                    name = UltimateStatistics.name;
+                    name = Compatibility.CompatibilityType.UltimateStatistics.name();
                     lore.add("§7Get Ultimate Stats to improve");
                     lore.add("§7Spartan's legitimate/hacker");
                     lore.add("§7detection.");
@@ -153,12 +151,12 @@ public class SpartanMenu {
                     break;
                 case 2:
                     InventoryUtils.prepareDescription(lore, "Compatible Plugin" + (SpartanBukkit.canAdvertise ? " Offer" : ""));
-                    name = AntiAltAccount.name;
+                    name = Compatibility.CompatibilityType.AntiAltAccount.name();
                     lore.add("§7Get Anti Alt Account to prevent");
                     lore.add("§7global hackers from joining your");
                     lore.add("§7server.");
                     ecosystemItem = 3;
-                    enabled = AntiAltAccount.isEnabled();
+                    enabled = Compatibility.CompatibilityType.AntiAltAccount.isFunctional();
                     break;
                 case 4:
                     InventoryUtils.prepareDescription(lore, opposite + " Detections");
@@ -171,12 +169,12 @@ public class SpartanMenu {
                     break;
                 default:
                     InventoryUtils.prepareDescription(lore, "Compatible Plugin" + (SpartanBukkit.canAdvertise ? " Offer" : ""));
-                    name = FileGUI.name;
+                    name = Compatibility.CompatibilityType.FileGUI.name();
                     lore.add("§7Get File GUI to replace Spartan's");
                     lore.add("§7simple configuration menu with");
                     lore.add("§7an advanced configuration menu.");
                     ecosystemItem = SpartanBukkit.canAdvertise ? 4 : 1;
-                    enabled = FileGUI.isEnabled();
+                    enabled = Compatibility.CompatibilityType.FileGUI.isFunctional();
                     break;
             }
             lore.add("");
@@ -187,13 +185,13 @@ public class SpartanMenu {
 
                 switch (ecosystemItem) {
                     case 2:
-                        lore.add("§a" + AntiAltAccount.name + " & " + FileGUI.name);
+                        lore.add("§a" + Compatibility.CompatibilityType.AntiAltAccount.name() + " & " + Compatibility.CompatibilityType.FileGUI.name());
                         break;
                     case 3:
-                        lore.add("§a" + UltimateStatistics.name + " & " + FileGUI.name);
+                        lore.add("§a" + Compatibility.CompatibilityType.UltimateStatistics.name() + " & " + Compatibility.CompatibilityType.FileGUI.name());
                         break;
                     default:
-                        lore.add("§a" + UltimateStatistics.name + " & " + AntiAltAccount.name);
+                        lore.add("§a" + Compatibility.CompatibilityType.UltimateStatistics.name() + " & " + Compatibility.CompatibilityType.AntiAltAccount.name());
                         break;
                 }
                 lore.add("§acompletely for FREE");
@@ -329,7 +327,7 @@ public class SpartanMenu {
             if (!Permissions.has(p, Permission.MANAGE)) {
                 p.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
-                if (FileGUI.isEnabled()) {
+                if (Compatibility.CompatibilityType.FileGUI.isFunctional()) {
                     Player n = p.getPlayer();
 
                     if (n != null && n.isOnline() && n.hasPermission(FileGUI.permission)) {
@@ -361,9 +359,9 @@ public class SpartanMenu {
                 }
             }
 
-        } else if (item.equals(UltimateStatistics.name)
-                || item.equals(AntiAltAccount.name)
-                || item.equals(FileGUI.name)
+        } else if (item.equals(Compatibility.CompatibilityType.UltimateStatistics.name())
+                || item.equals(Compatibility.CompatibilityType.AntiAltAccount.name())
+                || item.equals(Compatibility.CompatibilityType.FileGUI.name())
                 || item.equals(oppositeVersion)) {
             sendOffer(p);
         } else if (item.startsWith("Page")) {
@@ -431,17 +429,17 @@ public class SpartanMenu {
             p.sendImportantMessage("§6" + opposite_2_0_Version + "§8: §e§nhttps://www.vagdedes.com/account/viewProduct/?id=" + SpartanEdition.get2_0_ProductID(oppositeObject));
             p.sendMessage(offer);
         } else if (IDs.isBuiltByBit()) {
-            p.sendMessage("§6" + UltimateStatistics.name + "§8: §e§nhttps://builtbybit.com/resources/12576/");
-            p.sendMessage("§6" + AntiAltAccount.name + "§8: §e§nhttps://builtbybit.com/resources/20142/");
-            p.sendMessage("§6" + FileGUI.name + "§8: §e§nhttps://builtbybit.com/resources/13185/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.UltimateStatistics.name() + "§8: §e§nhttps://builtbybit.com/resources/12576/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.AntiAltAccount.name() + "§8: §e§nhttps://builtbybit.com/resources/20142/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.FileGUI.name() + "§8: §e§nhttps://builtbybit.com/resources/13185/");
         } else if (IDs.isPolymart()) {
-            p.sendMessage("§6" + UltimateStatistics.name + "§8: §e§nhttps://polymart.org/resource/982/");
-            p.sendMessage("§6" + AntiAltAccount.name + "§8: §e§nhttps://polymart.org/resource/1096/");
-            p.sendMessage("§6" + FileGUI.name + "§8: §e§nhttps://polymart.org/resource/984/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.UltimateStatistics.name() + "§8: §e§nhttps://polymart.org/resource/982/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.AntiAltAccount.name() + "§8: §e§nhttps://polymart.org/resource/1096/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.FileGUI.name() + "§8: §e§nhttps://polymart.org/resource/984/");
         } else {
-            p.sendMessage("§6" + UltimateStatistics.name + "§8: §e§nhttps://www.spigotmc.org/resources/60868/");
-            p.sendMessage("§6" + AntiAltAccount.name + "§8: §e§nhttps://www.spigotmc.org/resources/73105/");
-            p.sendMessage("§6" + FileGUI.name + "§8: §e§nhttps://www.spigotmc.org/resources/73893/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.UltimateStatistics.name() + "§8: §e§nhttps://www.spigotmc.org/resources/60868/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.AntiAltAccount.name() + "§8: §e§nhttps://www.spigotmc.org/resources/73105/");
+            p.sendMessage("§6" + Compatibility.CompatibilityType.FileGUI.name() + "§8: §e§nhttps://www.spigotmc.org/resources/73893/");
         }
         p.sendMessage("");
     }

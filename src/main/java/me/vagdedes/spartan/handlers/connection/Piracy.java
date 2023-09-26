@@ -59,8 +59,6 @@ public class Piracy implements Listener {
 
             if (!b) {
                 valid = b;
-            } else {
-                SpartanEdition.refresh();
             }
         }), delay * two);
 

@@ -9,7 +9,7 @@ import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import me.vagdedes.spartan.gui.helpers.PlayerStateLists;
-import me.vagdedes.spartan.gui.spartan.SpartanMenu;
+import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.MiningHistory;
@@ -21,7 +21,6 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.utils.data.CooldownUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
@@ -281,11 +280,11 @@ public class PlayerInfo {
         String key = "player-info=inventory-menu";
 
         if (Config.settings.getBoolean("Important.refresh_inventory_menu")
-                && CooldownUtils.store.canDo(SpartanBukkit.uuid + "=" + key)) {
-            CooldownUtils.store.add(SpartanBukkit.uuid + "=" + key, 1);
+                && SpartanBukkit.cooldowns.canDo(SpartanBukkit.uuid + "=" + key)) {
+            SpartanBukkit.cooldowns.add(SpartanBukkit.uuid + "=" + key, 1);
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            if (players.size() > 0) {
+            if (!players.isEmpty()) {
                 for (SpartanPlayer o : players) {
                     Player no = o.getPlayer();
 
@@ -372,7 +371,7 @@ public class PlayerInfo {
         } else if (item.equals("Close")) {
             p.sendInventoryCloseMessage(null);
         } else if (item.equals("Back")) {
-            SpartanMenu.open(p);
+            MainMenu.open(p);
         } else {
             p.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
         }

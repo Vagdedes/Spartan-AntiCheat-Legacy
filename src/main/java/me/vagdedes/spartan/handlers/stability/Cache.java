@@ -148,7 +148,7 @@ public class Cache {
         SpartanBukkit.clear();
 
         // Utilities
-        CooldownUtils.store.clear();
+        SpartanBukkit.cooldowns.clear();
 
         // Features
         DetectionNotifications.clear();

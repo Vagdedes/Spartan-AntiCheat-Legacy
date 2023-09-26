@@ -34,6 +34,7 @@ public class Register extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         enabled = true;
+        enable(new Piracy(), Piracy.class);
 
         /*PluginDescriptionFile description = plugin.getDescription();
 
@@ -78,7 +79,6 @@ public class Register extends JavaPlugin {
         enable(new EventsHandler8(), EventsHandler8.class);
         enable(new EventsHandler9(), EventsHandler9.class);
         enable(new EventsHandler10(), EventsHandler10.class);
-        enable(new Piracy(), Piracy.class);
 
         if (!MultiVersion.folia) {
             enable(new EventsHandler_non_folia(), EventsHandler_non_folia.class);

@@ -5,7 +5,7 @@ import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.functionality.important.Permissions;
 import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
-import me.vagdedes.spartan.gui.spartan.SpartanMenu;
+import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -217,7 +217,7 @@ public class ManageChecks {
             return true;
         }
         if (item.equals("Back")) {
-            SpartanMenu.open(p);
+            MainMenu.open(p);
         } else if (item.equals("Disable all checks")) {
             Config.disableChecks();
             open(p);
