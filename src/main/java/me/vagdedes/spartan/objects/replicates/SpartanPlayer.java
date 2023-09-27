@@ -585,23 +585,23 @@ public class SpartanPlayer {
     // Separator
 
     public Buffer getBuffer() {
-        return buffer[Enums.hackTypeLength];
+        return buffer[Enums.HackType.values().length];
     }
 
     public Timer getTimer() {
-        return timer[Enums.hackTypeLength];
+        return timer[Enums.HackType.values().length];
     }
 
     public Decimals getDecimals() {
-        return decimals[Enums.hackTypeLength];
+        return decimals[Enums.HackType.values().length];
     }
 
     public Tracker getTracker() {
-        return tracker[Enums.hackTypeLength];
+        return tracker[Enums.HackType.values().length];
     }
 
     public Cooldowns getCooldowns() {
-        return cooldowns[Enums.hackTypeLength];
+        return cooldowns[Enums.HackType.values().length];
     }
 
     public Buffer getBuffer(Enums.HackType hackType) {

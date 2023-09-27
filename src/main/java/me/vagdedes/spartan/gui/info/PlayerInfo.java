@@ -38,8 +38,7 @@ import java.util.UUID;
 
 public class PlayerInfo extends InventoryMenu {
 
-    public static final String name = "Player Info",
-            menu = ("§0" + name + ": ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
+    public static final String menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
     private static final String documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
 
     public PlayerInfo() {
@@ -48,10 +47,10 @@ public class PlayerInfo extends InventoryMenu {
 
     @Override
     public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
-        boolean back = false;
-        SpartanPlayer target = SpartanBukkit.getPlayer(name);
+        boolean back = !permissionMessage;
+        SpartanPlayer target = SpartanBukkit.getPlayer(object.toString());
         boolean isOnline = target != null;
-        PlayerProfile playerProfile = isOnline ? target.getProfile() : ResearchEngine.getPlayerProfileAdvanced(name, true);
+        PlayerProfile playerProfile = isOnline ? target.getProfile() : ResearchEngine.getPlayerProfileAdvanced(object.toString(), true);
 
         if (playerProfile == null) {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));

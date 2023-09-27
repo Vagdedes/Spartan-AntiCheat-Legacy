@@ -11,7 +11,7 @@ public class ViolationStatistics {
     private static final Map<Enums.HackType, Map<PlayerProfile, List<Map.Entry<String, Double>>>>
             statistics = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<String, List<Double>> individualWarmup = new LinkedHashMap<>();
-    private static final GlobalWarmup[] globalWarmups = new GlobalWarmup[Enums.hackTypeLength];
+    private static final GlobalWarmup[] globalWarmups = new GlobalWarmup[Enums.HackType.values().length];
 
     static {
         for (Enums.HackType hackType : Enums.HackType.values()) {

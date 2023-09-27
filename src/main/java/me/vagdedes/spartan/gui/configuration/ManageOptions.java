@@ -101,16 +101,15 @@ public class ManageOptions extends InventoryMenu {
             String[] split = item.split("\\.");
 
             if (split.length > 1) {
-                String hackTypeString = split[0],
-                        option = item.substring(hackTypeString.length() + 1);
+                String hackTypeString = split[0];
 
                 for (HackType hackType : Enums.HackType.values()) {
                     if (hackType.toString().equals(hackTypeString)) { // Do not use name, this is configuration based
                         Check check = hackType.getCheck();
-                        Object value = check.getOption(option, null, true);
+                        Object value = check.getOption(item, null, true);
 
                         if (value instanceof Boolean) {
-                            check.setOption(option, !((boolean) value));
+                            check.setOption(item, !((boolean) value));
                         }
                         open(player, hackType); // Always last
                         break;

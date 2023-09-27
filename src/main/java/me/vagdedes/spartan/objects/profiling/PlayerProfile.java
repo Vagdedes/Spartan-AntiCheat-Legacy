@@ -78,8 +78,8 @@ public class PlayerProfile {
         }
 
         // Separator
-        this.violationHistory = new ViolationHistory[Enums.hackTypeLength];
-        this.miningHistory = new MiningHistory[Enums.miningOreLength];
+        this.violationHistory = new ViolationHistory[hackTypes.length];
+        this.miningHistory = new MiningHistory[Enums.MiningOre.values().length];
 
         for (Enums.HackType hackType : hackTypes) {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory(hackType, getDataType());
@@ -104,8 +104,8 @@ public class PlayerProfile {
         this.bedrockPlayerCheck = true;
         this.lastPlayed = player.getLastPlayed();
 
-        this.violationHistory = new ViolationHistory[Enums.hackTypeLength];
-        this.miningHistory = new MiningHistory[Enums.miningOreLength];
+        this.violationHistory = new ViolationHistory[hackTypes.length];
+        this.miningHistory = new MiningHistory[Enums.MiningOre.values().length];
 
         for (Enums.HackType hackType : hackTypes) {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory(hackType, getDataType());
@@ -260,7 +260,7 @@ public class PlayerProfile {
                 Enums.HackType hackType = violationHistory.getHackType();
 
                 if (hackType == Enums.HackType.XRay) {
-                    Map<Enums.MiningOre, Integer> suspectedOres = new LinkedHashMap<>(Enums.miningOreLength);
+                    Map<Enums.MiningOre, Integer> suspectedOres = new LinkedHashMap<>(Enums.MiningOre.values().length);
 
                     for (MiningHistory miningHistory : getMiningHistory()) {
                         for (World.Environment environment : World.Environment.values()) {

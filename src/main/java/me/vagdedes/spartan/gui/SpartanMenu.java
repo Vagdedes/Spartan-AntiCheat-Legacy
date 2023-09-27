@@ -20,6 +20,7 @@ public class SpartanMenu {
     public static final ManageConfiguration manageConfiguration = new ManageConfiguration();
     public static final ManageOptions manageOptions = new ManageOptions();
     public static final PlayerReports playerReports = new PlayerReports();
+
     public static final InventoryMenu[] menus = new InventoryMenu[]{
             manageChecks,
             mainMenu,

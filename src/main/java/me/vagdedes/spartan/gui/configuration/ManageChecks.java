@@ -233,7 +233,7 @@ public class ManageChecks extends InventoryMenu {
         if (enabled && silent) {
             item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inv, colour + check.getName() + " " + secondColour + check.getCheckType().getName() + " Check", lore, item, -1);
+        InventoryUtils.add(inv, colour + check.getName() + " " + secondColour + check.getCheckType().toString() + " Check", lore, item, -1);
     }
 
     private void setEnable(SpartanPlayer player, String item) {
@@ -266,7 +266,7 @@ public class ManageChecks extends InventoryMenu {
         Check check = Config.getCheckByName(item);
 
         if (check != null) {
-            open(player);
+            SpartanMenu.manageOptions.open(player, check.getHackType());
         }
     }
 }

@@ -66,8 +66,8 @@ public class ResearchEngine {
 
     // Averages
     private static final Map<Enums.MiningOre, Double>
-            averageMining = new LinkedHashMap<>(Enums.miningOreLength),
-            defaultAverageMining = new LinkedHashMap<>(Enums.miningOreLength);
+            averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length),
+            defaultAverageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
     private static final double[]
             reach = new double[3],
             hitTime = new double[3],

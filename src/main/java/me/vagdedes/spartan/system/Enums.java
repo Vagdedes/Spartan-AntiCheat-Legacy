@@ -42,7 +42,7 @@ public class Enums {
         private final String string;
 
         MiningOre() {
-            string = this.toString().toLowerCase().replace("_", "-");
+            string = this.name().toLowerCase().replace("_", "-");
         }
 
         @Override
@@ -162,15 +162,10 @@ public class Enums {
             }
         }
 
-        public String getName() {
+        @Override
+        public String toString() {
             return string;
         }
 
     }
-
-    // Separator
-
-    public static final int
-            hackTypeLength = HackType.values().length,
-            miningOreLength = MiningOre.values().length;
 }

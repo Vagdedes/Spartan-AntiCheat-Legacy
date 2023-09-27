@@ -407,7 +407,7 @@ public class MainMenu extends InventoryMenu {
                     }
                 }
             } else {
-                SpartanMenu.playerInfo.open(player, item);
+                SpartanMenu.playerInfo.open(player, false, item);
             }
         }
         return true;
