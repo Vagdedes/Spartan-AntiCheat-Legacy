@@ -5,7 +5,6 @@ import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.utils.data.CooldownUtils;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

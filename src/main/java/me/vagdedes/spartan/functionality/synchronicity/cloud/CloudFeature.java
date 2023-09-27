@@ -6,7 +6,7 @@ import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.functionality.synchronicity.AutoUpdater;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
-import me.vagdedes.spartan.gui.configuration.ManageConfiguration;
+import me.vagdedes.spartan.gui.SpartanMenu;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.connection.Piracy;
 import me.vagdedes.spartan.system.Enums;
@@ -314,7 +314,7 @@ public class CloudFeature {
                             }
 
                             if (changed) {
-                                ManageConfiguration.reload(true);
+                                SpartanMenu.manageConfiguration.reload(true);
                             }
                         }
                     } catch (Exception e) {

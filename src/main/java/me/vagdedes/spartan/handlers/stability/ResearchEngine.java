@@ -15,7 +15,7 @@ import me.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import me.vagdedes.spartan.gui.info.PlayerInfo;
+import me.vagdedes.spartan.gui.SpartanMenu;
 import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.objects.features.StatisticalProgress;
@@ -145,7 +145,7 @@ public class ResearchEngine {
                 case ANCIENT_DEBRIS:
                     defaultAverageMining.put(ore, -minimumAverageMining);
                     break;
-                case Gold:
+                case GOLD:
                     defaultAverageMining.put(ore, -64.0);
                     break;
                 default:
@@ -700,7 +700,7 @@ public class ResearchEngine {
                 }
                 enoughData = false;
                 MainMenu.refresh();
-                PlayerInfo.refresh(playerName);
+                SpartanMenu.playerInfo.refresh(playerName);
             }
         }
     }

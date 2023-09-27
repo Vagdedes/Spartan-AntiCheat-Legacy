@@ -3,7 +3,7 @@ package me.vagdedes.spartan.objects.profiling;
 import me.vagdedes.spartan.checks.world.XRay;
 import me.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
 import me.vagdedes.spartan.functionality.important.Permissions;
-import me.vagdedes.spartan.gui.info.PlayerInfo;
+import me.vagdedes.spartan.gui.SpartanMenu;
 import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
@@ -387,7 +387,7 @@ public class PlayerProfile {
                             "suspicion: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
                     );
                     judgeEvidence();
-                    PlayerInfo.refresh(player.getName());
+                    SpartanMenu.playerInfo.refresh(player.getName());
                     MainMenu.refresh();
                     return true;
                 }

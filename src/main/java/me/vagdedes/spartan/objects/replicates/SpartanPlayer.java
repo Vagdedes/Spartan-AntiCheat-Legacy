@@ -39,7 +39,7 @@ import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import me.vagdedes.spartan.functionality.protections.Teleport;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
-import me.vagdedes.spartan.gui.info.PlayerInfo;
+import me.vagdedes.spartan.gui.SpartanMenu;
 import me.vagdedes.spartan.handlers.connection.IDs;
 import me.vagdedes.spartan.handlers.connection.Latency;
 import me.vagdedes.spartan.handlers.connection.Piracy;
@@ -710,7 +710,7 @@ public class SpartanPlayer {
             }
 
             if (success && clicks.canDistributeInformation()) {
-                PlayerInfo.refresh(getName());
+                SpartanMenu.playerInfo.refresh(getName());
             }
         }
     }

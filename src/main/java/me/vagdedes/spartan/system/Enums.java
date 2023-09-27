@@ -37,7 +37,7 @@ public class Enums {
     }
 
     public enum MiningOre {
-        ANCIENT_DEBRIS, DIAMOND, EMERALD, Gold;
+        ANCIENT_DEBRIS, DIAMOND, EMERALD, GOLD;
 
         private final String string;
 
@@ -45,7 +45,8 @@ public class Enums {
             string = this.toString().toLowerCase().replace("_", "-");
         }
 
-        public String getString() {
+        @Override
+        public String toString() {
             return string;
         }
     }
@@ -78,7 +79,8 @@ public class Enums {
             }
         }
 
-        public String getString() {
+        @Override
+        public String toString() {
             return string;
         }
 
@@ -126,7 +128,8 @@ public class Enums {
             }
         }
 
-        public String getString() {
+        @Override
+        public String toString() {
             return string;
         }
     }

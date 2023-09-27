@@ -19,7 +19,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Threads;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.utils.data.CooldownUtils;
 import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.entity.Player;
 
