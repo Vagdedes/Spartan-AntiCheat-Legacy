@@ -166,60 +166,60 @@ public class NoFall extends CheckExecutor {
         if (!player.getHandlers().has(Handlers.HandlerType.BlockBreak)) {
             if (hackType.getCheck().getBooleanOption("check_ratio", true)
                     && !PlayerData.hasJumpEffect(player)
-                    && !BouncingBlocks.isBelow(player)) {
-                if (buffer.get(ratioKey + "cancelled") != 1) {
-                    int toY = to.getBlockY(), fromY = from.getBlockY();
+                    && !BouncingBlocks.isBelow(player)
+                    && buffer.get(ratioKey + "cancelled") != 1
+                    && player.getCooldowns(check).canDo("ratio")) {
+                int toY = to.getBlockY(), fromY = from.getBlockY();
 
-                    if (toY < fromY) {
-                        int blockY = buffer.get(ratioKey + "block-y", Integer.MIN_VALUE);
+                if (toY < fromY) {
+                    int blockY = buffer.get(ratioKey + "block-y", Integer.MIN_VALUE);
 
-                        if (blockY != Integer.MIN_VALUE && blockY != toY) {
-                            buffer.increase(ratioKey + "blocks", 1);
+                    if (blockY != Integer.MIN_VALUE && blockY != toY) {
+                        buffer.increase(ratioKey + "blocks", 1);
+                    }
+                    buffer.set(ratioKey + "block-y", toY);
+
+                    if (vertical < -(MoveUtils.gravityAcceleration * 8) && airTicks > 8) {
+                        buffer.set(ratioKey + "validated", 1);
+                    }
+                } else if (buffer.get(ratioKey + "validated") == 1
+                        && Math.abs(toY - fromY) <= 3.0
+                        && to.distance(from) <= MoveUtils.chunk) {
+                    if (!player.isJumping(vertical)) {
+                        int cases, bufferTicks = 5, bufferRequirement = 2;
+
+                        if (player.isOnGroundCustom() && (!player.isBedrockPlayer() || buffer.start(ratioKey + "ground", bufferTicks) >= bufferRequirement)) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
+                            cases = 1;
+                        } else if (vertical == 0.0 && (requiresSuspicion || buffer.start(ratioKey + "movement", bufferTicks) >= bufferRequirement)) {
+                            buffer.remove(ratioKey + "movement");
+                            cases = 2;
+                        } else if (vertical > 0.0) {
+                            cases = 3;
+                        } else if (airTicks <= 5) {
+                            cases = 4;
+                        } else {
+                            cases = 0;
                         }
-                        buffer.set(ratioKey + "block-y", toY);
 
-                        if (vertical < -(MoveUtils.gravityAcceleration * 8) && airTicks > 8) {
-                            buffer.set(ratioKey + "validated", 1);
-                        }
-                    } else if (buffer.get(ratioKey + "validated") == 1 && Math.abs(toY - fromY) <= 3.0 && to.distance(from) <= MoveUtils.chunk) {
-                        if (!player.isJumping(vertical)) {
-                            int cases, bufferTicks = 5, bufferRequirement = 2;
+                        if (cases != 0) {
+                            SpartanBukkit.runDelayedTask(player, () -> {
+                                if (player != null) {
+                                    if (!PatternUtils.isBlockPattern(ratio, to, true, BlockUtils.semi_solid)) {
+                                        int blocks = buffer.get(ratioKey + "blocks");
 
-                            if (player.isOnGroundCustom() && (!player.isBedrockPlayer() || buffer.start(ratioKey + "ground", bufferTicks) >= bufferRequirement)) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
-                                cases = 1;
-                            } else if (vertical == 0.0 && (requiresSuspicion || buffer.start(ratioKey + "movement", bufferTicks) >= bufferRequirement)) {
-                                buffer.remove(ratioKey + "movement");
-                                cases = 2;
-                            } else if (vertical > 0.0) {
-                                cases = 3;
-                            } else if (airTicks <= 5) {
-                                cases = 4;
-                            } else {
-                                cases = 0;
-                            }
-
-                            if (cases != 0) {
-                                SpartanBukkit.runDelayedTask(player, () -> {
-                                    if (player != null) {
-                                        if (!PatternUtils.isBlockPattern(ratio, to, true, BlockUtils.semi_solid)) {
-                                            int blocks = buffer.get(ratioKey + "blocks");
-
-                                            // bigger or "equal" to 3 due to abstract counting of blocks
-                                            if (blocks >= MoveUtils.fallDamageBlocks && !decimals.has(decimals.get(ratioKey + "damage"))) {
-                                                boolean safe = blocks >= (MoveUtils.fallDamageBlocks + 1);
-                                                cancel("type: ratio, blocks: " + blocks + ", case: " + cases, to, safe ? 10 : 0, true, safe ? blocks : 0.0);
-                                            }
+                                        // bigger or "equal" to 3 due to abstract counting of blocks
+                                        if (blocks >= MoveUtils.fallDamageBlocks && !decimals.has(decimals.get(ratioKey + "damage"))) {
+                                            boolean safe = blocks >= (MoveUtils.fallDamageBlocks + 1);
+                                            cancel("type: ratio, blocks: " + blocks + ", case: " + cases, to, safe ? 10 : 0, true, safe ? blocks : 0.0);
                                         }
-                                        clearRatio(buffer, decimals);
                                     }
-                                }, 2L);
-                            }
+                                    clearRatio(buffer, decimals);
+                                }
+                            }, 2L);
                         }
-                    } else {
-                        decimals.remove(ratioKey + "damage");
                     }
                 } else {
-                    clearRatio(buffer, decimals);
+                    decimals.remove(ratioKey + "damage");
                 }
             } else {
                 clearRatio(buffer, decimals);
@@ -251,7 +251,7 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public boolean handle(Object object) {
-        player.getCooldowns(hackType).add("land", 10);
+        player.getCooldowns(hackType).add(new String[]{"land", "ratio"}, 10);
         return false;
     }
 

@@ -15,9 +15,8 @@ import java.util.*;
 
 public class PlayerLimitPerIP {
 
-    private static final List<String> array = new ArrayList<>();
+    private static final List<Integer> array = new ArrayList<>();
     private static final Map<Player, Integer> kick = new LinkedHashMap<>(Config.getMaxPlayers());
-    private static final int delayInTicks = 5;
 
     static {
         if (Register.isPluginLoaded()) {
@@ -30,7 +29,10 @@ public class PlayerLimitPerIP {
 
                     if (ticks == 0) {
                         Player p = entry.getKey();
-                        p.kickPlayer(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("player_ip_limit_kick_message"), null));
+
+                        if (p.isOnline()) {
+                            p.kickPlayer(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("player_ip_limit_kick_message"), null));
+                        }
                         iterator.remove();
                     } else {
                         entry.setValue(ticks - 1);
@@ -62,40 +64,39 @@ public class PlayerLimitPerIP {
     public static void cache() {
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-        if (players.size() > 0) {
+        if (!players.isEmpty()) {
             for (SpartanPlayer p : players) {
                 String ip = p.getIpAddress();
 
                 if (ip != null) {
-                    array.add(ip);
+                    array.add(ip.hashCode());
                 }
             }
         }
     }
 
     public static boolean add(Player p) {
-        if (!isLimited(p)) {
-            String ip = get(p);
+        String ip = get(p);
 
-            if (ip != null) {
-                int i = 0;
+        if (ip != null) {
+            int count = 0, ipHash = ip.hashCode();
 
-                for (String ips : array) {
-                    if (ip.equals(ips)) {
-                        i++;
-                    }
+            for (int loopIp : array) {
+                if (loopIp == ipHash) {
+                    count++;
                 }
-
-                if (i > 0) {
-                    int limit = Config.settings.getInteger("Protections.player_limit_per_ip");
-
-                    if (limit > 0 && i >= limit && !Permissions.has(p, Enums.Permission.RECONNECT)) {
-                        kick.put(p, delayInTicks);
-                        return true;
-                    }
-                }
-                array.add(ip);
             }
+
+            if (count > 0) {
+                int limit = Config.settings.getInteger("Protections.player_limit_per_ip");
+
+                if (count >= limit
+                        && !Permissions.has(p, Enums.Permission.RECONNECT)) {
+                    kick.put(p, 5);
+                    return true;
+                }
+            }
+            array.add(ipHash);
         }
         return false;
     }
@@ -108,7 +109,7 @@ public class PlayerLimitPerIP {
         String ip = p.getIpAddress();
 
         if (ip != null) {
-            array.remove(ip);
+            array.remove(ip.hashCode());
         }
     }
 }

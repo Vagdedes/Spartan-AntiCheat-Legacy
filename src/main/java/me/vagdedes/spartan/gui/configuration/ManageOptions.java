@@ -60,14 +60,14 @@ public class ManageOptions extends InventoryMenu {
                 } else {
                     item = new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.GRAY_DYE : Material.getMaterial("INK_SACK"), 1, (short) 8);
                 }
-                InventoryUtils.add(inventory, "§" + (positive ? "a" : "c") + option[0], null, item, -1);
+                add("§" + (positive ? "a" : "c") + option[0], null, item, -1);
             }
         } else {
             setInventory(player, menu + hackType, 9);
         }
-        InventoryUtils.add(inventory, "§4Reset Stored Data", AntiCheatUpdates.getInformation(false),
+        add("§4Reset Stored Data", AntiCheatUpdates.getInformation(false),
                 new ItemStack(Material.REDSTONE), size - 2);
-        InventoryUtils.add(inventory, "§cBack", AntiCheatUpdates.getInformation(false),
+        add("§cBack", AntiCheatUpdates.getInformation(false),
                 new ItemStack(Material.ARROW), size - 1);
         return true;
     }

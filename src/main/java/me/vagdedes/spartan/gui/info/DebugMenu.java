@@ -34,7 +34,7 @@ public class DebugMenu extends InventoryMenu {
         if (Debug.has(player, target, Enums.Debug.COMBAT)) {
             i.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inventory, "§7" + Enums.Debug.COMBAT.toString(), null, i, 10);
+        add("§7" + Enums.Debug.COMBAT.toString(), null, i, 10);
 
         // Separator
         i = new ItemStack(MaterialUtils.get("gold_boots"));
@@ -42,7 +42,7 @@ public class DebugMenu extends InventoryMenu {
         if (Debug.has(player, target, Enums.Debug.MOVEMENT)) {
             i.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inventory, "§7" + Enums.Debug.MOVEMENT.toString(), null, i, 12);
+        add("§7" + Enums.Debug.MOVEMENT.toString(), null, i, 12);
 
         // Separator
         i = new ItemStack(Material.COMPASS);
@@ -50,10 +50,10 @@ public class DebugMenu extends InventoryMenu {
         if (Debug.has(player, target, Enums.Debug.MISC)) {
             i.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        InventoryUtils.add(inventory, "§7" + Enums.Debug.MISC.toString(), null, i, 14);
+        add("§7" + Enums.Debug.MISC.toString(), null, i, 14);
 
         // Separator
-        InventoryUtils.add(inventory, "§cDisable", null, new ItemStack(Material.ARROW), 16);
+        add("§cDisable", null, new ItemStack(Material.ARROW), 16);
         return true;
     }
 

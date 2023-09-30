@@ -59,16 +59,16 @@ public class SupportIncompatibleItems extends InventoryMenu {
             for (Enums.HackType hackType : incompatibleItem.getHackTypes()) {
                 lore.add("§e" + hackType.toString().replace("_", "-"));
             }
-            InventoryUtils.add(inventory, "§6" + name, lore, new ItemStack(incompatibleItem.getMaterial()), -1);
+            add("§6" + name, lore, new ItemStack(incompatibleItem.getMaterial()), -1);
 
             if (counter == menuSize) {
                 break;
             }
         }
 
-        InventoryUtils.add(inventory, "§2Add Item", null, new ItemStack(MaterialUtils.get("redstone_torch")), 52);
+        add("§2Add Item", null, new ItemStack(MaterialUtils.get("redstone_torch")), 52);
 
-        InventoryUtils.add(inventory, "§4Back", AntiCheatUpdates.getInformation(false),
+        add("§4Back", AntiCheatUpdates.getInformation(false),
                 new ItemStack(Material.ARROW), 53);
         return true;
     }
