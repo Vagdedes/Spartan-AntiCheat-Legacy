@@ -15,7 +15,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.server.ConfigUtils;
-import me.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

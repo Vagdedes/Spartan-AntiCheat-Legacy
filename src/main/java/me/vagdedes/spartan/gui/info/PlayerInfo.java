@@ -23,7 +23,6 @@ import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.StringUtils;
-import me.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

@@ -11,7 +11,6 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
-import me.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

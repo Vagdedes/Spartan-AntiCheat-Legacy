@@ -14,7 +14,6 @@ import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
-import me.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

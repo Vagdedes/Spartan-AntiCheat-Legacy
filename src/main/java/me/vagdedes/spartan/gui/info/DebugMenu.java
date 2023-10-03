@@ -9,7 +9,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
