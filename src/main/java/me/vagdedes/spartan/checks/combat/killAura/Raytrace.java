@@ -70,9 +70,9 @@ public class Raytrace extends DetectionExecutor {
                                 block = raytracedLocation.getBlock();
                                 distanceToBlock = raytracedLocation.distance(block.getLocation());
                                 Material type = block.getType();
-                                fullSolid = (playerProfile.isSuspectedOrHacker(hackType) || distanceToBlock <= 1.0)
-                                        && (!handlers.has(Handlers.HandlerType.BlockBreak) || !BlockUtils.isSensitive(player, type))
+                                fullSolid = (!handlers.has(Handlers.HandlerType.BlockBreak) || !BlockUtils.isSensitive(player, type))
                                         && BlockUtils.isFullSolid(type);
+                                //(playerProfile.isSuspectedOrHacker(hackType) || distanceToBlock <= 1.0) Attention: recently removed
                             } else {
                                 distanceToBlock = 0.0;
                             }
