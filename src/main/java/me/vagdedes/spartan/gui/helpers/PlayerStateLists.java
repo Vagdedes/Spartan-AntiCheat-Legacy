@@ -194,7 +194,7 @@ public class PlayerStateLists {
 
                 for (int i = listSize; i < limit; i++) {
                     if (option) {
-                        add(inactiveColour + "Empty", lore, InventoryUtils.getHead(), freeSlots[slotPosition]);
+                        InventoryUtils.add(inventory, inactiveColour + "Empty", lore, InventoryUtils.getHead(), freeSlots[slotPosition]);
                     }
                     slotPosition++;
                 }
