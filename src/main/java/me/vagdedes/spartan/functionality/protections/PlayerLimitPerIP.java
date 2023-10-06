@@ -11,31 +11,44 @@ import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PlayerLimitPerIP {
 
-    private static final List<Integer> array = new ArrayList<>();
-    private static final Map<Player, Integer> kick = new LinkedHashMap<>(Config.getMaxPlayers());
+    private static class Storage {
+
+        private final String ipAddress;
+        private int kickTicks;
+
+        private Storage(String ipAddress) {
+            this.ipAddress = ipAddress;
+            this.kickTicks = -1;
+        }
+    }
+
+    private static final Map<Player, Storage> memory = new LinkedHashMap<>(Config.getMaxPlayers());
 
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                Iterator<Map.Entry<Player, Integer>> iterator = kick.entrySet().iterator();
+                Iterator<Map.Entry<Player, Storage>> iterator = memory.entrySet().iterator();
 
                 while (iterator.hasNext()) {
-                    Map.Entry<Player, Integer> entry = iterator.next();
-                    int ticks = entry.getValue();
+                    Map.Entry<Player, Storage> entry = iterator.next();
+                    Storage storage = entry.getValue();
 
-                    if (ticks == 0) {
+                    if (storage.kickTicks == 0) {
                         Player p = entry.getKey();
 
                         if (p.isOnline()) {
                             p.kickPlayer(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("player_ip_limit_kick_message"), null));
                         }
                         iterator.remove();
-                    } else {
-                        entry.setValue(ticks - 1);
+                    } else if (storage.kickTicks > 0) {
+                        storage.kickTicks -= 1;
                     }
                 }
             }, 1L, 1L);
@@ -43,8 +56,7 @@ public class PlayerLimitPerIP {
     }
 
     public static void clear() {
-        array.clear();
-        kick.clear();
+        memory.clear();
     }
 
     public static String get(Player p) {
@@ -69,7 +81,11 @@ public class PlayerLimitPerIP {
                 String ip = p.getIpAddress();
 
                 if (ip != null) {
-                    array.add(ip.hashCode());
+                    Player n = p.getPlayer();
+
+                    if (n != null && n.isOnline()) {
+                        memory.put(n, new Storage(ip));
+                    }
                 }
             }
         }
@@ -79,37 +95,44 @@ public class PlayerLimitPerIP {
         String ip = get(p);
 
         if (ip != null) {
-            int count = 0, ipHash = ip.hashCode();
+            int limit = Config.settings.getInteger("Protections.player_limit_per_ip");
 
-            for (int loopIp : array) {
-                if (loopIp == ipHash) {
-                    count++;
+            if (limit > 0) {
+                int count = 0;
+
+                for (Storage storage : memory.values()) {
+                    if (storage.ipAddress.equals(ip)) {
+                        count++;
+                    }
                 }
-            }
-
-            if (count > 0) {
-                int limit = Config.settings.getInteger("Protections.player_limit_per_ip");
 
                 if (count >= limit
                         && !Permissions.has(p, Enums.Permission.RECONNECT)) {
-                    kick.put(p, 5);
+                    Storage storage = new Storage(ip);
+                    storage.kickTicks = 5;
+                    memory.put(p, storage);
                     return true;
                 }
             }
-            array.add(ipHash);
+            memory.put(p, new Storage(ip));
         }
         return false;
     }
 
     public static boolean isLimited(Player p) {
-        return kick.containsKey(p);
+        Storage storage = memory.get(p);
+        return storage != null && storage.kickTicks >= 0;
     }
 
     public static void remove(SpartanPlayer p) {
         String ip = p.getIpAddress();
 
         if (ip != null) {
-            array.remove(ip.hashCode());
+            Player n = p.getPlayer();
+
+            if (n != null && n.isOnline()) {
+                memory.remove(n);
+            }
         }
     }
 }
