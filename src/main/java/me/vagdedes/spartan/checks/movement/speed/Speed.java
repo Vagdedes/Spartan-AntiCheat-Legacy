@@ -24,8 +24,7 @@ import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.Material;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.*;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
@@ -336,6 +335,7 @@ public class Speed extends CheckExecutor {
         }
         String reasonCopy = reason;
         boolean bedrockPlayer = player.isBedrockPlayer(),
+                vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                 explosion = !hasTrident && player.getHandlers().has(Handlers.HandlerType.Explosion),
                 damage = Damage.hasCooldown(player),
@@ -350,7 +350,7 @@ public class Speed extends CheckExecutor {
                                 || Compatibility.CompatibilityType.mcMMO.isFunctional() ? 0.6 :
                                 0.0,
                 hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0)
-        ), modifiedLimit = adjustLimit(to, reason, dm, difference, hasTrident, knockback, hitDelay, explosion, selfHit, damage, minimumLimit),
+        ), modifiedLimit = adjustLimit(to, reason, dm, difference, hasTrident, knockback, hitDelay, explosion, selfHit, damage, vehicle, minimumLimit),
                 dmCopy = dm;
         sprintDetection.setLimit(modifiedLimit);
 
@@ -361,9 +361,11 @@ public class Speed extends CheckExecutor {
         }
 
         if (dm != blocks && dm != blocks_slime && (reason.length() != 6 || !reason.equals("blocks"))
-                && !incompatibilities && !bedrockPlayer && difference == 0.0f && !damage && !extremelyPushed && !hasTrident && !hitDelay && minimumLimit <= 0.0
-                && !PlayerData.hasSpeedEffect(player, to) && !PlayerData.hasJumpEffect(player) && !FishingHook.hasCooldown(player) && !piston
-                && !PlayerData.hasLevitationEffect(player) && !FloorProtection.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
+                && !incompatibilities && !bedrockPlayer && !vehicle && !damage && !extremelyPushed
+                && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
+                && !PlayerData.hasSpeedEffect(player, to) && !PlayerData.hasJumpEffect(player)
+                && !FishingHook.hasCooldown(player) && !PlayerData.hasLevitationEffect(player)
+                && !FloorProtection.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
             boolean aboveBlocksCopy = aboveBlocks;
 
             runAsync(() -> {
@@ -734,7 +736,7 @@ public class Speed extends CheckExecutor {
     }
 
     private double adjustLimit(SpartanLocation to, String reason, double dm, float difference,
-                               boolean hasTrident, boolean bowProt, boolean hitDelay, boolean explosion, boolean selfHit, boolean damage,
+                               boolean hasTrident, boolean bowProt, boolean hitDelay, boolean explosion, boolean selfHit, boolean damage, boolean vehicle,
                                double minimumLimit) {
         double dm_speed = dm + (difference * 1.48);
 
@@ -776,6 +778,23 @@ public class Speed extends CheckExecutor {
             dm_speed = Math.max(bow, dm_speed);
         } else {
             dm_speed = MoveUtils.calculateLimit(player, to, dm_speed, 4.0, PotionEffectType.SPEED);
+        }
+        if (vehicle) {
+            Entity entity = player.getVehicle();
+
+            if (entity != null) { // In case the player recently exited their vehicle
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)
+                        && entity instanceof Camel) {
+                    minimumLimit = Math.max(minimumLimit, 2.5);
+                } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
+                        && (entity instanceof Horse || entity instanceof Llama)) {
+                    minimumLimit = Math.max(minimumLimit, 1.25);
+                } else if (entity instanceof Boat) {
+                    minimumLimit = Math.max(minimumLimit, 0.45);
+                } else if (entity instanceof Pig) {
+                    minimumLimit = Math.max(minimumLimit, 0.3);
+                }
+            }
         }
         return Math.max(minimumLimit, dm_speed);
     }

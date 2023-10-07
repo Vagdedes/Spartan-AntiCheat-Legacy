@@ -115,7 +115,7 @@ public class NoSwing extends CheckExecutor {
 
     private void runDamage(LivingEntity entity) {
         if (!canDo() || !hackType.getCheck().getBooleanOption("check_damage", true) || player.hasAttackCooldown()
-                || PlayerData.getEntitiesNumber(player, CombatUtils.maxHitDistance, false, 4) > 3
+                || PlayerData.getEntitiesNumber(player, CombatUtils.maxHitDistance, false) > 3
                 || player.getHandlers().has(Handlers.HandlerType.Trident) || CombatUtils.isNewPvPMechanic(player, entity) || CombatUtils.hasBlockBehind(player, entity)) {
             clearData();
             return;

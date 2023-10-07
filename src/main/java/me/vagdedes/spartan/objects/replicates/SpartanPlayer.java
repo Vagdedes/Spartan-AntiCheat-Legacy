@@ -12,7 +12,6 @@ import me.vagdedes.spartan.checks.exploits.Exploits;
 import me.vagdedes.spartan.checks.inventory.ImpossibleInventory;
 import me.vagdedes.spartan.checks.inventory.InventoryClicks;
 import me.vagdedes.spartan.checks.inventory.ItemDrops;
-import me.vagdedes.spartan.checks.movement.EntityMove;
 import me.vagdedes.spartan.checks.movement.MorePackets;
 import me.vagdedes.spartan.checks.movement.NoFall;
 import me.vagdedes.spartan.checks.movement.NoSlowdown;
@@ -524,9 +523,6 @@ public class SpartanPlayer {
                     break;
                 case FastBreak:
                     this.executors[id] = new FastBreak(this);
-                    break;
-                case EntityMove:
-                    this.executors[id] = new EntityMove(this);
                     break;
                 case FastClicks:
                     this.executors[id] = new FastClicks(this);
@@ -1069,8 +1065,14 @@ public class SpartanPlayer {
     }
 
     public boolean isOnGround() {
-        Player p = this.getPlayer();
-        return p != null && p.isOnGround();
+        Entity vehicle = getVehicle();
+
+        if (vehicle != null) {
+            return vehicle.isOnGround();
+        } else {
+            Player p = this.getPlayer();
+            return p != null && p.isOnGround();
+        }
     }
 
     public boolean refreshOnGroundCustom(SpartanLocation from) {

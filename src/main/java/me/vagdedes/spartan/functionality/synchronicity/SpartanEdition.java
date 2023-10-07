@@ -111,7 +111,6 @@ public class SpartanEdition {
                 return true;
             case Bedrock:
                 switch (hackType) {
-                    case EntityMove:
                     case IrregularMovements:
                     case NoFall:
                     case Speed:

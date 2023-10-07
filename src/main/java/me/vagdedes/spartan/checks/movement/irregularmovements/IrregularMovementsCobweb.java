@@ -2,6 +2,7 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
+import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -32,24 +33,24 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
                 oldBox = player.getOld_NmsBox();
 
         if (hackType.getCheck().getBooleanOption("check_cobweb", true)) {
+            boolean vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
+
             runAsync(() -> {
                 if (vertical == 0.0) {
-                    if (horizontal >= 0.01 && !player.isOnGround()
-                            || !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Second is used in case the first method is spoofed
+                    if (horizontal >= (vehicle ? 0.2 : 0.01) && !player.isOnGround()
+                            || !vehicle && !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Second is used in case the first method is spoofed
                         double selectedBox = AlgebraUtils.cut(GroundUtils.heightExists(box) ? box : oldBox, 5);
                         irregularMovements.cancel(prevention,
                                 "horizontal-" + scenario + "=" + selectedBox, "selected-box: " + selectedBox,
                                 6, IrregularMovements.defaultBufferTime);
                     }
-                } else {
-                    if (canGoDown) {
-                        long lastFall = player.getLastFall();
+                } else if (!vehicle && canGoDown) {
+                    long lastFall = player.getLastFall();
 
-                        if (vertical <= -(lastFall <= 105L ? 4.0 : lastFall <= 205L ? 0.2 : 0.1)) { // Last fall is checked to modify the limit and prevent fast falling false positives
-                            irregularMovements.cancel(prevention, "down-" + scenario, 2);
-                        }
-                    } // Do not create an up detection as it is covered by the illegal-up algorithm
-                }
+                    if (vertical <= -(lastFall <= 105L ? 4.0 : lastFall <= 205L ? 0.2 : 0.1)) { // Last fall is checked to modify the limit and prevent fast falling false positives
+                        irregularMovements.cancel(prevention, "down-" + scenario, 2);
+                    }
+                } // Do not create an up detection as it is covered by the illegal-up algorithm
             });
         }
     }

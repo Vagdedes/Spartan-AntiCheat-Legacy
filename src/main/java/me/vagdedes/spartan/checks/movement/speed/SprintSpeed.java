@@ -19,11 +19,8 @@ import java.util.Map;
 
 public class SprintSpeed extends DetectionExecutor {
 
-    private final Speed speed;
-
     SprintSpeed(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
-        speed = (Speed) executor;
     }
 
     private static final Direction[] directions = new Direction[]{
@@ -61,15 +58,16 @@ public class SprintSpeed extends DetectionExecutor {
     // Separator
 
     void run() {
-        if (speed.player.getNmsHorizontalDistance() >= 0.25
-                && !Moderation.wasDetected(speed.player)
-                && !speed.player.wasInLiquids()
-                && !LagLeniencies.hasHighLatency(speed.player, LagLeniencies.maxAllowedPing) // Library
-                && PlayerData.getWalkSpeedDifference(speed.player) != 0.0f) {
-            SpartanLocation from = speed.player.getEventFromLocation();
-            Buffer buffer = speed.player.getBuffer(hackType);
+        if (!player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && player.getNmsHorizontalDistance() >= 0.25
+                && !Moderation.wasDetected(player)
+                && !player.wasInLiquids()
+                && !LagLeniencies.hasHighLatency(player, LagLeniencies.maxAllowedPing) // Library
+                && PlayerData.getWalkSpeedDifference(player) != 0.0f) {
+            SpartanLocation from = player.getEventFromLocation();
+            Buffer buffer = player.getBuffer(hackType);
             checkFoodSprint(from, buffer);
-            checkOmnidirectional(speed.player.getEventToLocation(), from, buffer);
+            checkOmnidirectional(player.getEventToLocation(), from, buffer);
         }
     }
 

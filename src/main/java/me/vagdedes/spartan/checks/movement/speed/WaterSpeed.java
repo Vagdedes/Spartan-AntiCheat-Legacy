@@ -9,7 +9,6 @@ import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBloc
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
-import me.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -21,10 +20,7 @@ import me.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Llama;
-import org.bukkit.entity.Pig;
+import org.bukkit.entity.*;
 import org.bukkit.potion.PotionEffectType;
 
 public class WaterSpeed extends DetectionExecutor {
@@ -345,22 +341,27 @@ public class WaterSpeed extends DetectionExecutor {
 
         // Separator
         modifiedLimit = MoveUtils.calculateLimit(player, loc, modifiedLimit, 8.0, PotionEffectType.SPEED);
-        return Math.max(hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0), modifiedLimit);
+        double minimumLimit = hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0);
+
+        if (minimumLimit < 0.5 && vehicle != null) {
+            minimumLimit = 0.5;
+        }
+        return Math.max(minimumLimit, modifiedLimit);
     }
 
     private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
         if (player.canRunCheck(hackType, true) && hackType.getCheck().getBooleanOption("check_water_speed", true)
                 && (selfHit || !Damage.hasCooldown(player)) && !PlayerData.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !PlayerData.hasLevitationEffect(player) && !FishingHook.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.BlockBreak)
-                && !VehicleAccess.hasEnterCooldown(player, hackType)) {
+                && !PlayerData.hasLevitationEffect(player) && !FishingHook.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.BlockBreak)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                 Entity vehicle = player.getVehicle();
 
-                // Do not check boats, they behave much differently on water and require their own detection via the EntityMove check
                 if (vehicle != null
+                        && !(vehicle instanceof Boat)
                         && !(vehicle instanceof Pig)
                         && !(vehicle instanceof Horse)
-                        && !(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) && vehicle instanceof Llama)) {
+                        && !(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) && vehicle instanceof Llama)
+                        && !(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20) && vehicle instanceof Camel)) {
                     return false;
                 }
             }

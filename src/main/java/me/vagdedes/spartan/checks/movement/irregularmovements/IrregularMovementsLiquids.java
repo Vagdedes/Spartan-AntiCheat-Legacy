@@ -2,6 +2,7 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
+import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.data.Timer;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -28,13 +29,14 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
     void run(boolean pastFalling, boolean liquidBelow, boolean knownBoxes,
              boolean building, boolean jumping, boolean oldJumping, boolean changedScenario,
              String detection, String prevention) {
-        SpartanPlayer player = irregularMovements.player;
-        SpartanLocation to = player.getEventToLocation(),
-                from = player.getEventFromLocation();
-        double vertical = player.getNmsVerticalDistance(),
-                horizontal = player.getNmsHorizontalDistance();
+        if (hackType.getCheck().getBooleanOption("check_liquids", true)
+                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
+            SpartanPlayer player = irregularMovements.player;
+            SpartanLocation to = player.getEventToLocation(),
+                    from = player.getEventFromLocation();
+            double vertical = player.getNmsVerticalDistance(),
+                    horizontal = player.getNmsHorizontalDistance();
 
-        if (hackType.getCheck().getBooleanOption("check_liquids", true)) {
             runAsync(() -> {
                 if (liquidBelow) {
                     if (!building

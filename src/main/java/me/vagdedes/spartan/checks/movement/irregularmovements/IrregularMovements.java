@@ -236,7 +236,8 @@ public class IrregularMovements extends CheckExecutor {
 
                 constructDetection = true; // all
                 minimumUp = 0.022;
-            } else if (PatternUtils.collides(to, true, true, 0.62, BlockUtils.climbable)) { // Ladder/Vine Climbing
+            } else if (player.getVehicle() == null
+                    && PatternUtils.collides(to, true, true, 0.62, BlockUtils.climbable)) { // Ladder/Vine Climbing
                 climbScenario = true;
 
                 scenario = "climb";

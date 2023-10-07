@@ -21,11 +21,11 @@ public class IrregularMovementsMotion extends DetectionExecutor {
     }
 
     private static final double
-            stepExtraLimit = 2.0,
             criticalDecelerationLimit = -0.1,
             criticalUpwardsLimit = Math.sqrt(MoveUtils.chunk), // 4.0
             postJumpPreFallPrecision = MoveUtils.jumping[2] * 7, // 0.0007
-            criticalStepLimit = GroundUtils.maxPlayerStep * 2.0; // 1.325
+            criticalStepLimit = GroundUtils.maxPlayerStep * 2.0, // 1.325
+            vehicleStep = 2.0;
     private static final int
             criticalHoppingBuffer = AlgebraUtils.integerRound(MoveUtils.jumpingMotions / 2.0), // 3.0
             extendedDefaultBufferTime = AlgebraUtils.pow2(IrregularMovements.defaultBufferTime), // 400
@@ -89,14 +89,22 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                 box = player.getNmsBox(),
                 oldBox = player.getOld_NmsBox();
         int airTicks = player.getTicksOnAir();
+        boolean hasVehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
 
         Check check = hackType.getCheck();
-        double stepLimit = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
+        double stepLimit;
+
+        if (hasVehicle) {
+            double def = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
+            stepLimit = def <= 0.0 ? def : Math.max(def, vehicleStep);
+        } else {
+            stepLimit = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
+        }
         boolean jumpEffect = PlayerData.hasJumpEffect(player),
                 checkHoppingASYNC = (checkUp || checkJump) && check.getBooleanOption("check_hopping", true),
                 checkUpASYNC = checkUp && check.getBooleanOption("check_upwards", true),
                 checkDownASYNC = checkDown && check.getBooleanOption("check_downwards", true),
-                checkJumpASYNC = checkJump && check.getBooleanOption("check_jumping", true),
+                checkJumpASYNC = checkJump && !hasVehicle && check.getBooleanOption("check_jumping", true),
                 checkFallASYNC = checkFall && check.getBooleanOption("check_falling", true),
                 checkHorizontalASYNC = checkHorizontal && check.getBooleanOption("check_horizontal", true),
                 onGround = onGroundCustom || airTicks == 0;
@@ -154,12 +162,12 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             if (verticalDifference >= vertical) {
                                 irregularMovements.cancel(prevention,
                                         upwardsAccelerationKey, null,
-                                        5, extendedDefaultBufferTime);
+                                        hasVehicle ? 15 : 5, extendedDefaultBufferTime);
                             }
                         } else {
                             irregularMovements.cancel(prevention,
                                     upwardsProgressiveKey, null,
-                                    5, extendedDefaultBufferTime);
+                                    hasVehicle ? 15 : 5, extendedDefaultBufferTime);
                         }
                     }
                 } else if ((checkDownASYNC || checkFallASYNC)
@@ -193,11 +201,11 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             if (predictedExpectedTick != -1) {
                                 int inaccuracy = AlgebraUtils.integerRound(
                                         Math.abs(expectedTick - predictedExpectedTick)
-                                );
+                                ), limit = player.getHandlers().has(Handlers.HandlerType.Vehicle) ? 12 : 3;
 
-                                if (inaccuracy >= 3) {
+                                if (inaccuracy >= limit) {
                                     irregularMovements.cancel(
-                                            prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy,
+                                            prevention, downwardsPredictionKey, "inaccuracy: " + inaccuracy + ", limit: " + limit,
                                             5, extendedDefaultBufferTime);
                                 }
                             }
@@ -265,7 +273,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                     velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                         }
                     } else if (vertical < 0.0) {
-                        double limit = MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision;
+                        double limit = hasVehicle ? vehicleStep : MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision;
 
                         if (boxDifference >= limit) { // Anything below this threshold is likely instant, where otherwise you fall for a bit
                             irregularMovements.cancel(prevention, "step-down-predictable",
