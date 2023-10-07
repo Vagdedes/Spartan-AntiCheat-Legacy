@@ -864,8 +864,6 @@ public class Speed extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && player.getVehicle() == null
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && !MoveUtils.isInWaterTunnel(player, player.getEventToLocation());
     }

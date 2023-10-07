@@ -1456,9 +1456,18 @@ public class SpartanPlayer {
         return 1.0f;
     }
 
+    private Collection<PotionEffect> getLocalActivePotionEffects() {
+        Entity vehicle = getVehicle();
+        return new ArrayList<>(
+                vehicle != null ?
+                        (vehicle instanceof LivingEntity ? ((LivingEntity) vehicle).getActivePotionEffects() : new ArrayList<>(0))
+                        : potionEffects
+        );
+    }
+
     public Collection<PotionEffect> getActivePotionEffects() {
         synchronized (potionEffectLock) {
-            return new ArrayList<>(potionEffects);
+            return getLocalActivePotionEffects();
         }
     }
 
@@ -1470,8 +1479,10 @@ public class SpartanPlayer {
     }
 
     public PotionEffect getPotionEffect(PotionEffectType type) {
-        if (!potionEffects.isEmpty()) {
-            synchronized (potionEffectLock) {
+        synchronized (potionEffectLock) {
+            Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
+
+            if (!potionEffects.isEmpty()) {
                 for (PotionEffect potionEffect : potionEffects) {
                     if (potionEffect != null && potionEffect.getType().equals(type)) {
                         return potionEffect;
@@ -1483,8 +1494,10 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType[] potionEffectTypes) {
-        if (!potionEffects.isEmpty()) {
-            synchronized (potionEffectLock) {
+        synchronized (potionEffectLock) {
+            Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
+
+            if (!potionEffects.isEmpty()) {
                 for (PotionEffect potionEffect : potionEffects) {
                     for (PotionEffectType potionEffectType : potionEffectTypes) {
                         if (potionEffect.getType().equals(potionEffectType)) {
@@ -1498,8 +1511,10 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType potionEffectType) {
-        if (!potionEffects.isEmpty()) {
-            synchronized (potionEffectLock) {
+        synchronized (potionEffectLock) {
+            Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
+
+            if (!potionEffects.isEmpty()) {
                 for (PotionEffect potionEffect : potionEffects) {
                     if (potionEffect.getType().equals(potionEffectType)) {
                         return true;

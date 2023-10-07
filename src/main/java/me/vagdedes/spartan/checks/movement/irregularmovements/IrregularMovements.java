@@ -529,7 +529,6 @@ public class IrregularMovements extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && (!player.isBedrockPlayer() || player.getEventToLocation().getBlockY() > BlockUtils.getMinHeight(player.getWorld()));
     }
 
