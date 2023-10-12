@@ -29,6 +29,7 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
     void run(boolean pastFalling, boolean liquidBelow, boolean knownBoxes,
              boolean building, boolean jumping, boolean oldJumping, boolean changedScenario,
              String detection, String prevention) {
+
         if (hackType.getCheck().getBooleanOption("check_liquids", true)
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
             SpartanPlayer player = irregularMovements.player;
