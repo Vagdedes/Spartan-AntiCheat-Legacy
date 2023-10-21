@@ -31,10 +31,10 @@ public class BlockReach extends CheckExecutor {
         super(check, player);
     }
 
-    private double getMultiplier(SpartanBlock b) {
+    private double getMultiplier(SpartanBlock b, boolean sensitive) {
         return player.isBedrockPlayer() || LagLeniencies.hasHighLatency(player, LagLeniencies.continentPing) || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && player.getVehicle() instanceof Strider ? 1.5 :
-                        BlockUtils.isSensitive(player, b.getType()) ? Math.min(1 + LagLeniencies.getDelay(player), 1.5) : 1; // Building
+                        sensitive && BlockUtils.isSensitive(player, b.getType()) ? Math.min(1 + LagLeniencies.getDelay(player), 1.5) : 1; // Building
     }
 
     private boolean canDo(SpartanBlock b) {
@@ -55,7 +55,7 @@ public class BlockReach extends CheckExecutor {
             if (canDo()) {
                 SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
-                if (canDo(block)) {
+                if (canDo(block) && BlockUtils.isSensitive(player, block.getType())) {
                     Material item = player.getItemInHand().getType();
 
                     if (item != Material.FLINT_AND_STEEL
@@ -64,10 +64,10 @@ public class BlockReach extends CheckExecutor {
                         SpartanLocation bloc = block.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                                 limit = getLimit(),
-                                multiplier = getMultiplier(block);
+                                multiplier = getMultiplier(block, false);
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
-                            cancel("type: break, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
+                            cancel("type: break, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
                         }
                     }
                 }
@@ -83,10 +83,10 @@ public class BlockReach extends CheckExecutor {
                         SpartanLocation to = player.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                                 limit = getLimit(),
-                                multiplier = getMultiplier(block);
+                                multiplier = getMultiplier(block, true);
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
-                            cancel("type: interact, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
+                            cancel("type: interact, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
                         }
                     }
                 }
@@ -113,13 +113,13 @@ public class BlockReach extends CheckExecutor {
                             && !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                             && ypos <= 0.5
                             && distance >= 1.4 && distance > ab_distance && distance <= MoveUtils.chunk) {
-                        cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos);
+                        cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos + ", block: " + BlockUtils.blockToString(block));
                     } else {
                         double limit = getLimit(),
-                                multiplier = getMultiplier(block);
+                                multiplier = getMultiplier(block, true);
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
-                            cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier);
+                            cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
                         }
                     }
                 }
