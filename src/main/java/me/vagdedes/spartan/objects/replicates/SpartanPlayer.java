@@ -1572,13 +1572,15 @@ public class SpartanPlayer {
                     nearbyEntitiesDistance = x;
 
                     if (SpartanBukkit.isSynchronised()) {
-                        if (isNull) {
-                            return nearbyEntities = new CopyOnWriteArrayList<>(p.getNearbyEntities(x, y, z));
-                        } else {
-                            nearbyEntities.clear();
-                            nearbyEntities.addAll(p.getNearbyEntities(x, y, z));
-                            return nearbyEntities;
-                        }
+                        double finalX = x;
+
+                        SpartanBukkit.runTask(this, () -> {
+                            if (!isNull) {
+                                nearbyEntities.clear();
+                            }
+                            nearbyEntities.addAll(p.getNearbyEntities(finalX, finalX, finalX));
+                        });
+                        return nearbyEntities;
                     } else {
                         SpartanLocation loc = this.getLocation();
                         List<Entity> entities = new ArrayList<>(worldEntities.getOrDefault(loc.getWorld(), new ArrayList<>(0)));
