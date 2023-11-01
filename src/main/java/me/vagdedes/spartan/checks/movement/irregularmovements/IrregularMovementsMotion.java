@@ -369,16 +369,17 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     Handlers handlers = player.getHandlers();
 
                     if (!handlers.has(Handlers.HandlerType.BlockPlace)
-                            && !handlers.has(Handlers.HandlerType.Building)
-                            && !PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
-                            && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-                        irregularMovements.cancel(prevention, "equilibrium-spacious",
-                                jumpEffectASYNC ? 2 : 1);
-                    } else if (!knownBoxes
-                            && !GroundUtils.heightExists(oldBox - oldVertical)) {
-                        irregularMovements.cancel(prevention, "*equilibrium-abstract", 2);
-                    } else {
-                        irregularMovements.cancel(prevention, "*equilibrium-predictable", 3);
+                            && !handlers.has(Handlers.HandlerType.Building)) {
+                        if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
+                                && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
+                            irregularMovements.cancel(prevention, "equilibrium-spacious",
+                                    jumpEffectASYNC ? 2 : 1);
+                        } else if (!knownBoxes
+                                && !GroundUtils.heightExists(oldBox - oldVertical)) {
+                            irregularMovements.cancel(prevention, "*equilibrium-abstract", 2);
+                        } else {
+                            irregularMovements.cancel(prevention, "*equilibrium-predictable", 3);
+                        }
                     }
                 }
             }

@@ -276,7 +276,7 @@ public class NoFall extends CheckExecutor {
             if (canDo()) {
                 runAsync(() -> {
                     boolean requiresSuspicion = player.getProfile().isSuspectedOrHacker(hackType),
-                            offGround = player.getBlocksOffGround(3, true, true) >= 2;
+                            offGround = player.getBlocksOffGround(4, true, true) >= 3;
                     boolean bouncingBlocks = BouncingBlocks.isBelow(player);
 
                     if (!bouncingBlocks) {
