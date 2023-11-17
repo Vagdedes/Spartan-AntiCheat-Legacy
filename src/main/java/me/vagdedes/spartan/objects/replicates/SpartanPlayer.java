@@ -1575,10 +1575,12 @@ public class SpartanPlayer {
                         double finalX = x;
 
                         SpartanBukkit.runTask(this, () -> {
-                            if (!isNull) {
+                            if (isNull) {
+                                nearbyEntities = new CopyOnWriteArrayList<>(p.getNearbyEntities(finalX, finalX, finalX));
+                            } else {
                                 nearbyEntities.clear();
+                                nearbyEntities.addAll(p.getNearbyEntities(finalX, finalX, finalX));
                             }
-                            nearbyEntities.addAll(p.getNearbyEntities(finalX, finalX, finalX));
                         });
                         return nearbyEntities;
                     } else {
