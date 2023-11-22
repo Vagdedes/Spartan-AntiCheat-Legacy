@@ -27,7 +27,6 @@ public class GroundCollision {
                 handlers.remove(Handlers.HandlerType.Trident);
                 handlers.remove(Handlers.HandlerType.Piston);
                 handlers.remove(Handlers.HandlerType.Damage);
-                handlers.remove(Handlers.HandlerType.FishingHook);
                 handlers.remove(Handlers.HandlerType.ExtremeCollision);
                 handlers.remove(Handlers.HandlerType.Floor);
             }

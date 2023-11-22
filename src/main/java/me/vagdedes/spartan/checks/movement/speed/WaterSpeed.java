@@ -7,7 +7,6 @@ import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -353,7 +352,7 @@ public class WaterSpeed extends DetectionExecutor {
     private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
         if (player.canRunCheck(hackType, true) && hackType.getCheck().getBooleanOption("check_water_speed", true)
                 && (selfHit || !Damage.hasCooldown(player)) && !PlayerData.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !PlayerData.hasLevitationEffect(player) && !FishingHook.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
+                && !PlayerData.hasLevitationEffect(player) && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                 Entity vehicle = player.getVehicle();
 

@@ -11,7 +11,7 @@ public class Handlers {
     public enum HandlerType {
         GameMode, Teleport, Velocity, // Fundamental
         SensitiveBlockBreak, TowerBuilding, // Environment
-        BouncingBlocks, Floor, Piston, WaterElevator, Damage, FishingHook, // Loglinear
+        BouncingBlocks, Floor, Piston, WaterElevator, Damage, // Loglinear
         ElytraWear, ElytraUse, Vehicle, // Constant
         Trident, ExtremeCollision, Explosion // Exponential
     }

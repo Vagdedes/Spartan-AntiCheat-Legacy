@@ -6,12 +6,10 @@ import me.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
-import me.vagdedes.spartan.functionality.protections.Building;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
 import me.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
@@ -364,8 +362,8 @@ public class Speed extends CheckExecutor {
                 && !incompatibilities && !bedrockPlayer && !vehicle && !damage && !extremelyPushed
                 && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
                 && !PlayerData.hasSpeedEffect(player, to) && !PlayerData.hasJumpEffect(player)
-                && !FishingHook.hasCooldown(player) && !PlayerData.hasLevitationEffect(player)
-                && !FloorProtection.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
+                && !PlayerData.hasLevitationEffect(player) && !FloorProtection.hasCooldown(player)
+                && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
             boolean aboveBlocksCopy = aboveBlocks;
 
             runAsync(() -> {
@@ -724,7 +722,7 @@ public class Speed extends CheckExecutor {
         }
 
         // Limit
-        if (selfHit || FishingHook.hasCooldown(player)) {
+        if (selfHit) {
             dm = cacheLimit(decimals, dm, Speed.selfHit, 5);
         }
 

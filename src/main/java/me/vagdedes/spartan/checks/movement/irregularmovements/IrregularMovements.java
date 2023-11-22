@@ -5,13 +5,11 @@ import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
-import me.vagdedes.spartan.functionality.protections.Building;
 import me.vagdedes.spartan.functionality.protections.Explosion;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -176,8 +174,7 @@ public class IrregularMovements extends CheckExecutor {
             if (threwTrident
                     || PlayerData.hasNearbyCollisions(player)
                     || NoHitDelay.hasCooldown(player)
-                    || player.getHandlers().has(Handlers.HandlerType.Piston)
-                    || FishingHook.hasCooldown(player)) { // Extreme circumstances
+                    || player.getHandlers().has(Handlers.HandlerType.Piston)) { // Extreme circumstances
                 velocityScenario = true;
 
                 scenario = "abstract";

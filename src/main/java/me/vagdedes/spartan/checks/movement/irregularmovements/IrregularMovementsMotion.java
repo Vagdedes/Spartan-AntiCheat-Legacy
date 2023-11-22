@@ -2,7 +2,6 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
-import me.vagdedes.spartan.functionality.protections.Building;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Handlers;
