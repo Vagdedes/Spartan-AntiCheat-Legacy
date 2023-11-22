@@ -476,7 +476,7 @@ public class ResearchEngine {
             }
         }
 
-        if (violationsMap.size() == 0) {
+        if (violationsMap.isEmpty()) {
             return null;
         }
         return new ViolationHistory(hackType, dataType, violationsMap, violationsList, Math.max(dates.size(), 1));
@@ -723,7 +723,7 @@ public class ResearchEngine {
                         }
                         rs.close();
 
-                        if (cache.size() == 0) {
+                        if (cache.isEmpty()) {
                             continueWithYAML = true;
                         }
                     } else {
@@ -1269,7 +1269,7 @@ public class ResearchEngine {
                                             FalsePositiveDetection.TimePeriod timePeriod = averages.get(timeMoment);
 
                                             if (timePeriod == null) {
-                                                timePeriod = new FalsePositiveDetection.TimePeriod(duration);
+                                                timePeriod = new FalsePositiveDetection.TimePeriod();
                                                 timePeriod.add(playerViolation);
                                                 averages.put(timeMoment, timePeriod);
                                             } else {

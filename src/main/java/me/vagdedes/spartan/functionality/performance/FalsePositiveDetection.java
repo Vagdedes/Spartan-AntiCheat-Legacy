@@ -14,12 +14,10 @@ public class FalsePositiveDetection {
 
     public static class TimePeriod {
 
-        private final long ticks;
         private final Set<Integer> players;
         private final Map<Integer, Integer> violations;
 
-        public TimePeriod(double duration) {
-            this.ticks = (int) (duration / TPS.tickTimeDecimal);
+        public TimePeriod() {
             this.players = new HashSet<>();
             this.violations = new HashMap<>();
         }
