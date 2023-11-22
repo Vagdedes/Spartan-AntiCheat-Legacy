@@ -62,7 +62,6 @@ public class ResearchEngine {
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>(Config.getMaxPlayers());
     private static final Map<String, ItemStack> skulls = new ConcurrentHashMap<>(logRequirement);
     // Detections
-    private static final Map<String, Double> globalVelocityOccurrences = new LinkedHashMap<>();
 
     // Averages
     private static final Map<Enums.MiningOre, Double>
@@ -84,10 +83,10 @@ public class ResearchEngine {
     private static final Runnable skullsAndFightsRunnable = () -> {
         Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
-        if (playerProfiles.size() > 0) {
+        if (!playerProfiles.isEmpty()) {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            if (players.size() > 0) {
+            if (!players.isEmpty()) {
                 boolean added = !Config.settings.getBoolean("Important.load_player_head_textures") || skulls.size() == logRequirement;
                 Inventory inv = Bukkit.createInventory(players.get(0).getPlayer(), 9, "");
 
