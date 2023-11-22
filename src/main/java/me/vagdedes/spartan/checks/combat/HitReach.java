@@ -44,7 +44,7 @@ public class HitReach extends CheckExecutor {
             double y = player.getNmsVerticalDistance();
             preferred = player.isJumping(y) || player.isFalling(y) ? 4.25 : defaultHorizontalReach;
         }
-        return Math.max(ResearchEngine.getReach()[1], preferred);
+        return Math.max(ResearchEngine.getAverageReach(), preferred);
     }
 
     private double filter(double distance, double minimum, double extra) {

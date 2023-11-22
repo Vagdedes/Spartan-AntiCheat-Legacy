@@ -79,7 +79,7 @@ public class FastClicks extends CheckExecutor {
             int limit = hackType.getCheck().getNumericalOption("clicks_per_second_limit", defaultClicksPerSecondLimit),
                     latencyExtra = AlgebraUtils.integerRound(Math.min(LagLeniencies.getDelay(player), 5)),
                     extraLimit = Math.max(limit - defaultClicksPerSecondLimit, 0);
-            double globalAverage = ResearchEngine.getCPS()[1];
+            double globalAverage = ResearchEngine.getAverageCPS();
 
             if (limit > 0) {
                 if (globalAverage > limit) {

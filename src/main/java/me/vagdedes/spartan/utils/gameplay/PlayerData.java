@@ -162,7 +162,7 @@ public class PlayerData {
         List<PlayerFight> fights = p.getProfile().getCombat().getCurrentFights();
 
         if (!fights.isEmpty()) {
-            double globalAverageReach = ResearchEngine.getReach()[1];
+            double globalAverageReach = ResearchEngine.getAverageReach();
 
             for (PlayerFight fight : fights) {
                 PlayerOpponent[] opponents = fight.getOpponent(p);

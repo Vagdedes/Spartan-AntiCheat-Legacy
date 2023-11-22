@@ -21,7 +21,6 @@ import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.profiling.PlayerFight;
 import me.vagdedes.spartan.objects.profiling.PlayerOpponent;
-import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;

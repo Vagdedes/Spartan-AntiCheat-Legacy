@@ -68,16 +68,9 @@ public class ResearchEngine {
     private static final Map<Enums.MiningOre, Double>
             averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length),
             defaultAverageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
-    private static final double[]
-            reach = new double[3],
-            hitTime = new double[3],
-            yawRate = new double[3],
-            pitchRate = new double[3],
-            cps = new double[3],
-            winsToLosses = new double[3],
-            hitRatio = new double[3],
-            hitCombo = new double[3],
-            duration = new double[3];
+    private static double
+            averageReach = -1.0,
+            averageCPS = -1.0;
 
     // Lists
     private static final List<PlayerProfile>
@@ -125,17 +118,6 @@ public class ResearchEngine {
     private static String date = new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
 
     static {
-        for (int i = 0; i < 3; i++) {
-            reach[i] = -1.0;
-            hitTime[i] = -1.0;
-            yawRate[i] = -1.0;
-            pitchRate[i] = -1.0;
-            cps[i] = -1.0;
-            winsToLosses[i] = -1.0;
-            hitCombo[i] = -1.0;
-            duration[i] = -1.0;
-            hitRatio[i] = -1.0;
-        }
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {
             switch (ore) {
                 case DIAMOND:
@@ -306,45 +288,17 @@ public class ResearchEngine {
     }
 
     public static boolean hasCompetitiveCPS() {
-        return cps[1] >= CombatUtils.competitiveCPS;
+        return averageCPS >= CombatUtils.competitiveCPS;
     }
 
     // Separator
 
-    public static double[] getCPS() {
-        return cps;
+    public static double getAverageCPS() {
+        return averageCPS;
     }
 
-    public static double[] getReach() {
-        return reach;
-    }
-
-    public static double[] getDuration() {
-        return duration;
-    }
-
-    public static double[] getHitCombo() {
-        return hitCombo;
-    }
-
-    public static double[] getWinsToLosses() {
-        return winsToLosses;
-    }
-
-    public static double[] getHitRatio() {
-        return hitRatio;
-    }
-
-    public static double[] getHitTime() {
-        return hitTime;
-    }
-
-    public static double[] getYawRate() {
-        return yawRate;
-    }
-
-    public static double[] getPitchRate() {
-        return pitchRate;
+    public static double getAverageReach() {
+        return averageReach;
     }
 
     public static List<PlayerReport> getReports(Enums.HackType hackType, int days, boolean checkIfDismissed) {
@@ -1425,24 +1379,8 @@ public class ResearchEngine {
     }
 
     private static void updateCombatCache() {
-        double
-                averageCPS = 0.0, averageCPSCount = 0.0, minCPS = 0.0, maxCPS = 0.0,
-
-                averageReach = 0.0, averageReachCount = 0.0, minReach = 0.0, maxReach = 0.0,
-
-                averageHitTime = 0.0, averageHitTimeCount = 0.0, minHitTime = 0.0, maxHitTime = 0.0,
-
-                averageYawRate = 0.0, averageYawRateCount = 0.0, minYawRate = 0.0, maxYawRate = 0.0,
-
-                averagePitchRate = 0.0, averagePitchRateCount = 0.0, minPitchRate = 0.0, maxPitchRate = 0.0,
-
-                averageHitCombo = 0.0, averageHitComboCount = 0.0, minHitCombo = 0.0, maxHitCombo = 0.0,
-
-                averageDuration = 0.0, averageDurationCount = 0.0, minDuration = 0.0, maxDuration = 0.0,
-
-                averageHitRatio = 0.0, averageHitRatioCount = 0.0, minHitRatio = 0.0, maxHitRatio = 0.0,
-
-                averageWinsToLosses = 0.0, averageWinsToLossesCount = 0.0, minWinsToLosses = 0.0, maxWinsToLosses = 0.0;
+        double averageCPS = 0.0, averageCPSCount = 0.0,
+                averageReach = 0.0, averageReachCount = 0.0;
 
         if (hackerFreePlayerProfiles.size() >= profileRequirement) {
             List<PlayerFight> playerFights = new LinkedList<>();
@@ -1457,75 +1395,12 @@ public class ResearchEngine {
                     if (list != null) {
                         averageCPSCount += 1.0;
                         averageCPS += list[0];
-                        maxCPS += list[1];
-                        minCPS += list[2];
                     }
                     list = combat.getReachAverages();
 
                     if (list != null) {
                         averageReachCount += 1.0;
                         averageReach += list[0];
-                        maxReach += list[1];
-                        minReach += list[2];
-                    }
-                    list = combat.getHitTimeAverages();
-
-                    if (list != null) {
-                        averageHitTimeCount += 1.0;
-                        averageHitTime += list[0];
-                        maxHitTime += list[1];
-                        minHitTime += list[2];
-                    }
-                    list = combat.getYawRateAverages();
-
-                    if (list != null) {
-                        averageYawRateCount += 1.0;
-                        averageYawRate += list[0];
-                        maxYawRate += list[1];
-                        minYawRate += list[2];
-                    }
-                    list = combat.getPitchRateAverages();
-
-                    if (list != null) {
-                        averagePitchRateCount += 1.0;
-                        averagePitchRate += list[0];
-                        maxPitchRate += list[1];
-                        minPitchRate += list[2];
-                    }
-                    list = combat.getHitComboAverages();
-
-                    if (list != null) {
-                        averageHitComboCount += 1.0;
-                        averageHitCombo += list[0];
-                        maxHitCombo += list[1];
-                        minHitCombo += list[2];
-                    }
-                    list = combat.getDurationAverages();
-
-                    if (list != null) {
-                        averageDurationCount += 1.0;
-                        averageDuration += list[0];
-                        maxDuration += list[1];
-                        minDuration += list[2];
-                    }
-                    list = combat.getHitRatioAverages();
-
-                    if (list != null) {
-                        averageHitRatioCount += 1.0;
-                        averageHitRatio += list[0];
-                        maxHitRatio += list[1];
-                        minHitRatio += list[2];
-                    }
-
-                    // Separator
-
-                    double individual = combat.getAverageWinLossRatio();
-
-                    if (individual != -1.0) {
-                        averageWinsToLossesCount += 1.0;
-                        averageWinsToLosses += individual;
-                        maxWinsToLosses = Math.max(maxWinsToLosses, individual);
-                        minWinsToLosses = Math.min(minWinsToLosses, individual);
                     }
                 }
             }
@@ -1535,95 +1410,15 @@ public class ResearchEngine {
             // Separator
 
             if (averageCPSCount > 0.0) {
-                cps[0] = minCPS / averageCPSCount;
-                cps[1] = averageCPS / averageCPSCount;
-                cps[2] = maxCPS / averageCPSCount;
+                ResearchEngine.averageCPS = averageCPS / averageCPSCount;
             } else {
-                cps[0] = -1.0;
-                cps[1] = -1.0;
-                cps[2] = -1.0;
+                ResearchEngine.averageCPS = -1.0;
             }
 
             if (averageReachCount > 0.0) {
-                reach[0] = minReach / averageReachCount;
-                reach[1] = averageReach / averageReachCount;
-                reach[2] = maxReach / averageReachCount;
+                ResearchEngine.averageReach = averageReach / averageReachCount;
             } else {
-                reach[0] = -1.0;
-                reach[1] = -1.0;
-                reach[2] = -1.0;
-            }
-
-            if (averageHitTimeCount > 0.0) {
-                hitTime[0] = minHitTime / averageHitTimeCount;
-                hitTime[1] = averageHitTime / averageHitTimeCount;
-                hitTime[2] = maxHitTime / averageHitTimeCount;
-            } else {
-                hitTime[0] = -1.0;
-                hitTime[1] = -1.0;
-                hitTime[2] = -1.0;
-            }
-
-            if (averageYawRateCount > 0.0) {
-                yawRate[0] = minYawRate / averageYawRateCount;
-                yawRate[1] = averageYawRate / averageYawRateCount;
-                yawRate[2] = maxYawRate / averageYawRateCount;
-            } else {
-                yawRate[0] = -1.0;
-                yawRate[1] = -1.0;
-                yawRate[2] = -1.0;
-            }
-
-            if (averagePitchRateCount > 0.0) {
-                pitchRate[0] = minPitchRate / averagePitchRateCount;
-                pitchRate[1] = averagePitchRate / averagePitchRateCount;
-                pitchRate[2] = maxPitchRate / averagePitchRateCount;
-            } else {
-                pitchRate[0] = -1.0;
-                pitchRate[1] = -1.0;
-                pitchRate[2] = -1.0;
-            }
-
-            if (averageHitComboCount > 0.0) {
-                hitCombo[0] = minHitCombo / averageHitComboCount;
-                hitCombo[1] = averageHitCombo / averageHitComboCount;
-                hitCombo[2] = maxHitCombo / averageHitComboCount;
-            } else {
-                hitCombo[0] = -1.0;
-                hitCombo[1] = -1.0;
-                hitCombo[2] = -1.0;
-            }
-
-            if (averageDurationCount > 0.0) {
-                duration[0] = minDuration / averageDurationCount;
-                duration[1] = averageDuration / averageDurationCount;
-                duration[2] = maxDuration / averageDurationCount;
-            } else {
-                duration[0] = -1.0;
-                duration[1] = -1.0;
-                duration[2] = -1.0;
-            }
-
-            if (averageHitRatioCount > 0.0) {
-                hitRatio[0] = minHitRatio / averageHitRatioCount;
-                hitRatio[1] = averageHitRatio / averageHitRatioCount;
-                hitRatio[2] = maxHitRatio / averageHitRatioCount;
-            } else {
-                hitRatio[0] = -1.0;
-                hitRatio[1] = -1.0;
-                hitRatio[2] = -1.0;
-            }
-
-            // Separator
-
-            if (averageWinsToLossesCount > 0.0) {
-                winsToLosses[0] = minWinsToLosses;
-                winsToLosses[1] = averageWinsToLosses / averageWinsToLossesCount;
-                winsToLosses[2] = maxWinsToLosses;
-            } else {
-                winsToLosses[0] = -1.0;
-                winsToLosses[1] = -1.0;
-                winsToLosses[2] = -1.0;
+                ResearchEngine.averageReach = -1.0;
             }
         } else {
             ResearchEngine.playerFights.clear();
