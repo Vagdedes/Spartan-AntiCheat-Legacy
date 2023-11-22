@@ -9,7 +9,7 @@ public class BlockBreak {
 
     public static void run(SpartanPlayer p, boolean cancelled, SpartanBlock b) {
         if (BlockUtils.isSensitive(p, b.getType())) {
-            p.getHandlers().add(Handlers.HandlerType.BlockBreak, cancelled ? 20 : 40);
+            p.getHandlers().add(Handlers.HandlerType.SensitiveBlockBreak, cancelled ? 20 : 40);
         }
     }
 }

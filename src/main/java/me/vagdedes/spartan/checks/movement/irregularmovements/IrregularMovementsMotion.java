@@ -2,6 +2,7 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
+import me.vagdedes.spartan.functionality.protections.Building;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
 import me.vagdedes.spartan.objects.data.Handlers;
@@ -367,8 +368,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                 } else {
                     Handlers handlers = player.getHandlers();
 
-                    if (!handlers.has(Handlers.HandlerType.BlockPlace)
-                            && !handlers.has(Handlers.HandlerType.Building)) {
+                    if (!handlers.has(Handlers.HandlerType.TowerBuilding)) {
                         if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                                 && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                             irregularMovements.cancel(prevention, "equilibrium-spacious",

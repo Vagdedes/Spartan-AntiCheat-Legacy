@@ -994,9 +994,6 @@ public class SpartanPlayer {
         this.allowFlight = allowFlight;
 
         if (flying) {
-            if (gameMode == GameMode.CREATIVE) {
-                handlers.add(Handlers.HandlerType.GameMode, 20);
-            }
             this.flyingTime = System.currentTimeMillis() + 3_000L;
         }
     }
@@ -1775,6 +1772,10 @@ public class SpartanPlayer {
 
     public boolean isGroundSpoofing() {
         return isOnGroundCustom() != isOnGround();
+    }
+
+    public boolean isAnyOnGround() {
+        return isOnGroundCustom() || isOnGround();
     }
 
     // Jumping

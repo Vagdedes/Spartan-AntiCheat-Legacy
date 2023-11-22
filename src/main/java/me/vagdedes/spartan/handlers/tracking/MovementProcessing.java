@@ -29,7 +29,7 @@ public class MovementProcessing {
             Damage.runMove(p);
 
             // Vehicle Ticks Reset
-            if (hor <= sprintingMaxSpeed && vehicle == null && (p.isOnGround() || p.isOnGroundCustom())) {
+            if (hor <= sprintingMaxSpeed && vehicle == null && p.isAnyOnGround()) {
                 resetVehicleTicks(p);
             }
 
@@ -62,19 +62,19 @@ public class MovementProcessing {
 
                 // Sprint/Walk Identifier
                 if (dis > 0.1) {
-                    if (p.getActivePotionEffects().size() > 0 // Potions
+                    if (!p.getActivePotionEffects().isEmpty() // Potions
                             || p.isUsingItem() // Inventory
                             || Damage.hasCooldown(p) // Damage
                             || p.isSwimming() || p.wasInLiquids() // Liquid
                             || Velocity.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.Explosion) || p.getHandlers().has(Handlers.HandlerType.ElytraUse) || p.getHandlers().has(Handlers.HandlerType.Trident) // Abstract
-                            || p.getHandlers().has(Handlers.HandlerType.GameMode) || PlayerData.getWalkSpeedDifference(p) > 0.0f // Server
+                            || PlayerData.getWalkSpeedDifference(p) > 0.0f // Server
                             || FloorProtection.hasCooldown(p) || BlockUtils.areIceBlocks(to.clone().add(0, -1, 0))) { // Environment
                         p.setWalking(0);
                         p.setSprinting(0);
                     } else {
                         boolean walking = dis >= 0.215 && dis < walkingMaxSpeed,
                                 sprinting = !walking && dis > 0.28 && dis < sprintingMaxSpeed,
-                                ground = p.isOnGround() || p.isOnGroundCustom(),
+                                ground = p.isAnyOnGround(),
                                 nativeSprinting = p.isSprinting(),
                                 walkJumping = !walking && !nativeSprinting && dis > 0.24 && dis < 0.29,
                                 sprintJumping = nativeSprinting || !walking && !sprinting && dis > 0.5 && dis < 0.68;

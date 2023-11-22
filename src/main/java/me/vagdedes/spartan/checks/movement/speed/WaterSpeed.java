@@ -4,7 +4,6 @@ import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
-import me.vagdedes.spartan.functionality.protections.Building;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -309,7 +308,9 @@ public class WaterSpeed extends DetectionExecutor {
         } else if (boatStepping || selfHit || horizontalBuffer < 0 || vehicle instanceof Horse
                 || !cooldowns.canDo("ice") || player.getHandlers().has(Handlers.HandlerType.Explosion)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), premature));
-        } else if (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || player.isBedrockPlayer() || Building.hasCooldown(player)) {
+        } else if (player.isBedrockPlayer()
+                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
+                || player.getHandlers().has(Handlers.HandlerType.TowerBuilding)) {
             modifiedLimit = Math.max(modifiedLimit, instability);
         }
 
@@ -352,7 +353,7 @@ public class WaterSpeed extends DetectionExecutor {
     private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
         if (player.canRunCheck(hackType, true) && hackType.getCheck().getBooleanOption("check_water_speed", true)
                 && (selfHit || !Damage.hasCooldown(player)) && !PlayerData.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !PlayerData.hasLevitationEffect(player) && !FishingHook.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.BlockBreak)) {
+                && !PlayerData.hasLevitationEffect(player) && !FishingHook.hasCooldown(player) && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                 Entity vehicle = player.getVehicle();
 

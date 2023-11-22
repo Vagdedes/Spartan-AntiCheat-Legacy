@@ -164,7 +164,8 @@ public class IrregularMovements extends CheckExecutor {
             // Cache Variables
             Cooldowns cooldowns = player.getCooldowns(hackType);
             boolean heightExists = cacheBoolean(cooldowns, knownBoxes, "height-exists=half", 10),
-                    building = cacheBoolean(cooldowns, Building.hasCooldown(player) || player.getHandlers().has(Handlers.HandlerType.BlockPlace), "building", 20),
+                    building = cacheBoolean(cooldowns,
+                            player.getHandlers().has(Handlers.HandlerType.TowerBuilding), "building", 20),
                     pastFalling = cacheBoolean(cooldowns, falling || oldFalling, "past-falling", 20);
 
             // Combination Variables

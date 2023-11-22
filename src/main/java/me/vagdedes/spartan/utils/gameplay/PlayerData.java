@@ -17,6 +17,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.MaterialUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Boat;
@@ -132,6 +133,15 @@ public class PlayerData {
             p.setFlySpeed(n.getFlySpeed());
             p.setEyeHeight(n.getEyeHeight());
             p.setUsingItem(n.isBlocking());
+
+            // Separator
+
+            GameMode current = p.getGameMode();
+
+            if (current == GameMode.CREATIVE
+                    || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && current == GameMode.SPECTATOR) {
+                p.getHandlers().add(Handlers.HandlerType.GameMode, 60);
+            }
 
             // Separator
 

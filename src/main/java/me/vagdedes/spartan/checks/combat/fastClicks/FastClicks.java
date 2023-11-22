@@ -60,7 +60,7 @@ public class FastClicks extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true) && player.getVehicle() == null
-                && !player.getHandlers().has(Handlers.HandlerType.BlockBreak)
+                && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
                 && !PlayerData.isPickaxeItem(player.getItemInHand().getType())
                 && (!hackType.getCheck().getBooleanOption("combat_only_mode", false) || PlayerData.isInActivePlayerCombat(player))
                 && !PrinterMode.canCancel(player);

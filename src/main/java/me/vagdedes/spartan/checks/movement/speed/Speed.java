@@ -205,7 +205,7 @@ public class Speed extends CheckExecutor {
 
             if (piston) {
                 dm = cacheLimit(decimals, dm, blocks_ice, 15);
-            } else if (player.getHandlers().has(Handlers.HandlerType.BlockBreak) || BlockUtils.isSlime(player, to, 2)) {
+            } else if (player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak) || BlockUtils.isSlime(player, to, 2)) {
                 dm = cacheLimit(decimals, dm, blocks_slime, 15);
             } else {
                 dm = cacheLimit(decimals, dm, blocks, 15);
@@ -369,7 +369,7 @@ public class Speed extends CheckExecutor {
             boolean aboveBlocksCopy = aboveBlocks;
 
             runAsync(() -> {
-                boolean building = Building.hasCooldown(player);
+                boolean building = player.getHandlers().has(Handlers.HandlerType.TowerBuilding);
 
                 // Separator
                 if (modifiedLimit == Speed.air && !honey && !explosion && hor >= air_decreased

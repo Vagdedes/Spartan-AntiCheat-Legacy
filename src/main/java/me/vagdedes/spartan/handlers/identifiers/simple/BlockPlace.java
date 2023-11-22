@@ -7,7 +7,7 @@ public class BlockPlace {
 
     public static void runPlace(SpartanPlayer p, boolean cancelled) {
         if (p.getTimer().get("block-place=repeat") <= 205L) {
-            p.getHandlers().add(Handlers.HandlerType.BlockPlace, cancelled ? 20 : 40);
+            p.getHandlers().add(Handlers.HandlerType.TowerBuilding, cancelled ? 20 : 40);
         }
         p.getTimer().set("block-place=repeat");
     }

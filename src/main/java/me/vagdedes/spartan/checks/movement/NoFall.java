@@ -4,7 +4,6 @@ import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
-import me.vagdedes.spartan.functionality.protections.Building;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.objects.data.Buffer;
@@ -163,7 +162,7 @@ public class NoFall extends CheckExecutor {
                              int airTicks,
                              boolean requiresSuspicion,
                              Buffer buffer, Decimals decimals) {
-        if (!player.getHandlers().has(Handlers.HandlerType.BlockBreak)) {
+        if (!player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
             if (hackType.getCheck().getBooleanOption("check_ratio", true)
                     && !PlayerData.hasJumpEffect(player)
                     && !BouncingBlocks.isBelow(player)
@@ -329,8 +328,8 @@ public class NoFall extends CheckExecutor {
                         && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                         && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)
                         && !player.getHandlers().has(Handlers.HandlerType.Explosion)
+                        && !player.getHandlers().has(Handlers.HandlerType.TowerBuilding)
                         && !NoHitDelay.hasCooldown(player)
-                        && !Building.hasCooldown(player)
                         && !PlayerData.hasLevitationEffect(player)
                         && !PlayerData.hasSlowFallingEffect(player)
                         && !FloorProtection.hasCooldown(player, true)

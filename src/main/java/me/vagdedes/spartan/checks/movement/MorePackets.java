@@ -235,8 +235,7 @@ public class MorePackets extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)
-                && !player.getHandlers().has(Handlers.HandlerType.BlockBreak)
-                && !player.getHandlers().has(Handlers.HandlerType.GameMode)
+                && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
                 && !CrackShot.isUsingScope(player);
     }
 }

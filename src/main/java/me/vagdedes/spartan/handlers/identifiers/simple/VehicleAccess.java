@@ -51,8 +51,6 @@ public class VehicleAccess {
         Handlers handlers = p.getHandlers();
         handlers.remove(Handlers.HandlerType.ElytraUse);
         handlers.remove(Handlers.HandlerType.Trident);
-        handlers.remove(Handlers.HandlerType.Piston);
-        handlers.remove(Handlers.HandlerType.FishingHook);
         handlers.remove(Handlers.HandlerType.ExtremeCollision);
         handlers.remove(Handlers.HandlerType.Floor);
 

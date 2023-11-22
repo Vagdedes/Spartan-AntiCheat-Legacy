@@ -1,10 +1,8 @@
 package me.vagdedes.spartan.interfaces.listeners;
 
-import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.functionality.protections.Teleport;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.FishingHook;
-import me.vagdedes.spartan.handlers.identifiers.simple.GameModeProtection;
 import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
@@ -14,7 +12,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -129,24 +126,9 @@ public class EventsHandler2 implements Listener {
         if (p == null) {
             return;
         }
-        if (e.isCancelled()) {
-            p.setGameMode(n.getGameMode());
-        } else {
-            GameMode old = p.getGameMode();
-
-            if (old != null) {
-                // Protections
-                if (old != GameMode.SURVIVAL && old != GameMode.ADVENTURE) {
-                    GameMode current = e.getNewGameMode();
-
-                    if (current == GameMode.CREATIVE || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && current == GameMode.SPECTATOR) {
-                        GameModeProtection.run(p);
-                    }
-                }
-
-                // Objects
-                p.setGameMode(e.getNewGameMode());
-            }
+        if (!e.isCancelled()) {
+            // Objects
+            p.setGameMode(e.getNewGameMode());
         }
 
         // Objects

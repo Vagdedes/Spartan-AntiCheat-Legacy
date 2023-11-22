@@ -9,9 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Handlers {
 
     public enum HandlerType {
-        BlockBreak, BlockPlace, BouncingBlocks, Teleport, Damage, FishingHook,
-        GameMode, Floor, Piston, Vehicle, Velocity, WaterElevator, Building, Explosion,
-        ElytraUse, ElytraWear, Trident, ExtremeCollision
+        GameMode, Teleport, Velocity, // Fundamental
+        SensitiveBlockBreak, TowerBuilding, // Environment
+        BouncingBlocks, Floor, Piston, WaterElevator, Damage, FishingHook, // Loglinear
+        ElytraWear, ElytraUse, Vehicle, // Constant
+        Trident, ExtremeCollision, Explosion // Exponential
     }
 
     private final Map<HandlerType, Long> enable, disable;
