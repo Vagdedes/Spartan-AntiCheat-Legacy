@@ -353,8 +353,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
             } else if (checkHorizontalASYNC
                     && !changedScenario
                     && !climbScenario
-                    && !onGround
-                    && Math.abs(horizontalDifference) >= 0.0001) { // Equilibrium
+                    && !onGround) { // Equilibrium
                 double[][] positions = new double[][]{
                         {1, 0, 1},
                         {1, -(box + GroundUtils.minPossibleStep), 1},

@@ -1079,8 +1079,7 @@ public class SpartanPlayer {
         if (!TestServer.isIdentified() && this.isOnGround()
 
                 && (Config.settings.getBoolean("Performance.use_vanilla_ground_method")
-                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
-                || LagLeniencies.hasInconsistencies(this, "tps"))) {
+                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional())) {
             this.onGroundCustom = true; // Vanilla On-Ground When Necessary
         } else if (PlayerData.isOnGround(this, this.getLocation(), 0.0)) {
             this.onGroundCustom = true; // Server Current Location
