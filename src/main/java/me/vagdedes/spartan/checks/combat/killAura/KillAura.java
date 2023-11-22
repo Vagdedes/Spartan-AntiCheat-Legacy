@@ -31,10 +31,9 @@ public class KillAura extends CheckExecutor {
     private final Aim aim;
     private final Sensitivity sensitivity;
     private final Strafe strafe;
-    private final Analysis analysis;
 
     public KillAura(SpartanPlayer player) {
-        super(Enums.HackType.KillAura, player, 13);
+        super(Enums.HackType.KillAura, player, 12);
         this.addDetections(new DetectionExecutor[]{
                 new Irregular(this),
                 new Raytrace(this),
@@ -47,8 +46,7 @@ public class KillAura extends CheckExecutor {
                 new Pattern(this),
                 new Aim(this),
                 new Sensitivity(this),
-                new Strafe(this),
-                new Analysis(this)
+                new Strafe(this)
         });
         irregular = (Irregular) detections[0];
         raytrace = (Raytrace) detections[1];
@@ -62,7 +60,6 @@ public class KillAura extends CheckExecutor {
         aim = (Aim) detections[9];
         sensitivity = (Sensitivity) detections[10];
         strafe = (Strafe) detections[11];
-        analysis = (Analysis) detections[12];
     }
 
     static final double
@@ -148,10 +145,6 @@ public class KillAura extends CheckExecutor {
             sensitivity.remove();
             strafe.remove();
             pattern.remove();
-        } else if (object.equals(ANALYSIS)) {
-            if (canDo()) {
-                analysis.run();
-            }
         } else {
             if (canDo()) {
                 Object[] objects = (Object[]) object;

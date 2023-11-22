@@ -664,7 +664,7 @@ public class ResearchEngine {
                         }
                         Collection<File> files = getFiles();
 
-                        if (files.size() > 0) {
+                        if (!files.isEmpty()) {
                             for (File file : files) {
                                 YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
@@ -822,7 +822,7 @@ public class ResearchEngine {
         if (!isFull && continueWithYAML) {
             Collection<File> files = getFiles();
 
-            if (files.size() > 0) {
+            if (!files.isEmpty()) {
                 //Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
 
                 for (File file : files) {

@@ -62,7 +62,7 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
                             if (Math.abs(vertical) < 0.01 && horizontal >= requiredHorizontal) {
                                 irregularMovements.cancel(prevention, "horizontal-" + detection, 3);
                             } else {
-                                double limit = player.getLastLiquidTime() <= 500L ? 0.4 : 0.2;
+                                double limit = player.wasInLiquids() ? 0.4 : 0.2;
 
                                 if (vertical >= limit) {
                                     irregularMovements.cancel(prevention, "abstract-up-" + detection, "limit: " + limit, 3, -IrregularMovements.defaultBufferTime);

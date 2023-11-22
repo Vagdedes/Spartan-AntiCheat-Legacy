@@ -974,16 +974,16 @@ public class SpartanPlayer {
         return isFlying() || flyingTime >= System.currentTimeMillis();
     }
 
-    public long getLastLiquidTime() {
-        return lastLiquidTime;
-    }
-
     public boolean wasInLiquids() {
-        return System.currentTimeMillis() - lastLiquidTime <= 750L;
+        return System.currentTimeMillis() - lastLiquidTime <= 500L;
     }
 
     public synchronized void setLastLiquidTime() {
         lastLiquidTime = System.currentTimeMillis();
+    }
+
+    public synchronized void removeLastLiquidTime() {
+        lastLiquidTime = 0L;
     }
 
     public synchronized void setFlying(boolean flying, boolean allowFlight) {
@@ -1359,6 +1359,7 @@ public class SpartanPlayer {
         setSneaking(false);
         setSwimming(false, 0);
         setGliding(false, false);
+        removeLastLiquidTime();
     }
 
     public boolean teleport(SpartanLocation location) {
