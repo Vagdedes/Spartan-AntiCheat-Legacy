@@ -293,11 +293,11 @@ public class ResearchEngine {
     // Separator
 
     public static double getAverageCPS() {
-        return averageCPS;
+        return averageCPS > CombatUtils.maxLegitimateCPS ? -1.0 : averageCPS;
     }
 
     public static double getAverageReach() {
-        return averageReach;
+        return averageReach > CombatUtils.maxHitDistance ? -1.0 : averageReach;
     }
 
     public static List<PlayerReport> getReports(Enums.HackType hackType, int days, boolean checkIfDismissed) {
