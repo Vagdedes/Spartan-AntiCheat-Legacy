@@ -293,11 +293,11 @@ public class ResearchEngine {
     // Separator
 
     public static double getAverageCPS() {
-        return averageCPS > CombatUtils.maxLegitimateCPS ? -1.0 : averageCPS;
+        return averageCPS;
     }
 
     public static double getAverageReach() {
-        return averageReach > CombatUtils.maxHitDistance ? -1.0 : averageReach;
+        return averageReach;
     }
 
     public static List<PlayerReport> getReports(Enums.HackType hackType, int days, boolean checkIfDismissed) {
@@ -1245,13 +1245,15 @@ public class ResearchEngine {
 
             // Separator (Find False Positives)
 
+            double duration = 1000.0; // 1 second
+
             for (Enums.HackType hackType : hackTypes) {
                 hackType.getCheck().clearMaxCancelledViolations();
 
                 for (DataType dataType : dataTypes) {
                     if (hackType.getCheck().isEnabled(dataType, null, null)) {
                         boolean bedrock = dataType == DataType.Bedrock;
-                        Map<Long, Collection<PlayerViolation>> orderedMap = new TreeMap<>();
+                        Map<Integer, FalsePositiveDetection.TimePeriod> averages = new HashMap<>();
 
                         for (PlayerProfile playerProfile : playerProfiles) {
                             if (bedrock == playerProfile.isBedrockPlayer()
@@ -1259,18 +1261,19 @@ public class ResearchEngine {
                                     && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
                                 List<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getViolationsList();
 
+                                // Organize the violations into time period pieces
                                 if (!list.isEmpty()) {
                                     for (PlayerViolation playerViolation : list) {
                                         if (playerViolation.isDetectionEnabled()) {
-                                            long time = playerViolation.getTime();
-                                            Collection<PlayerViolation> playerViolations = orderedMap.get(time);
+                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
+                                            FalsePositiveDetection.TimePeriod timePeriod = averages.get(timeMoment);
 
-                                            if (playerViolations == null) {
-                                                playerViolations = new ArrayList<>();
-                                                playerViolations.add(playerViolation);
-                                                orderedMap.put(time, playerViolations);
+                                            if (timePeriod == null) {
+                                                timePeriod = new FalsePositiveDetection.TimePeriod(duration);
+                                                timePeriod.add(playerViolation);
+                                                averages.put(timeMoment, timePeriod);
                                             } else {
-                                                playerViolations.add(playerViolation);
+                                                timePeriod.add(playerViolation);
                                             }
                                         }
                                     }
@@ -1278,30 +1281,11 @@ public class ResearchEngine {
                             }
                         }
 
-                        if (!orderedMap.isEmpty()) {
-                            double duration = 1000.0; // 1 second
-                            Map<Integer, FalsePositiveDetection.TimePeriod> averages = new HashMap<>();
-
-                            for (Collection<PlayerViolation> playerViolations : orderedMap.values()) {
-                                for (PlayerViolation playerViolation : playerViolations) {
-                                    int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
-                                    FalsePositiveDetection.TimePeriod timePeriod = averages.get(timeMoment);
-
-                                    if (timePeriod == null) {
-                                        timePeriod = new FalsePositiveDetection.TimePeriod(duration);
-                                        timePeriod.add(playerViolation);
-                                        averages.put(timeMoment, timePeriod);
-                                    } else {
-                                        timePeriod.add(playerViolation);
-                                    }
-                                }
-                            }
-
-                            // Separator
-
+                        if (!averages.isEmpty()) {
                             HashMap<Integer, Double> violationAverages = new HashMap<>();
                             HashMap<Integer, Integer> violationAveragesDivisor = new HashMap<>();
 
+                            // Add the average violations for the executed detections based on each time period
                             for (FalsePositiveDetection.TimePeriod timePeriod : averages.values()) {
                                 for (Map.Entry<Integer, Double> individualViolationAverages : timePeriod.getAverageViolations().entrySet()) {
                                     int hash = individualViolationAverages.getKey();
@@ -1316,7 +1300,7 @@ public class ResearchEngine {
                                 }
                             }
 
-                            // Separator
+                            // Calculate the average violations for each executed detection and multiply to get the bigger image
                             duration = Check.violationCycleSeconds / duration;
 
                             for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
@@ -1408,13 +1392,13 @@ public class ResearchEngine {
 
             // Separator
 
-            if (averageCPSCount > 0.0) {
+            if (averageCPSCount > 0.0 && averageCPS <= CombatUtils.maxLegitimateCPS) {
                 ResearchEngine.averageCPS = averageCPS / averageCPSCount;
             } else {
                 ResearchEngine.averageCPS = -1.0;
             }
 
-            if (averageReachCount > 0.0) {
+            if (averageReachCount > 0.0 && averageCPS <= CombatUtils.maxHitDistance) {
                 ResearchEngine.averageReach = averageReach / averageReachCount;
             } else {
                 ResearchEngine.averageReach = -1.0;

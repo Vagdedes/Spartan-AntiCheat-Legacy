@@ -40,7 +40,7 @@ public class FalsePositiveDetection {
                 double players = this.players.size();
 
                 for (Map.Entry<Integer, Integer> entry : this.violations.entrySet()) {
-                    violations.put(entry.getKey(), entry.getValue() / players / ticks);
+                    violations.put(entry.getKey(), entry.getValue() / players);
                 }
                 return violations;
             } else {
