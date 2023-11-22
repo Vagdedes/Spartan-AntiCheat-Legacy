@@ -170,5 +170,10 @@ public class EventsHandler1 implements Listener {
             Velocity.run(p);
             Explosion.runVelocity(p);
         }
+
+        // Detections
+        if (p.getViolations(Enums.HackType.Velocity).process()) {
+            e.setCancelled(true);
+        }
     }
 }

@@ -347,39 +347,6 @@ public class ResearchEngine {
         return pitchRate;
     }
 
-    public static double getGlobalVelocityOccurrences(float desiredValue, int desiredCount, boolean vertical) {
-        if (hackerFreePlayerProfiles.size() >= profileRequirement) {
-            String key = desiredValue + (vertical ? "v" : "h") + desiredCount;
-            Double percentage = globalVelocityOccurrences.get(key);
-
-            if (percentage != null) {
-                return percentage;
-            }
-            int valid = 0, total = 0;
-
-            for (PlayerProfile playerProfile : hackerFreePlayerProfiles) { // Include all players including online but not offline players to get an idea of how percentages shift
-                PlayerCombat combat = playerProfile.getCombat();
-
-                if (combat.hasEnoughFights()) {
-                    double occurrences = combat.getVelocityOccurrences(desiredValue, desiredCount, vertical);
-
-                    if (occurrences != -1.0) {
-                        valid += occurrences;
-                        total++;
-                    }
-                }
-            }
-
-            if (total >= profileRequirement) {
-                percentage = valid / ((double) total);
-                globalVelocityOccurrences.put(key, percentage);
-                return percentage;
-            }
-            globalVelocityOccurrences.put(key, -1.0);
-        }
-        return -1.0;
-    }
-
     public static List<PlayerReport> getReports(Enums.HackType hackType, int days, boolean checkIfDismissed) {
         List<PlayerReport> reports = new LinkedList<>();
 
@@ -584,7 +551,7 @@ public class ResearchEngine {
 
             Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
-            if (playerProfiles.size() > 0) {
+            if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     playerProfile.getViolationHistory(hackType).clear();
                     playerProfile.getEvidence().remove(hackType);
@@ -601,7 +568,7 @@ public class ResearchEngine {
 
             Collection<File> files = getFiles();
 
-            if (files.size() > 0) {
+            if (!files.isEmpty()) {
                 for (File file : files) {
                     YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
@@ -972,11 +939,6 @@ public class ResearchEngine {
                                         double winnerReachAverage = 0.0, loserReachAverage = 0.0;
                                         float winnerYawRateAverage = 0.0f, loserYawRateAverage = 0.0f;
                                         float winnerPitchRateAverage = 0.0f, loserPitchRateAverage = 0.0f;
-                                        Map<Integer, Float[]>
-                                                winnerVerticalVelocity = new LinkedHashMap<>(),
-                                                loserVerticalVelocity = new LinkedHashMap<>(),
-                                                winnerHorizontalVelocity = new LinkedHashMap<>(),
-                                                loserHorizontalVelocity = new LinkedHashMap<>();
 
                                         for (String statistic : statistics) {
                                             String[] subStatistics = statistic.split(PlayerFight.intermediateSeparator[1]);
@@ -1074,46 +1036,6 @@ public class ResearchEngine {
                                                             }
                                                         }
                                                         break;
-                                                    case PlayerFight.oldVerticalVelocityKey: // Attention, added after initial algorithm (2)
-                                                    case PlayerFight.verticalVelocityKey: // Attention, added after initial algorithm (3)
-                                                    case PlayerFight.horizontalVelocityKey: // Attention, added after initial algorithm (3)
-                                                        if (subStatisticsLength >= 3) {
-                                                            boolean horizontal = statistic.equals(PlayerFight.horizontalVelocityKey);
-                                                            boolean winnerCalculation = true; // Use to judge which data collection to fulfill
-
-                                                            for (String velocityKeys : new String[]{subStatistics[1], subStatistics[2]}) { // Get both winner & loser velocity data to prevent code repetition
-                                                                String[] velocityStatistics = velocityKeys.split(PlayerFight.velocityMajorSeparator); // Split the data into their respective collections
-
-                                                                if (velocityStatistics.length > 0) { // Check if the split resulted in valid collections
-                                                                    for (String velocityStatistic : velocityStatistics) {
-                                                                        String[] velocitySubStatistics = velocityStatistic.split(PlayerFight.velocityMinorSeparator); // Split the collections into their respective variables
-                                                                        int velocitySubStatisticsSize = velocitySubStatistics.length;
-
-                                                                        if (velocitySubStatisticsSize > 0) { // Check if the split resulted in valid variables
-                                                                            List<Float> floats = new ArrayList<>(velocitySubStatisticsSize);
-
-                                                                            for (String velocitySubStatistic : velocitySubStatistics) {
-                                                                                Float validFloat = AlgebraUtils.returnValidFloat(velocitySubStatistic);
-
-                                                                                if (validFloat != null) { // Check if the variable is a valid decimal
-                                                                                    floats.add(validFloat);
-                                                                                }
-                                                                            }
-
-                                                                            if (winnerCalculation) {
-                                                                                Map<Integer, Float[]> winnerMap = horizontal ? winnerHorizontalVelocity : winnerVerticalVelocity;
-                                                                                winnerMap.put(winnerMap.size(), floats.toArray(new Float[0]));
-                                                                            } else {
-                                                                                Map<Integer, Float[]> loserMap = horizontal ? loserHorizontalVelocity : loserVerticalVelocity;
-                                                                                loserMap.put(loserMap.size(), floats.toArray(new Float[0]));
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                                winnerCalculation = false;
-                                                            }
-                                                        }
-                                                        break;
                                                     case PlayerFight.maxHitComboKey:
                                                         if (subStatisticsLength >= 3) {
                                                             argument1 = subStatistics[1];
@@ -1140,11 +1062,9 @@ public class ResearchEngine {
                                                 && (winnerHitTimeAverage > 0L && loserHitTimeAverage > 0L)
                                                 && (winnerReachAverage > 0.0 && loserReachAverage > 0.0)) {
                                             PlayerOpponent winnerOpponent = new PlayerOpponent(winner, winnerHits, winnerMaxHitCombo, winnerCPS, duration,
-                                                    winnerReachAverage, winnerHitTimeAverage, winnerYawRateAverage, winnerPitchRateAverage,
-                                                    new PlayerVelocity(winnerVerticalVelocity, winnerHorizontalVelocity));
+                                                    winnerReachAverage, winnerHitTimeAverage, winnerYawRateAverage, winnerPitchRateAverage);
                                             PlayerOpponent loserOpponent = new PlayerOpponent(loser, loserHits, loserMaxHitCombo, loserCPS, duration,
-                                                    loserReachAverage, loserHitTimeAverage, loserYawRateAverage, loserPitchRateAverage,
-                                                    new PlayerVelocity(loserVerticalVelocity, loserHorizontalVelocity));
+                                                    loserReachAverage, loserHitTimeAverage, loserYawRateAverage, loserPitchRateAverage);
                                             new PlayerFight(winnerOpponent, loserOpponent, judged);
                                         }
                                     }
@@ -1259,7 +1179,7 @@ public class ResearchEngine {
                         for (String reason : entry.getValue()) {
                             List<PlayerReport> reports = playerProfile.getPunishmentHistory().getReports();
 
-                            if (reports.size() > 0) {
+                            if (!reports.isEmpty()) {
                                 for (PlayerReport playerReport : reports) {
                                     if (playerReport.getReason().equals(reason)
                                             && playerReport.dismiss(name, null, false)) {
@@ -1300,7 +1220,7 @@ public class ResearchEngine {
             date = currentDate;
             Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
-            if (playerProfiles.size() > 0) {
+            if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {
                         violationHistory.clearDays();
@@ -1505,7 +1425,6 @@ public class ResearchEngine {
     }
 
     private static void updateCombatCache() {
-        globalVelocityOccurrences.clear();
         double
                 averageCPS = 0.0, averageCPSCount = 0.0, minCPS = 0.0, maxCPS = 0.0,
 
