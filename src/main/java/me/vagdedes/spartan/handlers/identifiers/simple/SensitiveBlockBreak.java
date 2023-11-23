@@ -5,7 +5,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 
-public class BlockBreak {
+public class SensitiveBlockBreak {
 
     public static void run(SpartanPlayer p, boolean cancelled, SpartanBlock b) {
         if (BlockUtils.isSensitive(p, b.getType())) {

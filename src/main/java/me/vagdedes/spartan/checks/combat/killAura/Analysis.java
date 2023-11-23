@@ -20,7 +20,9 @@ public class Analysis extends DetectionExecutor {
                 if (percentage > 1000) {
                     percentage = 1000;
                 }
-                //todo
+                runAsync(() -> {
+                    //todo
+                });
             }
         }
     }
