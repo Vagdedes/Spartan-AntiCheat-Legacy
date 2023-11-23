@@ -11,7 +11,6 @@ import me.vagdedes.spartan.objects.replicates.SpartanBlock;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.utils.gameplay.GroundUtils;
 import org.bukkit.block.BlockFace;
 
 public class Building {
@@ -70,7 +69,6 @@ public class Building {
     }
 
     private static void teleport(SpartanPlayer p, SpartanLocation loc) {
-        GroundUtils.setOnGround(p, 1);
         p.getHandlers().disable(Handlers.HandlerType.Teleport, 1);
         p.teleport(new SpartanLocation(p, loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), 0.0f, loc));
     }

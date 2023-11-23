@@ -1,13 +1,11 @@
 package me.vagdedes.spartan.handlers.tracking;
 
-import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
+import me.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
 import me.vagdedes.spartan.handlers.stability.Moderation;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Decimals;
-import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -62,13 +60,12 @@ public class MovementProcessing {
 
                 // Sprint/Walk Identifier
                 if (dis > 0.1) {
-                    if (!p.getActivePotionEffects().isEmpty() // Potions
+                    boolean liquid = p.isSwimming() || Liquid.isLocation(p, to);
+
+                    if (liquid // Liquid
+                            || !p.getActivePotionEffects().isEmpty() // Potions
                             || p.isUsingItem() // Inventory
-                            || Damage.hasCooldown(p) // Damage
-                            || p.isSwimming() || p.wasInLiquids() // Liquid
-                            || Velocity.hasCooldown(p) || p.getHandlers().has(Handlers.HandlerType.Explosion) || p.getHandlers().has(Handlers.HandlerType.ElytraUse) || p.getHandlers().has(Handlers.HandlerType.Trident) // Abstract
-                            || PlayerData.getWalkSpeedDifference(p) > 0.0f // Server
-                            || FloorProtection.hasCooldown(p) || BlockUtils.areIceBlocks(to.clone().add(0, -1, 0))) { // Environment
+                            || PlayerData.getWalkSpeedDifference(p) > 0.0f) { // Server
                         p.setWalking(0);
                         p.setSprinting(0);
                     } else {
