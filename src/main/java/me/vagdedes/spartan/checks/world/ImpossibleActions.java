@@ -156,8 +156,10 @@ public class ImpossibleActions extends CheckExecutor {
         SpartanLocation blockAgainstLocation = blockAgainst.getLocation();
         boolean sameItem = itemStackType == blockType;
 
-        if (hackType.getCheck().getBooleanOption("check_liquids", true) && blockType.isBlock() && sameItem && blockType != lily_pad
-                && !BlockUtils.areEntityBlocks(blockType) && !BlockUtils.areCarpets(blockType) && BlockUtils.isSolid(blockType)
+        if (hackType.getCheck().getBooleanOption("check_liquids", true)
+                && blockType.isBlock() && sameItem && blockType != lily_pad
+                && !BlockUtils.areEntityBlocks(blockType) && !BlockUtils.areCarpets(blockType)
+                && BlockUtils.isSolid(blockType)
 
                 && (BlockUtils.isBaseLiquid(blockAgainstType)
 
@@ -166,9 +168,14 @@ public class ImpossibleActions extends CheckExecutor {
                 && blockAgainstLocation.distance(bloc) == 0.0
                 && bloc.getBlock().getType() == Material.AIR)) {
             cancel(
-                    "type: liquids(place), b: " + BlockUtils.materialToString(blockType)
+                    "type: liquids(place), block: " + BlockUtils.materialToString(blockType)
                             + ", block-against: " + BlockUtils.materialToString(blockAgainstType)
                             + ", block-face: " + blockFace.toString().toLowerCase());
+        } else if (blockFace == BlockFace.SELF
+                && hackType.getCheck().getBooleanOption("check_air_placement", true)
+                && bloc.areBlocks(Material.AIR, 1, false)) {
+            cancel("type: air-placement, block: " + BlockUtils.materialToString(blockType)
+                    + ", block-against: " + BlockUtils.materialToString(blockAgainstType));
         } else if (blockType != Material.FIRE && blockType.isBlock() && !player.wasFlying() && !blockType.equals(soil)) {
             GameMode gameMode = player.getGameMode();
 

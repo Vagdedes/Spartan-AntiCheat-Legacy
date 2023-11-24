@@ -159,8 +159,8 @@ public class WaterSpeed extends DetectionExecutor {
                             }
                         }
 
-                    } else if (locM1.areBlocks(material, 1.0) && isSolidAndLiquidFree(to, 1, 0, 1)
-                            || locM2.areBlocks(material, 1.0) && isSolidAndLiquidFree(to, 1, 0, 1) && isSolidAndLiquidFree(to, 1, -1, 1)) {
+                    } else if (locM1.areBlocks(material, 1.0, true) && isSolidAndLiquidFree(to, 1, 0, 1)
+                            || locM2.areBlocks(material, 1.0, true) && isSolidAndLiquidFree(to, 1, 0, 1) && isSolidAndLiquidFree(to, 1, -1, 1)) {
                         if (canCheckWater) {
                             limit = out_water;
                             limitType += 6;
@@ -285,10 +285,10 @@ public class WaterSpeed extends DetectionExecutor {
             return false;
         }
         return loc1.getBlock().getType() == m
-                || to.areBlocks(m, BlockUtils.hitbox_max)
-                || locM1.areBlocks(m, BlockUtils.hitbox_max)
-                || to.clone().add(0, -remaining, 0).areBlocks(m, BlockUtils.hitbox_max)
-                || !PatternUtils.isBlockPattern(genericHitbox, locM1, true, BlockUtils.solid, BlockUtils.semi_solid) && locM2.areBlocks(m, BlockUtils.hitbox_max);
+                || to.areBlocks(m, BlockUtils.hitbox_max, true)
+                || locM1.areBlocks(m, BlockUtils.hitbox_max, true)
+                || to.clone().add(0, -remaining, 0).areBlocks(m, BlockUtils.hitbox_max, true)
+                || !PatternUtils.isBlockPattern(genericHitbox, locM1, true, BlockUtils.solid, BlockUtils.semi_solid) && locM2.areBlocks(m, BlockUtils.hitbox_max, true);
     }
 
     private double adjustLimit(SpartanLocation loc, SpartanLocation locM1, SpartanLocation loc1,

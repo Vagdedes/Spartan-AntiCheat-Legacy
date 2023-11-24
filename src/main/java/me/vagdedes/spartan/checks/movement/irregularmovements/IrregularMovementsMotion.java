@@ -10,6 +10,7 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import org.bukkit.Material;
 
 public class IrregularMovementsMotion extends DetectionExecutor {
 
@@ -42,9 +43,14 @@ public class IrregularMovementsMotion extends DetectionExecutor {
             downwardsPredictionKey = "downwards-prediction",
             downwardsUnexpectedKey = "downwards-unexpected";
 
-    private static final double[][] honey = new double[][]{
+    private static final double[][]
+            honey = new double[][]{
             {1, 1, 1},
             {1, 0, 1},
+    }, jumpEnd = new double[][]{
+            {1, 1, 1},
+            {1, 0, 1},
+            {1, -11, 1},
     };
 
     private void clearGeneralCache(IrregularMovements executor, Cooldowns cooldowns) {
@@ -76,7 +82,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
              double verticalDifference,
              double horizontalDifference,
              boolean knownBoxes, boolean knownBoxesNew, boolean knownBoxesOld,
-             boolean onGroundCustom,
+             boolean offGround, boolean onGroundCustom,
              boolean oldFalling, boolean levitationEffect,
              boolean constructDetection, boolean groundInteractionScenario, boolean velocityScenario, boolean changedScenario, boolean climbScenario, boolean slowFallingScenario,
              boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
@@ -344,8 +350,11 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                         groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
                             }
                         } else if (!onGroundCustom
-                                && !GroundUtils.heightExists(Math.abs(box - vertical))
-                                && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)) { // Jumping must start from somewhere
+                                && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)
+                                && (!GroundUtils.heightExists(Math.abs(box - vertical)) || !offGround
+                                && to.areBlocks(Material.AIR, 1, false)
+                                && to.clone().add(0, -1, 0).areBlocks(Material.AIR, 1, true)
+                                && to.clone().add(0, 1, 0).areBlocks(Material.AIR, 1, true))) { // Jumping must start from somewhere
                             irregularMovements.cancel(prevention, "jump-start", 1);
                         }
                     }

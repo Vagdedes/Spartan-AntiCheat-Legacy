@@ -1799,6 +1799,10 @@ public class SpartanPlayer {
         this.lastJump = System.currentTimeMillis();
         removeLastLiquidTime();
         handlers.removeMany(Handlers.HandlerFamily.Velocity);
+
+        if (!Liquid.isLocation(this, this.getLocation())) {
+            this.removeLastLiquidTime();
+        }
     }
 
     public boolean isFalling(double dy) {

@@ -394,7 +394,7 @@ public class IrregularMovements extends CheckExecutor {
                     verticalDifference,
                     horizontalDifference,
                     knownBoxes, knownBoxesNew, knownBoxesOld,
-                    onGroundCustom,
+                    offGround, onGroundCustom,
                     oldFalling, levitationEffect,
                     constructDetection, groundInteractionScenario, velocityScenario, changedScenario, climbScenario, slowFallingScenario,
                     canGoUp && checkUp, canGoDown && checkDown,
