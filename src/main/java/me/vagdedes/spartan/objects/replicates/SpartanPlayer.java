@@ -274,9 +274,7 @@ public class SpartanPlayer {
                     if (clearCache) {
                         Cache.clearCheckCache(p);
                     }
-                    synchronized (nearbyEntitiesLock) {
-                        p.nearbyEntities = null;
-                    }
+                    p.nearbyEntitiesDistance = 0;
                     p.locationTime = 0L;
                     p.runCheck.clear();
                     p.runCheckAccountLag.clear();
@@ -385,7 +383,7 @@ public class SpartanPlayer {
         this.eventTo = this.location;
         this.eventFrom = this.location;
         this.locationTime = 0L;
-        this.nearbyEntities = null;
+        this.nearbyEntities = new CopyOnWriteArrayList<>();
         this.nearbyEntitiesDistance = 0;
         this.runChecks = new boolean[]{false, false};
         this.runCheck = new LinkedHashMap<>(hackTypes.length);
@@ -1560,10 +1558,7 @@ public class SpartanPlayer {
         x = Math.max(Math.max(x, y), z);
 
         synchronized (nearbyEntitiesLock) {
-            boolean isNull = nearbyEntities == null;
-
-            // Caching
-            if (isNull || x > nearbyEntitiesDistance) {
+            if (x > nearbyEntitiesDistance) {
                 Player p = this.getPlayer();
 
                 if (p != null) {
@@ -1573,19 +1568,15 @@ public class SpartanPlayer {
                         double finalX = x;
 
                         SpartanBukkit.runTask(this, () -> {
-                            if (isNull) {
-                                nearbyEntities = new CopyOnWriteArrayList<>(p.getNearbyEntities(finalX, finalX, finalX));
-                            } else {
-                                nearbyEntities.clear();
-                                nearbyEntities.addAll(p.getNearbyEntities(finalX, finalX, finalX));
-                            }
+                            nearbyEntities.clear();
+                            nearbyEntities.addAll(p.getNearbyEntities(finalX, finalX, finalX));
                         });
                         return nearbyEntities;
                     } else {
                         SpartanLocation loc = this.getLocation();
-                        List<Entity> entities = new ArrayList<>(worldEntities.getOrDefault(loc.getWorld(), new ArrayList<>(0)));
+                        List<Entity> entities = worldEntities.get(loc.getWorld());
 
-                        if (!entities.isEmpty()) {
+                        if (entities != null && !entities.isEmpty()) {
                             Entity vehicle = this.getVehicle();
 
                             if (vehicle != null) {
@@ -1602,17 +1593,14 @@ public class SpartanPlayer {
                                     iterator.remove();
                                 }
                             }
-                        }
-                        if (isNull) {
-                            return nearbyEntities = new CopyOnWriteArrayList<>(entities);
-                        } else {
                             nearbyEntities.clear();
                             nearbyEntities.addAll(entities);
-                            return nearbyEntities;
+                        } else {
+                            nearbyEntities.clear();
                         }
                     }
                 } else {
-                    return new ArrayList<>(0);
+                    nearbyEntities.clear();
                 }
             } else if (!nearbyEntities.isEmpty()) {
                 SpartanLocation loc = this.getLocation();
@@ -1634,10 +1622,8 @@ public class SpartanPlayer {
                 }
                 nearbyEntities.clear();
                 nearbyEntities.addAll(entities);
-                return nearbyEntities;
-            } else {
-                return nearbyEntities;
             }
+            return nearbyEntities;
         }
     }
 

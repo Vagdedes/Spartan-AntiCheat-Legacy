@@ -376,7 +376,8 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                 } else {
                     Handlers handlers = player.getHandlers();
 
-                    if (!handlers.has(Handlers.HandlerType.TowerBuilding)) {
+                    if (!handlers.has(Handlers.HandlerType.TowerBuilding)
+                            && !handlers.has(Handlers.HandlerType.BridgeBuilding)) {
                         if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                                 && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                             irregularMovements.cancel(prevention, "equilibrium-spacious",

@@ -294,7 +294,7 @@ public class GroundUtils {
     public static boolean stepsOnBoats(SpartanPlayer p) {
         List<Entity> entities = p.getNearbyEntities(2.0, 2.0, 2.0);
 
-        if (entities.size() > 0) {
+        if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Boat) {
                     p.setAirTicks(0);
@@ -308,7 +308,7 @@ public class GroundUtils {
     private static boolean stepsOnShulkers(SpartanPlayer p) {
         List<Entity> entities = p.getNearbyEntities(3.0, 3.0, 3.0);
 
-        if (entities.size() > 0) {
+        if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Shulker) {
                     p.setAirTicks(0);
@@ -322,7 +322,7 @@ public class GroundUtils {
     private static boolean stepsOnSniffers(SpartanPlayer p) {
         List<Entity> entities = p.getNearbyEntities(1.0, 1.0, 1.0);
 
-        if (entities.size() > 0) {
+        if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Sniffer && ((Sniffer) entity).getState() == Sniffer.State.IDLING) {
                     p.setAirTicks(0);
