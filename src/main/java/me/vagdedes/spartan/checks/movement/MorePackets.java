@@ -59,6 +59,13 @@ public class MorePackets extends CheckExecutor {
     @Override
     public boolean run() {
         if (canDo()) {
+            Double horizontal = player.getNmsHorizontalDistance(),
+                    vertical = player.getNmsVerticalDistance();
+
+            if (horizontal == null
+                    || vertical == null) {
+                return false;
+            }
             Timer timer = player.getTimer(hackType);
             Buffer buffer = player.getBuffer(hackType);
             Cooldowns cooldowns = player.getCooldowns(hackType);
@@ -83,9 +90,7 @@ public class MorePackets extends CheckExecutor {
 
             // Detections
             if (timer.has(lastTick)) { // Do not start detection if not all cache is available
-                double horizontal = player.getNmsHorizontalDistance(),
-                        vertical = player.getNmsVerticalDistance(),
-                        horizontalMotionDifference = player.getCustomHorizontalDistance() - horizontal,
+                double horizontalMotionDifference = player.getCustomHorizontalDistance() - horizontal,
                         verticalMotionDifference = player.getCustomVerticalDistance() - vertical;
                 int tickCounter = buffer.increase(dataKey, 1);
 

@@ -87,13 +87,19 @@ public class IrregularMovementsMotion extends DetectionExecutor {
              boolean constructDetection, boolean groundInteractionScenario, boolean velocityScenario, boolean changedScenario, boolean climbScenario, boolean slowFallingScenario,
              boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
              String prevention) {
-        SpartanPlayer player = irregularMovements.player;
-        SpartanLocation to = player.getEventToLocation(),
-                from = player.getEventFromLocation();
-        double vertical = player.getNmsVerticalDistance(),
+        Double vertical = player.getNmsVerticalDistance(),
                 oldVertical = player.getOld_NmsVerticalDistance(),
                 box = player.getNmsBox(),
                 oldBox = player.getOld_NmsBox();
+
+        if (vertical == null
+                || oldVertical == null
+                || box == null
+                || oldBox == null) {
+            return;
+        }
+        SpartanLocation to = player.getEventToLocation(),
+                from = player.getEventFromLocation();
         int airTicks = player.getTicksOnAir();
         boolean hasVehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
 

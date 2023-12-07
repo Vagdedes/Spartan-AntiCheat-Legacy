@@ -256,11 +256,17 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public boolean run() {
+        Double vertical = player.getNmsVerticalDistance(),
+                horizontal = player.getNmsHorizontalDistance(),
+                oldVertical = player.getOld_NmsVerticalDistance();
+
+        if (vertical == null
+                || horizontal == null
+                || oldVertical == null) {
+            return false;
+        }
         float fallDistance = player.getFallDistance();
         int airTicks = player.getTicksOnAir();
-        double vertical = player.getNmsVerticalDistance();
-        double horizontal = player.getNmsHorizontalDistance();
-        double oldVertical = player.getOld_NmsVerticalDistance();
 
         if (fallDistance > 0.0f
                 || airTicks > 0

@@ -1024,12 +1024,16 @@ public class SpartanPlayer {
     }
 
     public boolean isMoving(boolean head) {
-        return (!head || getLastHeadMovement() <= 2_500L)
-                && (getNmsDistance() >= 0.1
-                || getCustomDistance() >= 0.1
-                || isSprinting() || isWalking()
-                || isSprintJumping() || isWalkJumping()
-                || Damage.getLastReceived(this) <= 100L);
+        if (!head || getLastHeadMovement() <= 2_500L) {
+            Double nmsDistance = getNmsDistance();
+            return nmsDistance != null && nmsDistance >= 0.1
+                    || getCustomDistance() >= 0.1
+                    || isSprinting() || isWalking()
+                    || isSprintJumping() || isWalkJumping()
+                    || Damage.getLastReceived(this) <= 100L;
+        } else {
+            return false;
+        }
     }
 
     public boolean isVanillaSprinting() {
@@ -1956,6 +1960,21 @@ public class SpartanPlayer {
         return customVerticalDistance;
     }
 
+    private void clearNmsDistance(Map<Long, Double> map) {
+        int size = map.size();
+
+        if (size > 2) {
+            size = size - 2;
+            Iterator<Double> iterator = map.values().iterator();
+
+            while (size > 0 && iterator.hasNext()) {
+                size--;
+                iterator.next();
+                iterator.remove();
+            }
+        }
+    }
+
     public synchronized void setNmsDistance(double distance,
                                             double horizontal,
                                             double vertical,
@@ -1965,37 +1984,45 @@ public class SpartanPlayer {
         this.nmsHorizontalDistance.put(tick, horizontal);
         this.nmsVerticalDistance.put(tick, vertical);
         this.nmsBox.put(tick, box);
+        clearNmsDistance(nmsDistance);
+        clearNmsDistance(nmsHorizontalDistance);
+        clearNmsDistance(nmsVerticalDistance);
+        clearNmsDistance(nmsBox);
     }
 
-    public Double getNmsDistance() {
+    public double getValueOrDefault(Double value, double def) {
+        return value == null ? def : value;
+    }
+
+    public synchronized Double getNmsDistance() {
         return nmsDistance.get(TPS.getTick(this));
     }
 
-    public Double getOld_NmsDistance() {
+    public synchronized Double getOld_NmsDistance() {
         return nmsDistance.get(TPS.getTick(this) - 1L);
     }
 
-    public Double getNmsHorizontalDistance() {
+    public synchronized Double getNmsHorizontalDistance() {
         return nmsHorizontalDistance.get(TPS.getTick(this));
     }
 
-    public Double getOld_NmsHorizontalDistance() {
+    public synchronized Double getOld_NmsHorizontalDistance() {
         return nmsHorizontalDistance.get(TPS.getTick(this) - 1L);
     }
 
-    public Double getNmsVerticalDistance() {
+    public synchronized Double getNmsVerticalDistance() {
         return nmsVerticalDistance.get(TPS.getTick(this));
     }
 
-    public Double getOld_NmsVerticalDistance() {
+    public synchronized Double getOld_NmsVerticalDistance() {
         return nmsVerticalDistance.get(TPS.getTick(this) - 1L);
     }
 
-    public Double getNmsBox() {
+    public synchronized Double getNmsBox() {
         return nmsBox.get(TPS.getTick(this));
     }
 
-    public Double getOld_NmsBox() {
+    public synchronized Double getOld_NmsBox() {
         return nmsBox.get(TPS.getTick(this) - 1L);
     }
 

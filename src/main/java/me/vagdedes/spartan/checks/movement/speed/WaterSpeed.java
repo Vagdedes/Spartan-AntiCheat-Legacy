@@ -54,16 +54,20 @@ public class WaterSpeed extends DetectionExecutor {
     };
 
     void run() {
-        double horizontal = player.getNmsHorizontalDistance(),
-                vertical = player.getNmsVerticalDistance();
+        Double horizontal = player.getNmsHorizontalDistance(),
+                vertical = player.getNmsVerticalDistance(),
+                oldVertical = player.getOld_NmsVerticalDistance(),
+                box = player.getNmsBox();
 
-        if (horizontal < minDs && Math.abs(vertical) < minDs) {
+        if (horizontal == null
+                || vertical == null
+                || oldVertical == null
+                || box == null
+                || horizontal < minDs && Math.abs(vertical) < minDs) {
             return;
         }
         SpartanLocation to = player.getEventToLocation(),
                 from = player.getEventFromLocation();
-        double oldVertical = player.getOld_NmsVerticalDistance(),
-                box = player.getNmsBox();
         int airTicks = player.getTicksOnAir();
         boolean selfHit = Damage.hasCooldown(player, Damage.selfHitKey);
         Buffer buffer = player.getBuffer(hackType);

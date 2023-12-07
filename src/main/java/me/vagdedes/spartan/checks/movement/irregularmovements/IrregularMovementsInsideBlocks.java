@@ -18,11 +18,10 @@ public class IrregularMovementsInsideBlocks extends DetectionExecutor {
     }
 
     void run(boolean knownBoxes, String prevention) {
-        SpartanPlayer player = irregularMovements.player;
-        SpartanLocation to = player.getEventToLocation(),
-                from = player.getEventFromLocation();
-
         if (hackType.getCheck().getBooleanOption("check_inside_blocks", true)) {
+            SpartanLocation to = player.getEventToLocation(),
+                    from = player.getEventFromLocation();
+
             runAsync(() -> {
                 if (from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) { // Make sure player changed blocks
                     Material toMaterial = to.getBlock().getType(),

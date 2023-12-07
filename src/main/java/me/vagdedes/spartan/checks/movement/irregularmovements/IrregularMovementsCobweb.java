@@ -25,14 +25,19 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
     };
 
     void run(boolean canGoDown, String prevention, String scenario) {
-        SpartanPlayer player = irregularMovements.player;
-        SpartanLocation to = player.getEventToLocation();
-        double vertical = player.getNmsVerticalDistance(),
-                horizontal = player.getNmsHorizontalDistance(),
-                box = player.getNmsBox(),
-                oldBox = player.getOld_NmsBox();
-
         if (hackType.getCheck().getBooleanOption("check_cobweb", true)) {
+            Double vertical = player.getNmsVerticalDistance(),
+                    horizontal = player.getNmsHorizontalDistance(),
+                    box = player.getNmsBox(),
+                    oldBox = player.getOld_NmsBox();
+
+            if (vertical == null
+                    || horizontal == null
+                    || box == null
+                    || oldBox == null) {
+                return;
+            }
+            SpartanLocation to = player.getEventToLocation();
             boolean vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
 
             runAsync(() -> {

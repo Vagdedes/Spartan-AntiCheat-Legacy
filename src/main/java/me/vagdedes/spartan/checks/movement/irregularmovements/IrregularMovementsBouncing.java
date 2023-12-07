@@ -26,13 +26,19 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
              boolean jumping, boolean falling,
              boolean levitationEffect,
              String prevention, String scenario) {
-        SpartanLocation to = player.getEventToLocation();
-        double vertical = player.getNmsVerticalDistance(),
-                oldVertical = player.getOld_NmsVerticalDistance(),
-                box = player.getNmsBox();
-        int airTicks = player.getTicksOnAir();
-
         if (hackType.getCheck().getBooleanOption("check_bouncing_blocks", true)) {
+            Double vertical = player.getNmsVerticalDistance(),
+                    oldVertical = player.getOld_NmsVerticalDistance(),
+                    box = player.getNmsBox();
+
+            if (vertical == null
+                    || oldVertical == null
+                    || box == null) {
+                return;
+            }
+            SpartanLocation to = player.getEventToLocation();
+            int airTicks = player.getTicksOnAir();
+
             runAsync(() -> {
                 if (!PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                     if (vertical > 0.0) {

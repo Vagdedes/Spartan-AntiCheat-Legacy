@@ -5,7 +5,6 @@ import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -25,11 +24,16 @@ public class IrregularMovementsClimb extends DetectionExecutor {
              String prevention, String scenario) {
         if (hackType.getCheck().getBooleanOption("check_climbing", true)
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
-            SpartanPlayer player = irregularMovements.player;
-            SpartanLocation to = player.getEventToLocation();
-            double vertical = player.getNmsVerticalDistance(),
+            Double vertical = player.getNmsVerticalDistance(),
                     oldVertical = player.getOld_NmsVerticalDistance(),
                     box = player.getNmsBox();
+
+            if (vertical == null
+                    || oldVertical == null
+                    || box == null) {
+                return;
+            }
+            SpartanLocation to = player.getEventToLocation();
 
             runAsync(() -> {
                 if (jumping) {

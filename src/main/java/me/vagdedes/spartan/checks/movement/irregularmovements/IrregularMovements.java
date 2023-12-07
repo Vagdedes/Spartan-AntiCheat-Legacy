@@ -70,14 +70,23 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     public boolean run() {
-        SpartanLocation to = player.getEventToLocation(),
-                from = player.getEventFromLocation();
-        double vertical = player.getNmsVerticalDistance(),
+        Double vertical = player.getNmsVerticalDistance(),
                 oldVertical = player.getOld_NmsVerticalDistance(),
                 horizontal = player.getNmsHorizontalDistance(),
                 oldHorizontal = player.getOld_NmsHorizontalDistance(),
                 box = player.getNmsBox(),
                 oldBox = player.getOld_NmsBox();
+
+        if (vertical == null
+                || oldVertical == null
+                || horizontal == null
+                || oldHorizontal == null
+                || box == null
+                || oldBox == null) {
+            return false;
+        }
+        SpartanLocation to = player.getEventToLocation(),
+                from = player.getEventFromLocation();
         int airTicks = player.getTicksOnAir();
         boolean bedrockPlayer = player.isBedrockPlayer();
 

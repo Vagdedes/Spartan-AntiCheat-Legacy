@@ -166,16 +166,24 @@ public class Speed extends CheckExecutor {
 
     @Override
     public boolean run() {
-        double hor = this.player.getNmsHorizontalDistance();
+        Double hor = this.player.getNmsHorizontalDistance();
 
-        if (hor < sneaking || player.wasInLiquids() || !canDo()) {
+        if (hor == null || hor < sneaking || player.wasInLiquids() || !canDo()) {
             return false;
         }
-        double ver = this.player.getNmsHorizontalDistance(),
+        Double ver = this.player.getNmsHorizontalDistance(),
                 oldVer = this.player.getOld_NmsVerticalDistance(),
                 oldHor = this.player.getOld_NmsHorizontalDistance(),
                 box = this.player.getNmsBox(),
                 oldBox = this.player.getOld_NmsBox();
+
+        if (ver == null
+                || oldVer == null
+                || oldHor == null
+                || box == null
+                || oldBox == null) {
+            return false;
+        }
         int air = this.player.getTicksOnAir();
         SpartanLocation to = player.getEventToLocation(),
                 from = player.getEventFromLocation();
@@ -195,7 +203,7 @@ public class Speed extends CheckExecutor {
                 locM1 = to.clone().add(0, -1, 0);
 
         if (player.isCrawling()
-                || isSolid()
+                || isSolid(box)
                 && (PlayerData.isOnGround(player, to, 0, -box, 0)
                 || PlayerData.isOnGround(player, to, 0, -(box * 2), 0))) {
             reason = "blocks";
@@ -797,7 +805,7 @@ public class Speed extends CheckExecutor {
         return Math.max(minimumLimit, dm_speed);
     }
 
-    private boolean isSolid() {
+    private boolean isSolid(double box) {
         SpartanLocation to = player.getEventToLocation();
         Boolean pattern = PatternUtils.getCached(to, hackType, "solid");
 
@@ -819,7 +827,6 @@ public class Speed extends CheckExecutor {
             return PatternUtils.cache(to, hackType, "solid", true);
         }
         boolean can = false;
-        double box = player.getNmsBox();
 
         for (double i = (2.0 - box); i <= (box >= 0.8 ? (3.0 - box) : 2.0); i++) {
             SpartanLocation[] locations = to.getSurroundingLocations(1, i, 1);

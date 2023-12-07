@@ -38,11 +38,11 @@ public class HitReach extends CheckExecutor {
             preferred = 5.0;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7)
                 || PlayerData.getPotionLevel(player, PotionEffectType.SPEED) > 0
-                && player.getNmsHorizontalDistance() >= Speed.ground) {
+                && player.getValueOrDefault(player.getNmsHorizontalDistance(), 0.0) >= Speed.ground) {
             preferred = 4.25;
         } else {
-            double y = player.getNmsVerticalDistance();
-            preferred = player.isJumping(y) || player.isFalling(y) ? 4.25 : defaultHorizontalReach;
+            Double y = player.getNmsVerticalDistance();
+            preferred = y != null && (player.isJumping(y) || player.isFalling(y)) ? 4.25 : defaultHorizontalReach;
         }
         return Math.max(ResearchEngine.getAverageReach(), preferred);
     }
@@ -82,13 +82,14 @@ public class HitReach extends CheckExecutor {
                             limit = filter(hackType.getCheck().getDecimalOption("horizontal_distance", 3.1), defaultHorizontalReach, 0.5);
 
                             if (distance >= limit) {
+                                Double nmsDistance = player.getNmsDistance();
                                 double preferredLimit = getPreferredLimit(entity);
                                 boolean minimumNotReached = distance < preferredLimit;
                                 int ticks = 10 * 11,
                                         attempts = minimumNotReached ? 6
                                                 : player.getProfile().isSuspectedOrHacker(hackType)
                                                 || player.hasAttackCooldown()
-                                                || player.getNmsDistance() <= 0.1
+                                                || nmsDistance != null && nmsDistance <= 0.1
                                                 || !PlayerData.isInActivePlayerCombat(player) ? 3 : 4;
                                 Buffer buffer = player.getBuffer(hackType);
 

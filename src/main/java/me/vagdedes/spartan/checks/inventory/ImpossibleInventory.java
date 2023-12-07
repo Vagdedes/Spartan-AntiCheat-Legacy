@@ -118,6 +118,6 @@ public class ImpossibleInventory extends CheckExecutor {
                                         check.getBooleanOption("check_dead", true) && player.isDead() ? 5 :
                                                 check.getBooleanOption("check_sprint_jumping", true) && player.isSprintJumping() ? 6 :
                                                         check.getBooleanOption("check_walk_jumping", true) && player.isWalkJumping() ? 7 :
-                                                                check.getBooleanOption("check_jumping", true) && player.isJumping(player.getNmsVerticalDistance()) ? jumping : 0;
+                                                                check.getBooleanOption("check_jumping", true) && player.isJumping(player.getValueOrDefault(player.getNmsVerticalDistance(), 0.0)) ? jumping : 0;
     }
 }

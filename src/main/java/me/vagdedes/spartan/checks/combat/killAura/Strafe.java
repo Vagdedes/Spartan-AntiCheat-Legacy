@@ -57,14 +57,14 @@ public class Strafe extends DetectionExecutor {
 
                                     if (oldDirection != null) {
                                         Decimals decimals = player.getDecimals(hackType);
+                                        Double nmsDistance = player.getNmsDistance();
                                         double directionalDistance = direction.distance(oldDirection),
                                                 oldDirectionalDistance = decimals.get(key, 0.0),
-                                                nmsDistance = player.getNmsDistance(),
                                                 oldNmsDistance = decimals.get(nmsKey, 0.0);
 
                                         if (directionalDistance > 0.0
                                                 && oldDirectionalDistance > 0.0
-                                                && nmsDistance >= KillAura.universalNmsDistanceRequirement
+                                                && nmsDistance != null && nmsDistance >= KillAura.universalNmsDistanceRequirement
                                                 && oldNmsDistance >= KillAura.universalNmsDistanceRequirement) {
                                             double distanceDifference = Math.abs(directionalDistance - oldDirectionalDistance),
                                                     nmsDistanceDifference = Math.abs(nmsDistance - oldNmsDistance);

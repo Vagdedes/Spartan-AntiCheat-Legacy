@@ -59,15 +59,18 @@ public class SprintSpeed extends DetectionExecutor {
 
     void run() {
         if (!player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && player.getNmsHorizontalDistance() >= 0.25
                 && !Moderation.wasDetected(player)
                 && !player.wasInLiquids()
                 && !LagLeniencies.hasHighLatency(player, LagLeniencies.maxAllowedPing) // Library
                 && PlayerData.getWalkSpeedDifference(player) != 0.0f) {
-            SpartanLocation from = player.getEventFromLocation();
-            Buffer buffer = player.getBuffer(hackType);
-            checkFoodSprint(from, buffer);
-            checkOmnidirectional(player.getEventToLocation(), from, buffer);
+            Double nmsHorizontalDistance = player.getNmsHorizontalDistance();
+
+            if (nmsHorizontalDistance != null && nmsHorizontalDistance >= 0.25) {
+                SpartanLocation from = player.getEventFromLocation();
+                Buffer buffer = player.getBuffer(hackType);
+                checkFoodSprint(from, buffer);
+                checkOmnidirectional(player.getEventToLocation(), from, buffer);
+            }
         }
     }
 

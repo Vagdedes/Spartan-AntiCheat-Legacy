@@ -102,10 +102,15 @@ public class NoSlowdown extends CheckExecutor {
     }
 
     private boolean runUse(String reason, boolean itemUsage, int limit) {
-        double horizontal = player.getNmsHorizontalDistance(),
+        Double horizontal = player.getNmsHorizontalDistance(),
                 oldHorizontal = player.getOld_NmsHorizontalDistance(),
                 vertical = player.getNmsVerticalDistance();
 
+        if (horizontal == null
+                || oldHorizontal == null
+                || vertical == null) {
+            return false;
+        }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                 && itemUsage
                 && canDo()

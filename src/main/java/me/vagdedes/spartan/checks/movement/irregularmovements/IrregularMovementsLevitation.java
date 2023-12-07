@@ -5,7 +5,6 @@ import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.objects.data.Cooldowns;
 import me.vagdedes.spartan.objects.data.Handlers;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -32,13 +31,18 @@ public class IrregularMovementsLevitation extends DetectionExecutor {
     void run(Cooldowns cooldowns,
              boolean canGoUp,
              String prevention, String scenario) {
-        SpartanPlayer player = irregularMovements.player;
-        SpartanLocation to = player.getEventToLocation();
-        double vertical = player.getNmsVerticalDistance(),
-                box = player.getNmsBox(),
-                oldBox = player.getOld_NmsBox();
-
         if (hackType.getCheck().getBooleanOption("check_levitation", true)) {
+            Double vertical = player.getNmsVerticalDistance(),
+                    box = player.getNmsBox(),
+                    oldBox = player.getOld_NmsBox();
+
+            if (vertical == null
+                    || box == null
+                    || oldBox == null) {
+                return;
+            }
+            SpartanLocation to = player.getEventToLocation();
+
             runAsync(() -> {
                 if (!player.getHandlers().has(Handlers.HandlerType.ElytraWear)) {
                     double modifiedBox = AlgebraUtils.cut(box, 5),

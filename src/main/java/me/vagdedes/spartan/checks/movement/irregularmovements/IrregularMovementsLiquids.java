@@ -29,14 +29,17 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
     void run(boolean pastFalling, boolean liquidBelow, boolean knownBoxes,
              boolean building, boolean jumping, boolean oldJumping, boolean changedScenario,
              String detection, String prevention) {
-
         if (hackType.getCheck().getBooleanOption("check_liquids", true)
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
-            SpartanPlayer player = irregularMovements.player;
+            Double vertical = player.getNmsVerticalDistance(),
+                    horizontal = player.getNmsHorizontalDistance();
+
+            if (vertical == null
+                    || horizontal == null) {
+                return;
+            }
             SpartanLocation to = player.getEventToLocation(),
                     from = player.getEventFromLocation();
-            double vertical = player.getNmsVerticalDistance(),
-                    horizontal = player.getNmsHorizontalDistance();
 
             runAsync(() -> {
                 if (liquidBelow) {

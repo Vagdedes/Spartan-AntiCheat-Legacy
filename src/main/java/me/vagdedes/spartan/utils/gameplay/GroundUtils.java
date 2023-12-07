@@ -178,10 +178,12 @@ public class GroundUtils {
             return true;
         }
         if (original) {
-            double vertical = p.getNmsVerticalDistance(),
+            Double vertical = p.getNmsVerticalDistance(),
                     oldVertical = p.getOld_NmsVerticalDistance();
 
-            if ((vertical - oldVertical) < 0.0
+            if (vertical == null
+                    || oldVertical == null
+                    || (vertical - oldVertical) < 0.0
                     && p.isFalling(vertical)
                     && p.isFalling(oldVertical)) {
                 return false;

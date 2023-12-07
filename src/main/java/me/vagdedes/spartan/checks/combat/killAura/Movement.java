@@ -26,9 +26,10 @@ public class Movement extends DetectionExecutor {
 
         if (distance > distanceRequirementModified // We want the player at a distance, otherwise we risk the width being within the limits
                 && (Math.abs(width) <= entityWidth || player.getProfile().isSuspectedOrHacker(hackType))) {
-            double nmsDistance = player.getNmsDistance();
+            Double nmsDistance = player.getNmsDistance();
 
-            if (nmsDistance >= KillAura.universalNmsDistanceRequirement) {
+            if (nmsDistance != null
+                    && nmsDistance >= KillAura.universalNmsDistanceRequirement) {
                 Decimals decimals = player.getDecimals();
                 double oldNmsDistance = decimals.get(key);
 
