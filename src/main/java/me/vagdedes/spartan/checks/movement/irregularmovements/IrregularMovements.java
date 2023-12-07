@@ -364,24 +364,20 @@ public class IrregularMovements extends CheckExecutor {
                         }
                         break;
                     case levitationKey:
-                        if (!waterElevator && !liquidBlocks && canRunDetection()) {
+                        if (!waterElevator) {
                             levitation.run(cooldowns, canGoUp, prevention, scenario);
                         }
                         break;
                     case "cobweb":
-                        if (canRunDetection()) {
-                            cobweb.run(canGoDown, prevention, scenario);
-                        }
+                        cobweb.run(canGoDown, prevention, scenario);
                         break;
                     case "bouncing":
-                        if (canRunDetection()) {
-                            bouncing.run(
-                                    knownBoxes, offGround, airTicksOffGround, heightExists,
-                                    canGoUp, canGoDown,
-                                    jumping, falling,
-                                    levitationEffect,
-                                    prevention, scenario);
-                        }
+                        bouncing.run(
+                                knownBoxes, offGround, airTicksOffGround, heightExists,
+                                canGoUp, canGoDown,
+                                jumping, falling,
+                                levitationEffect,
+                                prevention, scenario);
                         break;
                     case "inside-blocks":
                         if (!bedrockPlayer) {
@@ -537,9 +533,5 @@ public class IrregularMovements extends CheckExecutor {
         return player.canRunCheck(hackType, true)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && (!player.isBedrockPlayer() || player.getEventToLocation().getBlockY() > BlockUtils.getMinHeight(player.getWorld()));
-    }
-
-    private boolean canRunDetection() {
-        return !SpartanEdition.freeAlternativeVersion || !player.isBedrockPlayer();
     }
 }

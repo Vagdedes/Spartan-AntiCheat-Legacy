@@ -39,7 +39,6 @@ public class SpartanEdition {
                     + (SpartanBukkit.canAdvertise ? "\nClick §n" + productLink + productID + " §r§cto fix this." : "")
                     + "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Config.settings.getFile().getName() + "' to disable this notification.";
     private static final boolean javaEdition;
-    public static final boolean freeAlternativeVersion;
     private static boolean
             notify = false,
             v_2_0 = false,
@@ -49,11 +48,9 @@ public class SpartanEdition {
         if (SpartanBukkit.canAdvertise) {
             javaEdition = java || fullEdition;
             alternativeVersion = fullEdition;
-            freeAlternativeVersion = false;
         } else { // SpigotMC
             javaEdition = true;
             alternativeVersion = false;
-            freeAlternativeVersion = true;
         }
     }
 
@@ -115,7 +112,6 @@ public class SpartanEdition {
                     case NoFall:
                     case Speed:
                     case NoSlowdown:
-                        return true;
                     case XRay:
                     case KillAura:
                     case Exploits:
@@ -134,7 +130,7 @@ public class SpartanEdition {
                     case AutoRespawn:
                     case ImpossibleInventory:
                     case MorePackets:
-                        return !freeAlternativeVersion;
+                        return true;
                     default: // HitReach, GhostHand, InventoryClicks
                         return false;
                 }

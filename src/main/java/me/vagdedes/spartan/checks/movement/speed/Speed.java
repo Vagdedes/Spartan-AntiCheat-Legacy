@@ -350,7 +350,7 @@ public class Speed extends CheckExecutor {
                 incompatibilities = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
         float difference = PlayerData.getWalkSpeedDifference(player);
         double minimumLimit = Math.max(
-                bedrockPlayer || incompatibilities ? (bedrockPlayer && SpartanEdition.freeAlternativeVersion ? incompatibility * 2.0 : incompatibility) :
+                bedrockPlayer || incompatibilities ? incompatibility :
                         player.getHandlers().has(Handlers.HandlerType.ElytraWear)
                                 || Compatibility.CompatibilityType.MythicMobs.isFunctional()
                                 || Compatibility.CompatibilityType.mcMMO.isFunctional() ? 0.6 :

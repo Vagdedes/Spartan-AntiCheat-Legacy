@@ -418,7 +418,8 @@ public class Check {
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
-        this.enabled = new boolean[ResearchEngine.DataType.values().length - 1]; // -1 because of the universal
+        ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+        this.enabled = new boolean[dataTypes.length]; // -1 because of the universal
 
         if (legacy) {
             Object optionValue = getOption("enabled", true, false);
@@ -427,7 +428,7 @@ public class Check {
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
 
-            for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+            for (ResearchEngine.DataType dataType : dataTypes) {
                 this.enabled[dataType.ordinal()] = boolValue;
             }
         } else {
@@ -438,7 +439,7 @@ public class Check {
                 setOption("enabled", null, false);
             }
 
-            for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+            for (ResearchEngine.DataType dataType : dataTypes) {
                 Object optionValue = getOption(
                         "enabled." + dataType.lowerCase,
                         hasOldOption ? oldOptionValue : true,
@@ -714,21 +715,21 @@ public class Check {
     }
 
     public boolean isEnabled(ResearchEngine.DataType dataType, String world, UUID player) {
-        if (dataType == null) {
-            boolean enabled = false;
+        ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
 
-            for (ResearchEngine.DataType type : ResearchEngine.getDynamicUsableDataTypes(false)) {
+        if (dataType == null) {
+            for (ResearchEngine.DataType type : dataTypes) {
                 if (this.enabled[type.ordinal()]) {
-                    enabled = true;
-                    break;
+                    return true;
                 }
             }
+            return false;
+        } else {
+            int ordinal = dataType.ordinal();
 
-            if (!enabled) {
+            if ((ordinal + 1) > dataTypes.length || !this.enabled[ordinal]) {
                 return false;
             }
-        } else if (!this.enabled[dataType.ordinal()]) {
-            return false;
         }
         return (world == null || isEnabledOnWorld(world))
                 && (player == null || getDisabledCause(player) == null);
