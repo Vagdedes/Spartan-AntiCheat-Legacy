@@ -3,7 +3,6 @@ package me.vagdedes.spartan.checks.movement.irregularmovements;
 import me.vagdedes.spartan.abstraction.CheckExecutor;
 import me.vagdedes.spartan.abstraction.DetectionExecutor;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
-import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.GroundUtils;
 import org.bukkit.Material;

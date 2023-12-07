@@ -6,7 +6,6 @@ import me.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import me.vagdedes.spartan.configuration.Compatibility;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.functionality.protections.Explosion;
-import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import me.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import me.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
