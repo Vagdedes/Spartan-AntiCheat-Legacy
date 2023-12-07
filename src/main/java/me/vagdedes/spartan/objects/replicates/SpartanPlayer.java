@@ -1571,12 +1571,12 @@ public class SpartanPlayer {
                             nearbyEntities.clear();
                             nearbyEntities.addAll(p.getNearbyEntities(finalX, finalX, finalX));
                         });
-                        return nearbyEntities;
                     } else {
                         SpartanLocation loc = this.getLocation();
                         List<Entity> entities = worldEntities.get(loc.getWorld());
 
                         if (entities != null && !entities.isEmpty()) {
+                            entities = new ArrayList<>(entities);
                             Entity vehicle = this.getVehicle();
 
                             if (vehicle != null) {
