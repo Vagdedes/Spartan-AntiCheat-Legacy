@@ -161,10 +161,10 @@ public class SpartanPlayer {
 
     // Custom
 
-    private double
+    private Map<Long, Double>
             nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
-            nmsBox, oldNmsBox,
-            oldNmsDistance, oldNmsHorizontalDistance, oldNmsVerticalDistance,
+            nmsBox;
+    private double
             customDistance, customHorizontalDistance, customVerticalDistance;
     private long
             lastOffSprint,
@@ -423,14 +423,10 @@ public class SpartanPlayer {
         this.customDistance = 0.0;
         this.customHorizontalDistance = 0.0;
         this.customVerticalDistance = 0.0;
-        this.nmsDistance = 0.0;
-        this.oldNmsDistance = 0.0;
-        this.nmsHorizontalDistance = 0.0;
-        this.oldNmsHorizontalDistance = 0.0;
-        this.nmsVerticalDistance = 0.0;
-        this.oldNmsVerticalDistance = 0.0;
-        this.nmsBox = 0.0;
-        this.oldNmsBox = 0.0;
+        this.nmsDistance = new LinkedHashMap<>();
+        this.nmsHorizontalDistance = new LinkedHashMap<>();
+        this.nmsVerticalDistance = new LinkedHashMap<>();
+        this.nmsBox = new LinkedHashMap<>();
         this.lastFall = 0L;
         this.lastOffSprint = 0L;
         this.lastJump = 0L;
@@ -1944,76 +1940,63 @@ public class SpartanPlayer {
         return customDistance;
     }
 
-    public synchronized void setCustomDistance(double distance) {
+    public synchronized void setCustomDistance(double distance,
+                                               double horizontal,
+                                               double vertical) {
         this.customDistance = distance;
+        this.customHorizontalDistance = horizontal;
+        this.customVerticalDistance = vertical;
     }
 
     public double getCustomHorizontalDistance() {
         return customHorizontalDistance;
     }
 
-    public synchronized void setCustomHorizontalDistance(double distance) {
-        this.customHorizontalDistance = distance;
-    }
-
     public double getCustomVerticalDistance() {
         return customVerticalDistance;
     }
 
-    public synchronized void setCustomVerticalDistance(double distance) {
-        this.customVerticalDistance = distance;
+    public synchronized void setNmsDistance(double distance,
+                                            double horizontal,
+                                            double vertical,
+                                            double box) {
+        long tick = TPS.getTick(this);
+        this.nmsDistance.put(tick, distance);
+        this.nmsHorizontalDistance.put(tick, horizontal);
+        this.nmsVerticalDistance.put(tick, vertical);
+        this.nmsBox.put(tick, box);
     }
 
-    public double getNmsDistance() {
-        return nmsDistance;
+    public Double getNmsDistance() {
+        return nmsDistance.get(TPS.getTick(this));
     }
 
-    public synchronized void setNmsDistance(double distance) {
-        this.oldNmsDistance = this.nmsDistance;
-        this.nmsDistance = distance;
+    public Double getOld_NmsDistance() {
+        return nmsDistance.get(TPS.getTick(this) - 1L);
     }
 
-    public double getOld_NmsDistance() {
-        return oldNmsDistance;
+    public Double getNmsHorizontalDistance() {
+        return nmsHorizontalDistance.get(TPS.getTick(this));
     }
 
-    public double getNmsHorizontalDistance() {
-        return nmsHorizontalDistance;
+    public Double getOld_NmsHorizontalDistance() {
+        return nmsHorizontalDistance.get(TPS.getTick(this) - 1L);
     }
 
-    public double getOld_NmsHorizontalDistance() {
-        return oldNmsHorizontalDistance;
+    public Double getNmsVerticalDistance() {
+        return nmsVerticalDistance.get(TPS.getTick(this));
     }
 
-    public synchronized void setNmsHorizontalDistance(double distance) {
-        this.oldNmsHorizontalDistance = this.nmsHorizontalDistance;
-        this.nmsHorizontalDistance = distance;
+    public Double getOld_NmsVerticalDistance() {
+        return nmsVerticalDistance.get(TPS.getTick(this) - 1L);
     }
 
-    public double getNmsVerticalDistance() {
-        return nmsVerticalDistance;
+    public Double getNmsBox() {
+        return nmsBox.get(TPS.getTick(this));
     }
 
-    public synchronized void setNmsVerticalDistance(double distance) {
-        this.oldNmsVerticalDistance = this.nmsVerticalDistance;
-        this.nmsVerticalDistance = distance;
-    }
-
-    public double getOld_NmsVerticalDistance() {
-        return oldNmsVerticalDistance;
-    }
-
-    public double getNmsBox() {
-        return nmsBox;
-    }
-
-    public synchronized void setNmsBox(double box) {
-        this.oldNmsBox = this.nmsBox;
-        this.nmsBox = box;
-    }
-
-    public double getOld_NmsBox() {
-        return oldNmsBox;
+    public Double getOld_NmsBox() {
+        return nmsBox.get(TPS.getTick(this) - 1L);
     }
 
     // Direction

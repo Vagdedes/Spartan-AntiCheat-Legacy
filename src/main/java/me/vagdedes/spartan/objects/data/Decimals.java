@@ -170,7 +170,7 @@ public class Decimals {
     public void remove(String name, double value) {
         List<Double> list = hm.get(name);
 
-        if (list != null && list.remove(value) && list.size() == 0) {
+        if (list != null && list.remove(value) && list.isEmpty()) {
             hm.remove(name);
         }
     }

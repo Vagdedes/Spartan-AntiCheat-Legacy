@@ -179,10 +179,8 @@ public class SpartanEdition {
         switch (dataType) {
             case Bedrock:
                 return "16";
-            case Java:
-                return "1";
             default:
-                return null;
+                return "1";
         }
     }
 
@@ -190,10 +188,8 @@ public class SpartanEdition {
         switch (dataType) {
             case Bedrock:
                 return "22";
-            case Java:
-                return "21";
             default:
-                return null;
+                return "21";
         }
     }
 
