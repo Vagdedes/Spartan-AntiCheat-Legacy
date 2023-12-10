@@ -85,7 +85,12 @@ public class Strafe extends DetectionExecutor {
                                             }
                                         }
                                         decimals.set(key, directionalDistance);
-                                        decimals.set(nmsKey, nmsDistance);
+
+                                        if (nmsDistance != null) {
+                                            decimals.set(nmsKey, nmsDistance);
+                                        } else {
+                                            decimals.remove(nmsKey);
+                                        }
                                     }
                                     oldDirection = direction;
                                     break; // We just need one entity in angle to run this detection, so we break the loop
