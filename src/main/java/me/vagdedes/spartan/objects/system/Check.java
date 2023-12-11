@@ -419,7 +419,7 @@ public class Check {
 
         // Separator
         ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
-        this.enabled = new boolean[dataTypes.length]; // -1 because of the universal
+        this.enabled = new boolean[ResearchEngine.usableDataTypes.length];
 
         if (legacy) {
             Object optionValue = getOption("enabled", true, false);
@@ -724,19 +724,33 @@ public class Check {
                 }
             }
             return false;
-        } else {
-            int ordinal = dataType.ordinal();
-
-            if ((ordinal + 1) > dataTypes.length || !this.enabled[ordinal]) {
-                return false;
-            }
+        } else if (!this.enabled[dataType.ordinal()]) {
+            return false;
         }
         return (world == null || isEnabledOnWorld(world))
                 && (player == null || getDisabledCause(player) == null);
     }
 
     public void setEnabled(ResearchEngine.DataType dataType, boolean b) {
-        for (ResearchEngine.DataType type : (dataType == null ? ResearchEngine.getDynamicUsableDataTypes(false) : new ResearchEngine.DataType[]{dataType})) {
+        ResearchEngine.DataType[] dataTypes;
+
+        if (dataType == null) {
+            dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+        } else {
+            dataTypes = null;
+
+            for (ResearchEngine.DataType type : ResearchEngine.getDynamicUsableDataTypes(false)) {
+                if (type == dataType) {
+                    dataTypes = new ResearchEngine.DataType[]{dataType};
+                    break;
+                }
+            }
+
+            if (dataTypes == null) {
+                return;
+            }
+        }
+        for (ResearchEngine.DataType type : dataTypes) {
             int ordinal = type.ordinal();
 
             if (enabled[ordinal] != b) {
