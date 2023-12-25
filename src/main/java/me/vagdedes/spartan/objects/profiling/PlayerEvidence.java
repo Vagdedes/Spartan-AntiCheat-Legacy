@@ -112,7 +112,10 @@ public class PlayerEvidence {
         for (EvidenceType evidenceType : EvidenceType.values()) {
             if (count >= evidenceType.count) {
                 this.type = evidenceType;
-                return;
+
+                if (evidenceType == EvidenceType.Hacker) {
+                    break;
+                }
             }
         }
     }
