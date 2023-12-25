@@ -72,11 +72,6 @@ public class ResearchEngine {
             averageCPS = -1.0;
 
     // Lists
-    private static final List<PlayerProfile>
-            hackerPlayers = new LinkedList<>(),
-            legitimatePlayers = new LinkedList<>(),
-            suspectedPlayers = new LinkedList<>(),
-            hackerFreePlayerProfiles = new ArrayList<>(Config.getMaxPlayers());
     private static final List<PlayerFight> playerFights = new LinkedList<>();
     private static final int schedulerRefreshTicks = 1200 * 10;
     private static final long cacheTimeLimit = 60_000L * 4; // Despite being 4, realistically it is 5 minutes if extra calculations are accounted for
@@ -358,45 +353,48 @@ public class ResearchEngine {
         }
     }
 
-    public static void addHacker(PlayerProfile playerProfile) {
-        if (!hackerPlayers.contains(playerProfile)) {
-            hackerPlayers.add(playerProfile);
-            hackerFreePlayerProfiles.remove(playerProfile);
-            legitimatePlayers.remove(playerProfile);
-            suspectedPlayers.remove(playerProfile);
-        }
-    }
-
     public static List<PlayerProfile> getHackers() {
-        return new ArrayList<>(hackerPlayers);
-    }
+        if (!playerProfiles.isEmpty()) {
+            List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
-    public static void addSuspected(PlayerProfile playerProfile) {
-        if (!suspectedPlayers.contains(playerProfile)) {
-            suspectedPlayers.add(playerProfile);
-            hackerFreePlayerProfiles.remove(playerProfile);
-            legitimatePlayers.remove(playerProfile);
-            hackerPlayers.remove(playerProfile);
+            for (PlayerProfile playerProfile : playerProfiles.values()) {
+                if (playerProfile.isHacker()) {
+                    list.add(playerProfile);
+                }
+            }
+            return list;
+        } else {
+            return new ArrayList<>(0);
         }
     }
 
     public static List<PlayerProfile> getSuspectedPlayers() {
-        return new ArrayList<>(suspectedPlayers);
+        if (!playerProfiles.isEmpty()) {
+            List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
+
+            for (PlayerProfile playerProfile : playerProfiles.values()) {
+                if (playerProfile.isSuspected()) {
+                    list.add(playerProfile);
+                }
+            }
+            return list;
+        } else {
+            return new ArrayList<>(0);
+        }
     }
 
     public static List<PlayerProfile> getLegitimatePlayers() {
-        return new ArrayList<>(legitimatePlayers);
-    }
+        if (!playerProfiles.isEmpty()) {
+            List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
-    public static void addLegitimate(PlayerProfile playerProfile) {
-        if (!legitimatePlayers.contains(playerProfile)) {
-            legitimatePlayers.add(playerProfile);
-
-            if (playerProfile.isTrustWorthy(true)) {
-                hackerFreePlayerProfiles.add(playerProfile);
+            for (PlayerProfile playerProfile : playerProfiles.values()) {
+                if (playerProfile.isLegitimate()) {
+                    list.add(playerProfile);
+                }
             }
-            suspectedPlayers.remove(playerProfile);
-            hackerPlayers.remove(playerProfile);
+            return list;
+        } else {
+            return new ArrayList<>(0);
         }
     }
 
@@ -417,7 +415,6 @@ public class ResearchEngine {
         }
         playerProfile = new PlayerProfile(name);
         playerProfiles.put(name, playerProfile);
-        addLegitimate(playerProfile);
         return playerProfile;
     }
 
@@ -430,7 +427,6 @@ public class ResearchEngine {
         }
         playerProfile = new PlayerProfile(player);
         playerProfiles.put(name, playerProfile);
-        addLegitimate(playerProfile);
         return playerProfile;
     }
 
@@ -454,8 +450,7 @@ public class ResearchEngine {
         return null;
     }
 
-    public static ViolationHistory getViolationHistory(Enums.HackType hackType, DataType dataType, boolean legitimate) {
-        Collection<PlayerProfile> profiles = legitimate ? hackerFreePlayerProfiles : playerProfiles.values();
+    public static ViolationHistory getViolationHistory(Enums.HackType hackType, DataType dataType, Collection<PlayerProfile> profiles) {
         int size = profiles.size();
 
         if (size == 0) {
@@ -567,16 +562,10 @@ public class ResearchEngine {
                             // Wait here until the caching is finished
                         }
                         playerProfiles.remove(playerName);
-                        hackerFreePlayerProfiles.remove(playerProfile);
-                        hackerPlayers.remove(playerProfile);
-                        suspectedPlayers.remove(playerProfile);
-                        legitimatePlayers.remove(playerProfile);
                         ViolationStatistics.remove(playerProfile);
 
                         if (foundPlayer) {
                             PlayerProfile newPlayerProfile = getPlayerProfile(p);
-                            hackerFreePlayerProfiles.add(newPlayerProfile);
-                            legitimatePlayers.add(newPlayerProfile);
                             p.setProfile(newPlayerProfile);
                         }
                         if (Config.sql.isEnabled()) {
@@ -604,17 +593,11 @@ public class ResearchEngine {
                     });
                 } else {
                     playerProfiles.remove(playerName);
-                    hackerFreePlayerProfiles.remove(playerProfile);
-                    hackerPlayers.remove(playerProfile);
-                    suspectedPlayers.remove(playerProfile);
-                    legitimatePlayers.remove(playerProfile);
                     ViolationStatistics.remove(playerProfile);
                     SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
 
                     if (p != null) {
                         PlayerProfile newPlayerProfile = getPlayerProfile(p);
-                        hackerFreePlayerProfiles.add(newPlayerProfile);
-                        legitimatePlayers.add(newPlayerProfile);
                         p.setProfile(newPlayerProfile);
                     }
                 }
@@ -1194,7 +1177,9 @@ public class ResearchEngine {
         if (size > 0) {
             Enums.HackType[] hackTypes = Enums.HackType.values();
             DataType[] dataTypes = getDynamicUsableDataTypes(false);
-            List<PlayerProfile> playerProfilesCopy = new ArrayList<>(playerProfiles);
+            List<PlayerProfile>
+                    playerProfilesCopy = new ArrayList<>(playerProfiles),
+                    legitimatePlayers = getLegitimatePlayers();
             int mines = 0, logs = 0, reports = 0,
                     bans = 0, kicks = 0, warnings = 0;
             ViolationStatistics.calculate(playerProfiles);
@@ -1257,7 +1242,8 @@ public class ResearchEngine {
 
                         for (PlayerProfile playerProfile : playerProfiles) {
                             if (bedrock == playerProfile.isBedrockPlayer()
-                                    && playerProfile.isTrustWorthy(false)
+                                    && !playerProfile.wasStaff()
+                                    && !playerProfile.wasTesting()
                                     && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
                                 List<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getViolationsList();
 
@@ -1316,11 +1302,11 @@ public class ResearchEngine {
 
             // Separator (Calculate mining statistics)
 
-            if (!hackerFreePlayerProfiles.isEmpty()) {
+            if (!legitimatePlayers.isEmpty()) {
                 for (Enums.MiningOre ore : Enums.MiningOre.values()) {
                     double average = 0.0, total = 0.0;
 
-                    for (PlayerProfile playerProfile : hackerFreePlayerProfiles) {
+                    for (PlayerProfile playerProfile : legitimatePlayers) {
                         MiningHistory miningHistory = playerProfile.getMiningHistory(ore);
                         mines = miningHistory.getMines();
 
@@ -1346,11 +1332,8 @@ public class ResearchEngine {
                 CancelViolation.clear(); // We clear because there are no hacker-free players
             }
         } else { // We clear because there are no players
-            legitimatePlayers.clear();
-            hackerPlayers.clear();
             playerFights.clear();
             statisticalProgress = new StatisticalProgress();
-            hackerFreePlayerProfiles.clear();
             averageMining.clear();
             ViolationStatistics.clear();
             CancelViolation.clear();
@@ -1362,13 +1345,14 @@ public class ResearchEngine {
     }
 
     private static void updateCombatCache() {
+        List<PlayerProfile>legitimatePlayers = getLegitimatePlayers();
         double averageCPS = 0.0, averageCPSCount = 0.0,
                 averageReach = 0.0, averageReachCount = 0.0;
 
-        if (hackerFreePlayerProfiles.size() >= profileRequirement) {
+        if (legitimatePlayers.size() >= profileRequirement) {
             List<PlayerFight> playerFights = new LinkedList<>();
 
-            for (PlayerProfile playerProfile : hackerFreePlayerProfiles) {
+            for (PlayerProfile playerProfile : legitimatePlayers) {
                 PlayerCombat combat = playerProfile.getCombat();
 
                 if (combat.hasFights()) {
@@ -1388,19 +1372,23 @@ public class ResearchEngine {
                 }
             }
             ResearchEngine.playerFights.clear();
-            ResearchEngine.playerFights.addAll(playerFights);
 
-            // Separator
+            if (playerFights.size() >= profileRequirement) {
+                ResearchEngine.playerFights.addAll(playerFights);
 
-            if (averageCPSCount > 0.0 && averageCPS <= CombatUtils.maxLegitimateCPS) {
-                ResearchEngine.averageCPS = averageCPS / averageCPSCount;
+                if (averageCPSCount > 0.0 && averageCPS <= CombatUtils.maxLegitimateCPS) {
+                    ResearchEngine.averageCPS = averageCPS / averageCPSCount;
+                } else {
+                    ResearchEngine.averageCPS = -1.0;
+                }
+
+                if (averageReachCount > 0.0 && averageCPS <= CombatUtils.maxHitDistance) {
+                    ResearchEngine.averageReach = averageReach / averageReachCount;
+                } else {
+                    ResearchEngine.averageReach = -1.0;
+                }
             } else {
                 ResearchEngine.averageCPS = -1.0;
-            }
-
-            if (averageReachCount > 0.0 && averageCPS <= CombatUtils.maxHitDistance) {
-                ResearchEngine.averageReach = averageReach / averageReachCount;
-            } else {
                 ResearchEngine.averageReach = -1.0;
             }
         } else {

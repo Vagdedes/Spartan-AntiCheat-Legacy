@@ -106,15 +106,14 @@ public class PlayerEvidence {
         this.type = EvidenceType.Legitimate;
     }
 
-    EvidenceType judge() {
+    void judge() {
         int count = evidence.size();
 
         for (EvidenceType evidenceType : EvidenceType.values()) {
             if (count >= evidenceType.count) {
                 this.type = evidenceType;
-                return evidenceType;
+                return;
             }
         }
-        return EvidenceType.Legitimate;
     }
 }

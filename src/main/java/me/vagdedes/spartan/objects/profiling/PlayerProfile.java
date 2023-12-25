@@ -366,7 +366,7 @@ public class PlayerProfile {
                     evidence.remove(hackType);
                 }
             }
-            judgeEvidence();
+            evidence.judge();
         }
     }
 
@@ -386,7 +386,7 @@ public class PlayerProfile {
                     evidence.add(hackType,
                             "suspicion: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
                     );
-                    judgeEvidence();
+                    evidence.judge();
                     SpartanMenu.playerInfo.refresh(player.getName());
                     MainMenu.refresh();
                     return true;
@@ -406,28 +406,8 @@ public class PlayerProfile {
         return evidence;
     }
 
-    private void judgeEvidence() {
-        switch (evidence.judge()) {
-            case Suspected:
-                ResearchEngine.addSuspected(this);
-                break;
-            case Hacker:
-                ResearchEngine.addHacker(this);
-                break;
-            default:
-                ResearchEngine.addLegitimate(this);
-                break;
-        }
-    }
-
     boolean shouldCalculateEvidence() {
         return (staff || evidence.noCalculations() || wasRecentlyOnline()) && getUsefulLogs() > 0;
-    }
-
-    public boolean isTrustWorthy(boolean history) {
-        return !wasStaff()
-                && !wasTesting()
-                && (!history || punishmentHistory.getOverall(true) == 0);
     }
 
     // Separator

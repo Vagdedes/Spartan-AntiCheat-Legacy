@@ -173,6 +173,7 @@ public class ImpossibleActions extends CheckExecutor {
                             + ", block-face: " + blockFace.toString().toLowerCase());
         } else if (blockFace == BlockFace.SELF
                 && hackType.getCheck().getBooleanOption("check_air_placement", true)
+                && !BlockUtils.areWoods(blockType)
                 && bloc.areBlocks(Material.AIR, 1, false)) {
             cancel("type: air-placement, block: " + BlockUtils.materialToString(blockType)
                     + ", block-against: " + BlockUtils.materialToString(blockAgainstType));
