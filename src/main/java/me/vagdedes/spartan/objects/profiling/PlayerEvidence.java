@@ -38,6 +38,12 @@ public class PlayerEvidence {
         this.noCalculations = true;
     }
 
+    PlayerEvidence(PlayerEvidence evidence) {
+        this.type = evidence.type;
+        this.evidence = new LinkedHashMap<>(evidence.evidence);
+        this.noCalculations = evidence.noCalculations;
+    }
+
     // Separator
 
     public Collection<Enums.HackType> getKnowledgeList() {
@@ -75,6 +81,10 @@ public class PlayerEvidence {
 
     // Separator
 
+    public boolean has() {
+        return !evidence.isEmpty();
+    }
+
     Collection<Enums.HackType> has(EvidenceType type) {
         return this.type == type ? evidence.keySet() : new ArrayList<>(0);
     }
@@ -97,6 +107,10 @@ public class PlayerEvidence {
         this.evidence.put(hackType, reason);
     }
 
+    void addIfAbsent(Enums.HackType hackType, String reason) {
+        this.evidence.putIfAbsent(hackType, reason);
+    }
+
     public void remove(Enums.HackType hackType) {
         this.evidence.remove(hackType);
     }
@@ -106,9 +120,16 @@ public class PlayerEvidence {
         this.type = EvidenceType.Legitimate;
     }
 
-    void judge() {
-        int count = evidence.size();
+    void judge(PlayerEvidence evidence) {
+        int count = this.evidence.size();
 
+        if (evidence != null && evidence.has()) {
+            for (Enums.HackType hackType : evidence.getKnowledgeList()) {
+                if (!has(hackType)) {
+                    count++;
+                }
+            }
+        }
         for (EvidenceType evidenceType : EvidenceType.values()) {
             if (count >= evidenceType.count) {
                 this.type = evidenceType;

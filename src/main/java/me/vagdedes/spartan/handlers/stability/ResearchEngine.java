@@ -47,34 +47,38 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchEngine {
 
-    // Constants
     public static final int
             maxDataLength = 4096,
             logRequirement = Check.maxViolationsPerCycle,
-            profileRequirement = logRequirement / 10;
-    public static final double downloadedVersion = Double.parseDouble(API.getVersion().substring(6));
-    public static final int
-            maxSize = Cache.enoughRAM ? 102_400 : 20_480,
-            maxSizeInBytes = maxSize * 1024;
-    public static final DataType[] usableDataTypes = new DataType[]{DataType.Java, DataType.Bedrock};
-    private static final double minimumAverageMining = 16.0;
-    // Base
-    private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>(Config.getMaxPlayers());
-    private static final Map<String, ItemStack> skulls = new ConcurrentHashMap<>(logRequirement);
-    // Detections
+            profileRequirement = logRequirement / 10,
+            maxCacheSize = Cache.enoughRAM ? 102_400 : 20_480,
+            maxCacheSizeInBytes = maxCacheSize * 1024;
 
-    // Averages
-    private static final Map<Enums.MiningOre, Double>
-            averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length),
-            defaultAverageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
+    public static final double downloadedVersion = Double.parseDouble(API.getVersion().substring(6));
+    private static final double minimumAverageMining = 16.0;
     private static double
             averageReach = -1.0,
             averageCPS = -1.0;
 
-    // Lists
-    private static final List<PlayerFight> playerFights = new LinkedList<>();
-    private static final int schedulerRefreshTicks = 1200 * 10;
     private static final long cacheTimeLimit = 60_000L * 4; // Despite being 4, realistically it is 5 minutes if extra calculations are accounted for
+    private static final int schedulerRefreshTicks = 1200 * 10;
+    private static int schedulerTicks = 0;
+
+    private static boolean
+            isCaching = false,
+            isFull = false,
+            enoughData = false;
+
+    public static final DataType[] usableDataTypes = new DataType[]{DataType.Java, DataType.Bedrock};
+    private static StatisticalProgress statisticalProgress = new StatisticalProgress();
+    private static String date = new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
+
+    private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>(Config.getMaxPlayers());
+    private static final Map<String, ItemStack> skulls = new ConcurrentHashMap<>(logRequirement);
+    private static final Map<Enums.MiningOre, Double> averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
+    private static final double[] defaultAverageMining = new double[Enums.MiningOre.values().length];
+    private static final List<PlayerFight> playerFights = new LinkedList<>();
+
     private static final Runnable skullsAndFightsRunnable = () -> {
         Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
@@ -82,7 +86,8 @@ public class ResearchEngine {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (!players.isEmpty()) {
-                boolean added = !Config.settings.getBoolean("Important.load_player_head_textures") || skulls.size() == logRequirement;
+                boolean added = !Config.settings.getBoolean("Important.load_player_head_textures")
+                        || skulls.size() == logRequirement;
                 Inventory inv = Bukkit.createInventory(players.get(0).getPlayer(), 9, "");
 
                 for (PlayerProfile playerProfile : playerProfiles) {
@@ -102,27 +107,19 @@ public class ResearchEngine {
             }
         }
     };
-    private static boolean
-            isCaching = false,
-            isFull = false,
-            enoughData = false;
-    private static StatisticalProgress statisticalProgress = new StatisticalProgress();
-    // Scheduler
-    private static int schedulerTicks = 0;
-    private static String date = new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
 
     static {
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {
             switch (ore) {
                 case DIAMOND:
-                    defaultAverageMining.put(ore, -32.0);
+                    defaultAverageMining[ore.ordinal()] = -32.0;
                     break;
                 case EMERALD:
                 case ANCIENT_DEBRIS:
-                    defaultAverageMining.put(ore, -minimumAverageMining);
+                    defaultAverageMining[ore.ordinal()] = -minimumAverageMining;
                     break;
                 case GOLD:
-                    defaultAverageMining.put(ore, -64.0);
+                    defaultAverageMining[ore.ordinal()] = -64.0;
                     break;
                 default:
                     break;
@@ -273,7 +270,7 @@ public class ResearchEngine {
         if (index1 > -1) {
             int index2 = s.indexOf(") [");
 
-            if (index2 > -1 && index2 > index1 && s.length() > index2) {
+            if (index2 > -1 && index2 > index1) {
                 String number = s.substring(index1 + 5, index2);
                 return AlgebraUtils.validInteger(number) ? Integer.parseInt(number) : -1;
             }
@@ -481,7 +478,7 @@ public class ResearchEngine {
 
     public static double getMiningHistoryAverage(Enums.MiningOre ore, double multiplier) {
         Double average = averageMining.get(ore);
-        return average == null ? defaultAverageMining.get(ore) : (average * multiplier);
+        return average == null ? defaultAverageMining[ore.ordinal()] : (average * multiplier);
     }
 
     // Separator
@@ -502,7 +499,7 @@ public class ResearchEngine {
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.getEvidence().remove(hackType);
+                    playerProfile.getLiveEvidence().remove(hackType);
                 }
             }
 
@@ -663,7 +660,7 @@ public class ResearchEngine {
                             cache.put(key, information);
                             byteSize += key.length() + information.length();
 
-                            if (byteSize >= maxSizeInBytes) {
+                            if (byteSize >= maxCacheSizeInBytes) {
                                 isFull = true;
                                 break;
                             } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
@@ -682,7 +679,7 @@ public class ResearchEngine {
         if (Config.sql.isEnabled()) {
             if (!isFull) {
                 try {
-                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + maxSize + ";");
+                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + maxCacheSize + ";");
 
                     if (rs != null) {
                         while (rs.next()) {
@@ -694,7 +691,7 @@ public class ResearchEngine {
                                 cache.put(date, data);
                                 byteSize += date.length() + data.length();
 
-                                if (byteSize >= maxSizeInBytes) {
+                                if (byteSize >= maxCacheSizeInBytes) {
                                     isFull = true;
                                     break;
                                 } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
@@ -738,7 +735,7 @@ public class ResearchEngine {
                             cache.put(key, data);
                             byteSize += key.length() + data.length();
 
-                            if (byteSize >= maxSizeInBytes) {
+                            if (byteSize >= maxCacheSizeInBytes) {
                                 isFull = true;
                                 break;
                             } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
@@ -1345,7 +1342,7 @@ public class ResearchEngine {
     }
 
     private static void updateCombatCache() {
-        List<PlayerProfile>legitimatePlayers = getLegitimatePlayers();
+        List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();
         double averageCPS = 0.0, averageCPSCount = 0.0,
                 averageReach = 0.0, averageReachCount = 0.0;
 
