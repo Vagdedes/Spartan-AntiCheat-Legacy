@@ -420,10 +420,16 @@ public class PlayerProfile {
             PlayerEvidence evidence = new PlayerEvidence(historicalEvidence);
 
             if (liveEvidence.has()) {
+                boolean judge = false;
+
                 for (Map.Entry<Enums.HackType, String> entry : liveEvidence.getKnowledgeEntry()) {
-                    evidence.addIfAbsent(entry.getKey(), entry.getValue());
+                    if (evidence.addIfAbsent(entry.getKey(), entry.getValue())) {
+                        judge = true;
+                    }
                 }
-                evidence.judge(null);
+                if (judge) {
+                    evidence.judge(null);
+                }
             }
             return evidence;
         } else {

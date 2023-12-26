@@ -107,8 +107,8 @@ public class PlayerEvidence {
         this.evidence.put(hackType, reason);
     }
 
-    void addIfAbsent(Enums.HackType hackType, String reason) {
-        this.evidence.putIfAbsent(hackType, reason);
+    boolean addIfAbsent(Enums.HackType hackType, String reason) {
+        return this.evidence.putIfAbsent(hackType, reason) == null;
     }
 
     public void remove(Enums.HackType hackType) {
