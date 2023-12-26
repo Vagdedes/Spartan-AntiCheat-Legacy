@@ -130,8 +130,11 @@ public class PlayerEvidence {
                 }
             }
         }
+        this.type = EvidenceType.Legitimate;
+
         for (EvidenceType evidenceType : EvidenceType.values()) {
-            if (count >= evidenceType.count) {
+            if (count >= evidenceType.count
+                    && this.type.count < evidenceType.count) {
                 this.type = evidenceType;
 
                 if (evidenceType == EvidenceType.Hacker) {

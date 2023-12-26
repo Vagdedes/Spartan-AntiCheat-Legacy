@@ -377,6 +377,7 @@ public class PlayerProfile {
         if (historicalEvidence.has(hackType) || liveEvidence.has(hackType)) {
             return true;
         }
+
         if (hackType != Enums.HackType.XRay) {
             int violationCount = player.getViolations(hackType).getLevel() - hackType.getCheck().getCancelViolation();
 
