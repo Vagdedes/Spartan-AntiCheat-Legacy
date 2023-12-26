@@ -119,10 +119,6 @@ public class PlayerProfile {
         }
     }
 
-    public PlayerProfile() {
-        this((String) null);
-    }
-
     // Separator
 
     public UUID getUniqueId() {
@@ -468,7 +464,7 @@ public class PlayerProfile {
     // Separator
 
     public boolean isLegitimate() {
-        return getEvidence(true).has(PlayerEvidence.EvidenceType.Legitimate) != null;
+        return getEvidence(true).has(PlayerEvidence.EvidenceType.Legitimate).isEmpty();
     }
 
     public boolean isHacker() {

@@ -402,9 +402,6 @@ public class ResearchEngine {
     // Separator
 
     public static PlayerProfile getPlayerProfile(String name) {
-        if (name == null) {
-            return new PlayerProfile();
-        }
         PlayerProfile playerProfile = playerProfiles.get(name);
 
         if (playerProfile != null) {
@@ -994,11 +991,13 @@ public class ResearchEngine {
                                                 && (winnerMaxHitCombo >= 0 && loserMaxHitCombo >= 0) // Attention, added after initial algorithm (4)
                                                 && (winnerHitTimeAverage > 0L && loserHitTimeAverage > 0L)
                                                 && (winnerReachAverage > 0.0 && loserReachAverage > 0.0)) {
-                                            PlayerOpponent winnerOpponent = new PlayerOpponent(winner, winnerHits, winnerMaxHitCombo, winnerCPS, duration,
-                                                    winnerReachAverage, winnerHitTimeAverage, winnerYawRateAverage, winnerPitchRateAverage);
-                                            PlayerOpponent loserOpponent = new PlayerOpponent(loser, loserHits, loserMaxHitCombo, loserCPS, duration,
-                                                    loserReachAverage, loserHitTimeAverage, loserYawRateAverage, loserPitchRateAverage);
-                                            new PlayerFight(winnerOpponent, loserOpponent, judged);
+                                            new PlayerFight(
+                                                    new PlayerOpponent(winner, winnerHits, winnerMaxHitCombo, winnerCPS, duration,
+                                                            winnerReachAverage, winnerHitTimeAverage, winnerYawRateAverage, winnerPitchRateAverage),
+                                                    new PlayerOpponent(loser, loserHits, loserMaxHitCombo, loserCPS, duration,
+                                                            loserReachAverage, loserHitTimeAverage, loserYawRateAverage, loserPitchRateAverage),
+                                                    judged
+                                            );
                                         }
                                     }
                                 }
