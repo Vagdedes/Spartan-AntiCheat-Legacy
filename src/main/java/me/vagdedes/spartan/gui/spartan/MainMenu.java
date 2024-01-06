@@ -125,102 +125,27 @@ public class MainMenu extends InventoryMenu {
         int page = PlayerStateLists.getPage(uuid), previousPageSlot = 18, nextPageSlot = 26;
         setTitle(player, getMenuName() + page);
 
-        // Ecosystem
-        if (Config.settings.getBoolean(Settings.showEcosystemOption)) {
-            ItemStack itemStack = new ItemStack(Material.GOLD_BLOCK);
-            itemStack.setAmount(AlgebraUtils.randomInteger(1, 64));
-            itemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            ItemMeta meta = itemStack.getItemMeta();
-            String name;
-            boolean enabled;
-
-            switch (ecosystemItem) {
-                case 1:
-                    InventoryUtils.prepareDescription(lore, "Compatible Plugin" + (SpartanBukkit.canAdvertise ? " Offer" : ""));
-                    name = Compatibility.CompatibilityType.UltimateStatistics.name();
-                    lore.add("§7Get Ultimate Stats to improve");
-                    lore.add("§7Spartan's legitimate/hacker");
-                    lore.add("§7detection.");
-                    ecosystemItem = 2;
-                    enabled = PluginUtils.exists(name.toLowerCase());
-                    break;
-                case 2:
-                    InventoryUtils.prepareDescription(lore, "Compatible Plugin" + (SpartanBukkit.canAdvertise ? " Offer" : ""));
-                    name = Compatibility.CompatibilityType.AntiAltAccount.name();
-                    lore.add("§7Get Anti Alt Account to prevent");
-                    lore.add("§7global hackers from joining your");
-                    lore.add("§7server.");
-                    ecosystemItem = 3;
-                    enabled = Compatibility.CompatibilityType.AntiAltAccount.isFunctional();
-                    break;
-                case 4:
-                    InventoryUtils.prepareDescription(lore, opposite + " Detections");
-                    name = oppositeVersion;
-                    lore.add("§7Get the full version of the");
-                    lore.add("§7Spartan AntiCheat and enjoy");
-                    lore.add("§7" + SpartanEdition.getVersion() + " & " + opposite + " detections.");
-                    ecosystemItem = 1;
-                    enabled = SpartanEdition.getMissingDetection() == null;
-                    break;
-                default:
-                    InventoryUtils.prepareDescription(lore, "Compatible Plugin" + (SpartanBukkit.canAdvertise ? " Offer" : ""));
-                    name = Compatibility.CompatibilityType.FileGUI.name();
-                    lore.add("§7Get File GUI to replace Spartan's");
-                    lore.add("§7simple configuration menu with");
-                    lore.add("§7an advanced configuration menu.");
-                    ecosystemItem = SpartanBukkit.canAdvertise ? 4 : 1;
-                    enabled = Compatibility.CompatibilityType.FileGUI.isFunctional();
-                    break;
-            }
-            lore.add("");
-
-            if (SpartanBukkit.canAdvertise
-                    && !name.equals(oppositeVersion)) {
-                lore.add("§aGet " + name + " and receive");
-
-                switch (ecosystemItem) {
-                    case 2:
-                        lore.add("§a" + Compatibility.CompatibilityType.AntiAltAccount.name() + " & " + Compatibility.CompatibilityType.FileGUI.name());
-                        break;
-                    case 3:
-                        lore.add("§a" + Compatibility.CompatibilityType.UltimateStatistics.name() + " & " + Compatibility.CompatibilityType.FileGUI.name());
-                        break;
-                    default:
-                        lore.add("§a" + Compatibility.CompatibilityType.UltimateStatistics.name() + " & " + Compatibility.CompatibilityType.AntiAltAccount.name());
-                        break;
-                }
-                lore.add("§acompletely for FREE");
-                lore.add("");
-            }
-
-            if (enabled) {
-                lore.add("§2Enabled");
-            } else {
-                lore.add("§2Click to access.");
-            }
-            meta.setLore(lore);
-            meta.setDisplayName("§3" + name);
-            itemStack.setItemMeta(meta);
-            inventory.setItem(49, itemStack);
-        }
-
         // AntiCheat Updates
         add("§a" + AntiCheatUpdates.name,
                 AntiCheatUpdates.getInformation(true),
                 new ItemStack(Material.CHEST), 46);
+        int random = AlgebraUtils.randomInteger(1, 64);
+        boolean dividedBy2 = random % 2 == 0;
 
         // Live Customer Support
-        InventoryUtils.prepareDescription(lore, "Official Discord Server");
+        InventoryUtils.prepareDescription(lore, "Available via Discord Server");
+        lore.add("§7Download your favorite plugins");
+        lore.add("§7from our Discord server and save");
+        lore.add("§7time with our Auto Updater.");
         int discordMemberCount = DiscordMemberCount.get();
 
         if (discordMemberCount > 0) {
-            lore.add("§7Click this item to §ajoin " + discordMemberCount + " online Discord " + (discordMemberCount == 1 ? "member" : "members") + "§7.");
-        } else {
-            lore.add("§7Click this item to §ajoin the Discord server§7.");
+            lore.add("");
+            lore.add((dividedBy2 ? "§2" : "§6") + discordMemberCount + " online Discord " + (discordMemberCount == 1 ? "member" : "members"));
         }
-        ItemStack supportItem = new ItemStack(Material.EMERALD, Math.max(Math.min(discordMemberCount, 64), 1));
+        ItemStack supportItem = new ItemStack(dividedBy2 ? Material.EMERALD_BLOCK : Material.GOLD_BLOCK, random);
         supportItem.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-        add("§aDiscord Community", lore, supportItem, 47);
+        add("§aAuto Updater", lore, supportItem, 48);
 
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
@@ -260,7 +185,7 @@ public class MainMenu extends InventoryMenu {
         lore.add("§7Left click to §amanage checks§7.");
         lore.add("§7Right click to §emanage configurations§7.");
         lore.add("§7Shift click to §creload the plugin's memory contents§7.");
-        add("§aConfiguration", lore, new ItemStack(MaterialUtils.get("crafting_table")), 51);
+        add("§aConfiguration", lore, new ItemStack(MaterialUtils.get("crafting_table")), 50);
 
         // Compatibilities
         InventoryUtils.prepareDescription(lore, "Local Functionality");
@@ -309,7 +234,7 @@ public class MainMenu extends InventoryMenu {
         String name = itemStack.getItemMeta().getDisplayName(),
                 item = (name.startsWith("§") ? name.substring(2) : name);
 
-        if (item.equals("Discord Community")) {
+        if (item.equals("Auto Updater")) {
             player.sendInventoryCloseMessage("");
             player.sendMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
             player.sendMessage("§6Spartan Tutorial§8: §e§nhttps://bit.ly/3Itw7Fd");

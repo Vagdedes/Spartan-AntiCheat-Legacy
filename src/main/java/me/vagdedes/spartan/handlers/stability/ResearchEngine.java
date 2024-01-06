@@ -1226,73 +1226,79 @@ public class ResearchEngine {
 
             // Separator (Find False Positives)
 
-            double duration = 1000.0; // 1 second
+            if (enoughData()) {
+                double duration = 1000.0; // 1 second
 
-            for (Enums.HackType hackType : hackTypes) {
-                hackType.getCheck().clearMaxCancelledViolations();
+                for (Enums.HackType hackType : hackTypes) {
+                    hackType.getCheck().clearMaxCancelledViolations();
 
-                for (DataType dataType : dataTypes) {
-                    if (hackType.getCheck().isEnabled(dataType, null, null)) {
-                        boolean bedrock = dataType == DataType.Bedrock;
-                        Map<Integer, FalsePositiveDetection.TimePeriod> averages = new HashMap<>();
+                    for (DataType dataType : dataTypes) {
+                        if (hackType.getCheck().isEnabled(dataType, null, null)) {
+                            boolean bedrock = dataType == DataType.Bedrock;
+                            Map<Integer, FalsePositiveDetection.TimePeriod> averages = new HashMap<>();
 
-                        for (PlayerProfile playerProfile : playerProfiles) {
-                            if (bedrock == playerProfile.isBedrockPlayer()
-                                    && !playerProfile.wasStaff()
-                                    && !playerProfile.wasTesting()
-                                    && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
-                                List<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getViolationsList();
+                            for (PlayerProfile playerProfile : playerProfiles) {
+                                if (bedrock == playerProfile.isBedrockPlayer()
+                                        && !playerProfile.wasStaff()
+                                        && !playerProfile.wasTesting()
+                                        && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
+                                    List<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getViolationsList();
 
-                                // Organize the violations into time period pieces
-                                if (!list.isEmpty()) {
-                                    for (PlayerViolation playerViolation : list) {
-                                        if (playerViolation.isDetectionEnabled()) {
-                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
-                                            FalsePositiveDetection.TimePeriod timePeriod = averages.get(timeMoment);
+                                    // Organize the violations into time period pieces
+                                    if (!list.isEmpty()) {
+                                        for (PlayerViolation playerViolation : list) {
+                                            if (playerViolation.isDetectionEnabled()) {
+                                                int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
+                                                FalsePositiveDetection.TimePeriod timePeriod = averages.get(timeMoment);
 
-                                            if (timePeriod == null) {
-                                                timePeriod = new FalsePositiveDetection.TimePeriod();
-                                                timePeriod.add(playerViolation);
-                                                averages.put(timeMoment, timePeriod);
-                                            } else {
-                                                timePeriod.add(playerViolation);
+                                                if (timePeriod == null) {
+                                                    timePeriod = new FalsePositiveDetection.TimePeriod();
+                                                    timePeriod.add(playerViolation);
+                                                    averages.put(timeMoment, timePeriod);
+                                                } else {
+                                                    timePeriod.add(playerViolation);
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        if (!averages.isEmpty()) {
-                            HashMap<Integer, Double> violationAverages = new HashMap<>();
-                            HashMap<Integer, Integer> violationAveragesDivisor = new HashMap<>();
+                            if (!averages.isEmpty()) {
+                                HashMap<Integer, Double> violationAverages = new HashMap<>();
+                                HashMap<Integer, Integer> violationAveragesDivisor = new HashMap<>();
 
-                            // Add the average violations for the executed detections based on each time period
-                            for (FalsePositiveDetection.TimePeriod timePeriod : averages.values()) {
-                                for (Map.Entry<Integer, Double> individualViolationAverages : timePeriod.getAverageViolations().entrySet()) {
-                                    int hash = individualViolationAverages.getKey();
-                                    violationAverages.put(
-                                            hash,
-                                            violationAverages.getOrDefault(hash, 0.0) + individualViolationAverages.getValue()
-                                    );
-                                    violationAveragesDivisor.put(
-                                            hash,
-                                            violationAveragesDivisor.getOrDefault(hash, 0) + 1
-                                    );
+                                // Add the average violations for the executed detections based on each time period
+                                for (FalsePositiveDetection.TimePeriod timePeriod : averages.values()) {
+                                    for (Map.Entry<Integer, Double> individualViolationAverages : timePeriod.getAverageViolations().entrySet()) {
+                                        int hash = individualViolationAverages.getKey();
+                                        violationAverages.put(
+                                                hash,
+                                                violationAverages.getOrDefault(hash, 0.0) + individualViolationAverages.getValue()
+                                        );
+                                        violationAveragesDivisor.put(
+                                                hash,
+                                                violationAveragesDivisor.getOrDefault(hash, 0) + 1
+                                        );
+                                    }
                                 }
-                            }
 
-                            // Calculate the average violations for each executed detection and multiply to get the bigger image
-                            duration = Check.violationCycleSeconds / duration;
+                                // Calculate the average violations for each executed detection and multiply to get the bigger image
+                                duration = Check.violationCycleSeconds / duration;
 
-                            for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
-                                entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * duration);
+                                for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
+                                    entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * duration);
+                                }
+                                hackType.getCheck().setMaxCancelledViolations(dataType, violationAverages);
+                            } else {
+                                hackType.getCheck().clearMaxCancelledViolations();
                             }
-                            hackType.getCheck().setMaxCancelledViolations(dataType, violationAverages);
-                        } else {
-                            hackType.getCheck().clearMaxCancelledViolations();
                         }
                     }
+                }
+            } else {
+                for (Enums.HackType hackType : hackTypes) {
+                    hackType.getCheck().clearMaxCancelledViolations();
                 }
             }
 

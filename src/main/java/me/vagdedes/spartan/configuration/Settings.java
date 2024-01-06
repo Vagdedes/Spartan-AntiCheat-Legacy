@@ -50,7 +50,7 @@ public class Settings extends ConfigurationBuilder {
         boolean exists = file.exists();
         clear();
 
-        addOption("Punishments.broadcast_on_punishment", false);
+        addOption("Punishments.broadcast_on_punishment", true);
         addOption("Punishments.report_reasons", StringUtils.toString(PlayerReports.reasons, PlayerReports.separator));
         RawCommands.create();
 

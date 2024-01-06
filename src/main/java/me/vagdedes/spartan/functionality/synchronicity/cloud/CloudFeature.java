@@ -49,7 +49,6 @@ public class CloudFeature {
     private static final long[] connectionRefreshCooldown = new long[2];
 
     // Features
-    static String outdatedVersionMessage = null;
     static int outdatedVersion = AutoUpdater.NOT_CHECKED;
     static boolean ignoreServerLimits = false, serverLimited = false;
 
@@ -121,10 +120,6 @@ public class CloudFeature {
         return cloudExceptionCooldown != 0;
     }
 
-    public static String getOutdatedVersionMessage() {
-        return outdatedVersionMessage;
-    }
-
     public static boolean isServerLimited() { // Once
         return serverLimited;
     }
@@ -152,6 +147,33 @@ public class CloudFeature {
 
     public static boolean isPublicInformationCancelled(Enums.HackType hackType, String info) {
         return isInformationCancelled(allDisabledDetections.get(hackType), info);
+    }
+
+    public static boolean announce(SpartanPlayer player) {
+        if (Permissions.isStaff(player)) {
+            String[][] announcements = CloudConnections.getStaffAnnouncements();
+
+            if (announcements.length > 0) {
+                List<SpartanPlayer> players = Permissions.getStaff();
+
+                if (!players.isEmpty()) {
+                    boolean result = false;
+
+                    for (String[] announcement : announcements) {
+                        if (AwarenessNotifications.canS60end(
+                                player.getUniqueId(),
+                                "staff-announcement-" + announcement[0],
+                                Integer.parseInt(announcement[2])
+                        )) {
+                            player.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                            result = true;
+                        }
+                    }
+                    return result;
+                }
+            }
+        }
+        return false;
     }
 
     // Separator
@@ -219,8 +241,7 @@ public class CloudFeature {
             // Separator
             if (independent
                     && validIDs
-                    && outdatedVersion == AutoUpdater.NOT_CHECKED
-                    && outdatedVersionMessage == null) {
+                    && outdatedVersion == AutoUpdater.NOT_CHECKED) {
                 Runnable runnable = () -> {
                     try {
                         String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
@@ -243,10 +264,8 @@ public class CloudFeature {
                                 } else {
                                     outdatedVersion = AutoUpdater.OUTDATED;
                                 }
-                            } else if (data.equals("false")) {
-                                outdatedVersion = AutoUpdater.NOT_OUTDATED;
                             } else {
-                                outdatedVersionMessage = data;
+                                outdatedVersion = AutoUpdater.NOT_OUTDATED;
                             }
                         }
                     } catch (Exception e) {

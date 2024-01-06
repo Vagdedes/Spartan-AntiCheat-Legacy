@@ -304,7 +304,7 @@ public class Compatibility {
         CompatibilityType.MinigameMaker.setFunctional(MinigameMaker::reload);
         CompatibilityType.MythicMobs.setFunctional(MythicMobs::reload);
         CompatibilityType.CustomEnchantsPlus.setFunctional();
-        CompatibilityType.EcoEnchants.setFunctional();
+        CompatibilityType.EcoEnchants.setFunctional(ReflectionUtils.classExists("com.willfp.ecoenchants.enchants.EcoEnchant"));
         CompatibilityType.Vehicles.setFunctional(
                 () -> Register.enable(new Vehicles(), Vehicles.class)
         );

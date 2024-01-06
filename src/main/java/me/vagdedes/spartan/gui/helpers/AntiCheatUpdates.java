@@ -154,11 +154,6 @@ public class AntiCheatUpdates {
         if (CloudFeature.isServerLimited()) {
             warnings.add(menu ? prepareLore(CloudFeature.getMaximumServerLimitMessage()) : CloudFeature.getMaximumServerLimitMessage());
         }
-        String outdatedVersionMessage = CloudFeature.getOutdatedVersionMessage();
-
-        if (outdatedVersionMessage != null && outdatedVersionMessage.length() > 0) {
-            warnings.add(menu ? prepareLore(outdatedVersionMessage) : outdatedVersionMessage);
-        }
         return warnings;
     }
 

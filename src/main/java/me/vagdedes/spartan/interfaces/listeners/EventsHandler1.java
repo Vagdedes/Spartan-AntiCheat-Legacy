@@ -12,6 +12,7 @@ import me.vagdedes.spartan.functionality.protections.LagLeniencies;
 import me.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import me.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
+import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import me.vagdedes.spartan.gui.SpartanMenu;
 import me.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.spartan.handlers.stability.DetectionLocation;
@@ -62,7 +63,8 @@ public class EventsHandler1 implements Listener {
                 Config.settings.runOnLogin(p);
 
                 // Features
-                if (!SpartanMenu.mainMenu.notify(p)) {
+                if (!SpartanMenu.mainMenu.notify(p)
+                        && !CloudFeature.announce(p)) {
                     SuspicionNotifications.run(p);
                 }
             }
