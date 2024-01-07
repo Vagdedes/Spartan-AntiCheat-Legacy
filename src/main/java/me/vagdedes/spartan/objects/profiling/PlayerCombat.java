@@ -164,13 +164,12 @@ public class PlayerCombat {
     // Separator
 
     public double[] getHitRatioAverages() {
-        List<PlayerFight> fights = getPastFights();
-        int total = fights.size();
+        int total = pastFights.size();
 
         if (total > 0) {
             double average = 0.0, min = Double.MAX_VALUE, max = 0.0;
 
-            for (PlayerFight fight : fights) {
+            for (PlayerFight fight : pastFights) {
                 double value = fight.getHitRatio(fight.getOpponent(name));
                 average += value;
                 min = Math.min(min, value);
@@ -198,9 +197,10 @@ public class PlayerCombat {
         return null;
     }
 
-    public double[] getCPSAverages() { // Attention, added after initial algorithm (1)
-        if (!pastFights.isEmpty()) {
-            int total = 0;
+    public double[] getMaxCPSAverages() {
+        int total = pastFights.size();
+
+        if (total > 0) {
             double average = 0.0, min = Double.MAX_VALUE, max = 0.0;
 
             for (PlayerFight fight : pastFights) {
@@ -213,21 +213,40 @@ public class PlayerCombat {
                     max = Math.max(max, value);
                 }
             }
-
-            if (total > 0) {
-                return new double[]{min, average / ((double) total), max};
-            }
+            return new double[]{min, average / ((double) total), max};
         }
         return null;
     }
 
-    public double[] getYawRateAverages() { // Attention, added after initial algorithm (3)
-        if (!pastFights.isEmpty()) {
-            int total = 0;
+    public double[] getCPSAverages() {
+        int total = pastFights.size();
+
+        if (total > 0) {
             double average = 0.0, min = Double.MAX_VALUE, max = 0.0;
 
             for (PlayerFight fight : pastFights) {
-                float value = fight.getOpponent(name)[0].getYawRateAverage();
+                double value = fight.getOpponent(name)[0].getCPSAverage();
+
+                if (value > 0) {
+                    total++;
+                    average += value;
+                    min = Math.min(min, value);
+                    max = Math.max(max, value);
+                }
+            }
+            return new double[]{min, average / ((double) total), max};
+        }
+        return null;
+    }
+
+    public double[] getYawRateAverages() {
+        int total = pastFights.size();
+
+        if (total > 0) {
+            double average = 0.0, min = Double.MAX_VALUE, max = 0.0;
+
+            for (PlayerFight fight : pastFights) {
+                double value = fight.getOpponent(name)[0].getYawRateAverage();
 
                 if (value > 0.0f) {
                     total++;
@@ -236,21 +255,19 @@ public class PlayerCombat {
                     max = Math.max(max, value);
                 }
             }
-
-            if (total > 0) {
-                return new double[]{min, average / ((double) total), max};
-            }
+            return new double[]{min, average / ((double) total), max};
         }
         return null;
     }
 
-    public double[] getPitchRateAverages() { // Attention, added after initial algorithm (3)
-        if (!pastFights.isEmpty()) {
-            int total = 0;
+    public double[] getPitchRateAverages() {
+        int total = pastFights.size();
+
+        if (total > 0) {
             double average = 0.0, min = Double.MAX_VALUE, max = 0.0;
 
             for (PlayerFight fight : pastFights) {
-                float value = fight.getOpponent(name)[0].getPitchRateAverage();
+                double value = fight.getOpponent(name)[0].getPitchRateAverage();
 
                 if (value > 0.0f) {
                     total++;
@@ -259,17 +276,15 @@ public class PlayerCombat {
                     max = Math.max(max, value);
                 }
             }
-
-            if (total > 0) {
-                return new double[]{min, average / ((double) total), max};
-            }
+            return new double[]{min, average / ((double) total), max};
         }
         return null;
     }
 
-    public double[] getHitComboAverages() { // Attention, added after initial algorithm (4)
-        if (!pastFights.isEmpty()) {
-            int total = 0;
+    public double[] getHitComboAverages() {
+        int total = pastFights.size();
+
+        if (total > 0) {
             double average = 0.0, min = Double.MAX_VALUE, max = 0.0;
 
             for (PlayerFight fight : pastFights) {
@@ -282,10 +297,7 @@ public class PlayerCombat {
                     max = Math.max(max, value);
                 }
             }
-
-            if (total > 0) {
-                return new double[]{min, average / ((double) total), max};
-            }
+            return new double[]{min, average / ((double) total), max};
         }
         return null;
     }
@@ -341,12 +353,10 @@ public class PlayerCombat {
     }
 
     public double getAverageWinLossRatio() {
-        List<PlayerFight> fights = getPastFights();
-
-        if (!fights.isEmpty()) {
+        if (!pastFights.isEmpty()) {
             int wins = 0, loses = 0;
 
-            for (PlayerFight fight : fights) {
+            for (PlayerFight fight : pastFights) {
                 if (fight.getWinner().getName().equals(name)) {
                     wins++;
                 } else {

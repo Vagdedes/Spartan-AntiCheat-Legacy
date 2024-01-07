@@ -28,7 +28,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
              String prevention, String scenario) {
         if (hackType.getCheck().getBooleanOption("check_bouncing_blocks", true)) {
             Double vertical = player.getNmsVerticalDistance(),
-                    oldVertical = player.getOld_NmsVerticalDistance(),
+                    oldVertical = player.getPreviousNmsVerticalDistance(),
                     box = player.getNmsBox();
 
             if (vertical == null

@@ -2,37 +2,30 @@ package me.vagdedes.spartan.objects.profiling;
 
 import me.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.utils.gameplay.CombatUtils;
-import me.vagdedes.spartan.utils.gameplay.PlayerData;
 
 public class PlayerOpponent {
 
     private final String name;
-    private int hits, maxCPS, hitCombo, maxHitCombo;
+    private int hits, damage, maxCPS, hitCombo, maxHitCombo;
     private long lastHit, previousLastHit, lastDamage, hitTimeAverage, duration;
-    private double reachAverage;
+    private double reachAverage, yawRateAverage, pitchRateAverage, cpsAverage;
     private final long start;
-    private float yawRateAverage, pitchRateAverage;
 
     // Separator
 
-    public static int getEntities(SpartanPlayer player) {
-        return PlayerData.getEntitiesNumber(player, CombatUtils.maxHitDistance, false);
-    }
-
-    // Separator
-
-    public PlayerOpponent(String name, int hits, int maxHitCombo, int maxCPS, long duration, double reachAverage, long hitAverage,
-                          float yawRateAverage, float pitchRateAverage) { // Used for logs
+    public PlayerOpponent(String name, int hits, int maxHitCombo, int maxCPS, double cpsAverage, long duration, double reachAverage, long hitTimeAverage,
+                          double yawRateAverage, double pitchRateAverage) { // Used for logs
         this.name = name;
         this.hits = hits;
+        this.damage = 0;
         this.maxCPS = maxCPS;
+        this.maxHitCombo = maxHitCombo;
 
+        this.cpsAverage = -cpsAverage;
         this.reachAverage = -reachAverage;
-        this.hitTimeAverage = -hitAverage;
+        this.hitTimeAverage = -hitTimeAverage;
         this.yawRateAverage = -yawRateAverage;
         this.pitchRateAverage = -pitchRateAverage;
-        this.maxHitCombo = -maxHitCombo;
 
         this.hitCombo = 0;
         this.lastDamage = 0L;
@@ -47,13 +40,15 @@ public class PlayerOpponent {
 
         this.name = name;
         this.hits = 0;
+        this.damage = 0;
         this.maxCPS = 1;
+        this.maxHitCombo = 0;
 
+        this.cpsAverage = 0;
         this.reachAverage = 0;
         this.hitTimeAverage = 0;
         this.yawRateAverage = 0f;
         this.pitchRateAverage = 0f;
-        this.maxHitCombo = 0;
 
         this.hitCombo = 0;
         this.lastDamage = 0L;
@@ -86,7 +81,7 @@ public class PlayerOpponent {
     }
 
     public int getMaxHitCombo() {
-        return Math.abs(maxHitCombo);
+        return maxHitCombo;
     }
 
     public boolean hasHitCombo(int number) {
@@ -103,55 +98,66 @@ public class PlayerOpponent {
 
     // Separator
 
+    public double getCPSAverage() {
+        return cpsAverage < 0.0 ? Math.abs(cpsAverage) : cpsAverage / (double) (hits + damage);
+    }
+
+    public double getHitsAverage() {
+        return hits / (double) duration;
+    }
+
     public long getHitTimeAverage() {
-        return Math.abs(hitTimeAverage);
+        return hitTimeAverage < 0L ? Math.abs(hitTimeAverage) : hitTimeAverage / (hits + damage);
     }
 
     public double getReachAverage() {
-        return Math.abs(reachAverage);
+        return reachAverage < 0.0 ? Math.abs(reachAverage) : reachAverage / (double) hits;
     }
 
-    public float getYawRateAverage() {
-        return Math.abs(yawRateAverage);
+    public double getYawRateAverage() {
+        return yawRateAverage < 0.0 ? Math.abs(yawRateAverage) : yawRateAverage / (double) (hits + damage);
     }
 
-    public float getPitchRateAverage() {
-        return Math.abs(pitchRateAverage);
+    public double getPitchRateAverage() {
+        return pitchRateAverage < 0.0 ? Math.abs(pitchRateAverage) : pitchRateAverage / (double) (hits + damage);
     }
 
     // Separator
 
-    private void updateData(SpartanPlayer p, int entities, boolean lastDamage) {
+    private void updateData(SpartanPlayer p, boolean lastDamage) {
         int cps = p.getClicks().getCount();
 
         if (cps > this.maxCPS) {
             this.maxCPS = cps;
         }
+        this.cpsAverage += cps;
+        this.yawRateAverage += CombatProcessing.getDecimal(p, CombatProcessing.yawDifference, 0.0);
+        this.pitchRateAverage += CombatProcessing.getDecimal(p, CombatProcessing.pitchDifference, 0.0);
         this.maxHitCombo = Math.max(maxHitCombo, hitCombo);
 
         if (lastDamage) {
+            this.damage++;
             this.lastDamage = System.currentTimeMillis();
             this.hitCombo = 0;
         }
     }
 
-    public void updateData(SpartanPlayer p, int entities) {
-        updateData(p, entities, true);
+    public void updateData(SpartanPlayer p) {
+        updateData(p, true);
     }
 
-    public void increaseHits(SpartanPlayer p, double distance, int entities) {
+    public void increaseHits(SpartanPlayer p, double distance) {
         if (!hasEnded()) { // Asynchronous Protection
             long lastHit = getLastHit();
-            hitTimeAverage += lastHit;
-            previousLastHit = lastHit;
+            this.previousLastHit = lastHit;
             this.lastHit = System.currentTimeMillis();
 
-            hits++;
-            hitCombo++;
-            reachAverage = (reachAverage + distance) / ((double) hits);
-            yawRateAverage = (yawRateAverage + ((float) CombatProcessing.getDecimal(p, CombatProcessing.yawDifference, 0.0))) / ((float) hits);
-            pitchRateAverage = (pitchRateAverage + ((float) CombatProcessing.getDecimal(p, CombatProcessing.pitchDifference, 0.0))) / ((float) hits);
-            updateData(p, entities, false);
+            this.hits++;
+            this.hitCombo++;
+
+            this.reachAverage += distance;
+            this.hitTimeAverage += lastHit;
+            updateData(p, false);
         }
     }
 

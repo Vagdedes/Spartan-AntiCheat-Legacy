@@ -25,7 +25,7 @@ public class IrregularMovementsClimb extends DetectionExecutor {
         if (hackType.getCheck().getBooleanOption("check_climbing", true)
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
             Double vertical = player.getNmsVerticalDistance(),
-                    oldVertical = player.getOld_NmsVerticalDistance(),
+                    oldVertical = player.getPreviousNmsVerticalDistance(),
                     box = player.getNmsBox();
 
             if (vertical == null

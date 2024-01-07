@@ -40,15 +40,6 @@ import java.util.UUID;
 
 public class MainMenu extends InventoryMenu {
 
-    private static int ecosystemItem = 1;
-    private static final ResearchEngine.DataType oppositeObject = SpartanEdition.getOppositeVersion();
-    private static final String
-            opposite = oppositeObject.toString(),
-            offer = "§6Get Plugins for FREE§8: §e§nhttps://www.vagdedes.com/account/viewOffer",
-            oppositeVersion = "Spartan: " + opposite + " Edition",
-            opposite_1_0_Version = "Spartan 1.0: " + opposite + " Edition",
-            opposite_2_0_Version = "Spartan 2.0: " + opposite + " Edition";
-
     public MainMenu() {
         super(getMenuName(), 54, new Permission[]{Permission.MANAGE, Permission.INFO});
     }
@@ -276,11 +267,6 @@ public class MainMenu extends InventoryMenu {
                 }
             }
 
-        } else if (item.equals(Compatibility.CompatibilityType.UltimateStatistics.name())
-                || item.equals(Compatibility.CompatibilityType.AntiAltAccount.name())
-                || item.equals(Compatibility.CompatibilityType.FileGUI.name())
-                || item.equals(oppositeVersion)) {
-            sendOffer(player);
         } else if (item.startsWith("Page")) {
             String[] split = item.split(" ");
 
@@ -336,28 +322,5 @@ public class MainMenu extends InventoryMenu {
             }
         }
         return true;
-    }
-
-    private void sendOffer(SpartanPlayer player) {
-        player.sendInventoryCloseMessage("");
-
-        if (SpartanBukkit.canAdvertise) {
-            player.sendImportantMessage("§6" + opposite_1_0_Version + "§8: §e§nhttps://www.vagdedes.com/account/viewProduct/?id=" + SpartanEdition.get1_0_ProductID(oppositeObject));
-            player.sendImportantMessage("§6" + opposite_2_0_Version + "§8: §e§nhttps://www.vagdedes.com/account/viewProduct/?id=" + SpartanEdition.get2_0_ProductID(oppositeObject));
-            player.sendMessage(offer);
-        } else if (IDs.isBuiltByBit()) {
-            player.sendMessage("§6" + Compatibility.CompatibilityType.UltimateStatistics.name() + "§8: §e§nhttps://builtbybit.com/resources/12576/");
-            player.sendMessage("§6" + Compatibility.CompatibilityType.AntiAltAccount.name() + "§8: §e§nhttps://builtbybit.com/resources/20142/");
-            player.sendMessage("§6" + Compatibility.CompatibilityType.FileGUI.name() + "§8: §e§nhttps://builtbybit.com/resources/13185/");
-        } else if (IDs.isPolymart()) {
-            player.sendMessage("§6" + Compatibility.CompatibilityType.UltimateStatistics.name() + "§8: §e§nhttps://polymart.org/resource/982/");
-            player.sendMessage("§6" + Compatibility.CompatibilityType.AntiAltAccount.name() + "§8: §e§nhttps://polymart.org/resource/1096/");
-            player.sendMessage("§6" + Compatibility.CompatibilityType.FileGUI.name() + "§8: §e§nhttps://polymart.org/resource/984/");
-        } else {
-            player.sendMessage("§6" + Compatibility.CompatibilityType.UltimateStatistics.name() + "§8: §e§nhttps://www.spigotmc.org/resources/60868/");
-            player.sendMessage("§6" + Compatibility.CompatibilityType.AntiAltAccount.name() + "§8: §e§nhttps://www.spigotmc.org/resources/73105/");
-            player.sendMessage("§6" + Compatibility.CompatibilityType.FileGUI.name() + "§8: §e§nhttps://www.spigotmc.org/resources/73893/");
-        }
-        player.sendMessage("");
     }
 }

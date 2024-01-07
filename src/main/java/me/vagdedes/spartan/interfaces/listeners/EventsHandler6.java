@@ -155,10 +155,9 @@ public class EventsHandler6 implements Listener {
                     PlayerFight fight = player.getProfile().getCombat().getCurrentFight(targetPlayer);
 
                     if (fight != null) {
-                        int entities = PlayerOpponent.getEntities(player);
                         PlayerOpponent[] opponents = fight.getOpponent(player.getName());
-                        opponents[0].increaseHits(player, distance, entities);
-                        opponents[1].updateData(targetPlayer, entities);
+                        opponents[0].increaseHits(player, distance);
+                        opponents[1].updateData(targetPlayer);
                     }
                 }
 

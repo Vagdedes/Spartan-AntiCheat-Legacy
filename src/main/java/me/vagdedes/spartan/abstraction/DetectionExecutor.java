@@ -33,6 +33,10 @@ public abstract class DetectionExecutor {
         }
     }
 
+    protected final void forceAsync(Runnable runnable) {
+        SpartanBukkit.detectionThread.execute(runnable);
+    }
+
     protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
                                 boolean groundTeleport, double damage, int violation) {
         new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, violation);

@@ -70,9 +70,9 @@ public class IrregularMovements extends CheckExecutor {
     @Override
     public boolean run() {
         Double vertical = player.getNmsVerticalDistance(),
-                oldVertical = player.getOld_NmsVerticalDistance(),
+                oldVertical = player.getPreviousNmsVerticalDistance(),
                 horizontal = player.getNmsHorizontalDistance(),
-                oldHorizontal = player.getOld_NmsHorizontalDistance(),
+                oldHorizontal = player.getPreviousNmsHorizontalDistance(),
                 box = player.getNmsBox(),
                 oldBox = player.getOld_NmsBox();
 

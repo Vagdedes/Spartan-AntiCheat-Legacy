@@ -171,8 +171,8 @@ public class Speed extends CheckExecutor {
             return false;
         }
         Double ver = this.player.getNmsHorizontalDistance(),
-                oldVer = this.player.getOld_NmsVerticalDistance(),
-                oldHor = this.player.getOld_NmsHorizontalDistance(),
+                oldVer = this.player.getPreviousNmsVerticalDistance(),
+                oldHor = this.player.getPreviousNmsHorizontalDistance(),
                 box = this.player.getNmsBox(),
                 oldBox = this.player.getOld_NmsBox();
 

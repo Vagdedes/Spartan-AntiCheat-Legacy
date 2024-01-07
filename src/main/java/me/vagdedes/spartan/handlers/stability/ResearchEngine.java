@@ -862,13 +862,14 @@ public class ResearchEngine {
 
                                         boolean judged = false;
                                         long duration = 0L;
+                                        long winnerHitTimeAverage = 0L, loserHitTimeAverage = 0L;
                                         int winnerHits = 0, loserHits = 0;
                                         int winnerMaxHitCombo = 0, loserMaxHitCombo = 0;
-                                        int winnerCPS = 0, loserCPS = 0;
-                                        long winnerHitTimeAverage = 0L, loserHitTimeAverage = 0L;
+                                        int winnerMaxCPS = 0, loserMaxCPS = 0;
+                                        double winnerCPS = 0.0, loserCPS = 0.0;
                                         double winnerReachAverage = 0.0, loserReachAverage = 0.0;
-                                        float winnerYawRateAverage = 0.0f, loserYawRateAverage = 0.0f;
-                                        float winnerPitchRateAverage = 0.0f, loserPitchRateAverage = 0.0f;
+                                        double winnerYawRateAverage = 0.0f, loserYawRateAverage = 0.0f;
+                                        double winnerPitchRateAverage = 0.0f, loserPitchRateAverage = 0.0f;
 
                                         for (String statistic : statistics) {
                                             String[] subStatistics = statistic.split(PlayerFight.intermediateSeparator[1]);
@@ -933,17 +934,31 @@ public class ResearchEngine {
                                                             argument2 = subStatistics[2];
 
                                                             if (AlgebraUtils.validInteger(argument1) && AlgebraUtils.validInteger(argument2)) {
-                                                                winnerCPS = Integer.parseInt(argument1);
-                                                                loserCPS = Integer.parseInt(argument2);
+                                                                winnerMaxCPS = Integer.parseInt(argument1);
+                                                                loserMaxCPS = Integer.parseInt(argument2);
+                                                            }
+                                                        }
+                                                        break;
+                                                    case PlayerFight.cpsKey:
+                                                        if (subStatisticsLength >= 3) {
+                                                            Double decimal1 = AlgebraUtils.returnValidDecimal(subStatistics[1]);
+
+                                                            if (decimal1 != null) {
+                                                                Double decimal2 = AlgebraUtils.returnValidDecimal(subStatistics[2]);
+
+                                                                if (decimal2 != null) {
+                                                                    winnerCPS = decimal1;
+                                                                    loserCPS = decimal2;
+                                                                }
                                                             }
                                                         }
                                                         break;
                                                     case PlayerFight.yawRateKey:
                                                         if (subStatisticsLength >= 3) {
-                                                            Float decimal1 = AlgebraUtils.returnValidFloat(subStatistics[1]);
+                                                            Double decimal1 = AlgebraUtils.returnValidDecimal(subStatistics[1]);
 
                                                             if (decimal1 != null) {
-                                                                Float decimal2 = AlgebraUtils.returnValidFloat(subStatistics[2]);
+                                                                Double decimal2 = AlgebraUtils.returnValidDecimal(subStatistics[2]);
 
                                                                 if (decimal2 != null) {
                                                                     winnerYawRateAverage = decimal1;
@@ -954,10 +969,10 @@ public class ResearchEngine {
                                                         break;
                                                     case PlayerFight.pitchRateKey:
                                                         if (subStatisticsLength >= 3) {
-                                                            Float decimal1 = AlgebraUtils.returnValidFloat(subStatistics[1]);
+                                                            Double decimal1 = AlgebraUtils.returnValidDecimal(subStatistics[1]);
 
                                                             if (decimal1 != null) {
-                                                                Float decimal2 = AlgebraUtils.returnValidFloat(subStatistics[2]);
+                                                                Double decimal2 = AlgebraUtils.returnValidDecimal(subStatistics[2]);
 
                                                                 if (decimal2 != null) {
                                                                     winnerPitchRateAverage = decimal1;
@@ -985,16 +1000,17 @@ public class ResearchEngine {
 
                                         if (duration > 0L
                                                 && (winnerHits > 0 && loserHits > 0 && (winnerHits + loserHits) >= PlayerFight.requiredHits)
-                                                && (winnerCPS >= 0 && loserCPS >= 0) // Attention, added after initial algorithm (1)
-                                                && (winnerYawRateAverage >= 0f && loserYawRateAverage >= 0f) // Attention, added after initial algorithm (3)
-                                                && (winnerPitchRateAverage >= 0.0f && loserPitchRateAverage >= 0.0f) // Attention, added after initial algorithm (3)
-                                                && (winnerMaxHitCombo >= 0 && loserMaxHitCombo >= 0) // Attention, added after initial algorithm (4)
+                                                & (winnerCPS >= 0 && loserCPS >= 0)
+                                                && (winnerMaxCPS > 0 && loserMaxCPS > 0)
+                                                && (winnerYawRateAverage > 0f && loserYawRateAverage > 0f)
+                                                && (winnerPitchRateAverage > 0.0f && loserPitchRateAverage > 0.0f)
+                                                && (winnerMaxHitCombo > 0 && loserMaxHitCombo > 0)
                                                 && (winnerHitTimeAverage > 0L && loserHitTimeAverage > 0L)
                                                 && (winnerReachAverage > 0.0 && loserReachAverage > 0.0)) {
                                             new PlayerFight(
-                                                    new PlayerOpponent(winner, winnerHits, winnerMaxHitCombo, winnerCPS, duration,
+                                                    new PlayerOpponent(winner, winnerHits, winnerMaxHitCombo, winnerMaxCPS, winnerCPS, duration,
                                                             winnerReachAverage, winnerHitTimeAverage, winnerYawRateAverage, winnerPitchRateAverage),
-                                                    new PlayerOpponent(loser, loserHits, loserMaxHitCombo, loserCPS, duration,
+                                                    new PlayerOpponent(loser, loserHits, loserMaxHitCombo, loserMaxCPS, loserCPS, duration,
                                                             loserReachAverage, loserHitTimeAverage, loserYawRateAverage, loserPitchRateAverage),
                                                     judged
                                             );
@@ -1359,7 +1375,7 @@ public class ResearchEngine {
 
                 if (combat.hasFights()) {
                     playerFights.addAll(combat.getPastFights());
-                    double[] list = combat.getCPSAverages();
+                    double[] list = combat.getMaxCPSAverages();
 
                     if (list != null) {
                         averageCPSCount += 1.0;

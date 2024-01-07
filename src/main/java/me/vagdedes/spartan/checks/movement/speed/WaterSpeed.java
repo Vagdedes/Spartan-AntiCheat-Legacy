@@ -56,7 +56,7 @@ public class WaterSpeed extends DetectionExecutor {
     void run() {
         Double horizontal = player.getNmsHorizontalDistance(),
                 vertical = player.getNmsVerticalDistance(),
-                oldVertical = player.getOld_NmsVerticalDistance(),
+                oldVertical = player.getPreviousNmsVerticalDistance(),
                 box = player.getNmsBox();
 
         if (horizontal == null

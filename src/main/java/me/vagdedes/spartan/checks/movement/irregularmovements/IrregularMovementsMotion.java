@@ -87,7 +87,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
              boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
              String prevention) {
         Double vertical = player.getNmsVerticalDistance(),
-                oldVertical = player.getOld_NmsVerticalDistance(),
+                oldVertical = player.getPreviousNmsVerticalDistance(),
                 box = player.getNmsBox(),
                 oldBox = player.getOld_NmsBox();
 

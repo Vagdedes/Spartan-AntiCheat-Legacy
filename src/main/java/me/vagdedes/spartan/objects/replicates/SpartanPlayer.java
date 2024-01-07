@@ -161,7 +161,7 @@ public class SpartanPlayer {
 
     // Custom
 
-    private Map<Long, Double>
+    private final Map<Long, Double>
             nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
             nmsBox;
     private double
@@ -1998,7 +1998,7 @@ public class SpartanPlayer {
         return nmsDistance.get(TPS.getTick(this));
     }
 
-    public synchronized Double getOld_NmsDistance() {
+    public synchronized Double getPreviousNmsDistance() {
         return nmsDistance.get(TPS.getTick(this) - 1L);
     }
 
@@ -2006,7 +2006,7 @@ public class SpartanPlayer {
         return nmsHorizontalDistance.get(TPS.getTick(this));
     }
 
-    public synchronized Double getOld_NmsHorizontalDistance() {
+    public synchronized Double getPreviousNmsHorizontalDistance() {
         return nmsHorizontalDistance.get(TPS.getTick(this) - 1L);
     }
 
@@ -2014,7 +2014,7 @@ public class SpartanPlayer {
         return nmsVerticalDistance.get(TPS.getTick(this));
     }
 
-    public synchronized Double getOld_NmsVerticalDistance() {
+    public synchronized Double getPreviousNmsVerticalDistance() {
         return nmsVerticalDistance.get(TPS.getTick(this) - 1L);
     }
 

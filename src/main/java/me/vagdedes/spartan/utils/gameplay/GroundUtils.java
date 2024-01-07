@@ -179,7 +179,7 @@ public class GroundUtils {
         }
         if (original) {
             Double vertical = p.getNmsVerticalDistance(),
-                    oldVertical = p.getOld_NmsVerticalDistance();
+                    oldVertical = p.getPreviousNmsVerticalDistance();
 
             if (vertical == null
                     || oldVertical == null

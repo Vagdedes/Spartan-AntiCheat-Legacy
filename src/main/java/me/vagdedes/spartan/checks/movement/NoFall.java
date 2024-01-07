@@ -258,7 +258,7 @@ public class NoFall extends CheckExecutor {
     public boolean run() {
         Double vertical = player.getNmsVerticalDistance(),
                 horizontal = player.getNmsHorizontalDistance(),
-                oldVertical = player.getOld_NmsVerticalDistance();
+                oldVertical = player.getPreviousNmsVerticalDistance();
 
         if (vertical == null
                 || horizontal == null

@@ -24,6 +24,7 @@ public class PlayerFight {
             hitTimeAverageKey = "hit-time-average",
             reachAverageKey = "reach-average",
             maxCpsKey = "max-cps",
+            cpsKey = "cps",
             yawRateKey = "yaw-rate",
             pitchRateKey = "pitch-rate",
             maxHitComboKey = "max-hit-combo";
@@ -216,6 +217,7 @@ public class PlayerFight {
                         + hitTimeAverageKey + intermediateSeparator + winner.getHitTimeAverage() + intermediateSeparator + loser.getHitTimeAverage() + majorSeparator
                         + reachAverageKey + intermediateSeparator + winner.getReachAverage() + intermediateSeparator + loser.getReachAverage() + majorSeparator
                         + maxCpsKey + intermediateSeparator + winner.getMaxCPS() + intermediateSeparator + loser.getMaxCPS() + majorSeparator
+                        + cpsKey + intermediateSeparator + winner.getCPSAverage() + intermediateSeparator + loser.getCPSAverage() + majorSeparator
                         + yawRateKey + intermediateSeparator + winner.getYawRateAverage() + intermediateSeparator + loser.getYawRateAverage() + majorSeparator
                         + pitchRateKey + intermediateSeparator + winner.getPitchRateAverage() + intermediateSeparator + loser.getPitchRateAverage() + majorSeparator
                         + maxHitComboKey + intermediateSeparator + winner.getMaxHitCombo() + intermediateSeparator + loser.getMaxHitCombo();

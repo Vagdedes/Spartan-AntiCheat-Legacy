@@ -160,7 +160,7 @@ public class CloudFeature {
                     boolean result = false;
 
                     for (String[] announcement : announcements) {
-                        if (AwarenessNotifications.canS60end(
+                        if (AwarenessNotifications.canSend(
                                 player.getUniqueId(),
                                 "staff-announcement-" + announcement[0],
                                 Integer.parseInt(announcement[2])

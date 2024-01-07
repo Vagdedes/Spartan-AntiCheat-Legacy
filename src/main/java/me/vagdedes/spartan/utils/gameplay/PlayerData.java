@@ -82,7 +82,7 @@ public class PlayerData {
                 p.setGroundTicks(0);
                 p.setAirTicks(p.getTicksOnAir() + 1);
                 Double nmsVerticalDistance = p.getNmsVerticalDistance(),
-                        old_NmsVerticalDistance = p.getOld_NmsVerticalDistance();
+                        old_NmsVerticalDistance = p.getPreviousNmsVerticalDistance();
 
                 if (nmsVerticalDistance != null
                         && old_NmsVerticalDistance != null
