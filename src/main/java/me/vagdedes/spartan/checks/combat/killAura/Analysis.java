@@ -211,7 +211,7 @@ public class Analysis extends DetectionExecutor {
                                 debug.append(type.name()).append(": ").append("N/A, ");
                             }
                         }
-                        player.debug(false, false, debug.toString());
+                        //player.debug(false, false, debug.toString());
                     }
                 });
             }

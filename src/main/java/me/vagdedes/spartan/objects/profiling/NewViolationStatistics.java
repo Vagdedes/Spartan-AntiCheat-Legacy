@@ -1,9 +1,11 @@
 package me.vagdedes.spartan.objects.profiling;
 
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.utils.java.math.WaveProbability;
 
 import java.util.*;
 
@@ -11,7 +13,7 @@ public class NewViolationStatistics {
 
     private static final Map<Integer, Map<PlayerProfile, Map<Integer, Integer>>> violationProbabilityPie = new LinkedHashMap<>();
     private static final Map<Integer, Map<PlayerProfile, Double>> profileAverageProbability = new LinkedHashMap<>();
-    private static final Map<Integer, Map<Double, Integer>> profileProbabilityPie = new LinkedHashMap<>();
+    private static final Map<Integer, Map<Double, Integer>> profileProbabilityWave = new LinkedHashMap<>();
 
     public static synchronized void calculateData(Collection<PlayerProfile> playerProfiles) {
         if (!playerProfiles.isEmpty() && ResearchEngine.enoughData()) {
@@ -26,7 +28,7 @@ public class NewViolationStatistics {
                         int totalViolations = 0;
 
                         for (PlayerProfile profile : playerProfiles) {
-                            if (noStatistics || profile.wasRecentlyOnline()) {
+                            if ((noStatistics || profile.wasRecentlyOnline()) && profile.getDataType() == dataType) {
                                 Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
 
                                 if (!violations.isEmpty()) {
@@ -82,14 +84,14 @@ public class NewViolationStatistics {
                     } else {
                         violationProbabilityPie.remove(majorHash);
                         profileAverageProbability.remove(majorHash);
-                        profileProbabilityPie.remove(majorHash);
+                        profileProbabilityWave.remove(majorHash);
                     }
                 }
             }
         } else {
             violationProbabilityPie.clear();
             profileAverageProbability.clear();
-            profileProbabilityPie.clear();
+            profileProbabilityWave.clear();
         }
     }
 
@@ -97,7 +99,7 @@ public class NewViolationStatistics {
                                                     Enums.HackType hackType,
                                                     ResearchEngine.DataType dataType,
                                                     int totalViolations) {
-        profileProbabilityPie.clear();
+        profileProbabilityWave.clear();
         int majorHash = Objects.hash(hackType, dataType);
         Map<PlayerProfile, Map<Integer, Integer>> allData = violationProbabilityPie.get(majorHash);
 
@@ -114,7 +116,7 @@ public class NewViolationStatistics {
 
                 if (!violations.isEmpty()) {
                     double probabilityTotal = 0.0;
-                    int count = 0;
+                    int probabilityCount = 0;
                     long previousTime = Long.MIN_VALUE;
 
                     for (Collection<PlayerViolation> moment : violations) {
@@ -129,15 +131,15 @@ public class NewViolationStatistics {
                                 );
                                 previousTime = violation.getTime();
                                 probabilityTotal += onlyData.getOrDefault(hash, 0) / (double) totalViolations;
-                                count++;
+                                probabilityCount++;
                             }
                         }
                     }
 
-                    if (count > 0) {
-                        double averageProbability = probabilityTotal / (double) count;
+                    if (probabilityCount > 0) {
+                        double averageProbability = probabilityTotal / (double) probabilityCount;
                         profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
-                        profileProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
+                        profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
                     } else {
                         Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
 
@@ -160,6 +162,7 @@ public class NewViolationStatistics {
             );
         } else {
             profileAverageProbability.remove(majorHash);
+            profileProbabilityWave.remove(majorHash);
         }
     }
 
@@ -167,10 +170,28 @@ public class NewViolationStatistics {
                                          Enums.HackType hackType,
                                          ResearchEngine.DataType dataType) {
         int majorHash = Objects.hash(hackType, dataType);
-        Map<Double, Integer> probabilityData = profileProbabilityPie.get(majorHash);
+        Map<Double, Integer> probabilityData = profileProbabilityWave.get(majorHash);
 
-        for (PlayerProfile profile : playerProfiles) {
+        if (probabilityData != null) {
+            Map<PlayerProfile, Double> probabilityAverage = profileAverageProbability.get(majorHash);
+            WaveProbability wave = new WaveProbability();
 
+            for (Map.Entry<Double, Integer> entry : probabilityData.entrySet()) {
+                for (int i = 0; i < entry.getValue(); i++) {
+                    wave.addNumber(entry.getKey());
+                }
+            }
+            for (PlayerProfile profile : playerProfiles) {
+                Double probability = probabilityAverage.get(profile);
+
+                if (probability != null && profile.isSuspectedOrHacker()) {
+                    AwarenessNotifications.forcefullySend(
+                            profile.getName()
+                                    + "(" + hackType.toString() + "): "
+                                    + wave.getPosition(probability)
+                    );
+                }
+            }
         }
     }
 }
