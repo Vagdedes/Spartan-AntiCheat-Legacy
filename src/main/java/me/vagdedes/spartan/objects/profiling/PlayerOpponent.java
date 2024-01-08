@@ -47,8 +47,8 @@ public class PlayerOpponent {
         this.cpsAverage = 0;
         this.reachAverage = 0;
         this.hitTimeAverage = 0;
-        this.yawRateAverage = 0f;
-        this.pitchRateAverage = 0f;
+        this.yawRateAverage = 0;
+        this.pitchRateAverage = 0;
 
         this.hitCombo = 0;
         this.lastDamage = 0L;
@@ -98,20 +98,20 @@ public class PlayerOpponent {
 
     // Separator
 
-    public double getCPSAverage() {
-        return cpsAverage < 0.0 ? Math.abs(cpsAverage) : cpsAverage / (double) (hits + damage);
-    }
-
     public double getHitsAverage() {
         return hits / (double) duration;
     }
 
     public long getHitTimeAverage() {
-        return hitTimeAverage < 0L ? Math.abs(hitTimeAverage) : hitTimeAverage / (hits + damage);
+        return hitTimeAverage < 0L ? Math.abs(hitTimeAverage) : hitTimeAverage / hits;
     }
 
     public double getReachAverage() {
         return reachAverage < 0.0 ? Math.abs(reachAverage) : reachAverage / (double) hits;
+    }
+
+    public double getCPSAverage() {
+        return cpsAverage < 0.0 ? Math.abs(cpsAverage) : cpsAverage / (double) (hits + damage);
     }
 
     public double getYawRateAverage() {

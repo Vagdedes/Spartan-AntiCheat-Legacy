@@ -7,6 +7,7 @@ import me.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import me.vagdedes.spartan.functionality.important.MultiVersion;
 import me.vagdedes.spartan.objects.data.Buffer;
 import me.vagdedes.spartan.objects.data.Handlers;
+import me.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
@@ -23,8 +24,8 @@ public class KillAura extends CheckExecutor {
     private final Raytrace raytrace;
     private final Distance distance;
     private final Time time;
-    private final Rotations rotations ;
-    private final Direction direction ;
+    private final Rotations rotations;
+    private final Direction direction;
     private final Movement movement;
     private final Response response;
     private final Pattern pattern;
@@ -70,7 +71,6 @@ public class KillAura extends CheckExecutor {
             normalWidthToPlayerView = 0.7,
             universalNmsDistanceRequirement = 0.2;
     static final long pastDamageMilliseconds = 1_000L;
-    public static final byte ANALYSIS = 0;
 
     private void runDetection(String option, Runnable runnable, boolean sync) {
         if (hackType.getCheck().getBooleanOption(option, true)) {
@@ -148,9 +148,9 @@ public class KillAura extends CheckExecutor {
             sensitivity.remove();
             strafe.remove();
             pattern.remove();
-        } else if (object.equals(ANALYSIS)) {
+        } else if (object instanceof PlayerOpponent) {
             if (canDo()) {
-                analysis.run();
+                analysis.run((PlayerOpponent) object);
             }
         } else {
             if (canDo()) {

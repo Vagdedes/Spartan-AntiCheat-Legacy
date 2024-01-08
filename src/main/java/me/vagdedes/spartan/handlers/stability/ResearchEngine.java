@@ -61,7 +61,9 @@ public class ResearchEngine {
             averageCPS = -1.0;
 
     private static final long cacheTimeLimit = 60_000L * 4; // Despite being 4, realistically it is 5 minutes if extra calculations are accounted for
-    private static final int schedulerRefreshTicks = 1200 * 10;
+    public static final int
+            cacheRefreshTicks = 1200,
+            schedulerRefreshTicks = cacheRefreshTicks * 10;
     private static int schedulerTicks = 0;
 
     private static boolean
@@ -146,7 +148,7 @@ public class ResearchEngine {
                         SpartanBukkit.analysisThread.executeIfFreeElseHere(() -> {
                             skullsAndFightsRunnable.run();
 
-                            if (schedulerTicks % 1200 == 0) {
+                            if (schedulerTicks % cacheRefreshTicks == 0) {
                                 updateCache();
                             }
                         });
@@ -1195,6 +1197,7 @@ public class ResearchEngine {
             int mines = 0, logs = 0, reports = 0,
                     bans = 0, kicks = 0, warnings = 0;
             ViolationStatistics.calculate(playerProfiles);
+            NewViolationStatistics.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
                 playerProfile.calculateHistoricalEvidence();

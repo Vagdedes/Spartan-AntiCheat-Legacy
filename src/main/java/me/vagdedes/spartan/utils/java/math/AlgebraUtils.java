@@ -69,6 +69,20 @@ public class AlgebraUtils {
 
     // Separator
 
+    public static int floorToNearest(double number, int nearest) {
+        return (int) (nearest * Math.floor(number / (double) nearest));
+    }
+
+    public static int floorToNearest(int number, int nearest) {
+        return (int) (nearest * Math.floor(number / (double) nearest));
+    }
+
+    public static long floorToNearest(long number, int nearest) {
+        return nearest * Math.round(Math.floor(number / (double) nearest));
+    }
+
+    // Separator
+
     public static int getUniqueMultiplications(int m) {
         int total = 0, loop = m - 1;
 

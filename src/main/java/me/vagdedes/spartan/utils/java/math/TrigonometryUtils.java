@@ -165,9 +165,9 @@ public class TrigonometryUtils {
                 ratios[0] = angleDegrees1 < angleDegrees2 ? angleDegrees1 / angleDegrees2 : angleDegrees2 / angleDegrees1;
                 ratios[1] = angleDegrees1 < angleDegrees3 ? angleDegrees1 / angleDegrees3 : angleDegrees3 / angleDegrees1;
                 ratios[2] = angleDegrees2 < angleDegrees3 ? angleDegrees2 / angleDegrees3 : angleDegrees3 / angleDegrees2;
-                this.teams[0] = AlgebraUtils.roundToNearest(angleDegrees1, triangleTeamDivision);
-                this.teams[1] = AlgebraUtils.roundToNearest(angleDegrees2, triangleTeamDivision);
-                this.teams[2] = AlgebraUtils.roundToNearest(angleDegrees3, triangleTeamDivision);
+                this.teams[0] = AlgebraUtils.floorToNearest(angleDegrees1, triangleTeamDivision);
+                this.teams[1] = AlgebraUtils.floorToNearest(angleDegrees2, triangleTeamDivision);
+                this.teams[2] = AlgebraUtils.floorToNearest(angleDegrees3, triangleTeamDivision);
             } else {
                 this.ratios = new double[0];
                 this.teams = new int[0];

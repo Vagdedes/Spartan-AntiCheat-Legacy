@@ -120,6 +120,23 @@ public class ViolationHistory {
         return new LinkedHashMap<>(violationsMap);
     }
 
+    public Collection<Collection<PlayerViolation>> getTimeSortedViolations() {
+        int violationsSize = violationsMap.size();
+
+        if (violationsSize > 0) {
+            Map<Long, Collection<PlayerViolation>> map = new TreeMap<>();
+
+            for (List<PlayerViolation> violations : violationsMap.values()) {
+                for (PlayerViolation violation : violations) {
+                    map.computeIfAbsent(violation.getTime(), k -> new ArrayList<>()).add(violation);
+                }
+            }
+            return map.values();
+        } else {
+            return new ArrayList<>(0);
+        }
+    }
+
     // Separator
 
     public Set<String> getDates() {

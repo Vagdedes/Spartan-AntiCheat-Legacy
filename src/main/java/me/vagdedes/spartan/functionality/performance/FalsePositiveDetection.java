@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.functionality.performance;
 
 import me.vagdedes.spartan.configuration.Config;
-import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.objects.profiling.PlayerViolation;
 import me.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.system.Enums;

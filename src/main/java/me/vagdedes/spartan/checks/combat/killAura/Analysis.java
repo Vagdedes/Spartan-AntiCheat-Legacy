@@ -11,7 +11,9 @@ import me.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import me.vagdedes.spartan.objects.profiling.PlayerProfile;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Analysis extends DetectionExecutor {
 
@@ -169,7 +171,7 @@ public class Analysis extends DetectionExecutor {
         }
     }
 
-    void run() {
+    void run(PlayerOpponent self) {
         if (!ResearchEngine.isCaching()) {
             double percentage = hackType.getCheck().getDecimalOption("analysis_percentage", 2.0);
 
@@ -194,11 +196,6 @@ public class Analysis extends DetectionExecutor {
                                         for (AnalysisType type : AnalysisType.values()) {
                                             type.rest(opponent);
                                         }
-                                        if (opponent.getName().equals(player.getName())) {
-                                            for (AnalysisType type : AnalysisType.values()) {
-                                                type.self(opponent);
-                                            }
-                                        }
                                     }
                                 }
                             }
@@ -206,6 +203,8 @@ public class Analysis extends DetectionExecutor {
                         StringBuilder debug = new StringBuilder();
 
                         for (AnalysisType type : AnalysisType.values()) {
+                            type.self(self);
+
                             if (type.isFunctional()) {
                                 debug.append(type.name()).append(": ").append(type.getProbabilityRatioAveraged()).append(", ");
                             } else {
@@ -217,36 +216,5 @@ public class Analysis extends DetectionExecutor {
                 });
             }
         }
-    }
-
-    private int getQuantifiedPosition(double[] values, double comparison, int iterations) {
-        int start = -1;
-
-        for (int position = 0; position < values.length; position++) {
-            if (comparison == values[position]) {
-                start = position;
-                iterations--;
-
-                if (iterations == 0) {
-                    break;
-                }
-            } else if (start != -1) {
-                break;
-            }
-        }
-        return start;
-    }
-
-    private int countRepetitions(double[] values, double comparison) {
-        int count = 0;
-
-        for (int position = 0; position < values.length; position++) {
-            if (comparison == values[position]) {
-                count++;
-            } else if (count != 0) {
-                break;
-            }
-        }
-        return count;
     }
 }

@@ -229,7 +229,7 @@ public class PlayerFight {
         SpartanPlayer player = SpartanBukkit.getPlayer(winner.getName());
 
         if (player != null) {
-            player.getExecutor(Enums.HackType.KillAura).handle(KillAura.ANALYSIS);
+            player.getExecutor(Enums.HackType.KillAura).handle(winner);
         }
     }
 }

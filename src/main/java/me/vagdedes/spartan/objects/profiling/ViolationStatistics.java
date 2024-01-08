@@ -42,7 +42,7 @@ public class ViolationStatistics {
 
     public static void remove(PlayerProfile playerProfile) {
         synchronized (statistics) {
-            if (statistics.size() > 0) {
+            if (!statistics.isEmpty()) {
                 for (Map<PlayerProfile, List<Map.Entry<String, Double>>> map : statistics.values()) {
                     map.remove(playerProfile);
                 }
@@ -116,13 +116,7 @@ public class ViolationStatistics {
 
                                     for (PlayerViolation playerViolation : data) {
                                         if (playerViolation.isDetectionEnabled()) {
-                                            String date = playerViolation.getDate();
-                                            ViolationStatistics statistics = containedMap.get(date);
-
-                                            if (statistics == null) {
-                                                statistics = new ViolationStatistics();
-                                                containedMap.put(date, statistics);
-                                            }
+                                            ViolationStatistics statistics = containedMap.computeIfAbsent(playerViolation.getDate(), k -> new ViolationStatistics());
                                             statistics.count(playerViolation);
                                         }
                                     }
@@ -215,13 +209,7 @@ public class ViolationStatistics {
     }
 
     void count(PlayerViolation playerViolation) {
-        String detection = playerViolation.getDetection();
-        Calculator subStatistics = memory.get(detection);
-
-        if (subStatistics == null) {
-            subStatistics = new Calculator();
-            memory.put(detection, subStatistics);
-        }
+        Calculator subStatistics = memory.computeIfAbsent(playerViolation.getDetection(), k -> new Calculator());
         subStatistics.violations++;
         subStatistics.averageTime.add(playerViolation.getTime());
     }

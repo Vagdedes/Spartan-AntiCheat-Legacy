@@ -7,6 +7,7 @@ import me.vagdedes.spartan.gui.SpartanMenu;
 import me.vagdedes.spartan.gui.spartan.MainMenu;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
+import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.handlers.stability.TestServer;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
@@ -232,7 +233,7 @@ public class PlayerProfile {
     }
 
     public boolean wasRecentlyOnline() {
-        return isOnline() || (System.currentTimeMillis() - lastPlayed) <= 60_000L;
+        return isOnline() || (System.currentTimeMillis() - lastPlayed) <= (ResearchEngine.cacheRefreshTicks * TPS.tickTime);
     }
 
     public void setOnline(SpartanPlayer player) {
@@ -299,13 +300,7 @@ public class PlayerProfile {
                             // Calculate compared profile data
 
                             for (PlayerViolation playerViolation : data) {
-                                String date = playerViolation.getDate();
-                                ViolationStatistics statistics = comparedStatistics.get(date);
-
-                                if (statistics == null) {
-                                    statistics = new ViolationStatistics();
-                                    comparedStatistics.put(date, statistics);
-                                }
+                                ViolationStatistics statistics = comparedStatistics.computeIfAbsent(playerViolation.getDate(), k -> new ViolationStatistics());
                                 statistics.count(playerViolation);
                             }
 
