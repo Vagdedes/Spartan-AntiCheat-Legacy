@@ -269,7 +269,7 @@ public class PlayerProfile {
 
                 if (thresholdSurpassing >= 1.0) {
                     liveEvidence.add(hackType,
-                            "suspicion: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
+                            "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
                     );
                     liveEvidence.judge(historicalEvidence);
                     SpartanMenu.playerInfo.refresh(player.getName());
@@ -281,8 +281,13 @@ public class PlayerProfile {
         return false;
     }
 
-    public void resetLiveEvidence(Enums.HackType hackType) {
+    public void removeFromLiveEvidence(Enums.HackType hackType) {
         liveEvidence.remove(hackType);
+    }
+
+    public void removeFromEvidence(Enums.HackType hackType) {
+        liveEvidence.remove(hackType);
+        historicalEvidence.remove(hackType);
     }
 
     public PlayerEvidence getEvidence() {
@@ -316,10 +321,6 @@ public class PlayerProfile {
         } else {
             return liveEvidence;
         }
-    }
-
-    public PlayerEvidence getLiveEvidence() {
-        return liveEvidence;
     }
 
     boolean shouldCalculateEvidence() {

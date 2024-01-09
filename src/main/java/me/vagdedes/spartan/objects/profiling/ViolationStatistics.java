@@ -114,6 +114,7 @@ public class ViolationStatistics {
 
         synchronized (synchronizer) {
             if (!playerProfiles.isEmpty() && ResearchEngine.enoughData()) {
+                playerProfiles = new ArrayList<>(playerProfiles);
                 boolean noStatistics = violationProbabilityPie.isEmpty();
                 ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
 
@@ -155,6 +156,16 @@ public class ViolationStatistics {
                                         majorHash,
                                         totalViolations
                                 );
+                            } else {
+                                violationProbabilityPie.remove(majorHash);
+                                profileAverageProbability.remove(majorHash);
+                                profileProbabilityWave.remove(majorHash);
+
+                                for (PlayerProfile profile : playerProfiles) {
+                                    if (profile.getDataType() == dataType) {
+                                        profile.historicalEvidence.remove(hackType);
+                                    }
+                                }
                             }
                         } else {
                             violationProbabilityPie.remove(majorHash);
@@ -162,7 +173,9 @@ public class ViolationStatistics {
                             profileProbabilityWave.remove(majorHash);
 
                             for (PlayerProfile profile : playerProfiles) {
-                                profile.historicalEvidence.remove(hackType);
+                                if (profile.getDataType() == dataType) {
+                                    profile.historicalEvidence.remove(hackType);
+                                }
                             }
                         }
                     }
@@ -193,15 +206,14 @@ public class ViolationStatistics {
         for (PlayerProfile profile : playerProfiles) {
             if (profile.getDataType() == dataType) {
                 Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
+                double probabilityTotal = 0.0;
+                int probabilityCount = 0;
 
                 if (!violations.isEmpty()) {
-                    double probabilityTotal = 0.0;
-                    int probabilityCount = 0;
-
                     for (Collection<PlayerViolation> moment : violations) {
                         for (PlayerViolation violation : moment) {
                             if (violation.isDetectionEnabled()) {
-                                long time = AlgebraUtils.floorToNearest(violation.getTime(), (int)Check.violationCycleSeconds);
+                                long time = AlgebraUtils.floorToNearest(violation.getTime(), (int) Check.violationCycleSeconds);
                                 PlayerViolation highest = highestViolation.get(time);
 
                                 if (highest == null || violation.getLevel() > highest.getLevel()) {
@@ -211,27 +223,23 @@ public class ViolationStatistics {
                         }
                     }
 
-                    for (PlayerViolation violation : highestViolation.values()) {
-                        probabilityTotal += violationProbability.getOrDefault(hash(violation), 0) / (double) totalViolations;
-                        probabilityCount++;
-                    }
-
-                    if (probabilityCount > 0) {
-                        double averageProbability = probabilityTotal / (double) probabilityCount;
-                        profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
-                        profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
-                    } else {
-                        Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
-
-                        if (map != null) {
-                            map.remove(profile);
+                    if (!highestViolation.isEmpty()) {
+                        for (PlayerViolation violation : highestViolation.values()) {
+                            probabilityTotal += violationProbability.getOrDefault(hash(violation), 0) / (double) totalViolations;
+                            probabilityCount++;
                         }
-                    }
-                } else {
-                    Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
 
-                    if (map != null) {
-                        map.remove(profile);
+                        if (probabilityCount > 0) {
+                            double averageProbability = probabilityTotal / (double) probabilityCount;
+                            profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
+                            profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
+                        } else {
+                            Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
+
+                            if (map != null) {
+                                map.remove(profile);
+                            }
+                        }
                     }
                 }
             }
@@ -264,13 +272,25 @@ public class ViolationStatistics {
                     Double probability = probabilityAverage.get(profile);
 
                     if (probability != null) {
-                        AwarenessNotifications.forcefullySend(probability.toString());
-                    }
-                    if (probability != null && probability <= 0.1) {
-                        profile.historicalEvidence.add(hackType, "Probability: " + (wave.getPosition(probability) * 100.0) + "%");
+                        probability = wave.getPosition(probability);
+
+                        if (probability <= 0.1) {
+                            profile.historicalEvidence.add(hackType, "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%");
+                        } else {
+                            profile.historicalEvidence.remove(hackType);
+                        }
                     } else {
                         profile.historicalEvidence.remove(hackType);
                     }
+                }
+            }
+        } else {
+            profileAverageProbability.remove(majorHash);
+
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getDataType() == dataType) {
+                    profile.historicalEvidence.remove(hackType);
+
                 }
             }
         }

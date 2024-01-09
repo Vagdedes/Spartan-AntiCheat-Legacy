@@ -437,7 +437,7 @@ public class LiveViolation {
 
         // Always last
         if (player != null) {
-            player.getProfile().resetLiveEvidence(hackType);
+            player.getProfile().removeFromLiveEvidence(hackType);
 
             if (local) {
                 SpartanMenu.playerInfo.refresh(player.getName());

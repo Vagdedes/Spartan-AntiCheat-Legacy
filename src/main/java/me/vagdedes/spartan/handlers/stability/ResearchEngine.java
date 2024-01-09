@@ -497,7 +497,7 @@ public class ResearchEngine {
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.getLiveEvidence().remove(hackType);
+                    playerProfile.removeFromEvidence(hackType);
                 }
             }
 
