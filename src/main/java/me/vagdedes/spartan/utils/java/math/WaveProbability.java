@@ -66,6 +66,8 @@ public class WaveProbability {
         double dbl = number.doubleValue();
 
         while (iterator.hasNext()) {
+            position++;
+
             if (iterator.next() == dbl) {
                 end = position;
 
@@ -75,8 +77,7 @@ public class WaveProbability {
             } else if (start != -1) {
                 break;
             }
-            position++;
         }
-        return ((start + end) / 2.0) / (this.numbers.size() - 1);
+        return ((start + end) / 2.0) / this.numbers.size();
     }
 }

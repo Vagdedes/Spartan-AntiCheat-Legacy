@@ -1,6 +1,5 @@
 package me.vagdedes.spartan.objects.profiling;
 
-import me.vagdedes.spartan.checks.world.XRay;
 import me.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
 import me.vagdedes.spartan.functionality.important.Permissions;
 import me.vagdedes.spartan.gui.SpartanMenu;
@@ -13,15 +12,15 @@ import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
-import me.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.server.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
 
 public class PlayerProfile {
 
@@ -30,9 +29,8 @@ public class PlayerProfile {
     private final ViolationHistory[] violationHistory;
     private final MiningHistory[] miningHistory;
     private final PunishmentHistory punishmentHistory;
-    private final PlayerEvidence
-            liveEvidence,
-            historicalEvidence;
+    private final PlayerEvidence liveEvidence;
+    final PlayerEvidence historicalEvidence;
     private boolean
             bedrockPlayer,
             bedrockPlayerCheck,
@@ -252,116 +250,8 @@ public class PlayerProfile {
 
     // Separator
 
-    public void calculateHistoricalEvidence() {
-        if (historicalEvidence.startCalculation(shouldCalculateEvidence())) {
-            boolean hasStatistics = ViolationStatistics.has();
-
-            for (ViolationHistory violationHistory : violationHistory) {
-                Enums.HackType hackType = violationHistory.getHackType();
-
-                if (hackType == Enums.HackType.XRay) {
-                    Map<Enums.MiningOre, Integer> suspectedOres = new LinkedHashMap<>(Enums.MiningOre.values().length);
-
-                    for (MiningHistory miningHistory : getMiningHistory()) {
-                        for (World.Environment environment : World.Environment.values()) {
-                            double mines = miningHistory.getMines(environment);
-
-                            if (mines > 0) {
-                                int days = miningHistory.getDays();
-                                mines = (mines + punishmentHistory.getReportCount(hackType, 0)) / ((double) days);
-                                double globalAverage = Math.abs(ResearchEngine.getMiningHistoryAverage(miningHistory.getOre(), XRay.lenientStatisticalRatio)), // When below zero, it means data is not yet coming from player profiles but backup variables
-                                        miningRatio = mines / globalAverage;
-
-                                if (miningRatio > 1.0) { // We inform earlier in the inventory menu while the violation we want to be accurate
-                                    suspectedOres.put(miningHistory.getOre(), AlgebraUtils.integerRound(miningRatio * 100.0));
-                                }
-                            }
-                            break;
-                        }
-                    }
-
-                    if (!suspectedOres.isEmpty()) {
-                        String separator = "§l/§r";
-                        historicalEvidence.add(hackType,
-                                StringUtils.toString(suspectedOres.keySet().toArray(new Enums.MiningOre[0]), separator)
-                                        + ": " + StringUtils.toString(suspectedOres.values().toArray(new Integer[0]), separator));
-                    } else {
-                        historicalEvidence.remove(hackType);
-                    }
-                } else if (hasStatistics) {
-                    ViolationStatistics.GlobalWarmup globalStatistics = ViolationStatistics.get(hackType); // Already checked check & detections
-
-                    if (globalStatistics.has) {
-                        List<PlayerViolation> data = violationHistory.getViolationsList();
-
-                        if (!data.isEmpty()) {
-                            Map<String, ViolationStatistics> comparedStatistics = new LinkedHashMap<>();
-
-                            // Calculate compared profile data
-
-                            for (PlayerViolation playerViolation : data) {
-                                ViolationStatistics statistics = comparedStatistics.computeIfAbsent(playerViolation.getDate(), k -> new ViolationStatistics());
-                                statistics.count(playerViolation);
-                            }
-
-                            // Collide Compared and Global Data
-
-                            int violationCount = violationHistory.getImportantViolations(true) + punishmentHistory.getReportCount(hackType, 0);
-                            double averageViolations = violationCount / ((double) comparedStatistics.size()),
-                                    violationRatio = averageViolations / hackType.getCheck().getDefaultCancelViolation(),
-                                    thresholdSurpassing = violationRatio / Check.analysisMultiplier;
-
-                            if (thresholdSurpassing >= 1.0) {
-                                int count = 0,
-                                        globalCount = globalStatistics.unrecordedProfiles;
-                                double timeAverage = 0.0,
-                                        globalTimeAverage = 0.0;
-                                Collection<ViolationStatistics> comparedData = comparedStatistics.values();
-
-                                for (Map.Entry<String, Double> entry : globalStatistics.loop) { // Dates
-                                    ViolationStatistics.IndividualWarmup comparables = ViolationStatistics.getComparables(entry.getKey(), comparedData);
-
-                                    if (comparables.has && !comparables.cached) {
-                                        for (double comparedResults : comparables.loop) {
-                                            count++;
-                                            timeAverage += comparedResults;
-                                        }
-                                    }
-                                    globalCount++;
-                                    globalTimeAverage += entry.getValue();
-                                }
-
-                                // Decide based on Information
-
-                                if (count > 0 && globalCount > 0) {
-                                    timeAverage = (globalTimeAverage / globalCount) / (timeAverage / count); // Greater is less time between violations per day compared to others
-
-                                    if (timeAverage > 1.5) {
-                                        historicalEvidence.add(hackType,
-                                                "suspicion: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
-                                                        + "§l/§r" + AlgebraUtils.integerRound(timeAverage * 100.0) + "%"
-                                        );
-                                    } else {
-                                        historicalEvidence.remove(hackType);
-                                    }
-                                } else {
-                                    historicalEvidence.remove(hackType);
-                                }
-                            } else {
-                                historicalEvidence.remove(hackType);
-                            }
-                        } else {
-                            historicalEvidence.remove(hackType);
-                        }
-                    } else {
-                        historicalEvidence.remove(hackType);
-                    }
-                } else {
-                    historicalEvidence.remove(hackType);
-                }
-            }
-            historicalEvidence.judge(liveEvidence);
-        }
+    public void judgeHistoricalEvidence() {
+        historicalEvidence.judge(liveEvidence);
     }
 
     public boolean calculateLiveEvidence(SpartanPlayer player, Enums.HackType hackType, ResearchEngine.DataType dataType) {
@@ -433,7 +323,7 @@ public class PlayerProfile {
     }
 
     boolean shouldCalculateEvidence() {
-        return (staff || historicalEvidence.noCalculations() || wasRecentlyOnline()) && getUsefulLogs() > 0;
+        return (staff || wasRecentlyOnline()) && getUsefulLogs() > 0;
     }
 
     // Separator

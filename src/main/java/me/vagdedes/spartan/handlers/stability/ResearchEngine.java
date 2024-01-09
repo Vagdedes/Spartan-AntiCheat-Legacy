@@ -10,7 +10,6 @@ import me.vagdedes.spartan.functionality.important.Permissions;
 import me.vagdedes.spartan.functionality.moderation.BanManagement;
 import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import me.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
 import me.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import me.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import me.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
@@ -1196,14 +1195,10 @@ public class ResearchEngine {
                     legitimatePlayers = getLegitimatePlayers();
             int mines = 0, logs = 0, reports = 0,
                     bans = 0, kicks = 0, warnings = 0;
-            ViolationStatistics.calculate(playerProfiles);
-            NewViolationStatistics.calculateData(playerProfiles);
+            ViolationStatistics.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                playerProfile.calculateHistoricalEvidence();
-
-                // Separator
-
+                playerProfile.judgeHistoricalEvidence();
                 PunishmentHistory punishmentHistory = playerProfile.getPunishmentHistory();
 
                 for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {
@@ -1246,7 +1241,7 @@ public class ResearchEngine {
             // Separator (Find False Positives)
 
             if (enoughData()) {
-                double duration = 1000.0; // 1 second
+                double duration = 1000.0; // 1 tick
 
                 for (Enums.HackType hackType : hackTypes) {
                     hackType.getCheck().clearMaxCancelledViolations();
@@ -1254,7 +1249,7 @@ public class ResearchEngine {
                     for (DataType dataType : dataTypes) {
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
                             boolean bedrock = dataType == DataType.Bedrock;
-                            Map<Integer, FalsePositiveDetection.TimePeriod> averages = new HashMap<>();
+                            Map<Integer, ViolationStatistics.TimePeriod> averages = new HashMap<>();
 
                             for (PlayerProfile playerProfile : playerProfiles) {
                                 if (bedrock == playerProfile.isBedrockPlayer()
@@ -1268,10 +1263,10 @@ public class ResearchEngine {
                                         for (PlayerViolation playerViolation : list) {
                                             if (playerViolation.isDetectionEnabled()) {
                                                 int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
-                                                FalsePositiveDetection.TimePeriod timePeriod = averages.get(timeMoment);
+                                                ViolationStatistics.TimePeriod timePeriod = averages.get(timeMoment);
 
                                                 if (timePeriod == null) {
-                                                    timePeriod = new FalsePositiveDetection.TimePeriod();
+                                                    timePeriod = new ViolationStatistics.TimePeriod();
                                                     timePeriod.add(playerViolation);
                                                     averages.put(timeMoment, timePeriod);
                                                 } else {
@@ -1288,7 +1283,7 @@ public class ResearchEngine {
                                 HashMap<Integer, Integer> violationAveragesDivisor = new HashMap<>();
 
                                 // Add the average violations for the executed detections based on each time period
-                                for (FalsePositiveDetection.TimePeriod timePeriod : averages.values()) {
+                                for (ViolationStatistics.TimePeriod timePeriod : averages.values()) {
                                     for (Map.Entry<Integer, Double> individualViolationAverages : timePeriod.getAverageViolations().entrySet()) {
                                         int hash = individualViolationAverages.getKey();
                                         violationAverages.put(

@@ -7,48 +7,13 @@ import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 
-import java.util.*;
+import java.util.Collection;
 
 public class FalsePositiveDetection {
 
-    public static class TimePeriod {
-
-        private final Set<Integer> players;
-        private final Map<Integer, Integer> violations;
-
-        public TimePeriod() {
-            this.players = new HashSet<>();
-            this.violations = new HashMap<>();
-        }
-
-        public void add(PlayerViolation playerViolation) {
-            players.add(playerViolation.getPlayerIdentity());
-            violations.put(
-                    playerViolation.getSimilarityIdentity(),
-                    violations.getOrDefault(playerViolation.getSimilarityIdentity(), 0) + 1
-            );
-        }
-
-        public Map<Integer, Double> getAverageViolations() {
-            int size = this.violations.size();
-
-            if (size > 0) {
-                Map<Integer, Double> violations = new HashMap<>(size);
-                double players = this.players.size();
-
-                for (Map.Entry<Integer, Integer> entry : this.violations.entrySet()) {
-                    violations.put(entry.getKey(), entry.getValue() / players);
-                }
-                return violations;
-            } else {
-                return new HashMap<>(0);
-            }
-        }
-    }
-
     private static final int
             integerNearest = 5,
-            decimalPoint = 1;
+            decimalPoint = 2;
 
     public static boolean canFunction() {
         return Config.settings.getBoolean("Performance.enable_false_positive_detection");

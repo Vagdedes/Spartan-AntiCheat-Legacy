@@ -31,18 +31,15 @@ public class PlayerEvidence {
 
     private final Map<Enums.HackType, String> evidence;
     private EvidenceType type;
-    private boolean noCalculations;
 
     PlayerEvidence() {
         this.type = EvidenceType.Legitimate;
         this.evidence = new LinkedHashMap<>(Enums.HackType.values().length);
-        this.noCalculations = true;
     }
 
     PlayerEvidence(PlayerEvidence evidence) {
         this.type = evidence.type;
         this.evidence = new LinkedHashMap<>(evidence.evidence);
-        this.noCalculations = evidence.noCalculations;
     }
 
     // Separator
@@ -76,10 +73,6 @@ public class PlayerEvidence {
         return type;
     }
 
-    boolean noCalculations() {
-        return noCalculations;
-    }
-
     // Separator
 
     public boolean has() {
@@ -95,14 +88,6 @@ public class PlayerEvidence {
     }
 
     // Separator
-
-    boolean startCalculation(boolean bool) {
-        if (bool) {
-            this.noCalculations = false;
-            return true;
-        }
-        return false;
-    }
 
     void add(Enums.HackType hackType, String reason) {
         this.evidence.put(hackType, reason);
@@ -126,7 +111,7 @@ public class PlayerEvidence {
 
         if (evidence != null && evidence.has()) {
             for (Enums.HackType hackType : evidence.getKnowledgeList()) {
-                if (!has(hackType)) {
+                if (!this.has(hackType)) {
                     count++;
                 }
             }

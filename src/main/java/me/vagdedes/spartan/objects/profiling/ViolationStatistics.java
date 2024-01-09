@@ -1,252 +1,284 @@
 package me.vagdedes.spartan.objects.profiling;
 
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
+import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.system.Enums;
+import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.utils.java.math.WaveProbability;
 
 import java.util.*;
 
 public class ViolationStatistics {
 
-    // Check -> Profile -> Day -> Set of Data
-    private static final Map<Enums.HackType, Map<PlayerProfile, List<Map.Entry<String, Double>>>>
-            statistics = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<String, List<Double>> individualWarmup = new LinkedHashMap<>();
-    private static final GlobalWarmup[] globalWarmups = new GlobalWarmup[Enums.HackType.values().length];
+    private static final Map<Integer, Map<PlayerProfile, Map<Integer, Integer>>> violationProbabilityPie = new LinkedHashMap<>();
+    private static final Map<Integer, Map<PlayerProfile, Double>> profileAverageProbability = new LinkedHashMap<>();
+    private static final Map<Integer, Map<Double, Integer>> profileProbabilityWave = new LinkedHashMap<>();
+    private static boolean running = false;
+    private static final Object synchronizer = new Object();
 
-    static {
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            globalWarmups[hackType.ordinal()] = new GlobalWarmup(false, 0, null);
+    // Separator
+
+    public static class TimePeriod {
+
+        private final Set<Integer> players;
+        private final Map<Integer, Integer> violations;
+
+        public TimePeriod() {
+            this.players = new HashSet<>();
+            this.violations = new HashMap<>();
         }
+
+        public void add(PlayerViolation playerViolation) {
+            players.add(playerViolation.getPlayerIdentity());
+            violations.put(
+                    playerViolation.getSimilarityIdentity(),
+                    violations.getOrDefault(playerViolation.getSimilarityIdentity(), 0) + 1
+            );
+        }
+
+        public Map<Integer, Double> getAverageViolations() {
+            int size = this.violations.size();
+
+            if (size > 0) {
+                Map<Integer, Double> violations = new HashMap<>(size);
+                double players = this.players.size();
+
+                for (Map.Entry<Integer, Integer> entry : this.violations.entrySet()) {
+                    violations.put(entry.getKey(), entry.getValue() / players);
+                }
+                return violations;
+            } else {
+                return new HashMap<>(0);
+            }
+        }
+    }
+
+    // Separator
+
+    private static void rawClear() {
+        violationProbabilityPie.clear();
+        profileAverageProbability.clear();
+        profileProbabilityWave.clear();
     }
 
     public static void clear() {
-        synchronized (statistics) {
-            statistics.clear();
+        synchronized (synchronizer) {
+            rawClear();
         }
     }
 
-    static boolean has() {
-        return !statistics.isEmpty();
-    }
+    // Separator
 
-    public static boolean has(Enums.HackType hackType, int profileRequirement) {
-        if (globalWarmups[hackType.ordinal()].has) {
-            if (profileRequirement == 0) {
-                return true;
+    public static void remove(Enums.HackType hackType) {
+        synchronized (synchronizer) {
+            for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+                int majorHash = Objects.hash(hackType, dataType);
+                violationProbabilityPie.remove(majorHash);
+                profileAverageProbability.remove(majorHash);
+                profileProbabilityWave.remove(majorHash);
             }
-            Map<PlayerProfile, List<Map.Entry<String, Double>>> map = statistics.get(hackType);
-            return map != null && map.size() >= profileRequirement;
         }
-        return false;
     }
 
     public static void remove(PlayerProfile playerProfile) {
-        synchronized (statistics) {
-            if (!statistics.isEmpty()) {
-                for (Map<PlayerProfile, List<Map.Entry<String, Double>>> map : statistics.values()) {
+        synchronized (synchronizer) {
+            ResearchEngine.DataType dataType = playerProfile.getDataType();
+
+            for (Enums.HackType hackType : Enums.HackType.values()) {
+                Map<PlayerProfile, Double> map = profileAverageProbability.get(Objects.hash(hackType, dataType));
+
+                if (map != null) {
                     map.remove(playerProfile);
                 }
             }
         }
     }
 
-    public static void remove(Enums.HackType hackType) {
-        synchronized (statistics) {
-            statistics.remove(hackType);
+    // Separator
+
+    public static void calculateData(Collection<PlayerProfile> playerProfiles) {
+        if (running) {
+            return;
         }
-    }
+        running = true;
 
-    static IndividualWarmup getComparables(String detection, Collection<ViolationStatistics> data) {
-        List<Double> list = individualWarmup.get(detection);
+        synchronized (synchronizer) {
+            if (!playerProfiles.isEmpty() && ResearchEngine.enoughData()) {
+                boolean noStatistics = violationProbabilityPie.isEmpty();
+                ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
 
-        if (list == null) {
-            list = new ArrayList<>();
-
-            for (ViolationStatistics violationStatistics : data) {
-                Calculator calculator = violationStatistics.memory.get(detection);
-
-                if (calculator != null) {
-                    list.add(violationStatistics.getAverageTime(calculator));
-                }
-            }
-            individualWarmup.put(detection, list);
-            return new IndividualWarmup(!list.isEmpty(), false, list);
-        }
-        return new IndividualWarmup(!list.isEmpty(), true, list);
-    }
-
-    static GlobalWarmup get(Enums.HackType hackType) {
-        individualWarmup.clear();
-        return globalWarmups[hackType.ordinal()];
-    }
-
-    public static void calculate(Collection<PlayerProfile> playerProfiles) {
-        if (!ResearchEngine.enoughData()) {
-            synchronized (statistics) {
-                statistics.clear();
-            }
-        } else {
-            synchronized (statistics) {
-                boolean hasNoStatistics = statistics.isEmpty();
-                Map<Enums.HackType, Map<PlayerProfile, List<Map.Entry<String, Double>>>> newStatistics = new LinkedHashMap<>(statistics);
-
-                // Create Existence
-
-                if (hasNoStatistics) {
-                    for (Enums.HackType hackType : Enums.HackType.values()) {
-                        newStatistics.computeIfAbsent(hackType, map -> new LinkedHashMap<>());
-                    }
-                }
-
-                // Create Cache or Maintain Existing
-
-                for (PlayerProfile playerProfile : playerProfiles) {
-                    ResearchEngine.DataType dataType = playerProfile.getDataType();
-
-                    for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {
-                        Enums.HackType hackType = violationHistory.getHackType();
+                for (Enums.HackType hackType : Enums.HackType.values()) {
+                    for (ResearchEngine.DataType dataType : dataTypes) {
+                        int majorHash = Objects.hash(hackType, dataType);
 
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
-                            if (hasNoStatistics || playerProfile.shouldCalculateEvidence()) {
-                                List<PlayerViolation> data = violationHistory.getViolationsList();
-                                int size = data.size();
+                            int totalViolations = 0;
 
-                                if (size > 0) {
-                                    Map<String, ViolationStatistics> containedMap = new LinkedHashMap<>(size);
+                            for (PlayerProfile profile : playerProfiles) {
+                                if ((noStatistics || profile.shouldCalculateEvidence()) && profile.getDataType() == dataType) {
+                                    Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
 
-                                    for (PlayerViolation playerViolation : data) {
-                                        if (playerViolation.isDetectionEnabled()) {
-                                            ViolationStatistics statistics = containedMap.computeIfAbsent(playerViolation.getDate(), k -> new ViolationStatistics());
-                                            statistics.count(playerViolation);
+                                    if (!violations.isEmpty()) {
+                                        for (Collection<PlayerViolation> moment : violations) {
+                                            for (PlayerViolation violation : moment) {
+                                                int hash = Objects.hash(
+                                                        violation.getLevel(),
+                                                        violation.getSimilarityIdentity()
+                                                );
+
+                                                if (violation.isDetectionEnabled()) {
+                                                    Map<PlayerProfile, Map<Integer, Integer>> map = violationProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>());
+                                                    map.computeIfAbsent(profile, k -> new LinkedHashMap<>()).merge(hash, 1, Integer::sum);
+                                                    totalViolations++;
+                                                } else {
+                                                    Map<PlayerProfile, Map<Integer, Integer>> map = violationProbabilityPie.get(majorHash);
+
+                                                    if (map != null) {
+                                                        Map<Integer, Integer> map2 = map.get(profile);
+
+                                                        if (map2 != null) {
+                                                            map2.remove(hash);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        Map<PlayerProfile, Map<Integer, Integer>> map = violationProbabilityPie.get(majorHash);
+
+                                        if (map != null) {
+                                            map.remove(profile);
                                         }
                                     }
-
-                                    // Get Results
-                                    List<Map.Entry<String, Double>> list = new ArrayList<>(containedMap.size());
-
-                                    for (ViolationStatistics violationStatistics : containedMap.values()) {
-                                        list.addAll(violationStatistics.getAverageTimes());
-                                    }
-                                    newStatistics.get(hackType).put(playerProfile, list);
-                                } else if (!hasNoStatistics) {
-                                    newStatistics.get(hackType).remove(playerProfile);
                                 }
                             }
+
+                            if (totalViolations >= ResearchEngine.logRequirement) {
+                                calculateProfileProbability(
+                                        playerProfiles,
+                                        hackType,
+                                        dataType,
+                                        totalViolations
+                                );
+                            }
                         } else {
-                            newStatistics.get(hackType).remove(playerProfile);
+                            violationProbabilityPie.remove(majorHash);
+                            profileAverageProbability.remove(majorHash);
+                            profileProbabilityWave.remove(majorHash);
+
+                            for (PlayerProfile profile : playerProfiles) {
+                                profile.historicalEvidence.remove(hackType);
+                            }
                         }
                     }
                 }
+            } else {
+                rawClear();
 
-                // Transfer To Access List
+                if (!playerProfiles.isEmpty()) {
+                    for (PlayerProfile profile : playerProfiles) {
+                        profile.historicalEvidence.clear();
+                    }
+                }
+            }
+            running = false;
+        }
+    }
 
-                for (Map.Entry<Enums.HackType, Map<PlayerProfile, List<Map.Entry<String, Double>>>> entry : newStatistics.entrySet()) {
-                    GlobalWarmup globalWarmup;
-                    Map<PlayerProfile, List<Map.Entry<String, Double>>> map = entry.getValue();
-                    int size = map.size();
+    private static void calculateProfileProbability(Collection<PlayerProfile> playerProfiles,
+                                                    Enums.HackType hackType,
+                                                    ResearchEngine.DataType dataType,
+                                                    int totalViolations) {
+        profileProbabilityWave.clear();
+        int majorHash = Objects.hash(hackType, dataType);
+        Map<PlayerProfile, Map<Integer, Integer>> allData = violationProbabilityPie.get(majorHash);
 
-                    if (size > 0) {
-                        Collection<Map.Entry<String, Double>> list = new ArrayList<>(size);
+        if (allData != null) {
+            Map<Integer, Integer> onlyData = new LinkedHashMap<>();
 
-                        for (List<Map.Entry<String, Double>> containedMap : map.values()) {
-                            list.addAll(containedMap);
+            for (Map<Integer, Integer> map : allData.values()) {
+                for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                    onlyData.merge(entry.getKey(), entry.getValue(), Integer::sum);
+                }
+            }
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getDataType() == dataType) {
+                    Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
+
+                    if (!violations.isEmpty()) {
+                        double probabilityTotal = 0.0;
+                        int probabilityCount = 0;
+
+                        for (Collection<PlayerViolation> moment : violations) {
+                            for (PlayerViolation violation : moment) {
+                                if (violation.isDetectionEnabled()) {
+                                    int hash = Objects.hash(
+                                            violation.getLevel(),
+                                            violation.getSimilarityIdentity()
+                                    );
+                                    probabilityTotal += onlyData.getOrDefault(hash, 0) / (double) totalViolations;
+                                    probabilityCount++;
+                                }
+                            }
                         }
-                        globalWarmup = new GlobalWarmup(true, playerProfiles.size() - size, list);
+
+                        if (probabilityCount > 0) {
+                            double averageProbability = probabilityTotal / (double) probabilityCount;
+                            profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
+                            profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
+                        } else {
+                            Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
+
+                            if (map != null) {
+                                map.remove(profile);
+                            }
+                        }
                     } else {
-                        globalWarmup = new GlobalWarmup(false, 0, null);
+                        Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
+
+                        if (map != null) {
+                            map.remove(profile);
+                        }
                     }
-                    globalWarmups[entry.getKey().ordinal()] = globalWarmup;
                 }
-                statistics.putAll(newStatistics);
+            }
+            judgeProbability(
+                    playerProfiles,
+                    hackType,
+                    dataType
+            );
+        } else {
+            profileAverageProbability.remove(majorHash);
+            profileProbabilityWave.remove(majorHash);
+        }
+    }
+
+    private static void judgeProbability(Collection<PlayerProfile> playerProfiles,
+                                         Enums.HackType hackType,
+                                         ResearchEngine.DataType dataType) {
+        int majorHash = Objects.hash(hackType, dataType);
+        Map<Double, Integer> probabilityData = profileProbabilityWave.get(majorHash);
+
+        if (probabilityData != null) {
+            Map<PlayerProfile, Double> probabilityAverage = profileAverageProbability.get(majorHash);
+            WaveProbability wave = new WaveProbability();
+
+            for (Map.Entry<Double, Integer> entry : probabilityData.entrySet()) {
+                for (int i = 0; i < entry.getValue(); i++) {
+                    wave.addNumber(entry.getKey());
+                }
+            }
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getDataType() == dataType) {
+                    Double probability = probabilityAverage.get(profile);
+
+                    if (probability != null && probability <= 0.1) {
+                        profile.historicalEvidence.add(hackType, "Probability: " + (wave.getPosition(probability) * 100.0) + "%");
+                    } else {
+                        profile.historicalEvidence.remove(hackType);
+                    }
+                }
             }
         }
     }
-
-    // Objects
-
-    private static class Calculator {
-
-        private final List<Long> averageTime;
-        private double violations;
-
-        private Calculator() {
-            violations = 0.0;
-            averageTime = new ArrayList<>();
-        }
-    }
-
-    static class IndividualWarmup {
-
-        final boolean cached, has;
-        final List<Double> loop;
-
-        private IndividualWarmup(boolean has, boolean cached, List<Double> list) {
-            this.has = has;
-            this.cached = cached;
-            this.loop = list;
-        }
-    }
-
-    static class GlobalWarmup {
-
-        final boolean has;
-        final int unrecordedProfiles;
-        final Collection<Map.Entry<String, Double>> loop;
-
-        private GlobalWarmup(boolean has, int unrecordedProfiles, Collection<Map.Entry<String, Double>> data) {
-            this.has = has;
-            this.unrecordedProfiles = unrecordedProfiles;
-            this.loop = data;
-        }
-    }
-
-    // Main Object
-
-    private final Map<String, Calculator> memory;
-
-    ViolationStatistics() {
-        memory = new LinkedHashMap<>();
-    }
-
-    void count(PlayerViolation playerViolation) {
-        Calculator subStatistics = memory.computeIfAbsent(playerViolation.getDetection(), k -> new Calculator());
-        subStatistics.violations++;
-        subStatistics.averageTime.add(playerViolation.getTime());
-    }
-
-    Set<Map.Entry<String, Double>> getAverageTimes() {
-        int size = memory.size();
-
-        if (size > 0) {
-            Map<String, Double> map = new LinkedHashMap<>(size);
-
-            for (Map.Entry<String, Calculator> entry : memory.entrySet()) {
-                map.put(entry.getKey(), getAverageTime(entry.getValue()));
-            }
-            return map.entrySet();
-        }
-        return new HashSet<>(0);
-    }
-
-    private double getAverageTime(Calculator calculator) {
-        double counter = calculator.violations - 1.0;
-
-        if (counter > 0.0) {
-            long averageTime = 0L, previousTime = 0L;
-            Collections.sort(calculator.averageTime); // Set it in order, smallest to biggest
-            Iterator<Long> iterator = calculator.averageTime.iterator();
-
-            if (iterator.hasNext()) {
-                previousTime = iterator.next();
-            }
-            while (iterator.hasNext()) {
-                long time = iterator.next();
-                averageTime += (time - previousTime);
-                previousTime = time;
-            }
-            return averageTime / counter;
-        }
-        return 0.0;
-    }
-
 }
