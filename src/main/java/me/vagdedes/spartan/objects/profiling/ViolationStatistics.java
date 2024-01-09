@@ -1,7 +1,8 @@
 package me.vagdedes.spartan.objects.profiling;
 
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
-import me.vagdedes.spartan.handlers.stability.TPS;
+import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.utils.java.math.WaveProbability;
@@ -10,7 +11,7 @@ import java.util.*;
 
 public class ViolationStatistics {
 
-    private static final Map<Integer, Map<PlayerProfile, Map<Integer, Integer>>> violationProbabilityPie = new LinkedHashMap<>();
+    private static final Map<Integer, Map<Integer, Integer>> violationProbabilityPie = new LinkedHashMap<>();
     private static final Map<Integer, Map<PlayerProfile, Double>> profileAverageProbability = new LinkedHashMap<>();
     private static final Map<Integer, Map<Double, Integer>> profileProbabilityWave = new LinkedHashMap<>();
     private static boolean running = false;
@@ -51,6 +52,15 @@ public class ViolationStatistics {
                 return new HashMap<>(0);
             }
         }
+    }
+
+    // Separator
+
+    private static int hash(PlayerViolation playerViolation) {
+        return Objects.hash(
+                playerViolation.getLevel(),
+                playerViolation.getSimilarityIdentity()
+        );
     }
 
     // Separator
@@ -121,33 +131,17 @@ public class ViolationStatistics {
                                     if (!violations.isEmpty()) {
                                         for (Collection<PlayerViolation> moment : violations) {
                                             for (PlayerViolation violation : moment) {
-                                                int hash = Objects.hash(
-                                                        violation.getLevel(),
-                                                        violation.getSimilarityIdentity()
-                                                );
-
                                                 if (violation.isDetectionEnabled()) {
-                                                    Map<PlayerProfile, Map<Integer, Integer>> map = violationProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>());
-                                                    map.computeIfAbsent(profile, k -> new LinkedHashMap<>()).merge(hash, 1, Integer::sum);
+                                                    violationProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(hash(violation), 1, Integer::sum);
                                                     totalViolations++;
                                                 } else {
-                                                    Map<PlayerProfile, Map<Integer, Integer>> map = violationProbabilityPie.get(majorHash);
+                                                    Map<Integer, Integer> map = violationProbabilityPie.get(majorHash);
 
                                                     if (map != null) {
-                                                        Map<Integer, Integer> map2 = map.get(profile);
-
-                                                        if (map2 != null) {
-                                                            map2.remove(hash);
-                                                        }
+                                                        map.remove(hash(violation));
                                                     }
                                                 }
                                             }
-                                        }
-                                    } else {
-                                        Map<PlayerProfile, Map<Integer, Integer>> map = violationProbabilityPie.get(majorHash);
-
-                                        if (map != null) {
-                                            map.remove(profile);
                                         }
                                     }
                                 }
@@ -158,6 +152,7 @@ public class ViolationStatistics {
                                         playerProfiles,
                                         hackType,
                                         dataType,
+                                        majorHash,
                                         totalViolations
                                 );
                             }
@@ -188,51 +183,43 @@ public class ViolationStatistics {
     private static void calculateProfileProbability(Collection<PlayerProfile> playerProfiles,
                                                     Enums.HackType hackType,
                                                     ResearchEngine.DataType dataType,
+                                                    int majorHash,
                                                     int totalViolations) {
+        profileAverageProbability.clear();
         profileProbabilityWave.clear();
-        int majorHash = Objects.hash(hackType, dataType);
-        Map<PlayerProfile, Map<Integer, Integer>> allData = violationProbabilityPie.get(majorHash);
+        Map<Integer, Integer> violationProbability = violationProbabilityPie.get(majorHash);
+        Map<Long, PlayerViolation> highestViolation = new LinkedHashMap<>();
 
-        if (allData != null) {
-            Map<Integer, Integer> onlyData = new LinkedHashMap<>();
+        for (PlayerProfile profile : playerProfiles) {
+            if (profile.getDataType() == dataType) {
+                Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
 
-            for (Map<Integer, Integer> map : allData.values()) {
-                for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-                    onlyData.merge(entry.getKey(), entry.getValue(), Integer::sum);
-                }
-            }
-            for (PlayerProfile profile : playerProfiles) {
-                if (profile.getDataType() == dataType) {
-                    Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
+                if (!violations.isEmpty()) {
+                    double probabilityTotal = 0.0;
+                    int probabilityCount = 0;
 
-                    if (!violations.isEmpty()) {
-                        double probabilityTotal = 0.0;
-                        int probabilityCount = 0;
+                    for (Collection<PlayerViolation> moment : violations) {
+                        for (PlayerViolation violation : moment) {
+                            if (violation.isDetectionEnabled()) {
+                                long time = AlgebraUtils.floorToNearest(violation.getTime(), (int)Check.violationCycleSeconds);
+                                PlayerViolation highest = highestViolation.get(time);
 
-                        for (Collection<PlayerViolation> moment : violations) {
-                            for (PlayerViolation violation : moment) {
-                                if (violation.isDetectionEnabled()) {
-                                    int hash = Objects.hash(
-                                            violation.getLevel(),
-                                            violation.getSimilarityIdentity()
-                                    );
-                                    probabilityTotal += onlyData.getOrDefault(hash, 0) / (double) totalViolations;
-                                    probabilityCount++;
+                                if (highest == null || violation.getLevel() > highest.getLevel()) {
+                                    highestViolation.put(time, violation);
                                 }
                             }
                         }
+                    }
 
-                        if (probabilityCount > 0) {
-                            double averageProbability = probabilityTotal / (double) probabilityCount;
-                            profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
-                            profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
-                        } else {
-                            Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
+                    for (PlayerViolation violation : highestViolation.values()) {
+                        probabilityTotal += violationProbability.getOrDefault(hash(violation), 0) / (double) totalViolations;
+                        probabilityCount++;
+                    }
 
-                            if (map != null) {
-                                map.remove(profile);
-                            }
-                        }
+                    if (probabilityCount > 0) {
+                        double averageProbability = probabilityTotal / (double) probabilityCount;
+                        profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
+                        profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
                     } else {
                         Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
 
@@ -240,23 +227,27 @@ public class ViolationStatistics {
                             map.remove(profile);
                         }
                     }
+                } else {
+                    Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
+
+                    if (map != null) {
+                        map.remove(profile);
+                    }
                 }
             }
-            judgeProbability(
-                    playerProfiles,
-                    hackType,
-                    dataType
-            );
-        } else {
-            profileAverageProbability.remove(majorHash);
-            profileProbabilityWave.remove(majorHash);
         }
+        judgeProbability(
+                playerProfiles,
+                hackType,
+                dataType,
+                majorHash
+        );
     }
 
     private static void judgeProbability(Collection<PlayerProfile> playerProfiles,
                                          Enums.HackType hackType,
-                                         ResearchEngine.DataType dataType) {
-        int majorHash = Objects.hash(hackType, dataType);
+                                         ResearchEngine.DataType dataType,
+                                         int majorHash) {
         Map<Double, Integer> probabilityData = profileProbabilityWave.get(majorHash);
 
         if (probabilityData != null) {
@@ -272,6 +263,9 @@ public class ViolationStatistics {
                 if (profile.getDataType() == dataType) {
                     Double probability = probabilityAverage.get(profile);
 
+                    if (probability != null) {
+                        AwarenessNotifications.forcefullySend(probability.toString());
+                    }
                     if (probability != null && probability <= 0.1) {
                         profile.historicalEvidence.add(hackType, "Probability: " + (wave.getPosition(probability) * 100.0) + "%");
                     } else {
