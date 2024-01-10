@@ -62,7 +62,7 @@ public class ResearchEngine {
     private static final long cacheTimeLimit = 60_000L * 4; // Despite being 4, realistically it is 5 minutes if extra calculations are accounted for
     public static final int
             cacheRefreshTicks = 1200,
-            schedulerRefreshTicks = cacheRefreshTicks * 10;
+            databaseRefreshTicks = cacheRefreshTicks * 10;
     private static int schedulerTicks = 0;
 
     private static boolean
@@ -130,11 +130,10 @@ public class ResearchEngine {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
                 if (schedulerTicks == 0) {
-                    schedulerTicks = schedulerRefreshTicks;
+                    schedulerTicks = databaseRefreshTicks;
 
                     SpartanBukkit.analysisThread.executeIfFreeElseHere(() -> {
                         skullsAndFightsRunnable.run();
-                        updateCache();
 
                         if (isDatabaseMode()) {
                             refresh(false, Register.isPluginEnabled());
@@ -497,7 +496,7 @@ public class ResearchEngine {
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.removeFromEvidence(hackType);
+                    playerProfile.removeFromAllEvidence(hackType);
                 }
             }
 
@@ -1158,10 +1157,6 @@ public class ResearchEngine {
     }
 
     private static void updateCache() {
-        if (!SpartanBukkit.isSynchronised()) {
-            updateComprehensionCache(); // Always First
-            updateCombatCache();
-        }
         String currentDate = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDateTime.now());
 
         // When day changes
@@ -1171,14 +1166,15 @@ public class ResearchEngine {
 
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
-                    for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {
-                        violationHistory.clearDays();
-                    }
                     for (MiningHistory miningHistory : playerProfile.getMiningHistory()) {
                         miningHistory.increaseDays();
                     }
                 }
             }
+        }
+        if (!SpartanBukkit.isSynchronised()) {
+            updateComprehensionCache(); // Always First
+            updateCombatCache();
         }
         MainMenu.refresh();
     }

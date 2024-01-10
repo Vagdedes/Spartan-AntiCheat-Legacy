@@ -504,7 +504,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Important Violations: ").append(violationHistory.getImportantViolations(false))
                         .append(newLine);
-                softwareInformation.append("Days of Data: ").append(violationHistory.getDays())
+                softwareInformation.append("Days of Data: ").append(violationHistory.getDates().size())
                         .append(newLine).append(newLine); // 1 line
 
                 // Separator

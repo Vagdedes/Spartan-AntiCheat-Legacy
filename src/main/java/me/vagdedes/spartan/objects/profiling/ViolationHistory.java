@@ -1,5 +1,6 @@
 package me.vagdedes.spartan.objects.profiling;
 
+import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.system.Enums;
@@ -12,7 +13,6 @@ public class ViolationHistory {
 
     private final ResearchEngine.DataType dataType;
     private final Enums.HackType hackType;
-    private int days;
 
     private final Map<Integer, List<PlayerViolation>> violationsMap;
     private final List<PlayerViolation> violationsList;
@@ -27,7 +27,6 @@ public class ViolationHistory {
         this.dataType = dataType;
         this.violationsMap = violationsData;
         this.violationsList = violationsMap;
-        this.days = days;
     }
 
     // Used for object initiation in the player-profile object
@@ -40,11 +39,6 @@ public class ViolationHistory {
     public void clear() {
         violationsMap.clear();
         violationsList.clear();
-        clearDays();
-    }
-
-    public void clearDays() {
-        days = -1;
     }
 
     public Enums.HackType getHackType() {
@@ -61,6 +55,7 @@ public class ViolationHistory {
     public void increaseViolations(PlayerViolation playerViolation) {
         int identity = playerViolation.divisionIdentity;
         List<PlayerViolation> list = violationsMap.get(identity);
+        AwarenessNotifications.forcefullySend(playerViolation.getDetection());
 
         if (list == null) {
             list = new CopyOnWriteArrayList<>();
@@ -120,23 +115,6 @@ public class ViolationHistory {
         return new LinkedHashMap<>(violationsMap);
     }
 
-    public Collection<Collection<PlayerViolation>> getTimeSortedViolations() {
-        int violationsSize = violationsMap.size();
-
-        if (violationsSize > 0) {
-            Map<Long, Collection<PlayerViolation>> map = new TreeMap<>();
-
-            for (List<PlayerViolation> violations : violationsMap.values()) {
-                for (PlayerViolation violation : violations) {
-                    map.computeIfAbsent(violation.getTime(), k -> new ArrayList<>()).add(violation);
-                }
-            }
-            return map.values();
-        } else {
-            return new ArrayList<>(0);
-        }
-    }
-
     // Separator
 
     public Set<String> getDates() {
@@ -151,9 +129,5 @@ public class ViolationHistory {
             return dates;
         }
         return new HashSet<>(0);
-    }
-
-    public int getDays() {
-        return days == -1 ? days = getDates().size() : days;
     }
 }

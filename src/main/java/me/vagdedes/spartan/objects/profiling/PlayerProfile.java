@@ -285,7 +285,11 @@ public class PlayerProfile {
         liveEvidence.remove(hackType);
     }
 
-    public void removeFromEvidence(Enums.HackType hackType) {
+    public void removeFromHistoricalEvidence(Enums.HackType hackType) {
+        historicalEvidence.remove(hackType);
+    }
+
+    public void removeFromAllEvidence(Enums.HackType hackType) {
         liveEvidence.remove(hackType);
         historicalEvidence.remove(hackType);
     }

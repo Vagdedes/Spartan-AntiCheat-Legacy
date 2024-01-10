@@ -127,20 +127,18 @@ public class ViolationStatistics {
 
                             for (PlayerProfile profile : playerProfiles) {
                                 if ((noStatistics || profile.shouldCalculateEvidence()) && profile.getDataType() == dataType) {
-                                    Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
+                                    Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getViolationsList();
 
                                     if (!violations.isEmpty()) {
-                                        for (Collection<PlayerViolation> moment : violations) {
-                                            for (PlayerViolation violation : moment) {
-                                                if (violation.isDetectionEnabled()) {
-                                                    violationProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(hash(violation), 1, Integer::sum);
-                                                    totalViolations++;
-                                                } else {
-                                                    Map<Integer, Integer> map = violationProbabilityPie.get(majorHash);
+                                        for (PlayerViolation violation : violations) {
+                                            if (violation.isDetectionEnabled()) {
+                                                violationProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(hash(violation), 1, Integer::sum);
+                                                totalViolations++;
+                                            } else {
+                                                Map<Integer, Integer> map = violationProbabilityPie.get(majorHash);
 
-                                                    if (map != null) {
-                                                        map.remove(hash(violation));
-                                                    }
+                                                if (map != null) {
+                                                    map.remove(hash(violation));
                                                 }
                                             }
                                         }
@@ -165,6 +163,9 @@ public class ViolationStatistics {
                                     if (profile.getDataType() == dataType) {
                                         profile.historicalEvidence.remove(hackType);
                                     }
+                                }
+                                if (totalViolations > 0) {
+                                    AwarenessNotifications.forcefullySend(hackType.toString() + dataType.toString() + totalViolations);
                                 }
                             }
                         } else {
@@ -205,28 +206,30 @@ public class ViolationStatistics {
 
         for (PlayerProfile profile : playerProfiles) {
             if (profile.getDataType() == dataType) {
-                Collection<Collection<PlayerViolation>> violations = profile.getViolationHistory(hackType).getTimeSortedViolations();
+                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getViolationsList();
                 double probabilityTotal = 0.0;
                 int probabilityCount = 0;
 
                 if (!violations.isEmpty()) {
-                    for (Collection<PlayerViolation> moment : violations) {
-                        for (PlayerViolation violation : moment) {
-                            if (violation.isDetectionEnabled()) {
-                                long time = AlgebraUtils.floorToNearest(violation.getTime(), (int) Check.violationCycleSeconds);
-                                PlayerViolation highest = highestViolation.get(time);
+                    for (PlayerViolation violation : violations) {
+                        if (violation.isDetectionEnabled()) {
+                            long time = AlgebraUtils.floorToNearest(violation.getTime(), (int) Check.violationCycleSeconds);
+                            PlayerViolation highest = highestViolation.get(time);
 
-                                if (highest == null || violation.getLevel() > highest.getLevel()) {
-                                    highestViolation.put(time, violation);
-                                }
+                            if (highest == null || violation.getLevel() > highest.getLevel()) {
+                                highestViolation.put(time, violation);
                             }
                         }
                     }
 
                     if (!highestViolation.isEmpty()) {
                         for (PlayerViolation violation : highestViolation.values()) {
-                            probabilityTotal += violationProbability.getOrDefault(hash(violation), 0) / (double) totalViolations;
-                            probabilityCount++;
+                            Integer count = violationProbability.get(hash(violation));
+
+                            if (count != null) {
+                                probabilityTotal += count / (double) totalViolations;
+                                probabilityCount++;
+                            }
                         }
 
                         if (probabilityCount > 0) {
@@ -290,7 +293,6 @@ public class ViolationStatistics {
             for (PlayerProfile profile : playerProfiles) {
                 if (profile.getDataType() == dataType) {
                     profile.historicalEvidence.remove(hackType);
-
                 }
             }
         }
