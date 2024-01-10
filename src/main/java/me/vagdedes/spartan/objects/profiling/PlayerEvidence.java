@@ -58,10 +58,14 @@ public class PlayerEvidence {
 
     public Collection<Enums.HackType> getKnowledgeList() {
         synchronized (this.live) {
-            Collection<Enums.HackType> set = new HashSet<>(live.keySet());
-            set.addAll(historical.keySet());
-            return set;
+            return getRawKnowledgeList();
         }
+    }
+
+    private Collection<Enums.HackType> getRawKnowledgeList() {
+        Collection<Enums.HackType> set = new HashSet<>(live.keySet());
+        set.addAll(historical.keySet());
+        return set;
     }
 
     // Separator
@@ -102,19 +106,21 @@ public class PlayerEvidence {
     // Separator
 
     public void judge() {
-        int count = this.getCount();
-        EvidenceType type = this.type;
+        synchronized (this.live) {
+            int count = this.getRawKnowledgeList().size();
+            EvidenceType type = this.type;
 
-        for (EvidenceType evidenceType : EvidenceType.values()) {
-            if (count >= evidenceType.count
-                    && this.type.count < evidenceType.count) {
-                type = evidenceType;
+            for (EvidenceType evidenceType : EvidenceType.values()) {
+                if (count >= evidenceType.count
+                        && this.type.count < evidenceType.count) {
+                    type = evidenceType;
 
-                if (evidenceType == EvidenceType.Hacker) {
-                    break;
+                    if (evidenceType == EvidenceType.Hacker) {
+                        break;
+                    }
                 }
             }
+            this.type = type;
         }
-        this.type = type;
     }
 }
