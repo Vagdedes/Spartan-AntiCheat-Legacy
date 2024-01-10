@@ -29,31 +29,33 @@ public class PlayerEvidence {
 
     // Object
 
-    private final Map<Enums.HackType, String> evidence;
+    private final Map<Enums.HackType, String> evidence, establishedEvidence;
     private EvidenceType type;
 
     PlayerEvidence() {
         this.type = EvidenceType.Legitimate;
         this.evidence = new LinkedHashMap<>(Enums.HackType.values().length);
+        this.establishedEvidence = new LinkedHashMap<>(Enums.HackType.values().length);
     }
 
     PlayerEvidence(PlayerEvidence evidence) {
         this.type = evidence.type;
         this.evidence = new LinkedHashMap<>(evidence.evidence);
+        this.establishedEvidence = new LinkedHashMap<>(evidence.establishedEvidence);
     }
 
     // Separator
 
     public Collection<Enums.HackType> getKnowledgeList() {
-        return new HashSet<>(evidence.keySet());
+        return new HashSet<>(establishedEvidence.keySet());
     }
 
     public Set<Map.Entry<Enums.HackType, String>> getKnowledgeEntry() {
-        return new HashSet<>(evidence.entrySet());
+        return new HashSet<>(establishedEvidence.entrySet());
     }
 
     public String getKnowledge(Enums.HackType hackType, String color) {
-        String knowledge = evidence.get(hackType);
+        String knowledge = establishedEvidence.get(hackType);
         return color == null || knowledge == null ? knowledge : addColor(knowledge, color);
     }
 
@@ -66,7 +68,7 @@ public class PlayerEvidence {
     // Separator
 
     public int getCount() {
-        return evidence.size();
+        return establishedEvidence.size();
     }
 
     public EvidenceType getType() {
@@ -76,15 +78,15 @@ public class PlayerEvidence {
     // Separator
 
     public boolean has() {
-        return !evidence.isEmpty();
+        return !establishedEvidence.isEmpty();
     }
 
-    Collection<Enums.HackType> has(EvidenceType type) {
-        return this.type == type ? evidence.keySet() : new ArrayList<>(0);
+    boolean has(EvidenceType type) {
+        return this.type == type;
     }
 
     public boolean has(Enums.HackType hackType) {
-        return evidence.containsKey(hackType);
+        return establishedEvidence.containsKey(hackType);
     }
 
     // Separator
@@ -103,6 +105,7 @@ public class PlayerEvidence {
 
     void clear() {
         evidence.clear();
+        establishedEvidence.clear();
         this.type = EvidenceType.Legitimate;
     }
 
@@ -128,5 +131,8 @@ public class PlayerEvidence {
                 }
             }
         }
+        this.establishedEvidence.clear();
+        this.establishedEvidence.putAll(this.evidence);
     }
+
 }

@@ -55,7 +55,6 @@ public class ViolationHistory {
     public void increaseViolations(PlayerViolation playerViolation) {
         int identity = playerViolation.divisionIdentity;
         List<PlayerViolation> list = violationsMap.get(identity);
-        AwarenessNotifications.forcefullySend(playerViolation.getDetection());
 
         if (list == null) {
             list = new CopyOnWriteArrayList<>();

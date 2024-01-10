@@ -79,7 +79,7 @@ public class BanManagement {
                         "primary key (id));");
 
                 try {
-                    ResultSet rs = Config.sql.query("SELECT * FROM " + table + " ORDER BY id DESC LIMIT " + ResearchEngine.maxCacheSize + ";");
+                    ResultSet rs = Config.sql.query("SELECT * FROM " + table + " ORDER BY id DESC LIMIT " + ResearchEngine.maxRows + ";");
 
                     if (rs != null) {
                         while (rs.next()) {

@@ -50,8 +50,8 @@ public class ResearchEngine {
             maxDataLength = 4096,
             logRequirement = Check.maxViolationsPerCycle,
             profileRequirement = logRequirement / 10,
-            maxCacheSize = Cache.enoughRAM ? 102_400 : 20_480,
-            maxCacheSizeInBytes = maxCacheSize * 1024;
+            maxRows = Cache.enoughRAM ? 100_000 : 20_000,
+            maxBytes = maxRows * maxDataLength;
 
     public static final double downloadedVersion = Double.parseDouble(API.getVersion().substring(6));
     private static final double minimumAverageMining = 16.0;
@@ -657,7 +657,7 @@ public class ResearchEngine {
                             cache.put(key, information);
                             byteSize += key.length() + information.length();
 
-                            if (byteSize >= maxCacheSizeInBytes) {
+                            if (byteSize >= maxBytes) {
                                 isFull = true;
                                 break;
                             } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
@@ -676,7 +676,7 @@ public class ResearchEngine {
         if (Config.sql.isEnabled()) {
             if (!isFull) {
                 try {
-                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + maxCacheSize + ";");
+                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + maxRows + ";");
 
                     if (rs != null) {
                         while (rs.next()) {
@@ -688,7 +688,7 @@ public class ResearchEngine {
                                 cache.put(date, data);
                                 byteSize += date.length() + data.length();
 
-                                if (byteSize >= maxCacheSizeInBytes) {
+                                if (byteSize >= maxBytes) {
                                     isFull = true;
                                     break;
                                 } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
@@ -732,7 +732,7 @@ public class ResearchEngine {
                             cache.put(key, data);
                             byteSize += key.length() + data.length();
 
-                            if (byteSize >= maxCacheSizeInBytes) {
+                            if (byteSize >= maxBytes) {
                                 isFull = true;
                                 break;
                             } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {

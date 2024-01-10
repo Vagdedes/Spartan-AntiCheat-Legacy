@@ -126,7 +126,7 @@ public class ViolationStatistics {
                             int totalViolations = 0;
 
                             for (PlayerProfile profile : playerProfiles) {
-                                if ((noStatistics || profile.shouldCalculateEvidence()) && profile.getDataType() == dataType) {
+                                if ((noStatistics || profile.wasRecentlyOnline()) && profile.getDataType() == dataType) {
                                     Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getViolationsList();
 
                                     if (!violations.isEmpty()) {
@@ -164,9 +164,7 @@ public class ViolationStatistics {
                                         profile.historicalEvidence.remove(hackType);
                                     }
                                 }
-                                if (totalViolations > 0) {
-                                    AwarenessNotifications.forcefullySend(hackType.toString() + dataType.toString() + totalViolations);
-                                }
+                                AwarenessNotifications.forcefullySend(hackType.toString() + " " + dataType.toString() + " " + totalViolations);
                             }
                         } else {
                             violationProbabilityPie.remove(majorHash);

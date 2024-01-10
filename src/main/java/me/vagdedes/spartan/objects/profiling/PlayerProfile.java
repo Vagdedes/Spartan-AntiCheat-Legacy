@@ -300,9 +300,9 @@ public class PlayerProfile {
 
     private PlayerEvidence getEvidence(boolean quick) {
         if (quick) {
-            if (!historicalEvidence.has(PlayerEvidence.EvidenceType.Hacker).isEmpty()) {
+            if (historicalEvidence.has(PlayerEvidence.EvidenceType.Hacker)) {
                 return historicalEvidence;
-            } else if (!liveEvidence.has(PlayerEvidence.EvidenceType.Hacker).isEmpty()) {
+            } else if (liveEvidence.has(PlayerEvidence.EvidenceType.Hacker)) {
                 return liveEvidence;
             }
         }
@@ -325,10 +325,6 @@ public class PlayerProfile {
         } else {
             return liveEvidence;
         }
-    }
-
-    boolean shouldCalculateEvidence() {
-        return (staff || wasRecentlyOnline()) && getUsefulLogs() > 0;
     }
 
     // Separator
@@ -354,23 +350,25 @@ public class PlayerProfile {
     // Separator
 
     public boolean isLegitimate() {
-        return getEvidence(true).has(PlayerEvidence.EvidenceType.Legitimate).isEmpty();
+        return getEvidence(true).has(PlayerEvidence.EvidenceType.Legitimate);
     }
 
     public boolean isHacker() {
-        return !getEvidence(true).has(PlayerEvidence.EvidenceType.Hacker).isEmpty();
+        return getEvidence(true).has(PlayerEvidence.EvidenceType.Hacker);
     }
 
     public boolean isSuspected() {
-        return !getEvidence(true).has(PlayerEvidence.EvidenceType.Suspected).isEmpty();
+        return getEvidence(true).has(PlayerEvidence.EvidenceType.Suspected);
     }
 
     public boolean isSuspected(Enums.HackType[] hackTypes) {
-        Collection<Enums.HackType> evidence = getEvidence().has(PlayerEvidence.EvidenceType.Suspected);
+        PlayerEvidence evidence = getEvidence();
 
-        if (!evidence.isEmpty()) {
+        if (evidence.has(PlayerEvidence.EvidenceType.Suspected)) {
+            Collection<Enums.HackType> list = evidence.getKnowledgeList();
+
             for (Enums.HackType hackType : hackTypes) {
-                if (evidence.contains(hackType)) {
+                if (list.contains(hackType)) {
                     return true;
                 }
             }
@@ -379,8 +377,8 @@ public class PlayerProfile {
     }
 
     public boolean isSuspected(Enums.HackType hackType) {
-        return historicalEvidence.has(PlayerEvidence.EvidenceType.Suspected).contains(hackType)
-                || liveEvidence.has(PlayerEvidence.EvidenceType.Suspected).contains(hackType);
+        return historicalEvidence.has(PlayerEvidence.EvidenceType.Suspected) && historicalEvidence.getKnowledgeList().contains(hackType)
+                || liveEvidence.has(PlayerEvidence.EvidenceType.Suspected) && liveEvidence.getKnowledgeList().contains(hackType);
     }
 
     public boolean isSuspectedOrHacker() {
