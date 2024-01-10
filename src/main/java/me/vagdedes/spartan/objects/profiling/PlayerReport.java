@@ -27,7 +27,7 @@ public class PlayerReport {
         for (Enums.HackType hackType : Enums.HackType.values()) {
             if (reasonModified.contains(hackType.toString().toLowerCase())
                     || reasonModified.contains(hackType.getCheck().getName().toLowerCase())
-                    || hasProfile && playerProfile.isSuspectedOrHacker() && playerProfile.getEvidence().has(hackType)) {
+                    || hasProfile && playerProfile.getEvidence().has(hackType)) {
                 relations.add(hackType);
             }
         }

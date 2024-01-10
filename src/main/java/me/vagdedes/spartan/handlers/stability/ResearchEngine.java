@@ -530,7 +530,6 @@ public class ResearchEngine {
 
             // Separator
             MainMenu.refresh();
-            ViolationStatistics.remove(hackType);
         });
     }
 
@@ -556,7 +555,6 @@ public class ResearchEngine {
                             // Wait here until the caching is finished
                         }
                         playerProfiles.remove(playerName);
-                        ViolationStatistics.remove(playerProfile);
 
                         if (foundPlayer) {
                             PlayerProfile newPlayerProfile = getPlayerProfile(p);
@@ -587,7 +585,6 @@ public class ResearchEngine {
                     });
                 } else {
                     playerProfiles.remove(playerName);
-                    ViolationStatistics.remove(playerProfile);
                     SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
 
                     if (p != null) {
@@ -1194,7 +1191,7 @@ public class ResearchEngine {
             ViolationStatistics.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                playerProfile.judgeHistoricalEvidence();
+                playerProfile.getEvidence().judge();
                 PunishmentHistory punishmentHistory = playerProfile.getPunishmentHistory();
 
                 for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {

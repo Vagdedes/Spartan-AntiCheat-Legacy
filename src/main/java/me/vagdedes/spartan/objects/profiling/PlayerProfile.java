@@ -18,8 +18,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
 public class PlayerProfile {
@@ -29,8 +27,7 @@ public class PlayerProfile {
     private final ViolationHistory[] violationHistory;
     private final MiningHistory[] miningHistory;
     private final PunishmentHistory punishmentHistory;
-    private final PlayerEvidence liveEvidence;
-    final PlayerEvidence historicalEvidence;
+    private final PlayerEvidence evidence;
     private boolean
             bedrockPlayer,
             bedrockPlayerCheck,
@@ -52,8 +49,7 @@ public class PlayerProfile {
         this.name = name;
         this.punishmentHistory = new PunishmentHistory();
         this.playerCombat = new PlayerCombat(isNull ? "" : name);
-        this.liveEvidence = new PlayerEvidence();
-        this.historicalEvidence = new PlayerEvidence();
+        this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
 
@@ -98,8 +94,7 @@ public class PlayerProfile {
         this.offlinePlayer = player.getPlayer(); // Attention
         this.punishmentHistory = new PunishmentHistory();
         this.playerCombat = new PlayerCombat(name);
-        this.liveEvidence = new PlayerEvidence();
-        this.historicalEvidence = new PlayerEvidence();
+        this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
         this.bedrockPlayer = player.isBedrockPlayer(); // Attention
@@ -250,81 +245,60 @@ public class PlayerProfile {
 
     // Separator
 
-    public void judgeHistoricalEvidence() {
-        historicalEvidence.judge(liveEvidence);
-    }
-
     public boolean calculateLiveEvidence(SpartanPlayer player, Enums.HackType hackType, ResearchEngine.DataType dataType) {
-        if (historicalEvidence.has(hackType) || liveEvidence.has(hackType)) {
-            return true;
-        }
+        synchronized (evidence.live) {
+            if (evidence.live.containsKey(hackType) || evidence.historical.containsKey(hackType)) {
+                return true;
+            }
+            Check check = hackType.getCheck();
 
-        if (hackType != Enums.HackType.XRay) {
-            int violationCount = player.getViolations(hackType).getLevel() - hackType.getCheck().getCancelViolation();
+            if (check.supportsLiveEvidence()) {
+                int violationCount = player.getViolations(hackType).getLevel() - check.getCancelViolation();
 
-            if (violationCount > 0) {
-                violationCount += punishmentHistory.getReportCount(hackType, 0);
-                double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, dataType))),
-                        thresholdSurpassing = violationRatio / Check.analysisMultiplier;
+                if (violationCount > 0) {
+                    violationCount += punishmentHistory.getReportCount(hackType, 0);
+                    double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, dataType))),
+                            thresholdSurpassing = violationRatio / Check.analysisMultiplier;
 
-                if (thresholdSurpassing >= 1.0) {
-                    liveEvidence.add(hackType,
-                            "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
-                    );
-                    liveEvidence.judge(historicalEvidence);
-                    SpartanMenu.playerInfo.refresh(player.getName());
-                    MainMenu.refresh();
-                    return true;
+                    if (thresholdSurpassing >= 1.0) {
+                        evidence.live.put(hackType,
+                                "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
+                        );
+                        evidence.judge();
+                        SpartanMenu.playerInfo.refresh(player.getName());
+                        MainMenu.refresh();
+                        return true;
+                    }
                 }
             }
+            return false;
         }
-        return false;
     }
 
     public void removeFromLiveEvidence(Enums.HackType hackType) {
-        liveEvidence.remove(hackType);
+        synchronized (evidence.live) {
+            evidence.live.remove(hackType);
+            evidence.judge();
+        }
     }
 
     public void removeFromHistoricalEvidence(Enums.HackType hackType) {
-        historicalEvidence.remove(hackType);
+        synchronized (evidence.live) {
+            evidence.historical.remove(hackType);
+            evidence.judge();
+        }
     }
 
     public void removeFromAllEvidence(Enums.HackType hackType) {
-        liveEvidence.remove(hackType);
-        historicalEvidence.remove(hackType);
+        synchronized (evidence.live) {
+            evidence.live.remove(hackType);
+            evidence.historical.remove(hackType);
+            evidence.judge();
+        }
     }
 
     public PlayerEvidence getEvidence() {
-        return getEvidence(false);
-    }
-
-    private PlayerEvidence getEvidence(boolean quick) {
-        if (quick) {
-            if (historicalEvidence.has(PlayerEvidence.EvidenceType.Hacker)) {
-                return historicalEvidence;
-            } else if (liveEvidence.has(PlayerEvidence.EvidenceType.Hacker)) {
-                return liveEvidence;
-            }
-        }
-        if (historicalEvidence.has()) {
-            PlayerEvidence evidence = new PlayerEvidence(historicalEvidence);
-
-            if (liveEvidence.has()) {
-                boolean judge = false;
-
-                for (Map.Entry<Enums.HackType, String> entry : liveEvidence.getKnowledgeEntry()) {
-                    if (evidence.addIfAbsent(entry.getKey(), entry.getValue())) {
-                        judge = true;
-                    }
-                }
-                if (judge) {
-                    evidence.judge(null);
-                }
-            }
-            return evidence;
-        } else {
-            return liveEvidence;
-        }
+        return evidence;
     }
 
     // Separator
@@ -350,35 +324,37 @@ public class PlayerProfile {
     // Separator
 
     public boolean isLegitimate() {
-        return getEvidence(true).has(PlayerEvidence.EvidenceType.Legitimate);
+        return getEvidence().has(PlayerEvidence.EvidenceType.Legitimate);
     }
 
     public boolean isHacker() {
-        return getEvidence(true).has(PlayerEvidence.EvidenceType.Hacker);
+        return getEvidence().has(PlayerEvidence.EvidenceType.Hacker);
     }
 
     public boolean isSuspected() {
-        return getEvidence(true).has(PlayerEvidence.EvidenceType.Suspected);
+        return getEvidence().has(PlayerEvidence.EvidenceType.Suspected);
     }
 
     public boolean isSuspected(Enums.HackType[] hackTypes) {
-        PlayerEvidence evidence = getEvidence();
-
-        if (evidence.has(PlayerEvidence.EvidenceType.Suspected)) {
-            Collection<Enums.HackType> list = evidence.getKnowledgeList();
-
-            for (Enums.HackType hackType : hackTypes) {
-                if (list.contains(hackType)) {
-                    return true;
+        synchronized (evidence.live) {
+            if (evidence.has(PlayerEvidence.EvidenceType.Suspected)) {
+                for (Enums.HackType hackType : hackTypes) {
+                    if (evidence.live.containsKey(hackType)
+                            || evidence.historical.containsKey(hackType)) {
+                        return true;
+                    }
                 }
             }
+            return false;
         }
-        return false;
     }
 
     public boolean isSuspected(Enums.HackType hackType) {
-        return historicalEvidence.has(PlayerEvidence.EvidenceType.Suspected) && historicalEvidence.getKnowledgeList().contains(hackType)
-                || liveEvidence.has(PlayerEvidence.EvidenceType.Suspected) && liveEvidence.getKnowledgeList().contains(hackType);
+        synchronized (evidence.live) {
+            return evidence.has(PlayerEvidence.EvidenceType.Suspected)
+                    && (evidence.live.containsKey(hackType)
+                    || evidence.historical.containsKey(hackType));
+        }
     }
 
     public boolean isSuspectedOrHacker() {

@@ -1,6 +1,5 @@
 package me.vagdedes.spartan.objects.profiling;
 
-import me.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.handlers.stability.CancelViolation;
 import me.vagdedes.spartan.handlers.stability.ResearchEngine;
 import me.vagdedes.spartan.system.Enums;

@@ -171,7 +171,7 @@ public class PlayerInfo extends InventoryMenu {
             if (hackType.getCheck().getCheckType() == checkType) {
                 violations = isOnline ? player.getViolations(hackType).getLevel() : 0;
                 boolean hasViolations = violations > 0,
-                        hasData = playerProfile.isSuspectedOrHacker() && playerProfile.getEvidence().has(hackType);
+                        hasData = playerProfile.getEvidence().has(hackType);
 
                 String state = getDetectionState(player, hackType, dataType, cancellableCompatibility, delayNumber, isOnline,
                         tpsDropping, latencyLag, notChecked, detectionsNotAvailable, !SpartanEdition.supportsCheck(dataType, hackType),
@@ -203,7 +203,7 @@ public class PlayerInfo extends InventoryMenu {
                 new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(violations, 64), (short) 14) :
                 new ItemStack(Material.QUARTZ_BLOCK);
         boolean hasViolations = violations > 0,
-                hasData = playerProfile.isSuspectedOrHacker() && playerProfile.getEvidence().has(hackType);
+                hasData = playerProfile.getEvidence().has(hackType);
         ResearchEngine.DataType dataType = isOnline ? player.getDataType() : playerProfile.getDataType();
         String state = getDetectionState(player,
                 hackType,

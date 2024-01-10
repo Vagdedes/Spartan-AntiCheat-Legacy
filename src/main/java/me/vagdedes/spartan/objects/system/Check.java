@@ -71,12 +71,12 @@ public class Check {
 
     // Separator
 
-    public static boolean hasPunishCapabilities(Enums.HackType hackType) {
-        return hackType != Enums.HackType.XRay;
-    }
-
     private static boolean canPunishByDefault(Enums.HackType hackType) {
         return hackType != Enums.HackType.GhostHand;
+    }
+
+    private static boolean supportsLiveEvidence(Enums.HackType hackType) {
+        return hackType != Enums.HackType.XRay;
     }
 
     // Separator
@@ -125,6 +125,7 @@ public class Check {
     private final boolean[] enabled;
     private final boolean
             canPunish, canPunishByDefault,
+            supportsLiveEvidence,
             canBeSilent,
             canBeAsync;
     private final String[]
@@ -451,11 +452,13 @@ public class Check {
                                         Boolean.parseBoolean(optionValue.toString().toLowerCase());
             }
         }
+        this.supportsLiveEvidence = supportsLiveEvidence(hackType);
 
-        if (hasPunishCapabilities(hackType)) {
+        if (this.supportsLiveEvidence) {
+            this.canPunishByDefault = canPunishByDefault(hackType);
+
             if (legacy) {
                 this.commands = new String[]{};
-                this.canPunishByDefault = canPunishByDefault(hackType);
                 ConfigurationSection section = Register.plugin.getConfig().getConfigurationSection(hackType + ".punishments");
                 this.canPunish = section != null && !section.getKeys(false).isEmpty();
 
@@ -476,7 +479,6 @@ public class Check {
                     }
                 }
             } else {
-                this.canPunishByDefault = canPunishByDefault(hackType);
                 File file = Config.settings.getFile();
                 String[] commandsAfterException = new String[]{};
 
@@ -1161,6 +1163,10 @@ public class Check {
 
     public boolean canPunishByDefault() {
         return canPunishByDefault;
+    }
+
+    public boolean supportsLiveEvidence() {
+        return supportsLiveEvidence;
     }
 
     public boolean canPunish() {

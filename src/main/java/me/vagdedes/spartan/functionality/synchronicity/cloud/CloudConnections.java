@@ -471,8 +471,8 @@ public class CloudConnections {
             String checkName = check.getName();
 
             if (check.toString().equals(columnInformation) || checkName.equalsIgnoreCase(columnInformation)) {
-                if (!local && !Check.hasPunishCapabilities(hackType)) {
-                    return "This check cannot punish players, therefore we cannot accept a report about it";
+                if (!local && !check.supportsLiveEvidence()) {
+                    return "This check does not support live evidence, therefore we cannot accept a report about it";
                 }
                 ViolationHistory violationHistory = ResearchEngine.getViolationHistory(hackType, ResearchEngine.DataType.Universal, ResearchEngine.getLegitimatePlayers());
 

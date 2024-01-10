@@ -194,7 +194,7 @@ public class Moderation {
             }
 
             // Cross-Server & Console Notifications
-            boolean cannotPunish = !Check.hasPunishCapabilities(hackType),
+            boolean cannotPunish = !check.supportsLiveEvidence(),
                     consoleLog = !falsePositive && level >= cancelViolation,
                     important = hacker
                             || cannotPunish

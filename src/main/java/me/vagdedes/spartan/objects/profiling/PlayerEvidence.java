@@ -29,47 +29,16 @@ public class PlayerEvidence {
 
     // Object
 
-    private final Map<Enums.HackType, String> evidence, establishedEvidence;
     private EvidenceType type;
+    final Map<Enums.HackType, String> live, historical;
 
     PlayerEvidence() {
         this.type = EvidenceType.Legitimate;
-        this.evidence = new LinkedHashMap<>(Enums.HackType.values().length);
-        this.establishedEvidence = new LinkedHashMap<>(Enums.HackType.values().length);
-    }
-
-    PlayerEvidence(PlayerEvidence evidence) {
-        this.type = evidence.type;
-        this.evidence = new LinkedHashMap<>(evidence.evidence);
-        this.establishedEvidence = new LinkedHashMap<>(evidence.establishedEvidence);
+        this.live = Collections.synchronizedMap(new LinkedHashMap<>(Enums.HackType.values().length));
+        this.historical = new LinkedHashMap<>(Enums.HackType.values().length);
     }
 
     // Separator
-
-    public Collection<Enums.HackType> getKnowledgeList() {
-        return new HashSet<>(establishedEvidence.keySet());
-    }
-
-    public Set<Map.Entry<Enums.HackType, String>> getKnowledgeEntry() {
-        return new HashSet<>(establishedEvidence.entrySet());
-    }
-
-    public String getKnowledge(Enums.HackType hackType, String color) {
-        String knowledge = establishedEvidence.get(hackType);
-        return color == null || knowledge == null ? knowledge : addColor(knowledge, color);
-    }
-
-    // Separator
-
-    public String addColor(String knowledge, String color) {
-        return knowledge.replace("§r", "§r" + color);
-    }
-
-    // Separator
-
-    public int getCount() {
-        return establishedEvidence.size();
-    }
 
     public EvidenceType getType() {
         return type;
@@ -77,62 +46,75 @@ public class PlayerEvidence {
 
     // Separator
 
-    public boolean has() {
-        return !establishedEvidence.isEmpty();
+    void clear() {
+        synchronized (this.live) {
+            this.live.clear();
+            this.historical.clear();
+            this.type = EvidenceType.Legitimate;
+        }
     }
+
+    // Separator
+
+    public Collection<Enums.HackType> getKnowledgeList() {
+        synchronized (this.live) {
+            Collection<Enums.HackType> set = new HashSet<>(live.keySet());
+            set.addAll(historical.keySet());
+            return set;
+        }
+    }
+
+    // Separator
+
+    public String getKnowledge(Enums.HackType hackType, String color) {
+        synchronized (this.live) {
+            String knowledge = historical.get(hackType);
+
+            if (knowledge == null) {
+                knowledge = live.get(hackType);
+            }
+            return knowledge == null ? knowledge : addColor(knowledge, color);
+        }
+    }
+
+    private String addColor(String knowledge, String color) {
+        return knowledge.replace("§r", "§r" + color);
+    }
+
+    // Separator
+
+    public int getCount() {
+        return this.getKnowledgeList().size();
+    }
+
+    // Separator
 
     boolean has(EvidenceType type) {
         return this.type == type;
     }
 
     public boolean has(Enums.HackType hackType) {
-        return establishedEvidence.containsKey(hackType);
+        synchronized (this.live) {
+            return live.containsKey(hackType) || historical.containsKey(hackType);
+        }
     }
 
     // Separator
 
-    void add(Enums.HackType hackType, String reason) {
-        this.evidence.put(hackType, reason);
-    }
-
-    boolean addIfAbsent(Enums.HackType hackType, String reason) {
-        return this.evidence.putIfAbsent(hackType, reason) == null;
-    }
-
-    public void remove(Enums.HackType hackType) {
-        this.evidence.remove(hackType);
-    }
-
-    void clear() {
-        evidence.clear();
-        establishedEvidence.clear();
-        this.type = EvidenceType.Legitimate;
-    }
-
-    void judge(PlayerEvidence evidence) {
-        int count = this.evidence.size();
-
-        if (evidence != null && evidence.has()) {
-            for (Enums.HackType hackType : evidence.getKnowledgeList()) {
-                if (!this.has(hackType)) {
-                    count++;
-                }
-            }
-        }
-        this.type = EvidenceType.Legitimate;
+    public void judge() {
+        int count = this.getCount();
+        EvidenceType type = this.type;
 
         for (EvidenceType evidenceType : EvidenceType.values()) {
             if (count >= evidenceType.count
                     && this.type.count < evidenceType.count) {
-                this.type = evidenceType;
+                type = evidenceType;
 
                 if (evidenceType == EvidenceType.Hacker) {
                     break;
                 }
             }
         }
-        this.establishedEvidence.clear();
-        this.establishedEvidence.putAll(this.evidence);
+        this.type = type;
     }
-
 }
