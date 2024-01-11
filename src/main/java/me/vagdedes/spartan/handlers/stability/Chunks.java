@@ -59,24 +59,15 @@ public class Chunks {
     // Separator
 
     public static boolean isLoaded(World world, int x, int z) {
-        CopyOnWriteArrayList<Integer> list = loadedChunks.get(world);
-        boolean isNull = list == null;
+        CopyOnWriteArrayList<Integer> list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
         int hash = chunkIdentifier(x, z);
 
-        if (isNull) {
-            if (!looping) {
-                list = new CopyOnWriteArrayList<>();
-                loadedChunks.put(world, list);
-                isNull = false;
-            }
-        } else if (list.contains(hash)) {
+        if (list.contains(hash)) {
             return true;
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             if (chunk.getX() == x && chunk.getZ() == z) {
-                if (!isNull) {
-                    list.add(hash);
-                }
+                list.addIfAbsent(hash);
                 return true;
             }
         }
@@ -86,20 +77,16 @@ public class Chunks {
     // Separator
 
     public static void load(World world, Chunk chunk) {
-        run(() -> {
-            List<Integer> list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
-            list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
-        }, world, chunk);
+        CopyOnWriteArrayList<Integer> list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
+        list.addIfAbsent(chunkIdentifier(chunk.getX(), chunk.getZ()));
     }
 
     public static void unload(World world, Chunk chunk) {
-        run(() -> {
-            List<Integer> list = loadedChunks.get(world);
+        List<Integer> list = loadedChunks.get(world);
 
-            if (list != null) {
-                list.remove((Object) chunkIdentifier(chunk.getX(), chunk.getZ()));
-            }
-        }, world, chunk);
+        if (list != null) {
+            list.remove((Object) chunkIdentifier(chunk.getX(), chunk.getZ()));
+        }
     }
 
     public static void unload(World world) {
@@ -107,16 +94,6 @@ public class Chunks {
 
         if (looping) {
             SpartanBukkit.chunkThread.execute(() -> SpartanBukkit.transferTask(runnable));
-        } else {
-            runnable.run();
-        }
-    }
-
-    // Separator
-
-    private static void run(Runnable runnable, World world, Chunk chunk) {
-        if (looping) {
-            SpartanBukkit.chunkThread.execute(() -> SpartanBukkit.transferTask(world, chunk.getX(), chunk.getZ(), runnable));
         } else {
             runnable.run();
         }
