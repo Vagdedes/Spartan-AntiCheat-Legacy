@@ -50,6 +50,7 @@ public class SpartanBukkit {
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
             storageThread = new Threads.ThreadPool(5L),
             playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(2L),
+            chunkThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L),
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
 
     public static final int hashCodeMultiplier = 31;
@@ -159,11 +160,19 @@ public class SpartanBukkit {
     }
 
     public static void runTask(SpartanPlayer player, Runnable runnable) {
-        SpartanScheduler.run(player, runnable);
+        SpartanScheduler.run(player, runnable, false);
     }
 
-    public static void runTask(SpartanPlayer player, World world, int x, int z, Runnable runnable) {
-        SpartanScheduler.run(player, world, x, z, runnable);
+    public static void runTask(World world, int x, int z, Runnable runnable) {
+        SpartanScheduler.run(world, x, z, runnable, false);
+    }
+
+    public static void transferTask(SpartanPlayer player, Runnable runnable) {
+        SpartanScheduler.run(player, runnable, true);
+    }
+
+    public static void transferTask(World world, int x, int z, Runnable runnable) {
+        SpartanScheduler.run(world, x, z, runnable, true);
     }
 
     public static void transferTask(Runnable runnable) {

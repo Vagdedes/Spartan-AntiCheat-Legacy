@@ -19,23 +19,32 @@ public class Threads {
     public static class ThreadPool {
 
         private final List<Runnable> runnables;
+        private boolean pause;
 
         public ThreadPool(long refreshRateInMilliseconds) {
+            pause = false;
             runnables = Collections.synchronizedList(new LinkedList<>());
             new Thread(() -> {
                 while (enabled) {
-                    Runnable runnable;
-
-                    synchronized (runnables) {
-                        runnable = runnables.isEmpty() ? null : runnables.remove(0);
-                    }
-
-                    if (runnable != null) {
-                        runnable.run();
-                    } else {
+                    if (pause) {
                         try {
                             Thread.sleep(refreshRateInMilliseconds);
                         } catch (Exception ignored) {
+                        }
+                    } else {
+                        Runnable runnable;
+
+                        synchronized (runnables) {
+                            runnable = runnables.isEmpty() ? null : runnables.remove(0);
+                        }
+
+                        if (runnable != null) {
+                            runnable.run();
+                        } else {
+                            try {
+                                Thread.sleep(refreshRateInMilliseconds);
+                            } catch (Exception ignored) {
+                            }
                         }
                     }
                 }
@@ -66,5 +75,16 @@ public class Threads {
             }
         }
 
+        public boolean pause() {
+            boolean pause = this.pause;
+            this.pause = true;
+            return !pause;
+        }
+
+        public boolean resume() {
+            boolean pause = this.pause;
+            this.pause = false;
+            return pause;
+        }
     }
 }

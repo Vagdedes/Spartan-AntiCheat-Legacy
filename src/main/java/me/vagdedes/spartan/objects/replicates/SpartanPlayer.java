@@ -1096,7 +1096,6 @@ public class SpartanPlayer {
 
             if (MultiVersion.folia) {
                 SpartanBukkit.runTask(
-                        this,
                         eventFrom.getWorld(),
                         eventFrom.getBlockX() >> 4,
                         eventFrom.getBlockZ() >> 4,

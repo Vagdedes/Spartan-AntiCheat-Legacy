@@ -6,6 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 
 public class EventsHandler_non_folia implements Listener {
 
@@ -17,5 +18,10 @@ public class EventsHandler_non_folia implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void ChunkUnload(ChunkUnloadEvent e) {
         Chunks.unload(e.getWorld(), e.getChunk());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void WorldUnload(WorldUnloadEvent e) {
+        Chunks.unload(e.getWorld());
     }
 }

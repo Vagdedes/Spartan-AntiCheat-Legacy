@@ -10,7 +10,6 @@ import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.data.*;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
@@ -66,7 +65,6 @@ public class MorePackets extends CheckExecutor {
 
             if (horizontal == null
                     || vertical == null) {
-                player.debug(false, false, -2);
                 return false;
             }
             Timer timer = player.getTimer(hackType);
@@ -86,7 +84,6 @@ public class MorePackets extends CheckExecutor {
                 timer.remove(dataKey);
                 cooldowns.remove(new String[]{dataKey, refreshLocationKey});
                 decimals.remove(new String[]{horizontalKey, verticalKey, lastTickKey});
-                player.debug(false, false, -1);
                 return false;
             }
             boolean bedrockPlayer = player.isBedrockPlayer(),

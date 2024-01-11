@@ -18,9 +18,13 @@ class SpartanScheduler {
         }
     }
 
-    static void run(SpartanPlayer player, Runnable runnable) {
+    static void run(SpartanPlayer player, Runnable runnable, boolean sync) {
         if (!MultiVersion.folia) {
-            runnable.run();
+            if (sync && !Bukkit.isPrimaryThread()) {
+                Bukkit.getScheduler().runTask(Register.plugin, runnable);
+            } else {
+                runnable.run();
+            }
         } else {
             if (player != null) {
                 SpartanLocation location = player.getLocation();
@@ -34,18 +38,18 @@ class SpartanScheduler {
         }
     }
 
-    static void run(SpartanPlayer player, World world, int x, int z, Runnable runnable) {
+    static void run(World world, int x, int z, Runnable runnable, boolean sync) {
         if (!MultiVersion.folia) {
-            runnable.run();
-        } else {
-            if (player != null) {
-                Bukkit.getRegionScheduler()
-                        .execute(Register.plugin,
-                                world, x, z,
-                                runnable);
+            if (sync && !Bukkit.isPrimaryThread()) {
+                Bukkit.getScheduler().runTask(Register.plugin, runnable);
             } else {
                 runnable.run();
             }
+        } else {
+            Bukkit.getRegionScheduler()
+                    .execute(Register.plugin,
+                            world, x, z,
+                            runnable);
         }
     }
 

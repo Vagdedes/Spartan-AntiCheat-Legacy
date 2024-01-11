@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,21 +14,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Chunks {
 
-    private static final Map<World, List<Integer>> loadedChunks = new ConcurrentHashMap<>();
+    private static final Map<World, CopyOnWriteArrayList<Integer>> loadedChunks = MultiVersion.folia ? null : new ConcurrentHashMap<>();
     private static boolean looping = false;
 
     public static void reload(boolean enabledPlugin) {
-        if (!MultiVersion.folia) {
-            loadedChunks.clear();
+        if (enabledPlugin && !MultiVersion.folia && !looping) {
+            looping = true;
+            SpartanBukkit.chunkThread.pause();
+            Map<World, CopyOnWriteArrayList<Integer>> map = new LinkedHashMap<>();
 
-            if (enabledPlugin) {
-                looping = true;
+            for (World world : Bukkit.getWorlds()) {
+                CopyOnWriteArrayList<Integer> list = new CopyOnWriteArrayList<>();
 
-                for (World world : Bukkit.getWorlds()) {
-                    load(world);
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
                 }
-                looping = false;
+                map.put(world, list);
             }
+            loadedChunks.clear();
+            loadedChunks.putAll(map);
+            looping = false;
+            SpartanBukkit.chunkThread.resume();
         }
     }
 
@@ -49,30 +56,27 @@ public class Chunks {
         return (SpartanBukkit.hashCodeMultiplier * x) + z;
     }
 
-    private static void add(List<Integer> list, boolean isNull, World world, int hash) {
-        if (isNull) {
-            list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
-        }
-        if (looping) {
-            ((CopyOnWriteArrayList<Integer>) list).addIfAbsent(hash);
-        } else {
-            list.add(hash);
-        }
-    }
-
     // Separator
 
     public static boolean isLoaded(World world, int x, int z) {
-        List<Integer> list = loadedChunks.get(world);
+        CopyOnWriteArrayList<Integer> list = loadedChunks.get(world);
         boolean isNull = list == null;
         int hash = chunkIdentifier(x, z);
 
-        if (!isNull && list.contains(hash)) {
+        if (isNull) {
+            if (!looping) {
+                list = new CopyOnWriteArrayList<>();
+                loadedChunks.put(world, list);
+                isNull = false;
+            }
+        } else if (list.contains(hash)) {
             return true;
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             if (chunk.getX() == x && chunk.getZ() == z) {
-                add(list, isNull, world, hash);
+                if (!isNull) {
+                    list.add(hash);
+                }
                 return true;
             }
         }
@@ -82,26 +86,39 @@ public class Chunks {
     // Separator
 
     public static void load(World world, Chunk chunk) {
-        List<Integer> list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
-        list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
+        run(() -> {
+            List<Integer> list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
+            list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
+        }, world, chunk);
     }
 
-    private static void load(World world) {
-        List<Integer> list = new CopyOnWriteArrayList<>();
-        loadedChunks.put(world, list);
+    public static void unload(World world, Chunk chunk) {
+        run(() -> {
+            List<Integer> list = loadedChunks.get(world);
 
-        for (Chunk chunk : world.getLoadedChunks()) {
-            list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
+            if (list != null) {
+                list.remove((Object) chunkIdentifier(chunk.getX(), chunk.getZ()));
+            }
+        }, world, chunk);
+    }
+
+    public static void unload(World world) {
+        Runnable runnable = () -> loadedChunks.remove(world);
+
+        if (looping) {
+            SpartanBukkit.chunkThread.execute(() -> SpartanBukkit.transferTask(runnable));
+        } else {
+            runnable.run();
         }
     }
 
     // Separator
 
-    public static void unload(World world, Chunk chunk) {
-        List<Integer> list = loadedChunks.get(world);
-
-        if (list != null) {
-            list.remove((Object) chunkIdentifier(chunk.getX(), chunk.getZ()));
+    private static void run(Runnable runnable, World world, Chunk chunk) {
+        if (looping) {
+            SpartanBukkit.chunkThread.execute(() -> SpartanBukkit.transferTask(world, chunk.getX(), chunk.getZ(), runnable));
+        } else {
+            runnable.run();
         }
     }
 }
