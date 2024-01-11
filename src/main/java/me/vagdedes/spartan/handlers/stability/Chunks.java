@@ -51,12 +51,7 @@ public class Chunks {
 
     private static void add(List<Integer> list, boolean isNull, World world, int hash) {
         if (isNull) {
-            list = loadedChunks.get(world);
-
-            if (list == null) {
-                list = new CopyOnWriteArrayList<>();
-                loadedChunks.put(world, list);
-            }
+            list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
         }
         if (looping) {
             ((CopyOnWriteArrayList<Integer>) list).addIfAbsent(hash);
@@ -87,12 +82,7 @@ public class Chunks {
     // Separator
 
     public static void load(World world, Chunk chunk) {
-        List<Integer> list = loadedChunks.get(world);
-
-        if (list == null) {
-            list = new CopyOnWriteArrayList<>();
-            loadedChunks.put(world, list);
-        }
+        List<Integer> list = loadedChunks.computeIfAbsent(world, k -> new CopyOnWriteArrayList<>());
         list.add(chunkIdentifier(chunk.getX(), chunk.getZ()));
     }
 

@@ -10,6 +10,7 @@ import me.vagdedes.spartan.handlers.stability.TPS;
 import me.vagdedes.spartan.objects.data.*;
 import me.vagdedes.spartan.objects.replicates.SpartanLocation;
 import me.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import me.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.utils.gameplay.MoveUtils;
@@ -37,6 +38,7 @@ public class MorePackets extends CheckExecutor {
             horizontalKey = "motion-xz",
             verticalKey = "motion-y",
             lastTickKey = "last-tick",
+            suspiciouslastTickKey = "suspicious-last-tick",
             refreshLocationKey = "refresh-location",
             instantMotionKey = "instant-motion";
 
@@ -64,6 +66,7 @@ public class MorePackets extends CheckExecutor {
 
             if (horizontal == null
                     || vertical == null) {
+                player.debug(false, false, -2);
                 return false;
             }
             Timer timer = player.getTimer(hackType);
@@ -83,6 +86,7 @@ public class MorePackets extends CheckExecutor {
                 timer.remove(dataKey);
                 cooldowns.remove(new String[]{dataKey, refreshLocationKey});
                 decimals.remove(new String[]{horizontalKey, verticalKey, lastTickKey});
+                player.debug(false, false, -1);
                 return false;
             }
             boolean bedrockPlayer = player.isBedrockPlayer(),
@@ -95,58 +99,63 @@ public class MorePackets extends CheckExecutor {
                 int tickCounter = buffer.increase(dataKey, 1);
 
                 // Instant
-                if (hackType.getCheck().getBooleanOption("check_instant_movements", true)
-                        && lastTick < 10L) { // First stage
-                    double delay = LagLeniencies.getDelay(player);
-                    boolean decreasedRequirement = false,
-                            canHaveDecreasedRequirement =
-                                    !bedrockPlayer
-                                            && !player.isUsingItem()
-                                            && Damage.hasCooldown(player)
-                                            && !player.getHandlers().has(Handlers.HandlerType.Explosion)
-                                            && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                                            && !player.getHandlers().has(Handlers.HandlerType.Trident);
-                    int ticksRequirement = Math.min(10 + AlgebraUtils.integerRound(delay), 15),
-                            first = buffer.start(instantMotionKey + "=first", 1),
-                            special;
+                if (lastTick < 10L) { // First stage
+                    if (hackType.getCheck().getBooleanOption("check_instant_movements", true)) {
+                        double delay = LagLeniencies.getDelay(player);
+                        boolean decreasedRequirement;
+                        int ticksRequirement = Math.min(10 + AlgebraUtils.integerRound(delay), 15),
+                                tickBuffer = buffer.start(instantMotionKey + "=first", 1),
+                                zeroTickBuffer = lastTick == 0L ? buffer.start(instantMotionKey + "=first=special", 1) : buffer.get(instantMotionKey + "=first=special"),
+                                cases;
 
-                    if (lastTick == 0L) { // instant tick relative to its previous
-                        special = buffer.start(instantMotionKey + "=first=special", 1);
-                    } else {
-                        special = buffer.get(instantMotionKey + "=first=special");
-                    }
-
-                    // Second stage
-                    if (first >= ticksRequirement // Allow the player to pass when they reach the ticks requirement
-                            || canHaveDecreasedRequirement && (decreasedRequirement = first >= 2 && special > (first / 2))) { // Alternatively, allow them to pass if more than half of the recorded ticks have been instant in relative to the previous tick
-                        SpartanLocation customFrom = player.getFromLocation();
-                        double overallDistance = to.distance(customFrom),
-                                overallLimit = 1.5 + (decreasedRequirement ? 0.0 : Math.min(delay * 0.5, MoveUtils.chunk / 3.0));
-                        boolean passedLimit;
-
-                        if (overallDistance >= overallLimit) {
-                            passedLimit = true;
-                            cooldowns.add(instantMotionKey + "=passed-limit", 2);
+                        if (tickBuffer >= ticksRequirement) {
+                            cases = 1; // Allow the player to pass when they reach the ticks requirement
+                            decreasedRequirement = false;
+                        } else if (!bedrockPlayer
+                                && !player.isUsingItem()
+                                && !Damage.hasCooldown(player)
+                                && !player.getHandlers().has(Handlers.HandlerType.Explosion)
+                                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                                && !player.getHandlers().has(Handlers.HandlerType.Trident)
+                                && zeroTickBuffer > (tickBuffer / 2)) {
+                            cases = 2; // Alternatively, allow them to pass if more than half of the recorded ticks have been instant in relative to the previous tick
+                            decreasedRequirement = true;
                         } else {
-                            passedLimit = !cooldowns.canDo(instantMotionKey + "=passed-limit");
+                            cases = 0;
+                            decreasedRequirement = false;
                         }
-                        if (passedLimit
-                                && (decreasedRequirement || buffer.start(instantMotionKey + "=second", 1) >= 2)) { // Third stage
-                            buffer.remove(new String[]{
-                                    instantMotionKey + "=first",
-                                    instantMotionKey + "=first=special",
-                                    instantMotionKey + "=second"
-                            });
+                        // Second stage
+                        if (cases != 0) {
+                            SpartanLocation customFrom = player.getFromLocation();
+                            double overallDistance = to.distance(customFrom),
+                                    overallLimit = 1.5 + (decreasedRequirement ? 0.0 : Math.min(delay * 0.5, MoveUtils.chunk / 3.0));
+                            boolean passedLimit;
 
-                            boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
-                            SpartanLocation handlerFrom = DetectionLocation.get(player, true);
-                            SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
-
-                            if (instant) {
-                                DetectionLocation.set(player, teleportLocation);
+                            if (overallDistance >= overallLimit) {
+                                passedLimit = true;
+                                cooldowns.add(instantMotionKey + "=passed-limit", 2);
+                            } else {
+                                passedLimit = !cooldowns.canDo(instantMotionKey + "=passed-limit");
                             }
-                            cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", ticks-requirement: " + ticksRequirement + ", decreased-requirement: " + decreasedRequirement,
-                                    instant ? teleportLocation : null, instant ? teleportTicks : 0);
+
+                            if (passedLimit
+                                    && (decreasedRequirement || buffer.start(instantMotionKey + "=second", 1) >= 2)) { // Third stage
+                                buffer.remove(new String[]{
+                                        instantMotionKey + "=first",
+                                        instantMotionKey + "=first=special",
+                                        instantMotionKey + "=second"
+                                });
+
+                                boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
+                                SpartanLocation handlerFrom = DetectionLocation.get(player, true);
+                                SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
+
+                                if (instant) {
+                                    DetectionLocation.set(player, teleportLocation);
+                                }
+                                cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", ticks-requirement: " + ticksRequirement + ", decreased-requirement: " + decreasedRequirement,
+                                        instant ? teleportLocation : null, instant ? teleportTicks : 0);
+                            }
                         }
                     }
                 }
