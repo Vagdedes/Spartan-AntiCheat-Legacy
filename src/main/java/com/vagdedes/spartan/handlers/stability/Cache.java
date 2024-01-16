@@ -16,9 +16,9 @@ import com.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Threads;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;

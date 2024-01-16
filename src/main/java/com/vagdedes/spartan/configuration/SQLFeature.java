@@ -11,11 +11,11 @@ import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.api.API;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 
 import java.io.File;

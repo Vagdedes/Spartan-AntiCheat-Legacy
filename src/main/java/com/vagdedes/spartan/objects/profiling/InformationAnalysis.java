@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.handlers.stability.Cache;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.CharUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

@@ -10,10 +10,10 @@ import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.UUID;

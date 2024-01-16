@@ -6,9 +6,9 @@ import com.vagdedes.spartan.handlers.stability.Chunks;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.MemoryUtils;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 
 import java.util.LinkedHashMap;

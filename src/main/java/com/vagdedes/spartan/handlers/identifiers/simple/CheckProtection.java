@@ -3,8 +3,8 @@ package com.vagdedes.spartan.handlers.identifiers.simple;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

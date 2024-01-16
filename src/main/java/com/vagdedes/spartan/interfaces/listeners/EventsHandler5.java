@@ -9,10 +9,10 @@ import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlo
 import com.vagdedes.spartan.handlers.identifiers.simple.SensitiveBlockBreak;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;

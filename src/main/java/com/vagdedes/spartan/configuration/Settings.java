@@ -12,10 +12,10 @@ import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.interfaces.commands.CommandExecution;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;

@@ -2,8 +2,8 @@ package com.vagdedes.spartan.interfaces.listeners;
 
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.TridentUse;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

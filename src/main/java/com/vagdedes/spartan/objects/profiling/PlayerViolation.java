@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import me.vagdedes.spartan.system.Enums;
 
 import java.sql.Timestamp;
 import java.util.*;

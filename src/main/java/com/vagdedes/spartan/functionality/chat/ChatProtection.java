@@ -4,10 +4,10 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedHashMap;

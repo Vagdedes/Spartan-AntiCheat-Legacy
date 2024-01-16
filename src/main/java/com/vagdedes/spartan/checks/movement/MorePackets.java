@@ -10,10 +10,10 @@ import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.*;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums.HackType;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
 

@@ -4,8 +4,8 @@ import com.vagdedes.spartan.checks.exploits.Exploits;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

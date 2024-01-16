@@ -12,8 +12,8 @@ import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Timer;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums.HackType;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
 

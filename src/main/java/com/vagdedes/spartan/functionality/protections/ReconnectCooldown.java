@@ -3,9 +3,9 @@ package com.vagdedes.spartan.functionality.protections;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
 

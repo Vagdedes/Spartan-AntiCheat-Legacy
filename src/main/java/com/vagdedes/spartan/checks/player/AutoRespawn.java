@@ -6,9 +6,9 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums.HackType;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.PluginUtils;
+import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameRule;
 
 import java.util.Map;

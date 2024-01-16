@@ -2,8 +2,8 @@ package com.vagdedes.spartan.functionality.moderation;
 
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
 

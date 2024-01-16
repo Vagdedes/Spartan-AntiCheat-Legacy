@@ -2,9 +2,9 @@ package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.java.math.WaveProbability;
+import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
 

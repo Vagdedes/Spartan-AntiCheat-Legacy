@@ -7,8 +7,8 @@ import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.ChatColor;
 
 public class ConfigurationDiagnostics {

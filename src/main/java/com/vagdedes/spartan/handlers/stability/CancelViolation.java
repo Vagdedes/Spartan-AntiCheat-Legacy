@@ -4,8 +4,8 @@ import com.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.objects.system.LiveViolation;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import me.vagdedes.spartan.system.Enums;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

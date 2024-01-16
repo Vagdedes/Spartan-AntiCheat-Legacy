@@ -17,12 +17,12 @@ import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.api.ViolationResetEvent;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
 import java.util.Iterator;

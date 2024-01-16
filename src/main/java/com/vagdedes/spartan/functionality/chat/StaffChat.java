@@ -6,9 +6,9 @@ import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
+import me.vagdedes.spartan.system.Enums;
 
 import java.util.List;
 

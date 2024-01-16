@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.objects.features;
 
-import me.vagdedes.spartan.system.Enums;
 import io.signality.utils.system.Events;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 
 public class IncompatibleItem {

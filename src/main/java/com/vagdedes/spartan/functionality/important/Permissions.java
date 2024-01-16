@@ -3,8 +3,8 @@ package com.vagdedes.spartan.functionality.important;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import me.vagdedes.spartan.system.Enums;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
 import java.util.*;
