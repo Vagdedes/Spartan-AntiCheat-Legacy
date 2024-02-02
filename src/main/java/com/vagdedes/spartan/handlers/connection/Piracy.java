@@ -82,8 +82,8 @@ public class Piracy implements Listener {
         boolean b = valid
                 && name.equalsIgnoreCase("Spartan")
                 && (description = Register.plugin.getDescription()).getVersion().startsWith("Phase " + description.getVersion().substring(6))
-                && description.getDescription().equals("Advanced cheat prevention made simple.")
-                && description.getWebsite().startsWith("https://www.vagdedes.com")
+                && description.getDescription().equals("Machine Learning cheat prevention made simple.")
+                && description.getWebsite().startsWith("https://www.idealistic.ai")
                 && description.getAuthors().toString().equalsIgnoreCase("[Evangelos Dedes @Vagdedes]");
 
         try {
