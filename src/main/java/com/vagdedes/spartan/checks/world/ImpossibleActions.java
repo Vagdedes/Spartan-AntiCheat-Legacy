@@ -58,7 +58,7 @@ public class ImpossibleActions extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockPlaceEvent) {
             if (canDo()) {
                 BlockPlaceEvent event = (BlockPlaceEvent) object;
@@ -128,7 +128,7 @@ public class ImpossibleActions extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), "actions", 10);
         return false;
     }

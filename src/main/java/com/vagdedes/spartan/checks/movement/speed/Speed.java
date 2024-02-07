@@ -154,7 +154,7 @@ public class Speed extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object.equals(WATER)) {
             waterDetection.run();
         } else if (canDo()) {
@@ -164,7 +164,7 @@ public class Speed extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         Double hor = this.player.getNmsHorizontalDistance();
 
         if (hor == null || hor < sneaking || player.wasInLiquids() || !canDo()) {

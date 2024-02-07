@@ -11,9 +11,7 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.commands.RawCommands;
 import com.vagdedes.spartan.functionality.commands.UnbanCommand;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.moderation.Debug;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -64,12 +62,16 @@ public class EventsHandler6 implements Listener {
                 || RawCommands.run(p, msg)) {
             e.setCancelled(true);
         } else {
-            // Compatibility
-            Essentials.run(p, msg);
-            UnbanCommand.run(p, msg);
+            boolean cancelled = e.isCancelled();
+
+            if (!cancelled) {
+                // Compatibility
+                Essentials.run(p, msg);
+                UnbanCommand.run(p, msg);
+            }
 
             // Detections
-            p.getExecutor(Enums.HackType.ItemDrops).handle(msg);
+            p.getExecutor(Enums.HackType.ItemDrops).handle(cancelled, msg);
         }
     }
 
@@ -114,10 +116,10 @@ public class EventsHandler6 implements Listener {
         double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
         if (utility != null) {
+            double distance = utility[2];
+
             // Object
             player.calculateClickData(null, true);
-
-            double distance = utility[2];
 
             if (!cancelled) {
                 SpartanPlayer targetPlayer = entity instanceof Player ? SpartanBukkit.getPlayer((Player) entity) : null;
@@ -134,22 +136,6 @@ public class EventsHandler6 implements Listener {
                             + "distance: " + AlgebraUtils.cut(distance, 2));
                 }
 
-                // Notification
-                if ((!isPlayer || !targetPlayer.isMoving(true) || !PlayerData.isInActivePlayerCombat(targetPlayer)) && Permissions.isStaff(player)) {
-                    String message = AwarenessNotifications.getOptionalNotification(
-                            "It is recommended to fight a player that's also fighting you to properly test the combat checks. "
-                                    + "Animals, mobs, alt-accounts & NPCs come with slower detections.");
-
-                    if (message != null) {
-                        if (AwarenessNotifications.canSend(playerUUID, "combat")) {
-                            player.sendMessage(message);
-                        }
-                        if (targetPlayer != null && AwarenessNotifications.canSend(entityUUID, "combat")) {
-                            targetPlayer.sendMessage(message);
-                        }
-                    }
-                }
-
                 // Object
                 if (isPlayer) {
                     PlayerFight fight = player.getProfile().getCombat().getCurrentFight(targetPlayer);
@@ -161,17 +147,16 @@ public class EventsHandler6 implements Listener {
                     }
                 }
 
-                // Detections
-                player.getExecutor(Enums.HackType.Velocity).handle(event);
-                player.getExecutor(Enums.HackType.NoSwing).handle(event);
-                player.getExecutor(Enums.HackType.Criticals).handle(new Object[]{damage, entity});
-                runDealDamageChild(player, cooldowns, entity, utility, false);
-
                 // Handlers
                 Damage.runDealtDamage(player);
-            } else {
-                runDealDamageChild(player, cooldowns, entity, utility, true);
             }
+
+            // Detections
+            player.getExecutor(Enums.HackType.Velocity).handle(cancelled, event);
+            player.getExecutor(Enums.HackType.NoSwing).handle(cancelled, event);
+            player.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{damage, entity});
+
+            runDealDamageChild(player, cooldowns, entity, utility, cancelled);
         }
         cooldowns.add(cooldownKey, 3);
     }
@@ -180,8 +165,7 @@ public class EventsHandler6 implements Listener {
                                            LivingEntity entity,
                                            double[] utility,
                                            boolean cancelled) {
-        if (!cancelled
-                || TestServer.isIdentified()
+        if (TestServer.isIdentified()
                 || Config.settings.getBoolean("Detections.allow_cancelled_hit_checking")
                 || PlayerData.isInActivePlayerCombat(player)) {
             boolean hasMultipleHitCooldown = !cooldowns.canDo(cooldownKey) && CombatUtils.isNewPvPMechanic(player, entity);
@@ -189,8 +173,8 @@ public class EventsHandler6 implements Listener {
             // Detections
             if (!hasMultipleHitCooldown) {
                 Object[] objects = new Object[]{entity, utility};
-                player.getExecutor(Enums.HackType.HitReach).handle(objects);
-                player.getExecutor(Enums.HackType.KillAura).handle(objects);
+                player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
+                player.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
             }
         }
     }
@@ -288,7 +272,7 @@ public class EventsHandler6 implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void Animation(PlayerAnimationEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
@@ -298,7 +282,7 @@ public class EventsHandler6 implements Listener {
         PlayerAnimationType animationType = e.getAnimationType();
 
         // Detections
-        p.getExecutor(Enums.HackType.NoSwing).handle(e);
+        p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
 
         // Object
         if (animationType == PlayerAnimationType.ARM_SWING) {

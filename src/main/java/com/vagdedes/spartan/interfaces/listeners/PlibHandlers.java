@@ -82,7 +82,7 @@ public class PlibHandlers {
                                             || bow && (newType == Material.BOW || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && newType == Material.CROSSBOW) && p.getInventory().contains(Material.ARROW)
                                             || potion && newType == Material.POTION
                                             || shield && PlayerData.hasItemInHands(p, Material.SHIELD)) {
-                                        p.getExecutor(Enums.HackType.NoSlowdown).handle(NoSlowdown.PACKETS);
+                                        p.getExecutor(Enums.HackType.NoSlowdown).handle(false, NoSlowdown.PACKETS);
                                     }
                                 }
                             }, delay);

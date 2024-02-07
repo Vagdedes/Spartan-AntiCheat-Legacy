@@ -88,10 +88,10 @@ public class EventsHandler1 implements Listener {
         ChatProtection.remove(p);
 
         // System
-        Cache.clear(p, n, true, true, false, null);
+        Cache.clear(p, n, true, true, false, false, null);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void Death(PlayerDeathEvent e) {
         Player n = e.getEntity();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
@@ -99,33 +99,37 @@ public class EventsHandler1 implements Listener {
         if (p == null) {
             return;
         }
+        boolean cancelled = e.isCancelled();
+
         // Detections
         Cache.clearCheckCache(p);
-        p.getExecutor(Enums.HackType.KillAura).handle(null);
-        p.getExecutor(Enums.HackType.ImpossibleActions).run();
-        p.getExecutor(Enums.HackType.AutoRespawn).run();
-        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(ImpossibleInventory.DEATH);
+        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, null);
+        p.getExecutor(Enums.HackType.ImpossibleActions).run(cancelled);
+        p.getExecutor(Enums.HackType.AutoRespawn).run(cancelled);
+        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(cancelled, ImpossibleInventory.DEATH);
 
-        // Protections
-        p.resetHandlers(); // Always First
+        if (!cancelled) {
+            // Protections
+            p.resetHandlers(); // Always First
 
-        // Utils
-        DetectionLocation.update(p, p.getLocation(), true);
+            // Utils
+            DetectionLocation.update(p, p.getLocation(), true);
 
-        // Objects
-        Player killer = n.getKiller();
+            // Objects
+            Player killer = n.getKiller();
 
-        if (killer != null && killer.isOnline()) {
-            PlayerCombat combat = p.getProfile().getCombat();
-            combat.setWinnerAgainst(killer.getName());
+            if (killer != null && killer.isOnline()) {
+                PlayerCombat combat = p.getProfile().getCombat();
+                combat.setWinnerAgainst(killer.getName());
+            }
+            p.resetLocationData();
+            p.setDead(true);
+            p.setSleeping(false);
+            p.setHealth(n.getHealth());
         }
-        p.resetLocationData();
-        p.setDead(true);
-        p.setSleeping(false);
-        p.setHealth(n.getHealth());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void Respawn(PlayerRespawnEvent e) {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
@@ -135,8 +139,8 @@ public class EventsHandler1 implements Listener {
         }
         // Detections
         Cache.clearCheckCache(p);
-        p.getExecutor(Enums.HackType.KillAura).handle(null);
-        p.getExecutor(Enums.HackType.IrregularMovements).handle(null);
+        p.getExecutor(Enums.HackType.KillAura).handle(false, null);
+        p.getExecutor(Enums.HackType.IrregularMovements).handle(false, null);
 
         // Utils
         DetectionLocation.update(p, p.getLocation(), true);

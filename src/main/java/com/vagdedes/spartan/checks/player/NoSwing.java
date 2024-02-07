@@ -42,7 +42,7 @@ public class NoSwing extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
@@ -109,7 +109,7 @@ public class NoSwing extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         return false;
     }
 

@@ -38,7 +38,7 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object.equals(DEATH)) {
             if (canDo()) {
                 int ticks = player.getCooldowns(check).get("auto-totem");
@@ -58,7 +58,7 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         if (canDo()
                 && !player.isSwimming()
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)

@@ -116,7 +116,7 @@ public class Check {
     private short silent;
     private int cancelViolation;
     private final int defaultCancelViolation;
-    private boolean hasCancelViolation;
+    private boolean hasCancelViolation, handleCancelledEvents;
     private final Map<Integer, Integer> maxCancelledViolations;
     private final boolean[] enabled;
     private final boolean
@@ -403,7 +403,8 @@ public class Check {
         for (int position = (commands.size() + 1); position <= maxCommands; position++) {
             commands.add("");
         }
-        Object silent;
+        Object silent,
+                handleCancelledEvents = getOption("cancelled_event", false, false);
 
         if (hackType != Enums.HackType.AutoRespawn) { // Can Be Silent
             silent = getOption("silent", false, false);
@@ -539,6 +540,18 @@ public class Check {
         } else {
             this.canBeSilent = false;
             this.silent = 0;
+        }
+
+        // Separator
+
+        if (silent instanceof Boolean) {
+            this.handleCancelledEvents = (boolean) handleCancelledEvents;
+        } else if (silent instanceof Long || silent instanceof Integer || silent instanceof Short) {
+            this.handleCancelledEvents = ((long) silent) > 0L;
+        } else if (silent instanceof Double || silent instanceof Float) {
+            this.handleCancelledEvents = ((double) silent) > 0.0;
+        } else {
+            this.handleCancelledEvents = Boolean.parseBoolean(silent.toString().toLowerCase());
         }
 
         // Separator
@@ -1153,6 +1166,12 @@ public class Check {
 
     public Enums.CheckType getCheckType() {
         return checkType;
+    }
+
+    // Separator
+
+    public boolean canHandleCancelledEvents() {
+        return handleCancelledEvents;
     }
 
     // Separator

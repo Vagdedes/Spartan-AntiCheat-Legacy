@@ -49,7 +49,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
             if (canDo()) {
                 SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
@@ -128,7 +128,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         return false;
     }
 

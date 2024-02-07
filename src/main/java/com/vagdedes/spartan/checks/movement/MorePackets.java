@@ -41,7 +41,7 @@ public class MorePackets extends CheckExecutor {
             instantMotionKey = "instant-motion";
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object == null) {
             initialLocation = null;
         } else if (object instanceof BlockBreakEvent) {
@@ -57,7 +57,7 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         if (canDo()) {
             Double horizontal = player.getNmsHorizontalDistance(),
                     vertical = player.getNmsVerticalDistance();

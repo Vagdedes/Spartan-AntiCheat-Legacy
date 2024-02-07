@@ -119,10 +119,8 @@ public class EventsHandler7 implements Listener {
         }
         PlayerData.update(p, n, false);
         Decimals decimals = p.getDecimals();
+        boolean cancelled = e.isCancelled();
 
-        if (e.isCancelled()) {
-            return;
-        }
         if (!p.canDo(false)) {
             ServerFlying.run(p);
             return;
@@ -175,11 +173,11 @@ public class EventsHandler7 implements Listener {
 
         // Detections
         if (!crawling) {
-            p.getExecutor(Enums.HackType.Exploits).handle(Exploits.HEAD); // Optimised
-            p.getExecutor(Enums.HackType.ImpossibleInventory).run(); // Optimised
-            p.getExecutor(Enums.HackType.KillAura).run(); // Optimised
+            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD); // Optimised
+            p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled); // Optimised
+            p.getExecutor(Enums.HackType.KillAura).run(cancelled); // Optimised
         }
-        p.getExecutor(Enums.HackType.Exploits).handle(dis);
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, dis);
 
         if ((dis == 0.0 && p.getCustomDistance() == 0.0
                 || dis < 0.01 && p.getCustomDistance() < 0.01 && ver == 0.0)
@@ -207,22 +205,22 @@ public class EventsHandler7 implements Listener {
         // Detections
         if (!crawling) {
             ServerFlying.run(p);
-            p.getExecutor(Enums.HackType.Exploits).handle(Exploits.CHUNK);
-            p.getExecutor(Enums.HackType.Speed).handle(Speed.SPRINT);
+            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.CHUNK);
+            p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.SPRINT);
         }
         if (heavyMovementChecks) {
             if (!crawling) {
-                p.getExecutor(Enums.HackType.NoFall).run();
-                p.getExecutor(Enums.HackType.NoSlowdown).run();
+                p.getExecutor(Enums.HackType.NoFall).run(cancelled);
+                p.getExecutor(Enums.HackType.NoSlowdown).run(cancelled);
             }
-            p.getExecutor(Enums.HackType.IrregularMovements).run();
-            p.getExecutor(Enums.HackType.Speed).run();
-            p.getExecutor(Enums.HackType.Speed).handle(Speed.WATER);
-            p.getExecutor(Enums.HackType.MorePackets).run();
+            p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
+            p.getExecutor(Enums.HackType.Speed).run(cancelled);
+            p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.WATER);
+            p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void WorldChange(PlayerChangedWorldEvent e) {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
@@ -238,6 +236,6 @@ public class EventsHandler7 implements Listener {
         CheckProtection.cancel(p.getUniqueId(), 20, true);
 
         // System
-        Cache.clear(p, n, false, true, true, p.getLocation());
+        Cache.clear(p, n, false, true, true, false, p.getLocation());
     }
 }

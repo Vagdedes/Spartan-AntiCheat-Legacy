@@ -145,7 +145,7 @@ public class DetectionNotifications {
         return null;
     }
 
-    public static void runMining(SpartanPlayer player, SpartanBlock block) {
+    public static void runMining(SpartanPlayer player, SpartanBlock block, boolean cancelled) {
         if (player.getGameMode() == GameMode.SURVIVAL && PlayerData.isPickaxeItem(player.getItemInHand().getType())) {
             Material material = block.getType();
             Enums.MiningOre ore = getMiningOre(material);
@@ -188,6 +188,7 @@ public class DetectionNotifications {
                             String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
                             miningHistory.increaseMines(environment, amount);
                             player.getExecutor(Enums.HackType.XRay).handle(
+                                    cancelled,
                                     new Object[]{environment, miningHistory, ore, pluralKey});
                         }
                     }

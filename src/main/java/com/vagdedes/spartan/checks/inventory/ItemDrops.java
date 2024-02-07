@@ -24,7 +24,7 @@ public class ItemDrops extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         if (canDo()) {
             Timer timer = player.getTimer(check);
             long time = timer.get(checkID);
@@ -50,7 +50,7 @@ public class ItemDrops extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof String) {
             String[] args = object.toString().split(" ");
 

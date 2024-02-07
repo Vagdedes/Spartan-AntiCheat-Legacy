@@ -25,7 +25,7 @@ public class FastPlace extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
             SpartanBlock b = new SpartanBlock(player, ((BlockPlaceEvent) object).getBlock());
 
@@ -77,7 +77,7 @@ public class FastPlace extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         return false;
     }
 

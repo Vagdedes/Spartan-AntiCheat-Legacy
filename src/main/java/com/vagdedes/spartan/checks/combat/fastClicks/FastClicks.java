@@ -66,12 +66,12 @@ public class FastClicks extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         return false;
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (canDo()
                 && ((PlayerInteractEvent) object).getAction() == Action.LEFT_CLICK_AIR) {
             Clicks clickData = player.getClicks();

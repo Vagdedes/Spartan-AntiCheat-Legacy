@@ -68,7 +68,7 @@ public class IrregularMovements extends CheckExecutor {
     private static final int offGroundTicks = 12;
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         Double vertical = player.getNmsVerticalDistance(),
                 oldVertical = player.getPreviousNmsVerticalDistance(),
                 horizontal = player.getNmsHorizontalDistance(),
@@ -524,7 +524,7 @@ public class IrregularMovements extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object == null) {
             oldFrom = null;
         } else {

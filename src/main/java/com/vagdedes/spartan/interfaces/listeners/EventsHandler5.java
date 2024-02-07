@@ -39,24 +39,20 @@ public class EventsHandler5 implements Listener {
             if (p == null) {
                 return;
             }
-            if (e.isCancelled()) {
+            boolean cancelled = e.isCancelled();
+
+            // Detections
+            p.getExecutor(Enums.HackType.FastEat).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.NoSlowdown).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.FastHeal).handle(cancelled, e);
+
+            if (p.getViolations(Enums.HackType.FastEat).process()
+                    || p.getViolations(Enums.HackType.NoSlowdown).process()) {
+                e.setCancelled(true);
                 p.setFoodLevel(n.getFoodLevel(), false);
             } else {
-                int lvl = e.getFoodLevel();
-
-                // Detections
-                p.getExecutor(Enums.HackType.FastEat).handle(e);
-                p.getExecutor(Enums.HackType.NoSlowdown).handle(e);
-                p.getExecutor(Enums.HackType.FastHeal).handle(e);
-
-                if (p.getViolations(Enums.HackType.FastEat).process()
-                        || p.getViolations(Enums.HackType.NoSlowdown).process()) {
-                    e.setCancelled(true);
-                    p.setFoodLevel(n.getFoodLevel(), false);
-                } else {
-                    // Objects (Always after detections)
-                    p.setFoodLevel(lvl, false);
-                }
+                // Objects (Always after detections)
+                p.setFoodLevel(e.getFoodLevel(), false);
             }
         }
     }
@@ -75,13 +71,11 @@ public class EventsHandler5 implements Listener {
             // Objects
             p.setHealth(n.getHealth());
 
-            if (!e.isCancelled()) {
-                // Detections
-                p.getExecutor(Enums.HackType.NoSwing).handle(e);
+            // Detections
+            p.getExecutor(Enums.HackType.FastHeal).handle(e.isCancelled(), e);
 
-                if (p.getViolations(Enums.HackType.FastHeal).process()) {
-                    e.setCancelled(true);
-                }
+            if (p.getViolations(Enums.HackType.FastHeal).process()) {
+                e.setCancelled(true);
             }
         }
     }
@@ -97,33 +91,21 @@ public class EventsHandler5 implements Listener {
         SpartanBlock b = new SpartanBlock(p, nb);
         boolean cancelled = e.isCancelled();
 
-        if (!cancelled) {
-            // Detections
-            if (!ItemsAdder.is(nb)) {
-                p.getExecutor(Enums.HackType.NoSwing).handle(e);
-                p.getExecutor(Enums.HackType.BlockReach).handle(e);
-                p.getExecutor(Enums.HackType.FastBreak).handle(e);
-                p.getExecutor(Enums.HackType.GhostHand).handle(e);
-                p.getExecutor(Enums.HackType.ImpossibleActions).handle(e);
-            }
+        // Detections
+        if (!ItemsAdder.is(nb)) {
+            p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.BlockReach).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.FastBreak).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.GhostHand).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.ImpossibleActions).handle(cancelled, e);
+        }
 
+        if (!cancelled) {
             // Features
             if (Debug.canRun()) {
                 Debug.inform(p, Enums.Debug.MISC, "type: breaking, "
                         + "block: " + b.getType().toString().toLowerCase().replace("_", "-") + ", "
                         + "distance: " + AlgebraUtils.cut(p.getLocation().distance(b.getLocation()), 5));
-            }
-
-            // Detections
-            DetectionNotifications.runMining(p, b);
-
-            if (p.getViolations(Enums.HackType.NoSwing).process()
-                    || p.getViolations(Enums.HackType.BlockReach).process()
-                    || p.getViolations(Enums.HackType.ImpossibleActions).process()
-                    || p.getViolations(Enums.HackType.FastBreak).process()
-                    || p.getViolations(Enums.HackType.GhostHand).process()
-                    || p.getViolations(Enums.HackType.XRay).process()) {
-                e.setCancelled(true);
             }
         }
 
@@ -131,7 +113,17 @@ public class EventsHandler5 implements Listener {
         SensitiveBlockBreak.run(p, cancelled, b);
 
         // Detections
-        p.getExecutor(Enums.HackType.MorePackets).handle(e);
+        p.getExecutor(Enums.HackType.MorePackets).handle(false, e);
+        DetectionNotifications.runMining(p, b, cancelled);
+
+        if (p.getViolations(Enums.HackType.NoSwing).process()
+                || p.getViolations(Enums.HackType.BlockReach).process()
+                || p.getViolations(Enums.HackType.ImpossibleActions).process()
+                || p.getViolations(Enums.HackType.FastBreak).process()
+                || p.getViolations(Enums.HackType.GhostHand).process()
+                || p.getViolations(Enums.HackType.XRay).process()) {
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -157,14 +149,14 @@ public class EventsHandler5 implements Listener {
         Building.runPlace(p, b, blockFace, cancelled);
         BouncingBlocks.judge(p, p.getLocation());
 
-        if (!cancelled) {
-            // Detections
-            if (!ItemsAdder.is(nb)) {
-                p.getExecutor(Enums.HackType.ImpossibleActions).handle(e);
-                p.getExecutor(Enums.HackType.BlockReach).handle(e);
-                p.getExecutor(Enums.HackType.FastPlace).handle(e);
-            }
+        // Detections
+        if (!ItemsAdder.is(nb)) {
+            p.getExecutor(Enums.HackType.ImpossibleActions).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.BlockReach).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.FastPlace).handle(cancelled, e);
+        }
 
+        if (!cancelled) {
             // Feature
             if (Debug.canRun()) {
                 Debug.inform(p, Enums.Debug.MISC, "type: placing, "
@@ -173,12 +165,12 @@ public class EventsHandler5 implements Listener {
                         + "block-against: " + BlockUtils.materialToString(ba.getType()) + ", "
                         + "block-face: " + blockFace);
             }
+        }
 
-            if (p.getViolations(Enums.HackType.FastPlace).process()
-                    || p.getViolations(Enums.HackType.BlockReach).process()
-                    || p.getViolations(Enums.HackType.ImpossibleActions).process()) {
-                e.setCancelled(true);
-            }
+        if (p.getViolations(Enums.HackType.FastPlace).process()
+                || p.getViolations(Enums.HackType.BlockReach).process()
+                || p.getViolations(Enums.HackType.ImpossibleActions).process()) {
+            e.setCancelled(true);
         }
     }
 

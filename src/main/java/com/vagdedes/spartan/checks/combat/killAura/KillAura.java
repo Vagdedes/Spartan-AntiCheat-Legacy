@@ -106,7 +106,7 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         if (canDo()) {
             SpartanLocation to = player.getEventToLocation(),
                     from = player.getEventFromLocation();
@@ -142,7 +142,7 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object == null) {
             aim.remove();
             sensitivity.remove();

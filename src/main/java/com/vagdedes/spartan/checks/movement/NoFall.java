@@ -249,13 +249,13 @@ public class NoFall extends CheckExecutor {
     // Separator
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         player.getCooldowns(hackType).add(new String[]{"land", "ratio"}, 10);
         return false;
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         Double vertical = player.getNmsVerticalDistance(),
                 horizontal = player.getNmsHorizontalDistance(),
                 oldVertical = player.getPreviousNmsVerticalDistance();

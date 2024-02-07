@@ -35,7 +35,7 @@ public class VelocityCheck extends CheckExecutor {
     };
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         return false; //todo
     }
 
@@ -65,7 +65,7 @@ public class VelocityCheck extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         return false; //todo
     }
 }

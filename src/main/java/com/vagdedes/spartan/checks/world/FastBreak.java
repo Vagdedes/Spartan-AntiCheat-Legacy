@@ -183,7 +183,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
@@ -208,7 +208,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         return false;
     }
 

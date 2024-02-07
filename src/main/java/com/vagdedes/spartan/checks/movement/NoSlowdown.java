@@ -32,7 +32,7 @@ public class NoSlowdown extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         if (hackType.getCheck().getBooleanOption("check_item_usage", true)
                 && !PlayerData.isInActivePlayerCombat(player)) {
             return runUse("item-use", player.isUsingItem(), 6);
@@ -42,7 +42,7 @@ public class NoSlowdown extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 

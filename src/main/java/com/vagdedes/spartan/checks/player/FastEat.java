@@ -89,7 +89,7 @@ public class FastEat extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof FoodLevelChangeEvent) {
             if (canDo()) {
                 int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
@@ -133,7 +133,7 @@ public class FastEat extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         return false;
     }
 

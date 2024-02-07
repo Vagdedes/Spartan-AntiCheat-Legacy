@@ -68,7 +68,7 @@ public class Cache {
     }
 
     public static void clear(SpartanPlayer p, Player n,
-                             boolean leave, boolean distance, boolean deep,
+                             boolean leave, boolean distance, boolean deep, boolean cancelled,
                              SpartanLocation newLocation) {
         // Utils
         if (!leave) {
@@ -104,18 +104,18 @@ public class Cache {
 
         // Detections
         if (newLocation != null) {
-            p.getExecutor(Enums.HackType.MorePackets).handle(newLocation);
-            p.getExecutor(Enums.HackType.IrregularMovements).handle(newLocation);
-            p.getExecutor(Enums.HackType.Exploits).handle(newLocation);
+            p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, newLocation);
+            p.getExecutor(Enums.HackType.IrregularMovements).handle(cancelled, newLocation);
+            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, newLocation);
         } else {
-            p.getExecutor(Enums.HackType.MorePackets).handle(null);
-            p.getExecutor(Enums.HackType.IrregularMovements).handle(null);
-            p.getExecutor(Enums.HackType.Exploits).handle(null);
+            p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, null);
+            p.getExecutor(Enums.HackType.IrregularMovements).handle(cancelled, null);
+            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
         }
         if (leave || distance) {
-            p.getExecutor(Enums.HackType.KillAura).handle(null);
+            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, null);
         }
-        p.getExecutor(Enums.HackType.Criticals).handle(leave);
+        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, leave);
     }
 
     public static <K, V> Map<K, V> store(Map<K, V> map) {

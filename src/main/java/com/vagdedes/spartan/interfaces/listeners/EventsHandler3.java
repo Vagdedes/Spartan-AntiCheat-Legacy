@@ -38,7 +38,7 @@ import java.util.UUID;
 
 public class EventsHandler3 implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void Chat(AsyncPlayerChatEvent e) {
         Player n = e.getPlayer();
 
@@ -50,12 +50,13 @@ public class EventsHandler3 implements Listener {
             if (p == null) {
                 return;
             }
+            boolean cancelled = e.isCancelled();
             String msg = e.getMessage();
 
             // Protections
-            if (p.getExecutor(Enums.HackType.Exploits).handle(msg) // Detections
-                    || StaffChat.run(p, msg) // Features
-                    || ChatProtection.runChat(p, msg)) { // Features
+            if (p.getExecutor(Enums.HackType.Exploits).handle(cancelled, msg) // Detections
+                    || !cancelled && StaffChat.run(p, msg) // Features
+                    || !cancelled && ChatProtection.runChat(p, msg)) { // Features
                 e.setCancelled(true);
             }
         }
@@ -86,11 +87,11 @@ public class EventsHandler3 implements Listener {
 
             if (cancelled) {
                 // Detections
-               p.getExecutor(Enums.HackType.NoFall).handle(e);
+                p.getExecutor(Enums.HackType.NoFall).handle(false, e);
             } else {
                 // Detections
                 if (dmg == EntityDamageEvent.DamageCause.FALL) {
-                    p.getExecutor(Enums.HackType.NoFall).handle(e);
+                    p.getExecutor(Enums.HackType.NoFall).handle(false, e);
                 }
 
                 // Handlers
@@ -148,7 +149,7 @@ public class EventsHandler3 implements Listener {
         ReconnectCooldown.run(n, e);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void Sign(SignChangeEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
@@ -156,7 +157,7 @@ public class EventsHandler3 implements Listener {
             return;
         }
         // Detections
-        p.getExecutor(Enums.HackType.Exploits).handle(e.getLines());
+        p.getExecutor(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
 
         if (p.getViolations(Enums.HackType.Exploits).process()) {
             e.setCancelled(true);
@@ -189,34 +190,32 @@ public class EventsHandler3 implements Listener {
 
                 // Detections
                 if (!customBlock) {
-                    p.getExecutor(Enums.HackType.BlockReach).handle(e);
-                    p.getExecutor(Enums.HackType.FastBreak).handle(e);
-                    p.getExecutor(Enums.HackType.ImpossibleActions).handle(e);
+                    p.getExecutor(Enums.HackType.BlockReach).handle(false, e);
+                    p.getExecutor(Enums.HackType.FastBreak).handle(false, e);
+                    p.getExecutor(Enums.HackType.ImpossibleActions).handle(false, e);
                 }
-                p.getExecutor(Enums.HackType.FastEat).handle(e);
-                p.getExecutor(Enums.HackType.NoSlowdown).handle(e);
-                p.getExecutor(Enums.HackType.ItemDrops).handle(e);
+                p.getExecutor(Enums.HackType.FastEat).handle(false, e);
+                p.getExecutor(Enums.HackType.NoSlowdown).handle(false, e);
+                p.getExecutor(Enums.HackType.ItemDrops).handle(false, e);
 
                 // Protections
-                if (!cancelled) {
                     if (InteractionsPerTick.run(p, b, action)/* || FenceClick.run(p, b, action)*/) {
                         e.setCancelled(true);
                     } else if (!customBlock) {
                         // Detections
-                        p.getExecutor(Enums.HackType.GhostHand).handle(e);
+                        p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
                         Liquid.runInteract(p, action);
                     }
-                }
             } else {
                 // Detections
-                p.getExecutor(Enums.HackType.FastClicks).handle(e);
-                p.getExecutor(Enums.HackType.FastEat).handle(e);
+                p.getExecutor(Enums.HackType.FastClicks).handle(false, e);
+                p.getExecutor(Enums.HackType.FastEat).handle(false, e);
             }
             // Detections
             if (!customBlock) {
-                p.getExecutor(Enums.HackType.NoSwing).handle(e);
+                p.getExecutor(Enums.HackType.NoSwing).handle(false, e);
             }
-            p.getExecutor(Enums.HackType.FastBow).handle(e);
+            p.getExecutor(Enums.HackType.FastBow).handle(false, e);
 
             if (p.getViolations(Enums.HackType.GhostHand).process()
                     || p.getViolations(Enums.HackType.FastClicks).process()) {

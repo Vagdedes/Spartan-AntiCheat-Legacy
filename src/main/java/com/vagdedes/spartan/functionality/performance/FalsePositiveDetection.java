@@ -11,10 +11,6 @@ import java.util.Collection;
 
 public class FalsePositiveDetection {
 
-    private static final int
-            integerNearest = 5,
-            decimalPoint = 2;
-
     public static boolean canFunction() {
         return Config.settings.getBoolean("Performance.enable_false_positive_detection");
     }
@@ -26,10 +22,10 @@ public class FalsePositiveDetection {
             for (Number number : numbers) {
                 if (number instanceof Double) {
                     hash = (hash * SpartanBukkit.hashCodeMultiplier)
-                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), decimalPoint));
+                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), 2));
                 } else {
                     hash = (hash * SpartanBukkit.hashCodeMultiplier)
-                            + AlgebraUtils.roundToNearest(number.intValue(), integerNearest);
+                            + AlgebraUtils.roundToNearest(number.intValue(), 2);
                 }
             }
         }

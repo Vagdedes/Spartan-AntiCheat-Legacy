@@ -51,13 +51,13 @@ public class AutoRespawn extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         cancel("type: default, ms: " + object);
         return false;
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         if (canDo()) {
             hm.put(player.getUniqueId(), System.currentTimeMillis());
         }

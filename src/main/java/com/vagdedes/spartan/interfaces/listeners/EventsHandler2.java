@@ -26,7 +26,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class EventsHandler2 implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void Teleport(PlayerTeleportEvent e) {
         Location nto = e.getTo();
 
@@ -39,24 +39,31 @@ public class EventsHandler2 implements Listener {
         if (p == null) {
             return;
         }
+        boolean cancelled = e.isCancelled();
         SpartanLocation to = new SpartanLocation(p, nto);
 
         // Object
-        p.resetLocationData();
+        if (!cancelled) {
+            p.resetLocationData();
+        }
 
         // System
         Cache.clear(p, n,
                 false,
                 to.distance(e.getFrom()) >= MoveUtils.chunk && !Moderation.isDetectedAndPrevented(p),
                 !Moderation.wasDetected(p),
+                cancelled,
                 to);
-        CombatProcessing.runTeleport(p);
 
-        // Protections
-        Teleport.run(p);
+        if (!cancelled) {
+            CombatProcessing.runTeleport(p);
+
+            // Protections
+            Teleport.run(p);
+        }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemChange(PlayerItemHeldEvent e) {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
@@ -64,12 +71,16 @@ public class EventsHandler2 implements Listener {
         if (p == null) {
             return;
         }
+        boolean cancelled = e.isCancelled();
+
         // Objects
-        p.setInventory(n.getInventory(), n.getOpenInventory());
+        if (!cancelled) {
+            p.setInventory(n.getInventory(), n.getOpenInventory());
+        }
 
         // Detections
-        p.getExecutor(Enums.HackType.NoSlowdown).handle(e);
-        p.getExecutor(Enums.HackType.NoSwing).handle(e);
+        p.getExecutor(Enums.HackType.NoSlowdown).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -82,17 +93,20 @@ public class EventsHandler2 implements Listener {
             if (p == null) {
                 return;
             }
+            boolean cancelled = e.isCancelled();
             Entity projectile = e.getProjectile();
 
             // Detections
-            if (p.getExecutor(Enums.HackType.NoSlowdown).handle(e)) {
+            if (p.getExecutor(Enums.HackType.NoSlowdown).handle(cancelled, e)) {
                 e.setCancelled(true);
             } else {
                 // Detections
-                p.getExecutor(Enums.HackType.FastBow).handle(e);
+                p.getExecutor(Enums.HackType.FastBow).handle(cancelled, e);
 
                 // Protections
-                Damage.runBow(entity, projectile);
+                if (!cancelled) {
+                    Damage.runBow(entity, projectile);
+                }
 
                 if (p.getViolations(Enums.HackType.FastBow).process()) {
                     e.setCancelled(true);

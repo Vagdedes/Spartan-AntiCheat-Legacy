@@ -201,7 +201,7 @@ public class Criticals extends CheckExecutor {
     }
 
     @Override
-    public boolean run() {
+    public boolean runInternal(boolean cancelled) {
         if (!player.hasAttackCooldown()
                 && !player.isSprinting()) {
             checkPosition(); // Always first
@@ -212,7 +212,7 @@ public class Criticals extends CheckExecutor {
     }
 
     @Override
-    public boolean handle(Object object) {
+    public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof Boolean) {
             if ((boolean) object) {
                 if (!CriticalsUtils.canCollectFrom(player)) {
@@ -223,7 +223,7 @@ public class Criticals extends CheckExecutor {
             }
         } else if (canDo()) {
             Object[] objects = (Object[]) object;
-            run();
+            runInternal(cancelled);
             checkDamage((double) objects[0], (LivingEntity) objects[1]);
         }
         return false;
