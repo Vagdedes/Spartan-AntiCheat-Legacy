@@ -375,9 +375,11 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                 };
 
                 if (velocityScenarioASYNC) {
-                    irregularMovements.cancel(prevention, "equilibrium-velocity", MoveUtils.jumpingMotions);
+                    irregularMovements.cancel(prevention, "equilibrium-velocity", null,
+                            MoveUtils.jumpingMotions, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
                 } else if (levitationEffect) {
-                    irregularMovements.cancel(prevention, "equilibrium-levitation", MoveUtils.jumpingMotions);
+                    irregularMovements.cancel(prevention, "equilibrium-levitation", null,
+                            MoveUtils.jumpingMotions, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
                 } else {
                     Handlers handlers = player.getHandlers();
 
@@ -385,13 +387,15 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             && !handlers.has(Handlers.HandlerType.BridgeBuilding)) {
                         if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                                 && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
-                            irregularMovements.cancel(prevention, "equilibrium-spacious",
-                                    jumpEffectASYNC ? 2 : 1);
+                            irregularMovements.cancel(prevention, "equilibrium-spacious", null,
+                                    jumpEffectASYNC ? 2 : 1, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
                         } else if (!knownBoxes
                                 && !GroundUtils.heightExists(oldBox - oldVertical)) {
-                            irregularMovements.cancel(prevention, "*equilibrium-abstract", 2);
+                            irregularMovements.cancel(prevention, "*equilibrium-abstract", null,
+                                    2, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
                         } else {
-                            irregularMovements.cancel(prevention, "*equilibrium-predictable", 3);
+                            irregularMovements.cancel(prevention, "*equilibrium-predictable", null,
+                                    3, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
                         }
                     }
                 }
