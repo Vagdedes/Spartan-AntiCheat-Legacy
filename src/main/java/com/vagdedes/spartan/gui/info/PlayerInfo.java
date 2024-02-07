@@ -6,7 +6,7 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.moderation.Spectate;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
+import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
@@ -159,7 +159,7 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        double delayNumber = isOnline ? LagLeniencies.getDelaySimplified(LagLeniencies.getDelay(player)) : 0.0; // Base
+        double delayNumber = isOnline ? Latency.getDelaySimplified(Latency.getDelay(player)) : 0.0; // Base
         ResearchEngine.DataType dataType = isOnline ? player.getDataType() : playerProfile.getDataType();
         boolean tpsDropping = isOnline && TPS.areLow(player),
                 notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),
@@ -209,7 +209,7 @@ public class PlayerInfo extends InventoryMenu {
                 hackType,
                 dataType,
                 isOnline ? player.getCancellableCompatibility() : null,
-                isOnline ? LagLeniencies.getDelaySimplified(LagLeniencies.getDelay(player)) : 0.0,
+                isOnline ? Latency.getDelaySimplified(Latency.getDelay(player)) : 0.0,
                 isOnline,
                 isOnline && TPS.areLow(player),
                 isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),

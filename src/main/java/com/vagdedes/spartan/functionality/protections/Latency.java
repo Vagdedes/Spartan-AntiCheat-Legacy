@@ -2,20 +2,41 @@ package com.vagdedes.spartan.functionality.protections;
 
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.configuration.Settings;
+import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import org.bukkit.entity.Player;
 
-public class LagLeniencies {
+public class Latency {
 
-    public static double getDelay(SpartanPlayer p) {
+    public static int ping(Player p) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+            return p.getPing();
+        } else {
+            try {
+                Object obj = SpartanBukkit.getCraftPlayerMethod(p, "ping");
+
+                if (obj instanceof Integer) {
+                    return Math.max((int) obj, 0);
+                } else {
+                    return 0;
+                }
+            } catch (Exception ignored) {
+                return 0;
+            }
+        }
+    }
+
+    public static double getDelay(SpartanPlayer player) {
         double pingDelay;
 
         if (Config.settings.getInteger(Settings.maxSupportedLatencyOption) <= 0
-                || p.getProfile().isSuspectedOrHacker()) {
+                || player.getProfile().isSuspectedOrHacker()) {
             pingDelay = 0.0;
         } else {
-            int latency = p.getPing();
+            int latency = player.getPing();
 
             if (latency <= TPS.tickTimeInteger) {
                 pingDelay = 0.0;
@@ -36,7 +57,7 @@ public class LagLeniencies {
         if (!Config.settings.getBoolean(Settings.tpsProtectionOption)) {
             tpsDelay = 0.0;
         } else {
-            double tps = TPS.get(p, false);
+            double tps = TPS.get(player, false);
 
             if (tps >= TPS.excellent) {
                 tpsDelay = 0.0;
@@ -59,4 +80,5 @@ public class LagLeniencies {
     public static double getDelaySimplified(double delay) {
         return delay > 0.0 && delay < 0.5 ? 0.5 : AlgebraUtils.roundToHalf(delay);
     }
+
 }

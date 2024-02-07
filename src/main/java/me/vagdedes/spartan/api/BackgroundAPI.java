@@ -8,7 +8,7 @@ import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.handlers.connection.IDs;
-import com.vagdedes.spartan.handlers.connection.Latency;
+import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.handlers.stability.*;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;

@@ -33,12 +33,12 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
+import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
-import com.vagdedes.spartan.handlers.connection.Latency;
 import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -305,7 +305,7 @@ public class SpartanPlayer {
                 SpartanBukkit.runTask(p, () -> {
                     if (p != null) {
                         // Ground Identification Cache
-                        p.resetPing();
+                        p.ping = -1;
                         Player n = p.getPlayer();
 
                         if (n != null) {
@@ -1401,10 +1401,6 @@ public class SpartanPlayer {
 
     public synchronized void setUsingItem(boolean usingItem) {
         this.usingItem = usingItem;
-    }
-
-    public void resetPing() {
-        ping = -1;
     }
 
     public int getPing() {

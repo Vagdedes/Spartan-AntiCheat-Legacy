@@ -2,7 +2,6 @@ package com.vagdedes.spartan.checks.inventory;
 
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.configuration.Compatibility;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Timer;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
