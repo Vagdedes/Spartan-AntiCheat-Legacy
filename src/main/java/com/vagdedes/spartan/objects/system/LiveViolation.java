@@ -5,7 +5,6 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
@@ -138,7 +137,6 @@ public class LiveViolation {
         }
 
         if (hp != null
-                && !LagLeniencies.hasInconsistencies(player, null)
                 && !player.getHandlers().has(Handlers.HandlerType.GameMode)
                 && !CloudFeature.isPublicInformationCancelled(hackType, hp.information)) {
             UUID uuid = player.getUniqueId();

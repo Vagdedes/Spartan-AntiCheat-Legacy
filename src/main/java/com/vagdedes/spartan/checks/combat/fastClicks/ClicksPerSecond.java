@@ -15,7 +15,7 @@ public class ClicksPerSecond extends DetectionExecutor {
         fastClicks = (FastClicks) executor;
     }
 
-    void run(Clicks clickData, int limit, int latencyExtra, double globalAverage) {
+    void run(Clicks clickData, int limit, double globalAverage) {
         int count = clickData.getCount();
 
         if (count >= limit) {
@@ -24,7 +24,6 @@ public class ClicksPerSecond extends DetectionExecutor {
                     "type: clicks-per-second"
                             + ", count: " + count
                             + ", limit: " + limit
-                            + ", latency-extra: " + latencyExtra
                             + ", global-average: " + globalAverage
                             + ", average-pattern: " + clickData.getAveragePattern()
                             + ", last-pattern: " + clickData.getLastPattern()

@@ -59,22 +59,21 @@ public class FastBow extends CheckExecutor {
             String cancel = null;
             Buffer buffer = player.getBuffer(hackType);
             String key = "bow-shots=";
-            int delay = AlgebraUtils.integerRound(LagLeniencies.getDelay(player));
             int[] details = new int[]{10, 6};
 
-            if (buffer.start(key + "fast", details[0]) == Math.min(details[1] + delay, details[0])) { // Combat
+            if (buffer.start(key + "fast", details[0]) == details[1]) { // Combat
                 buffer.remove(key + "fast");
                 cancel = "fast";
             } else {
                 details = new int[]{20, 7};
 
-                if (buffer.start(key + "medium", details[0]) == Math.min(details[1] + delay, details[0])) { // Combat
+                if (buffer.start(key + "medium", details[0]) == details[1]) { // Combat
                     buffer.remove(key + "medium");
                     cancel = "medium";
                 } else {
                     details = new int[]{30, 9};
 
-                    if (buffer.start(key + "slow", details[0]) == Math.min(details[1] + delay, details[0])) { // Combat
+                    if (buffer.start(key + "slow", details[0]) == details[1]) { // Combat
                         buffer.remove(key + "slow");
                         cancel = "slow";
                     }

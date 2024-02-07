@@ -32,9 +32,7 @@ import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.performance.DetectionTick;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
@@ -144,7 +142,6 @@ public class SpartanPlayer {
     // Cache
 
     private PlayerProfile playerProfile;
-    private final DetectionTick detectionTick;
     private final Clicks clicks;
 
     private SpartanLocation location, fromLocation, eventTo, eventFrom;
@@ -345,7 +342,7 @@ public class SpartanPlayer {
                                 p.runChecks[0] = false;
                                 p.runChecks[1] = false;
                             } else {
-                                p.runChecks[0] = !LagLeniencies.hasInconsistencies(p, "");
+                                p.runChecks[0] = !TPS.areLow(p);
                                 p.runChecks[1] = true;
                             }
 
@@ -444,7 +441,6 @@ public class SpartanPlayer {
         this.chasing = 0L;
         this.lastLiquidTime = 0L;
         this.lastHeadMovement = System.currentTimeMillis();
-        this.detectionTick = new DetectionTick();
         this.playerProfile = ResearchEngine.getPlayerProfile(this);
         this.clicks = new Clicks();
         this.vehicle = p.getVehicle();
@@ -659,10 +655,6 @@ public class SpartanPlayer {
 
     public Player getPlayer() {
         return Bukkit.getPlayer(uuid);
-    }
-
-    public boolean canSkipDetectionTick(int ticksCooldown) {
-        return detectionTick.canSkip(playerProfile, ticksCooldown, this);
     }
 
     public int getCPS() {

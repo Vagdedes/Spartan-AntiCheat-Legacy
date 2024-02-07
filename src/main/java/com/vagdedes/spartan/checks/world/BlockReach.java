@@ -7,7 +7,6 @@ import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -31,10 +30,10 @@ public class BlockReach extends CheckExecutor {
         super(check, player);
     }
 
-    private double getMultiplier(SpartanBlock b, boolean sensitive) {
+    private double getMultiplier() {
         return player.isBedrockPlayer() || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && player.getVehicle() instanceof Strider ? 1.5 :
-                        sensitive && BlockUtils.isSensitive(player, b.getType()) ? Math.min(1 + LagLeniencies.getDelay(player), 1.5) : 1; // Building
+                        1; // Building
     }
 
     private boolean canDo(SpartanBlock b) {
@@ -64,7 +63,7 @@ public class BlockReach extends CheckExecutor {
                         SpartanLocation bloc = block.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                                 limit = getLimit(),
-                                multiplier = getMultiplier(block, false);
+                                multiplier = getMultiplier();
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
                             cancel("type: break, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
@@ -83,7 +82,7 @@ public class BlockReach extends CheckExecutor {
                         SpartanLocation to = player.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                                 limit = getLimit(),
-                                multiplier = getMultiplier(block, true);
+                                multiplier = getMultiplier();
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
                             cancel("type: interact, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
@@ -116,7 +115,7 @@ public class BlockReach extends CheckExecutor {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos + ", block: " + BlockUtils.blockToString(block));
                     } else {
                         double limit = getLimit(),
-                                multiplier = getMultiplier(block, true);
+                                multiplier = getMultiplier();
 
                         if (distance <= MoveUtils.chunk && distance >= (limit * multiplier)) {
                             cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));

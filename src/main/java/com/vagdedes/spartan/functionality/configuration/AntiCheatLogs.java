@@ -5,7 +5,6 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import me.vagdedes.spartan.system.Enums;

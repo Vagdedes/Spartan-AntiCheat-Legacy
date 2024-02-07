@@ -13,6 +13,7 @@ import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
+import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.profiling.MiningHistory;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.profiling.PunishmentHistory;
@@ -160,8 +161,7 @@ public class PlayerInfo extends InventoryMenu {
 
         double delayNumber = isOnline ? LagLeniencies.getDelaySimplified(LagLeniencies.getDelay(player)) : 0.0; // Base
         ResearchEngine.DataType dataType = isOnline ? player.getDataType() : playerProfile.getDataType();
-        boolean tpsDropping = isOnline && LagLeniencies.hasInconsistencies(player, "tps"),
-                latencyLag = isOnline && LagLeniencies.hasInconsistencies(player, "ping"),
+        boolean tpsDropping = isOnline && TPS.areLow(player),
                 notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),
                 detectionsNotAvailable = SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
@@ -174,7 +174,7 @@ public class PlayerInfo extends InventoryMenu {
                         hasData = playerProfile.getEvidence().has(hackType);
 
                 String state = getDetectionState(player, hackType, dataType, cancellableCompatibility, delayNumber, isOnline,
-                        tpsDropping, latencyLag, notChecked, detectionsNotAvailable, !SpartanEdition.supportsCheck(dataType, hackType),
+                        tpsDropping, notChecked, detectionsNotAvailable, !SpartanEdition.supportsCheck(dataType, hackType),
                         !hasViolations && !hasData);
 
                 if (hasViolations || hasData || state != null) {
@@ -211,8 +211,7 @@ public class PlayerInfo extends InventoryMenu {
                 isOnline ? player.getCancellableCompatibility() : null,
                 isOnline ? LagLeniencies.getDelaySimplified(LagLeniencies.getDelay(player)) : 0.0,
                 isOnline,
-                isOnline && LagLeniencies.hasInconsistencies(player, "tps"),
-                isOnline && LagLeniencies.hasInconsistencies(player, "ping"),
+                isOnline && TPS.areLow(player),
                 isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),
                 SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
                 !SpartanEdition.supportsCheck(dataType, hackType),
@@ -237,7 +236,6 @@ public class PlayerInfo extends InventoryMenu {
                                      double delayNumber,
                                      boolean hasPlayer,
                                      boolean tpsDropping,
-                                     boolean latencyIncreasing,
                                      boolean notChecked,
                                      boolean detectionMissing,
                                      boolean detectionUnsupported,
@@ -267,9 +265,8 @@ public class PlayerInfo extends InventoryMenu {
                 cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
                         notChecked ? "Temporarily Not Checked" :
                                 tpsDropping ? "Server Lag" + delay :
-                                        latencyIncreasing ? "Latency Lag" + delay :
-                                                disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                                                        (returnNull ? null : (check.isSilent(worldName, uuid) ? "Silent " : "") + "Checking" + delay);
+                                        disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
+                                                (returnNull ? null : (check.isSilent(worldName, uuid) ? "Silent " : "") + "Checking" + delay);
     }
 
     public void refresh(UUID uuid) {

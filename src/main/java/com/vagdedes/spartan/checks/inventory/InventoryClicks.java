@@ -50,7 +50,7 @@ public class InventoryClicks extends CheckExecutor {
                         && !quick
                         && !PlayerData.isUsingTheCursor(player)
                         && player.getViolations(check).hasLevel()
-                        && buffer.start(key + "shift", 5) > Math.min(10 + LagLeniencies.getDelay(player), 20)) { // Inventory
+                        && buffer.start(key + "shift", 5) > 10) { // Inventory
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);
                 } else {

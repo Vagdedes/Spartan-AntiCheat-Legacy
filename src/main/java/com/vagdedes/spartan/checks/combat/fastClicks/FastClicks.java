@@ -3,7 +3,6 @@ package com.vagdedes.spartan.checks.combat.fastClicks;
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.abstraction.DetectionExecutor;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.data.Clicks;
 import com.vagdedes.spartan.objects.data.Handlers;
@@ -77,7 +76,6 @@ public class FastClicks extends CheckExecutor {
                 && ((PlayerInteractEvent) object).getAction() == Action.LEFT_CLICK_AIR) {
             Clicks clickData = player.getClicks();
             int limit = hackType.getCheck().getNumericalOption("clicks_per_second_limit", defaultClicksPerSecondLimit),
-                    latencyExtra = AlgebraUtils.integerRound(Math.min(LagLeniencies.getDelay(player), 5)),
                     extraLimit = Math.max(limit - defaultClicksPerSecondLimit, 0);
             double globalAverage = ResearchEngine.getAverageCPS();
 
@@ -85,16 +83,15 @@ public class FastClicks extends CheckExecutor {
                 if (globalAverage > limit) {
                     limit = AlgebraUtils.integerCeil(globalAverage) + 1;
                 }
-                limit += latencyExtra;
-                clicksPerSecond.run(clickData, limit, latencyExtra, globalAverage);
+                clicksPerSecond.run(clickData, limit, globalAverage);
             }
             runDetection(
                     "check_click_frequency",
-                    () -> clickFrequency.run(clickData, latencyExtra, extraLimit, globalAverage)
+                    () -> clickFrequency.run(clickData, extraLimit, globalAverage)
             );
             runDetection(
                     "check_click_pattern",
-                    () -> clickPattern.run(clickData, latencyExtra, extraLimit, globalAverage)
+                    () -> clickPattern.run(clickData, extraLimit, globalAverage)
             );
         }
         return false;

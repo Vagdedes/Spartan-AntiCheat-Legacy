@@ -55,7 +55,7 @@ public class Response extends DetectionExecutor {
     }
 
     void runMove(Buffer buffer) {
-        if (buffer.start(key + "=tick", 1) == Math.max(LagLeniencies.getDelay(player), 1)) { // This algorithm runs regardless of combat, so makes sure it runs once per tick or one's latency
+        if (buffer.start(key + "=tick", 1) == 1) { // This algorithm runs regardless of combat, so makes sure it runs once per tick or one's latency
             List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
             if (!entities.isEmpty()) {

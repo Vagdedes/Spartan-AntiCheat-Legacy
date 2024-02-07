@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.moderation.Debug;
 import com.vagdedes.spartan.functionality.protections.ServerFlying;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.Cache;
+import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import com.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import com.vagdedes.spartan.objects.data.Buffer;
@@ -21,7 +22,6 @@ import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -151,6 +151,14 @@ public class EventsHandler7 implements Listener {
             }
         }
 
+        // Lag
+        Buffer buffer = p.getBuffer();
+
+        if (buffer.start("move-event", 1) > 1
+                && TPS.areLow(p)) {
+            return;
+        }
+
         // Values
         double preXZ = AlgebraUtils.getPreDistance(to.getX(), from.getX()) + AlgebraUtils.getPreDistance(to.getZ(), from.getZ()),
                 toY = to.getY(),
@@ -159,37 +167,28 @@ public class EventsHandler7 implements Listener {
                 rem = toY - to.getBlockY(),
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
-        Buffer buffer = p.getBuffer();
-        int tick = buffer.start("move-event", 1);
-        boolean crawling = p.isCrawling(),
-                firstTick = tick == 1,
-                longDistance = dis >= MoveUtils.nearMaxFallingMotion,
-                repetitionDistance = firstTick || longDistance,
-                repetition = repetitionDistance || p.getProfile().isSuspectedOrHacker(handledChecks),
-                checkPlayer = longDistance || !p.canSkipDetectionTick(SpartanLocation.clearanceTick);
+        boolean crawling = p.isCrawling();
 
         // Handlers
         Cooldowns cooldowns = p.getCooldowns();
         CombatProcessing.runMove(p, to, cooldowns, decimals);
 
         // Detections
-        if (checkPlayer && !crawling) {
+        if (!crawling) {
             p.getExecutor(Enums.HackType.Exploits).handle(Exploits.HEAD); // Optimised
             p.getExecutor(Enums.HackType.ImpossibleInventory).run(); // Optimised
             p.getExecutor(Enums.HackType.KillAura).run(); // Optimised
         }
         p.getExecutor(Enums.HackType.Exploits).handle(dis);
 
-        if (!repetitionDistance
-                && (dis == 0.0 || dis < 0.01 && ver == 0.0)
+        if ((dis == 0.0 && p.getCustomDistance() == 0.0
+                || dis < 0.01 && p.getCustomDistance() < 0.01 && ver == 0.0)
                 && p.isOnGround() && p.isOnGroundCustom()) {
             return;
         }
 
         // Values
-        int air = p.getTicksOnAir();
         Entity vehicle = p.getVehicle();
-        boolean hasVehicle = vehicle != null;
 
         // Features
         if (Debug.canRun()) {
@@ -197,38 +196,29 @@ public class EventsHandler7 implements Listener {
                     + "vertical: " + AlgebraUtils.cut(ver, 2) + ", "
                     + "horizontal: " + AlgebraUtils.cut(hor, 2) + ", "
                     + "remaining: " + AlgebraUtils.cut(rem, 5) + ", "
-                    + "air-ticks: " + air + ", "
+                    + "air-ticks: " + p.getTicksOnAir() + ", "
                     + "ground(vanilla/custom): " + p.isOnGround() + "/" + p.isOnGroundCustom()
-                    + (hasVehicle ? ", vehicle: " + CombatUtils.entityToString(vehicle) : ""));
+                    + (vehicle != null ? ", vehicle: " + CombatUtils.entityToString(vehicle) : ""));
         }
 
         // Utils
         MovementProcessing.run(p, to, vehicle, buffer, cooldowns, decimals, dis, hor, ver, rem, crawling); // Optimised
 
         // Detections
-        if (checkPlayer && !crawling && (firstTick || repetition)) {
-            if (firstTick) {
-                ServerFlying.run(p);
-            }
-            p.getExecutor(Enums.HackType.Exploits).handle(Exploits.CHUNK); // Optimised
-            p.getExecutor(Enums.HackType.Speed).handle(Speed.SPRINT); // Optimised
+        if (!crawling) {
+            ServerFlying.run(p);
+            p.getExecutor(Enums.HackType.Exploits).handle(Exploits.CHUNK);
+            p.getExecutor(Enums.HackType.Speed).handle(Speed.SPRINT);
         }
-
         if (heavyMovementChecks) {
-            if (checkPlayer && (firstTick || repetition || tick <= 3)) {
-                // Detections
-                if (firstTick || repetition) {
-                    if (!crawling) {
-                        p.getExecutor(Enums.HackType.NoFall).run(); // Repetitive (Optimised)
-                        p.getExecutor(Enums.HackType.NoSlowdown).run(); // Repetitive (Optimised)
-                        //p.getExecutor(Enums.HackType.EntityMove).run(); // Repetitive (Optimised)
-                    }
-                    p.getExecutor(Enums.HackType.IrregularMovements).run(); // Repetitive (Optimised)
-                }
-                p.getExecutor(Enums.HackType.Speed).run(); // Important (Optimised)
-                p.getExecutor(Enums.HackType.Speed).handle(Speed.WATER); // Repetitive (Optimised)
+            if (!crawling) {
+                p.getExecutor(Enums.HackType.NoFall).run();
+                p.getExecutor(Enums.HackType.NoSlowdown).run();
             }
-            p.getExecutor(Enums.HackType.MorePackets).run(); // Required (Let the check run in all circumstances to accurately count the packets)
+            p.getExecutor(Enums.HackType.IrregularMovements).run();
+            p.getExecutor(Enums.HackType.Speed).run();
+            p.getExecutor(Enums.HackType.Speed).handle(Speed.WATER);
+            p.getExecutor(Enums.HackType.MorePackets).run();
         }
     }
 

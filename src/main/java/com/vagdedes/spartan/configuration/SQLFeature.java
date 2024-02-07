@@ -10,7 +10,6 @@ import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;

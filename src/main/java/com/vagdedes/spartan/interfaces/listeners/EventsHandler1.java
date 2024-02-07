@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Explosion;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
@@ -89,7 +88,6 @@ public class EventsHandler1 implements Listener {
         ChatProtection.remove(p);
 
         // System
-        LagLeniencies.remove(p);
         Cache.clear(p, n, true, true, false, null);
     }
 

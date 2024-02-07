@@ -17,11 +17,10 @@ public class TPS {
     public static final long tickTime = 50L;
     public static final int tickTimeInteger = (int) tickTime;
     public static final double
-            criticalDifference = 0.5,
-            minimum = 18.0,
             maximum = 20.0,
             excellent = 19.5,
             good = 19.0,
+            minimum = 18.0,
             tickTimeDecimal = (double) tickTime;
     private static final Calculator calculator = MultiVersion.folia ? null : new Calculator();
     private static final Map<Integer, Calculator> calculators = MultiVersion.folia ? new LinkedHashMap<>() : null;
@@ -72,18 +71,15 @@ public class TPS {
     // Utils
 
     private static Calculator getCalculator(int hash, boolean create) {
-        return create ? calculators.computeIfAbsent(hash, c -> new Calculator()) :
-                calculators.get(hash);
+        return create
+                ? calculators.computeIfAbsent(hash, c -> new Calculator())
+                : calculators.get(hash);
     }
 
     private static void runCalculator(Calculator calculator) {
         calculator.time = System.currentTimeMillis();
         calculator.tickCalculator[calculator.counter % calculator.tickCalculator.length] = System.currentTimeMillis();
         calculator.counter++;
-
-        if (calculator.protection > 0) {
-            calculator.protection--;
-        }
     }
 
     public static void clear() {
@@ -95,26 +91,6 @@ public class TPS {
     }
 
     // Helpers
-
-    public static void setProtection(SpartanPlayer player, int ticks) {
-        if (!Config.settings.exists(Settings.permissionOption)) {
-            Config.settings.setOption(Settings.permissionOption, false);
-        }
-
-        // Separator
-
-        Calculator calculator;
-
-        if (MultiVersion.folia) {
-            calculator = getCalculator(getHash(player), true);
-        } else {
-            calculator = TPS.calculator;
-        }
-
-        if (ticks > calculator.protection) {
-            calculator.protection = ticks;
-        }
-    }
 
     public static long getMillisecondsPassed(SpartanPlayer player) {
         if (MultiVersion.folia) {
@@ -149,22 +125,22 @@ public class TPS {
 
     // Base
 
-    public static double get(SpartanPlayer player) {
-        return get(player, true);
-    }
+    public static boolean areLow(SpartanPlayer player) {
+        if (TestServer.isIdentified() || Config.settings.getBoolean(Settings.tpsProtectionOption)) {
+            Calculator calculator;
 
-    public static boolean areDropping(SpartanPlayer player) {
-        if (MultiVersion.folia) {
-            Calculator calculator = getCalculator(getHash(player), false);
-            return calculator != null && (calculator.protection > 0
+            if (MultiVersion.folia) {
+                calculator = getCalculator(getHash(player), false);
 
-                    || (TestServer.isIdentified() || Config.settings.getBoolean(Settings.tpsProtectionOption))
-                    && calculator.result(false) < minimum);
+                if (calculator == null) {
+                    return false;
+                }
+            } else {
+                calculator = TPS.calculator;
+            }
+            return calculator.result(false) < minimum;
         } else {
-            return calculator.protection > 0
-
-                    || (TestServer.isIdentified() || Config.settings.getBoolean(Settings.tpsProtectionOption))
-                    && calculator.result(false) < minimum;
+            return false;
         }
     }
 
@@ -172,17 +148,16 @@ public class TPS {
 
         private final long[] tickCalculator;
         private long time;
-        private int counter, protection;
+        private int counter;
 
         private Calculator() {
-            protection = 0;
             counter = 0;
             tickCalculator = new long[600];
         }
 
         private double result(boolean protection) {
             if (counter < minimumCounted
-                    || protection && !Config.settings.getBoolean(Config.settings.tpsProtectionOption)) {
+                    || protection && !Config.settings.getBoolean(Settings.tpsProtectionOption)) {
                 return maximum;
             }
             int target = (counter - 1 - minimumCounted) % tickCalculator.length;
@@ -196,7 +171,6 @@ public class TPS {
         }
 
         private void reset() {
-            protection = 0;
             counter = 0;
             Arrays.fill(tickCalculator, 0L);
         }

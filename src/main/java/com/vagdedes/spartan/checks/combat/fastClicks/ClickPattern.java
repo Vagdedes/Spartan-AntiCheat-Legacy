@@ -27,13 +27,12 @@ public class ClickPattern extends DetectionExecutor {
             bufferTime = 5 * 20;
     private static final double patternPrecision = (1.0 / TPS.tickTimeDecimal) * FastClicks.suspiciousMillisecondCorrelation; // Last number represents the time in milliseconds
 
-    void run(Clicks clickData, int latencyExtra, int extraLimit, double globalAverage) {
+    void run(Clicks clickData, int extraLimit, double globalAverage) {
         int count = clickData.getCount(), limit = FastClicks.suspiciousClicksPerSecond + extraLimit;
 
         if (globalAverage > limit) {
             limit = AlgebraUtils.integerCeil(globalAverage) + 1;
         }
-        limit += latencyExtra;
 
         if (count >= limit) {
             double patternRequirement = AlgebraUtils.ceilToHalf(Clicks.pastStoredTime / (limit * TPS.tickTimeDecimal));
@@ -54,7 +53,6 @@ public class ClickPattern extends DetectionExecutor {
                                         + ", limit: " + limit
                                         + ", pattern-requirement: " + patternRequirement
                                         + ", pattern-precision: " + patternPrecision
-                                        + ", latency-extra: " + latencyExtra
                                         + ", global-average: " + globalAverage
                                         + ", average-pattern: " + averagePattern
                                         + ", last-pattern: " + lastPattern

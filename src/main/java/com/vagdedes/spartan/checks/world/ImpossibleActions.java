@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -98,7 +97,6 @@ public class ImpossibleActions extends CheckExecutor {
                     || action == Action.LEFT_CLICK_BLOCK
                     || action == Action.RIGHT_CLICK_AIR
                     || action == Action.RIGHT_CLICK_BLOCK)
-                    && TPS.get(player) < TPS.excellent
                     && player.canRunCheck(hackType, true)
                     && hackType.getCheck().getBooleanOption("check_actions", true)
                     && !Compatibility.CompatibilityType.mcMMO.isFunctional()) {

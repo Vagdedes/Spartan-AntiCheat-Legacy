@@ -2,7 +2,6 @@ package com.vagdedes.spartan.checks.movement;
 
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.DetectionLocation;
@@ -98,14 +97,12 @@ public class MorePackets extends CheckExecutor {
                 // Instant
                 if (lastTick < 10L) { // First stage
                     if (hackType.getCheck().getBooleanOption("check_instant_movements", true)) {
-                        double delay = LagLeniencies.getDelay(player);
                         boolean decreasedRequirement;
-                        int ticksRequirement = Math.min(10 + AlgebraUtils.integerRound(delay), 15),
-                                tickBuffer = buffer.start(instantMotionKey + "=first", 1),
+                        int tickBuffer = buffer.start(instantMotionKey + "=first", 1),
                                 zeroTickBuffer = lastTick == 0L ? buffer.start(instantMotionKey + "=first=special", 1) : buffer.get(instantMotionKey + "=first=special"),
                                 cases;
 
-                        if (tickBuffer >= ticksRequirement) {
+                        if (tickBuffer >= 10) {
                             cases = 1; // Allow the player to pass when they reach the ticks requirement
                             decreasedRequirement = false;
                         } else if (!bedrockPlayer
@@ -125,7 +122,7 @@ public class MorePackets extends CheckExecutor {
                         if (cases != 0) {
                             SpartanLocation customFrom = player.getFromLocation();
                             double overallDistance = to.distance(customFrom),
-                                    overallLimit = 1.5 + (decreasedRequirement ? 0.0 : Math.min(delay * 0.5, MoveUtils.chunk / 3.0));
+                                    overallLimit = 1.5 + (decreasedRequirement ? 0.0 : MoveUtils.chunk / 3.0);
                             boolean passedLimit;
 
                             if (overallDistance >= overallLimit) {
@@ -150,7 +147,7 @@ public class MorePackets extends CheckExecutor {
                                 if (instant) {
                                     DetectionLocation.set(player, teleportLocation);
                                 }
-                                cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", ticks-requirement: " + ticksRequirement + ", decreased-requirement: " + decreasedRequirement,
+                                cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", decreased-requirement: " + decreasedRequirement,
                                         instant ? teleportLocation : null, instant ? teleportTicks : 0);
                             }
                         }
@@ -164,11 +161,10 @@ public class MorePackets extends CheckExecutor {
                             extraPackets = player.getExtraPackets();
                     double totalHorizontalMotion = decimals.get(horizontalKey, 0.0) + horizontalMotionDifference,
                             totalVerticalMotion = decimals.get(verticalKey, 0.0) + verticalMotionDifference,
-                            tickAverage = (decimals.get(lastTickKey, 0.0) + lastTick) / ((double) cycleTicks),
-                            delay = LagLeniencies.getDelay(player);
+                            tickAverage = (decimals.get(lastTickKey, 0.0) + lastTick) / ((double) cycleTicks);
                     boolean detected;
 
-                    if ((delay < 1.0 ? Math.round(tickAverage) : tickAverage) <= 50.0 && extraTicks >= 5) {
+                    if (Math.round(tickAverage) <= 50.0 && extraTicks >= 5) {
                         boolean instantExtraTicks = extraTicks >= maxTicks,
                                 instantExtraPackets = extraPackets >= (maxTicks / 2),
                                 instant = !bedrockPlayer

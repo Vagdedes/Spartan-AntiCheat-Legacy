@@ -398,7 +398,7 @@ public class Check {
 
         boolean legacy = Config.isLegacy();
         List<String> commands = new ArrayList<>(maxCommands);
-        commands.add("spartan {player} if {tps} > 18.0 do spartan kick {player} {detections}");
+        commands.add("spartan kick {player} {detections}");
 
         for (int position = (commands.size() + 1); position <= maxCommands; position++) {
             commands.add("");
