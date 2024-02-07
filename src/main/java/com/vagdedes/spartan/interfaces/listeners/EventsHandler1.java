@@ -50,9 +50,6 @@ public class EventsHandler1 implements Listener {
         // Object
         p.getProfile().setOnline(p);
 
-        // Protections
-        LagLeniencies.add(p);
-
         // System
         MaximumCheckedPlayers.add(p);
         SpartanEdition.attemptNotification(p);

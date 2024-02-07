@@ -5,7 +5,6 @@ import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.data.Buffer;
@@ -54,8 +53,7 @@ public class FastPlace extends CheckExecutor {
                                     && !player.isBedrockPlayer()
                                     && hackType.getCheck().getBooleanOption("check_fast", true)
                                     && !Compatibility.CompatibilityType.VeinMiner.isFunctional()
-                                    && !LagLeniencies.hasHighLatency(player, LagLeniencies.unplayablePing) // Building
-                                    && buffer.start("fast", ticks) >= (LagLeniencies.hasHighLatency(player, LagLeniencies.averagePing) ? 8 : 4)) { // Building
+                                    && buffer.start("fast", ticks) >= 4) {
                                 cancel(detection + ", ms: " + time + ", block: " + BlockUtils.materialToString(material),
                                         null, ticks);
                             }

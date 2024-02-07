@@ -32,7 +32,8 @@ public class Settings extends ConfigurationBuilder {
     public static final String explosionOption = "Protections.explosion_detection_cooldown",
             permissionOption = "Important.use_permission_cache", // test server
             showEcosystemOption = "Important.show_ecosystem",
-            tpsProtectionOption = "Protections.use_tps_protection";
+            tpsProtectionOption = "Protections.use_tps_protection",
+            maxSupportedLatencyOption = "Protections.max_supported_player_latency";
     private static int usingCustomPunishmentCommands = 0;
 
     @Override
@@ -73,7 +74,7 @@ public class Settings extends ConfigurationBuilder {
 
         addOption("Protections.reconnect_cooldown", 1);
         addOption(tpsProtectionOption, true); // test server
-        addOption("Protections.max_supported_player_latency", 500); // test server
+        addOption(maxSupportedLatencyOption, 500); // test server
         addOption("Protections.use_teleport_protection", false); // test server
         addOption("Protections.avoid_self_bow_damage", true);
         addOption("Protections.player_limit_per_ip", 0);

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.checks.movement;
 
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -68,8 +67,7 @@ public class NoSlowdown extends CheckExecutor {
                     || player.getWorld().getDifficulty() == Difficulty.PEACEFUL
                     || player.hasPotionEffect(PotionEffectType.SATURATION)
                     || !player.getCooldowns(hackType).canDo("food-eating")
-                    || ((FoodLevelChangeEvent) object).getFoodLevel() <= player.getFoodLevel()
-                    || LagLeniencies.hasHighLatency(player, LagLeniencies.badPing)) { // Item
+                    || ((FoodLevelChangeEvent) object).getFoodLevel() <= player.getFoodLevel()) { // Item
                 return false;
             }
             GameMode gameMode = player.getGameMode();
@@ -94,7 +92,6 @@ public class NoSlowdown extends CheckExecutor {
         } else if (object.equals(PACKETS)) {
             runUse("packets", true, 1);
         } else if (hackType.getCheck().getBooleanOption("check_potion", true)
-                && !LagLeniencies.hasHighLatency(player, LagLeniencies.badPing) // Item
                 && player.getItemInHand().getType() == Material.POTION) {
             runUse("potion", true, 1);
         }

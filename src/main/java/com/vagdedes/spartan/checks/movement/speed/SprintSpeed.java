@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.abstraction.DetectionExecutor;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.configuration.Compatibility;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.handlers.tracking.MovementProcessing;
@@ -61,7 +60,6 @@ public class SprintSpeed extends DetectionExecutor {
         if (!player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !Moderation.wasDetected(player)
                 && !player.wasInLiquids()
-                && !LagLeniencies.hasHighLatency(player, LagLeniencies.maxAllowedPing) // Library
                 && PlayerData.getWalkSpeedDifference(player) != 0.0f) {
             Double nmsHorizontalDistance = player.getNmsHorizontalDistance();
 

@@ -33,7 +33,7 @@ public class DetectionTick {
                 && !player.hasNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance)) {
             for (LiveViolation liveViolation : player.getViolations()) {
                 if (liveViolation.hasMaxCancelledLevel()
-                        || liveViolation.getLastViolationTime(true) <= Check.recentViolationSeconds) {
+                        || liveViolation.getLastViolationTime(true) <= 10_000L) {
                     return false;
                 }
             }

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.objects.profiling;
 
-import com.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
@@ -15,7 +14,7 @@ public class PlayerEvidence {
         EvidenceType() {
             switch (this.ordinal()) {
                 case 0:
-                    count = Check.hackerCheckAmount;
+                    count = 2;
                     break;
                 case 1:
                     count = 1;

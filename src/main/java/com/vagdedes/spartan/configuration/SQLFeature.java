@@ -363,7 +363,7 @@ public class SQLFeature extends ConfigurationBuilder {
                     + ", " + (cancelViolation > -1 && hasCheck && !hackType.getCheck().isSilent(hasPlayer ? location.getWorld().getName() : null, uuid) ? syntaxForColumn(cancelViolation) : "NULL")
                     + ");");
 
-            if (list.size() >= Check.sufficientViolations) {
+            if (list.size() >= 10) {
                 Runnable runnable = () -> {
                     for (String insert : list) {
                         update(insert);

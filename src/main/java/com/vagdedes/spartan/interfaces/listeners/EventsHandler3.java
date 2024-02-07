@@ -6,7 +6,10 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.moderation.BanManagement;
-import com.vagdedes.spartan.functionality.protections.*;
+import com.vagdedes.spartan.functionality.protections.Explosion;
+import com.vagdedes.spartan.functionality.protections.InteractionsPerTick;
+import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.handlers.bug.FalseFallDamage;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
@@ -138,7 +141,7 @@ public class EventsHandler3 implements Listener {
         UUID uuid = n.getUniqueId();
 
         // Protections
-        CheckProtection.cancel(uuid, SpartanBukkit.hasResourcePack ? ((LagLeniencies.maxServerPing / 1000) * 20) : 5, false);
+        CheckProtection.cancel(uuid, SpartanBukkit.hasResourcePack ? 100 : 5, false);
 
         // Configuration
         BanManagement.run(n, e);

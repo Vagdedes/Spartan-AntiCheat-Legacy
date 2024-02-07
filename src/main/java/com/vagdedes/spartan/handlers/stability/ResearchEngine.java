@@ -1248,7 +1248,7 @@ public class ResearchEngine {
                                 if (bedrock == playerProfile.isBedrockPlayer()
                                         && !playerProfile.wasStaff()
                                         && !playerProfile.wasTesting()
-                                        && playerProfile.getEvidence().getCount() <= (Check.hackerCheckAmount - 1)) {
+                                        && playerProfile.isLegitimate()) {
                                     List<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getViolationsList();
 
                                     // Organize the violations into time period pieces

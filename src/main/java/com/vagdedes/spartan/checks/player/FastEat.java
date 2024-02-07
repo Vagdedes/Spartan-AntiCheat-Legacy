@@ -2,7 +2,6 @@ package com.vagdedes.spartan.checks.player;
 
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Timer;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -142,7 +141,6 @@ public class FastEat extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && player.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && !player.hasPotionEffect(PotionEffectType.SATURATION)
-                && !LagLeniencies.hasHighLatency(player, LagLeniencies.averagePing); // Item
+                && !player.hasPotionEffect(PotionEffectType.SATURATION);
     }
 }

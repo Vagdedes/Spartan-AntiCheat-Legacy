@@ -32,7 +32,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     private double getMultiplier(SpartanBlock b, boolean sensitive) {
-        return player.isBedrockPlayer() || LagLeniencies.hasHighLatency(player, LagLeniencies.continentPing) || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
+        return player.isBedrockPlayer() || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && player.getVehicle() instanceof Strider ? 1.5 :
                         sensitive && BlockUtils.isSensitive(player, b.getType()) ? Math.min(1 + LagLeniencies.getDelay(player), 1.5) : 1; // Building
     }

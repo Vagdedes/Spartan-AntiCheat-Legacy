@@ -63,7 +63,7 @@ public class AntiCheatLogs {
                 information
         );
 
-        if (!playerRelated || (id % Check.sufficientViolations) == 0) {
+        if (!playerRelated || (id % 10) == 0) {
             if (SpartanBukkit.isSynchronised()) {
                 SpartanBukkit.storageThread.executeIfFreeElseHere(AntiCheatLogs::save);
             } else {

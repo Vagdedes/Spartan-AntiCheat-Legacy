@@ -30,18 +30,14 @@ public class Check {
 
     // Static Values
 
-    public static final long
-            violationCycleSeconds = 60_000L,
-            recentViolationSeconds = 10_000L;
+    public static final long violationCycleSeconds = 60_000L;
 
     public static final int
             maxCommands = 10,
             maxMath = 10,
             maxViolationsPerCycle = 100,
-            sufficientViolations = (maxViolationsPerCycle / 10),
             minimumDefaultCancelViolation = 1,
-            maximumDefaultCancelViolation = 6,
-            hackerCheckAmount = 3;
+            maximumDefaultCancelViolation = 6;
 
     public static final Enums.PunishmentCategory analysisMultiplierCategory = Enums.PunishmentCategory.CERTAIN;
     public static final double analysisMultiplier = analysisMultiplierCategory.getMultiplier();

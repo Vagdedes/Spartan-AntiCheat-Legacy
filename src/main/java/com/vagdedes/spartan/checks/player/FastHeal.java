@@ -2,7 +2,6 @@ package com.vagdedes.spartan.checks.player;
 
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Decimals;
 import com.vagdedes.spartan.objects.data.Timer;
@@ -58,8 +57,7 @@ public class FastHeal extends CheckExecutor {
                     long time = player.getTimer(hackType).get(checkID);
 
                     if (timer.has(time) && decimals.has(previousHealth)
-                            && previousHealth != health
-                            && !LagLeniencies.hasHighLatency(player, LagLeniencies.mediocrePing)) { // Library
+                            && previousHealth != health) {
                         long limit = calculate();
 
                         if (limit > 0L) {

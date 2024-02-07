@@ -5,7 +5,6 @@ import com.vagdedes.spartan.functionality.moderation.Debug;
 import com.vagdedes.spartan.functionality.moderation.Spectate;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.protections.LagLeniencies;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.functionality.synchronicity.AutoUpdater;
@@ -153,7 +152,6 @@ public class Cache {
         PlayerLimitPerIP.clear();
         Spectate.clear();
         ReconnectCooldown.clear();
-        LagLeniencies.clear();
         AwarenessNotifications.clear();
         Debug.clear();
 
