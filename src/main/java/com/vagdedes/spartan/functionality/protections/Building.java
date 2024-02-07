@@ -39,7 +39,7 @@ public class Building {
                     teleport(p, p.getLocation());
                     p.groundTeleport(false);
                 }
-                p.getExecutor(Enums.HackType.Exploits).handle(Exploits.BUILDING);
+                p.getExecutor(Enums.HackType.Exploits).handle(true, Exploits.BUILDING);
                 return;
             }
         }

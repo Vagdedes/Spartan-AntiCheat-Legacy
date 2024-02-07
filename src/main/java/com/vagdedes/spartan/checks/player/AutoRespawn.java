@@ -34,7 +34,7 @@ public class AutoRespawn extends CheckExecutor {
                             if (p != null) {
                                 SpartanBukkit.runTask(p, () -> {
                                     if (p != null && !p.isDead()) {
-                                        p.getExecutor(check).handle(time);
+                                        p.getExecutor(check).handle(false, time);
                                     }
                                 });
                             }
