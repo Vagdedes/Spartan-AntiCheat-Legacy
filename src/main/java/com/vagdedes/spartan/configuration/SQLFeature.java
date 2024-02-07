@@ -122,6 +122,10 @@ public class SQLFeature extends ConfigurationBuilder {
         return getBoolean("use_SSL");
     }
 
+    public boolean getPublicKeyRetrieval() {
+        return getBoolean("allow_public_key_retrieval");
+    }
+
     // Separator
 
     public void refreshConfiguration() {
@@ -172,6 +176,7 @@ public class SQLFeature extends ConfigurationBuilder {
         addOption("driver", "mysql");
         addOption("tls_Version", "");
         addOption("use_SSL", true);
+        addOption("allow_public_key_retrieval", false);
         addOption("escape_special_characters", false);
         refreshConfiguration();
 
@@ -223,7 +228,7 @@ public class SQLFeature extends ConfigurationBuilder {
             } else if (databaseLength == 0) {
                 enabled = false;
                 AwarenessNotifications.forcefullySend("SQL Configuration Error: Database is blank");
-            } else if (table.length() == 0) {
+            } else if (table.isEmpty()) {
                 enabled = false;
                 AwarenessNotifications.forcefullySend("SQL Configuration Error: Table is blank");
             } else if (!AlgebraUtils.validInteger(port) && !AlgebraUtils.validDecimal(port)) {
@@ -236,15 +241,16 @@ public class SQLFeature extends ConfigurationBuilder {
                 String driver = getDriver();
 
                 try {
-                    if (driver.length() == 0) {
+                    if (driver.isEmpty()) {
                         AwarenessNotifications.forcefullySend("SQL Configuration Error: Driver is blank");
                     } else {
                         String tlsVersion = getTLSVersion();
                         con = DriverManager.getConnection("jdbc:" + driver + "://" + host + ":" + port + "/" + database + "?" +
                                         "autoReconnect=true" +
                                         "&maxReconnects=10" +
-                                        (tlsVersion != null && tlsVersion.length() > 0 ? "&enabledTLSProtocols=TLSv" + tlsVersion : "") +
-                                        "&useSSL=" + getSSL(),
+                                        (tlsVersion != null && !tlsVersion.isEmpty() ? "&enabledTLSProtocols=TLSv" + tlsVersion : "") +
+                                        "&useSSL=" + getSSL() +
+                                        "&allowPublicKeyRetrieval=" + getPublicKeyRetrieval(),
                                 user, password);
                         createTable(table);
                     }

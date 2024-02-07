@@ -76,6 +76,7 @@ public class SpartanEdition {
                         get2_0_ProductID(getVersion())
                 )) {
                     v_2_0 = true;
+                    Config.messages.clear();
                 }
                 for (Enums.HackType hackType : Enums.HackType.values()) {
                     hackType.resetCheck();
