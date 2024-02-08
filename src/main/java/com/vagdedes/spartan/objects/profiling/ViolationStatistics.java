@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.objects.profiling;
 
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
@@ -252,14 +253,13 @@ public class ViolationStatistics {
                             } else {
                                 profile.getEvidence().historical.remove(hackType);
                             }
-                        } else {
-                            profile.getEvidence().historical.remove(hackType);
                         }
                     }
                 }
             } else {
                 profileAverageProbability.remove(majorHash);
                 remove(playerProfiles, hackType, dataType);
+                AwarenessNotifications.forcefullySend("4");
             }
         }
     }

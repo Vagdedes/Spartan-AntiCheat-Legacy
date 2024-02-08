@@ -511,14 +511,18 @@ public class Check {
 
         // Separator
 
-        if (silent instanceof Boolean) {
-            this.handleCancelledEvents = (boolean) handleCancelledEvents;
-        } else if (silent instanceof Long || silent instanceof Integer || silent instanceof Short) {
-            this.handleCancelledEvents = ((long) silent) > 0L;
-        } else if (silent instanceof Double || silent instanceof Float) {
-            this.handleCancelledEvents = ((double) silent) > 0.0;
+        if (handleCancelledEvents != null) {
+            if (handleCancelledEvents instanceof Boolean) {
+                this.handleCancelledEvents = (boolean) handleCancelledEvents;
+            } else if (handleCancelledEvents instanceof Long || handleCancelledEvents instanceof Integer || handleCancelledEvents instanceof Short) {
+                this.handleCancelledEvents = ((long) handleCancelledEvents) > 0L;
+            } else if (handleCancelledEvents instanceof Double || handleCancelledEvents instanceof Float) {
+                this.handleCancelledEvents = ((double) handleCancelledEvents) > 0.0;
+            } else {
+                this.handleCancelledEvents = Boolean.parseBoolean(handleCancelledEvents.toString().toLowerCase());
+            }
         } else {
-            this.handleCancelledEvents = Boolean.parseBoolean(silent.toString().toLowerCase());
+            this.handleCancelledEvents = false;
         }
 
         // Separator

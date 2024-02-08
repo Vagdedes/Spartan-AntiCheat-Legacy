@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
 import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -12,7 +13,8 @@ import java.util.Collection;
 public class FalsePositiveDetection {
 
     public static boolean canFunction() {
-        return Config.settings.getBoolean("Performance.enable_false_positive_detection");
+        return !TestServer.isIdentified()
+                && Config.settings.getBoolean("Performance.enable_false_positive_detection");
     }
 
     public static int getSimplifiedNumber(Enums.HackType hackType, String detection, Collection<Number> numbers) {

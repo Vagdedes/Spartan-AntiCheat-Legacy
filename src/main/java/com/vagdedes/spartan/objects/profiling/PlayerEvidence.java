@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.objects.profiling;
 
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
@@ -7,22 +8,14 @@ import java.util.*;
 public class PlayerEvidence {
 
     enum EvidenceType {
-        Hacker, Suspected, Legitimate;
+        Hacker(2),
+        Suspected(1),
+        Legitimate(0);
 
-        private final int count;
+        private final int requirement;
 
-        EvidenceType() {
-            switch (this.ordinal()) {
-                case 0:
-                    count = 2;
-                    break;
-                case 1:
-                    count = 1;
-                    break;
-                default:
-                    count = 0;
-                    break;
-            }
+        EvidenceType(int requirement) {
+            this.requirement = requirement;
         }
     }
 
@@ -86,12 +79,6 @@ public class PlayerEvidence {
 
     // Separator
 
-    public int getCount() {
-        return this.getKnowledgeList().size();
-    }
-
-    // Separator
-
     boolean has(EvidenceType type) {
         return this.type == type;
     }
@@ -109,11 +96,10 @@ public class PlayerEvidence {
         EvidenceType type = this.type;
 
         for (EvidenceType evidenceType : EvidenceType.values()) {
-            if (count >= evidenceType.count
-                    && this.type.count < evidenceType.count) {
+            if (count >= evidenceType.requirement) {
                 type = evidenceType;
 
-                if (evidenceType == EvidenceType.Hacker) {
+                if (evidenceType != EvidenceType.Legitimate) {
                     break;
                 }
             }

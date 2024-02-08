@@ -176,9 +176,6 @@ public class ResearchEngine {
     }
 
     public static boolean enoughData() {
-        if (enoughData) {
-            return !TestServer.isIdentified();
-        }
         Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
 
         if (playerProfiles.size() >= profileRequirement) {
