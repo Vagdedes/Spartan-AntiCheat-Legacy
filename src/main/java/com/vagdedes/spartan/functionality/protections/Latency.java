@@ -17,12 +17,7 @@ public class Latency {
         } else {
             try {
                 Object obj = SpartanBukkit.getCraftPlayerMethod(p, "ping");
-
-                if (obj instanceof Integer) {
-                    return Math.max((int) obj, 0);
-                } else {
-                    return 0;
-                }
+                return obj instanceof Integer ? Math.max((int) obj, 0) : 0;
             } catch (Exception ignored) {
                 return 0;
             }
@@ -76,9 +71,4 @@ public class Latency {
                 TPS.maximum
         );
     }
-
-    public static double getDelaySimplified(double delay) {
-        return delay > 0.0 && delay < 0.5 ? 0.5 : AlgebraUtils.roundToHalf(delay);
-    }
-
 }

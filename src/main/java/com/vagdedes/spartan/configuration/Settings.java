@@ -150,7 +150,7 @@ public class Settings extends ConfigurationBuilder {
                         if (number >= 1 && number <= Check.maxCommands) {
                             String command = getString(sectionString + number);
 
-                            if (command != null && command.length() > 0) {
+                            if (command != null && !command.isEmpty()) {
                                 list.add(command);
                             }
                         }
@@ -160,44 +160,5 @@ public class Settings extends ConfigurationBuilder {
             return list;
         }
         return new LinkedList<>();
-    }
-
-    public boolean isUsingCustomPunishmentCommands() {
-        if (usingCustomPunishmentCommands != 0) {
-            return usingCustomPunishmentCommands == 1;
-        }
-        if (Config.isLegacy()) {
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                Check check = hackType.getCheck();
-
-                for (int i = 1; i < Check.maxViolationsPerCycle; i++) {
-                    String[] commands = check.getLegacyCommands(i);
-
-                    if (commands.length > 0) {
-                        for (String command : commands) {
-                            if (CommandExecution.isCustomCommand(command)) {
-                                usingCustomPunishmentCommands = 1;
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                String[] commands = hackType.getCheck().getCommands();
-
-                if (commands.length > 0) {
-                    for (String command : commands) {
-                        if (CommandExecution.isCustomCommand(command)) {
-                            usingCustomPunishmentCommands = 1;
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        usingCustomPunishmentCommands = -1;
-        return false;
     }
 }

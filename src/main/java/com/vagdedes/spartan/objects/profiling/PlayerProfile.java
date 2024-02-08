@@ -2,6 +2,7 @@ package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
 import com.vagdedes.spartan.functionality.important.Permissions;
+import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.gui.spartan.MainMenu;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
@@ -247,13 +248,16 @@ public class PlayerProfile {
 
     public boolean calculateLiveEvidence(SpartanPlayer player, Enums.HackType hackType, ResearchEngine.DataType dataType) {
         synchronized (evidence.live) {
-            if (evidence.live.containsKey(hackType) || evidence.historical.containsKey(hackType)) {
+            if (evidence.live.containsKey(hackType)
+                    || evidence.historical.containsKey(hackType)) {
                 return true;
             }
             Check check = hackType.getCheck();
 
             if (check.supportsLiveEvidence()) {
-                int violationCount = player.getViolations(hackType).getLevel() - check.getCancelViolation();
+                int violationCount = player.getViolations(hackType).getLevel()
+                        - check.getCancelViolation()
+                        - AlgebraUtils.integerCeil(Latency.getDelay(player));
 
                 if (violationCount > 0) {
                     violationCount += punishmentHistory.getReportCount(hackType, 0);

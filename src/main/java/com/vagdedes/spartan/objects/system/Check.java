@@ -75,37 +75,6 @@ public class Check {
         return hackType != Enums.HackType.XRay;
     }
 
-    // Separator
-
-    public static boolean isUsingCustomCheckNames() {
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            if (!hackType.getCheck().getName().equals(hackType.toString())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isUsingPerWorldFeatures() {
-        List<World> worlds = Bukkit.getWorlds();
-
-        if (!worlds.isEmpty()) {
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                Check check = hackType.getCheck();
-
-                for (World worldObject : worlds) {
-                    String world = worldObject.getName();
-
-                    if (!check.isEnabledOnWorld(world)
-                            || check.isSilentOnWorld(world)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     // Object Values
 
     private final Enums.HackType hackType;

@@ -1542,21 +1542,19 @@ public class SpartanPlayer {
     }
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        x = Math.max(Math.max(x, y), z);
+        double max = Math.max(Math.max(x, y), z);
 
         synchronized (nearbyEntitiesLock) {
-            if (x > nearbyEntitiesDistance) {
+            if (max > nearbyEntitiesDistance) {
                 Player p = this.getPlayer();
 
                 if (p != null) {
-                    nearbyEntitiesDistance = x;
+                    nearbyEntitiesDistance = max;
 
                     if (SpartanBukkit.isSynchronised()) {
-                        double finalX = x;
-
                         SpartanBukkit.runTask(this, () -> {
                             nearbyEntities.clear();
-                            nearbyEntities.addAll(p.getNearbyEntities(finalX, finalX, finalX));
+                            nearbyEntities.addAll(p.getNearbyEntities(x, y, z));
                         });
                     } else {
                         SpartanLocation loc = this.getLocation();
@@ -1576,7 +1574,7 @@ public class SpartanPlayer {
                                 Entity entity = iterator.next();
 
                                 if (entity instanceof LivingEntity ? entity.isDead() : !(entity instanceof Vehicle)
-                                        || loc.distance(entity.getLocation()) > x) {
+                                        || loc.distance(entity.getLocation()) > max) {
                                     iterator.remove();
                                 }
                             }
@@ -1603,7 +1601,7 @@ public class SpartanPlayer {
                     Entity entity = iterator.next();
 
                     if (entity instanceof LivingEntity && entity.isDead()
-                            || loc.distance(entity.getLocation()) > x) {
+                            || loc.distance(entity.getLocation()) > max) {
                         iterator.remove();
                     }
                 }

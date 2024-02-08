@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.important;
 
 import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.configuration.Settings;
 import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -24,7 +25,7 @@ public class Permissions {
     };
 
     public static boolean isCacheEnabled() {
-        return Config.settings.getBoolean("Important.use_permission_cache");
+        return Config.settings.getBoolean(Settings.permissionOption);
     }
 
     public static void clear() {

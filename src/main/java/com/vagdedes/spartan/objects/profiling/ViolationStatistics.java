@@ -10,9 +10,12 @@ import java.util.*;
 
 public class ViolationStatistics {
 
-    private static final Map<Integer, Map<Integer, Integer>> violationProbabilityPie = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<Integer, Map<PlayerProfile, Double>> profileAverageProbability = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<Integer, Map<Double, Integer>> profileProbabilityWave = new LinkedHashMap<>();
+    private static final Map<Integer, Map<Integer, Integer>> violationProbabilityPie
+            = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Integer, Map<PlayerProfile, Double>> profileAverageProbability
+            = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Integer, Map<Double, Integer>> profileProbabilityWave
+            = new LinkedHashMap<>();
     private static boolean running = false;
 
     // Separator
@@ -255,7 +258,10 @@ public class ViolationStatistics {
                             probability = wave.getPosition(probability);
 
                             if (probability <= 0.1) {
-                                profile.getEvidence().historical.put(hackType, "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%");
+                                profile.getEvidence().historical.put(
+                                        hackType,
+                                        "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%"
+                                );
                             } else {
                                 profile.getEvidence().historical.remove(hackType);
                             }
@@ -270,4 +276,5 @@ public class ViolationStatistics {
             }
         }
     }
+
 }

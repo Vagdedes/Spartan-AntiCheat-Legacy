@@ -22,6 +22,7 @@ import com.vagdedes.spartan.objects.system.CancelCause;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
+import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -159,7 +160,7 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        double delayNumber = isOnline ? Latency.getDelaySimplified(Latency.getDelay(player)) : 0.0; // Base
+        double delayNumber = isOnline ? AlgebraUtils.roundToHalf(Latency.getDelay(player)) : 0.0; // Base
         ResearchEngine.DataType dataType = isOnline ? player.getDataType() : playerProfile.getDataType();
         boolean tpsDropping = isOnline && TPS.areLow(player),
                 notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),
@@ -209,7 +210,7 @@ public class PlayerInfo extends InventoryMenu {
                 hackType,
                 dataType,
                 isOnline ? player.getCancellableCompatibility() : null,
-                isOnline ? Latency.getDelaySimplified(Latency.getDelay(player)) : 0.0,
+                isOnline ? AlgebraUtils.roundToHalf(Latency.getDelay(player)) : 0.0,
                 isOnline,
                 isOnline && TPS.areLow(player),
                 isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),
