@@ -24,8 +24,7 @@ public class FalsePositiveDetection {
                     hash = (hash * SpartanBukkit.hashCodeMultiplier)
                             + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), 2));
                 } else {
-                    hash = (hash * SpartanBukkit.hashCodeMultiplier)
-                            + AlgebraUtils.roundToNearest(number.intValue(), 2);
+                    hash = (hash * SpartanBukkit.hashCodeMultiplier) + number.intValue();
                 }
             }
         }
