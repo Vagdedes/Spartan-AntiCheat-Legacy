@@ -2,7 +2,6 @@ package com.vagdedes.spartan.interfaces.listeners;
 
 import com.vagdedes.spartan.abstraction.InventoryMenu;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.moderation.Spectate;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Piston;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
@@ -61,12 +60,8 @@ public class EventsHandler4 implements Listener {
         if (p == null) {
             return;
         }
-        if (Spectate.isUsing(p)) {
-            e.setCancelled(true);
-        } else {
-            // Objects
-            p.setInventory(n.getInventory(), n.getOpenInventory());
-        }
+        // Objects
+        p.setInventory(n.getInventory(), n.getOpenInventory());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

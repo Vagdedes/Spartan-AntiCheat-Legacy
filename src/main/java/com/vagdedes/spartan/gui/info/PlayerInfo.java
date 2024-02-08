@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.InventoryMenu;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.moderation.Spectate;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
@@ -90,8 +89,8 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§c" + PlayerStateLists.noDataAvailable);
             }
             int miningHistoryMines = playerProfile.getOverallMiningHistory().getMines(),
-                    information = 33,
-                    reset = 34;
+                    information = 29,
+                    reset = 33;
             ItemStack item = miningHistoryMines > 0 ?
                     new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(miningHistoryMines, 64), (short) 14) :
                     new ItemStack(Material.QUARTZ_BLOCK);
@@ -127,9 +126,6 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§cClick to delete the player's stored data.");
                 add("§4Reset", lore, new ItemStack(Material.REDSTONE), reset);
             }
-            add("§2Debug", null, new ItemStack(Material.IRON_SWORD), 28);
-            add("§2Spectate", null, new ItemStack(MaterialUtils.get("watch")), 29);
-
             add("§c" + (back ? "Back" : "Close"), AntiCheatUpdates.getInformation(false),
                     new ItemStack(Material.ARROW), 31);
             return true;
@@ -316,33 +312,7 @@ public class PlayerInfo extends InventoryMenu {
         String item = itemStack.getItemMeta().getDisplayName();
         item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (item.equals("Debug")) {
-            if (!Permissions.has(player, Permission.INFO) && !Permissions.has(player, Permission.MANAGE)) {
-                player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
-            } else {
-                String playerName = title.substring(menu.length());
-                SpartanPlayer t = SpartanBukkit.getPlayer(playerName);
-
-                if (t == null) {
-                    player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
-                } else {
-                    SpartanMenu.debugMenu.open(player, t);
-                }
-            }
-        } else if (item.equals("Spectate")) {
-            if (!Permissions.has(player, Permission.INFO) && !Permissions.has(player, Permission.MANAGE)) {
-                player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
-            } else {
-                String playerName = title.substring(menu.length());
-                SpartanPlayer t = SpartanBukkit.getPlayer(playerName);
-
-                if (t == null) {
-                    player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
-                } else {
-                    Spectate.run(player, t);
-                }
-            }
-        } else if (item.equals("Reset")) {
+        if (item.equals("Reset")) {
             String playerName = title.substring(menu.length());
 
             if (!Permissions.has(player, Permission.MANAGE)) {

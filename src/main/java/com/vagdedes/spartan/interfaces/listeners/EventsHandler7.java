@@ -8,7 +8,6 @@ import com.vagdedes.spartan.checks.movement.NoSlowdown;
 import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.moderation.Debug;
 import com.vagdedes.spartan.functionality.protections.ServerFlying;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.Cache;
@@ -21,7 +20,6 @@ import com.vagdedes.spartan.objects.data.Decimals;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -187,17 +185,6 @@ public class EventsHandler7 implements Listener {
 
         // Values
         Entity vehicle = p.getVehicle();
-
-        // Features
-        if (Debug.canRun()) {
-            Debug.inform(p, Enums.Debug.MOVEMENT, "distance: " + AlgebraUtils.cut(dis, 2) + ", "
-                    + "vertical: " + AlgebraUtils.cut(ver, 2) + ", "
-                    + "horizontal: " + AlgebraUtils.cut(hor, 2) + ", "
-                    + "remaining: " + AlgebraUtils.cut(rem, 5) + ", "
-                    + "air-ticks: " + p.getTicksOnAir() + ", "
-                    + "ground(vanilla/custom): " + p.isOnGround() + "/" + p.isOnGroundCustom()
-                    + (vehicle != null ? ", vehicle: " + CombatUtils.entityToString(vehicle) : ""));
-        }
 
         // Utils
         MovementProcessing.run(p, to, vehicle, buffer, cooldowns, decimals, dis, hor, ver, rem, crawling); // Optimised

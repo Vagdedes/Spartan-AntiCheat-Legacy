@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.handlers.stability;
 
 import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.moderation.Debug;
-import com.vagdedes.spartan.functionality.moderation.Spectate;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
@@ -97,11 +95,6 @@ public class Cache {
             clearCheckCache(p);
         }
 
-        // Features
-        if (leave) {
-            Spectate.remove(p, true);
-        }
-
         // Detections
         if (newLocation != null) {
             p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, newLocation);
@@ -150,10 +143,8 @@ public class Cache {
         DetectionNotifications.clear();
         CrossServerInformation.clear();
         PlayerLimitPerIP.clear();
-        Spectate.clear();
         ReconnectCooldown.clear();
         AwarenessNotifications.clear();
-        Debug.clear();
 
         // Configuration
         Config.create();

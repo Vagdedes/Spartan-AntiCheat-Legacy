@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.objects.profiling;
 
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;

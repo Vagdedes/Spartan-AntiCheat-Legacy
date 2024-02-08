@@ -8,10 +8,7 @@ import com.vagdedes.spartan.compatibility.manual.essential.Essentials;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.commands.RawCommands;
-import com.vagdedes.spartan.functionality.commands.UnbanCommand;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.moderation.Debug;
 import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -24,7 +21,6 @@ import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -58,8 +54,7 @@ public class EventsHandler6 implements Listener {
         }
         String msg = e.getMessage();
 
-        if (ChatProtection.runCommand(p, msg, false)
-                || RawCommands.run(p, msg)) {
+        if (ChatProtection.runCommand(p, msg, false)) {
             e.setCancelled(true);
         } else {
             boolean cancelled = e.isCancelled();
@@ -67,7 +62,6 @@ public class EventsHandler6 implements Listener {
             if (!cancelled) {
                 // Compatibility
                 Essentials.run(p, msg);
-                UnbanCommand.run(p, msg);
             }
 
             // Detections
@@ -127,14 +121,6 @@ public class EventsHandler6 implements Listener {
 
                 // Compatibility
                 NoHitDelay.runDealDamage(player, entity);
-
-                // Feature
-                if (Debug.canRun()) {
-                    Debug.inform(player, Enums.Debug.COMBAT, "entity: " + CombatUtils.entityToString(entity) + ", "
-                            + "width: " + AlgebraUtils.cut(utility[0], 5) + ", "
-                            + "height: " + AlgebraUtils.cut(utility[1], 5) + ", "
-                            + "distance: " + AlgebraUtils.cut(distance, 2));
-                }
 
                 // Object
                 if (isPlayer) {

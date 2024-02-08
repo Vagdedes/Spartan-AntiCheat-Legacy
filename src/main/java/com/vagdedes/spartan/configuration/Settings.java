@@ -2,7 +2,6 @@ package com.vagdedes.spartan.configuration;
 
 import com.vagdedes.spartan.abstraction.ConfigurationBuilder;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.commands.RawCommands;
 import com.vagdedes.spartan.functionality.moderation.PlayerReports;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
@@ -51,7 +50,6 @@ public class Settings extends ConfigurationBuilder {
 
         addOption("Punishments.broadcast_on_punishment", true);
         addOption("Punishments.report_reasons", StringUtils.toString(PlayerReports.reasons, PlayerReports.separator));
-        RawCommands.create();
 
         addOption("Logs.log_file", true);
         addOption("Logs.log_console", true);

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.interfaces.listeners;
 
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
-import com.vagdedes.spartan.functionality.moderation.Debug;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.protections.Building;
 import com.vagdedes.spartan.functionality.protections.Explosion;
@@ -10,8 +9,6 @@ import com.vagdedes.spartan.handlers.identifiers.simple.SensitiveBlockBreak;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -100,15 +97,6 @@ public class EventsHandler5 implements Listener {
             p.getExecutor(Enums.HackType.ImpossibleActions).handle(cancelled, e);
         }
 
-        if (!cancelled) {
-            // Features
-            if (Debug.canRun()) {
-                Debug.inform(p, Enums.Debug.MISC, "type: breaking, "
-                        + "block: " + b.getType().toString().toLowerCase().replace("_", "-") + ", "
-                        + "distance: " + AlgebraUtils.cut(p.getLocation().distance(b.getLocation()), 5));
-            }
-        }
-
         // Protections
         SensitiveBlockBreak.run(p, cancelled, b);
 
@@ -154,17 +142,6 @@ public class EventsHandler5 implements Listener {
             p.getExecutor(Enums.HackType.ImpossibleActions).handle(cancelled, e);
             p.getExecutor(Enums.HackType.BlockReach).handle(cancelled, e);
             p.getExecutor(Enums.HackType.FastPlace).handle(cancelled, e);
-        }
-
-        if (!cancelled) {
-            // Feature
-            if (Debug.canRun()) {
-                Debug.inform(p, Enums.Debug.MISC, "type: placing, "
-                        + "block: " + b.getType() + ", "
-                        + "distance: " + AlgebraUtils.cut(p.getLocation().distance(b.getLocation()), 2) + ", "
-                        + "block-against: " + BlockUtils.materialToString(ba.getType()) + ", "
-                        + "block-face: " + blockFace);
-            }
         }
 
         if (p.getViolations(Enums.HackType.FastPlace).process()
