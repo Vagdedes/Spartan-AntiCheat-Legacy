@@ -2,7 +2,6 @@ package com.vagdedes.spartan.configuration;
 
 import com.vagdedes.spartan.abstraction.ConfigurationBuilder;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.moderation.PlayerReports;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
@@ -11,7 +10,6 @@ import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -49,7 +47,6 @@ public class Settings extends ConfigurationBuilder {
         clear();
 
         addOption("Punishments.broadcast_on_punishment", true);
-        addOption("Punishments.report_reasons", StringUtils.toString(PlayerReports.reasons, PlayerReports.separator));
 
         addOption("Logs.log_file", true);
         addOption("Logs.log_console", true);
@@ -103,7 +100,6 @@ public class Settings extends ConfigurationBuilder {
         addOption(DiscordWebhooks.configurationSection + ".webhook_hex_color", "4caf50");
         addOption(DiscordWebhooks.configurationSection + ".checks_webhook_url", "");
         addOption(DiscordWebhooks.configurationSection + ".punishments_webhook_url", "");
-        addOption(DiscordWebhooks.configurationSection + ".reports_webhook_url", "");
         addOption(DiscordWebhooks.configurationSection + ".communication_webhook_url", "");
 
         if (!local && exists) {

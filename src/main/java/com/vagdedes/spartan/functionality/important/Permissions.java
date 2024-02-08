@@ -21,7 +21,6 @@ public class Permissions {
             Enums.Permission.STAFF_CHAT, Enums.Permission.WAVE, Enums.Permission.WARN,
             Enums.Permission.ADMIN, Enums.Permission.KICK, Enums.Permission.NOTIFICATIONS,
             Enums.Permission.USE_BYPASS, Enums.Permission.MANAGE, Enums.Permission.INFO,
-            Enums.Permission.UNBAN, Enums.Permission.BAN
     };
 
     public static boolean isCacheEnabled() {

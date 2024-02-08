@@ -181,22 +181,27 @@ public class API {
         return BackgroundAPI.isBypassing(p, HackType);
     }
 
+    @Deprecated
     public static void banPlayer(UUID uuid, String reason) {
         BackgroundAPI.banPlayer(uuid, reason);
     }
 
+    @Deprecated
     public static boolean isBanned(UUID uuid) {
         return BackgroundAPI.isBanned(uuid);
     }
 
+    @Deprecated
     public static void unbanPlayer(UUID uuid) {
         BackgroundAPI.unbanPlayer(uuid);
     }
 
+    @Deprecated
     public static String getBanReason(UUID uuid) {
         return BackgroundAPI.getBanReason(uuid);
     }
 
+    @Deprecated
     public static String getBanPunisher(UUID uuid) {
         return BackgroundAPI.getBanPunisher(uuid);
     }
@@ -223,6 +228,7 @@ public class API {
         return BackgroundAPI.getCPS(p);
     }
 
+    @Deprecated
     public static UUID[] getBanList() {
         return BackgroundAPI.getBanList();
     }

@@ -24,7 +24,7 @@ public class DiscordWebhooks {
                     if (key.endsWith("_url")) {
                         key = configurationSection + "." + key;
 
-                        if (Config.settings.exists(key) && Config.settings.getString(key).length() > 0) {
+                        if (Config.settings.exists(key) && !Config.settings.getString(key).isEmpty()) {
                             return true;
                         }
                     }
@@ -40,14 +40,10 @@ public class DiscordWebhooks {
         String webhook;
 
         switch (type.split(" ")[0]) {
-            case "Ban":
             case "Kick":
+            case "Warning":
             case "Punishment":
                 webhook = "punishments";
-                break;
-            case "Warning":
-            case "Report":
-                webhook = "reports";
                 break;
             default:
                 switch (type) {

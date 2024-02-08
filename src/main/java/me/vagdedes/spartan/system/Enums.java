@@ -90,9 +90,9 @@ public class Enums {
     }
 
     public enum Permission {
-        CONDITION, REPORT, STAFF_CHAT, WAVE, RECONNECT, ADMIN, RELOAD,
+        CONDITION, STAFF_CHAT, WAVE, RECONNECT, ADMIN, RELOAD,
         KICK, BYPASS, MANAGE, INFO, CHAT_PROTECTION, WARN, USE_BYPASS,
-        BAN, UNBAN, NOTIFICATIONS;
+        NOTIFICATIONS;
 
         private final String key;
 

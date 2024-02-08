@@ -17,10 +17,8 @@ import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.handlers.stability.TestServer;
-import com.vagdedes.spartan.objects.profiling.PlayerReport;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
@@ -289,34 +287,7 @@ public class MainMenu extends InventoryMenu {
             }
         } else if (!name.startsWith(PlayerStateLists.inactiveColour)
                 && !item.equals(AntiCheatUpdates.name)) {
-            List<String> lore = itemStack.getItemMeta().getLore();
-
-            if (lore != null && lore.size() > 1 && lore.get(0).equals(PlayerStateLists.punishedPlayers)) {
-                StringBuilder builder = new StringBuilder();
-
-                for (String line : lore) {
-                    if (!line.isEmpty()) {
-                        builder.append(StringUtils.getClearColorString(line));
-                    }
-                }
-                String reason = builder.toString();
-
-                if (!reason.isEmpty()) {
-                    List<PlayerReport> reports = ResearchEngine.getPlayerProfile(item).getPunishmentHistory().getReports();
-
-                    if (!reports.isEmpty()) {
-                        for (PlayerReport playerReport : reports) {
-                            if (!playerReport.isDismissed() && playerReport.getReason().equals(reason)) {
-                                playerReport.dismiss(name, player, true);
-                                open(player);
-                                break;
-                            }
-                        }
-                    }
-                }
-            } else {
-                SpartanMenu.playerInfo.open(player, false, item);
-            }
+            SpartanMenu.playerInfo.open(player, false, item);
         }
         return true;
     }

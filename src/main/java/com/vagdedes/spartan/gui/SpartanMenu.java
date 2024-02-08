@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.gui;
 
 import com.vagdedes.spartan.abstraction.InventoryMenu;
-import com.vagdedes.spartan.functionality.moderation.PlayerReports;
 import com.vagdedes.spartan.gui.configuration.ManageChecks;
 import com.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import com.vagdedes.spartan.gui.configuration.ManageOptions;
@@ -17,7 +16,6 @@ public class SpartanMenu {
     public static final PlayerInfo playerInfo = new PlayerInfo();
     public static final ManageConfiguration manageConfiguration = new ManageConfiguration();
     public static final ManageOptions manageOptions = new ManageOptions();
-    public static final PlayerReports playerReports = new PlayerReports();
 
     public static final InventoryMenu[] menus = new InventoryMenu[]{
             manageChecks,
@@ -25,7 +23,6 @@ public class SpartanMenu {
             supportIncompatibleItems,
             playerInfo,
             manageConfiguration,
-            manageOptions,
-            playerReports
+            manageOptions
     };
 }

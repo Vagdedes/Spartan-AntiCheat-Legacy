@@ -3,7 +3,6 @@ package com.vagdedes.spartan.configuration;
 import com.vagdedes.spartan.abstraction.ConfigurationBuilder;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.moderation.BanManagement;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
@@ -233,9 +232,6 @@ public class SQLFeature extends ConfigurationBuilder {
             } else if (!AlgebraUtils.validInteger(port) && !AlgebraUtils.validDecimal(port)) {
                 enabled = false;
                 AwarenessNotifications.forcefullySend("SQL Configuration Error: Port is not a valid number");
-            } else if (table.equalsIgnoreCase(BanManagement.table)) {
-                enabled = false;
-                AwarenessNotifications.forcefullySend("SQL Configuration Error: Table cannot have the name: " + BanManagement.table);
             } else if (!isConnected(true)) {
                 String driver = getDriver();
 

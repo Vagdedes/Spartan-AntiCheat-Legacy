@@ -3,12 +3,11 @@ package me.vagdedes.spartan.api;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.moderation.BanManagement;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.functionality.protections.Latency;
+import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.stability.*;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -18,7 +17,6 @@ import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -287,28 +285,34 @@ public class BackgroundAPI {
         return player != null && Permissions.isBypassing(player, HackType);
     }
 
+    @Deprecated
     static void banPlayer(UUID uuid, String reason) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            BanManagement.ban(uuid, Bukkit.getConsoleSender(), reason, 0L);
-        }
+        AwarenessNotifications.forcefullySend("The API method 'banPlayer' has been removed.");
+
     }
 
+    @Deprecated
     static boolean isBanned(UUID uuid) {
-        return BanManagement.isBanned(uuid);
+        AwarenessNotifications.forcefullySend("The API method 'isBanned' has been removed.");
+
+        return false;
     }
 
+    @Deprecated
     static void unbanPlayer(UUID uuid) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            BanManagement.unban(uuid, false);
-        }
+        AwarenessNotifications.forcefullySend("The API method 'unbanPlayer' has been removed.");
     }
 
+    @Deprecated
     static String getBanReason(UUID uuid) {
-        return BanManagement.get(uuid, "reason");
+        AwarenessNotifications.forcefullySend("The API method 'getBanReason' has been removed.");
+        return null;
     }
 
+    @Deprecated
     static String getBanPunisher(UUID uuid) {
-        return BanManagement.get(uuid, "punisher");
+        AwarenessNotifications.forcefullySend("The API method 'getBanPunisher' has been removed.");
+        return null;
     }
 
     static boolean isHacker(Player p) {
@@ -336,8 +340,10 @@ public class BackgroundAPI {
         return player == null ? 0 : player.getClicks().getCount();
     }
 
+    @Deprecated
     static UUID[] getBanList() {
-        return BanManagement.getBanList().toArray(new UUID[0]);
+        AwarenessNotifications.forcefullySend("The API method 'getBanList' has been removed.");
+        return new UUID[]{};
     }
 
     static boolean addToWave(UUID uuid, String command) {

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.configuration;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.moderation.BanManagement;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
@@ -227,7 +226,6 @@ public class Config {
         sql.create(local); // Always Third (Research Engine SQL Logs)
         messages.create(local);
         Compatibility.create(local);
-        BanManagement.create(local);
         Wave.create(local);
     }
 
@@ -247,7 +245,6 @@ public class Config {
             sql.refreshConfiguration();
             messages.clear();
             compatibility.clear();
-            BanManagement.clear();
             Wave.clearCache();
         }
 

@@ -122,9 +122,7 @@ public class ConfigUtils {
 
         PunishmentHistory punishmentHistory = p.getProfile().getPunishmentHistory();
         message = replace(message, "{kicks}", String.valueOf(punishmentHistory.getKicks()));
-        message = replace(message, "{bans}", String.valueOf(punishmentHistory.getBans()));
         message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
-        message = replace(message, "{reports}", String.valueOf(punishmentHistory.getReports().size()));
 
         if (hackType != null) {
             LiveViolation liveViolation = p.getViolations(hackType);
@@ -174,9 +172,7 @@ public class ConfigUtils {
 
                 PunishmentHistory punishmentHistory = ResearchEngine.getPlayerProfile(name).getPunishmentHistory();
                 message = replace(message, "{kicks}", String.valueOf(punishmentHistory.getKicks()));
-                message = replace(message, "{bans}", String.valueOf(punishmentHistory.getBans()));
                 message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
-                message = replace(message, "{reports}", String.valueOf(punishmentHistory.getReports().size()));
 
                 if (hasHackType) {
                     LiveViolation liveViolation = p.getViolations(hackType);

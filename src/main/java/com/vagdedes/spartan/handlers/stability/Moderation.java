@@ -26,7 +26,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -35,10 +34,8 @@ public class Moderation {
 
     public static final String
             warningMessage = " was warned for ",
-            reportMessage = " was reported for ",
             kickMessage = " was kicked for ",
             falsePositiveDisclaimer = "§4(False Positive)§f ",
-            dismissedReportMessage = "Dismissed report against ",
             criticalHitMessage = " landed a critical hit with ";
 
     private static boolean isDetected(SpartanPlayer p, boolean checkSilent, long ms) {
@@ -75,42 +72,6 @@ public class Moderation {
         AntiCheatLogs.logInfo(Config.getConstruct() + t.getName() + warningMessage + reason);
 
         t.getProfile().getPunishmentHistory().increaseWarnings();
-    }
-
-    public static void report(SpartanPlayer reporter, SpartanPlayer reported, String reason) {
-        if (reporter == reported) {
-            reporter.sendMessage(ConfigUtils.replaceWithSyntax(reporter, Config.messages.getColorfulString("failed_command"), null));
-            return;
-        }
-        String report = Config.messages.getColorfulString("report_message").replace("{reason}", reason).replace("{reported}", reported.getName());
-        report = ConfigUtils.replaceWithSyntax(reporter, report, null);
-        boolean sent = false;
-        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-        if (players.size() > 0) {
-            for (SpartanPlayer p : players) {
-                if (DetectionNotifications.hasPermission(p)) {
-                    if (p.getUniqueId().equals(reporter.getUniqueId())) {
-                        sent = true;
-                    }
-                    p.sendMessage(report);
-                }
-            }
-        }
-        if (!sent) {
-            reporter.sendMessage(report);
-        }
-
-        SpartanLocation location = reporter.getLocation();
-        CrossServerInformation.queueNotificationWithWebhook(reporter.getUniqueId(), reporter.getName(),
-                location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-                "Report -> " + reported.getName(), reason,
-                false);
-
-        String name = reported.getName();
-        AntiCheatLogs.logInfo(Config.getConstruct() + name + reportMessage + reason);
-
-        reported.getProfile().getPunishmentHistory().increaseReports(reported, name, reason, new Timestamp(System.currentTimeMillis()), false);
     }
 
     public static void kick(CommandSender punisher, SpartanPlayer p, String reason) {

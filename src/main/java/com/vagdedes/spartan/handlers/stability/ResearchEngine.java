@@ -6,7 +6,6 @@ import com.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.moderation.BanManagement;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
@@ -251,8 +250,7 @@ public class ResearchEngine {
     // Separator
 
     public static String getDetectionInformation(String s) {
-        if (s.contains(Moderation.reportMessage)
-                || s.contains(Moderation.kickMessage)
+        if (s.contains(Moderation.kickMessage)
                 || s.contains(Moderation.warningMessage)) {
             return null;
         }
@@ -291,30 +289,6 @@ public class ResearchEngine {
         return averageReach;
     }
 
-    public static List<PlayerReport> getReports(Enums.HackType hackType, int days, boolean checkIfDismissed) {
-        List<PlayerReport> reports = new LinkedList<>();
-
-        boolean hasDays = days > 0,
-                hasHackType = hackType != null;
-
-        for (PlayerProfile playerProfile : ResearchEngine.playerProfiles.values()) {
-            List<PlayerReport> playerReports = hasDays || hasHackType ?
-                    playerProfile.getPunishmentHistory().getReports(hackType, days) :
-                    playerProfile.getPunishmentHistory().getReports();
-
-            if (checkIfDismissed) {
-                for (PlayerReport playerReport : playerReports) {
-                    if (!playerReport.isDismissed()) {
-                        reports.add(playerReport);
-                    }
-                }
-            } else {
-                reports.addAll(playerReports);
-            }
-        }
-        return reports;
-    }
-
     public static StatisticalProgress getProgress() {
         return statisticalProgress;
     }
@@ -332,7 +306,7 @@ public class ResearchEngine {
             ArrayList<PlayerProfile> profiles = new ArrayList<>(size);
 
             for (PlayerProfile playerProfile : playerProfiles.values()) {
-                if (playerProfile.getPunishmentHistory().getOverall(reports) > 0) {
+                if (playerProfile.getPunishmentHistory().getOverall() > 0) {
                     profiles.add(playerProfile);
                 }
             }
@@ -812,7 +786,6 @@ public class ResearchEngine {
                 try {
                     String construct = Config.getConstruct();
                     Map<String, Set<String>> miningDays = new LinkedHashMap<>(size);
-                    Map<String, List<String>> dismissedReports = new LinkedHashMap<>(size);
 
                     for (Map.Entry<String, String> entry : logs.entrySet()) {
                         String key = entry.getKey();
@@ -1017,33 +990,6 @@ public class ResearchEngine {
                                 getPlayerProfile(split[0]).getPunishmentHistory().increaseWarnings();
                             } else if (data.contains(Moderation.kickMessage)) {
                                 getPlayerProfile(split[0]).getPunishmentHistory().increaseKicks();
-                            } else if (data.contains(BanManagement.message)) {
-                                getPlayerProfile(split[0]).getPunishmentHistory().increaseBans();
-                            } else if (data.contains(Moderation.reportMessage)) {
-                                String name = split[0];
-                                int wordIndex = data.indexOf("for");
-
-                                if (wordIndex > -1) {
-                                    getPlayerProfile(name).getPunishmentHistory().increaseReports(null, name, data.substring(wordIndex + 4), Timestamp.valueOf(fullDate.replace("/", "-")), false);
-                                }
-                            } else if (data.contains(Moderation.dismissedReportMessage)) {
-                                if (split.length >= 4) {
-                                    String name = split[3];
-                                    int reasonIndex = data.indexOf("reason:");
-
-                                    if (reasonIndex > -1) {
-                                        String reason = data.substring(reasonIndex + 8);
-                                        List<String> reports = dismissedReports.get(name);
-
-                                        if (reports == null) {
-                                            reports = new ArrayList<>();
-                                            reports.add(reason);
-                                            dismissedReports.put(name, reports);
-                                        } else {
-                                            reports.add(reason);
-                                        }
-                                    }
-                                }
                             } else if (data.contains(" failed ")) {
                                 if (split.length >= 3 && !data.contains("(VL: 0)")) {
                                     if (!data.startsWith(falsePositiveDisclaimer)) {
@@ -1114,25 +1060,6 @@ public class ResearchEngine {
                             }
                         }
                     }
-
-                    // Cache Preporation
-                    for (Map.Entry<String, List<String>> entry : dismissedReports.entrySet()) {
-                        String name = entry.getKey();
-                        PlayerProfile playerProfile = getPlayerProfile(name);
-
-                        for (String reason : entry.getValue()) {
-                            List<PlayerReport> reports = playerProfile.getPunishmentHistory().getReports();
-
-                            if (!reports.isEmpty()) {
-                                for (PlayerReport playerReport : reports) {
-                                    if (playerReport.getReason().equals(reason)
-                                            && playerReport.dismiss(name, null, false)) {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
                     enoughData = false;
                     updateCache();
 
@@ -1185,8 +1112,7 @@ public class ResearchEngine {
             List<PlayerProfile>
                     playerProfilesCopy = new ArrayList<>(playerProfiles),
                     legitimatePlayers = getLegitimatePlayers();
-            int mines = 0, logs = 0, reports = 0,
-                    bans = 0, kicks = 0, warnings = 0;
+            int mines = 0, logs = 0, kicks = 0, warnings = 0;
             ViolationStatistics.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
@@ -1197,8 +1123,6 @@ public class ResearchEngine {
                     logs += playerProfile.getUsefulLogs(violationHistory);
                 }
                 mines += playerProfile.getOverallMiningHistory().getMines();
-                reports += punishmentHistory.getReports().size();
-                bans += punishmentHistory.getBans();
                 kicks += punishmentHistory.getKicks();
                 warnings += punishmentHistory.getWarnings();
             }
@@ -1228,7 +1152,7 @@ public class ResearchEngine {
                     }
                 }
             }
-            statisticalProgress = new StatisticalProgress(mines, logs, reports, bans, kicks, warnings, staffOffline, staffOnline.toArray(new SpartanPlayer[0]));
+            statisticalProgress = new StatisticalProgress(mines, logs, kicks, warnings, staffOffline, staffOnline.toArray(new SpartanPlayer[0]));
 
             // Separator (Find False Positives)
 

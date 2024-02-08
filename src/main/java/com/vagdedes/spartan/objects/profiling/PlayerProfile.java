@@ -260,7 +260,6 @@ public class PlayerProfile {
                         - AlgebraUtils.integerCeil(Latency.getDelay(player));
 
                 if (violationCount > 0) {
-                    violationCount += punishmentHistory.getReportCount(hackType, 0);
                     double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, dataType))),
                             thresholdSurpassing = violationRatio / Check.analysisMultiplier;
 
@@ -378,7 +377,7 @@ public class PlayerProfile {
     public int getUsefulLogs(ViolationHistory violationHistory) {
         return violationHistory.getAllViolations()
                 + getOverallMiningHistory().getMines()
-                + getPunishmentHistory().getOverall(true);
+                + getPunishmentHistory().getOverall();
     }
 
     public int getUsefulLogs() {

@@ -22,7 +22,6 @@ import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -101,8 +100,6 @@ public class PlayerInfo extends InventoryMenu {
             lore.add("");
             lore.add("§7Warnings§8:§c " + punishmentHistory.getWarnings());
             lore.add("§7Kicks§8:§c " + punishmentHistory.getKicks());
-            lore.add("§7Bans§8:§c " + punishmentHistory.getBans());
-            lore.add("§7Reports§8:§c " + punishmentHistory.getReports().size());
 
             if (isOnline) {
                 int violations = target.getViolationCount();

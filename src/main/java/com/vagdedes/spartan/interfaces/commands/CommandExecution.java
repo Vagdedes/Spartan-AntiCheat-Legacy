@@ -5,7 +5,6 @@ import com.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.moderation.BanManagement;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
@@ -19,7 +18,6 @@ import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.NetworkUtils;
@@ -36,7 +34,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 public class CommandExecution implements CommandExecutor {
@@ -81,9 +78,6 @@ public class CommandExecution implements CommandExecutor {
 
         if (spartanMessage(sender, isPlayer)) {
             String command = Register.plugin.getName().toLowerCase();
-
-            boolean ban = !isPlayer || Permissions.has(player, Permission.BAN),
-                    unban = !isPlayer || Permissions.has(player, Permission.UNBAN);
             boolean info = !isPlayer || Permissions.has(player, Enums.Permission.INFO),
                     manage = !isPlayer || Permissions.has(player, Enums.Permission.MANAGE);
 
@@ -105,12 +99,11 @@ public class CommandExecution implements CommandExecutor {
                         buildCommand(sender, ChatColor.RED, "/" + command + " reload",
                                 "Click this command to reload the plugin's cache.");
                     }
-                    if (!isPlayer || ban || unban || info
+                    if (!isPlayer || info
                             || Permissions.has(player, Permission.KICK)
                             || Permissions.has(player, Permission.WARN)
                             || Permissions.has(player, Permission.USE_BYPASS)
-                            || Permissions.has(player, Permission.WAVE)
-                            || Permissions.has(player, Permission.REPORT)) {
+                            || Permissions.has(player, Permission.WAVE)) {
                         buildCommand(sender, ChatColor.RED, "/" + command + " moderation",
                                 "Click this command to view a list of moderation commands.");
                     }
@@ -145,20 +138,6 @@ public class CommandExecution implements CommandExecutor {
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " kick <player> <reason>",
                                 "This command can be used to kick players from the server for a specific reason.", null);
                     }
-                    if (ban || unban) {
-                        permission = true;
-
-                        if (ban) {
-                            ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " ban <player> [(time)m/h/d/w/y] <reason>",
-                                    "This command can be used to temporarily prevent a player from joining the server.", null);
-                        }
-                        if (unban) {
-                            ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " unban <player>",
-                                    "This command can be used to allow a banned player to gain the ability to join the server again.", null);
-                        }
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " ban-info [player]",
-                                "This command can be used to view information about permanently/temporarily banned players.", null);
-                    }
                     if (!isPlayer || Permissions.has(player, Permission.WAVE)) {
                         permission = true;
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " wave <add/remove/clear/run/list> [player] [command]",
@@ -167,11 +146,6 @@ public class CommandExecution implements CommandExecutor {
                                         "and cause added players to punished all at once and in order."
                                         + "\n\n"
                                         + "Example: /" + command + " wave add playerName ban {player} You have been banned for hacking!", null);
-                    }
-                    if (isPlayer && Permissions.has(player, Permission.REPORT)) {
-                        permission = true;
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " report <player> [reason]",
-                                "This command can be used by players to report other players for specific reasons.", null);
                     }
                     if (!isPlayer || Permissions.has(player, Permission.ADMIN)) {
                         permission = true;
@@ -227,14 +201,6 @@ public class CommandExecution implements CommandExecutor {
 
                 } else if (args[0].equalsIgnoreCase("Conditions")) {
                     completeMessage(sender, args[0].toLowerCase());
-
-                } else if (args[0].equalsIgnoreCase("Ban-info")) {
-                    if (isPlayer && (!Permissions.has((Player) sender, Permission.BAN) && !Permissions.has((Player) sender, Permission.UNBAN))) {
-                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                        return true;
-                    }
-                    sender.sendMessage(ChatColor.GRAY + "Banned Players" + ChatColor.DARK_GRAY + ":");
-                    sender.sendMessage(BanManagement.getBanListString());
 
                 } else if (args[0].equalsIgnoreCase("Reload") || args[0].equalsIgnoreCase("Rl")) {
                     if (isPlayer && !Permissions.has((Player) sender, Permission.RELOAD)) {
@@ -381,68 +347,6 @@ public class CommandExecution implements CommandExecutor {
                             sender.sendMessage(Config.messages.getColorfulString("non_existing_check"));
                         }
 
-                    } else if (isPlayer && args[0].equalsIgnoreCase("Report")) {
-                        SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
-
-                        if (!Permissions.has((Player) sender, Permission.REPORT)) {
-                            sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                            return true;
-                        }
-                        if (t == null) {
-                            sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
-                            return true;
-                        }
-                        SpartanMenu.playerReports.open(player, t);
-
-                    } else if (args[0].equalsIgnoreCase("Unban")) {
-                        OfflinePlayer t = Bukkit.getOfflinePlayer(args[1]);
-
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.UNBAN)) {
-                            sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                            return true;
-                        }
-                        UUID uuid = t.getUniqueId();
-
-                        if (!BanManagement.isBanned(uuid)) {
-                            sender.sendMessage(Config.messages.getColorfulString("player_not_banned"));
-                            return true;
-                        }
-                        BanManagement.unban(uuid, true);
-
-                        String message = Config.messages.getColorfulString("unban_message");
-                        message = ConfigUtils.replaceWithSyntax(t, message, null);
-                        sender.sendMessage(message);
-
-                    } else if (args[0].equalsIgnoreCase("Ban-info")) {
-                        OfflinePlayer t = Bukkit.getOfflinePlayer(args[1]);
-
-                        if (isPlayer && (!Permissions.has((Player) sender, Permission.BAN) && !Permissions.has((Player) sender, Permission.UNBAN))) {
-                            sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                            return true;
-                        }
-                        UUID tuuid = t.getUniqueId();
-
-                        if (!BanManagement.isBanned(tuuid)) {
-                            sender.sendMessage(Config.messages.getColorfulString("player_not_banned"));
-                            return true;
-                        }
-                        sender.sendMessage(ChatColor.GRAY + "Ban Information" + ChatColor.DARK_GRAY + ":");
-                        sender.sendMessage(ChatColor.GRAY + "Player" + ChatColor.DARK_GRAY + ": " + ChatColor.RED + t.getName());
-                        sender.sendMessage(ChatColor.GRAY + "Punisher" + ChatColor.DARK_GRAY + ": " + ChatColor.RED + BanManagement.getProtected(tuuid, "punisher"));
-                        sender.sendMessage(ChatColor.GRAY + "Reason" + ChatColor.DARK_GRAY + ": " + ChatColor.RED + BanManagement.getProtected(tuuid, "reason"));
-                        long creation = BanManagement.getCreation(tuuid);
-
-                        if (creation != 0L) {
-                            sender.sendMessage(ChatColor.GRAY + "Creation" + ChatColor.DARK_GRAY + ": " + ChatColor.RED + new Timestamp(creation).toString().substring(0, 10));
-                        }
-                        long expiration = BanManagement.getExpiration(tuuid);
-
-                        if (expiration != 0L) {
-                            sender.sendMessage(ChatColor.GRAY + "Expiration" + ChatColor.DARK_GRAY + ": " + ChatColor.RED + new Timestamp(expiration).toString().substring(0, 10));
-                        } else {
-                            sender.sendMessage(ChatColor.GRAY + "Expiration" + ChatColor.DARK_GRAY + ": " + ChatColor.RED + "Never");
-                        }
-
                     } else if (args[0].equalsIgnoreCase("Customer-Support")) {
                         if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
                             sender.sendMessage(Config.messages.getColorfulString("no_permission"));
@@ -542,61 +446,6 @@ public class CommandExecution implements CommandExecutor {
                             return true;
                         }
                         Moderation.warn(sender, t, argumentsToString);
-
-                    } else if (args[0].equalsIgnoreCase("Ban")) {
-                        if (isPlayer && !Permissions.has((Player) sender, Permission.BAN)) {
-                            sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                            return true;
-                        }
-                        String targetName = args[1];
-                        OfflinePlayer t = Bukkit.getOfflinePlayer(targetName);
-                        boolean isTempBan = false;
-                        String time = args[2];
-
-                        if (args.length > 3) {
-                            for (String character : timeCharacters) {
-                                if (time.endsWith(character) && AlgebraUtils.validInteger(time.replace(character, ""))) {
-                                    isTempBan = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (isTempBan) {
-                            String command = "spartan tempban " + targetName + " " + time + " " + argumentsToString.substring(time.length() + 1); // Add 1 for the expected space character
-
-                            if (isPlayer) {
-                                ((Player) sender).performCommand(command);
-                            } else {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                            }
-                        } else {
-                            BanManagement.ban(t.getUniqueId(), sender, argumentsToString, 0L);
-
-                            String message = Config.messages.getColorfulString("ban_message");
-                            message = message.replace("{reason}", argumentsToString);
-                            message = message.replace("{punisher}", sender.getName());
-                            message = message.replace("{expiration}", "Permanently");
-                            message = ConfigUtils.replaceWithSyntax(t, message, null);
-                            sender.sendMessage(message);
-                        }
-
-                    } else if (isPlayer && args[0].equalsIgnoreCase("Report")) {
-                        SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
-
-                        if (!Permissions.has((Player) sender, Permission.REPORT)) {
-                            sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                            return true;
-                        }
-                        if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
-                            sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
-                            return true;
-                        }
-                        if (t == null) {
-                            sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
-                            return true;
-                        }
-                        Moderation.report(player, t, argumentsToString);
 
                     } else if (args[0].equalsIgnoreCase("Bypass")) {
                         boolean noSeconds = args.length == 3;
@@ -729,52 +578,6 @@ public class CommandExecution implements CommandExecutor {
                                 String discordTag = args[2];
                                 AwarenessNotifications.forcefullySend(sender, CloudConnections.sendCustomerSupport(discordTag, check, argumentsToStringThreaded, false));
                             });
-
-                        } else if (args[0].equalsIgnoreCase("Tempban")) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.BAN)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                                return true;
-                            }
-                            if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
-                                sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
-                                return true;
-                            }
-                            OfflinePlayer t = Bukkit.getOfflinePlayer(args[1]);
-                            String time = args[2];
-                            char type = 'a';
-
-                            for (String character : timeCharacters) {
-                                if (time.endsWith(character)) {
-                                    type = character.charAt(0);
-                                    break;
-                                }
-                            }
-
-                            if (type == 'a') {
-                                sender.sendMessage(Config.messages.getColorfulString("failed_command"));
-                                return true;
-                            }
-                            String multiplier = time.substring(0, time.length() - 1);
-
-                            if (!AlgebraUtils.validInteger(multiplier)) {
-                                sender.sendMessage(Config.messages.getColorfulString("failed_command"));
-                                return true;
-                            }
-                            long ms = TimeUtils.getTime(Integer.parseInt(multiplier), type);
-
-                            if (ms == 0L) {
-                                sender.sendMessage(Config.messages.getColorfulString("failed_command"));
-                                return true;
-                            }
-                            ms += System.currentTimeMillis();
-                            BanManagement.ban(t.getUniqueId(), sender, argumentsToString, ms);
-
-                            String message = Config.messages.getColorfulString("ban_message");
-                            message = message.replace("{reason}", argumentsToString);
-                            message = message.replace("{punisher}", sender.getName());
-                            message = message.replace("{expiration}", new Timestamp(ms).toString().substring(0, 10));
-                            message = ConfigUtils.replaceWithSyntax(t, message, null);
-                            sender.sendMessage(message);
 
                         } else if (Compatibility.CompatibilityType.MinigameMaker.isFunctional() && args[0].equalsIgnoreCase("Add-Incompatible-Item")) {
                             if (args.length == 6) {

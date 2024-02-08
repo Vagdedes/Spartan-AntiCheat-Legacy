@@ -43,9 +43,7 @@ public class AntiCheatUpdates {
                     int hackers = ResearchEngine.getHackers().size(),
                             suspectedPlayers = ResearchEngine.getSuspectedPlayers().size(),
                             legitimates = ResearchEngine.getLegitimatePlayers().size(),
-                            activeReports = ResearchEngine.getReports(null, 0, true).size(),
-                            allReports = ResearchEngine.getReports(null, 0, false).size(),
-                            bans = object.getBans(), kicks = object.getKicks(), warnings = object.getWarnings(),
+                            kicks = object.getKicks(), warnings = object.getWarnings(),
                             mines = object.getMines(),
                             staffOffline = object.getStaffOffline(), staffOnlineAmount = staffOnline.length;
 
@@ -60,12 +58,8 @@ public class AntiCheatUpdates {
                     if (legitimates > 0) {
                         statisticsArray.add("§c" + Math.max(AlgebraUtils.cut((legitimates / players) * 100.0, 2), 0.01) + "§r§c% §7of players are §clegitimate");
                     }
-                    if (allReports > 0) {
-                        statisticsArray.add("§c" + Math.max(AlgebraUtils.cut(((allReports - activeReports) / ((double) allReports)) * 100.0, 2), 0.01) + "§r§c% §7of reports have been §chandled");
-                    }
-                    if (bans > 0 || kicks > 0 || warnings > 0) {
-                        statisticsArray.add("§c" + bans + " " + (bans == 1 ? "ban" : "§r§cbans")
-                                + "§7, §c" + kicks + " " + (kicks == 1 ? "kick" : "§r§ckicks")
+                    if (kicks > 0 || warnings > 0) {
+                        statisticsArray.add("§c" + kicks + " " + (kicks == 1 ? "kick" : "§r§ckicks")
                                 + " §7& §c" + warnings + " " + (warnings == 1 ? "warning" : "§r§cwarnings")
                                 + " §7executed");
                     }

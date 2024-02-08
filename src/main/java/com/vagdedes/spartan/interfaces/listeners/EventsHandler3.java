@@ -5,7 +5,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.moderation.BanManagement;
 import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.functionality.protections.InteractionsPerTick;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
@@ -145,7 +144,6 @@ public class EventsHandler3 implements Listener {
         CheckProtection.cancel(uuid, SpartanBukkit.hasResourcePack ? 100 : 5, false);
 
         // Configuration
-        BanManagement.run(n, e);
         ReconnectCooldown.run(n, e);
     }
 
