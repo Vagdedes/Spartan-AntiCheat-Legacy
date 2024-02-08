@@ -29,7 +29,7 @@ public class PlayerEvidence {
     // Object
 
     private EvidenceType type;
-    final Map<Enums.HackType, String> live, historical;
+    final Map<Enums.HackType, String> live, historical; // Live object is used for synchronization
 
     PlayerEvidence() {
         this.type = EvidenceType.Legitimate;
@@ -104,22 +104,26 @@ public class PlayerEvidence {
 
     // Separator
 
-    public void judge() {
-        synchronized (this.live) {
-            int count = this.getRawKnowledgeList().size();
-            EvidenceType type = this.type;
+    void judgeLocal() {
+        int count = this.getRawKnowledgeList().size();
+        EvidenceType type = this.type;
 
-            for (EvidenceType evidenceType : EvidenceType.values()) {
-                if (count >= evidenceType.count
-                        && this.type.count < evidenceType.count) {
-                    type = evidenceType;
+        for (EvidenceType evidenceType : EvidenceType.values()) {
+            if (count >= evidenceType.count
+                    && this.type.count < evidenceType.count) {
+                type = evidenceType;
 
-                    if (evidenceType == EvidenceType.Hacker) {
-                        break;
-                    }
+                if (evidenceType == EvidenceType.Hacker) {
+                    break;
                 }
             }
-            this.type = type;
+        }
+        this.type = type;
+    }
+
+    public void judge() {
+        synchronized (this.live) {
+            judgeLocal();
         }
     }
 }

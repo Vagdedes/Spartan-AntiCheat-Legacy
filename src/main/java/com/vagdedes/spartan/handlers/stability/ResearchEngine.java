@@ -132,18 +132,20 @@ public class ResearchEngine {
                 if (schedulerTicks == 0) {
                     schedulerTicks = databaseRefreshTicks;
 
-                    SpartanBukkit.analysisThread.executeIfFreeElseHere(() -> {
+                    SpartanBukkit.analysisThread.executeIfFree(() -> {
                         skullsAndFightsRunnable.run();
 
                         if (isDatabaseMode()) {
                             refresh(false, Register.isPluginEnabled());
+                        } else if (schedulerTicks % cacheRefreshTicks == 0) {
+                            updateCache();
                         }
                     });
                 } else {
                     schedulerTicks -= 1;
 
                     if (schedulerTicks % 20 == 0) {
-                        SpartanBukkit.analysisThread.executeIfFreeElseHere(() -> {
+                        SpartanBukkit.analysisThread.executeIfFree(() -> {
                             skullsAndFightsRunnable.run();
 
                             if (schedulerTicks % cacheRefreshTicks == 0) {

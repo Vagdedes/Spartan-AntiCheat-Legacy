@@ -268,7 +268,7 @@ public class PlayerProfile {
                         evidence.live.put(hackType,
                                 "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
                         );
-                        evidence.judge();
+                        evidence.judgeLocal();
                         SpartanMenu.playerInfo.refresh(player.getName());
                         MainMenu.refresh();
                         return true;
@@ -282,14 +282,14 @@ public class PlayerProfile {
     public void removeFromLiveEvidence(Enums.HackType hackType) {
         synchronized (evidence.live) {
             evidence.live.remove(hackType);
-            evidence.judge();
+            evidence.judgeLocal();
         }
     }
 
     public void removeFromHistoricalEvidence(Enums.HackType hackType) {
         synchronized (evidence.live) {
             evidence.historical.remove(hackType);
-            evidence.judge();
+            evidence.judgeLocal();
         }
     }
 
@@ -297,7 +297,7 @@ public class PlayerProfile {
         synchronized (evidence.live) {
             evidence.live.remove(hackType);
             evidence.historical.remove(hackType);
-            evidence.judge();
+            evidence.judgeLocal();
         }
     }
 
