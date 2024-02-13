@@ -99,34 +99,30 @@ public class EventsHandler1 implements Listener {
         if (p == null) {
             return;
         }
-        boolean cancelled = e.isCancelled();
-
         // Detections
         Cache.clearCheckCache(p);
-        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, null);
-        p.getExecutor(Enums.HackType.ImpossibleActions).run(cancelled);
-        p.getExecutor(Enums.HackType.AutoRespawn).run(cancelled);
-        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(cancelled, ImpossibleInventory.DEATH);
+        p.getExecutor(Enums.HackType.KillAura).handle(false, null);
+        p.getExecutor(Enums.HackType.ImpossibleActions).run(false);
+        p.getExecutor(Enums.HackType.AutoRespawn).run(false);
+        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, ImpossibleInventory.DEATH);
 
-        if (!cancelled) {
-            // Protections
-            p.resetHandlers(); // Always First
+        // Protections
+        p.resetHandlers(); // Always First
 
-            // Utils
-            DetectionLocation.update(p, p.getLocation(), true);
+        // Utils
+        DetectionLocation.update(p, p.getLocation(), true);
 
-            // Objects
-            Player killer = n.getKiller();
+        // Objects
+        Player killer = n.getKiller();
 
-            if (killer != null && killer.isOnline()) {
-                PlayerCombat combat = p.getProfile().getCombat();
-                combat.setWinnerAgainst(killer.getName());
-            }
-            p.resetLocationData();
-            p.setDead(true);
-            p.setSleeping(false);
-            p.setHealth(n.getHealth());
+        if (killer != null && killer.isOnline()) {
+            PlayerCombat combat = p.getProfile().getCombat();
+            combat.setWinnerAgainst(killer.getName());
         }
+        p.resetLocationData();
+        p.setDead(true);
+        p.setSleeping(false);
+        p.setHealth(n.getHealth());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

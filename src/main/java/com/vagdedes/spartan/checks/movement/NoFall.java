@@ -326,7 +326,9 @@ public class NoFall extends CheckExecutor {
                 EntityDamageEvent damageCause = player.getLastDamageCause();
                 SpartanLocation loc = player.getEventToLocation();
 
-                if ((damageCause.getCause() != EntityDamageEvent.DamageCause.FALL || !damageCause.isCancelled())
+                if ((damageCause == null
+                        || damageCause.getCause() != EntityDamageEvent.DamageCause.FALL
+                        || !damageCause.isCancelled())
                         && !player.isInvulnerable()
                         && !player.wasInLiquids()
                         && loc.getBlockY() > BlockUtils.getMinHeight(player.getWorld())

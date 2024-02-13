@@ -1416,7 +1416,7 @@ public class SpartanPlayer {
     }
 
     public EntityDamageEvent getLastDamageCause() {
-        return lastDamageCause == null ? new EntityDamageEvent(getPlayer(), EntityDamageEvent.DamageCause.CUSTOM, 0) : lastDamageCause;
+        return lastDamageCause;
     }
 
     public synchronized void setLastDamageCause(EntityDamageEvent lastDamageCause, double lastDamage, int maximumNoDamageTicks) {
