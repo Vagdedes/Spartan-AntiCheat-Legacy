@@ -17,7 +17,7 @@ import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.java.math.LinearRegression;
+import com.vagdedes.spartan.utils.java.math.statistics.LinearRegression;
 import com.vagdedes.spartan.utils.java.math.TrigonometryUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
