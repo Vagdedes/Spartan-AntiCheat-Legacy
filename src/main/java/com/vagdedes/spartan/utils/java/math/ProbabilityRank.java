@@ -2,13 +2,17 @@ package com.vagdedes.spartan.utils.java.math;
 
 import java.util.*;
 
-public class WaveProbability {
+public class ProbabilityRank {
 
     private final List<Double> numbers;
     private boolean sorted;
 
-    public WaveProbability() {
-        this.numbers = new ArrayList<>();
+    public ProbabilityRank() {
+        this(-1);
+    }
+
+    public ProbabilityRank(int capacity) {
+        this.numbers = capacity >= 0 ? new ArrayList<>(capacity) : new ArrayList<>();
         this.sorted = false;
     }
 

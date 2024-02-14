@@ -3,7 +3,7 @@ package com.vagdedes.spartan.objects.profiling;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.java.math.WaveProbability;
+import com.vagdedes.spartan.utils.java.math.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
@@ -230,7 +230,7 @@ public class ViolationStatistics {
 
             if (probabilityData != null) {
                 Map<PlayerProfile, Double> probabilityAverage = profileAverageProbability.get(majorHash);
-                WaveProbability wave = new WaveProbability();
+                ProbabilityRank wave = new ProbabilityRank();
 
                 for (Map.Entry<Double, Integer> entry : probabilityData.entrySet()) {
                     for (int i = 0; i < entry.getValue(); i++) {
