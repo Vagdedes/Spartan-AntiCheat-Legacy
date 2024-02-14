@@ -1,31 +1,62 @@
 package com.vagdedes.spartan.utils.java;
 
+import com.vagdedes.spartan.objects.replicates.SpartanInventory;
+import com.vagdedes.spartan.objects.replicates.SpartanLocation;
+import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class HashHelper {
 
-    public static int fastCollection(Collection<? extends Number> collection) {
-        return collection.isEmpty() ? 0 :
-                (collection.iterator().next().hashCode() * SpartanBukkit.hashCodeMultiplier)
-                        + collection.size();
+    public static final int
+            trueHash = Boolean.hashCode(true),
+            falseHash = Boolean.hashCode(false);
+
+    public static int extend(int hash, int extra) {
+        return (hash * SpartanBukkit.hashCodeMultiplier) + extra;
     }
 
-    public static int collection(Collection<? extends Number> collection) {
+    // Separator
+
+    public static <E> int fastCollection(Collection<E> collection) {
+        Iterator<E> iterator = collection.iterator();
+        int hash = (iterator.next().hashCode() * SpartanBukkit.hashCodeMultiplier) + collection.size();
+        Object object = null;
+
+        while (iterator.hasNext()) {
+            object = iterator.next();
+        }
+        if (object != null) {
+            hash = extend(hash, object.hashCode());
+        }
+        return hash;
+    }
+
+    public static <E> int collection(Collection<E> collection) {
         int result = 1;
 
-        for (Number num : collection) {
-            result = (result * SpartanBukkit.hashCodeMultiplier) + num.hashCode();
+        for (Object object : collection) {
+            result = extend(result, object.hashCode());
         }
         return result;
     }
 
-    public static int collection(Collection<? extends Number> collection,
-                                 int start, int end) {
+    public static <E> int collection(Collection<E> collection, int start, int end) {
         int result = 1, pos = 0;
-        Iterator<? extends Number> iterator = collection.iterator();
+        Iterator<E> iterator = collection.iterator();
 
         if (start > 0) {
             for (int i = 0; i < start; i++) {
@@ -36,10 +67,102 @@ public class HashHelper {
             if (pos >= end) {
                 break;
             } else {
-                result = (result * SpartanBukkit.hashCodeMultiplier) + iterator.next().hashCode();
+                result = extend(result, iterator.next().hashCode());
                 pos++;
             }
         }
         return result;
+    }
+
+    // Separator
+
+    public static int hashPlayer(SpartanPlayer player) {
+        int hash = Boolean.hashCode(player.isBedrockPlayer());
+        Entity vehicle = player.getVehicle();
+        Collection<PotionEffect> potionEffects;
+
+        if (vehicle != null) {
+            hash = extend(hash, vehicle.getType().ordinal());
+
+            if (vehicle instanceof LivingEntity) {
+                potionEffects = ((LivingEntity) vehicle).getActivePotionEffects();
+            } else {
+                potionEffects = null;
+            }
+        } else {
+            hash = extend(hash, Double.hashCode(player.getEyeHeight()));
+            potionEffects = player.getActivePotionEffects();
+        }
+        if (potionEffects != null && !potionEffects.isEmpty()) {
+            Map<Integer, PotionEffect> map = new TreeMap<>();
+
+            for (PotionEffect potionEffect : potionEffects) {
+                map.put(potionEffect.getType().hashCode(), potionEffect);
+            }
+            for (PotionEffect potionEffect : map.values()) {
+                hash = extend(hash, potionEffect.getType().hashCode());
+                hash = extend(hash, potionEffect.getAmplifier());
+            }
+        }
+        return hash;
+    }
+
+    public static int hashInventory(SpartanInventory inventory) {
+        int hash = 1;
+        ItemStack[] armors = inventory.getArmorContents();
+
+        for (ItemStack armor : armors) {
+            if (armor != null) {
+                hash = extend(hash, armor.getType().hashCode());
+                Map<Enchantment, Integer> enchantments = armor.getEnchantments();
+
+                if (!enchantments.isEmpty()) {
+                    Map<Integer, Integer> map = new TreeMap<>();
+
+                    for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                        int key = entry.getKey().hashCode();
+                        map.put(
+                                key,
+                                (key * SpartanBukkit.hashCodeMultiplier) + entry.getValue()
+                        );
+                    }
+                    for (int value : map.values()) {
+                        hash = extend(hash, value);
+                    }
+                } else {
+                    hash = extend(hash, falseHash);
+                }
+            } else {
+                hash = extend(hash, falseHash);
+            }
+        }
+        return hash;
+    }
+
+    public static int hashEnvironment(SpartanLocation location) {
+        int hash = 1;
+
+        for (int y = -1; y <= 2; y++) {
+            for (SpartanLocation cloned : location.getSurroundingLocations(1.0, y, 1.0, true)) {
+                Material material = cloned.getBlock().getType();
+
+                if (BlockUtils.isSolid(material)) {
+                    hash = extend(hash, GroundUtils.getHeightsHash(material, trueHash));
+                    hash = extend(hash, Double.hashCode(AlgebraUtils.cut(location.distance(cloned), 1)));
+                } else {
+                    hash = extend(hash, falseHash);
+                }
+            }
+        }
+        return hash;
+    }
+
+    public static int hashDirection(SpartanLocation location,
+                                    SpartanLocation oldLocation) {
+        int hash = 1;
+        float yaw = Math.abs(location.getYaw() - oldLocation.getYaw()),
+                pitch = Math.abs(location.getPitch() - oldLocation.getPitch());
+        //todo
+        return hash;
     }
 }

@@ -1,7 +1,9 @@
 package com.vagdedes.spartan.utils.java.math.probability;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class ProbabilityPie {
 
@@ -82,7 +84,10 @@ public class ProbabilityPie {
         return count != null ? count / this.total : defaultValue;
     }
 
-
+    public Stream<Map.Entry<Number, Integer>> getRanked() {
+        return this.map.entrySet().stream().sorted(
+                Map.Entry.comparingByValue(Comparator.reverseOrder()));
+    }
 
     // Separator
 

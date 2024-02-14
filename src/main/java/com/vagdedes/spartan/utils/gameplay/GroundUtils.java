@@ -6,6 +6,7 @@ import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.utils.java.HashHelper;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
@@ -19,6 +20,7 @@ public class GroundUtils {
 
     private static final Set<Double> heights = new HashSet<>();
     private static final Map<Material, double[]> specificHeights = new LinkedHashMap<>();
+    private static final Map<Material, Integer> specificHeightsHashes = new LinkedHashMap<>();
 
     private static final boolean
             v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9),
@@ -160,6 +162,14 @@ public class GroundUtils {
                     break;
             }
         }
+        for (Map.Entry<Material, double[]> entry : specificHeights.entrySet()) {
+            int hash = 1;
+
+            for (double d : entry.getValue()) {
+                hash = HashHelper.extend(hash, Double.hashCode(d));
+            }
+            specificHeightsHashes.put(entry.getKey(), hash);
+        }
     }
 
     // Method
@@ -270,8 +280,16 @@ public class GroundUtils {
         }
     }
 
+    public static double[] getHeightsRaw(Material m) {
+        return specificHeights.getOrDefault(m, new double[]{0.0});
+    }
+
+    public static int getHeightsHash(Material m, int defaultValue) {
+        return specificHeightsHashes.getOrDefault(m, defaultValue);
+    }
+
     public static double getMaxHeight(Material m) {
-        double[] heights = specificHeights.getOrDefault(m, new double[]{0.0});
+        double[] heights = getHeightsRaw(m);
 
         if (heights.length == 1) {
             return heights[0];
