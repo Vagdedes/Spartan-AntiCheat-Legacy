@@ -5,7 +5,7 @@ import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
 import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Collection;

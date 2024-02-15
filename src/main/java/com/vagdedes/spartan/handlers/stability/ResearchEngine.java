@@ -23,7 +23,7 @@ import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;

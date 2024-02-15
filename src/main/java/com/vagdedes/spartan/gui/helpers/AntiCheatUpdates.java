@@ -8,7 +8,7 @@ import com.vagdedes.spartan.objects.features.StatisticalProgress;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.java.StringUtils;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.utils.java.math.probability;
+package com.vagdedes.spartan.utils.math.probability;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;

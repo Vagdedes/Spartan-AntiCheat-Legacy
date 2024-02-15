@@ -10,7 +10,7 @@ import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;

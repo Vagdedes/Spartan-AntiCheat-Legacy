@@ -10,7 +10,7 @@ import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Decimals;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.java.math.statistics.LinearRegression;
+import com.vagdedes.spartan.utils.math.statistics.LinearRegression;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

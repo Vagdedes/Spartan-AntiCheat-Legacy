@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.java;
 
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.ChatColor;
 
 import java.nio.charset.Charset;

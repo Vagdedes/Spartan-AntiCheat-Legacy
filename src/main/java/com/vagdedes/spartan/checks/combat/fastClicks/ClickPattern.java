@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.DetectionExecutor;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Clicks;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class ClickPattern extends DetectionExecutor {
 

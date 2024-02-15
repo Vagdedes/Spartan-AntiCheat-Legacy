@@ -9,7 +9,7 @@ import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.profiling.PlayerFight;
 import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.utils.java.math;
+package com.vagdedes.spartan.utils.math;
 
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import org.bukkit.Location;

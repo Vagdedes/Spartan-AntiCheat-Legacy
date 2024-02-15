@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.objects.data;
 
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

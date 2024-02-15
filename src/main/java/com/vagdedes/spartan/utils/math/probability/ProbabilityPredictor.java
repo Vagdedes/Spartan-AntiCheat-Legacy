@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.utils.java.math.probability;
+package com.vagdedes.spartan.utils.math.probability;
 
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.HashHelper;
@@ -21,7 +21,6 @@ public class ProbabilityPredictor {
                                            int allPatternsCount) {
             this.pie = pie;
             this.patternSignificance = (patternCount * patternSize) / (double) allPatternsCount;
-
         }
     }
 
@@ -51,11 +50,12 @@ public class ProbabilityPredictor {
                 } else {
                     ProbabilityPie pie = new ProbabilityPie();
                     boolean next = false;
-                    int pos = 0, count = 0;
+                    int pos = 0, patternCount = 0;
 
                     for (Number pattern : allPatterns) {
                         if (next) {
                             next = false;
+                            patternCount++;
                             pie.add(pattern);
                         }
                         if (patternHash == HashHelper.collection(allPatterns, pos - patternSize, pos)) {
@@ -63,7 +63,12 @@ public class ProbabilityPredictor {
                         }
                         pos++;
                     }
-                    outcome = new ProbabilityPredictorOutcome(pie, count, patternSize, allPatternsSize);
+                    outcome = new ProbabilityPredictorOutcome(
+                            pie,
+                            patternCount,
+                            patternSize,
+                            allPatternsSize
+                    );
                     this.outcomes.put(hash, outcome);
                     return outcome;
                 }

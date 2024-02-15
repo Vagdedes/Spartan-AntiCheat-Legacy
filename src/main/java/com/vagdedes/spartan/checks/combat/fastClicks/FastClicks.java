@@ -8,7 +8,7 @@ import com.vagdedes.spartan.objects.data.Clicks;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;

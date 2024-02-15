@@ -15,7 +15,7 @@ import com.vagdedes.spartan.objects.profiling.PlayerFight;
 import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
