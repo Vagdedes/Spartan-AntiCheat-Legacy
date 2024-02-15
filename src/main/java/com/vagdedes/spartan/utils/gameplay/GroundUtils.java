@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.utils.gameplay;
 
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;

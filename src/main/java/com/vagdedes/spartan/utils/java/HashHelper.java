@@ -4,6 +4,7 @@ import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.objects.statistics.PatternValue;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -36,7 +37,7 @@ public class HashHelper {
 
     // Separator
 
-    public static <E> long hashDouble(double[] array, int generalize) {
+    public static long hashDouble(double[] array, int generalize) {
         long result = 1L;
         boolean generalization = generalize > 0;
 
@@ -51,7 +52,7 @@ public class HashHelper {
         return result;
     }
 
-    public static <E> long hashFloat(float[] array, int generalize) {
+    public static long hashFloat(float[] array, int generalize) {
         long result = 1L;
         boolean generalization = generalize > 0;
 
@@ -68,33 +69,33 @@ public class HashHelper {
 
     // Separator
 
-    public static <E> long fastCollection(Collection<E> collection) {
-        Iterator<E> iterator = collection.iterator();
-        long hash = (iterator.next().hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
-        Object object = null;
+    public static long fastCollection(Collection<PatternValue> collection) {
+        Iterator<PatternValue> iterator = collection.iterator();
+        long hash = (iterator.next().number.hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
+        Number value = null;
 
         while (iterator.hasNext()) {
-            object = iterator.next();
+            value = iterator.next().number;
         }
-        if (object != null) {
-            hash = extendLong(hash, object.hashCode());
+        if (value != null) {
+            hash = extendLong(hash, value.hashCode());
         }
         return hash;
     }
 
-    public static <E> long collection(Collection<E> collection) {
+    public static long collection(Collection<PatternValue> collection) {
         long result = 1L;
 
-        for (Object object : collection) {
-            result = extendLong(result, object.hashCode());
+        for (PatternValue value : collection) {
+            result = extendLong(result, value.number.hashCode());
         }
         return result;
     }
 
-    public static <E> long collection(Collection<E> collection, int start, int end) {
+    public static long collection(Collection<PatternValue> collection, int start, int end) {
         long hash = 1L;
         int pos = 0;
-        Iterator<E> iterator = collection.iterator();
+        Iterator<PatternValue> iterator = collection.iterator();
 
         if (start > 0) {
             for (int i = 0; i < start; i++) {
@@ -105,7 +106,7 @@ public class HashHelper {
             if (pos >= end) {
                 break;
             } else {
-                hash = extendLong(hash, iterator.next().hashCode());
+                hash = extendLong(hash, iterator.next().number.hashCode());
                 pos++;
             }
         }

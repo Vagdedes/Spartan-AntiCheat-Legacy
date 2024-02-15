@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.utils.java;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
 
 public class TimeUtils {
     

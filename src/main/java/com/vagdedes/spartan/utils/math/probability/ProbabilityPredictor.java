@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.utils.math.probability;
 
+import com.vagdedes.spartan.objects.statistics.PatternValue;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.HashHelper;
 
@@ -32,8 +33,8 @@ public class ProbabilityPredictor {
         this.outcomes = capacity >= 0 ? new LinkedHashMap<>(capacity) : new LinkedHashMap<>();
     }
 
-    public ProbabilityPredictorOutcome calculate(Collection<? extends Number> allPatterns,
-                                                 Collection<? extends Number> currentPattern) {
+    public ProbabilityPredictorOutcome calculate(Collection<PatternValue> allPatterns,
+                                                 Collection<PatternValue> currentPattern) {
         int allPatternsSize = allPatterns.size();
 
         if (allPatternsSize > 0) {
@@ -52,11 +53,11 @@ public class ProbabilityPredictor {
                     boolean next = false;
                     int pos = 0, patternCount = 0;
 
-                    for (Number pattern : allPatterns) {
+                    for (PatternValue pattern : allPatterns) {
                         if (next) {
                             next = false;
                             patternCount++;
-                            pie.add(pattern);
+                            pie.add(pattern.number);
                         }
                         if (patternHash == HashHelper.collection(allPatterns, pos - patternSize, pos)) {
                             next = true;
