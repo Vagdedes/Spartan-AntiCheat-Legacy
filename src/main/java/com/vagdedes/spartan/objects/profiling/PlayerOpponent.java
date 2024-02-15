@@ -33,6 +33,10 @@ public class PlayerOpponent {
         return hits;
     }
 
+    public int getDamage() {
+        return damage;
+    }
+
     public boolean hasHitCombo(int number) {
         return hitCombo >= number;
     }

@@ -4,27 +4,23 @@ import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class PlayerViolation {
 
-    private final PlayerProfile profile;
     private final Enums.HackType hackType;
     private final long time;
-    private final String information, date, detection;
-    private final int level, similarityIdentity, playerIdentity;
+    private final String information, detection;
+    private final int level, similarityIdentity;
     final int divisionIdentity;
     private final boolean isOption;
     private final Collection<Number> numbers;
 
-    public PlayerViolation(String name, Enums.HackType hackType, long time, String information, int level) {
-        this.playerIdentity = name.hashCode();
+    public PlayerViolation(Enums.HackType hackType, long time, String information, int level) {
         this.hackType = hackType;
         this.time = time;
-        this.date = new Timestamp(time).toString().substring(0, 10);
         this.information = information;
         this.level = level;
 
@@ -36,20 +32,12 @@ public class PlayerViolation {
         this.divisionIdentity = (information.hashCode() * SpartanBukkit.hashCodeMultiplier) + level;
     }
 
-    public int getPlayerIdentity() {
-        return playerIdentity;
-    }
-
     public Enums.HackType getHackType() {
         return hackType;
     }
 
     public long getTime() {
         return time;
-    }
-
-    public String getDate() {
-        return date;
     }
 
     public String getInformation() {

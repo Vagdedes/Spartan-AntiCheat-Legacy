@@ -397,7 +397,6 @@ public class ResearchEngine {
         }
         List<PlayerViolation> violationsList = new ArrayList<>(size);
         Map<Integer, List<PlayerViolation>> violationsMap = new LinkedHashMap<>(size);
-        Set<String> dates = new HashSet<>(size);
         boolean universal = dataType == DataType.Universal;
 
         // Separator
@@ -406,14 +405,13 @@ public class ResearchEngine {
                 ViolationHistory violationHistory = playerProfile.getViolationHistory(hackType);
                 violationsMap.putAll(violationHistory.getViolationsMap());
                 violationsList.addAll(violationHistory.getViolationsList());
-                dates.addAll(violationHistory.getDates());
             }
         }
 
         if (violationsMap.isEmpty()) {
             return null;
         }
-        return new ViolationHistory(hackType, dataType, violationsMap, violationsList, Math.max(dates.size(), 1));
+        return new ViolationHistory(hackType, dataType, violationsMap, violationsList);
     }
 
     // Separator
@@ -801,7 +799,7 @@ public class ResearchEngine {
                                                                         AntiCheatLogs.usualDateFormat
                                                         );
                                                         playerProfile.getViolationHistory(hackType).increaseViolations(
-                                                                new PlayerViolation(name, hackType, sdf.parse(fullDate).getTime(), detection, violation)
+                                                                new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation)
                                                         );
                                                     }
                                                 }
@@ -971,10 +969,10 @@ public class ResearchEngine {
 
                                                 if (timePeriod == null) {
                                                     timePeriod = new ViolationStatistics.TimePeriod();
-                                                    timePeriod.add(playerViolation);
+                                                    timePeriod.add(playerProfile, playerViolation);
                                                     averages.put(timeMoment, timePeriod);
                                                 } else {
-                                                    timePeriod.add(playerViolation);
+                                                    timePeriod.add(playerProfile, playerViolation);
                                                 }
                                             }
                                         }

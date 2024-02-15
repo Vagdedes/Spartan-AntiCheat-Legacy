@@ -147,7 +147,6 @@ public class LiveViolation {
                     || !disableCause.pointerMatches(hp.information)) {
                 int violations = this.getLevel();
                 PlayerViolation playerViolation = new PlayerViolation(
-                        player.getName(),
                         hackType,
                         hp.time,
                         hp.information,

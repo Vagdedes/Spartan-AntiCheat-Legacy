@@ -20,8 +20,7 @@ public class ViolationHistory {
     public ViolationHistory(Enums.HackType hackType,
                             ResearchEngine.DataType dataType,
                             Map<Integer, List<PlayerViolation>> violationsData,
-                            List<PlayerViolation> violationsMap,
-                            int days) { // Constructor
+                            List<PlayerViolation> violationsMap) { // Constructor
         this.hackType = hackType;
         this.dataType = dataType;
         this.violationsMap = violationsData;
@@ -30,7 +29,7 @@ public class ViolationHistory {
 
     // Used for object initiation in the player-profile object
     ViolationHistory(Enums.HackType hackType, ResearchEngine.DataType dataType) { // Local
-        this(hackType, dataType, new ConcurrentHashMap<>(), new CopyOnWriteArrayList<>(), -1);
+        this(hackType, dataType, new ConcurrentHashMap<>(), new CopyOnWriteArrayList<>());
     }
 
     // Separator
@@ -111,21 +110,5 @@ public class ViolationHistory {
 
     public Map<Integer, List<PlayerViolation>> getViolationsMap() {
         return new LinkedHashMap<>(violationsMap);
-    }
-
-    // Separator
-
-    public Set<String> getDates() {
-        int violationsSize = violationsMap.size();
-
-        if (violationsSize > 0) {
-            Set<String> dates = new HashSet<>(violationsSize);
-
-            for (PlayerViolation playerViolation : violationsList) {
-                dates.add(playerViolation.getDate());
-            }
-            return dates;
-        }
-        return new HashSet<>(0);
     }
 }

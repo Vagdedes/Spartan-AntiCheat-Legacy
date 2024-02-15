@@ -31,8 +31,8 @@ public class ViolationStatistics {
             this.violations = new HashMap<>();
         }
 
-        public void add(PlayerViolation playerViolation) {
-            players.add(playerViolation.getPlayerIdentity());
+        public void add(PlayerProfile profile, PlayerViolation playerViolation) {
+            players.add(profile.hashCode());
             violations.put(
                     playerViolation.getSimilarityIdentity(),
                     violations.getOrDefault(playerViolation.getSimilarityIdentity(), 0) + 1

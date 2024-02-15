@@ -458,7 +458,7 @@ public class CloudConnections {
                 discordTag = StringUtils.getDiscordTag(contactInformation);
 
                 if (discordTag == null) {
-                    return "The Discord tag you provided is incorrect";
+                    return "The Discord tag you provided is incorrect.";
                 }
             } else {
                 discordTag = new String[]{contactInformation};
@@ -472,12 +472,12 @@ public class CloudConnections {
 
             if (check.toString().equals(columnInformation) || checkName.equalsIgnoreCase(columnInformation)) {
                 if (!local && !check.supportsLiveEvidence()) {
-                    return "This check does not support live evidence, therefore we cannot accept a report about it";
+                    return "This check does not support live evidence, therefore we cannot accept a report about it.";
                 }
                 ViolationHistory violationHistory = ResearchEngine.getViolationHistory(hackType, ResearchEngine.DataType.Universal, ResearchEngine.getLegitimatePlayers());
 
                 if (violationHistory == null) {
-                    violationHistory = new ViolationHistory(hackType, ResearchEngine.DataType.Universal, new HashMap<>(0), new ArrayList<>(0), 1);
+                    return "No useful information was found for this check, try again later.";
                 }
                 Collection<Map.Entry<PlayerViolation, Integer>> entries = violationHistory.getViolationCounts();
 
@@ -504,8 +504,6 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Important Violations: ").append(violationHistory.getImportantViolations(false))
                         .append(newLine);
-                softwareInformation.append("Days of Data: ").append(violationHistory.getDates().size())
-                        .append(newLine).append(newLine); // 1 line
 
                 // Separator
 
@@ -604,9 +602,7 @@ public class CloudConnections {
                         averageViolations += violation;
                         totalViolations++;
                         String rawInformation = playerViolation.getInformation(),
-                                information = playerViolation.getDate()
-                                        + ": x" + entry.getValue()
-                                        + " (" + rawInformation + ")";
+                                information = "x" + entry.getValue() + " (" + rawInformation + ")";
 
                         if (uniqueInformation.add(playerViolation.getSimilarityIdentity())) {
                             softwareInformation.append(information).append(newLine);
