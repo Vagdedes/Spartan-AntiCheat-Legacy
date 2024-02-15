@@ -190,6 +190,7 @@ public class HashHelper {
     public static long hashEnvironment(SpartanPlayer player,
                                        SpartanLocation location) {
         long hash = 1L;
+        boolean foundBlock = false;
 
         for (int y = -1; y <= Math.ceil(player.getEyeHeight()); y++) {
             for (SpartanLocation cloned : location.clone().getSurroundingLocations(1.0, y, 1.0, true)) {
@@ -197,8 +198,11 @@ public class HashHelper {
                 Material material = block.getType();
 
                 if (BlockUtils.isSolid(material)) {
+                    foundBlock = true;
                     hash = extendLong(hash, GroundUtils.getHeightsHashLong(material, trueHash));
-                    hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(location.distance(cloned), 1)));
+                    hash = extendLong(hash, Double.hashCode(
+                            AlgebraUtils.cut(AlgebraUtils.getHorizontalDistance(location, cloned), 1))
+                    );
 
                     if (BlockUtils.areBouncingBlocks(material)) {
                         hash = extendLong(
@@ -211,11 +215,20 @@ public class HashHelper {
                         hash = extendLong(hash, material.toString().hashCode());
                     }
                 } else if (block.isLiquid()) {
+                    foundBlock = true;
                     hash = extendLong(hash, material.toString().hashCode());
-                } else {
-                    hash = extendLong(hash, falseHash);
                 }
                 hash = extendLong(hash, Boolean.hashCode(block.isWaterLogged()));
+            }
+        }
+
+        if (foundBlock) {
+            double box = location.getY() - location.getBlockY();
+
+            if (GroundUtils.heightExists(box)) {
+                hash = extendLong(hash, Double.hashCode(box));
+            } else {
+                hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 1)));
             }
         }
         return hash;
