@@ -21,7 +21,8 @@ public class PlayerEvidence {
     // Object
 
     private EvidenceType type;
-    final Map<Enums.HackType, String> live, historical; // Live object is used for synchronization
+    final Map<Enums.HackType, String> live; // Live object is used for synchronization
+    public final Map<Enums.HackType, String> historical; // Live object is used for synchronization
 
     PlayerEvidence() {
         this.type = EvidenceType.Legitimate;
@@ -37,11 +38,45 @@ public class PlayerEvidence {
 
     // Separator
 
-    void clear() {
+    public void clear(boolean live, boolean historical, boolean judge) {
         synchronized (this.live) {
-            this.live.clear();
-            this.historical.clear();
-            this.type = EvidenceType.Legitimate;
+            if (live) {
+                this.live.clear();
+            }
+            if (historical) {
+                this.historical.clear();
+            }
+            if (judge) {
+                judgeLocal();
+            }
+        }
+    }
+
+    public void remove(Enums.HackType hackType, boolean live, boolean historical, boolean judge) {
+        synchronized (this.live) {
+            if (live) {
+                this.live.remove(hackType);
+            }
+            if (historical) {
+                this.historical.remove(hackType);
+            }
+            if (judge) {
+                judgeLocal();
+            }
+        }
+    }
+
+    public void add(Enums.HackType hackType, String info, boolean live, boolean historical, boolean judge) {
+        synchronized (this.live) {
+            if (live) {
+                this.live.put(hackType, info);
+            }
+            if (historical) {
+                this.historical.put(hackType, info);
+            }
+            if (judge) {
+                judgeLocal();
+            }
         }
     }
 

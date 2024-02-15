@@ -18,6 +18,7 @@ import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.objects.features.StatisticalProgress;
 import com.vagdedes.spartan.objects.profiling.*;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.objects.statistics.ViolationStatistics;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -469,7 +470,7 @@ public class ResearchEngine {
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles) {
                     playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.removeFromAllEvidence(hackType);
+                    playerProfile.getEvidence().remove(hackType, true, true, true);
                 }
             }
 

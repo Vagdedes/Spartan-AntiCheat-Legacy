@@ -1,6 +1,8 @@
-package com.vagdedes.spartan.objects.profiling;
+package com.vagdedes.spartan.objects.statistics;
 
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
+import com.vagdedes.spartan.objects.profiling.PlayerProfile;
+import com.vagdedes.spartan.objects.profiling.PlayerViolation;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
@@ -78,9 +80,7 @@ public class ViolationStatistics {
                                ResearchEngine.DataType dataType) {
         for (PlayerProfile profile : playerProfiles) {
             if (profile.getDataType() == dataType) {
-                synchronized (profile.getEvidence().live) {
-                    profile.getEvidence().historical.remove(hackType);
-                }
+                profile.getEvidence().remove(hackType, false, true, false);
             }
         }
     }
@@ -154,7 +154,7 @@ public class ViolationStatistics {
             }
         } else if (!playerProfiles.isEmpty()) {
             for (PlayerProfile profile : playerProfiles) {
-                profile.getEvidence().clear();
+                profile.getEvidence().clear(false, true, false);
             }
         }
     }
@@ -245,12 +245,15 @@ public class ViolationStatistics {
                             probability = wave.getChance(probability);
 
                             if (probability <= 0.1) {
-                                profile.getEvidence().historical.put(
+                                profile.getEvidence().add(
                                         hackType,
-                                        "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%"
+                                        "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
+                                        false,
+                                        true,
+                                        false
                                 );
                             } else {
-                                profile.getEvidence().historical.remove(hackType);
+                                profile.getEvidence().remove(hackType, false, true, false);
                             }
                         }
                     }

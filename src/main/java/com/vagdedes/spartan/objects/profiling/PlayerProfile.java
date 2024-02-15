@@ -278,28 +278,6 @@ public class PlayerProfile {
         }
     }
 
-    public void removeFromLiveEvidence(Enums.HackType hackType) {
-        synchronized (evidence.live) {
-            evidence.live.remove(hackType);
-            evidence.judgeLocal();
-        }
-    }
-
-    public void removeFromHistoricalEvidence(Enums.HackType hackType) {
-        synchronized (evidence.live) {
-            evidence.historical.remove(hackType);
-            evidence.judgeLocal();
-        }
-    }
-
-    public void removeFromAllEvidence(Enums.HackType hackType) {
-        synchronized (evidence.live) {
-            evidence.live.remove(hackType);
-            evidence.historical.remove(hackType);
-            evidence.judgeLocal();
-        }
-    }
-
     public PlayerEvidence getEvidence() {
         return evidence;
     }
