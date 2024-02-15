@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.utils.java;
 
+import com.vagdedes.spartan.handlers.stability.TPS;
+import com.vagdedes.spartan.objects.replicates.SpartanBlock;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -14,19 +16,50 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class HashHelper {
 
     public static final int
             trueHash = Boolean.hashCode(true),
             falseHash = Boolean.hashCode(false);
+    private static final int
+            bedWordHash = "BED".hashCode();
 
     public static int extend(int hash, int extra) {
         return (hash * SpartanBukkit.hashCodeMultiplier) + extra;
+    }
+
+    // Separator
+
+    public static <E> int hashDouble(double[] array, int generalize) {
+        int result = 1;
+        boolean generalization = generalize > 0;
+
+        for (double number : array) {
+            result = extend(
+                    result,
+                    generalization
+                            ? Double.hashCode(AlgebraUtils.cut(number, generalize))
+                            : Double.hashCode(number)
+            );
+        }
+        return result;
+    }
+
+    public static <E> int hashFloat(float[] array, int generalize) {
+        int result = 1;
+        boolean generalization = generalize > 0;
+
+        for (float number : array) {
+            result = extend(
+                    result,
+                    generalization
+                            ? Double.hashCode(AlgebraUtils.cut(number, generalize))
+                            : Float.hashCode(number)
+            );
+        }
+        return result;
     }
 
     // Separator
@@ -87,12 +120,12 @@ public class HashHelper {
             if (vehicle instanceof LivingEntity) {
                 potionEffects = ((LivingEntity) vehicle).getActivePotionEffects();
             } else {
-                potionEffects = null;
+                potionEffects = new ArrayList<>(0);
             }
         } else {
             EntityDamageEvent damage = player.getLastDamageCause();
 
-            if (damage != null) { //todo check if in the last tick to include
+            if (damage != null && TPS.getTick(player) == player.getDamageTick()) {
                 hash = extend(hash, damage.getCause().ordinal());
             }
             hash = extend(hash, Double.hashCode(player.getEyeHeight()));
@@ -102,7 +135,7 @@ public class HashHelper {
             hash = extend(hash, Boolean.hashCode(player.isFrozen()));
             potionEffects = player.getActivePotionEffects();
         }
-        if (potionEffects != null && !potionEffects.isEmpty()) {
+        if (!potionEffects.isEmpty()) {
             Map<Integer, PotionEffect> map = new TreeMap<>();
 
             for (PotionEffect potionEffect : potionEffects) {
@@ -153,25 +186,29 @@ public class HashHelper {
 
         for (int y = -1; y <= 2; y++) {
             for (SpartanLocation cloned : location.getSurroundingLocations(1.0, y, 1.0, true)) {
-                Material material = cloned.getBlock().getType();
+                SpartanBlock block = cloned.getBlock();
+                Material material = block.getType();
 
                 if (BlockUtils.isSolid(material)) {
                     hash = extend(hash, GroundUtils.getHeightsHash(material, trueHash));
                     hash = extend(hash, Double.hashCode(AlgebraUtils.cut(location.distance(cloned), 1)));
+
+                    if (BlockUtils.areBouncingBlocks(material)) {
+                        hash = extend(
+                                hash,
+                                BlockUtils.areBeds(material)
+                                        ? bedWordHash
+                                        : material.toString().hashCode()
+                        );
+                    }
+                } else if (block.isLiquid()) {
+                    hash = extend(hash, material.toString().hashCode());
                 } else {
                     hash = extend(hash, falseHash);
                 }
+                hash = extend(hash, Boolean.hashCode(block.isWaterLogged()));
             }
         }
-        return hash;
-    }
-
-    public static int hashDirection(SpartanLocation location,
-                                    SpartanLocation oldLocation) {
-        int hash = 1;
-        float yaw = Math.abs(location.getYaw() - oldLocation.getYaw()),
-                pitch = Math.abs(location.getPitch() - oldLocation.getPitch());
-        //todo
         return hash;
     }
 }

@@ -30,13 +30,9 @@ public class AlgebraUtils {
 
     // Separator
 
-    private static double cutInternal(double value, double cut) {
-        cut = (int) Math.pow(10, cut);
-        return Math.floor(value * cut) / cut;
-    }
-
     public static double cut(double value, int cut) {
-        return value == 0.0 ? 0.0 : cutInternal(value, cut);
+        cut = (int) Math.pow(10, cut);
+        return Math.floor(value * cut) / (double) cut;
     }
 
     // Separator

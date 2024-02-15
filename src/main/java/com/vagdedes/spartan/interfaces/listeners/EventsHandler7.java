@@ -21,6 +21,7 @@ import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.java.HashHelper;
 import com.vagdedes.spartan.utils.java.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -182,6 +183,7 @@ public class EventsHandler7 implements Listener {
                 && p.isOnGround() && p.isOnGroundCustom()) {
             return;
         }
+        p.debug(false, false, HashHelper.hashPlayer(p), HashHelper.hashEnvironment(to));
 
         // Values
         Entity vehicle = p.getVehicle();

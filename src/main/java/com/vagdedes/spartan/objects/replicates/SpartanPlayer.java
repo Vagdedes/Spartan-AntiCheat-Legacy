@@ -117,6 +117,7 @@ public class SpartanPlayer {
     private final long firstPlayed;
     private boolean usingItem;
     private int fireTicks;
+    private long damageTick;
     private double lastDamage;
     private EntityDamageEvent lastDamageCause;
     private SpartanOpenInventory openInventory;
@@ -409,6 +410,7 @@ public class SpartanPlayer {
         this.address = p.getAddress();
         this.usingItem = p.isBlocking();
         this.fireTicks = p.getFireTicks();
+        this.damageTick = 0L;
         this.lastDamage = p.getLastDamage();
         this.lastDamageCause = p.getLastDamageCause();
         this.openInventory = spartanOpenInv;
@@ -1415,6 +1417,10 @@ public class SpartanPlayer {
         return ping;
     }
 
+    public long getDamageTick() {
+        return damageTick;
+    }
+
     public double getLastDamage() {
         return lastDamage;
     }
@@ -1424,6 +1430,7 @@ public class SpartanPlayer {
     }
 
     public synchronized void setLastDamageCause(EntityDamageEvent lastDamageCause, int maximumNoDamageTicks) {
+        this.damageTick = TPS.getTick(this);
         this.lastDamageCause = lastDamageCause;
         this.lastDamage = lastDamageCause.getDamage();
         this.maximumNoDamageTicks = maximumNoDamageTicks;
