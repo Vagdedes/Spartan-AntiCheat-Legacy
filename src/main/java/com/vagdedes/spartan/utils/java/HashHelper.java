@@ -138,6 +138,7 @@ public class HashHelper {
             hash = extendLong(hash, Boolean.hashCode(player.isSwimming()));
             hash = extendLong(hash, Boolean.hashCode(player.isCrawling()));
             hash = extendLong(hash, Boolean.hashCode(player.isFrozen()));
+            hash = extendLong(hash, Boolean.hashCode(player.isSneaking()));
             potionEffects = player.getActivePotionEffects();
         }
         if (!potionEffects.isEmpty()) {
@@ -186,11 +187,12 @@ public class HashHelper {
         return hash;
     }
 
-    public static long hashEnvironment(SpartanLocation location) {
+    public static long hashEnvironment(SpartanPlayer player,
+                                       SpartanLocation location) {
         long hash = 1L;
 
-        for (int y = -1; y <= 2; y++) {
-            for (SpartanLocation cloned : location.getSurroundingLocations(1.0, y, 1.0, true)) {
+        for (int y = -1; y <= Math.ceil(player.getEyeHeight()); y++) {
+            for (SpartanLocation cloned : location.clone().getSurroundingLocations(1.0, y, 1.0, true)) {
                 SpartanBlock block = cloned.getBlock();
                 Material material = block.getType();
 
@@ -205,6 +207,8 @@ public class HashHelper {
                                         ? bedWordHash
                                         : material.toString().hashCode()
                         );
+                    } else if (BlockUtils.areIceBlocks(material)) {
+                        hash = extendLong(hash, material.toString().hashCode());
                     }
                 } else if (block.isLiquid()) {
                     hash = extendLong(hash, material.toString().hashCode());
