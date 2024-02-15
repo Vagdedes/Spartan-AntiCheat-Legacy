@@ -5,7 +5,6 @@ package com.vagdedes.spartan.checks.combat.killAura;
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.abstraction.DetectionExecutor;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.profiling.PlayerFight;
 import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
@@ -49,12 +48,11 @@ public class Distance extends DetectionExecutor {
                     long timePassed = opponents[0].getPreviousLastHit(false);
 
                     if (timePassed <= 755L) { // 15 Ticks (Make sure the previous hit is recent or non-existent)
-                        double averageDistance = fight.getOpponent(player)[0].getReachAverage(),
-                                limit = MoveUtils.calculateLimit(player, location,
-                                        Math.max(CombatUtils.getWidthAndHeight(entity)[0], Math.max(ResearchEngine.getAverageReach(), 2.5)),
+                        double limit = MoveUtils.calculateLimit(player, location,
+                                        Math.max(CombatUtils.getWidthAndHeight(entity)[0], 2.5),
                                         4.0, PotionEffectType.SPEED);
 
-                        if (averageDistance >= limit) { // Make sure the player's average distance is appropriate
+                        if (distance >= limit) { // Make sure the player's average distance is appropriate
                             Buffer buffer = player.getBuffer(hackType);
 
                             if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 6) == 3) {
@@ -62,7 +60,7 @@ public class Distance extends DetectionExecutor {
                                 cancel("type: distance"
                                         + ", time-passed: " + timePassed
                                         + ", diagonal-distance: " + distance
-                                        + ", average-distance: " + averageDistance
+                                        + ", distance: " + distance
                                         + ", limit: " + limit);
                             }
                         }

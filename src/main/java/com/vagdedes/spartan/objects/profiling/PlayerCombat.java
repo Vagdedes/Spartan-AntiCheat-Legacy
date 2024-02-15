@@ -3,6 +3,7 @@ package com.vagdedes.spartan.objects.profiling;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -19,35 +20,43 @@ public class PlayerCombat {
         this.profile = profile;
     }
 
-    // Separator
-
-    public void removeFight(PlayerFight fight) {
-        fights.remove(fight);
-    }
-
-    public void createFight(PlayerFight fight) {
-        fights.add(fight);
-    }
-
     public boolean isFighting() {
-        return !fights.isEmpty();
-    }
+        int size = fights.size();
 
-    // Separator
+        if (size > 0) {
+            Iterator<PlayerFight> iterator = fights.iterator();
+
+            while (iterator.hasNext()) {
+                PlayerFight fight1 = iterator.next();
+
+                if (fight1.expired()) {
+                    iterator.remove();
+                    removeFightCopy(fight1);
+                    size--;
+                }
+            }
+            return size > 0;
+        } else {
+            return false;
+        }
+    }
 
     public List<PlayerFight> getFights() {
         return new ArrayList<>(fights);
     }
 
-    // Separator
-
     public PlayerFight getFight(SpartanPlayer opponent) {
-        List<PlayerFight> fights = getFights();
-
         if (!fights.isEmpty()) {
-            for (PlayerFight fight : fights) {
-                if (fight.getOpponent1().getPlayer().equals(opponent)
-                        || fight.getOpponent2().getPlayer().equals(opponent)) {
+            Iterator<PlayerFight> iterator = fights.iterator();
+
+            while (iterator.hasNext()) {
+                PlayerFight fight = iterator.next();
+
+                if (fight.expired()) {
+                    iterator.remove();
+                    removeFightCopy(fight);
+                } else if (fight.opponent1.getPlayer().equals(opponent)
+                        || fight.opponent2.getPlayer().equals(opponent)) {
                     return fight;
                 }
             }
@@ -55,13 +64,23 @@ public class PlayerCombat {
         return new PlayerFight(new PlayerOpponent(profile.getSpartanPlayer()), new PlayerOpponent(opponent));
     }
 
-    // Separator
-
     public void track() {
         if (!fights.isEmpty()) {
-            for (PlayerFight fight : fights) {
-                fight.track();
+            Iterator<PlayerFight> iterator = fights.iterator();
+
+            while (iterator.hasNext()) {
+                PlayerFight fight = iterator.next();
+
+                if (fight.expired()) {
+                    iterator.remove();
+                    removeFightCopy(fight);
+                }
             }
         }
+    }
+
+    private void removeFightCopy(PlayerFight fight) {
+        fight.getOpponent(profile.getSpartanPlayer())[1].getPlayer()
+                .getProfile().getCombat().fights.remove(fight);
     }
 }

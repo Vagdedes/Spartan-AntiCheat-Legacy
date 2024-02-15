@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.profiling.PlayerFight;
@@ -44,7 +43,7 @@ public class HitReach extends CheckExecutor {
             Double y = player.getNmsVerticalDistance();
             preferred = y != null && (player.isJumping(y) || player.isFalling(y)) ? 4.25 : defaultHorizontalReach;
         }
-        return Math.max(ResearchEngine.getAverageReach(), preferred);
+        return preferred;
     }
 
     private double filter(double distance, double minimum, double extra) {

@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.abstraction.DetectionExecutor;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Clicks;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class ClickFrequency extends DetectionExecutor {
 

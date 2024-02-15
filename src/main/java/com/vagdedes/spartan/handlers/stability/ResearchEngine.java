@@ -74,7 +74,6 @@ public class ResearchEngine {
     private static final Map<String, ItemStack> skulls = new ConcurrentHashMap<>(logRequirement);
     private static final Map<Enums.MiningOre, Double> averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
     private static final double[] defaultAverageMining = new double[Enums.MiningOre.values().length];
-    private static final List<PlayerFight> playerFights = new LinkedList<>();
 
     private static final Runnable skullsAndFightsRunnable = () -> {
         Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
@@ -273,10 +272,6 @@ public class ResearchEngine {
     }
 
     // Separator
-
-    public static double getAverageReach() {
-        return averageReach;
-    }
 
     public static StatisticalProgress getProgress() {
         return statisticalProgress;
@@ -1069,7 +1064,6 @@ public class ResearchEngine {
                 CancelViolation.clear(); // We clear because there are no hacker-free players
             }
         } else { // We clear because there are no players
-            playerFights.clear();
             statisticalProgress = new StatisticalProgress();
             averageMining.clear();
             ViolationStatistics.clear();

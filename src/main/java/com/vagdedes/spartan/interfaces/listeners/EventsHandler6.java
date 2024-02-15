@@ -19,7 +19,6 @@ import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -125,7 +124,7 @@ public class EventsHandler6 implements Listener {
                 if (isPlayer) {
                     PlayerOpponent[] opponents = player.getProfile().getCombat()
                             .getFight(targetPlayer).getOpponent(player);
-                    opponents[0].damager(distance);
+                    opponents[0].damager();
                     opponents[1].update();
                 }
 
@@ -137,28 +136,16 @@ public class EventsHandler6 implements Listener {
             player.getExecutor(Enums.HackType.Velocity).handle(cancelled, event);
             player.getExecutor(Enums.HackType.NoSwing).handle(cancelled, event);
             player.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{damage, entity});
-
-            runDealDamageChild(player, cooldowns, entity, utility, cancelled);
-        }
-        cooldowns.add(cooldownKey, 3);
-    }
-
-    private static void runDealDamageChild(SpartanPlayer player, Cooldowns cooldowns,
-                                           LivingEntity entity,
-                                           double[] utility,
-                                           boolean cancelled) {
-        if (TestServer.isIdentified()
-                || Config.settings.getBoolean("Detections.allow_cancelled_hit_checking")
-                || PlayerData.isInActivePlayerCombat(player)) {
             boolean hasMultipleHitCooldown = !cooldowns.canDo(cooldownKey) && CombatUtils.isNewPvPMechanic(player, entity);
 
-            // Detections
             if (!hasMultipleHitCooldown) {
                 Object[] objects = new Object[]{entity, utility};
-                player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
+                player.getExecutor(Enums.HackType.KillAura).run(cancelled);
                 player.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
+                player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
             }
         }
+        cooldowns.add(cooldownKey, 3);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

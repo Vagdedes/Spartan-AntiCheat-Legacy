@@ -7,7 +7,6 @@ import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.ExtremeCollision;
 import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
@@ -166,8 +165,6 @@ public class PlayerData {
         List<PlayerFight> fights = p.getProfile().getCombat().getFights();
 
         if (!fights.isEmpty()) {
-            double globalAverageReach = ResearchEngine.getAverageReach();
-
             for (PlayerFight fight : fights) {
                 PlayerOpponent[] opponents = fight.getOpponent(p);
 
@@ -178,8 +175,7 @@ public class PlayerData {
                         damage = true;
                     }
                 }
-                if (!hit && (opponents[0].getLastHit() <= combatTimeRequirement
-                        || globalAverageReach != -1.0 && opponents[1].getReachAverage() > globalAverageReach)) {
+                if (!hit && opponents[0].getLastHit() <= combatTimeRequirement) {
                     if (damage) {
                         return true;
                     } else {
