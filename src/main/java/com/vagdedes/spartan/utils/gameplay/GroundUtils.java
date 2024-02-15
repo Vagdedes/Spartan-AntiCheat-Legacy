@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.utils.gameplay;
 
 import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
@@ -32,6 +33,7 @@ public class GroundUtils {
             maxPossibleStep = 0.9375, // Attention, serious usage
             minPossibleStep = 0.015625,  // Attention, serious usage
             maxPlayerStep = bedStep + 0.1;
+    public static final int maxHeightLength;
 
     static final String
             inaccuracyKey = "ground-utils=utility-inaccuracy";
@@ -83,7 +85,7 @@ public class GroundUtils {
             } else if (BlockUtils.areFlowerPots(m) || BlockUtils.areCandles(m)) {
                 specificHeights.put(m, new double[]{0.0, 0.375});
             } else if (BlockUtils.areCarpets(m)) {
-                specificHeights.put(m, new double[]{0.0625, 0.99999999});
+                specificHeights.put(m, new double[]{0.0625});
             } else if (m == MaterialUtils.get("repeater_on") || m == MaterialUtils.get("repeater_off") || m == MaterialUtils.get("comparator_on") || m == MaterialUtils.get("comparator_off")) {
                 specificHeights.put(m, new double[]{0.125});
             } else if (BlockUtils.areBeds(m)) {
@@ -162,14 +164,18 @@ public class GroundUtils {
                     break;
             }
         }
+        int maxHeightLengthLocal = 0;
+
         for (Map.Entry<Material, double[]> entry : specificHeights.entrySet()) {
             int hash = 1;
 
             for (double d : entry.getValue()) {
+                maxHeightLengthLocal = Math.max(maxHeightLengthLocal, Double.toString(d).length() - 2); // 0.XXXXX
                 hash = HashHelper.extendInt(hash, Double.hashCode(d));
             }
             specificHeightsHashes.put(entry.getKey(), hash);
         }
+        maxHeightLength = maxHeightLengthLocal;
     }
 
     // Method

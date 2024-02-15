@@ -5,6 +5,7 @@ import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
 import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
@@ -24,7 +25,7 @@ public class FalsePositiveDetection {
             for (Number number : numbers) {
                 if (number instanceof Double) {
                     hash = (hash * SpartanBukkit.hashCodeMultiplier)
-                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), 2));
+                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), GroundUtils.maxHeightLength));
                 } else {
                     hash = (hash * SpartanBukkit.hashCodeMultiplier) + number.intValue();
                 }
