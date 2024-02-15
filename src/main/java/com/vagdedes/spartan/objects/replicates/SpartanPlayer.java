@@ -331,7 +331,11 @@ public class SpartanPlayer {
                             p.setFlying(n.isFlying(), n.getAllowFlight());
                             p.setFoodLevel(n.getFoodLevel(), false);
                             p.setDead(n.isDead());
-                            p.setLastDamageCause(n.getLastDamageCause(), n.getLastDamage(), n.getMaximumNoDamageTicks());
+                            EntityDamageEvent lastDamageCause = n.getLastDamageCause();
+
+                            if (lastDamageCause != null) {
+                                p.setLastDamageCause(lastDamageCause, n.getMaximumNoDamageTicks());
+                            }
 
                             // Check Allowance Cache
                             if (TPS.getTick(p) <= 100
@@ -1172,7 +1176,7 @@ public class SpartanPlayer {
             EntityDamageEvent event = new EntityDamageEvent(p, damageCause, amount);
             p.damage(amount);
             p.setLastDamageCause(event);
-            setLastDamageCause(event, amount, p.getMaximumNoDamageTicks());
+            setLastDamageCause(event, p.getMaximumNoDamageTicks());
         }
     }
 
@@ -1419,9 +1423,9 @@ public class SpartanPlayer {
         return lastDamageCause;
     }
 
-    public synchronized void setLastDamageCause(EntityDamageEvent lastDamageCause, double lastDamage, int maximumNoDamageTicks) {
+    public synchronized void setLastDamageCause(EntityDamageEvent lastDamageCause, int maximumNoDamageTicks) {
         this.lastDamageCause = lastDamageCause;
-        this.lastDamage = lastDamage;
+        this.lastDamage = lastDamageCause.getDamage();
         this.maximumNoDamageTicks = maximumNoDamageTicks;
     }
 

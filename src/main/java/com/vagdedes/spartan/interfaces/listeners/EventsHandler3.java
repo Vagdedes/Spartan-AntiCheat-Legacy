@@ -77,12 +77,11 @@ public class EventsHandler3 implements Listener {
             boolean cancelled = e.isCancelled()
                     && (gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE);
-            double damage = e.getDamage();
 
             // Objects
             p.setFallDistance(n.getFallDistance(), false);
             p.setHealth(n.getHealth());
-            p.setLastDamageCause(e, damage, n.getMaximumNoDamageTicks());
+            p.setLastDamageCause(e, n.getMaximumNoDamageTicks());
 
             if (cancelled) {
                 // Detections
@@ -112,8 +111,6 @@ public class EventsHandler3 implements Listener {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
 
             if (passengers.length > 0) {
-                double damage = e.getDamage();
-
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
                         Player n = (Player) passenger;
@@ -123,7 +120,7 @@ public class EventsHandler3 implements Listener {
                             // Objects
                             p.setFallDistance(n.getFallDistance(), false);
                             p.setHealth(n.getHealth());
-                            p.setLastDamageCause(e, damage, n.getMaximumNoDamageTicks());
+                            p.setLastDamageCause(e, n.getMaximumNoDamageTicks());
 
                             // Handlers
                             Damage.runReceivedDamage(p, dmg);

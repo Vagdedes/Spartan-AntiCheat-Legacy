@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.java;
 
-import com.vagdedes.spartan.objects.replicates.SpartanInventory;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -11,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -82,7 +82,7 @@ public class HashHelper {
         Collection<PotionEffect> potionEffects;
 
         if (vehicle != null) {
-            hash = extend(hash, vehicle.getType().ordinal());
+            hash = extend(hash, vehicle.getType().toString().hashCode());
 
             if (vehicle instanceof LivingEntity) {
                 potionEffects = ((LivingEntity) vehicle).getActivePotionEffects();
@@ -90,37 +90,46 @@ public class HashHelper {
                 potionEffects = null;
             }
         } else {
+            EntityDamageEvent damage = player.getLastDamageCause();
+
+            if (damage != null) { //todo check if in the last tick to include
+                hash = extend(hash, damage.getCause().ordinal());
+            }
             hash = extend(hash, Double.hashCode(player.getEyeHeight()));
+            hash = extend(hash, Boolean.hashCode(player.isGliding()));
+            hash = extend(hash, Boolean.hashCode(player.isSwimming()));
+            hash = extend(hash, Boolean.hashCode(player.isCrawling()));
+            hash = extend(hash, Boolean.hashCode(player.isFrozen()));
             potionEffects = player.getActivePotionEffects();
         }
         if (potionEffects != null && !potionEffects.isEmpty()) {
             Map<Integer, PotionEffect> map = new TreeMap<>();
 
             for (PotionEffect potionEffect : potionEffects) {
-                map.put(potionEffect.getType().hashCode(), potionEffect);
+                map.put(potionEffect.getType().toString().hashCode(), potionEffect);
             }
             for (PotionEffect potionEffect : map.values()) {
-                hash = extend(hash, potionEffect.getType().hashCode());
+                hash = extend(hash, potionEffect.getType().toString().hashCode());
                 hash = extend(hash, potionEffect.getAmplifier());
             }
         }
         return hash;
     }
 
-    public static int hashInventory(SpartanInventory inventory) {
-        int hash = 1;
-        ItemStack[] armors = inventory.getArmorContents();
+    public static int hashInventory(SpartanPlayer player) {
+        int hash = Boolean.hashCode(player.isUsingItem());
+        ItemStack[] armors = player.getInventory().getArmorContents();
 
         for (ItemStack armor : armors) {
             if (armor != null) {
-                hash = extend(hash, armor.getType().hashCode());
+                hash = extend(hash, armor.getType().toString().hashCode());
                 Map<Enchantment, Integer> enchantments = armor.getEnchantments();
 
                 if (!enchantments.isEmpty()) {
                     Map<Integer, Integer> map = new TreeMap<>();
 
                     for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                        int key = entry.getKey().hashCode();
+                        int key = entry.getKey().toString().hashCode();
                         map.put(
                                 key,
                                 (key * SpartanBukkit.hashCodeMultiplier) + entry.getValue()
