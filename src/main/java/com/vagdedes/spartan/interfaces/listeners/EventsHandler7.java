@@ -183,9 +183,12 @@ public class EventsHandler7 implements Listener {
                 && p.isOnGround() && p.isOnGroundCustom()) {
             return;
         }
-        p.debug(false, false,
+        p.debug(
+                false,
+                false,
                 HashHelper.hashPlayer(p),
-                HashHelper.hashEnvironment(p, to));
+                HashHelper.hashEnvironment(p, to)
+        );
 
         // Values
         Entity vehicle = p.getVehicle();

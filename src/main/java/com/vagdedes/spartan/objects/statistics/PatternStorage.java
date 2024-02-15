@@ -1,46 +1,77 @@
 package com.vagdedes.spartan.objects.statistics;
 
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 
 public class PatternStorage {
 
-    private final String key;
-    private final int[] generalizations;
-    private final boolean generalization;
-    private final Map<Integer, Collection<PatternValue>> available, hidden;
-    private final Map<UUID, Map<Integer, Collection<PatternValue>>> correlations;
-    private static final Object synchronizer = new Object();
+    private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
 
-    public PatternStorage(String key, int[] generalizations) {
-        this.key = key;
-        this.generalizations = generalizations;
-        this.generalization = generalizations.length > 0;
-        this.correlations = new LinkedHashMap<>();
-
-        this.available = new LinkedHashMap<>();
-        this.available.put(0, new ArrayList<>());
-
-        this.hidden = new LinkedHashMap<>();
-        this.hidden.put(0, new ArrayList<>());
-
-        for (int generalization : generalizations) {
-            this.available.put(generalization, new ArrayList<>());
-            this.hidden.put(generalization, new ArrayList<>());
+    public static void consider(UUID uuid) {
+        synchronized (instances) {
+            for (PatternStorage instance : instances) {
+                instance.considerLocal(uuid);
+            }
         }
     }
 
+    public static void block(UUID uuid) {
+        synchronized (instances) {
+            for (PatternStorage instance : instances) {
+                instance.blockLocal(uuid);
+            }
+        }
+    }
+
+    // Separator
+
+    private final String key;
+    private final int[] generalizations;
+    private final boolean generalization;
+    private final Map<Integer, Collection<PatternValue>> available, unavailable;
+    private final Map<UUID, Map<Integer, Collection<PatternValue>>> correlations;
+    private final Set<UUID> blocked;
+
+    public PatternStorage(String key, int[] generalizations) {
+        this.key = key;
+        this.blocked = Collections.synchronizedSet(new HashSet<>());
+
+        this.generalizations = generalizations;
+        this.generalization = generalizations.length > 0;
+
+        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+
+        this.available = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.available.put(0, new ArrayList<>());
+
+        this.unavailable = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.unavailable.put(0, new ArrayList<>());
+
+        for (int generalization : generalizations) {
+            this.available.put(generalization, new ArrayList<>());
+            this.unavailable.put(generalization, new ArrayList<>());
+        }
+        synchronized (instances) {
+            instances.add(this);
+        }
+    }
+
+    // Separator
+
     public void store() {
+
+    }
+
+    public void load() {
 
     }
 
     // Separator
 
     private void rawCache(Map<Integer, Collection<PatternValue>> map,
-                         SpartanPlayer player, PatternValue value, int generalization) {
+                          SpartanPlayer player, PatternValue value, int generalization) {
         map.get(generalization).add(value);
         this.correlations.computeIfAbsent(
                 player.getUniqueId(),
@@ -53,20 +84,23 @@ public class PatternStorage {
 
     public void cache(SpartanPlayer player, Number number) {
         PatternValue value = new PatternValue(number);
+        boolean legitimate = player.getProfile().isLegitimate();
 
-        synchronized (synchronizer) {
-            Map<Integer, Collection<PatternValue>> map =
-                    player.getProfile().isLegitimate() ? this.available : this.hidden;
-            this.rawCache(map, player, value, 0);
+        synchronized (legitimate ? this.available : this.unavailable) {
+            synchronized (this.correlations) {
+                Map<Integer, Collection<PatternValue>> map =
+                        legitimate ? this.available : this.unavailable;
+                this.rawCache(map, player, value, 0);
 
-            if (this.generalization) {
-                for (int generalization : this.generalizations) {
-                    this.rawCache(
-                            map,
-                            player,
-                            new PatternValue(AlgebraUtils.cut(number.doubleValue(), generalization), value.time),
-                            generalization
-                    );
+                if (this.generalization) {
+                    for (int generalization : this.generalizations) {
+                        this.rawCache(
+                                map,
+                                player,
+                                new PatternValue(AlgebraUtils.cut(number.doubleValue(), generalization), value.time),
+                                generalization
+                        );
+                    }
                 }
             }
         }
@@ -74,30 +108,81 @@ public class PatternStorage {
 
     // Separator
 
-    public void show(SpartanPlayer player) {
-        if (!hidden.isEmpty()) {
+    private void considerLocal(UUID uuid) {
+        synchronized (this.blocked) {
+            if (this.blocked.contains(uuid)) {
+                this.blocked.remove(uuid);
+                Map<Integer, Collection<PatternValue>> map = this.correlations.get(uuid);
 
+                if (map != null) {
+                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
+                        synchronized (this.available) {
+                            synchronized (this.unavailable) {
+                                this.unavailable.get(entry.getKey()).removeAll(entry.getValue());
+                                this.available.get(entry.getKey()).addAll(entry.getValue());
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    public void hide(SpartanPlayer player) {
-        if (!available.isEmpty()) {
+    private void blockLocal(UUID uuid) {
+        synchronized (this.blocked) {
+            if (!this.blocked.contains(uuid)) {
+                this.blocked.add(uuid);
+                Map<Integer, Collection<PatternValue>> map = this.correlations.get(uuid);
 
+                if (map != null) {
+                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
+                        synchronized (this.available) {
+                            synchronized (this.unavailable) {
+                                this.available.get(entry.getKey()).removeAll(entry.getValue());
+                                this.unavailable.get(entry.getKey()).addAll(entry.getValue());
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-
-    private int hash(UUID uuid, int generalization) {
-        return (uuid.hashCode() * SpartanBukkit.hashCodeMultiplier) + generalization;
-    }
-
 
     // Separator
 
     public Collection<PatternValue> get() {
-        return this.available.get(0);
+        return this.get(0);
     }
 
     public Collection<PatternValue> get(int generalization) {
-        return this.available.get(generalization);
+        synchronized (this.available) {
+            return this.available.get(generalization);
+        }
     }
+
+    public Collection<PatternValue> get(SpartanPlayer player, int count) {
+        return this.get(player, 0, count);
+    }
+
+    public Collection<PatternValue> get(SpartanPlayer player, int generalization, int count) {
+        synchronized (this.correlations) {
+            Map<Integer, Collection<PatternValue>> map = this.correlations.get(player.getUniqueId());
+
+            if (map != null) {
+                Collection<PatternValue> values = map.get(generalization);
+
+                if (values != null) {
+                    int size = values.size();
+
+                    if (size > count) {
+                        size--;
+                        return new ArrayList<>(values).subList(size - count, size);
+                    }
+                }
+            }
+            return new ArrayList<>(0);
+        }
+    }
+
+    // Separator
 }

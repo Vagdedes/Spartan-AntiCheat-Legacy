@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.objects.profiling;
 
+import com.vagdedes.spartan.objects.statistics.PatternStorage;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
@@ -20,11 +21,13 @@ public class PlayerEvidence {
 
     // Object
 
+    private final UUID uuid;
     private EvidenceType type;
     final Map<Enums.HackType, String> live; // Live object is used for synchronization
     public final Map<Enums.HackType, String> historical; // Live object is used for synchronization
 
-    PlayerEvidence() {
+    PlayerEvidence(UUID uuid) {
+        this.uuid = uuid;
         this.type = EvidenceType.Legitimate;
         this.live = Collections.synchronizedMap(new LinkedHashMap<>(Enums.HackType.values().length));
         this.historical = new LinkedHashMap<>(Enums.HackType.values().length);
@@ -134,10 +137,12 @@ public class PlayerEvidence {
                 type = evidenceType;
 
                 if (evidenceType != EvidenceType.Legitimate) {
+                    PatternStorage.block(this.uuid);
                     break;
                 }
             }
         }
+        PatternStorage.consider(this.uuid);
         this.type = type;
     }
 

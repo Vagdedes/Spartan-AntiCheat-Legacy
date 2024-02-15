@@ -1,5 +1,8 @@
 package com.vagdedes.spartan.utils.math.probability;
 
+import com.vagdedes.spartan.objects.statistics.PatternValue;
+
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,6 +41,18 @@ public class ProbabilityPie {
 
     public void add(Number number) {
         this.increase(number, 1);
+    }
+
+    public void addMultiple(Collection<? extends Number> numbers) {
+        for (Number number : numbers) {
+            this.add(number);
+        }
+    }
+
+    public void addMultiplePatterns(Collection<PatternValue> values) {
+        for (PatternValue value : values) {
+            this.add(value.number);
+        }
     }
 
     public void increase(Number number, int amount) {
