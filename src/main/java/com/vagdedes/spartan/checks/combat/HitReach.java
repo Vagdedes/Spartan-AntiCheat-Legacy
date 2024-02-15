@@ -5,9 +5,6 @@ import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Cooldowns;
-import com.vagdedes.spartan.objects.profiling.PlayerFight;
-import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -101,26 +98,6 @@ public class HitReach extends CheckExecutor {
                             } else if (buffer.start(Buffer.BufferType.Combat, "horizontal-long", ticks * 2) >= (attempts * 2)) {
                                 buffer.clear("horizontal-short");
                                 cancel("type: horizontal(long), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
-                            }
-                        }
-
-                        // Separator
-                        if (isPlayer) {
-                            String detection = "horizontal(historical)",
-                                    key = detection + "=" + entity.getEntityId();
-                            Cooldowns cooldowns = player.getCooldowns(hackType);
-
-                            if (cooldowns.canDo(key)) {
-                                PlayerOpponent opponent = player.getProfile().getCombat().getFight(damaged).getOpponent(player)[0];
-
-                                if (opponent.getHits() >= PlayerFight.requiredHits) {
-                                    double reachAverage = opponent.getReachAverage();
-
-                                    if (reachAverage >= limit) {
-                                        cooldowns.add(key, CombatUtils.getFightTicks(player) * PlayerFight.requiredHits);
-                                        cancel("type: " + detection + ", distance: " + reachAverage + ", limit: " + limit);
-                                    }
-                                }
                             }
                         }
                     }

@@ -41,27 +41,29 @@ public class Distance extends DetectionExecutor {
                     && !CombatUtils.hasBlockBehind(player, entity)
                     && targetPlayer.getBlocksOffGround(groundBlockRequirement + 1, true, true) <= groundBlockRequirement) { // We need the target close to the ground
                 PlayerFight fight = player.getProfile().getCombat().getFight(targetPlayer);
-                PlayerOpponent[] opponents = fight.getOpponent(player);
 
-                if (fight.getHitRatio(opponents) > 1.0 // Make sure the player has a hit advantage
-                        && opponents[0].hasHitCombo()) { // Make sure the player has a hit combo
-                    long timePassed = opponents[0].getPreviousLastHit(false);
+                if (fight.getHitRatio(player) > 1.0) { // Make sure the player has a hit advantage
+                    PlayerOpponent[] opponents = fight.getOpponent(player);
 
-                    if (timePassed <= 755L) { // 15 Ticks (Make sure the previous hit is recent or non-existent)
-                        double limit = MoveUtils.calculateLimit(player, location,
-                                        Math.max(CombatUtils.getWidthAndHeight(entity)[0], 2.5),
-                                        4.0, PotionEffectType.SPEED);
+                    if (opponents[0].hasHitCombo()) { // Make sure the player has a hit combo
+                        long timePassed = opponents[0].getPreviousLastHit(false);
 
-                        if (distance >= limit) { // Make sure the player's average distance is appropriate
-                            Buffer buffer = player.getBuffer(hackType);
+                        if (timePassed <= 755L) { // 15 Ticks (Make sure the previous hit is recent or non-existent)
+                            double limit = MoveUtils.calculateLimit(player, location,
+                                    Math.max(CombatUtils.getWidthAndHeight(entity)[0], 2.5),
+                                    4.0, PotionEffectType.SPEED);
 
-                            if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 6) == 3) {
-                                buffer.remove(key);
-                                cancel("type: distance"
-                                        + ", time-passed: " + timePassed
-                                        + ", diagonal-distance: " + distance
-                                        + ", distance: " + distance
-                                        + ", limit: " + limit);
+                            if (distance >= limit) { // Make sure the player's average distance is appropriate
+                                Buffer buffer = player.getBuffer(hackType);
+
+                                if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 6) == 3) {
+                                    buffer.remove(key);
+                                    cancel("type: distance"
+                                            + ", time-passed: " + timePassed
+                                            + ", diagonal-distance: " + distance
+                                            + ", distance: " + distance
+                                            + ", limit: " + limit);
+                                }
                             }
                         }
                     }

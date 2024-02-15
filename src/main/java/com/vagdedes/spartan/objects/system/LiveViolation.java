@@ -11,7 +11,6 @@ import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
@@ -147,7 +146,13 @@ public class LiveViolation {
             if (disableCause == null
                     || !disableCause.pointerMatches(hp.information)) {
                 int violations = this.getLevel();
-                PlayerViolation playerViolation = new PlayerViolation(player.getName(), hackType, hp.time, hp.information, violations + 1, TPS.get(player, false) < TPS.minimum);
+                PlayerViolation playerViolation = new PlayerViolation(
+                        player.getName(),
+                        hackType,
+                        hp.time,
+                        hp.information,
+                        violations + 1
+                );
 
                 if (!CheckProtection.hasCooldown(uuid, playerViolation)) {
                     Player realPlayer = player.getPlayer();

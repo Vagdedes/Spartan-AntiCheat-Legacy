@@ -710,18 +710,6 @@ public class ResearchEngine {
         return -1;
     }
 
-    public static boolean isLowTPS(String data) {
-        int tpsString = data.indexOf("(TPS: ");
-
-        if (tpsString > -1) {
-            try {
-                return Double.parseDouble(data.substring(tpsString + 6, tpsString + 11)) < TPS.minimum;
-            } catch (Exception ignored) {
-            }
-        }
-        return false;
-    }
-
     private static boolean isLogValid(String log) {
         if (log.length() <= maxDataLength) {
             String start = "[Spartan Phase ";
@@ -813,7 +801,7 @@ public class ResearchEngine {
                                                                         AntiCheatLogs.usualDateFormat
                                                         );
                                                         playerProfile.getViolationHistory(hackType).increaseViolations(
-                                                                new PlayerViolation(name, hackType, sdf.parse(fullDate).getTime(), detection, violation, isLowTPS(data))
+                                                                new PlayerViolation(name, hackType, sdf.parse(fullDate).getTime(), detection, violation)
                                                         );
                                                     }
                                                 }

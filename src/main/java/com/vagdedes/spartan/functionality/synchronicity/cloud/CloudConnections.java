@@ -584,7 +584,6 @@ public class CloudConnections {
                 // Separator
 
                 int entriesSize = entries.size(),
-                        lowTPS = 0,
                         limit = 250,
                         minViolations = Integer.MAX_VALUE,
                         maxViolations = 0,
@@ -597,30 +596,25 @@ public class CloudConnections {
                 if (entriesSize > 0) {
                     for (Map.Entry<PlayerViolation, Integer> entry : entries) {
                         PlayerViolation playerViolation = entry.getKey();
+                        int violation = playerViolation.getLevel();
 
-                        if (!playerViolation.isLowTPS()) {
-                            int violation = playerViolation.getLevel();
+                        minViolations = Math.min(minViolations, violation);
+                        maxViolations = Math.max(maxViolations, violation);
 
-                            minViolations = Math.min(minViolations, violation);
-                            maxViolations = Math.max(maxViolations, violation);
+                        averageViolations += violation;
+                        totalViolations++;
+                        String rawInformation = playerViolation.getInformation(),
+                                information = playerViolation.getDate()
+                                        + ": x" + entry.getValue()
+                                        + " (" + rawInformation + ")";
 
-                            averageViolations += violation;
-                            totalViolations++;
-                            String rawInformation = playerViolation.getInformation(),
-                                    information = playerViolation.getDate()
-                                            + ": x" + entry.getValue()
-                                            + " (" + rawInformation + ")";
+                        if (uniqueInformation.add(playerViolation.getSimilarityIdentity())) {
+                            softwareInformation.append(information).append(newLine);
+                            validViolations++;
 
-                            if (uniqueInformation.add(playerViolation.getSimilarityIdentity())) {
-                                softwareInformation.append(information).append(newLine);
-                                validViolations++;
-
-                                if (validViolations == limit) {
-                                    break;
-                                }
+                            if (validViolations == limit) {
+                                break;
                             }
-                        } else {
-                            lowTPS++;
                         }
                     }
                 } else {
@@ -634,8 +628,6 @@ public class CloudConnections {
                         .append("Average Violations: ").append(AlgebraUtils.cut(averageViolations / ((double) totalViolations), 2))
                         .append(newLine)
                         .append("Maximum Violations: ").append(maxViolations)
-                        .append(newLine)
-                        .append("Low TPS Percentage: ").append((lowTPS / (double) entriesSize) * 100.0)
                         .append(newLine)
                         .append("Problematic Detections: ").append(check.getProblematicDetections());
 
