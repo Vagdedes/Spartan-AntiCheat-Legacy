@@ -9,7 +9,21 @@ import java.util.Map;
 
 public class ProbabilityPredictor {
 
-    private final Map<Long, ProbabilityPie> outcomes;
+    private final Map<Long, ProbabilityPredictorOutcome> outcomes;
+
+    private static class ProbabilityPredictorOutcome {
+        public final ProbabilityPie pie;
+        public final double patternSignificance;
+
+        public ProbabilityPredictorOutcome(ProbabilityPie pie,
+                                           int patternCount,
+                                           int patternSize,
+                                           int allPatternsCount) {
+            this.pie = pie;
+            this.patternSignificance = (patternCount * patternSize) / (double) allPatternsCount;
+
+        }
+    }
 
     public ProbabilityPredictor() {
         this(-1);
@@ -19,8 +33,8 @@ public class ProbabilityPredictor {
         this.outcomes = capacity >= 0 ? new LinkedHashMap<>(capacity) : new LinkedHashMap<>();
     }
 
-    public ProbabilityPie calculate(Collection<? extends Number> allPatterns,
-                                    Collection<? extends Number> currentPattern) {
+    public ProbabilityPredictorOutcome calculate(Collection<? extends Number> allPatterns,
+                                                 Collection<? extends Number> currentPattern) {
         int allPatternsSize = allPatterns.size();
 
         if (allPatternsSize > 0) {
@@ -30,14 +44,15 @@ public class ProbabilityPredictor {
             if (patternSize <= allPatternsSize) {
                 long hash = (HashHelper.fastCollection(allPatterns) * SpartanBukkit.hashCodeMultiplierLong)
                         + patternHash;
-                ProbabilityPie pie = this.outcomes.get(hash);
+                ProbabilityPredictorOutcome outcome = this.outcomes.get(hash);
 
-                if (pie != null) {
-                    return pie;
+                if (outcome != null) {
+                    return outcome;
                 } else {
-                    pie = new ProbabilityPie();
+                    ProbabilityPie pie = new ProbabilityPie();
                     boolean next = false;
-                    int pos = 0;
+                    int pos = 0, count = 0;
+
                     for (Number pattern : allPatterns) {
                         if (next) {
                             next = false;
@@ -48,8 +63,9 @@ public class ProbabilityPredictor {
                         }
                         pos++;
                     }
-                    this.outcomes.put(hash, pie);
-                    return pie;
+                    outcome = new ProbabilityPredictorOutcome(pie, count, patternSize, allPatternsSize);
+                    this.outcomes.put(hash, outcome);
+                    return outcome;
                 }
             }
         }

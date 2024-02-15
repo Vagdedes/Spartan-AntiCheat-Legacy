@@ -84,7 +84,7 @@ public class ProbabilityPie {
         return count != null ? count / this.total : defaultValue;
     }
 
-    public Stream<Map.Entry<Number, Integer>> getRanked() {
+    public Stream<Map.Entry<Number, Integer>> getChancesRanked() {
         return this.map.entrySet().stream().sorted(
                 Map.Entry.comparingByValue(Comparator.reverseOrder()));
     }
@@ -97,6 +97,12 @@ public class ProbabilityPie {
 
     public int getCount(Number number, int defaultValue) {
         return this.map.getOrDefault(number, defaultValue);
+    }
+
+    // Separator
+
+    public int getSlices() {
+        return (int) this.map.size();
     }
 
     public int getTotal() {
