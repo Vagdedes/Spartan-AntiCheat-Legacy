@@ -166,7 +166,7 @@ public class GroundUtils {
             int hash = 1;
 
             for (double d : entry.getValue()) {
-                hash = HashHelper.extend(hash, Double.hashCode(d));
+                hash = HashHelper.extendInt(hash, Double.hashCode(d));
             }
             specificHeightsHashes.put(entry.getKey(), hash);
         }
@@ -286,6 +286,11 @@ public class GroundUtils {
 
     public static int getHeightsHash(Material m, int defaultValue) {
         return specificHeightsHashes.getOrDefault(m, defaultValue);
+    }
+
+    public static long getHeightsHashLong(Material m, long defaultValue) {
+        Integer hash = specificHeightsHashes.get(m);
+        return hash != null ? hash : defaultValue;
     }
 
     public static double getMaxHeight(Material m) {

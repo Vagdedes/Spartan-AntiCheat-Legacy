@@ -54,6 +54,7 @@ public class SpartanBukkit {
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
 
     public static final int hashCodeMultiplier = 31;
+    public static final long hashCodeMultiplierLong = 31L;
     private static final ConcurrentHashMap<UUID, SpartanPlayer> players = new ConcurrentHashMap<>(Config.getMaxPlayers());
     public static final UUID uuid = UUID.randomUUID();
     public static final Class<?> craftPlayer = ReflectionUtils.getClass(

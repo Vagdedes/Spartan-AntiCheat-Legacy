@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ProbabilityPredictor {
 
-    private final Map<Integer, ProbabilityPie> outcomes;
+    private final Map<Long, ProbabilityPie> outcomes;
 
     public ProbabilityPredictor() {
         this(-1);
@@ -24,11 +24,11 @@ public class ProbabilityPredictor {
         int allPatternsSize = allPatterns.size();
 
         if (allPatternsSize > 0) {
-            int patternSize = currentPattern.size(),
-                    patternHash = HashHelper.collection(currentPattern);
+            int patternSize = currentPattern.size();
+            long patternHash = HashHelper.collection(currentPattern);
 
             if (patternSize <= allPatternsSize) {
-                int hash = (HashHelper.fastCollection(allPatterns) * SpartanBukkit.hashCodeMultiplier)
+                long hash = (HashHelper.fastCollection(allPatterns) * SpartanBukkit.hashCodeMultiplierLong)
                         + patternHash;
                 ProbabilityPie pie = this.outcomes.get(hash);
 
