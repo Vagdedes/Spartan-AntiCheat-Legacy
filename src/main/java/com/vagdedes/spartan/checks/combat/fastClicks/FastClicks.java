@@ -77,21 +77,17 @@ public class FastClicks extends CheckExecutor {
             Clicks clickData = player.getClicks();
             int limit = hackType.getCheck().getNumericalOption("clicks_per_second_limit", defaultClicksPerSecondLimit),
                     extraLimit = Math.max(limit - defaultClicksPerSecondLimit, 0);
-            double globalAverage = ResearchEngine.getAverageCPS();
 
             if (limit > 0) {
-                if (globalAverage > limit) {
-                    limit = AlgebraUtils.integerCeil(globalAverage) + 1;
-                }
-                clicksPerSecond.run(clickData, limit, globalAverage);
+                clicksPerSecond.run(clickData, limit);
             }
             runDetection(
                     "check_click_frequency",
-                    () -> clickFrequency.run(clickData, extraLimit, globalAverage)
+                    () -> clickFrequency.run(clickData, extraLimit)
             );
             runDetection(
                     "check_click_pattern",
-                    () -> clickPattern.run(clickData, extraLimit, globalAverage)
+                    () -> clickPattern.run(clickData, extraLimit)
             );
         }
         return false;

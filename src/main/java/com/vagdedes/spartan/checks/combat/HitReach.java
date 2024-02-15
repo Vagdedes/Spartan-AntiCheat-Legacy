@@ -77,52 +77,49 @@ public class HitReach extends CheckExecutor {
                         cancel("type: vertical, distance: " + distance + ", limit: " + limit);
                     } else {
                         distance = ((double[]) objects[1])[2];
+                        limit = filter(hackType.getCheck().getDecimalOption("horizontal_distance", 3.1), defaultHorizontalReach, 0.5);
 
-                        if (!player.isChasing()) {
-                            limit = filter(hackType.getCheck().getDecimalOption("horizontal_distance", 3.1), defaultHorizontalReach, 0.5);
+                        if (distance >= limit) {
+                            Double nmsDistance = player.getNmsDistance();
+                            double preferredLimit = getPreferredLimit(entity);
+                            boolean minimumNotReached = distance < preferredLimit;
+                            int ticks = 10 * 11,
+                                    attempts = minimumNotReached ? 6
+                                            : player.getProfile().isSuspectedOrHacker(hackType)
+                                            || player.hasAttackCooldown()
+                                            || nmsDistance != null && nmsDistance <= 0.1
+                                            || !PlayerData.isInActivePlayerCombat(player) ? 3 : 4;
+                            Buffer buffer = player.getBuffer(hackType);
 
-                            if (distance >= limit) {
-                                Double nmsDistance = player.getNmsDistance();
-                                double preferredLimit = getPreferredLimit(entity);
-                                boolean minimumNotReached = distance < preferredLimit;
-                                int ticks = 10 * 11,
-                                        attempts = minimumNotReached ? 6
-                                                : player.getProfile().isSuspectedOrHacker(hackType)
-                                                || player.hasAttackCooldown()
-                                                || nmsDistance != null && nmsDistance <= 0.1
-                                                || !PlayerData.isInActivePlayerCombat(player) ? 3 : 4;
-                                Buffer buffer = player.getBuffer(hackType);
-
-                                if (minimumNotReached && limit < 4.0) {
-                                    limit = 4.0;
-                                }
-
-                                if (!NoHitDelay.hasCooldown(player) && (!isPlayer || !NoHitDelay.hasCooldown(damaged))
-                                        && buffer.start(Buffer.BufferType.Combat, "horizontal-short=" + minimumNotReached, ticks) >= attempts) {
-                                    buffer.remove("horizontal-long");
-                                    cancel("type: horizontal(short), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
-                                } else if (buffer.start(Buffer.BufferType.Combat, "horizontal-long", ticks * 2) >= (attempts * 2)) {
-                                    buffer.clear("horizontal-short");
-                                    cancel("type: horizontal(long), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
-                                }
+                            if (minimumNotReached && limit < 4.0) {
+                                limit = 4.0;
                             }
 
-                            // Separator
-                            if (isPlayer) {
-                                String detection = "horizontal(historical)",
-                                        key = detection + "=" + entity.getEntityId();
-                                Cooldowns cooldowns = player.getCooldowns(hackType);
+                            if (!NoHitDelay.hasCooldown(player) && (!isPlayer || !NoHitDelay.hasCooldown(damaged))
+                                    && buffer.start(Buffer.BufferType.Combat, "horizontal-short=" + minimumNotReached, ticks) >= attempts) {
+                                buffer.remove("horizontal-long");
+                                cancel("type: horizontal(short), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
+                            } else if (buffer.start(Buffer.BufferType.Combat, "horizontal-long", ticks * 2) >= (attempts * 2)) {
+                                buffer.clear("horizontal-short");
+                                cancel("type: horizontal(long), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
+                            }
+                        }
 
-                                if (cooldowns.canDo(key)) {
-                                    PlayerOpponent opponent = player.getProfile().getCombat().getCurrentFight(damaged).getOpponent(player)[0];
+                        // Separator
+                        if (isPlayer) {
+                            String detection = "horizontal(historical)",
+                                    key = detection + "=" + entity.getEntityId();
+                            Cooldowns cooldowns = player.getCooldowns(hackType);
 
-                                    if (opponent.getHits() >= PlayerFight.requiredHits) {
-                                        double reachAverage = opponent.getReachAverage();
+                            if (cooldowns.canDo(key)) {
+                                PlayerOpponent opponent = player.getProfile().getCombat().getFight(damaged).getOpponent(player)[0];
 
-                                        if (reachAverage >= limit) {
-                                            cooldowns.add(key, CombatUtils.getFightTicks(player) * PlayerFight.requiredHits);
-                                            cancel("type: " + detection + ", distance: " + reachAverage + ", limit: " + limit);
-                                        }
+                                if (opponent.getHits() >= PlayerFight.requiredHits) {
+                                    double reachAverage = opponent.getReachAverage();
+
+                                    if (reachAverage >= limit) {
+                                        cooldowns.add(key, CombatUtils.getFightTicks(player) * PlayerFight.requiredHits);
+                                        cancel("type: " + detection + ", distance: " + reachAverage + ", limit: " + limit);
                                     }
                                 }
                             }

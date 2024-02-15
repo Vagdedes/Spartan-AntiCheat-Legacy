@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.objects.statistics;
 
+import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
@@ -9,18 +10,18 @@ public class PatternStorage {
 
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
 
-    public static void consider(UUID uuid) {
+    public static void consider(PlayerProfile profile) {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
-                instance.considerLocal(uuid);
+                instance.considerLocal(profile);
             }
         }
     }
 
-    public static void block(UUID uuid) {
+    public static void block(PlayerProfile profile) {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
-                instance.blockLocal(uuid);
+                instance.blockLocal(profile);
             }
         }
     }
@@ -31,8 +32,8 @@ public class PatternStorage {
     private final int[] generalizations;
     private final boolean generalization;
     private final Map<Integer, Collection<PatternValue>> available, unavailable;
-    private final Map<UUID, Map<Integer, Collection<PatternValue>>> correlations;
-    private final Set<UUID> blocked;
+    private final Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations;
+    private final Set<PlayerProfile> blocked;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
@@ -61,11 +62,11 @@ public class PatternStorage {
     // Separator
 
     public void store() {
-
+        //todo
     }
 
     public void load() {
-
+        //todo
     }
 
     // Separator
@@ -74,7 +75,7 @@ public class PatternStorage {
                           SpartanPlayer player, PatternValue value, int generalization) {
         map.get(generalization).add(value);
         this.correlations.computeIfAbsent(
-                player.getUniqueId(),
+                player.getProfile(),
                 k -> new LinkedHashMap<>()
         ).computeIfAbsent(
                 generalization,
@@ -108,11 +109,11 @@ public class PatternStorage {
 
     // Separator
 
-    private void considerLocal(UUID uuid) {
+    private void considerLocal(PlayerProfile profile) {
         synchronized (this.blocked) {
-            if (this.blocked.contains(uuid)) {
-                this.blocked.remove(uuid);
-                Map<Integer, Collection<PatternValue>> map = this.correlations.get(uuid);
+            if (this.blocked.contains(profile)) {
+                this.blocked.remove(profile);
+                Map<Integer, Collection<PatternValue>> map = this.correlations.get(profile);
 
                 if (map != null) {
                     for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
@@ -128,11 +129,11 @@ public class PatternStorage {
         }
     }
 
-    private void blockLocal(UUID uuid) {
+    private void blockLocal(PlayerProfile profile) {
         synchronized (this.blocked) {
-            if (!this.blocked.contains(uuid)) {
-                this.blocked.add(uuid);
-                Map<Integer, Collection<PatternValue>> map = this.correlations.get(uuid);
+            if (!this.blocked.contains(profile)) {
+                this.blocked.add(profile);
+                Map<Integer, Collection<PatternValue>> map = this.correlations.get(profile);
 
                 if (map != null) {
                     for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {

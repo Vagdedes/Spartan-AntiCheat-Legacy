@@ -21,13 +21,13 @@ public class PlayerEvidence {
 
     // Object
 
-    private final UUID uuid;
+    private final PlayerProfile profile;
     private EvidenceType type;
     final Map<Enums.HackType, String> live; // Live object is used for synchronization
     public final Map<Enums.HackType, String> historical; // Live object is used for synchronization
 
-    PlayerEvidence(UUID uuid) {
-        this.uuid = uuid;
+    PlayerEvidence(PlayerProfile profile) {
+        this.profile = profile;
         this.type = EvidenceType.Legitimate;
         this.live = Collections.synchronizedMap(new LinkedHashMap<>(Enums.HackType.values().length));
         this.historical = new LinkedHashMap<>(Enums.HackType.values().length);
@@ -137,12 +137,12 @@ public class PlayerEvidence {
                 type = evidenceType;
 
                 if (evidenceType != EvidenceType.Legitimate) {
-                    PatternStorage.block(this.uuid);
+                    PatternStorage.block(this.profile);
                     break;
                 }
             }
         }
-        PatternStorage.consider(this.uuid);
+        PatternStorage.consider(this.profile);
         this.type = type;
     }
 

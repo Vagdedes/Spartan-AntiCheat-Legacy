@@ -25,12 +25,8 @@ public class ClickFrequency extends DetectionExecutor {
             bufferFailure = 3,
             bufferTime = 5 * 20;
 
-    void run(Clicks clickData, int extraLimit, double globalAverage) {
+    void run(Clicks clickData, int extraLimit) {
         int count = clickData.getCount(), limit = FastClicks.suspiciousClicksPerSecond + extraLimit;
-
-        if (globalAverage > limit) {
-            limit = AlgebraUtils.integerCeil(globalAverage) + 1;
-        }
 
         if (count >= limit) {
             long passedTimeDifference = clickData.getPassedTimeDifference();
@@ -45,7 +41,6 @@ public class ClickFrequency extends DetectionExecutor {
                             "type: " + detection
                                     + ", count: " + count
                                     + ", limit: " + limit
-                                    + ", global-average: " + globalAverage
                                     + ", average-pattern: " + clickData.getAveragePattern()
                                     + ", last-pattern: " + clickData.getLastPattern()
                                     + ", pattern-difference: " + clickData.getPatternDifference()

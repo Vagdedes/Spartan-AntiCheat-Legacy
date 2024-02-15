@@ -41,7 +41,7 @@ public class Distance extends DetectionExecutor {
                     && !NoHitDelay.hasCooldown(targetPlayer)
                     && !CombatUtils.hasBlockBehind(player, entity)
                     && targetPlayer.getBlocksOffGround(groundBlockRequirement + 1, true, true) <= groundBlockRequirement) { // We need the target close to the ground
-                PlayerFight fight = player.getProfile().getCombat().getCurrentFight(targetPlayer);
+                PlayerFight fight = player.getProfile().getCombat().getFight(targetPlayer);
                 PlayerOpponent[] opponents = fight.getOpponent(player);
 
                 if (fight.getHitRatio(opponents) > 1.0 // Make sure the player has a hit advantage

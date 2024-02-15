@@ -14,7 +14,6 @@ import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtec
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
-import com.vagdedes.spartan.objects.profiling.PlayerFight;
 import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -124,13 +123,10 @@ public class EventsHandler6 implements Listener {
 
                 // Object
                 if (isPlayer) {
-                    PlayerFight fight = player.getProfile().getCombat().getCurrentFight(targetPlayer);
-
-                    if (fight != null) {
-                        PlayerOpponent[] opponents = fight.getOpponent(player.getName());
-                        opponents[0].increaseHits(player, distance);
-                        opponents[1].updateData(targetPlayer);
-                    }
+                    PlayerOpponent[] opponents = player.getProfile().getCombat()
+                            .getFight(targetPlayer).getOpponent(player);
+                    opponents[0].damager(distance);
+                    opponents[1].update();
                 }
 
                 // Handlers

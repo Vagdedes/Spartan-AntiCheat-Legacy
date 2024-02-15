@@ -49,8 +49,8 @@ public class PlayerProfile {
         this.uuid = isNull ? SpartanBukkit.uuid : null;
         this.name = name;
         this.punishmentHistory = new PunishmentHistory();
-        this.playerCombat = new PlayerCombat(isNull ? "" : name);
-        this.evidence = new PlayerEvidence(); //todo
+        this.playerCombat = new PlayerCombat(this);
+        this.evidence = new PlayerEvidence(this);
         this.skull = null;
         this.offlinePlayer = null;
 
@@ -94,8 +94,8 @@ public class PlayerProfile {
         this.name = player.getName();
         this.offlinePlayer = player.getPlayer(); // Attention
         this.punishmentHistory = new PunishmentHistory();
-        this.playerCombat = new PlayerCombat(name);
-        this.evidence = new PlayerEvidence(uuid);
+        this.playerCombat = new PlayerCombat(this);
+        this.evidence = new PlayerEvidence(this);
         this.skull = null;
         this.offlinePlayer = null;
         this.bedrockPlayer = player.isBedrockPlayer(); // Attention

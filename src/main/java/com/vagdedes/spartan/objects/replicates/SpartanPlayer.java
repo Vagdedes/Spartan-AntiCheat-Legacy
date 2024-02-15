@@ -1846,47 +1846,6 @@ public class SpartanPlayer {
 
     // Chasing
 
-    public boolean isChasing() {
-        if (chasing >= System.currentTimeMillis()) {
-            return true;
-        }
-        if (!playerProfile.isHacker()
-                && isMoving(false) // Make sure the chaser is moving
-                && CombatProcessing.getDecimal(this, CombatProcessing.yawDifference, 0.0) <= 45.0
-                && CombatProcessing.getDecimal(this, CombatProcessing.pitchDifference, 0.0) <= 22.5) {
-            List<Entity> entities = getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
-
-            if (!entities.isEmpty()) { // Make sure there are entities nearby in a hit distance
-                for (Entity entity : entities) {
-                    if (entity instanceof Player) { // Make sure the entity is a player
-                        SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
-
-                        if (target != null && target.isMoving(false)) { // Make sure the target is also moving
-                            PlayerFight fight = playerProfile.getCombat().getCurrentFight(target);
-                            PlayerOpponent[] playerOpponents = fight.getOpponent(this);
-
-                            if (playerOpponents[0].getLastHit() <= PlayerData.combatTimeRequirement // Make sure the player has recently hit the target
-                                    && (playerOpponents[0].hasHitCombo() || !CombatUtils.areFacingEachOther(this, (LivingEntity) entity)) // Make sure the player has a hit combo or is facing a different direction
-                                    && playerOpponents[1].getLastDamage() <= PlayerData.combatTimeRequirement) {  // Make sure the target has recently received damage by the player
-                                double[] utility = CombatUtils.get_X_Y_Distance(this, (LivingEntity) entity);
-
-                                if (utility != null) {
-                                    double distance = utility[2];
-
-                                    if (distance >= CombatUtils.maxLegitimateHitDistance) { // Make sure the distance of the two players is beyond legitimacy
-                                        chasing = System.currentTimeMillis() + PlayerData.combatTimeRequirement;
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     // Environment
 
     public boolean stepsOnBoats() {

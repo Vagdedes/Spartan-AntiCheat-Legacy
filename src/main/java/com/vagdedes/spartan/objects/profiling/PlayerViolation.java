@@ -9,6 +9,7 @@ import java.util.*;
 
 public class PlayerViolation {
 
+    private final PlayerProfile profile;
     private final Enums.HackType hackType;
     private final long time;
     private final String information, date, detection;

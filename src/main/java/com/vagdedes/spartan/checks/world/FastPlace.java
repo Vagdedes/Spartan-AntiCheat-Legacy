@@ -48,8 +48,7 @@ public class FastPlace extends CheckExecutor {
                         if (time <= 50L) {
                             String detection = "type: fast";
 
-                            if (!ResearchEngine.hasCompetitiveCPS()
-                                    && !CloudFeature.isInformationCancelled(hackType, detection)
+                            if (!CloudFeature.isInformationCancelled(hackType, detection)
                                     && !player.isBedrockPlayer()
                                     && hackType.getCheck().getBooleanOption("check_fast", true)
                                     && !Compatibility.CompatibilityType.VeinMiner.isFunctional()

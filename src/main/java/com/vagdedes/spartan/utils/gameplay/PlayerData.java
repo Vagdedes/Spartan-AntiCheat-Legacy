@@ -163,7 +163,7 @@ public class PlayerData {
 
     public static boolean isInActivePlayerCombat(SpartanPlayer p) {
         boolean damage = false, hit = false;
-        List<PlayerFight> fights = p.getProfile().getCombat().getCurrentFights();
+        List<PlayerFight> fights = p.getProfile().getCombat().getFights();
 
         if (!fights.isEmpty()) {
             double globalAverageReach = ResearchEngine.getAverageReach();
@@ -196,11 +196,11 @@ public class PlayerData {
     }
 
     public static boolean isFightParticipant(SpartanPlayer p) {
-        return p.getProfile().getCombat().hasCurrentFight();
+        return p.getProfile().getCombat().isFighting();
     }
 
     public static boolean receivedPlayerDamage(SpartanPlayer p) {
-        List<PlayerFight> fights = p.getProfile().getCombat().getCurrentFights();
+        List<PlayerFight> fights = p.getProfile().getCombat().getFights();
 
         if (!fights.isEmpty()) {
             for (PlayerFight fight : fights) {
@@ -217,7 +217,7 @@ public class PlayerData {
     }
 
     public static boolean hitAPlayer(SpartanPlayer p) {
-        List<PlayerFight> fights = p.getProfile().getCombat().getCurrentFights();
+        List<PlayerFight> fights = p.getProfile().getCombat().getFights();
 
         if (!fights.isEmpty()) {
             for (PlayerFight fight : fights) {

@@ -7,6 +7,7 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Handlers;
+import com.vagdedes.spartan.objects.profiling.PlayerFight;
 import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -148,9 +149,9 @@ public class KillAura extends CheckExecutor {
             sensitivity.remove();
             strafe.remove();
             pattern.remove();
-        } else if (object instanceof PlayerOpponent) {
+        } else if (object instanceof PlayerFight) {
             if (canDo()) {
-                analysis.run((PlayerOpponent) object);
+                analysis.run((PlayerFight) object);
             }
         } else {
             if (canDo()) {

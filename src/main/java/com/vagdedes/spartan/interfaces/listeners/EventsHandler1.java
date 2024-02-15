@@ -16,7 +16,7 @@ import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.profiling.PlayerCombat;
+import com.vagdedes.spartan.objects.profiling.PlayerFight;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -116,8 +116,15 @@ public class EventsHandler1 implements Listener {
         Player killer = n.getKiller();
 
         if (killer != null && killer.isOnline()) {
-            PlayerCombat combat = p.getProfile().getCombat();
-            combat.setWinnerAgainst(killer.getName());
+            SpartanPlayer p2 = SpartanBukkit.getPlayer(killer);
+
+            if (p2 != null) {
+                PlayerFight fight = p.getProfile().getCombat().getFight(p2);
+
+                if (fight != null) {
+                    fight.setWinner(p2);
+                }
+            }
         }
         p.resetLocationData();
         p.setDead(true);
@@ -152,7 +159,6 @@ public class EventsHandler1 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-
     private void Velocity(PlayerVelocityEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 

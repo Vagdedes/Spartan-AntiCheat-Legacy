@@ -21,7 +21,6 @@ import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.statistics.ViolationStatistics;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -55,9 +54,6 @@ public class ResearchEngine {
 
     public static final double downloadedVersion = Double.parseDouble(API.getVersion().substring(6));
     private static final double minimumAverageMining = 16.0;
-    private static double
-            averageReach = -1.0,
-            averageCPS = -1.0;
 
     private static final long cacheTimeLimit = 60_000L * 4; // Despite being 4, realistically it is 5 minutes if extra calculations are accounted for
     public static final int
@@ -92,7 +88,7 @@ public class ResearchEngine {
                 Inventory inv = Bukkit.createInventory(players.get(0).getPlayer(), 9, "");
 
                 for (PlayerProfile playerProfile : playerProfiles) {
-                    playerProfile.getCombat().runFights();
+                    playerProfile.getCombat().track();
 
                     if (!added && !playerProfile.isBedrockPlayer()) {
                         String name = playerProfile.getName();
@@ -276,15 +272,7 @@ public class ResearchEngine {
         return -1;
     }
 
-    public static boolean hasCompetitiveCPS() {
-        return averageCPS >= CombatUtils.competitiveCPS;
-    }
-
     // Separator
-
-    public static double getAverageCPS() {
-        return averageCPS;
-    }
 
     public static double getAverageReach() {
         return averageReach;
@@ -294,13 +282,9 @@ public class ResearchEngine {
         return statisticalProgress;
     }
 
-    public static List<PlayerFight> getFights() {
-        return new ArrayList<>(playerFights);
-    }
-
     // Separator
 
-    public static List<PlayerProfile> getPunishedProfiles(boolean reports) {
+    public static List<PlayerProfile> getPunishedProfiles() {
         int size = playerProfiles.size();
 
         if (size > 0) {
@@ -314,14 +298,6 @@ public class ResearchEngine {
             return profiles;
         }
         return new ArrayList<>(0);
-    }
-
-    public static void addFight(PlayerFight fight, boolean refreshMenu) {
-        playerFights.add(fight);
-
-        if (refreshMenu) {
-            MainMenu.refresh();
-        }
     }
 
     public static List<PlayerProfile> getHackers() {
@@ -531,8 +507,7 @@ public class ResearchEngine {
                         playerProfiles.remove(playerName);
 
                         if (foundPlayer) {
-                            PlayerProfile newPlayerProfile = getPlayerProfile(p);
-                            p.setProfile(newPlayerProfile);
+                            p.setProfile(getPlayerProfile(p));
                         }
                         if (Config.sql.isEnabled()) {
                             Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
@@ -562,8 +537,7 @@ public class ResearchEngine {
                     SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
 
                     if (p != null) {
-                        PlayerProfile newPlayerProfile = getPlayerProfile(p);
-                        p.setProfile(newPlayerProfile);
+                        p.setProfile(getPlayerProfile(p));
                     }
                 }
                 enoughData = false;
@@ -818,175 +792,6 @@ public class ResearchEngine {
                                         }
                                     }
                                 }
-                            } else if (data.contains(PlayerFight.finderKey)) {
-                                int dataIndex = data.indexOf(PlayerFight.introductorySeparator);
-
-                                if (dataIndex > -1) {
-                                    dataIndex += 2;
-                                    String[] statistics = data.substring(dataIndex).split(PlayerFight.majorSeparator);
-
-                                    if (statistics.length > 0) {
-                                        String[] information = data.split(" ", 7);
-                                        String winner = information[0];
-                                        String loser = information[5].replace(PlayerFight.introductorySeparator, ""); // Introductory separator is connected to the player's name
-
-                                        boolean judged = false;
-                                        long duration = 0L;
-                                        long winnerHitTimeAverage = 0L, loserHitTimeAverage = 0L;
-                                        int winnerHits = 0, loserHits = 0;
-                                        int winnerMaxHitCombo = 0, loserMaxHitCombo = 0;
-                                        int winnerMaxCPS = 0, loserMaxCPS = 0;
-                                        double winnerCPS = 0.0, loserCPS = 0.0;
-                                        double winnerReachAverage = 0.0, loserReachAverage = 0.0;
-                                        double winnerYawRateAverage = 0.0f, loserYawRateAverage = 0.0f;
-                                        double winnerPitchRateAverage = 0.0f, loserPitchRateAverage = 0.0f;
-
-                                        for (String statistic : statistics) {
-                                            String[] subStatistics = statistic.split(PlayerFight.intermediateSeparator[1]);
-                                            int subStatisticsLength = subStatistics.length;
-
-                                            if (subStatisticsLength >= 2) {
-                                                statistic = subStatistics[0];
-                                                String argument1, argument2;
-
-                                                switch (statistic) {
-                                                    case PlayerFight.outcomeKey:
-                                                        if (subStatistics[1].equals(PlayerFight.outcome[0])) {
-                                                            judged = true;
-                                                        }
-                                                        break;
-                                                    case PlayerFight.durationKey:
-                                                        argument1 = subStatistics[1];
-
-                                                        if (AlgebraUtils.validInteger(argument1)) {
-                                                            duration = Long.parseLong(argument1);
-                                                        }
-                                                        break;
-                                                    case PlayerFight.hitsKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            argument1 = subStatistics[1];
-                                                            argument2 = subStatistics[2];
-
-                                                            if (AlgebraUtils.validInteger(argument1) && AlgebraUtils.validInteger(argument2)) {
-                                                                winnerHits = Integer.parseInt(argument1);
-                                                                loserHits = Integer.parseInt(argument2);
-                                                            }
-                                                        }
-                                                        break;
-                                                    case PlayerFight.hitTimeAverageKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            argument1 = subStatistics[1];
-                                                            argument2 = subStatistics[2];
-
-                                                            if (AlgebraUtils.validInteger(argument1) && AlgebraUtils.validInteger(argument2)) {
-                                                                winnerHitTimeAverage = Long.parseLong(argument1);
-                                                                loserHitTimeAverage = Long.parseLong(argument2);
-                                                            }
-                                                        }
-                                                        break;
-                                                    case PlayerFight.reachAverageKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            Double decimal1 = AlgebraUtils.returnValidDecimal(subStatistics[1]);
-
-                                                            if (decimal1 != null) {
-                                                                Double decimal2 = AlgebraUtils.returnValidDecimal(subStatistics[2]);
-
-                                                                if (decimal2 != null) {
-                                                                    winnerReachAverage = decimal1;
-                                                                    loserReachAverage = decimal2;
-                                                                }
-                                                            }
-                                                        }
-                                                        break;
-                                                    case PlayerFight.maxCpsKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            argument1 = subStatistics[1];
-                                                            argument2 = subStatistics[2];
-
-                                                            if (AlgebraUtils.validInteger(argument1) && AlgebraUtils.validInteger(argument2)) {
-                                                                winnerMaxCPS = Integer.parseInt(argument1);
-                                                                loserMaxCPS = Integer.parseInt(argument2);
-                                                            }
-                                                        }
-                                                        break;
-                                                    case PlayerFight.cpsKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            Double decimal1 = AlgebraUtils.returnValidDecimal(subStatistics[1]);
-
-                                                            if (decimal1 != null) {
-                                                                Double decimal2 = AlgebraUtils.returnValidDecimal(subStatistics[2]);
-
-                                                                if (decimal2 != null) {
-                                                                    winnerCPS = decimal1;
-                                                                    loserCPS = decimal2;
-                                                                }
-                                                            }
-                                                        }
-                                                        break;
-                                                    case PlayerFight.yawRateKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            Double decimal1 = AlgebraUtils.returnValidDecimal(subStatistics[1]);
-
-                                                            if (decimal1 != null) {
-                                                                Double decimal2 = AlgebraUtils.returnValidDecimal(subStatistics[2]);
-
-                                                                if (decimal2 != null) {
-                                                                    winnerYawRateAverage = decimal1;
-                                                                    loserYawRateAverage = decimal2;
-                                                                }
-                                                            }
-                                                        }
-                                                        break;
-                                                    case PlayerFight.pitchRateKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            Double decimal1 = AlgebraUtils.returnValidDecimal(subStatistics[1]);
-
-                                                            if (decimal1 != null) {
-                                                                Double decimal2 = AlgebraUtils.returnValidDecimal(subStatistics[2]);
-
-                                                                if (decimal2 != null) {
-                                                                    winnerPitchRateAverage = decimal1;
-                                                                    loserPitchRateAverage = decimal2;
-                                                                }
-                                                            }
-                                                        }
-                                                        break;
-                                                    case PlayerFight.maxHitComboKey:
-                                                        if (subStatisticsLength >= 3) {
-                                                            argument1 = subStatistics[1];
-                                                            argument2 = subStatistics[2];
-
-                                                            if (AlgebraUtils.validInteger(argument1) && AlgebraUtils.validInteger(argument2)) {
-                                                                winnerMaxHitCombo = Integer.parseInt(argument1);
-                                                                loserMaxHitCombo = Integer.parseInt(argument2);
-                                                            }
-                                                        }
-                                                        break;
-                                                    default:
-                                                        break;
-                                                }
-                                            }
-                                        }
-
-                                        if (duration > 0L
-                                                && (winnerHits > 0 && loserHits > 0 && (winnerHits + loserHits) >= PlayerFight.requiredHits)
-                                                & (winnerCPS >= 0 && loserCPS >= 0)
-                                                && (winnerMaxCPS > 0 && loserMaxCPS > 0)
-                                                && (winnerYawRateAverage > 0f && loserYawRateAverage > 0f)
-                                                && (winnerPitchRateAverage > 0.0f && loserPitchRateAverage > 0.0f)
-                                                && (winnerMaxHitCombo > 0 && loserMaxHitCombo > 0)
-                                                && (winnerHitTimeAverage > 0L && loserHitTimeAverage > 0L)
-                                                && (winnerReachAverage > 0.0 && loserReachAverage > 0.0)) {
-                                            new PlayerFight(
-                                                    new PlayerOpponent(winner, winnerHits, winnerMaxHitCombo, winnerMaxCPS, winnerCPS, duration,
-                                                            winnerReachAverage, winnerHitTimeAverage, winnerYawRateAverage, winnerPitchRateAverage),
-                                                    new PlayerOpponent(loser, loserHits, loserMaxHitCombo, loserMaxCPS, loserCPS, duration,
-                                                            loserReachAverage, loserHitTimeAverage, loserYawRateAverage, loserPitchRateAverage),
-                                                    judged
-                                            );
-                                        }
-                                    }
-                                }
                             } else if (data.contains(Moderation.warningMessage)) {
                                 getPlayerProfile(split[0]).getPunishmentHistory().increaseWarnings();
                             } else if (data.contains(Moderation.kickMessage)) {
@@ -1098,7 +903,6 @@ public class ResearchEngine {
         }
         if (!SpartanBukkit.isSynchronised()) {
             updateComprehensionCache(); // Always First
-            updateCombatCache();
         }
         MainMenu.refresh();
     }
@@ -1274,58 +1078,6 @@ public class ResearchEngine {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 hackType.getCheck().clearMaxCancelledViolations();
             }
-        }
-    }
-
-    private static void updateCombatCache() {
-        List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();
-        double averageCPS = 0.0, averageCPSCount = 0.0,
-                averageReach = 0.0, averageReachCount = 0.0;
-
-        if (legitimatePlayers.size() >= profileRequirement) {
-            List<PlayerFight> playerFights = new LinkedList<>();
-
-            for (PlayerProfile playerProfile : legitimatePlayers) {
-                PlayerCombat combat = playerProfile.getCombat();
-
-                if (combat.hasFights()) {
-                    playerFights.addAll(combat.getPastFights());
-                    double[] list = combat.getMaxCPSAverages();
-
-                    if (list != null) {
-                        averageCPSCount += 1.0;
-                        averageCPS += list[0];
-                    }
-                    list = combat.getReachAverages();
-
-                    if (list != null) {
-                        averageReachCount += 1.0;
-                        averageReach += list[0];
-                    }
-                }
-            }
-            ResearchEngine.playerFights.clear();
-
-            if (playerFights.size() >= profileRequirement) {
-                ResearchEngine.playerFights.addAll(playerFights);
-
-                if (averageCPSCount > 0.0 && averageCPS <= CombatUtils.maxLegitimateCPS) {
-                    ResearchEngine.averageCPS = averageCPS / averageCPSCount;
-                } else {
-                    ResearchEngine.averageCPS = -1.0;
-                }
-
-                if (averageReachCount > 0.0 && averageCPS <= CombatUtils.maxHitDistance) {
-                    ResearchEngine.averageReach = averageReach / averageReachCount;
-                } else {
-                    ResearchEngine.averageReach = -1.0;
-                }
-            } else {
-                ResearchEngine.averageCPS = -1.0;
-                ResearchEngine.averageReach = -1.0;
-            }
-        } else {
-            ResearchEngine.playerFights.clear();
         }
     }
 

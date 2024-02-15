@@ -89,7 +89,7 @@ public class Cache {
 
         // Objects
         if (distance) {
-            p.getProfile().getCombat().endFights();
+            p.getProfile().getCombat().track();
         }
         if (deep) {
             clearCheckCache(p);
