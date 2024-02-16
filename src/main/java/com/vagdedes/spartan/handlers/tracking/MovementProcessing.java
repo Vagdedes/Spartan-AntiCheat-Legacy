@@ -13,7 +13,7 @@ import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.entity.Entity;
 
-public class MovementProcessing {
+public class MovementProcessing { // todo simplify
 
     public static final double
             sprintingMaxSpeed = 0.287,

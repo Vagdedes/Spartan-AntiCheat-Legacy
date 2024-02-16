@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class CombatProcessing {
+public class CombatProcessing { // todo simplify
 
     private static final int pastTicks = 5;
     private static final String
