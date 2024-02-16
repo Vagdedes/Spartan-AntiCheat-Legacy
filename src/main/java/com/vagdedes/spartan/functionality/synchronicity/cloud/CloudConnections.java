@@ -589,17 +589,17 @@ public class CloudConnections {
 
                 if (entriesSize > 0) {
                     for (PlayerViolation playerViolation : violations) {
-                        int violation = playerViolation.getLevel();
+                        int violation = playerViolation.level;
 
                         minViolations = Math.min(minViolations, violation);
                         maxViolations = Math.max(maxViolations, violation);
 
                         averageViolations += violation;
                         totalViolations++;
-                        String information = "x" + playerViolation.getLevel()
-                                + " (" + playerViolation.getInformation() + ")";
+                        String information = "x" + playerViolation.level
+                                + " (" + playerViolation.information + ")";
 
-                        if (uniqueInformation.add(playerViolation.getSimilarityIdentity())) {
+                        if (uniqueInformation.add(playerViolation.similarityIdentity)) {
                             softwareInformation.append(information).append(newLine);
                             validViolations++;
 

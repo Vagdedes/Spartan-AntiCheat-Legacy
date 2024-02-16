@@ -2,9 +2,9 @@ package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 
-public class PlayerOpponent {
+public class PlayerOpponent { // todo fix last-hit, last-damage checks on detections
 
-    private final SpartanPlayer player;
+    public final SpartanPlayer player;
     private int hits, damage, hitCombo;
     private long lastHit, lastDamage;
 
@@ -23,10 +23,6 @@ public class PlayerOpponent {
     }
 
     // Separator
-
-    public SpartanPlayer getPlayer() {
-        return player;
-    }
 
     public int getHits() {
         return hits;
@@ -62,7 +58,9 @@ public class PlayerOpponent {
     // Separator
 
     public long getLastHit(boolean maxIfNull) {
-        return this.lastHit == 0L ? (maxIfNull ? Long.MAX_VALUE : 0L) : System.currentTimeMillis() - this.lastHit;
+        return this.lastHit == 0L
+                ? (maxIfNull ? Long.MAX_VALUE : 0L)
+                : System.currentTimeMillis() - this.lastHit;
     }
 
     public long getLastHit() {

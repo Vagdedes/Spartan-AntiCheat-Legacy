@@ -78,7 +78,7 @@ public class PlayerInfo extends InventoryMenu {
 
                 if (mines > 0) {
                     added = true;
-                    String ore = history.getOre().toString();
+                    String ore = history.ore.toString();
                     int days = history.getDays();
                     lore.add("§c" + mines + " §7" + ore + (mines == 1 ? "" : (ore.endsWith("s") ? "es" : "s"))
                             + " in §c" + days + " §7" + (days == 1 ? "day" : "days"));

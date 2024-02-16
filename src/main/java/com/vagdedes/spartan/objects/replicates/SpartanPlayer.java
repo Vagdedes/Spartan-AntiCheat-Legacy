@@ -482,7 +482,7 @@ public class SpartanPlayer {
             this.decimals[id] = new Decimals(async);
             this.tracker[id] = new Tracker(async);
             this.cooldowns[id] = new Cooldowns(async);
-            this.violations[id] = new LiveViolation(this, dataType, hackType);
+            this.violations[id] = new LiveViolation(this, hackType);
 
             switch (hackType) {
                 case KillAura:

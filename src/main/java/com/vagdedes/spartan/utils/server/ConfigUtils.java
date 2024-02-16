@@ -28,36 +28,42 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigUtils {
 
-    private static final Map<String, Map<String, Boolean>> map = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, Boolean>> map
+            = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public static void clear() {
-        map.clear();
+        synchronized (map) {
+            map.clear();
+        }
     }
 
     public static boolean contains(String message, String index) {
-        Map<String, Boolean> childMap = map.get(message);
+        synchronized (map) {
+            Map<String, Boolean> childMap = map.get(message);
 
-        if (childMap != null) {
-            Boolean contains = childMap.get(index);
+            if (childMap != null) {
+                Boolean contains = childMap.get(index);
 
-            if (contains != null) {
+                if (contains != null) {
+                    return contains;
+                }
+                contains = message.contains(index);
+                childMap.put(index, contains);
+                return contains;
+            } else {
+                childMap = new LinkedHashMap<>();
+                boolean contains = message.contains(index);
+                childMap.put(index, contains);
+                map.put(message, childMap);
                 return contains;
             }
-            contains = message.contains(index);
-            childMap.put(index, contains);
-            return contains;
-        } else {
-            childMap = new ConcurrentHashMap<>();
-            boolean contains = message.contains(index);
-            childMap.put(index, contains);
-            map.put(message, childMap);
-            return contains;
         }
     }
 

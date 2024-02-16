@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Timer {
+public class Timer { // todo synchronize
 
     private final Map<String, Long> hm;
 

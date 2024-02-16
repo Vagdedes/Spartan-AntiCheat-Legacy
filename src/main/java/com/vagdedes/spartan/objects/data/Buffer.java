@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Buffer {
+public class Buffer { // todo synchronize
 
     // Orientation
 

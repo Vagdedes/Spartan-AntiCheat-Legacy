@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Decimals {
+public class Decimals { // todo synchronize
 
     public static final int CALCULATE_AVERAGE = -1,
             CALCULATE_SUMMARY = -2,

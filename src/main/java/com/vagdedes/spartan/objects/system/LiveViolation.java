@@ -10,9 +10,7 @@ import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.Moderation;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -29,7 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LiveViolation {
+public class LiveViolation { // todo simplify
 
     private static final Map<LiveViolation, String> maxLevel =
             MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
@@ -81,7 +79,6 @@ public class LiveViolation {
     }
 
     private final SpartanPlayer player;
-    private final ResearchEngine.DataType dataType;
     private final Enums.HackType hackType;
     private long cycleExpiration, lastViolation;
     private final Map<Integer, Long> cancelledLevel;
@@ -89,9 +86,8 @@ public class LiveViolation {
     private final LoopLevelCache cancelledLevelCache, maxCancelledLevelCache;
     private final Map<Integer, HackPrevention> queue;
 
-    public LiveViolation(SpartanPlayer player, ResearchEngine.DataType dataType, Enums.HackType hackType) {
+    public LiveViolation(SpartanPlayer player, Enums.HackType hackType) {
         this.player = player;
-        this.dataType = dataType;
         this.hackType = hackType;
         this.level = 0;
         this.cancelledLevel = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
@@ -136,16 +132,24 @@ public class LiveViolation {
         }
 
         if (hp != null
+                && !CheckProtection.hasCooldown(player.getUniqueId())
                 && !player.getHandlers().has(Handlers.HandlerType.GameMode)
                 && !CloudFeature.isPublicInformationCancelled(hackType, hp.information)) {
             UUID uuid = player.getUniqueId();
             Check check = hackType.getCheck();
             CancelCause disableCause = check.getDisabledCause(uuid);
-            ResearchEngine.DataType dataType = player.getDataType();
 
             if (disableCause == null
                     || !disableCause.pointerMatches(hp.information)) {
                 int violations = this.getLevel();
+                Player realPlayer = player.getPlayer();
+                boolean canPrevent, canPreventAlternative, falsePositive,
+                        hacker = player.getProfile().isHacker(),
+                        suspected = !hacker && player.getProfile().isSuspected(hackType),
+                        suspectedOrHacker = suspected || hacker,
+                        enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
+                PlayerViolationEvent playerViolationEvent;
+
                 PlayerViolation playerViolation = new PlayerViolation(
                         hackType,
                         hp.time,
@@ -153,106 +157,95 @@ public class LiveViolation {
                         violations + 1
                 );
 
-                if (!CheckProtection.hasCooldown(uuid, playerViolation)) {
-                    Player realPlayer = player.getPlayer();
-                    PlayerProfile playerProfile = player.getProfile();
-                    boolean canPrevent, canPreventAlternative, falsePositive,
-                            hacker = playerProfile.isHacker(),
-                            suspected = !hacker && playerProfile.isSuspected(hackType),
-                            suspectedOrHacker = suspected || hacker,
-                            enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
-                    PlayerViolationEvent playerViolationEvent;
+                if (suspectedOrHacker) {
+                    CancelCause silentCause = check.getSilentCause(uuid);
 
-                    if (suspectedOrHacker) {
-                        CancelCause silentCause = check.getSilentCause(uuid);
-
-                        if (silentCause == null || !silentCause.pointerMatches(hp.information)) {
-                            canPrevent = true;
-                            canPreventAlternative = true;
-                        } else {
-                            canPrevent = false;
-                            canPreventAlternative = false;
-                        }
-                    } else if (CancelViolation.isForced(player, hackType, this, playerViolation.getSimilarityIdentity())
-                            || violations >= CancelViolation.get(hackType, dataType)) {
-                        CancelCause silentCause = check.getSilentCause(uuid);
-
-                        if (silentCause == null || !silentCause.pointerMatches(hp.information)) {
-                            canPrevent = true;
-                            canPreventAlternative = true;
-                        } else {
-                            canPrevent = false;
-                            canPreventAlternative = false;
-                        }
+                    if (silentCause == null || !silentCause.pointerMatches(hp.information)) {
+                        canPrevent = true;
+                        canPreventAlternative = true;
                     } else {
                         canPrevent = false;
-                        canPreventAlternative = violations > 0  // Testing scenario
-                                && !check.hasMaximumDefaultCancelViolation()
-                                && player.getLastViolation().getLastViolationTime(true) <= Check.violationCycleSeconds
-                                && !SpartanBukkit.isProductionServer()
-                                && DetectionNotifications.isEnabled(player);
+                        canPreventAlternative = false;
                     }
-                    if (FalsePositiveDetection.canCorrect(playerViolation, this)) {
-                        falsePositive = true;
+                } else if (CancelViolation.isForced(player, hackType, this, playerViolation.similarityIdentity)
+                        || violations >= CancelViolation.get(hackType, player.getDataType())) {
+                    CancelCause silentCause = check.getSilentCause(uuid);
+
+                    if (silentCause == null || !silentCause.pointerMatches(hp.information)) {
+                        canPrevent = true;
+                        canPreventAlternative = true;
                     } else {
-                        falsePositive = false;
-                        violations += 1;
+                        canPrevent = false;
+                        canPreventAlternative = false;
                     }
+                } else {
+                    canPrevent = false;
+                    canPreventAlternative = violations > 0  // Testing scenario
+                            && !check.hasMaximumDefaultCancelViolation()
+                            && player.getLastViolation().getLastViolationTime(true) <= Check.violationCycleSeconds
+                            && !SpartanBukkit.isProductionServer()
+                            && DetectionNotifications.isEnabled(player);
+                }
+                if (FalsePositiveDetection.canCorrect(playerViolation, this)) {
+                    falsePositive = true;
+                } else {
+                    falsePositive = false;
+                    violations += 1;
+                }
 
-                    this.setLastViolationTime(hp.time); // Always after false-positive check
+                this.setLastViolationTime(hp.time); // Always after false-positive check
 
-                    if (!processed) {
-                        // API Event
-                        if (enabledDeveloperAPI) {
-                            playerViolationEvent = new PlayerViolationEvent(realPlayer, hackType, violations, hp.information, falsePositive);
-                            Register.manager.callEvent(playerViolationEvent);
-                        } else {
-                            playerViolationEvent = null;
-                        }
+                if (!processed) {
+                    // API Event
+                    if (enabledDeveloperAPI) {
+                        playerViolationEvent = new PlayerViolationEvent(realPlayer, hackType, violations, hp.information, falsePositive);
+                        Register.manager.callEvent(playerViolationEvent);
                     } else {
                         playerViolationEvent = null;
                     }
+                } else {
+                    playerViolationEvent = null;
+                }
 
-                    if (playerViolationEvent == null || !playerViolationEvent.isCancelled()) {
-                        if (falsePositive) {
-                            this.removeMaxLevel(hp.information);
-                            violations = this.increaseCancelledLevel(playerViolation.getSimilarityIdentity(), hacker ? 2.0 : suspected ? 1.5 : 1.0);
-                            Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), hp.information, violations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
+                if (playerViolationEvent == null || !playerViolationEvent.isCancelled()) {
+                    if (falsePositive) {
+                        this.removeMaxLevel(hp.information);
+                        violations = this.increaseCancelledLevel(playerViolation.similarityIdentity, hacker ? 2.0 : suspected ? 1.5 : 1.0);
+                        Moderation.detection(uuid, player, check, playerViolation.detection, hp.information, violations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker);
+                    } else {
+                        if (processed) {
+                            Moderation.detection(uuid, player, check, playerViolation.detection, hp.information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker);
                         } else {
-                            if (processed) {
-                                Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), hp.information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
-                            } else {
-                                switch (hp.violation) {
-                                    case 2:
-                                        this.setMaxLevel(hp.information); // Algorithm will redirect this to case '1'.
-                                        break;
-                                    case 1:
-                                        playerProfile.getViolationHistory(hackType).store(playerViolation);
-                                        this.setLevel(playerViolation.getSimilarityIdentity(), violations);
-                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), hp.information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
-                                        Moderation.performPunishments(player, hackType, violations, dataType);
-                                        break;
-                                    default:
-                                        playerProfile.getViolationHistory(hackType).store(playerViolation);
-                                        Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), hp.information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
-                                        break;
-                                }
+                            switch (hp.violation) {
+                                case 2:
+                                    this.setMaxLevel(hp.information); // Algorithm will redirect this to case '1'.
+                                    break;
+                                case 1:
+                                    player.getProfile().getViolationHistory(hackType).store(playerViolation);
+                                    this.setLevel(playerViolation.similarityIdentity, violations);
+                                    Moderation.detection(uuid, player, check, playerViolation.detection, hp.information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker);
+                                    Moderation.performPunishments(player, hackType, violations, player.getDataType());
+                                    break;
+                                default:
+                                    player.getProfile().getViolationHistory(hackType).store(playerViolation);
+                                    Moderation.detection(uuid, player, check, playerViolation.detection, hp.information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker);
+                                    break;
                             }
+                        }
 
-                            if (!check.isSilent(player.getWorld().getName(), uuid)
-                                    && (canPrevent || canPreventAlternative)) {
-                                if (enabledDeveloperAPI) {
-                                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(realPlayer, hackType);
-                                    Register.manager.callEvent(checkCancelEvent);
+                        if (!check.isSilent(player.getWorld().getName(), uuid)
+                                && (canPrevent || canPreventAlternative)) {
+                            if (enabledDeveloperAPI) {
+                                CheckCancelEvent checkCancelEvent = new CheckCancelEvent(realPlayer, hackType);
+                                Register.manager.callEvent(checkCancelEvent);
 
-                                    if (!checkCancelEvent.isCancelled()) {
-                                        hp.handle(player, hackType);
-                                        return true;
-                                    }
-                                } else {
+                                if (!checkCancelEvent.isCancelled()) {
                                     hp.handle(player, hackType);
                                     return true;
                                 }
+                            } else {
+                                hp.handle(player, hackType);
+                                return true;
                             }
                         }
                     }
@@ -320,7 +313,7 @@ public class LiveViolation {
                 long time = entry.getValue() - current;
 
                 if (time > 0L) {
-                    if (time / 1000.0 >= (hackType.getCheck().getMaxCancelledViolations(dataType, entry.getKey()) - 1)) { // Minus one so we don't ceil each loop number
+                    if (time / 1000.0 >= (hackType.getCheck().getMaxCancelledViolations(player.getDataType(), entry.getKey()) - 1)) { // Minus one so we don't ceil each loop number
                         return maxCancelledLevelCache.setResult(true);
                     }
                 } else {
@@ -337,7 +330,7 @@ public class LiveViolation {
         if (time != null) {
             time -= System.currentTimeMillis();
             return time > 0L
-                    && (time / 1000.0) >= (hackType.getCheck().getMaxCancelledViolations(dataType, hash) - 1); // -1 so we don't ceil the number
+                    && (time / 1000.0) >= (hackType.getCheck().getMaxCancelledViolations(player.getDataType(), hash) - 1); // -1 so we don't ceil the number
         } else {
             return false;
         }

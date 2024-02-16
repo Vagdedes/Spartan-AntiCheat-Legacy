@@ -9,11 +9,11 @@ import java.util.List;
 
 public class PlayerViolation {
 
-    private final Enums.HackType hackType;
-    private final long time;
-    private final String information, detection;
-    private final int level, similarityIdentity;
-    private final boolean isOption;
+    public final Enums.HackType hackType;
+    public final long time;
+    public final String information, detection;
+    public final int level, similarityIdentity;
+    public final boolean isOption;
     private final Collection<Number> numbers;
 
     public PlayerViolation(Enums.HackType hackType, long time, String information, int level) {
@@ -29,35 +29,11 @@ public class PlayerViolation {
         this.similarityIdentity = FalsePositiveDetection.getSimplifiedNumber(hackType, detection, numbers);
     }
 
-    public Enums.HackType getHackType() {
-        return hackType;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public String getInformation() {
-        return information;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
     boolean isDetectionEnabled() {
         return !isOption || hackType.getCheck().getBooleanOption(detection, null);
     }
 
-    public String getDetection() {
-        return detection;
-    }
-
     public List<Number> getNumbersList() {
         return new ArrayList<>(numbers);
-    }
-
-    public int getSimilarityIdentity() {
-        return similarityIdentity;
     }
 }

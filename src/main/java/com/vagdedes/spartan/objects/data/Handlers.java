@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Handlers {
+public class Handlers { // todo synchronize
 
     public enum HandlerFamily {
         Velocity, Constant, Environment, Motion, Part

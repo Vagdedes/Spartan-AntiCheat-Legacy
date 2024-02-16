@@ -36,6 +36,6 @@ public class FalsePositiveDetection {
 
     public static boolean canCorrect(PlayerViolation playerViolation, LiveViolation liveViolation) {
         return canFunction()
-                && !liveViolation.hasMaxCancelledLevel(playerViolation.getSimilarityIdentity());
+                && !liveViolation.hasMaxCancelledLevel(playerViolation.similarityIdentity);
     }
 }

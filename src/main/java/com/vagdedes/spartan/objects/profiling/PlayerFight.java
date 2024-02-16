@@ -17,7 +17,7 @@ public class PlayerFight {
     }
 
     public PlayerOpponent[] getOpponent(SpartanPlayer player) {
-        return opponent1.getPlayer().equals(player) ?
+        return opponent1.player.equals(player) ?
                 new PlayerOpponent[]{opponent1, opponent2} :
                 new PlayerOpponent[]{opponent2, opponent1};
     }
@@ -40,8 +40,8 @@ public class PlayerFight {
 
     public void setWinner(SpartanPlayer opponent) { // Use only when player is in said fight
         finish(getOpponent(opponent)[0]);
-        opponent1.getPlayer().getProfile().getCombat().removeFight(this);
-        opponent2.getPlayer().getProfile().getCombat().removeFight(this);
+        opponent1.player.getProfile().getCombat().removeFight(this);
+        opponent2.player.getProfile().getCombat().removeFight(this);
     }
 
     boolean expired() {
@@ -63,6 +63,6 @@ public class PlayerFight {
 
     private void finish(PlayerOpponent winner) {
         this.duration = System.currentTimeMillis() - this.duration;
-        winner.getPlayer().getExecutor(Enums.HackType.KillAura).handle(false, this);
+        winner.player.getExecutor(Enums.HackType.KillAura).handle(false, this);
     }
 }

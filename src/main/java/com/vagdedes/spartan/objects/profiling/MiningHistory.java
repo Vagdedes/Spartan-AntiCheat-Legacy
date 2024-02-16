@@ -5,7 +5,7 @@ import org.bukkit.World;
 
 public class MiningHistory {
 
-    private final Enums.MiningOre ore;
+    public final Enums.MiningOre ore;
     private final int[] mines;
     private int days;
 
@@ -18,10 +18,6 @@ public class MiningHistory {
         }
         this.ore = ore;
         this.days = days;
-    }
-
-    public Enums.MiningOre getOre() {
-        return ore;
     }
 
     public int getMines() {

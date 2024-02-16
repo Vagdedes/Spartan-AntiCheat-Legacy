@@ -58,8 +58,8 @@ public class PlayerCombat {
                     if (fight.expired()) {
                         iterator.remove();
                         removeFightCopy(fight);
-                    } else if (fight.opponent1.getPlayer().equals(opponent)
-                            || fight.opponent2.getPlayer().equals(opponent)) {
+                    } else if (fight.opponent1.player.equals(opponent)
+                            || fight.opponent2.player.equals(opponent)) {
                         return fight;
                     }
                 }
@@ -92,7 +92,7 @@ public class PlayerCombat {
     }
 
     private void removeFightCopy(PlayerFight fight) {
-        PlayerCombat combat = fight.getOpponent(profile.getSpartanPlayer())[1].getPlayer().getProfile().getCombat();
+        PlayerCombat combat = fight.getOpponent(profile.getSpartanPlayer())[1].player.getProfile().getCombat();
 
         synchronized (combat.fights) {
             combat.fights.remove(fight);

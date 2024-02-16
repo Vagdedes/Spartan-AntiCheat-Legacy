@@ -34,8 +34,8 @@ public class ViolationStatistics { //todo use pie equation
         public void add(PlayerProfile profile, PlayerViolation playerViolation) {
             players.add(profile.hashCode());
             violations.put(
-                    playerViolation.getSimilarityIdentity(),
-                    violations.getOrDefault(playerViolation.getSimilarityIdentity(), 0) + 1
+                    playerViolation.similarityIdentity,
+                    violations.getOrDefault(playerViolation.similarityIdentity, 0) + 1
             );
         }
 
@@ -60,8 +60,8 @@ public class ViolationStatistics { //todo use pie equation
 
     private static int hash(PlayerViolation playerViolation) {
         return Objects.hash(
-                playerViolation.getLevel(),
-                playerViolation.getSimilarityIdentity()
+                playerViolation.level,
+                playerViolation.similarityIdentity
         );
     }
 
@@ -166,10 +166,10 @@ public class ViolationStatistics { //todo use pie equation
 
                 if (!violations.isEmpty()) {
                     for (PlayerViolation violation : violations) {
-                        long time = AlgebraUtils.floorToNearest(violation.getTime(), (int) Check.violationCycleSeconds);
+                        long time = AlgebraUtils.floorToNearest(violation.time, (int) Check.violationCycleSeconds);
                         PlayerViolation highest = highestViolation.get(time);
 
-                        if (highest == null || violation.getLevel() > highest.getLevel()) {
+                        if (highest == null || violation.level > highest.level) {
                             highestViolation.put(time, violation);
                         }
                     }

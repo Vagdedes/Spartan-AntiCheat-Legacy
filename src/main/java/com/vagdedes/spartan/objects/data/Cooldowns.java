@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Cooldowns {
+public class Cooldowns { // todo synchronize
 
     private final Map<String, Long> hm;
 

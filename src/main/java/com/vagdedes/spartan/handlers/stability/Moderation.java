@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickablemessage.ClickableMessage;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
@@ -30,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public class Moderation {
+public class Moderation { // todo simplify
 
     public static final String
             warningMessage = " was warned for ",
@@ -111,20 +110,17 @@ public class Moderation {
 
     public static void detection(UUID uuid,
                                  SpartanPlayer detectedPlayer,
-                                 PlayerProfile playerProfile,
-                                 HackType hackType,
                                  Check check,
                                  String detailedDetection,
                                  String info,
                                  int level,
-                                 boolean log, boolean falsePositive, boolean canPrevent, boolean hacker,
-                                 ResearchEngine.DataType dataType) {
+                                 boolean log, boolean falsePositive, boolean canPrevent, boolean hacker) {
         if (level < Check.maxViolationsPerCycle) {
             // Variables
             String name = detectedPlayer.getName(),
                     world = detectedPlayer.getWorld().getName();
             boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
-            int cancelViolation = CancelViolation.get(hackType, dataType),
+            int cancelViolation = CancelViolation.get(check.getHackType(), detectedPlayer.getDataType()),
                     playerCount = SpartanBukkit.getPlayerCount();
 
             // Message Preparation
@@ -132,9 +128,9 @@ public class Moderation {
 
             if (ConfigUtils.contains(message, "{info}")) {
                 if (falsePositive) {
-                    message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(detectedPlayer, message, hackType);
+                    message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(detectedPlayer, message, check.getHackType());
                 } else {
-                    message = ConfigUtils.replaceWithSyntax(detectedPlayer, message, hackType);
+                    message = ConfigUtils.replaceWithSyntax(detectedPlayer, message, check.getHackType());
                 }
 
                 // Separator
@@ -147,9 +143,9 @@ public class Moderation {
                 }
             } else {
                 if (falsePositive) {
-                    message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(detectedPlayer, message, hackType);
+                    message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(detectedPlayer, message, check.getHackType());
                 } else {
-                    message = ConfigUtils.replaceWithSyntax(detectedPlayer, message, hackType);
+                    message = ConfigUtils.replaceWithSyntax(detectedPlayer, message, check.getHackType());
                 }
                 shorterMessage = message;
             }
@@ -161,7 +157,7 @@ public class Moderation {
                             || cannotPunish
                             || canPrevent
                             || consoleLog
-                            || playerProfile.isSuspected();
+                            || detectedPlayer.getProfile().isSuspected();
 
             if (important) {
                 CrossServerInformation.queueNotification(message, true);
@@ -172,11 +168,11 @@ public class Moderation {
                 SpartanLocation location = detectedPlayer.getLocation();
                 String cancelViolationString = (canPrevent ? "-" : "") + cancelViolation + (check.hasCancelViolation() ? "*" : ""),
                         information = (falsePositive ? "(False Positive) " : "")
-                                + Config.getConstruct() + name + " failed " + hackType + " (VL: " + level + ") " +
+                                + Config.getConstruct() + name + " failed " + check.getHackType() + " (VL: " + level + ") " +
                                 "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString() + "), (C-V: " + cancelViolationString + ") (Silent: " + check.isSilent(world, uuid) + "), " +
                                 "(Ping: " + detectedPlayer.getPing() + "ms), (TPS: " + AlgebraUtils.cut(TPS.get(detectedPlayer, false), 3) + "), (Hacker: " + hacker + "), (Online: " + playerCount + "), " +
                                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), (" + info + ")]";
-                AntiCheatLogs.logInfo(detectedPlayer, information, consoleLog ? shorterMessage : null, null, hackType, falsePositive, true, level, cancelViolation);
+                AntiCheatLogs.logInfo(detectedPlayer, information, consoleLog ? shorterMessage : null, null, check.getHackType(), falsePositive, true, level, cancelViolation);
             }
 
             // Local Notifications

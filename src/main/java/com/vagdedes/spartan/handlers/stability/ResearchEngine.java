@@ -957,7 +957,7 @@ public class ResearchEngine {
                                     // Organize the violations into time period pieces
                                     if (!list.isEmpty()) {
                                         for (PlayerViolation playerViolation : list) {
-                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
+                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.time / duration);
                                             ViolationStatistics.TimePeriod timePeriod = averages.get(timeMoment);
 
                                             if (timePeriod == null) {
