@@ -44,6 +44,12 @@ public class PlayerFight {
         opponent2.player.getProfile().getCombat().removeFight(this);
     }
 
+    public void update(SpartanPlayer damager) {
+        PlayerOpponent[] opponents = getOpponent(damager);
+        opponents[0].damager();
+        opponents[1].damaged();
+    }
+
     boolean expired() {
         if (Math.min(
                 opponent1.getLastHit(false),

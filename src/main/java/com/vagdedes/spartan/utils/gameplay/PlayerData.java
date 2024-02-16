@@ -35,7 +35,7 @@ import java.util.Map;
 
 import static org.bukkit.potion.PotionEffectType.*;
 
-public class PlayerData {
+public class PlayerData { // todo incorporate fights methods in combat object
 
     private static final Material
             gold_axe = MaterialUtils.get("gold_axe"),
@@ -168,14 +168,14 @@ public class PlayerData {
             for (PlayerFight fight : fights) {
                 PlayerOpponent[] opponents = fight.getOpponent(p);
 
-                if (!damage && opponents[0].getLastDamage() <= combatTimeRequirement) { // Last-damage double of last-hit due to advantage restrictions
+                if (!damage && opponents[0].getLastDamage(true) <= combatTimeRequirement) { // Last-damage double of last-hit due to advantage restrictions
                     if (hit) {
                         return true;
                     } else {
                         damage = true;
                     }
                 }
-                if (!hit && opponents[0].getLastHit() <= combatTimeRequirement) {
+                if (!hit && opponents[0].getLastHit(true) <= combatTimeRequirement) {
                     if (damage) {
                         return true;
                     } else {
@@ -200,7 +200,7 @@ public class PlayerData {
 
         if (!fights.isEmpty()) {
             for (PlayerFight fight : fights) {
-                if (fight.getOpponent(p)[0].getLastDamage() <= combatTimeRequirement) { // Last-damage double of last-hit due to advantage restrictions
+                if (fight.getOpponent(p)[0].getLastDamage(true) <= combatTimeRequirement) { // Last-damage double of last-hit due to advantage restrictions
                     return true;
                 }
             }
@@ -217,7 +217,7 @@ public class PlayerData {
 
         if (!fights.isEmpty()) {
             for (PlayerFight fight : fights) {
-                if (fight.getOpponent(p)[0].getLastHit() <= combatTimeRequirement) {
+                if (fight.getOpponent(p)[0].getLastHit(true) <= combatTimeRequirement) {
                     return true;
                 }
             }

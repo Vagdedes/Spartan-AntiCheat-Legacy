@@ -14,7 +14,6 @@ import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtec
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
-import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -108,25 +107,12 @@ public class EventsHandler6 implements Listener {
         double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
         if (utility != null) {
-            double distance = utility[2];
-
             // Object
             player.calculateClickData(null, true);
 
             if (!cancelled) {
-                SpartanPlayer targetPlayer = entity instanceof Player ? SpartanBukkit.getPlayer((Player) entity) : null;
-                boolean isPlayer = targetPlayer != null;
-
                 // Compatibility
                 NoHitDelay.runDealDamage(player, entity);
-
-                // Object
-                if (isPlayer) {
-                    PlayerOpponent[] opponents = player.getProfile().getCombat()
-                            .getFight(targetPlayer).getOpponent(player);
-                    opponents[0].damager();
-                    opponents[1].update();
-                }
 
                 // Handlers
                 Damage.runDealtDamage(player);
@@ -143,6 +129,17 @@ public class EventsHandler6 implements Listener {
                 player.getExecutor(Enums.HackType.KillAura).run(cancelled);
                 player.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
                 player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
+            }
+
+            if (!cancelled) {
+                // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
+                if (entity instanceof Player) {
+                    SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
+
+                    if (target != null) {
+                        player.getProfile().getCombat().getFight(target).update(player);
+                    }
+                }
             }
         }
         cooldowns.add(cooldownKey, 3);

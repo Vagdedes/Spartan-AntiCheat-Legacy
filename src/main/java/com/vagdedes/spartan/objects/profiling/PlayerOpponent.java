@@ -2,7 +2,7 @@ package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 
-public class PlayerOpponent { // todo fix last-hit, last-damage checks on detections
+public class PlayerOpponent {
 
     public final SpartanPlayer player;
     private int hits, damage, hitCombo;
@@ -11,18 +11,14 @@ public class PlayerOpponent { // todo fix last-hit, last-damage checks on detect
     // Separator
 
     PlayerOpponent(SpartanPlayer player) { // Used for memory
-        long time = System.currentTimeMillis();
-
         this.player = player;
         this.hits = 0;
         this.damage = 0;
 
         this.hitCombo = 0;
         this.lastDamage = 0L;
-        this.lastHit = time;
+        this.lastHit = 0L;
     }
-
-    // Separator
 
     public int getHits() {
         return hits;
@@ -40,22 +36,18 @@ public class PlayerOpponent { // todo fix last-hit, last-damage checks on detect
         return hitCombo;
     }
 
-    // Separator
-
-    public void update() {
+    void damaged() {
         this.damage++;
         this.lastDamage = System.currentTimeMillis();
         this.hitCombo = 0;
     }
 
-    public void damager() {
+    void damager() {
         this.lastHit = System.currentTimeMillis();
 
         this.hits++;
         this.hitCombo++;
     }
-
-    // Separator
 
     public long getLastHit(boolean maxIfNull) {
         return this.lastHit == 0L
@@ -63,12 +55,10 @@ public class PlayerOpponent { // todo fix last-hit, last-damage checks on detect
                 : System.currentTimeMillis() - this.lastHit;
     }
 
-    public long getLastHit() {
-        return getLastHit(true);
-    }
-
-    public long getLastDamage() {
-        return System.currentTimeMillis() - this.lastDamage;
+    public long getLastDamage(boolean maxIfNull) {
+        return this.lastDamage == 0L
+                ? (maxIfNull ? Long.MAX_VALUE : 0L)
+                : System.currentTimeMillis() - this.lastDamage;
     }
 
 }
