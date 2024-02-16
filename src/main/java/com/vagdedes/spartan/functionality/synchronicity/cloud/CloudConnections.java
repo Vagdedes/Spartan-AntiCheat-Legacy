@@ -479,7 +479,7 @@ public class CloudConnections {
                 if (violationHistory == null) {
                     return "No useful information was found for this check, try again later.";
                 }
-                Collection<Map.Entry<PlayerViolation, Integer>> entries = violationHistory.getViolationCounts();
+                Collection<PlayerViolation> violations = violationHistory.getMemory();
 
                 String comma = ", ", newLine = "\n";
                 StringBuilder softwareInformation = new StringBuilder();
@@ -498,11 +498,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Cancel Violation: ").append(CancelViolation.get(hackType, ResearchEngine.DataType.Universal))
                         .append(newLine);
-                softwareInformation.append("All Violations: ").append(violationHistory.getAllViolations())
-                        .append(newLine);
-                softwareInformation.append("Unique Violations: ").append(violationHistory.getUniqueViolations())
-                        .append(newLine);
-                softwareInformation.append("Important Violations: ").append(violationHistory.getImportantViolations(false))
+                softwareInformation.append("Violation Count: ").append(violationHistory.getCount())
                         .append(newLine);
 
                 // Separator
@@ -581,7 +577,7 @@ public class CloudConnections {
 
                 // Separator
 
-                int entriesSize = entries.size(),
+                int entriesSize = violations.size(),
                         limit = 250,
                         minViolations = Integer.MAX_VALUE,
                         maxViolations = 0,
@@ -592,8 +588,7 @@ public class CloudConnections {
                 Set<Integer> uniqueInformation = new HashSet<>(limit);
 
                 if (entriesSize > 0) {
-                    for (Map.Entry<PlayerViolation, Integer> entry : entries) {
-                        PlayerViolation playerViolation = entry.getKey();
+                    for (PlayerViolation playerViolation : violations) {
                         int violation = playerViolation.getLevel();
 
                         minViolations = Math.min(minViolations, violation);
@@ -601,8 +596,8 @@ public class CloudConnections {
 
                         averageViolations += violation;
                         totalViolations++;
-                        String rawInformation = playerViolation.getInformation(),
-                                information = "x" + entry.getValue() + " (" + rawInformation + ")";
+                        String information = "x" + playerViolation.getLevel()
+                                + " (" + playerViolation.getInformation() + ")";
 
                         if (uniqueInformation.add(playerViolation.getSimilarityIdentity())) {
                             softwareInformation.append(information).append(newLine);

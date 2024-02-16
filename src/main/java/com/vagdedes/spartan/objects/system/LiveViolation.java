@@ -227,13 +227,13 @@ public class LiveViolation {
                                         this.setMaxLevel(hp.information); // Algorithm will redirect this to case '1'.
                                         break;
                                     case 1:
-                                        playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
+                                        playerProfile.getViolationHistory(hackType).store(playerViolation);
                                         this.setLevel(playerViolation.getSimilarityIdentity(), violations);
                                         Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), hp.information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         Moderation.performPunishments(player, hackType, violations, dataType);
                                         break;
                                     default:
-                                        playerProfile.getViolationHistory(hackType).increaseViolations(playerViolation);
+                                        playerProfile.getViolationHistory(hackType).store(playerViolation);
                                         Moderation.detection(uuid, player, playerProfile, hackType, check, playerViolation.getDetection(), hp.information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker, dataType);
                                         break;
                                 }

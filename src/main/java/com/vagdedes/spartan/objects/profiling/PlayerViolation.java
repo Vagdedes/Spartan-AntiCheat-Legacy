@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
-import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ public class PlayerViolation {
     private final long time;
     private final String information, detection;
     private final int level, similarityIdentity;
-    final int divisionIdentity;
     private final boolean isOption;
     private final Collection<Number> numbers;
 
@@ -29,7 +27,6 @@ public class PlayerViolation {
         this.numbers = informationAnalysis.getNumbers();
         this.isOption = informationAnalysis.isOption(hackType);
         this.similarityIdentity = FalsePositiveDetection.getSimplifiedNumber(hackType, detection, numbers);
-        this.divisionIdentity = (information.hashCode() * SpartanBukkit.hashCodeMultiplier) + level;
     }
 
     public Enums.HackType getHackType() {

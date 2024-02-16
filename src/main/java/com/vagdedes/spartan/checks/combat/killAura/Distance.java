@@ -46,7 +46,7 @@ public class Distance extends DetectionExecutor {
                     PlayerOpponent[] opponents = fight.getOpponent(player);
 
                     if (opponents[0].hasHitCombo()) { // Make sure the player has a hit combo
-                        long timePassed = opponents[0].getPreviousLastHit(false);
+                        long timePassed = opponents[0].getLastHit(false);
 
                         if (timePassed <= 755L) { // 15 Ticks (Make sure the previous hit is recent or non-existent)
                             double limit = MoveUtils.calculateLimit(player, location,

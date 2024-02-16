@@ -6,7 +6,7 @@ public class PlayerOpponent {
 
     private final SpartanPlayer player;
     private int hits, damage, hitCombo;
-    private long lastHit, previousLastHit, lastDamage;
+    private long lastHit, lastDamage;
 
     // Separator
 
@@ -20,7 +20,6 @@ public class PlayerOpponent {
         this.hitCombo = 0;
         this.lastDamage = 0L;
         this.lastHit = time;
-        this.previousLastHit = time;
     }
 
     // Separator
@@ -37,12 +36,8 @@ public class PlayerOpponent {
         return damage;
     }
 
-    public boolean hasHitCombo(int number) {
-        return hitCombo >= number;
-    }
-
     public boolean hasHitCombo() {
-        return hasHitCombo(2);
+        return hitCombo >= 2;
     }
 
     public int getHitCombo() {
@@ -51,25 +46,17 @@ public class PlayerOpponent {
 
     // Separator
 
-    private void update(boolean lastDamage) {
-        if (lastDamage) {
-            this.damage++;
-            this.lastDamage = System.currentTimeMillis();
-            this.hitCombo = 0;
-        }
-    }
-
     public void update() {
-        update(true);
+        this.damage++;
+        this.lastDamage = System.currentTimeMillis();
+        this.hitCombo = 0;
     }
 
     public void damager() {
-        this.previousLastHit = getLastHit();
         this.lastHit = System.currentTimeMillis();
 
         this.hits++;
         this.hitCombo++;
-        update(false);
     }
 
     // Separator
@@ -80,14 +67,6 @@ public class PlayerOpponent {
 
     public long getLastHit() {
         return getLastHit(true);
-    }
-
-    public long getPreviousLastHit(boolean maxIfNull) { // Replacement to 'getLastHit' in situations where data is just updated
-        return this.previousLastHit == 0L ? (maxIfNull ? Long.MAX_VALUE : 0L) : System.currentTimeMillis() - this.previousLastHit;
-    }
-
-    public long getPreviousLastHit() { // Replacement to 'getLastHit' in situations where data is just updated
-        return getPreviousLastHit(true);
     }
 
     public long getLastDamage() {

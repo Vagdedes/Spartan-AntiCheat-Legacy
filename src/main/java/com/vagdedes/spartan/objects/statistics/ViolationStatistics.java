@@ -103,7 +103,7 @@ public class ViolationStatistics {
 
                         for (PlayerProfile profile : playerProfiles) {
                             if (profile.getDataType() == dataType) {
-                                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getViolationsList();
+                                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getMemory();
 
                                 if (!violations.isEmpty()) {
                                     for (PlayerViolation violation : violations) {
@@ -169,7 +169,7 @@ public class ViolationStatistics {
 
         for (PlayerProfile profile : playerProfiles) {
             if (profile.getDataType() == dataType) {
-                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getViolationsList();
+                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getMemory();
                 double probabilityTotal = 0.0;
                 int probabilityCount = 0;
 

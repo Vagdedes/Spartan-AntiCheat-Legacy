@@ -395,23 +395,21 @@ public class ResearchEngine {
         if (size == 0) {
             return null;
         }
-        List<PlayerViolation> violationsList = new ArrayList<>(size);
-        Map<Integer, List<PlayerViolation>> violationsMap = new LinkedHashMap<>(size);
+        Collection<PlayerViolation> list = new ArrayList<>(size);
         boolean universal = dataType == DataType.Universal;
 
         // Separator
         for (PlayerProfile playerProfile : profiles) {
             if (universal || ((dataType == DataType.Bedrock) == playerProfile.isBedrockPlayer())) {
                 ViolationHistory violationHistory = playerProfile.getViolationHistory(hackType);
-                violationsMap.putAll(violationHistory.getViolationsMap());
-                violationsList.addAll(violationHistory.getViolationsList());
+                list.addAll(violationHistory.getMemory());
             }
         }
 
-        if (violationsMap.isEmpty()) {
+        if (list.isEmpty()) {
             return null;
         }
-        return new ViolationHistory(hackType, dataType, violationsMap, violationsList);
+        return new ViolationHistory(list, false);
     }
 
     // Separator
@@ -778,7 +776,7 @@ public class ResearchEngine {
                             } else if (data.contains(Moderation.kickMessage)) {
                                 getPlayerProfile(split[0]).getPunishmentHistory().increaseKicks();
                             } else if (data.contains(" failed ")) {
-                                if (split.length >= 3 && !data.contains("(VL: 0)")) {
+                                if (split.length >= 3) {
                                     if (!data.startsWith(falsePositiveDisclaimer)) {
                                         String name = split[0];
                                         String hackTypeString = split[2];
@@ -798,7 +796,7 @@ public class ResearchEngine {
                                                                         AntiCheatLogs.dateFormat :
                                                                         AntiCheatLogs.usualDateFormat
                                                         );
-                                                        playerProfile.getViolationHistory(hackType).increaseViolations(
+                                                        playerProfile.getViolationHistory(hackType).store(
                                                                 new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation)
                                                         );
                                                     }
@@ -904,10 +902,7 @@ public class ResearchEngine {
             for (PlayerProfile playerProfile : playerProfiles) {
                 playerProfile.getEvidence().judge();
                 PunishmentHistory punishmentHistory = playerProfile.getPunishmentHistory();
-
-                for (ViolationHistory violationHistory : playerProfile.getViolationHistory()) {
-                    logs += playerProfile.getUsefulLogs(violationHistory);
-                }
+                logs += playerProfile.getUsefulLogs();
                 mines += playerProfile.getOverallMiningHistory().getMines();
                 kicks += punishmentHistory.getKicks();
                 warnings += punishmentHistory.getWarnings();
@@ -958,7 +953,7 @@ public class ResearchEngine {
                                         && !playerProfile.wasStaff()
                                         && !playerProfile.wasTesting()
                                         && playerProfile.isLegitimate()) {
-                                    List<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getViolationsList();
+                                    Collection<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getMemory();
 
                                     // Organize the violations into time period pieces
                                     if (!list.isEmpty()) {
