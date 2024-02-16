@@ -479,7 +479,7 @@ public class CloudConnections {
                 if (violationHistory == null) {
                     return "No useful information was found for this check, try again later.";
                 }
-                Collection<PlayerViolation> violations = violationHistory.getMemory();
+                Collection<PlayerViolation> violations = violationHistory.getCollection();
 
                 String comma = ", ", newLine = "\n";
                 StringBuilder softwareInformation = new StringBuilder();

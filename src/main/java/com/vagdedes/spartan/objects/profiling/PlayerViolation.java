@@ -45,7 +45,7 @@ public class PlayerViolation {
         return level;
     }
 
-    public boolean isDetectionEnabled() {
+    boolean isDetectionEnabled() {
         return !isOption || hackType.getCheck().getBooleanOption(detection, null);
     }
 

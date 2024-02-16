@@ -10,7 +10,7 @@ import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
 
-public class ViolationStatistics {
+public class ViolationStatistics { //todo use pie equation
 
     private static final Map<Integer, Map<Integer, Integer>> violationProbabilityPie
             = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -103,23 +103,14 @@ public class ViolationStatistics {
 
                         for (PlayerProfile profile : playerProfiles) {
                             if (profile.getDataType() == dataType) {
-                                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getMemory();
+                                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getCollection();
 
                                 if (!violations.isEmpty()) {
-                                    for (PlayerViolation violation : violations) {
-                                        if (violation.isDetectionEnabled()) {
-                                            synchronized (profileProbabilityWave) {
-                                                violationProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(hash(violation), 1, Integer::sum);
-                                            }
-                                            totalViolations++;
-                                        } else {
-                                            synchronized (profileProbabilityWave) {
-                                                Map<Integer, Integer> map = violationProbabilityPie.get(majorHash);
+                                    totalViolations += violations.size();
 
-                                                if (map != null) {
-                                                    map.remove(hash(violation));
-                                                }
-                                            }
+                                    synchronized (profileProbabilityWave) {
+                                        for (PlayerViolation violation : violations) {
+                                            violationProbabilityPie.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(hash(violation), 1, Integer::sum);
                                         }
                                     }
                                 }
@@ -169,45 +160,41 @@ public class ViolationStatistics {
 
         for (PlayerProfile profile : playerProfiles) {
             if (profile.getDataType() == dataType) {
-                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getMemory();
+                Collection<PlayerViolation> violations = profile.getViolationHistory(hackType).getCollection();
                 double probabilityTotal = 0.0;
                 int probabilityCount = 0;
 
                 if (!violations.isEmpty()) {
                     for (PlayerViolation violation : violations) {
-                        if (violation.isDetectionEnabled()) {
-                            long time = AlgebraUtils.floorToNearest(violation.getTime(), (int) Check.violationCycleSeconds);
-                            PlayerViolation highest = highestViolation.get(time);
+                        long time = AlgebraUtils.floorToNearest(violation.getTime(), (int) Check.violationCycleSeconds);
+                        PlayerViolation highest = highestViolation.get(time);
 
-                            if (highest == null || violation.getLevel() > highest.getLevel()) {
-                                highestViolation.put(time, violation);
-                            }
+                        if (highest == null || violation.getLevel() > highest.getLevel()) {
+                            highestViolation.put(time, violation);
                         }
                     }
 
-                    if (!highestViolation.isEmpty()) {
-                        for (PlayerViolation violation : highestViolation.values()) {
-                            Integer count = violationProbability.get(hash(violation));
+                    for (PlayerViolation violation : highestViolation.values()) {
+                        Integer count = violationProbability.get(hash(violation));
 
-                            if (count != null) {
-                                probabilityTotal += count / (double) totalViolations;
-                                probabilityCount++;
-                            }
+                        if (count != null) {
+                            probabilityTotal += count / (double) totalViolations;
+                            probabilityCount++;
                         }
+                    }
 
-                        if (probabilityCount > 0) {
-                            double averageProbability = probabilityTotal / (double) probabilityCount;
+                    if (probabilityCount > 0) {
+                        double averageProbability = probabilityTotal / (double) probabilityCount;
 
-                            synchronized (profileProbabilityWave) {
-                                profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
-                                profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
-                            }
-                        } else {
-                            Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
+                        synchronized (profileProbabilityWave) {
+                            profileAverageProbability.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).put(profile, averageProbability);
+                            profileProbabilityWave.computeIfAbsent(majorHash, k -> new LinkedHashMap<>()).merge(averageProbability, 1, Integer::sum);
+                        }
+                    } else {
+                        Map<PlayerProfile, Double> map = profileAverageProbability.get(majorHash);
 
-                            if (map != null) {
-                                map.remove(profile);
-                            }
+                        if (map != null) {
+                            map.remove(profile);
                         }
                     }
                 }

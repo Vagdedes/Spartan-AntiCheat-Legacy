@@ -401,8 +401,7 @@ public class ResearchEngine {
         // Separator
         for (PlayerProfile playerProfile : profiles) {
             if (universal || ((dataType == DataType.Bedrock) == playerProfile.isBedrockPlayer())) {
-                ViolationHistory violationHistory = playerProfile.getViolationHistory(hackType);
-                list.addAll(violationHistory.getMemory());
+                list.addAll(playerProfile.getViolationHistory(hackType).getRawCollection());
             }
         }
 
@@ -953,22 +952,20 @@ public class ResearchEngine {
                                         && !playerProfile.wasStaff()
                                         && !playerProfile.wasTesting()
                                         && playerProfile.isLegitimate()) {
-                                    Collection<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getMemory();
+                                    Collection<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getCollection();
 
                                     // Organize the violations into time period pieces
                                     if (!list.isEmpty()) {
                                         for (PlayerViolation playerViolation : list) {
-                                            if (playerViolation.isDetectionEnabled()) {
-                                                int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
-                                                ViolationStatistics.TimePeriod timePeriod = averages.get(timeMoment);
+                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.getTime() / duration);
+                                            ViolationStatistics.TimePeriod timePeriod = averages.get(timeMoment);
 
-                                                if (timePeriod == null) {
-                                                    timePeriod = new ViolationStatistics.TimePeriod();
-                                                    timePeriod.add(playerProfile, playerViolation);
-                                                    averages.put(timeMoment, timePeriod);
-                                                } else {
-                                                    timePeriod.add(playerProfile, playerViolation);
-                                                }
+                                            if (timePeriod == null) {
+                                                timePeriod = new ViolationStatistics.TimePeriod();
+                                                timePeriod.add(playerProfile, playerViolation);
+                                                averages.put(timeMoment, timePeriod);
+                                            } else {
+                                                timePeriod.add(playerProfile, playerViolation);
                                             }
                                         }
                                     }
