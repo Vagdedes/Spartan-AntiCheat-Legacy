@@ -59,10 +59,8 @@ public class EventsHandler1 implements Listener {
                 Config.settings.runOnLogin(p);
 
                 // Features
-                if (!SpartanMenu.mainMenu.notify(p)
-                        && !CloudFeature.announce(p)) {
-                    SuspicionNotifications.run(p);
-                }
+                SuspicionNotifications.run(p);
+                CloudFeature.announce(p);
             }
         }, 10);
     }

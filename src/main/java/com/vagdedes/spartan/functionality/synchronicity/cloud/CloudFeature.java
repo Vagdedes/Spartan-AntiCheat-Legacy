@@ -149,31 +149,34 @@ public class CloudFeature {
         return isInformationCancelled(allDisabledDetections.get(hackType), info);
     }
 
-    public static boolean announce(SpartanPlayer player) {
+    public static void announce(SpartanPlayer player) {
         if (Permissions.isStaff(player)) {
-            String[][] announcements = CloudConnections.getStaffAnnouncements();
+            Runnable runnable = () -> {
+                String[][] announcements = CloudConnections.getStaffAnnouncements();
 
-            if (announcements.length > 0) {
-                List<SpartanPlayer> players = Permissions.getStaff();
+                if (announcements.length > 0) {
+                    List<SpartanPlayer> players = Permissions.getStaff();
 
-                if (!players.isEmpty()) {
-                    boolean result = false;
-
-                    for (String[] announcement : announcements) {
-                        if (AwarenessNotifications.canSend(
-                                player.getUniqueId(),
-                                "staff-announcement-" + announcement[0],
-                                Integer.parseInt(announcement[2])
-                        )) {
-                            player.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
-                            result = true;
+                    if (!players.isEmpty()) {
+                        for (String[] announcement : announcements) {
+                            if (AwarenessNotifications.canSend(
+                                    player.getUniqueId(),
+                                    "staff-announcement-" + announcement[0],
+                                    Integer.parseInt(announcement[2])
+                            )) {
+                                player.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                            }
                         }
                     }
-                    return result;
                 }
+            };
+
+            if (SpartanBukkit.isSynchronised()) {
+                runnable.run();
+            } else {
+                SpartanBukkit.connectionThread.execute(runnable);
             }
         }
-        return false;
     }
 
     // Separator

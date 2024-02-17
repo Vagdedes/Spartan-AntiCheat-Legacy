@@ -136,7 +136,7 @@ public class ConfigUtils {
             boolean cancelled = lastLevel != 0;
             int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
             String category = cancelled ? Enums.PunishmentCategory.UNLIKE.toString() : Check.getCategoryFromViolations(violations, hackType, p.getProfile().isSuspectedOrHacker(hackType)).toString();
-            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, uuid)));
+            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, p)));
             message = replace(message, "{vls:detection}", String.valueOf(violations));
             message = replace(message, "{category:detection}", category);
             message = replace(message, "{detection:category:adverb}", (category.endsWith("ly") ? category : category + "ly"));

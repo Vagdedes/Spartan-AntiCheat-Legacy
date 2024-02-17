@@ -18,8 +18,7 @@ import java.util.Objects;
 
 public class AntiCheatUpdates {
 
-    public static final String name = "AntiCheat Updates",
-            communicationDetails = "§5Official Discord§8: §d§n" + DiscordMemberCount.discordURL + "§r §8§l| §r§2Business Email§8: §acontact@vagdedes.com";
+    public static final String name = "AntiCheat Updates";
 
     public static List<String> getInformation(boolean showStatistics) {
         int arraySize = 20;
@@ -101,21 +100,7 @@ public class AntiCheatUpdates {
         }
 
         // Separator
-        List<String> warnings = getWarnings(true);
-
-        if (warnings.size() > 0) {
-            if (showStatistics) {
-                InventoryUtils.prepareDescription(array, "Important Information");
-            } else {
-                array.add("");
-            }
-            array.add("§4Warning§8:");
-
-            for (String warning : warnings) {
-                array.add("§c" + warning);
-            }
-            array.add("");
-        } else if (showStatistics) {
+        if (showStatistics) {
             InventoryUtils.prepareDescription(array, "Important Information");
         }
 
@@ -127,7 +112,7 @@ public class AntiCheatUpdates {
                 array.add("§7Data from §4stored players§8:");
             }
 
-            if (statisticsArray.size() > 0) {
+            if (!statisticsArray.isEmpty()) {
                 array.addAll(statisticsArray);
             } else if (caching) {
                 array.add("§7" + PlayerStateLists.calculatingData);
@@ -135,53 +120,7 @@ public class AntiCheatUpdates {
                 array.add("§7" + PlayerStateLists.noDataAvailable);
             }
         }
-
-        // Separator
         return array;
-    }
-
-    // Separator
-
-    public static List<String> getWarnings(boolean menu) {
-        List<String> warnings = new LinkedList<>();
-
-        if (CloudFeature.isServerLimited()) {
-            warnings.add(menu ? prepareLore(CloudFeature.getMaximumServerLimitMessage()) : CloudFeature.getMaximumServerLimitMessage());
-        }
-        return warnings;
-    }
-
-    public static boolean messageWarnings(SpartanPlayer p) {
-        List<String> messages = new LinkedList<>(),
-                warnings = getWarnings(false);
-        int warningsCount = warnings.size();
-
-        if (warningsCount > 0) {
-            messages.add("");
-
-            for (int position = 0; position < warningsCount; position++) {
-                String color = (position + 1) % 2 == 0 ? "§7" : "§c";
-                messages.add(color + prepareMessage(warnings.get(position), color));
-            }
-            messages.add(communicationDetails);
-
-            // Separator
-            String message = StringUtils.toString(messages.toArray(new String[0]), "\n");
-            String hash = String.valueOf(Objects.hash(message));
-            message = AwarenessNotifications.getNotification(message);
-
-            if (AwarenessNotifications.canSend(p.getUniqueId(), hash)) {
-                p.sendImportantMessage(message);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    // Separator
-
-    private static String prepareMessage(String s, String color) {
-        return s.replace("§r", "§r" + color);
     }
 
     private static String prepareLore(String s) {

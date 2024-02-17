@@ -95,15 +95,6 @@ public class MainMenu extends InventoryMenu {
         return ("§0" + name + " | Page ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
     }
 
-    public boolean notify(SpartanPlayer player) {
-        for (Permission permission : permissions) {
-            if (Permissions.has(player, permission)) {
-                return AntiCheatUpdates.messageWarnings(player);
-            }
-        }
-        return false;
-    }
-
     @Override
     public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
         List<String> lore = new ArrayList<>(20);
@@ -136,16 +127,6 @@ public class MainMenu extends InventoryMenu {
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
         Runtime runtime = Runtime.getRuntime();
-        List<String> warnings = AntiCheatUpdates.getWarnings(true);
-
-        if (!warnings.isEmpty()) {
-            lore.add("§4Warning§8:");
-
-            for (String warning : warnings) {
-                lore.add("§c" + warning);
-            }
-            lore.add("");
-        }
         lore.add("§7Server Type§8: §a" + (TestServer.isIdentified() ? "Testing (" + TestServer.getIdentification() + ")" : SpartanBukkit.isProductionServer() ? "Production" : "Vanilla"));
         if (!MultiVersion.unknownFork || !MultiVersion.other) {
             lore.add("§7Server Information§8: §a" + (MultiVersion.unknownFork ? "Version" : MultiVersion.fork())
