@@ -36,10 +36,6 @@ public class DetectionNotifications {
 
     // General
 
-    public static int getPlayersRawSize() {
-        return notifications.size();
-    }
-
     public static List<SpartanPlayer> getPlayers(boolean all) {
         int size = notifications.size();
 

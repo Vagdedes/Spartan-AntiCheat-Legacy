@@ -120,7 +120,6 @@ public class SpartanPlayer {
     private boolean usingItem;
     private int fireTicks;
     private long damageTick;
-    private double lastDamage;
     private EntityDamageEvent lastDamageCause;
     private SpartanOpenInventory openInventory;
     private int ping;
@@ -416,7 +415,6 @@ public class SpartanPlayer {
         this.usingItem = p.isBlocking();
         this.fireTicks = p.getFireTicks();
         this.damageTick = 0L;
-        this.lastDamage = p.getLastDamage();
         this.lastDamageCause = p.getLastDamageCause();
         this.openInventory = spartanOpenInv;
         this.maximumNoDamageTicks = p.getMaximumNoDamageTicks();
@@ -1455,10 +1453,6 @@ public class SpartanPlayer {
         return damageTick;
     }
 
-    public double getLastDamage() {
-        return lastDamage;
-    }
-
     public EntityDamageEvent getLastDamageCause() {
         return lastDamageCause;
     }
@@ -1466,7 +1460,6 @@ public class SpartanPlayer {
     public synchronized void setLastDamageCause(EntityDamageEvent lastDamageCause, int maximumNoDamageTicks) {
         this.damageTick = TPS.getTick(this);
         this.lastDamageCause = lastDamageCause;
-        this.lastDamage = lastDamageCause.getDamage();
         this.maximumNoDamageTicks = maximumNoDamageTicks;
     }
 
@@ -1596,7 +1589,7 @@ public class SpartanPlayer {
                 if (p != null) {
                     nearbyEntitiesDistance = max;
 
-                    if (SpartanBukkit.isSynchronised()) {
+                    if (MultiVersion.folia || SpartanBukkit.isSynchronised()) {
                         SpartanBukkit.runTask(this, () -> {
                             nearbyEntities.clear();
                             nearbyEntities.addAll(p.getNearbyEntities(x, y, z));
