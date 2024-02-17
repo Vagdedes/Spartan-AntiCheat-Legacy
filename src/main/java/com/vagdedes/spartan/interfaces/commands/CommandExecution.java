@@ -14,7 +14,6 @@ import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.connection.Piracy;
-import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;

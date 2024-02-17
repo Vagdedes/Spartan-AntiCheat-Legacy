@@ -1,18 +1,9 @@
 package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
-import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.protections.Latency;
-import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.spartan.MainMenu;
-import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
-import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
@@ -29,15 +20,10 @@ public class PlayerProfile {
     private final MiningHistory[] miningHistory;
     private final PunishmentHistory punishmentHistory;
     private final PlayerEvidence evidence;
-    private boolean
-            bedrockPlayer,
-            bedrockPlayerCheck,
-            staff,
-            tester;
+    private boolean bedrockPlayer, bedrockPlayerCheck;
     private ItemStack skull;
     private OfflinePlayer offlinePlayer;
     private final PlayerCombat playerCombat;
-    private long lastPlayed;
 
     // Separator
 
@@ -57,15 +43,11 @@ public class PlayerProfile {
         SpartanPlayer player = this.getSpartanPlayer();
 
         if (player != null) {
-            this.staff = Permissions.isStaff(player);
             this.bedrockPlayer = player.isBedrockPlayer();
             this.bedrockPlayerCheck = true;
-            this.lastPlayed = player.getLastPlayed();
         } else {
-            this.staff = false;
             this.bedrockPlayer = BedrockCompatibility.isPlayer(name);
             this.bedrockPlayerCheck = bedrockPlayer;
-            this.lastPlayed = 0L;
         }
 
         // Separator
@@ -91,9 +73,7 @@ public class PlayerProfile {
         this.skull = null;
         this.offlinePlayer = null;
         this.bedrockPlayer = player.isBedrockPlayer(); // Attention
-        this.staff = Permissions.isStaff(player);
         this.bedrockPlayerCheck = true;
-        this.lastPlayed = player.getLastPlayed();
 
         this.violationHistory = new ViolationHistory[hackTypes.length];
         this.miningHistory = new MiningHistory[Enums.MiningOre.values().length];
@@ -169,26 +149,6 @@ public class PlayerProfile {
         return false;
     }
 
-    public boolean wasStaff() {
-        return staff;
-    }
-
-    public void setStaff(boolean bool) {
-        this.staff = bool;
-    }
-
-    public boolean wasTesting() {
-        if (tester) {
-            return true;
-        }
-        SpartanPlayer player = getSpartanPlayer();
-        return player != null && TestServer.isTester(player);
-    }
-
-    public void setTester(boolean bool) {
-        this.tester = bool;
-    }
-
     public OfflinePlayer getOfflinePlayer() {
         if (offlinePlayer == null && name != null) {
             if (this.uuid == null) {
@@ -212,18 +172,8 @@ public class PlayerProfile {
                         null;
     }
 
-    // Separator
-
     public boolean isOnline() {
         return getSpartanPlayer() != null;
-    }
-
-    public boolean wasRecentlyOnline() {
-        return isOnline() || (System.currentTimeMillis() - lastPlayed) <= (ResearchEngine.cacheRefreshTicks * TPS.tickTime);
-    }
-
-    public void setOnline(SpartanPlayer player) {
-        this.lastPlayed = player.getLastPlayed();
     }
 
     // Separator
@@ -237,38 +187,6 @@ public class PlayerProfile {
     }
 
     // Separator
-
-    public boolean calculateLiveEvidence(SpartanPlayer player, Enums.HackType hackType) {
-        synchronized (evidence.live) {
-            if (evidence.live.containsKey(hackType)
-                    || evidence.historical.containsKey(hackType)) {
-                return true;
-            }
-            Check check = hackType.getCheck();
-
-            if (check.supportsLiveEvidence()) {
-                int violationCount = player.getViolations(hackType).getLevel()
-                        - check.getCancelViolation()
-                        - AlgebraUtils.integerCeil(Latency.getDelay(player));
-
-                if (violationCount > 0) {
-                    double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, getDataType()))),
-                            thresholdSurpassing = violationRatio / Check.analysisMultiplier;
-
-                    if (thresholdSurpassing >= 1.0) {
-                        evidence.live.put(hackType,
-                                "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
-                        );
-                        evidence.judgeLocal();
-                        SpartanMenu.playerInfo.refresh(player.getName());
-                        MainMenu.refresh();
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    }
 
     public PlayerEvidence getEvidence() {
         return evidence;
@@ -358,8 +276,6 @@ public class PlayerProfile {
     public PunishmentHistory getPunishmentHistory() {
         return punishmentHistory;
     }
-
-    // Separator
 
     public PlayerCombat getCombat() {
         return playerCombat;

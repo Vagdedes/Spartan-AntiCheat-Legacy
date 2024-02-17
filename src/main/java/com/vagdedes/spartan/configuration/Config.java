@@ -343,7 +343,7 @@ public class Config {
         if (violation % hackType.getCheck().getDefaultCancelViolation() == 0) {
             PlayerProfile profile = p.getProfile();
 
-            if (profile.calculateLiveEvidence(p, hackType)) {
+            if (profile.getEvidence().calculateLive(p, hackType)) {
                 Collection<HackType> evidence = profile.getEvidence().getKnowledgeList();
                 Iterator<HackType> iterator = evidence.iterator();
 

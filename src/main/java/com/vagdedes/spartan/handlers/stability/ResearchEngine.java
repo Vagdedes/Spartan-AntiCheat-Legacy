@@ -177,13 +177,11 @@ public class ResearchEngine {
             int logs = 0, profiles = 0;
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                if (!playerProfile.wasStaff()) {
-                    profiles++;
-                    logs += playerProfile.getUsefulLogs();
+                profiles++;
+                logs += playerProfile.getUsefulLogs();
 
-                    if (logs >= logRequirement && profiles >= profileRequirement) {
-                        return enoughData = true;
-                    }
+                if (logs >= logRequirement && profiles >= profileRequirement) {
+                    return enoughData = true;
                 }
             }
         }
@@ -894,9 +892,7 @@ public class ResearchEngine {
         if (size > 0) {
             Enums.HackType[] hackTypes = Enums.HackType.values();
             DataType[] dataTypes = getDynamicUsableDataTypes(false);
-            List<PlayerProfile>
-                    playerProfilesCopy = new ArrayList<>(playerProfiles),
-                    legitimatePlayers = getLegitimatePlayers();
+            List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();
             int mines = 0, logs = 0, kicks = 0, warnings = 0, punishments = 0;
             ViolationStatistics.calculateData(playerProfiles);
 
@@ -912,28 +908,10 @@ public class ResearchEngine {
 
             // Separator
 
-            int staffOffline = 0;
             List<SpartanPlayer> staffOnline = SpartanBukkit.getPlayers();
 
             if (!staffOnline.isEmpty()) {
-                Iterator<SpartanPlayer> iterator = staffOnline.iterator();
-
-                while (iterator.hasNext()) {
-                    SpartanPlayer player = iterator.next();
-
-                    if (Permissions.isStaff(player)) {
-                        playerProfilesCopy.remove(player.getProfile());
-                    } else {
-                        iterator.remove();
-                    }
-                }
-            }
-            if (!playerProfilesCopy.isEmpty()) {
-                for (PlayerProfile playerProfile : playerProfilesCopy) {
-                    if (playerProfile.wasStaff()) {
-                        staffOffline++;
-                    }
-                }
+                staffOnline.removeIf(player -> !Permissions.isStaff(player));
             }
             statisticalProgress = new StatisticalProgress(
                     mines,
@@ -941,7 +919,6 @@ public class ResearchEngine {
                     kicks,
                     warnings,
                     punishments,
-                    staffOffline,
                     staffOnline
             );
 
@@ -960,8 +937,6 @@ public class ResearchEngine {
 
                             for (PlayerProfile playerProfile : playerProfiles) {
                                 if (bedrock == playerProfile.isBedrockPlayer()
-                                        && !playerProfile.wasStaff()
-                                        && !playerProfile.wasTesting()
                                         && playerProfile.isLegitimate()) {
                                     Collection<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getCollection();
 

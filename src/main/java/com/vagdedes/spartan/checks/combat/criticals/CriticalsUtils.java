@@ -34,8 +34,7 @@ public class CriticalsUtils {
     static boolean canCollectFrom(SpartanPlayer player) {
         if (!player.isBedrockPlayer()) {
             PlayerProfile profile = player.getProfile();
-            return !profile.isSuspectedOrHacker(Criticals.check)
-                    && !profile.wasTesting();
+            return !profile.isSuspectedOrHacker(Criticals.check);
         }
         return false;
     }

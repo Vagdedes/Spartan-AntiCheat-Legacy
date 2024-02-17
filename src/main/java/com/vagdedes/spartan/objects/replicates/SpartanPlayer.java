@@ -241,14 +241,17 @@ public class SpartanPlayer {
             if (syncTicks == 0) {
                 clearCache = true;
                 syncTicks = tickFrequency;
-                worldEntities.clear();
 
-                if (hasPlayers) {
-                    for (World world : Bukkit.getWorlds()) {
-                        worldEntities.put(
-                                world,
-                                MultiVersion.folia ? world.getEntities() : new CopyOnWriteArrayList<>(world.getEntities())
-                        );
+                if (!MultiVersion.folia) {
+                    worldEntities.clear();
+
+                    if (hasPlayers) {
+                        for (World world : Bukkit.getWorlds()) {
+                            worldEntities.put(
+                                    world,
+                                    new CopyOnWriteArrayList<>(world.getEntities())
+                            );
+                        }
                     }
                 }
             } else {
@@ -1589,7 +1592,7 @@ public class SpartanPlayer {
         }
     }
 
-    public List<Entity> getNearbyEntities(double x, double y, double z) {
+    public List<Entity> getNearbyEntities(double x, double y, double z) { // todo fix for folia
         double max = Math.max(Math.max(x, y), z);
 
         synchronized (nearbyEntitiesLock) {

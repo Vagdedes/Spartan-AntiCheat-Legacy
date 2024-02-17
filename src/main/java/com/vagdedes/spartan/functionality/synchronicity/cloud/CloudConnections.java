@@ -303,30 +303,28 @@ public class CloudConnections {
             StringBuilder value = new StringBuilder();
 
             for (PlayerProfile playerProfile : ResearchEngine.getHackers()) {
-                if (!playerProfile.wasStaff() && !playerProfile.wasTesting()) {
-                    SpartanPlayer player = playerProfile.getSpartanPlayer();
-                    boolean isNull = player == null;
+                SpartanPlayer player = playerProfile.getSpartanPlayer();
+                boolean isNull = player == null;
 
-                    if (isNull || !Permissions.isStaff(player)) {
-                        OfflinePlayer offlinePlayer = playerProfile.getOfflinePlayer();
+                if (isNull || !Permissions.isStaff(player)) {
+                    OfflinePlayer offlinePlayer = playerProfile.getOfflinePlayer();
 
-                        if (offlinePlayer != null && !offlinePlayer.isOp()) {
-                            UUID uuid = offlinePlayer.getUniqueId();
+                    if (offlinePlayer != null && !offlinePlayer.isOp()) {
+                        UUID uuid = offlinePlayer.getUniqueId();
 
-                            if (CloudFeature.punishedPlayers.addIfAbsent(uuid)) {
-                                String ipAddress;
+                        if (CloudFeature.punishedPlayers.addIfAbsent(uuid)) {
+                            String ipAddress;
 
-                                if (!isNull && offlinePlayer.isOnline()) {
-                                    ipAddress = player.getIpAddress();
+                            if (!isNull && offlinePlayer.isOnline()) {
+                                ipAddress = player.getIpAddress();
 
-                                    if (ipAddress == null) {
-                                        ipAddress = "NULL";
-                                    }
-                                } else {
+                                if (ipAddress == null) {
                                     ipAddress = "NULL";
                                 }
-                                value.append(StringUtils.encodeBase64(uuid + CloudFeature.separator + ipAddress)).append(CloudFeature.separator);
+                            } else {
+                                ipAddress = "NULL";
                             }
+                            value.append(StringUtils.encodeBase64(uuid + CloudFeature.separator + ipAddress)).append(CloudFeature.separator);
                         }
                     }
                 }

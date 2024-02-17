@@ -1,6 +1,13 @@
 package com.vagdedes.spartan.objects.profiling;
 
+import com.vagdedes.spartan.functionality.protections.Latency;
+import com.vagdedes.spartan.gui.SpartanMenu;
+import com.vagdedes.spartan.gui.spartan.MainMenu;
+import com.vagdedes.spartan.handlers.stability.CancelViolation;
+import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.statistics.PatternStorage;
+import com.vagdedes.spartan.objects.system.Check;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
@@ -123,6 +130,40 @@ public class PlayerEvidence {
     public boolean has(Enums.HackType hackType) {
         synchronized (this.live) {
             return live.containsKey(hackType) || historical.containsKey(hackType);
+        }
+    }
+
+    // Separator
+
+    public boolean calculateLive(SpartanPlayer player, Enums.HackType hackType) {
+        synchronized (this.live) {
+            if (this.live.containsKey(hackType)
+                    || this.historical.containsKey(hackType)) {
+                return true;
+            }
+            Check check = hackType.getCheck();
+
+            if (check.supportsLiveEvidence()) {
+                int violationCount = player.getViolations(hackType).getLevel()
+                        - check.getCancelViolation()
+                        - AlgebraUtils.integerCeil(Latency.getDelay(player));
+
+                if (violationCount > 0) {
+                    double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, profile.getDataType()))),
+                            thresholdSurpassing = violationRatio / Check.analysisMultiplier;
+
+                    if (thresholdSurpassing >= 1.0) {
+                        this.live.put(hackType,
+                                "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
+                        );
+                        this.judgeLocal();
+                        SpartanMenu.playerInfo.refresh(player.getName());
+                        MainMenu.refresh();
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 

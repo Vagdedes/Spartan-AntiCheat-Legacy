@@ -46,9 +46,6 @@ public class EventsHandler1 implements Listener {
         if (p == null) {
             return;
         }
-        // Object
-        p.getProfile().setOnline(p);
-
         // System
         MaximumCheckedPlayers.add(p);
         SpartanEdition.attemptNotification(p);

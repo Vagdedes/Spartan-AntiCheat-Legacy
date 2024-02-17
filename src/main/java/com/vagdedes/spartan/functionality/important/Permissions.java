@@ -96,7 +96,6 @@ public class Permissions {
 
         if (TestServer.isIdentified() || !isCacheEnabled()) {
             if (p.hasPermission(permission.getKey())) {
-                setStaff(p, permission);
                 return true;
             }
             if (API) {
@@ -107,14 +106,12 @@ public class Permissions {
                     Boolean bool = map.get(permission);
 
                     if (bool != null && bool) {
-                        setStaff(uuid, permission);
                         return true;
                     }
                 }
             }
             if (permission != admin ? p.hasPermission(Enums.Permission.ADMIN.getKey()) || p.hasPermission(alternativeAdminKey) :
                     p.hasPermission(alternativeAdminKey)) { // If it's the admin permission and it's false (at this stage it is), then we check the other admin permission
-                setStaff(p, permission);
                 return true;
             }
             return false;
@@ -126,9 +123,6 @@ public class Permissions {
             Boolean bool = map.get(permission);
 
             if (bool != null) {
-                if (bool) {
-                    setStaff(uuid, permission);
-                }
                 return bool;
             }
         } else {
@@ -153,10 +147,6 @@ public class Permissions {
             }
         }
         map.put(permission, hasPermission);
-
-        if (hasPermission) {
-            setStaff(uuid, permission);
-        }
         return hasPermission;
     }
 
@@ -216,25 +206,6 @@ public class Permissions {
     public static void remove(UUID uuid) {
         perm.remove(uuid);
         bypass.remove(uuid);
-    }
-
-    // Separator
-
-    private static void setStaff(UUID uuid, Enums.Permission permission) {
-        for (Enums.Permission staffPermission : staffPermissions) {
-            if (staffPermission == permission) {
-                SpartanPlayer spartanPlayer = SpartanBukkit.getPlayer(uuid);
-
-                if (spartanPlayer != null) {
-                    spartanPlayer.getProfile().setStaff(true);
-                }
-                break;
-            }
-        }
-    }
-
-    private static void setStaff(Player player, Enums.Permission permission) {
-        setStaff(player.getUniqueId(), permission);
     }
 
     // Separator

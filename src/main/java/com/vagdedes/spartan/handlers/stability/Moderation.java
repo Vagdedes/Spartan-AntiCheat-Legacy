@@ -1,10 +1,8 @@
 package com.vagdedes.spartan.handlers.stability;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickablemessage.ClickableMessage;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
@@ -13,21 +11,10 @@ import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
-import com.vagdedes.spartan.utils.server.PluginUtils;
-import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
-import me.vagdedes.spartan.system.Enums.HackType;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 public class Moderation { // todo simplify and transfer to player object
 
