@@ -543,7 +543,7 @@ public class CloudConnections {
                             && !fileName.equals(Config.messages.getFile().getName())) {
                         switch (fileName) {
                             case ManageConfiguration.checksFileName:
-                                Set<Map.Entry<String, Object>> options = check.getOptions();
+                                Collection<Map.Entry<String, Object>> options = check.getOptions();
 
                                 if (!options.isEmpty()) {
                                     for (Map.Entry<String, Object> entry : options) {

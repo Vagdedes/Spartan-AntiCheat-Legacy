@@ -1,11 +1,9 @@
 package me.vagdedes.spartan.system;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.objects.system.CancelCause;
 import com.vagdedes.spartan.objects.system.Check;
 
 import java.util.Map;
-import java.util.UUID;
 
 public class Enums {
 
@@ -27,11 +25,9 @@ public class Enums {
 
         public void resetCheck() {
             if (this.check != null) {
-                Map<UUID, CancelCause> disabledUsers = this.check.copyDisabledUsers();
-                Map<UUID, CancelCause> silentUsers = this.check.copySilentUsers();
                 Map<Integer, Integer> maxCancelledViolations = this.check.copyMaxCancelledViolations();
                 this.check.clearCache();
-                this.check = new Check(this, disabledUsers, silentUsers, maxCancelledViolations);
+                this.check = new Check(this, maxCancelledViolations, true);
             }
         }
     }

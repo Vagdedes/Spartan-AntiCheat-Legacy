@@ -45,8 +45,7 @@ public class FastClicks extends CheckExecutor {
 
         if (detection != null) {
             player.getViolations(hackType).process();
-            hackType.getCheck().addDisabledUser(
-                    player.getUniqueId(),
+            player.getViolations(hackType).addDisableCause(
                     hackType.toString(),
                     detection,
                     20

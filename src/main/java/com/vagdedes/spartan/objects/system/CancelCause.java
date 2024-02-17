@@ -39,6 +39,6 @@ public class CancelCause {
     }
 
     public boolean pointerMatches(String info) {
-        return this.pointer != null && info.contains(this.pointer);
+        return this.pointer == null || info.contains(this.pointer);
     }
 }

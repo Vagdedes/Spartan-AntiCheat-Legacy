@@ -355,7 +355,7 @@ public class SQLFeature extends ConfigurationBuilder {
                     + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
                     + ", " + (hasCheck ? syntaxForColumn(hackType) : miningNotification ? syntaxForColumn(material) : "NULL")
                     + ", " + (violations > -1 ? syntaxForColumn(violations) : "NULL")
-                    + ", " + (cancelViolation > -1 && hasCheck && !hackType.getCheck().isSilent(hasPlayer ? location.getWorld().getName() : null, uuid) ? syntaxForColumn(cancelViolation) : "NULL")
+                    + ", " + (cancelViolation > -1 && hasCheck && !hackType.getCheck().isSilent(hasPlayer ? location.getWorld().getName() : null, p) ? syntaxForColumn(cancelViolation) : "NULL")
                     + ");");
 
             if (list.size() >= 10) {

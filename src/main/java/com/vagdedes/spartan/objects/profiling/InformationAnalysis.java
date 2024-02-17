@@ -84,7 +84,7 @@ public class InformationAnalysis {
     }
 
     boolean isOption(Enums.HackType hackType) {
-        Set<String> configKeys = hackType.getCheck().getOptionKeys();
+        Collection<String> configKeys = hackType.getCheck().getOptionKeys();
         int configKeyCount = configKeys.size();
 
         if (configKeyCount > 0) {

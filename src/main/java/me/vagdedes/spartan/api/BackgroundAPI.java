@@ -199,55 +199,77 @@ public class BackgroundAPI {
         }
     }
 
-    static void enableSilentChecking(Player p, HackType HackType) {
+    static void cancelCheck(Player p, HackType hackType, int ticks) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().addSilentUser(p.getUniqueId(), "Developer-API", 0);
-        }
-    }
+            SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
-    static void disableSilentChecking(Player p, HackType HackType) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().removeSilentUser(p.getUniqueId());
-        }
-    }
-
-    static void enableSilentChecking(HackType HackType) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setSilent("true");
-        }
-    }
-
-    static void disableSilentChecking(HackType HackType) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setSilent("false");
-        }
-    }
-
-    static void cancelCheck(Player p, HackType HackType, int ticks) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().addDisabledUser(p.getUniqueId(), "Developer-API", ticks);
+            if (player != null) {
+                player.getViolations(hackType).addDisableCause("Developer-API", null, ticks);
+            }
         }
     }
 
     static void cancelCheckPerVerbose(Player p, String string, int ticks) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) { // Keep the null pointer protection to prevent the method from acting differently
-            UUID uuid = p.getUniqueId();
+            SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
-            for (HackType hackType : Enums.HackType.values()) {
-                hackType.getCheck().addDisabledUser(uuid, "Developer-API", string, ticks);
+            if (player != null) {
+                for (HackType hackType : Enums.HackType.values()) {
+                    player.getViolations(hackType).addDisableCause("Developer-API", string, ticks);
+                }
             }
         }
     }
 
-    static void startCheck(Player p, HackType HackType) {
+    static void enableSilentChecking(HackType HackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().addDisabledUser(p.getUniqueId(), "Developer-API", 0);
+            HackType.getCheck().setSilent(true);
         }
     }
 
-    static void stopCheck(Player p, HackType HackType) {
+    static void disableSilentChecking(HackType HackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().removeDisabledUser(p.getUniqueId());
+            HackType.getCheck().setSilent(false);
+        }
+    }
+
+    static void enableSilentChecking(Player p, HackType hackType) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
+            SpartanPlayer player = SpartanBukkit.getPlayer(p);
+
+            if (player != null) {
+                player.getViolations(hackType).addSilentCause("Developer-API", null, 0);
+            }
+        }
+    }
+
+    static void disableSilentChecking(Player p, HackType hackType) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
+            SpartanPlayer player = SpartanBukkit.getPlayer(p);
+
+            if (player != null) {
+                player.getViolations(hackType).removeSilentCause();
+            }
+        }
+    }
+
+    static void startCheck(Player p, HackType hackType) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
+            SpartanPlayer player = SpartanBukkit.getPlayer(p);
+
+            if (player != null) {
+                player.getViolations(hackType).removeDisableCause();
+            }
+        }
+    }
+
+    static void stopCheck(Player p, HackType hackType) {
+        if (Config.settings.getBoolean("Important.enable_developer_api")) {
+            SpartanPlayer player = SpartanBukkit.getPlayer(p);
+
+            if (player != null) {
+                player.getViolations(hackType).addSilentCause("Developer-API", null, 0);
+            }
         }
     }
 

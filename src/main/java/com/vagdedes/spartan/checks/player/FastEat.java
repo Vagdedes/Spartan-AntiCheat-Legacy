@@ -116,7 +116,7 @@ public class FastEat extends CheckExecutor {
             switch (e.getAction()) {
                 case RIGHT_CLICK_BLOCK:
                     if (e.getClickedBlock().getType() == cake) {
-                        hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 10);
+                        player.getViolations(hackType).addDisableCause(hackType.toString(), null, 10);
                     }
                     break;
                 case RIGHT_CLICK_AIR:

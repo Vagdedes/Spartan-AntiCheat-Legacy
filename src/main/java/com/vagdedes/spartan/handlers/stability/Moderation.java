@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public class Moderation { // todo simplify
+public class Moderation { // todo simplify and transfer to player object
 
     public static final String
             warningMessage = " was warned for ",
@@ -41,7 +41,7 @@ public class Moderation { // todo simplify
         LiveViolation liveViolation = p.getLastViolation();
         return liveViolation.getLastViolationTime(true) <= ms
                 && (!checkSilent
-                || !liveViolation.getHackType().getCheck().isSilent(p.getWorld().getName(), p.getUniqueId()));
+                || !liveViolation.hackType.getCheck().isSilent(p.getWorld().getName(), p));
     }
 
     public static boolean wasDetected(SpartanPlayer p) {
@@ -52,34 +52,46 @@ public class Moderation { // todo simplify
         return isDetected(p, true, 55L);
     }
 
-    public static void warn(CommandSender punisher, SpartanPlayer t, String reason) {
-        String punisherName = punisher instanceof ConsoleCommandSender ? Config.messages.getColorfulString("console_name") : punisher.getName(),
-                warning = ConfigUtils.replaceWithSyntax(t,
-                        Config.messages.getColorfulString("warning_message").replace("{reason}", reason).replace("{punisher}", punisherName),
+    public static void warn(CommandSender punisher, SpartanPlayer target, String reason) {
+        String punisherName = punisher instanceof ConsoleCommandSender
+                ? Config.messages.getColorfulString("console_name")
+                : punisher.getName(),
+                warning = ConfigUtils.replaceWithSyntax(target,
+                        Config.messages.getColorfulString("warning_message")
+                                .replace("{reason}", reason)
+                                .replace("{punisher}", punisherName),
                         null),
-                feedback = ConfigUtils.replaceWithSyntax(t,
-                        Config.messages.getColorfulString("warning_feedback_message").replace("{reason}", reason).replace("{punisher}", punisherName),
+                feedback = ConfigUtils.replaceWithSyntax(target,
+                        Config.messages.getColorfulString("warning_feedback_message")
+                                .replace("{reason}", reason)
+                                .replace("{punisher}", punisherName),
                         null);
-        t.sendMessage(warning);
+        target.sendMessage(warning);
         punisher.sendMessage(feedback);
 
-        SpartanLocation location = t.getLocation();
-        CrossServerInformation.queueNotificationWithWebhook(t.getUniqueId(), t.getName(),
+        SpartanLocation location = target.getLocation();
+        CrossServerInformation.queueNotificationWithWebhook(target.getUniqueId(), target.getName(),
                 location.getBlockX(), location.getBlockY(), location.getBlockZ(),
                 "Warning", reason,
                 true);
-        AntiCheatLogs.logInfo(Config.getConstruct() + t.getName() + warningMessage + reason);
 
-        t.getProfile().getPunishmentHistory().increaseWarnings();
+        AntiCheatLogs.logInfo(Config.getConstruct() + target.getName() + warningMessage + reason);
+        target.getProfile().getPunishmentHistory().increaseWarnings();
     }
 
-    public static void kick(CommandSender punisher, SpartanPlayer p, String reason) {
-        String punisherName = punisher instanceof ConsoleCommandSender ? Config.messages.getColorfulString("console_name") : punisher.getName(),
-                kick = ConfigUtils.replaceWithSyntax(p,
-                        Config.messages.getColorfulString("kick_reason").replace("{reason}", reason).replace("{punisher}", punisherName),
+    public static void kick(CommandSender punisher, SpartanPlayer target, String reason) {
+        String punisherName = punisher instanceof ConsoleCommandSender
+                ? Config.messages.getColorfulString("console_name")
+                : punisher.getName(),
+                kick = ConfigUtils.replaceWithSyntax(target,
+                        Config.messages.getColorfulString("kick_reason")
+                                .replace("{reason}", reason)
+                                .replace("{punisher}", punisherName),
                         null),
-                announcement = ConfigUtils.replaceWithSyntax(p,
-                        Config.messages.getColorfulString("kick_broadcast_message").replace("{reason}", reason).replace("{punisher}", punisherName),
+                announcement = ConfigUtils.replaceWithSyntax(target,
+                        Config.messages.getColorfulString("kick_broadcast_message")
+                                .replace("{reason}", reason)
+                                .replace("{punisher}", punisherName),
                         null);
 
         if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
@@ -96,20 +108,18 @@ public class Moderation { // todo simplify
             }
         }
 
-        SpartanLocation location = p.getLocation();
-        CrossServerInformation.queueNotificationWithWebhook(p.getUniqueId(), p.getName(),
+        SpartanLocation location = target.getLocation();
+        CrossServerInformation.queueNotificationWithWebhook(target.getUniqueId(), target.getName(),
                 location.getBlockX(), location.getBlockY(), location.getBlockZ(),
                 "Kick", reason,
                 true);
 
-        AntiCheatLogs.logInfo(Config.getConstruct() + p.getName() + kickMessage + reason);
-
-        p.getProfile().getPunishmentHistory().increaseKicks();
-        p.kickPlayer(kick);
+        AntiCheatLogs.logInfo(Config.getConstruct() + target.getName() + kickMessage + reason);
+        target.getProfile().getPunishmentHistory().increaseKicks();
+        target.kickPlayer(kick);
     }
 
-    public static void detection(UUID uuid,
-                                 SpartanPlayer detectedPlayer,
+    public static void detection(SpartanPlayer detectedPlayer,
                                  Check check,
                                  String detailedDetection,
                                  String info,
@@ -169,7 +179,7 @@ public class Moderation { // todo simplify
                 String cancelViolationString = (canPrevent ? "-" : "") + cancelViolation + (check.hasCancelViolation() ? "*" : ""),
                         information = (falsePositive ? "(False Positive) " : "")
                                 + Config.getConstruct() + name + " failed " + check.getHackType() + " (VL: " + level + ") " +
-                                "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString() + "), (C-V: " + cancelViolationString + ") (Silent: " + check.isSilent(world, uuid) + "), " +
+                                "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString() + "), (C-V: " + cancelViolationString + ") (Silent: " + check.isSilent(world, detectedPlayer) + "), " +
                                 "(Ping: " + detectedPlayer.getPing() + "ms), (TPS: " + AlgebraUtils.cut(TPS.get(detectedPlayer, false), 3) + "), (Hacker: " + hacker + "), (Online: " + playerCount + "), " +
                                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), (" + info + ")]";
                 AntiCheatLogs.logInfo(detectedPlayer, information, consoleLog ? shorterMessage : null, null, check.getHackType(), falsePositive, true, level, cancelViolation);
@@ -214,9 +224,9 @@ public class Moderation { // todo simplify
 
         if (check.canPunish()) {
             boolean legacy = Config.isLegacy();
-            String[] commands = legacy ? check.getLegacyCommands(violation) : check.getCommands();
+            Collection<String> commands = legacy ? check.getLegacyCommands(violation) : check.getCommands();
 
-            if (commands.length > 0) {
+            if (!commands.isEmpty()) {
                 Player n = p.getPlayer();
 
                 if (n != null && n.isOnline()) {
@@ -294,7 +304,7 @@ public class Moderation { // todo simplify
                     if (performed) {
                         String commandsString = StringUtils.toString(commands, "\n");
 
-                        if (commandsString.length() > 0) {
+                        if (!commandsString.isEmpty()) {
                             SpartanBukkit.runDelayedTask(p, () ->
                                     CrossServerInformation.queueWebhook(uuid, name,
                                             location.getBlockX(), location.getBlockY(), location.getBlockZ(),
@@ -305,7 +315,7 @@ public class Moderation { // todo simplify
                                 + " Please do not reach support for this as it relates only to your server.";
                         List<Plugin> dependentPlugins = PluginUtils.getDependentPlugins(Register.plugin.getName());
 
-                        if (dependentPlugins.size() > 0) {
+                        if (!dependentPlugins.isEmpty()) {
                             StringBuilder dependentPluginNames = new StringBuilder();
 
                             for (Plugin plugin : dependentPlugins) {

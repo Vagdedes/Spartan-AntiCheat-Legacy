@@ -5,24 +5,21 @@ import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.objects.system.Check;
+import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.UUID;
-
 public class FalseFallDamage {
 
     public static boolean runDamage(SpartanPlayer p, EntityDamageEvent.DamageCause dmg) {
         if (!Permissions.isBypassing(p, Enums.HackType.NoFall)) {
-            UUID uuid = p.getUniqueId();
-            Check check = Enums.HackType.NoFall.getCheck();
+            LiveViolation violation = p.getViolations(Enums.HackType.NoFall);
 
-            if (check.getDisabledCause(uuid) == null
-                    && check.getSilentCause(uuid) == null
+            if (violation.getDisableCause() == null
+                    && violation.getSilentCause() == null
                     && dmg == EntityDamageEvent.DamageCause.FALL
 
                     && !Moderation.wasDetected(p)

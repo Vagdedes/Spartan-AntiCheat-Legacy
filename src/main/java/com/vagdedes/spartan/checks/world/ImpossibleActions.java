@@ -129,7 +129,7 @@ public class ImpossibleActions extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), "actions", 10);
+        player.getViolations(hackType).addDisableCause(hackType.toString(), "actions", 10);
         return false;
     }
 

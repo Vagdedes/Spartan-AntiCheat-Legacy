@@ -58,7 +58,7 @@ public class CheckProtection {
 
     public static void evadeCommonFalsePositives(SpartanPlayer player, Compatibility.CompatibilityType compatibilityType, Enums.HackType[] hackTypes, int ticks) {
         for (Enums.HackType hackType : hackTypes) {
-            hackType.getCheck().addDisabledUser(player.getUniqueId(), compatibilityType.toString(), ticks);
+            player.getViolations(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
         }
     }
 

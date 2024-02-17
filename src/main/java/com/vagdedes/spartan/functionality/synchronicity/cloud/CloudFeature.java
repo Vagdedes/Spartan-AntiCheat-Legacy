@@ -473,24 +473,32 @@ public class CloudFeature {
 
             // Separator
             if (independent && validIDs) {
-                String[][] announcements = CloudConnections.getStaffAnnouncements();
+                Runnable runnable = () -> {
+                    String[][] announcements = CloudConnections.getStaffAnnouncements();
 
-                if (announcements.length > 0) {
-                    List<SpartanPlayer> players = Permissions.getStaff();
+                    if (announcements.length > 0) {
+                        List<SpartanPlayer> players = Permissions.getStaff();
 
-                    if (!players.isEmpty()) {
-                        for (String[] announcement : announcements) {
-                            for (SpartanPlayer p : players) {
-                                if (AwarenessNotifications.canSend(
-                                        p.getUniqueId(),
-                                        "staff-announcement-" + announcement[0],
-                                        Integer.parseInt(announcement[2])
-                                )) {
-                                    p.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                        if (!players.isEmpty()) {
+                            for (String[] announcement : announcements) {
+                                for (SpartanPlayer p : players) {
+                                    if (AwarenessNotifications.canSend(
+                                            p.getUniqueId(),
+                                            "staff-announcement-" + announcement[0],
+                                            Integer.parseInt(announcement[2])
+                                    )) {
+                                        p.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                                    }
                                 }
                             }
                         }
                     }
+                };
+
+                if (async) {
+                    runnable.run();
+                } else {
+                    SpartanBukkit.connectionThread.execute(runnable);
                 }
             }
         } else {

@@ -6,8 +6,6 @@ import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.UUID;
-
 public class Teleport {
 
     public static final int ticks = 3;
@@ -15,18 +13,16 @@ public class Teleport {
 
     public static void run(SpartanPlayer p) {
         if (!p.getHandlers().isDisabled(Handlers.HandlerType.Teleport)) {
-            UUID uuid = p.getUniqueId();
-
             if (Config.settings.getBoolean("Protections.use_teleport_protection")) {
                 for (Enums.HackType hackType : Enums.HackType.values()) {
-                    hackType.getCheck().addSilentUser(uuid, reason, ticks);
+                    p.getViolations(hackType).addSilentCause(reason, null, ticks);
                 }
             } else {
                 for (Enums.HackType hackType : Enums.HackType.values()) {
                     Check check = hackType.getCheck();
 
                     if (!check.hasMaximumDefaultCancelViolation()) {
-                        hackType.getCheck().addSilentUser(uuid, reason, ticks);
+                        p.getViolations(hackType).addSilentCause(reason, null, ticks);
                     }
                 }
             }

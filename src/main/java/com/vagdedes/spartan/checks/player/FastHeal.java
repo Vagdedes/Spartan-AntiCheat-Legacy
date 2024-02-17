@@ -76,7 +76,7 @@ public class FastHeal extends CheckExecutor {
         } else if (canDo() && ((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 || player.getItemInHand().getType() != Material.DRIED_KELP)) {
-            hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 10);
+            player.getViolations(hackType).addDisableCause(hackType.toString(), null, 10);
         }
         return false;
     }

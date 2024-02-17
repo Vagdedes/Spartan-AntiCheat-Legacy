@@ -59,7 +59,7 @@ public class ItemDrops extends CheckExecutor {
                     SpartanPlayer p = SpartanBukkit.getPlayer(arg);
 
                     if (p != null) {
-                        check.getCheck().addDisabledUser(p.getUniqueId(), check.toString(), 5);
+                        player.getViolations(hackType).addDisableCause(check.toString(), null, 5);
                     }
                 }
             }
@@ -70,7 +70,7 @@ public class ItemDrops extends CheckExecutor {
                     && canDo()
                     && e.getClickedBlock().getType() == water
                     && player.getItemInHand().getType() == Material.GLASS_BOTTLE) {
-                check.getCheck().addDisabledUser(player.getUniqueId(), check.toString(), 10);
+                player.getViolations(hackType).addDisableCause(check.toString(), null, 10);
             }
         }
         return false;

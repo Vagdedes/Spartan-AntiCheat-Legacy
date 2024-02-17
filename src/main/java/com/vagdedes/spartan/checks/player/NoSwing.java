@@ -51,7 +51,7 @@ public class NoSwing extends CheckExecutor {
                 player.getTimer(hackType).set("break");
             }
         } else if (object instanceof PlayerItemHeldEvent) {
-            hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 10);
+            player.getViolations(hackType).addDisableCause(hackType.toString(), null, 10);
         } else if (object instanceof PlayerAnimationEvent) {
             if (!player.canRunCheck(hackType, true)
                     || ((PlayerAnimationEvent) object).getAnimationType() != PlayerAnimationType.ARM_SWING) {

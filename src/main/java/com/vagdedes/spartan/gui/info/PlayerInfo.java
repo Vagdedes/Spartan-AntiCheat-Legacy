@@ -254,21 +254,13 @@ public class PlayerInfo extends InventoryMenu {
         }
         UUID uuid = player.getUniqueId();
         String delay = delayNumber == 0.0 ? "" : " (" + (Math.floor(delayNumber) == delayNumber ? String.valueOf((int) delayNumber) : String.valueOf(delayNumber)) + ")";
-        CancelCause disabledCause = check.getDisabledCause(uuid);
+        CancelCause disabledCause = player.getViolations(hackType).getDisableCause();
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
                 cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
                         notChecked ? "Temporarily Not Checked" :
                                 tpsDropping ? "Server Lag" + delay :
                                         disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
                                                 (returnNull ? null : (check.isSilent(worldName, uuid) ? "Silent " : "") + "Checking" + delay);
-    }
-
-    public void refresh(UUID uuid) {
-        SpartanPlayer player = SpartanBukkit.getPlayer(uuid);
-
-        if (player != null) {
-            refresh(player.getName());
-        }
     }
 
     public void refresh(String targetName) {

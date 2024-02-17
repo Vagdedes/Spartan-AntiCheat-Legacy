@@ -14,7 +14,8 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -124,12 +125,12 @@ public class Settings extends ConfigurationBuilder {
         }
     }
 
-    public List<String> getPunishments() {
+    public Collection<String> getPunishments() {
         String sectionString = "Punishments.Commands";
         ConfigurationSection section = getPath().getConfigurationSection(sectionString);
 
         if (section != null) {
-            List<String> list = new LinkedList<>();
+            Collection<String> list = new ArrayList<>();
             Set<String> keys = section.getKeys(true);
 
             if (!keys.isEmpty()) {
@@ -151,6 +152,6 @@ public class Settings extends ConfigurationBuilder {
             }
             return list;
         }
-        return new LinkedList<>();
+        return new ArrayList<>(0);
     }
 }

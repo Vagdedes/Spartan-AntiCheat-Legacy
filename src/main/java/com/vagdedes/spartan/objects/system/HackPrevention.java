@@ -45,7 +45,7 @@ public class HackPrevention {
             if (VehicleAccess.hasExitCooldown(player, hackType)) {
                 this.violation = 0;
             } else {
-                CancelCause silentCause = hackType.getCheck().getSilentCause(player.getUniqueId());
+                CancelCause silentCause = player.getViolations(hackType).getSilentCause();
 
                 if (silentCause != null && silentCause.getReason().equals(Teleport.reason)) {
                     this.violation = 0;

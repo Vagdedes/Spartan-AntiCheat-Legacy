@@ -92,7 +92,7 @@ public class ManageChecks extends InventoryMenu {
         String colour, secondColour;
         ItemStack item;
 
-        if (check.canBeSilent()) {
+        if (check.supportsSilent()) {
             if (silent) {
                 silentOption = "§7Right click to §cdisable §7silent checking.";
             } else {
@@ -252,9 +252,9 @@ public class ManageChecks extends InventoryMenu {
 
         if (check != null) {
             if (check.isSilent(null, null)) {
-                check.setSilent("false");
+                check.setSilent(false);
             } else {
-                check.setSilent("true");
+                check.setSilent(true);
             }
         }
         open(player);

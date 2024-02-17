@@ -893,7 +893,7 @@ public class SpartanPlayer {
                 return bool;
             }
             bool = SpartanEdition.supportsCheck(dataType, hackType)
-                    && hackType.getCheck().isEnabled(dataType, this.getWorld().getName(), this.getUniqueId())
+                    && hackType.getCheck().isEnabled(dataType, this.getWorld().getName(), this)
                     && !Permissions.isBypassing(this, hackType);
             map.put(hackType, bool);
             return bool;

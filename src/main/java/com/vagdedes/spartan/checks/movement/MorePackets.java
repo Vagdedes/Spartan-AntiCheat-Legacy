@@ -48,7 +48,7 @@ public class MorePackets extends CheckExecutor {
             Block block = ((BlockBreakEvent) object).getBlock();
 
             if (BlockUtils.areOres(block.getType())) {
-                hackType.getCheck().addDisabledUser(player.getUniqueId(), hackType.toString(), 5);
+                player.getViolations(hackType).addDisableCause(hackType.toString(), null, 5);
             }
         } else {
             initialLocation = ((SpartanLocation) object);

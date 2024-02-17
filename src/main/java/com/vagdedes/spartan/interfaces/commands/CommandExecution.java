@@ -475,18 +475,18 @@ public class CommandExecution implements CommandExecutor {
                                     }
                                 }
                             }
-                            if (found.size() > 0) {
+                            if (!found.isEmpty()) {
                                 for (Enums.HackType hackType : found) {
                                     int seconds = noSeconds ? 0 : Integer.parseInt(sec);
 
                                     if (noSeconds) {
-                                        hackType.getCheck().addDisabledUser(t.getUniqueId(), "Command-" + sender.getName(), 0);
+                                        t.getViolations(hackType).addDisableCause("Command-" + sender.getName(), null, 0);
                                     } else {
                                         if (seconds < 1 || seconds > 3600) {
                                             sender.sendMessage(ChatColor.RED + "Seconds must be between 1 and 3600.");
                                             return true;
                                         }
-                                        hackType.getCheck().addDisabledUser(t.getUniqueId(), "Command-" + sender.getName(), seconds * 20);
+                                        t.getViolations(hackType).addDisableCause("Command-" + sender.getName(), null, seconds * 20);
                                     }
                                     String message = ConfigUtils.replaceWithSyntax(t, Config.messages.getColorfulString("bypass_message"), hackType)
                                             .replace("{time}", noSeconds ? "infinite" : String.valueOf(seconds));
