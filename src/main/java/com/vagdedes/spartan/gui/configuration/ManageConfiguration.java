@@ -298,7 +298,6 @@ public class ManageConfiguration extends InventoryMenu {
                             refresh = false;
                         }
                         break;
-                    case "Text":
                     default:
                         refresh = false;
                         break;

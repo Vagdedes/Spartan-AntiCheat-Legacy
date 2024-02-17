@@ -2,6 +2,7 @@ package com.vagdedes.spartan.objects.system;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
@@ -12,14 +13,21 @@ import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.profiling.PlayerViolation;
+import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.server.ConfigUtils;
+import com.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.api.CheckCancelEvent;
+import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.api.ViolationResetEvent;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -213,7 +221,7 @@ public class LiveViolation { // todo simplify
                                     player.getProfile().getViolationHistory(hackType).store(playerViolation);
                                     this.setLevel(playerViolation.similarityIdentity, violations);
                                     Moderation.detection(player, check, playerViolation.detection, hp.information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker);
-                                    Moderation.performPunishments(player, hackType, violations, player.getDataType());
+                                    performPunishments(violations);
                                     break;
                                 default:
                                     player.getProfile().getViolationHistory(hackType).store(playerViolation);
@@ -480,5 +488,116 @@ public class LiveViolation { // todo simplify
     public void removeSilentCause() {
         this.silentCause = null;
         SpartanMenu.playerInfo.refresh(player.getName());
+    }
+
+    // Separator
+
+    private void performPunishments(int violation) {
+        Check check = hackType.getCheck();
+
+        if (check.canPunish()) {
+            boolean legacy = Config.isLegacy();
+            Collection<String> commands = legacy ? check.getLegacyCommands(violation) : check.getCommands();
+
+            if (!commands.isEmpty()) {
+                Player n = player.getPlayer();
+
+                if (n != null && n.isOnline()) {
+                    boolean performed = false, found = false;
+                    SpartanLocation location = player.getLocation();
+
+                    if (legacy) {
+                        boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
+
+                        for (String command : commands) {
+                            if (command != null) {
+                                found = true;
+                                String modifiedCommand = ConfigUtils.replaceWithSyntax(player, command, hackType);
+
+                                if (enabledDeveloperAPI) {
+                                    PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(n, hackType, modifiedCommand);
+                                    Register.manager.callEvent(event);
+
+                                    if (event.isCancelled()) {
+                                        continue;
+                                    }
+                                }
+                                performed = true;
+                                SpartanBukkit.runDelayedTask(player, () -> {
+                                    if (player != null) {
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
+                                    }
+                                }, 1);
+                            }
+                        }
+                    } else {
+                        Collection<Enums.HackType> detectedHacks = Config.getPunishableHackModules(player, hackType, violation);
+
+                        if (!detectedHacks.isEmpty()) {
+                            boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
+                            StringBuilder stringBuilder = new StringBuilder();
+
+                            for (Enums.HackType detectedHack : detectedHacks) {
+                                stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
+                            }
+                            String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
+
+                            for (String command : commands) {
+                                if (command != null) {
+                                    found = true;
+                                    String modifiedCommand = ConfigUtils.replaceWithSyntax(
+                                            player,
+                                            command.replaceAll("\\{detections}|\\{detection}", detections),
+                                            null
+                                    );
+
+                                    if (enabledDeveloperAPI) {
+                                        PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(n, hackType, detectedHacks, modifiedCommand);
+                                        Register.manager.callEvent(event);
+
+                                        if (event.isCancelled()) {
+                                            continue;
+                                        }
+                                    }
+
+                                    performed = true;
+                                    SpartanBukkit.runDelayedTask(player, () -> {
+                                        if (player != null) {
+                                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
+                                        }
+                                    }, 1);
+                                }
+                            }
+                        }
+                    }
+
+                    if (performed) {
+                        String commandsString = StringUtils.toString(commands, "\n");
+
+                        if (!commandsString.isEmpty()) {
+                            player.getProfile().getPunishmentHistory().increasePunishments(player, commandsString);
+                        }
+                    } else if (found && AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-cancelled-punishment-event")) {
+                        String notification = "Just a reminder that the punishments of the '" + hackType + "' check were just cancelled via code by a third-party plugin."
+                                + " Please do not reach support for this as it relates only to your server.";
+                        List<Plugin> dependentPlugins = PluginUtils.getDependentPlugins(Register.plugin.getName());
+
+                        if (!dependentPlugins.isEmpty()) {
+                            StringBuilder dependentPluginNames = new StringBuilder();
+
+                            for (Plugin plugin : dependentPlugins) {
+                                dependentPluginNames.append(dependentPluginNames.length() == 0 ? "" : ", ").append(plugin.getName());
+                            }
+                            notification += " Here are possible plugins that could be doing this:\n" + dependentPluginNames;
+                        }
+                        AwarenessNotifications.forcefullySend(notification);
+                    }
+                }
+            } else if (AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-no-punishment-commands")) {
+                AwarenessNotifications.forcefullySend("Just a reminder that you have set no punishment commands for the '" + hackType + "' check.");
+            }
+        } else if (check.canPunish() && AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-disabled-punishments")) {
+            AwarenessNotifications.forcefullySend("Just a reminder that punishments have been disabled for the '" + hackType + "' check.");
+        }
     }
 }

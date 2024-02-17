@@ -47,7 +47,7 @@ public class PlayerProfile {
         // Separator
         this.uuid = null;
         this.name = name;
-        this.punishmentHistory = new PunishmentHistory();
+        this.punishmentHistory = new PunishmentHistory(this);
         this.playerCombat = new PlayerCombat(this);
         this.evidence = new PlayerEvidence(this);
         this.skull = null;
@@ -85,7 +85,7 @@ public class PlayerProfile {
         this.uuid = player.getUniqueId();
         this.name = player.getName();
         this.offlinePlayer = player.getPlayer(); // Attention
-        this.punishmentHistory = new PunishmentHistory();
+        this.punishmentHistory = new PunishmentHistory(this);
         this.playerCombat = new PlayerCombat(this);
         this.evidence = new PlayerEvidence(this);
         this.skull = null;
@@ -238,7 +238,7 @@ public class PlayerProfile {
 
     // Separator
 
-    public boolean calculateLiveEvidence(SpartanPlayer player, Enums.HackType hackType, ResearchEngine.DataType dataType) {
+    public boolean calculateLiveEvidence(SpartanPlayer player, Enums.HackType hackType) {
         synchronized (evidence.live) {
             if (evidence.live.containsKey(hackType)
                     || evidence.historical.containsKey(hackType)) {
@@ -252,7 +252,7 @@ public class PlayerProfile {
                         - AlgebraUtils.integerCeil(Latency.getDelay(player));
 
                 if (violationCount > 0) {
-                    double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, dataType))),
+                    double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, getDataType()))),
                             thresholdSurpassing = violationRatio / Check.analysisMultiplier;
 
                     if (thresholdSurpassing >= 1.0) {

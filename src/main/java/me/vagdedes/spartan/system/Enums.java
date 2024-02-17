@@ -25,9 +25,12 @@ public class Enums {
 
         public void resetCheck() {
             if (this.check != null) {
-                Map<Integer, Integer> maxCancelledViolations = this.check.copyMaxCancelledViolations();
-                this.check.clearCache();
-                this.check = new Check(this, maxCancelledViolations, true);
+                this.check.clearConfigurationCache();
+                this.check = new Check(
+                        this,
+                        this.check.copyMaxCancelledViolations(),
+                        true
+                );
             }
         }
     }

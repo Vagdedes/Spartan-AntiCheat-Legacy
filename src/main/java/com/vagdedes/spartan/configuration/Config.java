@@ -338,11 +338,12 @@ public class Config {
 
     // Separator
 
-    public static Collection<HackType> getPunishableHackModules(SpartanPlayer p, HackType hackType, int violation, ResearchEngine.DataType dataType) {
+    // todo move
+    public static Collection<HackType> getPunishableHackModules(SpartanPlayer p, HackType hackType, int violation) {
         if (violation % hackType.getCheck().getDefaultCancelViolation() == 0) {
             PlayerProfile profile = p.getProfile();
 
-            if (profile.calculateLiveEvidence(p, hackType, dataType)) {
+            if (profile.calculateLiveEvidence(p, hackType)) {
                 Collection<HackType> evidence = profile.getEvidence().getKnowledgeList();
                 Iterator<HackType> iterator = evidence.iterator();
 

@@ -32,10 +32,12 @@ import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.Teleport;
+import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
@@ -53,10 +55,13 @@ import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.*;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -1136,35 +1141,70 @@ public class SpartanPlayer {
         return true;
     }
 
-    public void showPlayer(SpartanPlayer target) {
-        Player p = getPlayer();
+    public void kick(CommandSender punisher, String reason) {
+        Player target = getPlayer();
 
-        if (p != null && p.isOnline()) {
-            Player t = target.getPlayer();
+        if (target != null && target.isOnline()) {
+            String punisherName = punisher instanceof ConsoleCommandSender
+                    ? Config.messages.getColorfulString("console_name")
+                    : punisher.getName(),
+                    kick = ConfigUtils.replaceWithSyntax(target,
+                            Config.messages.getColorfulString("kick_reason")
+                                    .replace("{reason}", reason)
+                                    .replace("{punisher}", punisherName),
+                            null),
+                    announcement = ConfigUtils.replaceWithSyntax(target,
+                            Config.messages.getColorfulString("kick_broadcast_message")
+                                    .replace("{reason}", reason)
+                                    .replace("{punisher}", punisherName),
+                            null);
 
-            if (t != null && t.isOnline()) {
-                p.showPlayer(t);
+            if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
+                Bukkit.broadcastMessage(announcement);
+            } else {
+                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+
+                if (!players.isEmpty()) {
+                    for (SpartanPlayer o : players) {
+                        if (DetectionNotifications.hasPermission(o)) {
+                            o.sendMessage(announcement);
+                        }
+                    }
+                }
             }
+
+            playerProfile.getPunishmentHistory().increaseKicks(this, kick);
+            target.kickPlayer(kick);
         }
     }
 
-    public void hidePlayer(SpartanPlayer target) {
-        Player p = getPlayer();
+    public void warn(CommandSender punisher, String reason) {
+        Player target = getPlayer();
 
-        if (p != null && p.isOnline()) {
-            Player t = target.getPlayer();
+        if (target != null && target.isOnline()) {
+            String punisherName = punisher instanceof ConsoleCommandSender
+                    ? Config.messages.getColorfulString("console_name")
+                    : punisher.getName(),
+                    warning = ConfigUtils.replaceWithSyntax(target,
+                            Config.messages.getColorfulString("warning_message")
+                                    .replace("{reason}", reason)
+                                    .replace("{punisher}", punisherName),
+                            null),
+                    feedback = ConfigUtils.replaceWithSyntax(target,
+                            Config.messages.getColorfulString("warning_feedback_message")
+                                    .replace("{reason}", reason)
+                                    .replace("{punisher}", punisherName),
+                            null);
+            target.sendMessage(warning);
+            punisher.sendMessage(feedback);
 
-            if (t != null && t.isOnline()) {
-                p.hidePlayer(t);
-            }
-        }
-    }
+            SpartanLocation location = getLocation();
+            CrossServerInformation.queueNotificationWithWebhook(target.getUniqueId(), target.getName(),
+                    location.getBlockX(), location.getBlockY(), location.getBlockZ(),
+                    "Warning", reason,
+                    true);
 
-    public void kickPlayer(String reason) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            p.kickPlayer(reason);
+            playerProfile.getPunishmentHistory().increaseWarnings(this, reason);
         }
     }
 

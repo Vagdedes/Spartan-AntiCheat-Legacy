@@ -428,7 +428,7 @@ public class CommandExecution implements CommandExecutor {
                             sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
                             return true;
                         }
-                        Moderation.kick(sender, t, argumentsToString);
+                        t.kick(sender, argumentsToString);
 
                     } else if (args[0].equalsIgnoreCase("Warn")) {
                         SpartanPlayer t = SpartanBukkit.getPlayer(args[1]);
@@ -445,7 +445,7 @@ public class CommandExecution implements CommandExecutor {
                             sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
                             return true;
                         }
-                        Moderation.warn(sender, t, argumentsToString);
+                        t.warn(sender, argumentsToString);
 
                     } else if (args[0].equalsIgnoreCase("Bypass")) {
                         boolean noSeconds = args.length == 3;

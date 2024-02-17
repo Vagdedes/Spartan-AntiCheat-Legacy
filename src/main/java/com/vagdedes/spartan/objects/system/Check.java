@@ -623,11 +623,6 @@ public class Check {
         }
     }
 
-    public void clearCache() {
-        clearConfigurationCache();
-        clearMaxCancelledViolations();
-    }
-
     // Separator
 
     public boolean isEnabled(ResearchEngine.DataType dataType, String world, SpartanPlayer player) {

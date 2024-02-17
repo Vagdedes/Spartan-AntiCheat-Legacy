@@ -771,9 +771,11 @@ public class ResearchEngine {
                                     }
                                 }
                             } else if (data.contains(Moderation.warningMessage)) {
-                                getPlayerProfile(split[0]).getPunishmentHistory().increaseWarnings();
+                                getPlayerProfile(split[0]).getPunishmentHistory().increaseWarnings(null, null);
                             } else if (data.contains(Moderation.kickMessage)) {
-                                getPlayerProfile(split[0]).getPunishmentHistory().increaseKicks();
+                                getPlayerProfile(split[0]).getPunishmentHistory().increaseKicks(null, null);
+                            } else if (data.contains(Moderation.punishmentMessage)) {
+                                getPlayerProfile(split[0]).getPunishmentHistory().increasePunishments(null, null);
                             } else if (data.contains(" failed ")) {
                                 if (split.length >= 3) {
                                     if (!data.startsWith(falsePositiveDisclaimer)) {
@@ -895,7 +897,7 @@ public class ResearchEngine {
             List<PlayerProfile>
                     playerProfilesCopy = new ArrayList<>(playerProfiles),
                     legitimatePlayers = getLegitimatePlayers();
-            int mines = 0, logs = 0, kicks = 0, warnings = 0;
+            int mines = 0, logs = 0, kicks = 0, warnings = 0, punishments = 0;
             ViolationStatistics.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
@@ -905,6 +907,7 @@ public class ResearchEngine {
                 mines += playerProfile.getOverallMiningHistory().getMines();
                 kicks += punishmentHistory.getKicks();
                 warnings += punishmentHistory.getWarnings();
+                punishments += punishmentHistory.getPunishments();
             }
 
             // Separator
@@ -932,7 +935,15 @@ public class ResearchEngine {
                     }
                 }
             }
-            statisticalProgress = new StatisticalProgress(mines, logs, kicks, warnings, staffOffline, staffOnline.toArray(new SpartanPlayer[0]));
+            statisticalProgress = new StatisticalProgress(
+                    mines,
+                    logs,
+                    kicks,
+                    warnings,
+                    punishments,
+                    staffOffline,
+                    staffOnline
+            );
 
             // Separator (Find False Positives)
 
