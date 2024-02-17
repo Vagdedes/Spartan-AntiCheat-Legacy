@@ -106,7 +106,7 @@ public class Moderation { // todo simplify and transfer to player object
                                 "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString() + "), (C-V: " + cancelViolationString + ") (Silent: " + check.isSilent(world, detectedPlayer) + "), " +
                                 "(Ping: " + detectedPlayer.getPing() + "ms), (TPS: " + AlgebraUtils.cut(TPS.get(detectedPlayer, false), 3) + "), (Hacker: " + hacker + "), (Online: " + playerCount + "), " +
                                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), (" + info + ")]";
-                AntiCheatLogs.logInfo(detectedPlayer, information, consoleLog ? shorterMessage : null, null, check.getHackType(), falsePositive, true, level, cancelViolation);
+                AntiCheatLogs.logInfo(detectedPlayer, information, consoleLog ? shorterMessage : null, null, check.getHackType(), true, level);
             }
 
             // Local Notifications

@@ -175,10 +175,9 @@ public class DetectionNotifications {
                             null,
                             material,
                             XRay.check,
-                            false,
                             true,
-                            player.getViolations(XRay.check).getLevel(),
-                            CancelViolation.get(XRay.check, player.getDataType()));
+                            player.getViolations(XRay.check).getLevel()
+                    );
 
                     if (!ResearchEngine.isCaching()) {
                         MiningHistory miningHistory = player.getProfile().getMiningHistory(ore);

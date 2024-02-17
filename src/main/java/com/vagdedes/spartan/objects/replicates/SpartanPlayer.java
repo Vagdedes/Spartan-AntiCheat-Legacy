@@ -1201,12 +1201,6 @@ public class SpartanPlayer {
             target.sendMessage(warning);
             punisher.sendMessage(feedback);
 
-            SpartanLocation location = getLocation();
-            CrossServerInformation.queueNotificationWithWebhook(target.getUniqueId(), target.getName(),
-                    location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-                    "Warning", reason,
-                    true);
-
             playerProfile.getPunishmentHistory().increaseWarnings(this, reason);
         }
     }
@@ -1662,12 +1656,6 @@ public class SpartanPlayer {
             return nearbyEntities;
         }
     }
-
-    public boolean hasNearbyEntities(double x, double y, double z) {
-        return !getNearbyEntities(x, y, z).isEmpty();
-    }
-
-    // Custom
 
     // Teleport
 

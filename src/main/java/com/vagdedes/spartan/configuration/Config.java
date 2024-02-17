@@ -96,40 +96,6 @@ public class Config {
 
     // Separator
 
-    public static int getMaxPunishmentViolation(HackType hackType, ResearchEngine.DataType dataType) {
-        if (!Config.isLegacy()) {
-            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.ABSOLUTE);
-        }
-        Check check = hackType.getCheck();
-
-        for (int i = 1; i <= Check.maxViolationsPerCycle; i++) {
-            for (String s : check.getLegacyCommands(i)) {
-                if (s != null) {
-                    return i;
-                }
-            }
-        }
-        return 0;
-    }
-
-    public static int getMinPunishmentViolation(HackType hackType, ResearchEngine.DataType dataType) {
-        if (!Config.isLegacy()) {
-            return Check.getCategoryPunishment(hackType, dataType, Enums.PunishmentCategory.UNLIKE);
-        }
-        Check check = hackType.getCheck();
-
-        for (int i = 1; i <= Check.maxViolationsPerCycle; i++) {
-            for (String s : check.getLegacyCommands(i)) {
-                if (s != null) {
-                    return i;
-                }
-            }
-        }
-        return 0;
-    }
-
-    // Separator
-
     public static Check getCheckByName(String s) {
         for (HackType hackType : Enums.HackType.values()) {
             Check check = hackType.getCheck();
@@ -285,7 +251,7 @@ public class Config {
                 );
                 List<SpartanPlayer> players = Permissions.getStaff();
 
-                if (players.size() > 0) {
+                if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
                         UUID uuid = p.getUniqueId();
 
@@ -335,8 +301,6 @@ public class Config {
         }
         return cancelAfterViolation;
     }
-
-    // Separator
 
     // todo move
     public static Collection<HackType> getPunishableHackModules(SpartanPlayer p, HackType hackType, int violation) {

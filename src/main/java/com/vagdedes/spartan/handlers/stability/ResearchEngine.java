@@ -586,7 +586,7 @@ public class ResearchEngine {
 
                     for (String information : incomingInformation) {
                         if (isLogValid(information)) {
-                            AntiCheatLogs.logInfo(null, information, null, null, null, false, false, -1, -1);
+                            AntiCheatLogs.logInfo(null, information, null, null, null, false, -1);
                             cache.put(key, information);
                             byteSize += key.length() + information.length();
 

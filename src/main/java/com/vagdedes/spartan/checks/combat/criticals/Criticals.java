@@ -83,7 +83,7 @@ public class Criticals extends CheckExecutor {
                                 damageDecimals == 0.0 || damageDecimals == 0.5)) { // When method is not available, check the validity of the damage
                             double originalDamage = damage - sharpnessDamage - smiteDamage;
                             CriticalsUtils.cache(player.getName(), itemType, originalDamage);
-                            AntiCheatLogs.silentLogInfo(player.getName() + Moderation.criticalHitMessage + BlockUtils.materialToString(itemType) + " and " + originalDamage + " damage");
+                            AntiCheatLogs.logInfo(player.getName() + Moderation.criticalHitMessage + BlockUtils.materialToString(itemType) + " and " + originalDamage + " damage", false);
                         }
                     }
 

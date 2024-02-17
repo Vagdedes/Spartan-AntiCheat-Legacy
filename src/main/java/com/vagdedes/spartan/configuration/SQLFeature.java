@@ -316,7 +316,6 @@ public class SQLFeature extends ConfigurationBuilder {
 
                         "functionality VARCHAR(32), " +
                         "violation_level INT(3), " +
-                        "cancel_violation INT(3), " +
 
                         "primary key (id));"
         );
@@ -324,10 +323,12 @@ public class SQLFeature extends ConfigurationBuilder {
 
     // Separator
 
-    public void logInfo(SpartanPlayer p, String information,
-                        Material material, Enums.HackType hackType,
-                        boolean falsePositive, boolean miningNotification,
-                        int violations, int cancelViolation) {
+    public void logInfo(SpartanPlayer p,
+                        String information,
+                        Material material,
+                        Enums.HackType hackType,
+                        boolean miningNotification,
+                        int violations) {
         if (enabled) {
             String table = getTable();
             boolean hasPlayer = p != null;
@@ -335,28 +336,29 @@ public class SQLFeature extends ConfigurationBuilder {
             UUID uuid = hasPlayer ? p.getUniqueId() : null;
             SpartanLocation location = hasPlayer ? p.getLocation() : null;
 
-            list.add("INSERT INTO " + table
-                    + " (creation_date"
-                    + ", plugin_version, server_version, server_tps, online_players"
-                    + ", type, information"
-                    + ", player_uuid, player_latency, player_x, player_y, player_z"
-                    + ", functionality, violation_level, cancel_violation) "
-                    + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
-                    + ", " + syntaxForColumn(API.getVersion())
-                    + ", " + syntaxForColumn(MultiVersion.versionString())
-                    + ", " + syntaxForColumn(TPS.get(p, false))
-                    + ", " + syntaxForColumn(SpartanBukkit.getPlayerCount())
-                    + ", " + syntaxForColumn(hasCheck ? (falsePositive ? "false-positive" : "violation") : miningNotification ? "mining" : "other")
-                    + ", " + syntaxForColumn(information)
-                    + ", " + (hasPlayer ? syntaxForColumn(uuid) : "NULL")
-                    + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
-                    + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
-                    + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
-                    + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
-                    + ", " + (hasCheck ? syntaxForColumn(hackType) : miningNotification ? syntaxForColumn(material) : "NULL")
-                    + ", " + (violations > -1 ? syntaxForColumn(violations) : "NULL")
-                    + ", " + (cancelViolation > -1 && hasCheck && !hackType.getCheck().isSilent(hasPlayer ? location.getWorld().getName() : null, p) ? syntaxForColumn(cancelViolation) : "NULL")
-                    + ");");
+            list.add(
+                    "INSERT INTO " + table
+                            + " (creation_date"
+                            + ", plugin_version, server_version, server_tps, online_players"
+                            + ", type, information"
+                            + ", player_uuid, player_latency, player_x, player_y, player_z"
+                            + ", functionality, violation_level) "
+                            + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
+                            + ", " + syntaxForColumn(API.getVersion())
+                            + ", " + syntaxForColumn(MultiVersion.versionString())
+                            + ", " + syntaxForColumn(TPS.get(p, false))
+                            + ", " + syntaxForColumn(SpartanBukkit.getPlayerCount())
+                            + ", " + syntaxForColumn(miningNotification ? "mining" : hasCheck ? "violation" : "other")
+                            + ", " + syntaxForColumn(information)
+                            + ", " + (hasPlayer ? syntaxForColumn(uuid) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
+                            + ", " + (hasCheck ? syntaxForColumn(hackType) : miningNotification ? syntaxForColumn(material) : "NULL")
+                            + ", " + (violations > -1 ? syntaxForColumn(violations) : "NULL")
+                            + ");"
+            );
 
             if (list.size() >= 10) {
                 Runnable runnable = () -> {
