@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SpartanLocation {
+public class SpartanLocation { // todo synchronize
 
     private static class BlockCache {
 

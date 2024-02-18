@@ -84,7 +84,7 @@ public class SpartanPlayer {
 
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
-    private static final Map<World, List<Entity>> worldEntities = new ConcurrentHashMap<>(Math.max(Bukkit.getWorlds().size(), 1));
+    private static final Map<World, List<Entity>> worldEntities = new LinkedHashMap<>(Math.max(Bukkit.getWorlds().size(), 1));
     private static final Object
             nearbyEntitiesLock = new Object(),
             potionEffectLock = new Object();
@@ -147,10 +147,9 @@ public class SpartanPlayer {
 
     private SpartanLocation location, fromLocation, eventTo, eventFrom;
     private long locationTime;
-    private long chasing;
 
     private Entity vehicle;
-    private List<Entity> nearbyEntities;
+    private final List<Entity> nearbyEntities;
     private double nearbyEntitiesDistance;
 
     private final boolean[] runChecks;
@@ -195,7 +194,9 @@ public class SpartanPlayer {
     // Separator
 
     public static void clear() {
-        worldEntities.clear();
+        synchronized (worldEntities) {
+            worldEntities.clear();
+        }
         SpartanLocation.memory.clear();
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
@@ -223,10 +224,12 @@ public class SpartanPlayer {
     }
 
     public static void cacheEntity(Entity entity) {
-        List<Entity> collection = worldEntities.get(entity.getWorld());
+        synchronized (worldEntities) {
+            List<Entity> collection = worldEntities.get(entity.getWorld());
 
-        if (collection != null) {
-            collection.add(entity);
+            if (collection != null) {
+                collection.add(entity);
+            }
         }
     }
 
@@ -241,14 +244,16 @@ public class SpartanPlayer {
                 syncTicks = tickFrequency;
 
                 if (!MultiVersion.folia) {
-                    worldEntities.clear();
+                    synchronized (worldEntities) {
+                        worldEntities.clear();
 
-                    if (hasPlayers) {
-                        for (World world : Bukkit.getWorlds()) {
-                            worldEntities.put(
-                                    world,
-                                    new CopyOnWriteArrayList<>(world.getEntities())
-                            );
+                        if (hasPlayers) {
+                            for (World world : Bukkit.getWorlds()) {
+                                worldEntities.put(
+                                        world,
+                                        new ArrayList<>(world.getEntities())
+                                );
+                            }
                         }
                     }
                 }
@@ -257,14 +262,16 @@ public class SpartanPlayer {
                 syncTicks--;
 
                 if (syncTicks % 20 == 0) {
-                    worldEntities.clear();
+                    synchronized (worldEntities) {
+                        worldEntities.clear();
 
-                    if (hasPlayers) {
-                        for (World world : Bukkit.getWorlds()) {
-                            worldEntities.put(
-                                    world,
-                                    MultiVersion.folia ? world.getEntities() : new CopyOnWriteArrayList<>(world.getEntities())
-                            );
+                        if (hasPlayers) {
+                            for (World world : Bukkit.getWorlds()) {
+                                worldEntities.put(
+                                        world,
+                                        new ArrayList<>(world.getEntities())
+                                );
+                            }
                         }
                     }
                 }
@@ -395,7 +402,7 @@ public class SpartanPlayer {
         this.runCheckAccountLag = new LinkedHashMap<>(hackTypes.length);
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
-        this.handlers = new Handlers();
+        this.handlers = new Handlers(this);
 
         this.ipAddress = PlayerLimitPerIP.get(p);
         this.name = p.getName();
@@ -446,7 +453,6 @@ public class SpartanPlayer {
         this.jumpWalking = 0;
         this.swimmingTime = 0L;
         this.flyingTime = 0L;
-        this.chasing = 0L;
         this.lastLiquidTime = 0L;
         this.lastHeadMovement = System.currentTimeMillis();
         this.playerProfile = ResearchEngine.getPlayerProfile(this);
@@ -484,7 +490,7 @@ public class SpartanPlayer {
             boolean async = hackType.getCheck().canBeAsynchronous();
             this.buffer[id] = new Buffer(this, hackType);
             this.timer[id] = new Timer();
-            this.decimals[id] = new Decimals(async);
+            this.decimals[id] = new Decimals();
             this.tracker[id] = new Tracker(async);
             this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
@@ -572,7 +578,7 @@ public class SpartanPlayer {
         this.lastViolation = this.violations[0];
         this.buffer[hackTypes.length] = new Buffer(this, null);
         this.timer[hackTypes.length] = new Timer();
-        this.decimals[hackTypes.length] = new Decimals(true);
+        this.decimals[hackTypes.length] = new Decimals();
         this.tracker[hackTypes.length] = new Tracker(true);
         this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
@@ -1839,15 +1845,6 @@ public class SpartanPlayer {
 
     public double getExtraMovementFromJumpEffect() {
         return PlayerData.getPotionLevel(this, PotionEffectType.JUMP) * 0.1;
-    }
-
-    public double getJumpEffectLimit(double v) {
-        double additional = getExtraMovementFromJumpEffect();
-
-        if (additional > 0.0) {
-            v += (additional + MoveUtils.highPrecision);
-        }
-        return v;
     }
 
     // Allowance

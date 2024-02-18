@@ -35,7 +35,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
-public class LiveViolation { // todo simplify
+public class LiveViolation {
 
     private static final Map<LiveViolation, String> maxLevel
             = Cache.store(Collections.synchronizedMap(new LinkedHashMap<>()));
