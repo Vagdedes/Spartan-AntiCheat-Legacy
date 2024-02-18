@@ -77,17 +77,13 @@ import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpartanPlayer {
 
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
-    private static final Map<World, List<Entity>> worldEntities = new LinkedHashMap<>(Math.max(Bukkit.getWorlds().size(), 1));
-    private static final Object
-            nearbyEntitiesLock = new Object(),
-            potionEffectLock = new Object();
+    private static final Map<World, List<Entity>> worldEntities
+            = Collections.synchronizedMap(new LinkedHashMap<>(Math.max(Bukkit.getWorlds().size(), 1)));
 
     final String name;
     private final UUID uuid;
@@ -395,7 +391,7 @@ public class SpartanPlayer {
         this.eventTo = this.location;
         this.eventFrom = this.location;
         this.locationTime = 0L;
-        this.nearbyEntities = new CopyOnWriteArrayList<>();
+        this.nearbyEntities = Collections.synchronizedList(new ArrayList<>());
         this.nearbyEntitiesDistance = 0;
         this.runChecks = new boolean[]{false, false};
         this.runCheck = new LinkedHashMap<>(hackTypes.length);
@@ -426,7 +422,7 @@ public class SpartanPlayer {
         this.maximumNoDamageTicks = p.getMaximumNoDamageTicks();
         this.fallDistance = p.getFallDistance();
         this.foodLevel = p.getFoodLevel();
-        this.potionEffects = new ArrayList<>(p.getActivePotionEffects());
+        this.potionEffects = Collections.synchronizedList(new ArrayList<>(p.getActivePotionEffects()));
         this.playerWeather = p.getPlayerWeather();
         this.ping = Latency.ping(p);
         this.frozen = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && p.isFrozen();
@@ -1507,20 +1503,20 @@ public class SpartanPlayer {
     }
 
     public Collection<PotionEffect> getActivePotionEffects() {
-        synchronized (potionEffectLock) {
+        synchronized (potionEffects) {
             return getLocalActivePotionEffects();
         }
     }
 
-    public void setActivePotionEffects(Collection<PotionEffect> potionEffects) {
-        synchronized (potionEffectLock) {
+    public void setActivePotionEffects(Collection<PotionEffect> effects) {
+        synchronized (potionEffects) {
             this.potionEffects.clear();
-            this.potionEffects.addAll(potionEffects);
+            this.potionEffects.addAll(effects);
         }
     }
 
     public PotionEffect getPotionEffect(PotionEffectType type) {
-        synchronized (potionEffectLock) {
+        synchronized (potionEffects) {
             Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
 
             if (!potionEffects.isEmpty()) {
@@ -1535,7 +1531,7 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType[] potionEffectTypes) {
-        synchronized (potionEffectLock) {
+        synchronized (potionEffects) {
             Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
 
             if (!potionEffects.isEmpty()) {
@@ -1552,7 +1548,7 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType potionEffectType) {
-        synchronized (potionEffectLock) {
+        synchronized (potionEffects) {
             Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
 
             if (!potionEffects.isEmpty()) {
@@ -1600,7 +1596,7 @@ public class SpartanPlayer {
     public List<Entity> getNearbyEntities(double x, double y, double z) {
         double max = Math.max(Math.max(x, y), z);
 
-        synchronized (nearbyEntitiesLock) {
+        synchronized (nearbyEntities) {
             if (max > nearbyEntitiesDistance) {
                 Player p = this.getPlayer();
 
@@ -1614,8 +1610,11 @@ public class SpartanPlayer {
                         });
                     } else {
                         SpartanLocation loc = this.getLocation();
-                        List<Entity> entities = worldEntities.get(loc.getWorld());
+                        List<Entity> entities;
 
+                        synchronized (worldEntities) {
+                            entities = worldEntities.get(loc.getWorld());
+                        }
                         if (entities != null && !entities.isEmpty()) {
                             entities = new ArrayList<>(entities);
                             Entity vehicle = this.getVehicle();
