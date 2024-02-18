@@ -58,7 +58,7 @@ public class Buffer {
                     }
                 }
 
-                if (player.getProfile().getCombat().isActivelyFighting()
+                if (player.getProfile().getCombat().isActivelyFighting(true, true)
                         || CombatUtils.getEnemiesNumber(player, CombatUtils.maxHitDistance, true) > 0) {
                     bufferChild.ticks -= 1L;
                 } else {
@@ -83,10 +83,12 @@ public class Buffer {
     }
 
     public int get(String name, int def) {
+        BufferChild object;
+
         synchronized (storage) {
-            BufferChild object = storage.get(name);
-            return object != null ? object.count : def;
+            object = storage.get(name);
         }
+        return object != null ? object.count : def;
     }
 
     public int get(String name) {
@@ -94,14 +96,15 @@ public class Buffer {
     }
 
     public void set(String name, int amount) {
-        synchronized (storage) {
-            BufferChild obj = storage.get(name);
+        BufferChild obj;
 
-            if (obj != null) {
-                obj.count = amount;
-            } else {
-                storage.put(name, new BufferChild(amount));
-            }
+        synchronized (storage) {
+            obj = storage.get(name);
+        }
+        if (obj != null) {
+            obj.count = amount;
+        } else {
+            storage.put(name, new BufferChild(amount));
         }
     }
 
@@ -132,7 +135,11 @@ public class Buffer {
     }
 
     public int start(String name, int ticks) {
-        BufferChild obj = storage.computeIfAbsent(name, k -> new BufferChild(0));
+        BufferChild obj;
+
+        synchronized (storage) {
+            obj = storage.computeIfAbsent(name, k -> new BufferChild(0));
+        }
         boolean combat = hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT;
 
         if (this.getRemainingTicks(obj) == 0) {
@@ -158,19 +165,24 @@ public class Buffer {
     }
 
     public int getRemainingTicks(String name) {
-        BufferChild object = storage.get(name);
+        BufferChild object;
+
+        synchronized (storage) {
+            object = storage.get(name);
+        }
         return object == null ? 0 : this.getRemainingTicks(object);
     }
 
     public void setRemainingTicks(String name, int ticks) {
-        synchronized (storage) {
-            BufferChild object = storage.get(name);
+        BufferChild object;
 
-            if (object != null) {
-                object.ticks = hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
-                        ? ticks
-                        : TPS.getTick(player) + ticks;
-            }
+        synchronized (storage) {
+            object = storage.get(name);
+        }
+        if (object != null) {
+            object.ticks = hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
+                    ? ticks
+                    : TPS.getTick(player) + ticks;
         }
     }
 

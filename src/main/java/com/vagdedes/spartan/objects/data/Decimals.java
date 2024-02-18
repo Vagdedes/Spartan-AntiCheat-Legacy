@@ -201,17 +201,4 @@ public class Decimals { // todo synchronize
         List<Double> list = storage.get(name);
         return list == null ? new ArrayList<>(0) : list;
     }
-
-    public void clear(String s) {
-        if (!storage.isEmpty()) {
-            List<String> internal = new ArrayList<>();
-
-            for (String name : storage.keySet()) {
-                if (name.contains(s)) {
-                    internal.add(name);
-                }
-            }
-            remove(internal.toArray(new String[0]));
-        }
-    }
 }

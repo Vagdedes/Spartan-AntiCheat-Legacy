@@ -84,7 +84,6 @@ public class Cache {
             DetectionLocation.remove(p);
         }
         p.resetHandlers();
-        MovementProcessing.resetVehicleTicks(p);
         CombatProcessing.remove(p);
 
         // Objects

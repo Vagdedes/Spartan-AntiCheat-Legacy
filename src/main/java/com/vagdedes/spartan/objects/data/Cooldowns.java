@@ -4,10 +4,7 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Cooldowns { // todo synchronize
@@ -63,19 +60,6 @@ public class Cooldowns { // todo synchronize
     public void remove(String[] names) {
         for (String name : names) {
             remove(name);
-        }
-    }
-
-    public void clear(String s) {
-        if (!storage.isEmpty()) {
-            List<String> internal = new ArrayList<>();
-
-            for (String name : storage.keySet()) {
-                if (name.contains(s)) {
-                    internal.add(name);
-                }
-            }
-            remove(internal.toArray(new String[0]));
         }
     }
 }

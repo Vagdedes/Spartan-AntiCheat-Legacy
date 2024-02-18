@@ -26,11 +26,6 @@ public class MovementProcessing { // todo simplify
             // Damage
             Damage.runMove(p);
 
-            // Vehicle Ticks Reset
-            if (hor <= sprintingMaxSpeed && vehicle == null && p.isAnyOnGround()) {
-                resetVehicleTicks(p);
-            }
-
             // NMS Distance Caching
             p.setNmsDistance(dis, hor, ver, box);
 
@@ -124,9 +119,5 @@ public class MovementProcessing { // todo simplify
                 decimals.remove(key);
             }
         }
-    }
-
-    public static void resetVehicleTicks(SpartanPlayer p) {
-        p.getCooldowns().clear("player-data=vehicle");
     }
 }

@@ -1,23 +1,21 @@
 package com.vagdedes.spartan.objects.data;
 
-import com.vagdedes.spartan.functionality.important.MultiVersion;
-
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class Timer { // todo synchronize
+public class Timer {
 
     private final Map<String, Long> storage;
 
-    public Timer(boolean async) {
-        storage = (async && !MultiVersion.folia ? new ConcurrentHashMap<>() : new LinkedHashMap<>());
+    public Timer() {
+        storage = Collections.synchronizedMap(new LinkedHashMap<>());
     }
 
     public void clear() {
-        storage.clear();
+        synchronized (storage) {
+            storage.clear();
+        }
     }
 
     public boolean has(long l) {
@@ -25,11 +23,17 @@ public class Timer { // todo synchronize
     }
 
     public boolean has(String name) {
-        return storage.get(name) != null;
+        synchronized (storage) {
+            return storage.get(name) != null;
+        }
     }
 
     public long get(String name, long def) {
-        Long ms = storage.get(name);
+        Long ms;
+
+        synchronized (storage) {
+            ms = storage.get(name);
+        }
         return ms != null ? System.currentTimeMillis() - ms : def;
     }
 
@@ -38,33 +42,22 @@ public class Timer { // todo synchronize
     }
 
     public void set(String name) {
-        storage.put(name, System.currentTimeMillis());
-    }
-
-    public void set(String name, long ms, boolean future) {
-        storage.put(name, System.currentTimeMillis() + (future ? ms : -ms));
-    }
-
-    public void remove(String name) {
-        storage.remove(name);
-    }
-
-    public void remove(String[] names) {
-        for (String name : names) {
-            remove(name);
+        synchronized (storage) {
+            storage.put(name, System.currentTimeMillis());
         }
     }
 
-    public void clear(String s) {
-        if (!storage.isEmpty()) {
-            List<String> internal = new ArrayList<>();
+    public void remove(String name) {
+        synchronized (storage) {
+            storage.remove(name);
+        }
+    }
 
-            for (String name : storage.keySet()) {
-                if (name.contains(s)) {
-                    internal.add(name);
-                }
+    public void remove(String[] names) {
+        synchronized (storage) {
+            for (String name : names) {
+                storage.remove(name);
             }
-            remove(internal.toArray(new String[0]));
         }
     }
 }

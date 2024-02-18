@@ -483,7 +483,7 @@ public class SpartanPlayer {
             int id = hackType.ordinal();
             boolean async = hackType.getCheck().canBeAsynchronous();
             this.buffer[id] = new Buffer(this, hackType);
-            this.timer[id] = new Timer(async);
+            this.timer[id] = new Timer();
             this.decimals[id] = new Decimals(async);
             this.tracker[id] = new Tracker(async);
             this.cooldowns[id] = new Cooldowns(async);
@@ -571,7 +571,7 @@ public class SpartanPlayer {
         }
         this.lastViolation = this.violations[0];
         this.buffer[hackTypes.length] = new Buffer(this, null);
-        this.timer[hackTypes.length] = new Timer(true);
+        this.timer[hackTypes.length] = new Timer();
         this.decimals[hackTypes.length] = new Decimals(true);
         this.tracker[hackTypes.length] = new Tracker(true);
         this.cooldowns[hackTypes.length] = new Cooldowns(true);

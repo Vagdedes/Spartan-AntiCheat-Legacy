@@ -51,8 +51,8 @@ public class PlayerCombat {
         return false;
     }
 
-    public boolean isActivelyFighting() {
-        return isActivelyFighting(2_500L, 2_500L);
+    public boolean isActivelyFighting(boolean hit, boolean damage) {
+        return isActivelyFighting(hit ? 2_500L : -1L, damage ? 2_500L : -1L);
     }
 
     public PlayerFight getFight(SpartanPlayer opponent) {
