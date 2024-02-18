@@ -47,7 +47,7 @@ public class PlayerCombat {
         }
     }
 
-    public boolean isActivelyFighting(long hit, long damage) { //todo
+    public boolean isActivelyFighting(long hit, long damage) { // todo
         return false;
     }
 

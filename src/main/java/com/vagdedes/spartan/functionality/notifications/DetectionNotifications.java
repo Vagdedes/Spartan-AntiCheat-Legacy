@@ -68,7 +68,7 @@ public class DetectionNotifications {
         return divisor != null ? (absolute ? Math.abs(divisor) : divisor) : null;
     }
 
-    public static boolean canAcceptMessages(SpartanPlayer p, Integer divisor, boolean all) {
+    public static boolean canAcceptMessages(SpartanPlayer p, Integer divisor, boolean all) { // todo
         return divisor != null
                 && (divisor < 0
 

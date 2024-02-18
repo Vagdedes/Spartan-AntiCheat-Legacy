@@ -24,7 +24,7 @@ public class SpartanBukkit {
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
             canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isSongoda() || IDs.isPolymart(),
             hasResourcePack;
-    public static Cooldowns cooldowns = new Cooldowns(false);
+    public static Cooldowns cooldowns = new Cooldowns(null);
 
     static {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)) {

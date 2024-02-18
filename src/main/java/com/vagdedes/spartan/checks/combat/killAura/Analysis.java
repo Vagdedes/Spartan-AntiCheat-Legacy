@@ -22,7 +22,6 @@ public class Analysis extends DetectionExecutor {
                     percentage = 5.0;
                 }
                 forceAsync(() -> {
-                    //todo
                     // direction change
                     // directions difference
                     // clicks per second

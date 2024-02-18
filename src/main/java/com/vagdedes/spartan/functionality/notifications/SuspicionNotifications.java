@@ -48,7 +48,7 @@ public class SuspicionNotifications {
             send = true;
 
             if (!isNull) {
-                if (!TestServer.isIdentified()
+                if (!TestServer.isIdentified() // todo
                         && ResearchEngine.enoughData()
                         && !Config.settings.getBoolean("Notifications.individual_only_notifications")) {
                     Integer divisor = DetectionNotifications.getDivisor(p, false);

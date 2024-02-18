@@ -62,11 +62,11 @@ public class PatternStorage {
     // Separator
 
     public void store() {
-        //todo
+        // todo
     }
 
     public void load() {
-        //todo
+        // todo
     }
 
     // Separator

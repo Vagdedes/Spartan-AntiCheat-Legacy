@@ -895,7 +895,7 @@ public class Check {
         return supportsSilent;
     }
 
-    public boolean isSilent(String world, SpartanPlayer player) { //todo fix silent-cause not being specific
+    public boolean isSilent(String world, SpartanPlayer player) { // todo fix silent-cause not being specific
         return !supportsSilent()
                 || silent
                 || world != null && isSilentOnWorld(world)

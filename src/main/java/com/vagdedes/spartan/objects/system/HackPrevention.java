@@ -22,7 +22,7 @@ public class HackPrevention {
     final double damage;
     final long time, expiration;
 
-    private static final Cooldowns cooldowns = new Cooldowns(false);
+    private static final Cooldowns cooldowns = new Cooldowns(null);
 
     // Separator
 

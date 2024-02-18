@@ -486,7 +486,7 @@ public class SpartanPlayer {
             this.timer[id] = new Timer();
             this.decimals[id] = new Decimals(async);
             this.tracker[id] = new Tracker(async);
-            this.cooldowns[id] = new Cooldowns(async);
+            this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
 
             switch (hackType) {
@@ -574,7 +574,7 @@ public class SpartanPlayer {
         this.timer[hackTypes.length] = new Timer();
         this.decimals[hackTypes.length] = new Decimals(true);
         this.tracker[hackTypes.length] = new Tracker(true);
-        this.cooldowns[hackTypes.length] = new Cooldowns(true);
+        this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
     // Separator
