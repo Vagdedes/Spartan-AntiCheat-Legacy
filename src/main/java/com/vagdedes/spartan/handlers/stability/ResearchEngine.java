@@ -20,6 +20,7 @@ import com.vagdedes.spartan.objects.profiling.*;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.statistics.ViolationStatistics;
 import com.vagdedes.spartan.objects.system.Check;
+import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
@@ -244,8 +245,9 @@ public class ResearchEngine {
     // Separator
 
     public static String getDetectionInformation(String s) {
-        if (s.contains(Moderation.kickMessage)
-                || s.contains(Moderation.warningMessage)) {
+        if (s.contains(PunishmentHistory.kickMessage)
+                || s.contains(PunishmentHistory.warningMessage)
+                || s.contains(PunishmentHistory.punishmentMessage)) {
             return null;
         }
         String[] split = s.split("\\), \\(");
@@ -732,7 +734,7 @@ public class ResearchEngine {
             int size = logs.size();
 
             if (size > 0) {
-                String falsePositiveDisclaimer = StringUtils.getClearColorString(Moderation.falsePositiveDisclaimer);
+                String falsePositiveDisclaimer = StringUtils.getClearColorString(LiveViolation.falsePositiveDisclaimer);
 
                 try {
                     String construct = Config.getConstruct();
@@ -756,7 +758,7 @@ public class ResearchEngine {
                             int greatestSplitPosition = 10; // Attention
                             String[] split = data.split(" ", greatestSplitPosition + 1);
 
-                            if (data.contains(Moderation.criticalHitMessage)) {
+                            if (data.contains(CriticalsUtils.criticalHitMessage)) {
                                 if (split.length >= greatestSplitPosition) {
                                     Material material = Material.getMaterial(split[6].replace("-", "_").toUpperCase());
 
@@ -768,11 +770,11 @@ public class ResearchEngine {
                                         }
                                     }
                                 }
-                            } else if (data.contains(Moderation.warningMessage)) {
+                            } else if (data.contains(PunishmentHistory.warningMessage)) {
                                 getPlayerProfile(split[0]).getPunishmentHistory().increaseWarnings(null, null);
-                            } else if (data.contains(Moderation.kickMessage)) {
+                            } else if (data.contains(PunishmentHistory.kickMessage)) {
                                 getPlayerProfile(split[0]).getPunishmentHistory().increaseKicks(null, null);
-                            } else if (data.contains(Moderation.punishmentMessage)) {
+                            } else if (data.contains(PunishmentHistory.punishmentMessage)) {
                                 getPlayerProfile(split[0]).getPunishmentHistory().increasePunishments(null, null);
                             } else if (data.contains(" failed ")) {
                                 if (split.length >= 3) {

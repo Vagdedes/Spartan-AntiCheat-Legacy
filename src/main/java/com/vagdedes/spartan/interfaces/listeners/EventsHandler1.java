@@ -83,7 +83,7 @@ public class EventsHandler1 implements Listener {
         ChatProtection.remove(p);
 
         // System
-        Cache.clear(p, n, true, true, false, false, null);
+        Cache.clear(p, n, true, true, true, false, null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

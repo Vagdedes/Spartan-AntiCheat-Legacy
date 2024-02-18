@@ -88,9 +88,6 @@ public class Cache {
         CombatProcessing.remove(p);
 
         // Objects
-        if (distance) {
-            p.getProfile().getCombat().track();
-        }
         if (deep) {
             clearCheckCache(p);
         }

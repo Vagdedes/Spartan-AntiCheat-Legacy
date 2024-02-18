@@ -2,7 +2,6 @@ package com.vagdedes.spartan.handlers.tracking;
 
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Decimals;
@@ -106,7 +105,7 @@ public class MovementProcessing { // todo simplify
             // Extra Packets
             String key = "player-data=extra-packets";
 
-            if (!Moderation.wasDetected(p)) {
+            if (!p.isDetected(true)) {
                 int maxTicks = 20;
                 double difference = p.getCustomDistance() - dis;
                 decimals.add(key, difference, maxTicks);

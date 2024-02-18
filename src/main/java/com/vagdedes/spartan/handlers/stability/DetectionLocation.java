@@ -55,7 +55,7 @@ public class DetectionLocation {
     }
 
     public static void update(SpartanPlayer p, SpartanLocation location, boolean force) {
-        if (force || !Moderation.wasDetected(p)) {
+        if (force || !p.isDetected(true)) {
             int minHeight = BlockUtils.getMinHeight(p.getWorld());
 
             if (location.getBlockY() < minHeight) {

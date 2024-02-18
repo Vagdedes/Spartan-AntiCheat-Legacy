@@ -135,35 +135,36 @@ public class PlayerEvidence {
 
     // Separator
 
-    public boolean calculateLive(SpartanPlayer player, Enums.HackType hackType) {
+    public Collection<Enums.HackType> calculate(SpartanPlayer player, Enums.HackType hackType) {
         synchronized (this.live) {
             if (this.live.containsKey(hackType)
                     || this.historical.containsKey(hackType)) {
-                return true;
-            }
-            Check check = hackType.getCheck();
+                return getRawKnowledgeList();
+            } else {
+                Check check = hackType.getCheck();
 
-            if (check.supportsLiveEvidence()) {
-                int violationCount = player.getViolations(hackType).getLevel()
-                        - check.getCancelViolation()
-                        - AlgebraUtils.integerCeil(Latency.getDelay(player));
+                if (check.supportsLiveEvidence()) {
+                    int violationCount = player.getViolations(hackType).getLevel()
+                            - check.getCancelViolation()
+                            - AlgebraUtils.integerCeil(Latency.getDelay(player));
 
-                if (violationCount > 0) {
-                    double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, profile.getDataType()))),
-                            thresholdSurpassing = violationRatio / Check.analysisMultiplier;
+                    if (violationCount > 0) {
+                        double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, profile.getDataType()))),
+                                thresholdSurpassing = violationRatio / Check.analysisMultiplier;
 
-                    if (thresholdSurpassing >= 1.0) {
-                        this.live.put(hackType,
-                                "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
-                        );
-                        this.judgeLocal();
-                        SpartanMenu.playerInfo.refresh(player.getName());
-                        MainMenu.refresh();
-                        return true;
+                        if (thresholdSurpassing >= 1.0) {
+                            this.live.put(hackType,
+                                    "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
+                            );
+                            this.judgeLocal();
+                            SpartanMenu.playerInfo.refresh(player.getName());
+                            MainMenu.refresh();
+                            return getRawKnowledgeList();
+                        }
                     }
                 }
+                return new ArrayList<>(0);
             }
-            return false;
         }
     }
 

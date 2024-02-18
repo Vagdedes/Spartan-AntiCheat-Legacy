@@ -15,6 +15,7 @@ import java.util.*;
 public class CriticalsUtils {
 
     static final Map<String, List<CriticalsItem>> memory = new LinkedHashMap<>(Config.getMaxPlayers());
+    public static final String criticalHitMessage = " landed a critical hit with ";
 
     // Objects
 

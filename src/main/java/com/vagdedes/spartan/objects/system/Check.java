@@ -76,7 +76,6 @@ public class Check {
     private String name;
     private final Enums.CheckType checkType;
     private final Map<Integer, Collection<String>> commandsLegacy;
-    private final Collection<String> commands;
     private final Map<String, Object> options;
     private int cancelViolation;
     private final int defaultCancelViolation;
@@ -348,12 +347,6 @@ public class Check {
         // Separator
 
         boolean legacy = Config.isLegacy();
-        List<String> commands = new ArrayList<>(maxCommands);
-        commands.add("spartan kick {player} {detections}");
-
-        for (int position = (commands.size() + 1); position <= maxCommands; position++) {
-            commands.add("");
-        }
         Object silent,
                 handleCancelledEvents = getOption("cancelled_event", false, false);
 
@@ -406,7 +399,6 @@ public class Check {
             this.canPunishByDefault = canPunishByDefault(hackType);
 
             if (legacy) {
-                this.commands = new ArrayList<>(0);
                 ConfigurationSection section = Register.plugin.getConfig().getConfigurationSection(hackType + ".punishments");
                 this.canPunish = section != null && !section.getKeys(false).isEmpty();
 
@@ -415,8 +407,8 @@ public class Check {
 
                     try {
                         if (file.exists() || file.createNewFile()) {
-                            for (int position = 1; position <= commands.size(); position++) {
-                                ConfigUtils.add(file, hackType + ".punishments." + analysisMultiplierCategory.toString() + "." + position, commands.get(position - 1));
+                            for (int position = 0; position < Check.maxCommands; position++) {
+                                ConfigUtils.add(file, hackType + ".punishments." + analysisMultiplierCategory + "." + (position + 1), Config.settings.getDefaultPunishmentCommands().get(position));
                             }
                         } else {
                             AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
@@ -427,37 +419,15 @@ public class Check {
                     }
                 }
             } else {
-                File file = Config.settings.getFile();
-                Collection<String> commandsAfterException = new ArrayList<>(0);
-
-                try {
-                    if (file.exists() || file.createNewFile()) {
-                        for (int position = 1; position <= commands.size(); position++) {
-                            ConfigUtils.add(file, "Punishments.Commands." + position, commands.get(position - 1));
-                        }
-                        Collection<String> list = Config.settings.getPunishments();
-
-                        if (!list.isEmpty()) {
-                            commandsAfterException = list;
-                        }
-                    } else {
-                        AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
-                    }
-                } catch (Exception ex) {
-                    AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
-                    ex.printStackTrace();
-                }
                 Object punish = getOption("punish", this.canPunishByDefault, false);
                 this.canPunish = punish instanceof Boolean ? (boolean) punish :
                         punish instanceof Long || punish instanceof Integer || punish instanceof Short ? ((long) punish) > 0L :
                                 punish instanceof Double || punish instanceof Float ? ((double) punish) > 0.0 :
                                         Boolean.parseBoolean(punish.toString().toLowerCase());
-                this.commands = commandsAfterException;
             }
         } else {
             this.canPunish = false;
             this.canPunishByDefault = false;
-            this.commands = new ArrayList<>(0);
         }
 
         // Separator
@@ -1139,12 +1109,6 @@ public class Check {
 
     public int getDefaultCancelViolation() {
         return defaultCancelViolation;
-    }
-
-    public Collection<String> getCommands() {
-        synchronized (commands) {
-            return new ArrayList<>(commands);
-        }
     }
 
     public Collection<String> getLegacyCommands(int violation) {

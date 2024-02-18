@@ -302,28 +302,6 @@ public class Config {
         return cancelAfterViolation;
     }
 
-    // todo move
-    public static Collection<HackType> getPunishableHackModules(SpartanPlayer p, HackType hackType, int violation) {
-        if (violation % hackType.getCheck().getDefaultCancelViolation() == 0) {
-            PlayerProfile profile = p.getProfile();
-
-            if (profile.getEvidence().calculateLive(p, hackType)) {
-                Collection<HackType> evidence = profile.getEvidence().getKnowledgeList();
-                Iterator<HackType> iterator = evidence.iterator();
-
-                while (iterator.hasNext()) { // Check for punishment allowance
-                    HackType loopHackType = iterator.next();
-
-                    if (!loopHackType.getCheck().canPunish()) {
-                        iterator.remove();
-                    }
-                }
-                return evidence;
-            }
-        }
-        return new ArrayList<>(0);
-    }
-
     // Separator
 
     public static void enableChecks() {

@@ -37,7 +37,6 @@ import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.Teleport;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
@@ -632,8 +631,27 @@ public class SpartanPlayer {
         return violations[hackType.ordinal()];
     }
 
+    private boolean isDetected(LiveViolation liveViolation, boolean prevention) {
+        return liveViolation.getLastTick() == TPS.getTick(this)
+                && (!prevention
+                || !liveViolation.hackType.getCheck().isSilent(getWorld().getName(), this));
+    }
+
+    public boolean isDetected(boolean prevention) {
+        if (isDetected(lastViolation, prevention)) {
+            return true;
+        } else {
+            for (LiveViolation liveViolation : violations) {
+                if (isDetected(liveViolation, prevention)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public boolean hasViolations() {
-        for (LiveViolation liveViolation : getViolations()) {
+        for (LiveViolation liveViolation : violations) {
             if (liveViolation.hasLevel()) {
                 return true;
             }
@@ -644,7 +662,7 @@ public class SpartanPlayer {
     public int getViolationCount() {
         int sum = 0;
 
-        for (LiveViolation liveViolation : getViolations()) {
+        for (LiveViolation liveViolation : violations) {
             sum += liveViolation.getLevel();
         }
         return sum;
@@ -1579,7 +1597,7 @@ public class SpartanPlayer {
         }
     }
 
-    public List<Entity> getNearbyEntities(double x, double y, double z) { // todo fix for folia
+    public List<Entity> getNearbyEntities(double x, double y, double z) {
         double max = Math.max(Math.max(x, y), z);
 
         synchronized (nearbyEntitiesLock) {

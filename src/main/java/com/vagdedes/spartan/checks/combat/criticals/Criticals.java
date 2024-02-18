@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.data.Decimals;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -83,7 +82,7 @@ public class Criticals extends CheckExecutor {
                                 damageDecimals == 0.0 || damageDecimals == 0.5)) { // When method is not available, check the validity of the damage
                             double originalDamage = damage - sharpnessDamage - smiteDamage;
                             CriticalsUtils.cache(player.getName(), itemType, originalDamage);
-                            AntiCheatLogs.logInfo(player.getName() + Moderation.criticalHitMessage + BlockUtils.materialToString(itemType) + " and " + originalDamage + " damage", false);
+                            AntiCheatLogs.logInfo(player.getName() + CriticalsUtils.criticalHitMessage + BlockUtils.materialToString(itemType) + " and " + originalDamage + " damage", false);
                         }
                     }
 

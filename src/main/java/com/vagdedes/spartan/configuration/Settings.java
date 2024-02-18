@@ -2,6 +2,7 @@ package com.vagdedes.spartan.configuration;
 
 import com.vagdedes.spartan.abstraction.ConfigurationBuilder;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
@@ -11,6 +12,7 @@ import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.server.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
@@ -30,11 +32,20 @@ public class Settings extends ConfigurationBuilder {
             showEcosystemOption = "Important.show_ecosystem",
             tpsProtectionOption = "Protections.use_tps_protection",
             maxSupportedLatencyOption = "Protections.max_supported_player_latency";
-    private static int usingCustomPunishmentCommands = 0;
+    private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
+    private Collection<String> punishments = null;
+
+    static {
+        defaultPunishments.add("spartan kick {player} {detections}");
+
+        for (int position = (defaultPunishments.size() + 1); position <= Check.maxCommands; position++) {
+            defaultPunishments.add("");
+        }
+    }
 
     @Override
     public void clear() {
-        usingCustomPunishmentCommands = 0;
+        punishments = null;
         internalClear();
 
         // Systems based in this configuration
@@ -125,33 +136,54 @@ public class Settings extends ConfigurationBuilder {
         }
     }
 
-    public Collection<String> getPunishments() {
-        String sectionString = "Punishments.Commands";
-        ConfigurationSection section = getPath().getConfigurationSection(sectionString);
+    public List<String> getDefaultPunishmentCommands() {
+        return defaultPunishments;
+    }
 
-        if (section != null) {
-            Collection<String> list = new ArrayList<>();
-            Set<String> keys = section.getKeys(true);
+    public Collection<String> getPunishmentCommands() {
+        if (punishments != null) {
+            return punishments;
+        } else {
+            String sectionString = "Punishments.Commands";
 
-            if (!keys.isEmpty()) {
-                sectionString += ".";
+            try {
+                if (file.exists() || file.createNewFile()) {
+                    for (int position = 0; position < defaultPunishments.size(); position++) {
+                        ConfigUtils.add(file, sectionString + "." + (position + 1), defaultPunishments.get(position));
+                    }
+                } else {
+                    AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
+                }
+            } catch (Exception ex) {
+                AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
+            }
+            ConfigurationSection section = getPath().getConfigurationSection(sectionString);
 
-                for (String key : keys) {
-                    if (AlgebraUtils.validInteger(key)) {
-                        int number = Integer.parseInt(key);
+            if (section != null) {
+                Collection<String> list = new ArrayList<>();
+                Set<String> keys = section.getKeys(true);
 
-                        if (number >= 1 && number <= Check.maxCommands) {
-                            String command = getString(sectionString + number);
+                if (!keys.isEmpty()) {
+                    sectionString += ".";
 
-                            if (command != null && !command.isEmpty()) {
-                                list.add(command);
+                    for (String key : keys) {
+                        if (AlgebraUtils.validInteger(key)) {
+                            int number = Integer.parseInt(key);
+
+                            if (number >= 1 && number <= Check.maxCommands) {
+                                String command = getString(sectionString + number);
+
+                                if (command != null && !command.isEmpty()) {
+                                    list.add(command);
+                                }
                             }
                         }
                     }
                 }
+                return punishments = list;
+            } else {
+                return punishments = new ArrayList<>(0);
             }
-            return list;
         }
-        return new ArrayList<>(0);
     }
 }

@@ -4,7 +4,6 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.Cache;
-import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -48,10 +47,11 @@ public class EventsHandler2 implements Listener {
         }
 
         // System
+        boolean distance = to.distance(e.getFrom()) >= MoveUtils.chunk && !p.isDetected(true);
         Cache.clear(p, n,
                 false,
-                to.distance(e.getFrom()) >= MoveUtils.chunk && !Moderation.isDetectedAndPrevented(p),
-                !Moderation.wasDetected(p),
+                distance,
+                distance,
                 cancelled,
                 to);
 

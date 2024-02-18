@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.handlers.identifiers.simple;
 
 import com.vagdedes.spartan.configuration.Compatibility;
+import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -51,9 +52,10 @@ public class CheckProtection {
         }
     }
 
-    public static boolean hasCooldown(UUID uuid) {
+    public static boolean hasCooldown(SpartanPlayer player) {
         return cooldown >= System.currentTimeMillis()
-                || !SpartanBukkit.cooldowns.canDo(uuid + "=check=protection");
+                || player.getHandlers().has(Handlers.HandlerType.GameMode)
+                || !SpartanBukkit.cooldowns.canDo(player.getUniqueId() + "=check=protection");
     }
 
     public static void evadeCommonFalsePositives(SpartanPlayer player, Compatibility.CompatibilityType compatibilityType, Enums.HackType[] hackTypes, int ticks) {

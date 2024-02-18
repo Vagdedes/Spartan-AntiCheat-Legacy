@@ -165,8 +165,8 @@ public class BackgroundAPI {
                         CancelViolation.get(
                                 hackType,
                                 player.getDataType()
-                        ),
-                        TestServer.isIdentified());
+                        )
+                );
     }
 
     static void reloadConfig() {

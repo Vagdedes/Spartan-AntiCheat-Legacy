@@ -3,11 +3,15 @@ package com.vagdedes.spartan.objects.profiling;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 
 public class PunishmentHistory {
+
+    public static final String
+            punishmentMessage = " was punished with the commands: ",
+            warningMessage = " was warned for ",
+            kickMessage = " was kicked for ";
 
     private final PlayerProfile profile;
     private int kicks, warnings, punishments;
@@ -31,7 +35,7 @@ public class PunishmentHistory {
         kicks++;
 
         if (reason != null) {
-            AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + Moderation.kickMessage + reason, true);
+            AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + kickMessage + reason, true);
             SpartanLocation location = player.getLocation();
             CrossServerInformation.queueNotificationWithWebhook(
                     player.getUniqueId(),
@@ -58,7 +62,7 @@ public class PunishmentHistory {
         warnings++;
 
         if (reason != null) {
-            AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + Moderation.warningMessage + reason, true);
+            AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + warningMessage + reason, true);
             SpartanLocation location = player.getLocation();
             CrossServerInformation.queueNotificationWithWebhook(
                     player.getUniqueId(),
@@ -77,7 +81,7 @@ public class PunishmentHistory {
         punishments++;
 
         if (commands != null) {
-            AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + Moderation.punishmentMessage + commands, true);
+            AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + punishmentMessage + commands, true);
             SpartanLocation location = player.getLocation();
             CrossServerInformation.queueWebhook(
                     player.getUniqueId(),

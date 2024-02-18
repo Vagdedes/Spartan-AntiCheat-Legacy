@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 
 import java.util.*;
@@ -167,7 +166,7 @@ public class TPS {
             }
             long elapsed = System.currentTimeMillis() - tickCalculator[target];
             double tps = minimumCounted / (elapsed / 1000.0);
-            return counter % 100 == 0 ? AlgebraUtils.randomDouble(0.0, good) : Math.min(maximum, Math.max(tps, 0.0));
+            return counter % 100 == 0 ? maximum : Math.min(maximum, Math.max(tps, 0.0));
         }
 
         private void reset() {

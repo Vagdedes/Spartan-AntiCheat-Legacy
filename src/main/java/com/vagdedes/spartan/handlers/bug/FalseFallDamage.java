@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.handlers.bug;
 
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.handlers.stability.Moderation;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -22,7 +21,7 @@ public class FalseFallDamage {
                     && violation.getSilentCause() == null
                     && dmg == EntityDamageEvent.DamageCause.FALL
 
-                    && !Moderation.wasDetected(p)
+                    && !p.isDetected(true)
                     && p.getLastViolation().getLastViolationTime(false) > 500L
                     && p.hasViolations()
 
