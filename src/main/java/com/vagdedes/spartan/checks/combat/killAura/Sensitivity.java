@@ -65,8 +65,8 @@ public class Sensitivity extends DetectionExecutor {
 
                                     if (gcd <= minimumGCD) {
                                         if (gcd <= safeGCD ?
-                                                buffer.start(Buffer.BufferType.Combat, key + "=safe", 20) == 5 :
-                                                buffer.start(Buffer.BufferType.Combat, key, 20) == 13) { // 2/3rds
+                                                buffer.start(key + "=safe", 20) == 5 :
+                                                buffer.start(key, 20) == 13) { // 2/3rds
                                             buffer.remove(key);
                                             killAura.violateLive("type: sensitivity(minimum)"
                                                     + ", pitch: " + pitch
@@ -79,7 +79,7 @@ public class Sensitivity extends DetectionExecutor {
                                     } else if (suspectedOrHacker) {
                                         runAbstract(decimals, 2, gcd);
                                     } else { // Some players may false this due to their client, so this helps prevent it
-                                        buffer.decrease(Buffer.BufferType.Combat, key, 1);
+                                        buffer.decrease(key, 1);
                                     }
                                 }
                             }

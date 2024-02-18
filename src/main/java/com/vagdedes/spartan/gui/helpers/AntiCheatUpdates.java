@@ -60,9 +60,6 @@ public class AntiCheatUpdates {
                     if (object.mines > 0) {
                         statisticsArray.add("§c" + object.mines + " ore " + (object.mines == 1 ? "block" : "§r§cblocks") + " have been §cmined");
                     }
-                    if (object.staffOffline > 0) {
-                        statisticsArray.add("§c" + object.staffOffline + " §7staff " + (object.staffOffline == 1 ? "player is" : "players are") + " §coffline");
-                    }
                     if (staffOnlineAmount > 0) {
                         int counter = 10;
 

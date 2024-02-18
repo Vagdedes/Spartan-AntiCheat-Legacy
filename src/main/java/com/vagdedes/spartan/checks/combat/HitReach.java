@@ -92,10 +92,10 @@ public class HitReach extends CheckExecutor {
                             }
 
                             if (!NoHitDelay.hasCooldown(player) && (!isPlayer || !NoHitDelay.hasCooldown(damaged))
-                                    && buffer.start(Buffer.BufferType.Combat, "horizontal-short=" + minimumNotReached, ticks) >= attempts) {
+                                    && buffer.start("horizontal-short=" + minimumNotReached, ticks) >= attempts) {
                                 buffer.remove("horizontal-long");
                                 cancel("type: horizontal(short), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
-                            } else if (buffer.start(Buffer.BufferType.Combat, "horizontal-long", ticks * 2) >= (attempts * 2)) {
+                            } else if (buffer.start("horizontal-long", ticks * 2) >= (attempts * 2)) {
                                 buffer.clear("horizontal-short");
                                 cancel("type: horizontal(long), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
                             }

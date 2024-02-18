@@ -191,10 +191,6 @@ public class PlayerData { // todo incorporate fights methods in combat object
         return receivedEntityDamage(p) && hitAnEntity(p);
     }
 
-    public static boolean isFightParticipant(SpartanPlayer p) {
-        return p.getProfile().getCombat().isFighting();
-    }
-
     public static boolean receivedPlayerDamage(SpartanPlayer p) {
         List<PlayerFight> fights = p.getProfile().getCombat().getFights();
 

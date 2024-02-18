@@ -12,7 +12,6 @@ import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 
@@ -168,7 +167,7 @@ public class KillAura extends CheckExecutor {
                         if (width != 0.0
                                 && height != 0.0) {
                             SpartanLocation location = player.getLocation();
-                            boolean isFightParticipant = PlayerData.isFightParticipant(player);
+                            boolean isFightParticipant = player.getProfile().getCombat().isFighting();
 
                             runDetection(
                                     "check_irregular",

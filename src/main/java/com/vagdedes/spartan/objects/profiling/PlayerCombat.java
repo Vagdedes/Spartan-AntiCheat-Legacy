@@ -47,6 +47,14 @@ public class PlayerCombat {
         }
     }
 
+    public boolean isActivelyFighting(long hit, long damage) { //todo
+        return false;
+    }
+
+    public boolean isActivelyFighting() {
+        return isActivelyFighting(2_500L, 2_500L);
+    }
+
     public PlayerFight getFight(SpartanPlayer opponent) {
         if (!fights.isEmpty()) {
             synchronized (fights) {

@@ -40,8 +40,8 @@ public class Response extends DetectionExecutor {
             if (angleTicks == 0) {
                 int bufferTicks = CombatUtils.getFightTicks(player) * 5;
 
-                if (buffer.start(Buffer.BufferType.Combat, key + "=run", bufferTicks) == 1
-                        && buffer.start(Buffer.BufferType.Combat, Response.key, bufferTicks) == 2) {
+                if (buffer.start(key + "=run", bufferTicks) == 1
+                        && buffer.start(Response.key, bufferTicks) == 2) {
                     buffer.clear(Response.key);
                     cancel("type: response"
                             + ", width: " + width

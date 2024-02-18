@@ -423,6 +423,12 @@ public class LiveViolation { // todo simplify
 
     // Separator
 
+    public boolean isDetected(boolean prevention) {
+        return lastTick == TPS.getTick(player)
+                && (!prevention
+                || !hackType.getCheck().isSilent(player.getWorld().getName(), player));
+    }
+
     public long getLastTick() {
         return lastTick;
     }

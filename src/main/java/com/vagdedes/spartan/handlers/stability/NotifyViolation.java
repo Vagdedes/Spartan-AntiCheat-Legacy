@@ -28,7 +28,7 @@ public class NotifyViolation {
                 if (detectedPlayer != null
                         && defaultDivisor < Check.maximumDefaultCancelViolation) {
                     if (staff.getUniqueId().equals(detectedPlayer.getUniqueId())
-                    || staff.getWorld().equals(detectedPlayer.getWorld())
+                            || staff.getWorld().equals(detectedPlayer.getWorld())
                             && AlgebraUtils.getHorizontalDistance(staff.getLocation(), detectedPlayer.getLocation()) <= MoveUtils.chunk) {
                         return 1;
                     } else {

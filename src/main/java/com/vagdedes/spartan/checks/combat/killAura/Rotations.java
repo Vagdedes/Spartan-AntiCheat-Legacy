@@ -70,7 +70,7 @@ public class Rotations extends DetectionExecutor {
                         } else if (distanceRatio >= 2.0) {
                             Buffer buffer = player.getBuffer(hackType);
 
-                            if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 5) == 2) {
+                            if (buffer.start(key, CombatUtils.getFightTicks(player) * 5) == 2) {
                                 buffer.remove(key);
                                 cancel(
                                         "type: rotations(yaw-buffered)"

@@ -87,7 +87,7 @@ public class Time extends DetectionExecutor {
                                 dynamicMinimumTime = Math.max(time, 50L);
                                 Buffer buffer = player.getBuffer(hackType);
 
-                                if (buffer.start(Buffer.BufferType.Combat, subKey, 10 * ((int) dynamicMinimumTime)) == 8) {
+                                if (buffer.start(subKey, 10 * ((int) dynamicMinimumTime)) == 8) {
                                     buffer.remove(subKey);
                                     cancel("type: time(consistency)"
                                             + ", width: " + width

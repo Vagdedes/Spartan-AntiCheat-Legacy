@@ -201,7 +201,7 @@ public class ManageChecks extends InventoryMenu {
         } else {
             int counter = 0;
 
-            for (String s : check.getCommands()) {
+            for (String s : Config.settings.getPunishmentCommands()) {
                 if (s != null) {
                     counter++;
                     String base = "§7" + counter + "§8:§f ";

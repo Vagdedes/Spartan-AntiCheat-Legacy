@@ -56,7 +56,7 @@ public class Distance extends DetectionExecutor {
                             if (distance >= limit) { // Make sure the player's average distance is appropriate
                                 Buffer buffer = player.getBuffer(hackType);
 
-                                if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 6) == 3) {
+                                if (buffer.start(key, CombatUtils.getFightTicks(player) * 6) == 3) {
                                     buffer.remove(key);
                                     cancel("type: distance"
                                             + ", time-passed: " + timePassed

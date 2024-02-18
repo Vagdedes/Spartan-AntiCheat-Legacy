@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-public class CombatUtils {
+public class CombatUtils { // todo improve
 
     private static final Material
             gold_sword = MaterialUtils.get("gold_sword"),
@@ -291,7 +291,7 @@ public class CombatUtils {
         return false;
     }
 
-    public static int getEnemiesNumber(SpartanPlayer p, double distance, boolean includeRest, int limit) {
+    public static int getEnemiesNumber(SpartanPlayer p, double distance, boolean includeRest) {
         int i = 0;
         boolean hitAnEntity = PlayerData.hitAPlayer(p);
 

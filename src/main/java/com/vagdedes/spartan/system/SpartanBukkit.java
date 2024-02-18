@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Threads;

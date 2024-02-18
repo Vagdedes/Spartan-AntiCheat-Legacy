@@ -102,7 +102,6 @@ public class Settings extends ConfigurationBuilder {
 
         addOption("Detections.ground_teleport_on_detection", true); // test server
         addOption("Detections.fall_damage_on_teleport", false); // test server
-        addOption("Detections.allow_cancelled_hit_checking", false); // test server alternative
         addOption("Detections.update_blocks_upon_violation", false);
 
         addOption("Performance.enable_false_positive_detection", true); // test server

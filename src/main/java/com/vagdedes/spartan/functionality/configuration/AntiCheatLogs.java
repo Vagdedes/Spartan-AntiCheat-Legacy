@@ -99,7 +99,8 @@ public class AntiCheatLogs {
         if (Config.settings.getBoolean("Logs.log_file")) {
             Timestamp now = new Timestamp(System.currentTimeMillis());
 
-            if (savedFile == null || time.getDay() != now.getDay()) {
+            if (savedFile == null
+                    || time.getDay() != now.getDay()) {
                 save();
                 id = 1;
                 time = now;

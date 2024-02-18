@@ -482,7 +482,7 @@ public class SpartanPlayer {
         for (Enums.HackType hackType : hackTypes) {
             int id = hackType.ordinal();
             boolean async = hackType.getCheck().canBeAsynchronous();
-            this.buffer[id] = new Buffer(async);
+            this.buffer[id] = new Buffer(this, hackType);
             this.timer[id] = new Timer(async);
             this.decimals[id] = new Decimals(async);
             this.tracker[id] = new Tracker(async);
@@ -570,7 +570,7 @@ public class SpartanPlayer {
             }
         }
         this.lastViolation = this.violations[0];
-        this.buffer[hackTypes.length] = new Buffer(true);
+        this.buffer[hackTypes.length] = new Buffer(this, null);
         this.timer[hackTypes.length] = new Timer(true);
         this.decimals[hackTypes.length] = new Decimals(true);
         this.tracker[hackTypes.length] = new Tracker(true);
@@ -631,18 +631,12 @@ public class SpartanPlayer {
         return violations[hackType.ordinal()];
     }
 
-    private boolean isDetected(LiveViolation liveViolation, boolean prevention) {
-        return liveViolation.getLastTick() == TPS.getTick(this)
-                && (!prevention
-                || !liveViolation.hackType.getCheck().isSilent(getWorld().getName(), this));
-    }
-
     public boolean isDetected(boolean prevention) {
-        if (isDetected(lastViolation, prevention)) {
+        if (lastViolation.isDetected(prevention)) {
             return true;
         } else {
             for (LiveViolation liveViolation : violations) {
-                if (isDetected(liveViolation, prevention)) {
+                if (liveViolation.isDetected(prevention)) {
                     return true;
                 }
             }

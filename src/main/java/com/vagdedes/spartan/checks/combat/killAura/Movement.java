@@ -38,7 +38,7 @@ public class Movement extends DetectionExecutor {
                     Buffer buffer = player.getBuffer(hackType);
 
                     if (difference < differenceRequirement) {
-                        if (buffer.start(Buffer.BufferType.Combat, key, 10 * CombatUtils.getFightTicks(player)) == 6) {
+                        if (buffer.start(key, 10 * CombatUtils.getFightTicks(player)) == 6) {
                             buffer.remove(key);
                             cancel("type: movement"
                                     + ", width: " + width

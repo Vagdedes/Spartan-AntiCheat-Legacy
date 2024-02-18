@@ -33,7 +33,7 @@ public class Direction extends DetectionExecutor {
         } else if (widthRatio >= 4.0) {
             Buffer buffer = player.getBuffer(hackType);
 
-            if (buffer.start(Buffer.BufferType.Combat, key, CombatUtils.getFightTicks(player) * 5) == 2) {
+            if (buffer.start(key, CombatUtils.getFightTicks(player) * 5) == 2) {
                 buffer.remove(key);
                 cancel("type: direction(beyond-buffered)"
                         + ", entity: " + CombatUtils.entityToString(entity)

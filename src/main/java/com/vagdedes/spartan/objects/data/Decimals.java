@@ -2,7 +2,6 @@ package com.vagdedes.spartan.objects.data;
 
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.utils.java.MemoryUtils;
-import com.vagdedes.spartan.utils.java.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,25 +14,25 @@ public class Decimals { // todo synchronize
             CALCULATE_MAX = -3,
             CALCULATE_MIN = -4,
             CALCULATE_REMAINING = -5;
-    private final Map<String, List<Double>> hm;
+    private final Map<String, List<Double>> storage;
     private final boolean async;
 
     public Decimals(boolean async) {
-        this.hm = (async && !MultiVersion.folia ? new ConcurrentHashMap<>() : new LinkedHashMap<>());
+        this.storage = (async && !MultiVersion.folia ? new ConcurrentHashMap<>() : new LinkedHashMap<>());
         this.async = async;
     }
 
     public void clear() {
-        hm.clear();
+        storage.clear();
     }
 
     public double get(String name, double def, int newestToOldestIndex) {
         List<Double> list;
 
         if (async) {
-            list = new ArrayList<>(hm.getOrDefault(name, new ArrayList<>()));
+            list = new ArrayList<>(storage.getOrDefault(name, new ArrayList<>()));
         } else {
-            list = hm.get(name);
+            list = storage.get(name);
 
             if (list == null) {
                 return def;
@@ -116,11 +115,11 @@ public class Decimals { // todo synchronize
     }
 
     public boolean has(String name) {
-        return hm.get(name) != null;
+        return storage.get(name) != null;
     }
 
     public void set(String name, double value) {
-        List<Double> list = hm.get(name);
+        List<Double> list = storage.get(name);
 
         if (list != null) {
             list.clear();
@@ -128,12 +127,12 @@ public class Decimals { // todo synchronize
         } else {
             list = async ? new CopyOnWriteArrayList<>() : new LinkedList<>();
             list.add(value);
-            hm.put(name, list);
+            storage.put(name, list);
         }
     }
 
     public double add(String name, double value, int maxSize) {
-        List<Double> list = hm.get(name);
+        List<Double> list = storage.get(name);
 
         if (list != null) {
             list.add(value);
@@ -166,7 +165,7 @@ public class Decimals { // todo synchronize
         } else {
             list = async ? new CopyOnWriteArrayList<>() : new LinkedList<>();
             list.add(value);
-            hm.put(name, list);
+            storage.put(name, list);
             return value;
         }
     }
@@ -176,7 +175,7 @@ public class Decimals { // todo synchronize
     }
 
     public void remove(String name) {
-        hm.remove(name);
+        storage.remove(name);
     }
 
     public void remove(String[] names) {
@@ -186,41 +185,28 @@ public class Decimals { // todo synchronize
     }
 
     public void remove(String name, double value) {
-        List<Double> list = hm.get(name);
+        List<Double> list = storage.get(name);
 
         if (list != null && list.remove(value) && list.isEmpty()) {
-            hm.remove(name);
+            storage.remove(name);
         }
     }
 
     public int getCount(String name) {
-        List<Double> list = hm.get(name);
+        List<Double> list = storage.get(name);
         return list == null ? 0 : list.size();
     }
 
     public List<Double> getOldestToNewestList(String name) {
-        List<Double> list = hm.get(name);
+        List<Double> list = storage.get(name);
         return list == null ? new ArrayList<>(0) : list;
     }
 
-    public void clear(String[] ignore) {
-        if (!hm.isEmpty()) {
-            List<String> internal = new ArrayList<>();
-
-            for (String name : hm.keySet()) {
-                if (!StringUtils.stringContainsPartOfArray(ignore, name)) {
-                    internal.add(name);
-                }
-            }
-            remove(internal.toArray(new String[0]));
-        }
-    }
-
     public void clear(String s) {
-        if (!hm.isEmpty()) {
+        if (!storage.isEmpty()) {
             List<String> internal = new ArrayList<>();
 
-            for (String name : hm.keySet()) {
+            for (String name : storage.keySet()) {
                 if (name.contains(s)) {
                     internal.add(name);
                 }
