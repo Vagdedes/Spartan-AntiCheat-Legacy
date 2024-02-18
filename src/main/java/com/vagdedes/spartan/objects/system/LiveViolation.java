@@ -110,7 +110,7 @@ public class LiveViolation { // todo simplify
     // Separator
 
     void queue(HackPrevention hackPrevention, Check check) {
-        if (queue.size() < check.getDefaultCancelViolation()) {
+        if (queue.size() < check.getCancelViolation()) {
             synchronized (queue) {
                 queue.putIfAbsent(hackPrevention.information.hashCode(), hackPrevention);
             }
@@ -146,10 +146,8 @@ public class LiveViolation { // todo simplify
                 || !disableCause.pointerMatches(hp.information))) {
             Check check = hackType.getCheck();
             int violations = this.getLevel();
-            boolean canPrevent, canPreventAlternative, falsePositive,
-                    hacker = player.getProfile().isHacker(),
-                    suspected = !hacker && player.getProfile().isSuspected(hackType),
-                    suspectedOrHacker = suspected || hacker,
+            boolean canPrevent, falsePositive,
+                    suspectedOrHacker = player.getProfile().isSuspectedOrHacker(hackType),
                     enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
             PlayerViolationEvent playerViolationEvent;
             PlayerViolation playerViolation = new PlayerViolation(
@@ -160,29 +158,12 @@ public class LiveViolation { // todo simplify
             );
 
             if (suspectedOrHacker) {
-                if (silentCause == null || !silentCause.pointerMatches(hp.information)) {
-                    canPrevent = true;
-                    canPreventAlternative = true;
-                } else {
-                    canPrevent = false;
-                    canPreventAlternative = false;
-                }
+                canPrevent = silentCause == null || !silentCause.pointerMatches(hp.information);
             } else if (CancelViolation.isForced(player, hackType, this, playerViolation.similarityIdentity)
                     || violations >= CancelViolation.get(hackType, player.getDataType())) {
-                if (silentCause == null || !silentCause.pointerMatches(hp.information)) {
-                    canPrevent = true;
-                    canPreventAlternative = true;
-                } else {
-                    canPrevent = false;
-                    canPreventAlternative = false;
-                }
+                canPrevent = silentCause == null || !silentCause.pointerMatches(hp.information);
             } else {
                 canPrevent = false;
-                canPreventAlternative = violations > 0  // Testing scenario
-                        && !check.hasMaximumDefaultCancelViolation()
-                        && player.getLastViolation().getLastViolationTime(true) <= Check.violationCycleSeconds
-                        && !SpartanBukkit.isProductionServer()
-                        && DetectionNotifications.isEnabled(player);
             }
             if (FalsePositiveDetection.canCorrect(playerViolation, this)) {
                 falsePositive = true;
@@ -208,11 +189,11 @@ public class LiveViolation { // todo simplify
             if (playerViolationEvent == null || !playerViolationEvent.isCancelled()) {
                 if (falsePositive) {
                     this.removeMaxLevel(hp.information);
-                    violations = this.increaseCancelledLevel(playerViolation.similarityIdentity, hacker ? 2.0 : suspected ? 1.5 : 1.0);
-                    performNotification(playerViolation.detection, hp.information, violations, false, true, canPrevent || canPreventAlternative, suspectedOrHacker);
+                    violations = this.increaseCancelledLevel(playerViolation.similarityIdentity, 1.0 + player.getProfile().getEvidence().getKnowledgeList().size());
+                    performNotification(hp.information, violations, false, true, canPrevent, suspectedOrHacker);
                 } else {
                     if (processed) {
-                        performNotification(playerViolation.detection, hp.information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker);
+                        performNotification(hp.information, violations, false, false, canPrevent, suspectedOrHacker);
                     } else {
                         switch (hp.violation) {
                             case 2:
@@ -221,18 +202,17 @@ public class LiveViolation { // todo simplify
                             case 1:
                                 player.getProfile().getViolationHistory(hackType).store(playerViolation);
                                 this.setLevel(playerViolation.similarityIdentity, violations);
-                                performNotification(playerViolation.detection, hp.information, violations, true, false, canPrevent || canPreventAlternative, suspectedOrHacker);
+                                performNotification(hp.information, violations, true, false, canPrevent, suspectedOrHacker);
                                 this.performPunishments(violations);
                                 break;
                             default:
                                 player.getProfile().getViolationHistory(hackType).store(playerViolation);
-                                performNotification(playerViolation.detection, hp.information, violations, false, false, canPrevent || canPreventAlternative, suspectedOrHacker);
+                                performNotification(hp.information, violations, false, false, canPrevent, suspectedOrHacker);
                                 break;
                         }
                     }
 
-                    if (!check.isSilent(player.getWorld().getName(), player)
-                            && (canPrevent || canPreventAlternative)) {
+                    if (canPrevent && !check.isSilent(player.getWorld().getName(), player)) {
                         if (enabledDeveloperAPI) {
                             CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getPlayer(), hackType);
                             Register.manager.callEvent(checkCancelEvent);
@@ -608,78 +588,48 @@ public class LiveViolation { // todo simplify
         }
     }
 
-    private void performNotification(String detailedDetection,
-                                     String info,
+    private void performNotification(String info,
                                      int level,
                                      boolean log,
                                      boolean falsePositive,
                                      boolean canPrevent,
-                                     boolean hacker) {
+                                     boolean suspectedOrHacker) {
         if (level < Check.maxViolationsPerCycle) {
-            // Variables
             boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
             int cancelViolation = CancelViolation.get(hackType, player.getDataType()),
                     playerCount = SpartanBukkit.getPlayerCount();
+            String message = Config.messages.getColorfulString("detection_notification")
+                    .replace("{info}", info);
 
-            // Message Preparation
-            String shorterMessage, message = Config.messages.getColorfulString("detection_notification");
-
-            if (ConfigUtils.contains(message, "{info}")) {
-                if (falsePositive) {
-                    message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(player, message, hackType);
-                } else {
-                    message = ConfigUtils.replaceWithSyntax(player, message, hackType);
-                }
-
-                // Separator
-                message = message.replace("{info}", info);
-
-                if (individualOnlyNotifications) {
-                    shorterMessage = message;
-                } else {
-                    shorterMessage = detailedDetection != null ? message.replace("{info}", detailedDetection) : message;
-                }
+            if (falsePositive) {
+                message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(player, message, hackType);
             } else {
-                if (falsePositive) {
-                    message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(player, message, hackType);
-                } else {
-                    message = ConfigUtils.replaceWithSyntax(player, message, hackType);
-                }
-                shorterMessage = message;
+                message = ConfigUtils.replaceWithSyntax(player, message, hackType);
             }
-
-            // Cross-Server & Console Notifications
-            boolean cannotPunish = !hackType.getCheck().supportsLiveEvidence(),
-                    consoleLog = !falsePositive && level >= cancelViolation,
-                    important = hacker
-                            || cannotPunish
-                            || canPrevent
-                            || consoleLog
-                            || player.getProfile().isSuspected();
-
-            if (important) {
+            if (suspectedOrHacker
+                    || level % cancelViolation == 0
+                    || !hackType.getCheck().supportsLiveEvidence()) {
                 CrossServerInformation.queueNotification(message, true);
             }
-
-            // Logs
             if (log) {
                 SpartanLocation location = player.getLocation();
-                String cancelViolationString = (canPrevent ? "-" : "") + cancelViolation + (hackType.getCheck().hasCancelViolation() ? "*" : ""),
+                String cancelViolationString = (canPrevent ? "-" : "") + cancelViolation,
                         information = (falsePositive ? "(False Positive) " : "")
                                 + Config.getConstruct() + player.getName() + " failed " + hackType + " (VL: " + level
                                 + ") " + "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString()
                                 + "), (C-V: " + cancelViolationString + ") (Silent: "
                                 + hackType.getCheck().isSilent(player.getWorld().getName(), player) + "), "
                                 + "(Ping: " + player.getPing() + "ms), (TPS: "
-                                + AlgebraUtils.cut(TPS.get(player, false), 3) + "), (Hacker: " + hacker
+                                + AlgebraUtils.cut(TPS.get(player, false), 3) + "), (Hacker: " + suspectedOrHacker
                                 + "), (Online: " + playerCount + "), " +
                                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
                                 + location.getBlockZ() + "), (" + info + ")]";
-                AntiCheatLogs.logInfo(player, information, consoleLog ? shorterMessage : null, null, hackType, true, level);
+                AntiCheatLogs.logInfo(player, information, information, null, hackType, true, level);
             }
 
             // Local Notifications
-            String command = Config.settings.getString("Notifications.message_clickable_command").replace("{player}", player.getName());
+            String command = Config.settings.getString("Notifications.message_clickable_command")
+                    .replace("{player}", player.getName());
 
             if (individualOnlyNotifications) {
                 Integer divisor = DetectionNotifications.getDivisor(player, false);
@@ -693,12 +643,12 @@ public class LiveViolation { // todo simplify
 
                 if (!notificationPlayers.isEmpty()) {
                     for (SpartanPlayer staff : notificationPlayers) {
-                        int divisor = NotifyViolation.get(staff, player, cancelViolation, playerCount);
+                        int divisor = NotifyViolation.get(staff, player, hackType, playerCount);
 
                         if (isDivisorValid(level, divisor)) {
                             ClickableMessage.sendCommand(
                                     staff,
-                                    divisor == 1 ? message : shorterMessage,
+                                    message,
                                     "Command: " + command,
                                     command
                             );

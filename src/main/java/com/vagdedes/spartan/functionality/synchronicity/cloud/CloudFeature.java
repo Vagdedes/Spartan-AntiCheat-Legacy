@@ -195,7 +195,7 @@ public class CloudFeature {
         if (!recentError(ms)) {
             connectionFailedCooldown = ms + (connectionRefreshFrequencyInMinutes * 60_000L);
 
-            if (!hasException() && AwarenessNotifications.areEnabled() && SpartanBukkit.isProductionServer()) {
+            if (!hasException() && AwarenessNotifications.areEnabled()) {
                 AwarenessNotifications.forcefullySend("(" + function + ") Failed to connect to the Game Cloud.");
                 AwarenessNotifications.forcefullySend("Error: " + object.getMessage());
                 AwarenessNotifications.forcefullySend("In Depth: " + object);

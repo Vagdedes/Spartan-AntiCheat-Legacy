@@ -49,7 +49,6 @@ public class SuspicionNotifications {
 
             if (!isNull) {
                 if (!TestServer.isIdentified()
-                        && SpartanBukkit.isProductionServer()
                         && ResearchEngine.enoughData()
                         && !Config.settings.getBoolean("Notifications.individual_only_notifications")) {
                     Integer divisor = DetectionNotifications.getDivisor(p, false);
@@ -87,7 +86,7 @@ public class SuspicionNotifications {
                             PlayerEvidence evidence = profile.getEvidence();
 
                             for (Enums.HackType hackType : evidence.getKnowledgeList()) {
-                                if (player.getViolations(hackType).getLevel() >= hackType.getCheck().getDefaultCancelViolation()) {
+                                if (player.getViolations(hackType).getLevel() >= hackType.getCheck().getCancelViolation()) {
                                     shouldList = true;
                                     break;
                                 }

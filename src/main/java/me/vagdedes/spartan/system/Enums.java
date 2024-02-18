@@ -3,8 +3,6 @@ package me.vagdedes.spartan.system;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.objects.system.Check;
 
-import java.util.Map;
-
 public class Enums {
 
     // Should have used capital letters but won't change them now so to not break the dozen APIs who use these enums

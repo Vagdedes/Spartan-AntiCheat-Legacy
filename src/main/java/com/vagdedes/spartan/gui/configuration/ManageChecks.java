@@ -84,7 +84,7 @@ public class ManageChecks extends InventoryMenu {
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(player, hackType);
         String[] disabledDetections = CloudFeature.getShownDisabledDetections(hackType);
-        int cancelViolation = check.getDefaultCancelViolation();
+        int cancelViolation = check.getCancelViolation();
         int problematicDetections = check.getProblematicDetections();
 
         String enabledOption;

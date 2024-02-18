@@ -1,6 +1,5 @@
 package me.vagdedes.spartan.api;
 
-import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;

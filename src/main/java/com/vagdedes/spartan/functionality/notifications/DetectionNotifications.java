@@ -74,7 +74,6 @@ public class DetectionNotifications {
 
                 || (all
                 || TestServer.isIdentified()
-                || !SpartanBukkit.isProductionServer()
                 || !ResearchEngine.enoughData()
                 || divisor >= 1
                 || Config.settings.getBoolean("Notifications.individual_only_notifications"))

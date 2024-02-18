@@ -15,7 +15,6 @@ import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.Chunks;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.interfaces.listeners.EventsHandler7;
-import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -30,7 +29,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 public class Config {
 
@@ -286,20 +286,6 @@ public class Config {
             }
         }
         create();
-    }
-
-    // Separator
-
-    public static boolean hasCancelAfterViolationOption() {
-        boolean cancelAfterViolation = false;
-
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            if (hackType.getCheck().hasCancelViolation()) {
-                cancelAfterViolation = true;
-                break;
-            }
-        }
-        return cancelAfterViolation;
     }
 
     // Separator

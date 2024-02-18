@@ -49,7 +49,7 @@ public class Check {
 
     public static Enums.PunishmentCategory getCategoryFromViolations(int violations, Enums.HackType hackType, boolean suspectedOrHacker) {
         if (!suspectedOrHacker) {
-            int cancelViolation = hackType.getCheck().getDefaultCancelViolation();
+            int cancelViolation = hackType.getCheck().getCancelViolation();
 
             for (Enums.PunishmentCategory category : Enums.PunishmentCategory.values()) {
                 if (violations <= (cancelViolation * category.getMultiplier())) {
@@ -70,6 +70,10 @@ public class Check {
         return hackType != Enums.HackType.XRay;
     }
 
+    private static boolean supportsSilent(Enums.HackType hackType) {
+        return hackType != Enums.HackType.AutoRespawn;
+    }
+
     // Object Values
 
     private final Enums.HackType hackType;
@@ -77,9 +81,8 @@ public class Check {
     private final Enums.CheckType checkType;
     private final Map<Integer, Collection<String>> commandsLegacy;
     private final Map<String, Object> options;
-    private int cancelViolation;
-    private final int defaultCancelViolation;
-    private boolean silent, hasCancelViolation;
+    private final int cancelViolation;
+    private boolean silent;
     private final boolean handleCancelledEvents;
     private final Map<Integer, Integer> maxCancelledViolations;
     private final boolean[] enabled;
@@ -107,7 +110,7 @@ public class Check {
             case AutoRespawn:
             case XRay:
             case InventoryClicks:
-                this.defaultCancelViolation = minimumDefaultCancelViolation;
+                this.cancelViolation = minimumDefaultCancelViolation;
                 break;
             case Criticals:
             case FastPlace:
@@ -117,28 +120,28 @@ public class Check {
             case Velocity:
             case ImpossibleInventory:
             case ImpossibleActions:
-                this.defaultCancelViolation = 2;
+                this.cancelViolation = 2;
                 break;
             case KillAura:
             case FastClicks:
             case NoFall:
             case NoSlowdown:
             case HitReach:
-                this.defaultCancelViolation = 3;
+                this.cancelViolation = 3;
                 break;
             case Exploits:
             case MorePackets:
-                this.defaultCancelViolation = 4;
+                this.cancelViolation = 4;
                 break;
             case Speed:
             case IrregularMovements:
-                this.defaultCancelViolation = 5;
+                this.cancelViolation = 5;
                 break;
             case GhostHand:
-                this.defaultCancelViolation = maximumDefaultCancelViolation;
+                this.cancelViolation = maximumDefaultCancelViolation;
                 break;
             default:
-                this.defaultCancelViolation = 0;
+                this.cancelViolation = 0;
                 break;
         }
 
@@ -350,7 +353,7 @@ public class Check {
         Object silent,
                 handleCancelledEvents = getOption("cancelled_event", false, false);
 
-        if (hackType != Enums.HackType.AutoRespawn) { // Can Be Silent
+        if (supportsSilent(hackType)) { // Can Be Silent
             silent = getOption("silent", false, false);
         } else {
             silent = null;
@@ -471,60 +474,6 @@ public class Check {
             }
         } else {
             this.handleCancelledEvents = false;
-        }
-
-        // Separator
-
-        if (supportsSilent) {
-            Object cancelAfterViolation = getOption("cancel_after_violation", null, false);
-
-            if (cancelAfterViolation instanceof Integer || cancelAfterViolation instanceof Short) {
-                this.hasCancelViolation = true;
-                int cancelViolation = (int) cancelAfterViolation;
-
-                if (cancelViolation > maxViolationsPerCycle) {
-                    this.silent = true;
-                    this.cancelViolation = maxViolationsPerCycle;
-                } else {
-                    this.cancelViolation = Math.max(1, cancelViolation);
-                }
-            } else if (cancelAfterViolation instanceof String || cancelAfterViolation instanceof Long) {
-                try {
-                    int cancelViolation = Integer.parseInt(cancelAfterViolation.toString());
-
-                    if (cancelViolation > maxViolationsPerCycle) {
-                        this.silent = true;
-                        this.cancelViolation = maxViolationsPerCycle;
-                    } else {
-                        this.cancelViolation = Math.max(1, cancelViolation);
-                    }
-                    this.hasCancelViolation = true; // Always at the end to run after the critical code
-                } catch (Exception ex) {
-                    this.cancelViolation = defaultCancelViolation;
-                    this.hasCancelViolation = false;
-                }
-            } else if (cancelAfterViolation instanceof Double || cancelAfterViolation instanceof Float) {
-                try {
-                    int cancelViolation = AlgebraUtils.integerRound((double) cancelAfterViolation);
-
-                    if (cancelViolation > maxViolationsPerCycle) {
-                        this.silent = true;
-                        this.cancelViolation = maxViolationsPerCycle;
-                    } else {
-                        this.cancelViolation = Math.max(1, cancelViolation);
-                    }
-                    this.hasCancelViolation = true; // Always at the end to run after the critical code
-                } catch (Exception ex) {
-                    this.cancelViolation = defaultCancelViolation;
-                    this.hasCancelViolation = false;
-                }
-            } else {
-                this.cancelViolation = defaultCancelViolation;
-                this.hasCancelViolation = false;
-            }
-        } else {
-            this.cancelViolation = Integer.MIN_VALUE;
-            this.hasCancelViolation = false;
         }
 
         // Separator
@@ -1013,44 +962,12 @@ public class Check {
 
     // Separator
 
-    public boolean isUsingCancelViolation(int preferred, int deviationUpwards) {
-        return cancelViolation + deviationUpwards >= preferred;
-    }
-
-    public int getCancelViolation() {
-        return cancelViolation;
-    }
-
-    public boolean hasCancelViolation() {
-        return hasCancelViolation;
-    }
-
-    public boolean setCancelViolation(int i) {
-        if (supportsSilent()) {
-            Object cancelAfterViolation = getOption("cancel_after_violation", null, false);
-
-            if (!(cancelAfterViolation instanceof Integer) || i > (int) cancelAfterViolation) {
-                this.hasCancelViolation = true;
-                setOption("cancel_after_violation", i, false);
-
-                if (i > maxViolationsPerCycle) {
-                    this.silent = true;
-                    this.cancelViolation = maxViolationsPerCycle;
-                } else {
-                    this.cancelViolation = Math.max(1, i);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean hasMinimumDefaultCancelViolation() {
-        return defaultCancelViolation == minimumDefaultCancelViolation;
+        return cancelViolation == minimumDefaultCancelViolation;
     }
 
     public boolean hasMaximumDefaultCancelViolation() {
-        return defaultCancelViolation == maximumDefaultCancelViolation;
+        return cancelViolation == maximumDefaultCancelViolation;
     }
 
     // Separator
@@ -1058,8 +975,7 @@ public class Check {
     public int getProblematicDetections() {
         if (!maxCancelledViolations.isEmpty()) {
             synchronized (maxCancelledViolations) {
-                int count = 0,
-                        cancelViolation = getCancelViolation();
+                int count = 0;
 
                 for (int level : maxCancelledViolations.values()) {
                     if (level >= cancelViolation) {
@@ -1107,8 +1023,8 @@ public class Check {
 
     // Separator
 
-    public int getDefaultCancelViolation() {
-        return defaultCancelViolation;
+    public int getCancelViolation() {
+        return cancelViolation;
     }
 
     public Collection<String> getLegacyCommands(int violation) {
@@ -1138,7 +1054,7 @@ public class Check {
             boolean containsCategory = !categoriesFound.isEmpty();
 
             if (containsCategory) {
-                int defaultCancelViolation = this.getDefaultCancelViolation();
+                int defaultCancelViolation = this.getCancelViolation();
 
                 for (Enums.PunishmentCategory category : categoriesFound) {
                     String string = category.toString();

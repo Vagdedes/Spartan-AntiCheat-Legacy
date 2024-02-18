@@ -8,7 +8,9 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.handlers.connection.IDs;
-import com.vagdedes.spartan.handlers.stability.*;
+import com.vagdedes.spartan.handlers.stability.CancelViolation;
+import com.vagdedes.spartan.handlers.stability.ResearchEngine;
+import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
@@ -158,15 +160,10 @@ public class BackgroundAPI {
         return CancelViolation.get(hackType, ResearchEngine.DataType.Universal);
     }
 
+    @Deprecated
     static int getViolationDivisor(Player p, HackType hackType) {
-        SpartanPlayer player = SpartanBukkit.getPlayer(p);
-        return player == null ? 0 :
-                NotifyViolation.get(player, null, SpartanBukkit.getPlayerCount(),
-                        CancelViolation.get(
-                                hackType,
-                                player.getDataType()
-                        )
-                );
+        AwarenessNotifications.forcefullySend("The API method 'getViolationDivisor' has been removed.");
+        return 0;
     }
 
     static void reloadConfig() {

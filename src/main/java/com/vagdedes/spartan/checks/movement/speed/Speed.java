@@ -770,13 +770,6 @@ public class Speed extends CheckExecutor {
         }
 
         // Separator
-        double averageSprintingSpeedDifference = getAverageSprintingSpeedDifference();
-
-        if (averageSprintingSpeedDifference >= 0.1) {
-            dm_speed += averageSprintingSpeedDifference;
-        }
-
-        // Separator
         if (hasTrident) {
             dm_speed = Math.max(trident, dm_speed);
         } else if (bowProt) {
@@ -857,31 +850,6 @@ public class Speed extends CheckExecutor {
             return PatternUtils.cache(to, hackType, "solid", true);
         }
         return PatternUtils.cache(to, hackType, "solid", false);
-    }
-
-    private double getAverageSprintingSpeedDifference() {
-        if (SpartanBukkit.isProductionServer()) {
-            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-            if (!players.isEmpty()) {
-                String key = "average=sprinting=speed";
-                double summary = 0.0,
-                        count = 0.0;
-
-                for (SpartanPlayer p : players) {
-                    double d = p.getDecimals(hackType).get(key, 0.0);
-
-                    if (d != 0.0 && !p.getProfile().isSuspectedOrHacker(hackType)) {
-                        count++;
-                        summary += d;
-                    }
-                }
-                if (count > 0) {
-                    return (summary / count) - MovementProcessing.sprintingMaxSpeed;
-                }
-            }
-        }
-        return 0.0;
     }
 
     @Override

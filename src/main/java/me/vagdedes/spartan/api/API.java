@@ -109,6 +109,7 @@ public class API {
         return BackgroundAPI.getCancelViolation(hackType);
     }
 
+    @Deprecated
     public static int getViolationDivisor(Player p, HackType hackType) {
         return BackgroundAPI.getViolationDivisor(p, hackType);
     }
