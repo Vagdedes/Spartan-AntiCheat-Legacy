@@ -21,12 +21,9 @@ import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.util.Vector;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
-public class SpartanLocation { // todo synchronize
+public class SpartanLocation {
 
     private static class BlockCache {
 
@@ -39,8 +36,8 @@ public class SpartanLocation { // todo synchronize
         }
     }
 
-    static final Map<Integer, BlockCache> memory = new ConcurrentHashMap<>();
-    public static final int clearanceTick = 4;
+    static final Map<Integer, BlockCache> memory = Collections.synchronizedMap(new LinkedHashMap<>());
+    public static final long clearanceTick = 4L;
     private static final long clearanceTime = clearanceTick * TPS.tickTime;
     private static final boolean
             v_1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9),
@@ -53,14 +50,17 @@ public class SpartanLocation { // todo synchronize
             SpartanBukkit.runRepeatingTask(() -> {
                 if (!memory.isEmpty()) {
                     long time = System.currentTimeMillis();
-                    Iterator<BlockCache> iterator = memory.values().iterator();
 
-                    while (iterator.hasNext()) {
-                        BlockCache cache = iterator.next();
+                    synchronized (memory) {
+                        Iterator<BlockCache> iterator = memory.values().iterator();
 
-                        if ((time - cache.time) >= clearanceTime) {
-                            iterator.remove();
-                            PatternUtils.synchronizeClearance(cache.block);
+                        while (iterator.hasNext()) {
+                            BlockCache cache = iterator.next();
+
+                            if ((time - cache.time) >= clearanceTime) {
+                                iterator.remove();
+                                PatternUtils.synchronizeClearance(cache.block);
+                            }
                         }
                     }
                 }
@@ -68,9 +68,10 @@ public class SpartanLocation { // todo synchronize
         }
     }
 
-    public static double distance(Location loc1, Location loc2) {
-        return loc1.getWorld() != loc2.getWorld() ? 0.0 :
-                AlgebraUtils.getDistance(loc1.getX(), loc2.getX(), loc1.getY(), loc2.getY(), loc1.getZ(), loc2.getZ());
+    static void clear() {
+        synchronized (memory) {
+            memory.clear();
+        }
     }
 
     // Object
@@ -443,7 +444,11 @@ public class SpartanLocation { // todo synchronize
                 if (MultiVersion.folia
                         || SpartanBukkit.isSynchronised()
                         || Chunks.isLoaded(serverWorld, getBlockX() >> 4, getBlockZ() >> 4)) {
-                    BlockCache cache = memory.get(identifier);
+                    BlockCache cache;
+
+                    synchronized (memory) {
+                        cache = memory.get(identifier);
+                    }
 
                     if (cache != null) {
                         this.block = cache.block;
@@ -451,7 +456,9 @@ public class SpartanLocation { // todo synchronize
                         SpartanBlock block = setBlock();
 
                         if (block != null) {
-                            memory.put(identifier, new BlockCache(block));
+                            synchronized (memory) {
+                                memory.put(identifier, new BlockCache(block));
+                            }
                         }
                     }
                 } else {

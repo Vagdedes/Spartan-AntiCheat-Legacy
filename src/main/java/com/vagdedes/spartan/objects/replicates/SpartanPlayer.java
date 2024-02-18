@@ -193,7 +193,7 @@ public class SpartanPlayer {
         synchronized (worldEntities) {
             worldEntities.clear();
         }
-        SpartanLocation.memory.clear();
+        SpartanLocation.clear();
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
         if (!players.isEmpty()) {
