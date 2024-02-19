@@ -20,9 +20,10 @@ import java.io.File;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SQLFeature extends ConfigurationBuilder {
 
@@ -33,7 +34,7 @@ public class SQLFeature extends ConfigurationBuilder {
     private static boolean enabled = false;
 
     private static Connection con = null;
-    private static final List<String> list = new CopyOnWriteArrayList<>();
+    private static final List<String> list = Collections.synchronizedList(new ArrayList<>());
 
     // Separator
 
@@ -140,10 +141,12 @@ public class SQLFeature extends ConfigurationBuilder {
     public void refreshDatabase() {
         // Queries
         if (!list.isEmpty()) {
-            for (String insert : list) {
-                update(insert);
+            synchronized (list) {
+                for (String insert : list) {
+                    update(insert);
+                }
+                list.clear();
             }
-            list.clear();
         }
 
         if (isConnected(false)) {
@@ -336,36 +339,43 @@ public class SQLFeature extends ConfigurationBuilder {
             UUID uuid = hasPlayer ? p.getUniqueId() : null;
             SpartanLocation location = hasPlayer ? p.getLocation() : null;
 
-            list.add(
-                    "INSERT INTO " + table
-                            + " (creation_date"
-                            + ", plugin_version, server_version, server_tps, online_players"
-                            + ", type, information"
-                            + ", player_uuid, player_latency, player_x, player_y, player_z"
-                            + ", functionality, violation_level) "
-                            + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
-                            + ", " + syntaxForColumn(API.getVersion())
-                            + ", " + syntaxForColumn(MultiVersion.versionString())
-                            + ", " + syntaxForColumn(TPS.get(p, false))
-                            + ", " + syntaxForColumn(SpartanBukkit.getPlayerCount())
-                            + ", " + syntaxForColumn(miningNotification ? "mining" : hasCheck ? "violation" : "other")
-                            + ", " + syntaxForColumn(information)
-                            + ", " + (hasPlayer ? syntaxForColumn(uuid) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
-                            + ", " + (hasCheck ? syntaxForColumn(hackType) : miningNotification ? syntaxForColumn(material) : "NULL")
-                            + ", " + (violations > -1 ? syntaxForColumn(violations) : "NULL")
-                            + ");"
-            );
+            synchronized (list) {
+                list.add(
+                        "INSERT INTO " + table
+                                + " (creation_date"
+                                + ", plugin_version, server_version, server_tps, online_players"
+                                + ", type, information"
+                                + ", player_uuid, player_latency, player_x, player_y, player_z"
+                                + ", functionality, violation_level) "
+                                + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
+                                + ", " + syntaxForColumn(API.getVersion())
+                                + ", " + syntaxForColumn(MultiVersion.versionString())
+                                + ", " + syntaxForColumn(TPS.get(p, false))
+                                + ", " + syntaxForColumn(SpartanBukkit.getPlayerCount())
+                                + ", " + syntaxForColumn(miningNotification ? "mining" : hasCheck ? "violation" : "other")
+                                + ", " + syntaxForColumn(information)
+                                + ", " + (hasPlayer ? syntaxForColumn(uuid) : "NULL")
+                                + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
+                                + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
+                                + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
+                                + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
+                                + ", " + (hasCheck ? syntaxForColumn(hackType) : miningNotification ? syntaxForColumn(material) : "NULL")
+                                + ", " + (violations > -1 ? syntaxForColumn(violations) : "NULL")
+                                + ");"
+                );
+            }
 
             if (list.size() >= 10) {
                 Runnable runnable = () -> {
-                    for (String insert : list) {
+                    List<String> newList;
+
+                    synchronized (list) {
+                        newList = new ArrayList<>(list);
+                        list.clear();
+                    }
+                    for (String insert : newList) {
                         update(insert);
                     }
-                    list.clear();
                 };
 
                 if (SpartanBukkit.isSynchronised()) {

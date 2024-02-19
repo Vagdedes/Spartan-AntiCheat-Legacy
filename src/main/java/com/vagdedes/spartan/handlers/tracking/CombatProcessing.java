@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class CombatProcessing { // todo simplify
+public class CombatProcessing {
 
     private static final int pastTicks = 5;
     private static final String
@@ -64,8 +64,6 @@ public class CombatProcessing { // todo simplify
         }
     }
 
-    // Methods
-
     public static double getDecimal(SpartanPlayer p, String s, double fallback) {
         return !p.getCooldowns().canDo(baseKey + s + cooldownKey) ?
                 p.getDecimals().get(baseKey + s, fallback, Decimals.CALCULATE_MAX) :
@@ -78,42 +76,7 @@ public class CombatProcessing { // todo simplify
                 fallback;
     }
 
-    // Singles
-
-    public static long getLong(SpartanPlayer p, String s, long fallback) {
-        return !p.getCooldowns().canDo(baseKey + s + cooldownKey) ?
-                (long) p.getDecimals().get(baseKey + s, fallback, Decimals.CALCULATE_MAX) :
-                fallback;
-    }
-
-    public static double getDecimalAverage(SpartanPlayer p, String s, double fallback) {
-        return !p.getCooldowns().canDo(baseKey + s + cooldownKey) ?
-                p.getDecimals().get(baseKey + s, fallback, Decimals.CALCULATE_AVERAGE) :
-                fallback;
-    }
-
-    public static int getIntegerAverage(SpartanPlayer p, String s, int fallback) {
-        return !p.getCooldowns().canDo(baseKey + s + cooldownKey) ?
-                (int) p.getDecimals().get(baseKey + s, fallback, Decimals.CALCULATE_AVERAGE) :
-                fallback;
-    }
-
-    // Averages
-
-    public static long getLongAverage(SpartanPlayer p, String s, long fallback) {
-        return !p.getCooldowns().canDo(baseKey + s + cooldownKey) ?
-                (long) p.getDecimals().get(baseKey + s, fallback, Decimals.CALCULATE_AVERAGE) :
-                fallback;
-    }
-
     public static List<Double> getAllValues(SpartanPlayer p, String s) {
         return p.getDecimals().getOldestToNewestList(baseKey + s);
     }
-
-
-
-    // List
-
-
-
 }

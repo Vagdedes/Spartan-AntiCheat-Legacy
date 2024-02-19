@@ -21,11 +21,12 @@ public class mcMMO {
                 || hasTamingAbility(p);
     }
 
-    private static boolean hasAxeAbility(SpartanPlayer p) {
+    private static boolean hasAxeAbility(SpartanPlayer p) { // todo
         if (Compatibility.CompatibilityType.mcMMO.isFunctional()) {
             Material m = p.getItemInHand().getType();
             return PlayerData.isAxeItem(m)
                     && PlayerData.isInActivePlayerCombat(p)
+                    && p.getProfile().getCombat().isActivelyFighting(null, true, true, false)
                     && PlayerData.getEntitiesNumber(p, CombatUtils.maxHitDistance, false) > 0;
         }
         return false;

@@ -61,10 +61,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.Inventory;
@@ -487,7 +484,7 @@ public class SpartanPlayer {
             this.buffer[id] = new Buffer(this, hackType);
             this.timer[id] = new Timer();
             this.decimals[id] = new Decimals();
-            this.tracker[id] = new Tracker(async);
+            this.tracker[id] = new Tracker();
             this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
 
@@ -575,7 +572,7 @@ public class SpartanPlayer {
         this.buffer[hackTypes.length] = new Buffer(this, null);
         this.timer[hackTypes.length] = new Timer();
         this.decimals[hackTypes.length] = new Decimals();
-        this.tracker[hackTypes.length] = new Tracker(true);
+        this.tracker[hackTypes.length] = new Tracker();
         this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
@@ -690,7 +687,7 @@ public class SpartanPlayer {
 
     public void calculateClickData(Action action, boolean runRegardless) {
         if (!runRegardless) {
-            if (PlayerData.isInActivePlayerCombat(this)) {
+            if (playerProfile.getCombat().isActivelyFighting(null, true, true, false)) {
                 runRegardless = true;
             } else {
                 SpartanBlock block = getTargetBlock(CombatUtils.maxHitDistance);
@@ -1665,6 +1662,44 @@ public class SpartanPlayer {
             }
             return nearbyEntities;
         }
+    }
+
+    public int getEnemiesNumber(double distance, boolean includeRest) {
+        Player n = getPlayer();
+
+        if (n != null) {
+            List<Entity> entities = getNearbyEntities(distance, distance, distance);
+
+            if (!entities.isEmpty()) {
+                int count = 0;
+
+                for (Entity e : getNearbyEntities(distance, distance, distance)) {
+                    if (e instanceof Mob) {
+                        LivingEntity target = ((Mob) e).getTarget();
+
+                        if (target != null && target.equals(n)) {
+                            count++;
+                        }
+                    } else if (e instanceof Player) {
+                        SpartanPlayer target = SpartanBukkit.getPlayer((Player) e);
+
+                        if (target != null
+                                && playerProfile.getCombat().isActivelyFighting(
+                                target,
+                                true,
+                                true,
+                                false)
+                        ) {
+                            count++;
+                        }
+                    } else if (includeRest && e instanceof LivingEntity) {
+                        count++;
+                    }
+                }
+                return count;
+            }
+        }
+        return 0;
     }
 
     // Teleport

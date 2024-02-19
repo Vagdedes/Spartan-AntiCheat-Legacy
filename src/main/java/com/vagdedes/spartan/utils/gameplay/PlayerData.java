@@ -10,8 +10,6 @@ import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.profiling.PlayerFight;
-import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -160,69 +158,19 @@ public class PlayerData { // todo incorporate fights methods in combat object
 
     // Combat
 
-    public static boolean isInActivePlayerCombat(SpartanPlayer p) {
-        boolean damage = false, hit = false;
-        List<PlayerFight> fights = p.getProfile().getCombat().getFights();
-
-        if (!fights.isEmpty()) {
-            for (PlayerFight fight : fights) {
-                PlayerOpponent[] opponents = fight.getOpponent(p);
-
-                if (!damage && opponents[0].getLastDamage(true) <= combatTimeRequirement) { // Last-damage double of last-hit due to advantage restrictions
-                    if (hit) {
-                        return true;
-                    } else {
-                        damage = true;
-                    }
-                }
-                if (!hit && opponents[0].getLastHit(true) <= combatTimeRequirement) {
-                    if (damage) {
-                        return true;
-                    } else {
-                        hit = true;
-                    }
-                }
-            }
-        }
-        return false;
+    public static boolean isActivelyFighting(SpartanPlayer self, long hit, long damage, boolean both) {
+        boolean hitB = Damage.getLastDealt(self) <= hit,
+                damageB = Damage.getLastReceived(self) <= damage;
+        return both ? hitB && damageB : hitB || damageB;
     }
 
-    public static boolean isInActiveEntityCombat(SpartanPlayer p) {
-        return receivedEntityDamage(p) && hitAnEntity(p);
-    }
-
-    public static boolean receivedPlayerDamage(SpartanPlayer p) {
-        List<PlayerFight> fights = p.getProfile().getCombat().getFights();
-
-        if (!fights.isEmpty()) {
-            for (PlayerFight fight : fights) {
-                if (fight.getOpponent(p)[0].getLastDamage(true) <= combatTimeRequirement) { // Last-damage double of last-hit due to advantage restrictions
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean receivedEntityDamage(SpartanPlayer p) {
-        return Damage.getLastReceived(p) <= combatTimeRequirement;
-    }
-
-    public static boolean hitAPlayer(SpartanPlayer p) {
-        List<PlayerFight> fights = p.getProfile().getCombat().getFights();
-
-        if (!fights.isEmpty()) {
-            for (PlayerFight fight : fights) {
-                if (fight.getOpponent(p)[0].getLastHit(true) <= combatTimeRequirement) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean hitAnEntity(SpartanPlayer p) {
-        return Damage.getLastDealt(p) <= combatTimeRequirement;
+    public static boolean isActivelyFightingEntities(SpartanPlayer self, boolean hit, boolean damage, boolean both) {
+        return isActivelyFighting(
+                self,
+                hit ? combatTimeRequirement : -1L,
+                damage ? combatTimeRequirement : -1L,
+                both
+        );
     }
 
     // Enchantments
@@ -500,7 +448,9 @@ public class PlayerData { // todo incorporate fights methods in combat object
 
         for (Entity e : p.getNearbyEntities(distance, distance, distance)) {
             if (e instanceof LivingEntity && (!(e instanceof Player) || p.canSee((Player) e))) {
-                if (findPusher && (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && e.getPassengers().size() > 0 || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && e.getPassenger() != null)) {
+                if (findPusher
+                        && (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && !e.getPassengers().isEmpty()
+                        || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && e.getPassenger() != null)) {
                     pusherFound = true;
                 } else {
                     i++;

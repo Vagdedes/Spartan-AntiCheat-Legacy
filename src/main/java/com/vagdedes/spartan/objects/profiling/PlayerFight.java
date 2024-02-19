@@ -22,6 +22,12 @@ public class PlayerFight {
                 new PlayerOpponent[]{opponent2, opponent1};
     }
 
+    PlayerOpponent[] getOpponent(PlayerProfile profile) {
+        return opponent1.player.getProfile().equals(profile) ?
+                new PlayerOpponent[]{opponent1, opponent2} :
+                new PlayerOpponent[]{opponent2, opponent1};
+    }
+
     public double getHitRatio(SpartanPlayer player) {
         PlayerOpponent[] opponents = getOpponent(player);
         int targetHits = opponents[1].getHits();

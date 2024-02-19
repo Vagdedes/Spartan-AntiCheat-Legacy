@@ -352,13 +352,8 @@ public class CloudConnections {
     }
 
     public static void updatePunishedPlayer(UUID uuid, String ipAddress) {
-        // Doesn't need ID validation due to its validated method call
-        if (Compatibility.CompatibilityType.AntiAltAccount.isFunctional()) {
-            CloudFeature.updatedPunishedPlayers.addIfAbsent(uuid);
-        } else if (!CloudFeature.recentError(System.currentTimeMillis())
-
-                && (CloudFeature.updatedPunishedPlayers.addIfAbsent(uuid)
-                || CloudFeature.punishedPlayers.contains(uuid))) { // Always after to update cache of Spartan
+        if (!CloudFeature.recentError(System.currentTimeMillis())
+                && CloudFeature.punishedPlayers.contains(uuid)) { // Always after to update cache of Spartan
             if (ipAddress == null) {
                 ipAddress = "NULL";
             }

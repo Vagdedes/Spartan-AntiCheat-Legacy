@@ -50,7 +50,8 @@ public class VelocityCheck extends CheckExecutor {
                 && !player.wasInLiquids()
                 && player.getBlocksOffGround(3, true, true) <= 2
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && CombatUtils.getEnemiesNumber(player, CombatUtils.maxHitDistance, false) <= 5 && !NoHitDelay.hasCooldown(player)
+                && player.getEnemiesNumber(CombatUtils.maxHitDistance, false) <= 5
+                && !NoHitDelay.hasCooldown(player)
                 && !Essentials.isAFK(player)
                 && !Attributes.has(player, Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
             SpartanLocation loc = player.getLocation();

@@ -31,7 +31,8 @@ public class PlibHandlers {
                             && NoSlowdown.check.getCheck().getBooleanOption("check_packets", true)) {
                         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
-                        if (p == null || PlayerData.isInActivePlayerCombat(p)) {
+                        if (p == null
+                                || p.getProfile().getCombat().isActivelyFighting(null, true, true, false)) {
                             return;
                         }
 

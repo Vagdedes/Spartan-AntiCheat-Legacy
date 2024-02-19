@@ -17,15 +17,11 @@ import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 
 public class Cache {
 
-    private static final List<Object> memory = new CopyOnWriteArrayList<>();
+    private static final List<Object> memory = Collections.synchronizedList(new ArrayList<>());
     public static final int gradeDivisor = 1024;
     public static final boolean enoughRAM = (Runtime.getRuntime().maxMemory() / gradeDivisor / gradeDivisor) >= 900;
 
@@ -51,15 +47,17 @@ public class Cache {
 
     public static void clearStorage(boolean clear) {
         if (!memory.isEmpty()) {
-            for (Object object : memory) {
-                if (object instanceof Map) {
-                    ((Map<?, ?>) object).clear();
-                } else {
-                    ((Collection<?>) object).clear();
+            synchronized (memory) {
+                for (Object object : memory) {
+                    if (object instanceof Map) {
+                        ((Map<?, ?>) object).clear();
+                    } else {
+                        ((Collection<?>) object).clear();
+                    }
                 }
-            }
-            if (clear) {
-                memory.clear();
+                if (clear) {
+                    memory.clear();
+                }
             }
         }
     }
@@ -107,18 +105,24 @@ public class Cache {
     }
 
     public static <K, V> Map<K, V> store(Map<K, V> map) {
-        memory.add(map);
-        return map;
+        synchronized (memory) {
+            memory.add(map);
+            return map;
+        }
     }
 
     public static <T> List<T> store(List<T> list) {
-        memory.add(list);
-        return list;
+        synchronized (memory) {
+            memory.add(list);
+            return list;
+        }
     }
 
     public static <T> Set<T> store(Set<T> set) {
-        memory.add(set);
-        return set;
+        synchronized (memory) {
+            memory.add(set);
+            return set;
+        }
     }
 
     public static void disable() {

@@ -58,8 +58,7 @@ public class Buffer {
                     }
                 }
 
-                if (player.getProfile().getCombat().isActivelyFighting(true, true)
-                        || CombatUtils.getEnemiesNumber(player, CombatUtils.maxHitDistance, true) > 0) {
+                if (player.getEnemiesNumber(CombatUtils.maxHitDistance, true) > 0) {
                     bufferChild.ticks -= 1L;
                 } else {
                     for (Enums.HackType hackType : Enums.HackType.values()) {

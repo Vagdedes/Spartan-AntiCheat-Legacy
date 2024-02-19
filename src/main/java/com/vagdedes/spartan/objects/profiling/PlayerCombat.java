@@ -1,8 +1,12 @@
 package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 public class PlayerCombat {
 
@@ -16,12 +20,6 @@ public class PlayerCombat {
     PlayerCombat(PlayerProfile profile) {
         this.profile = profile;
         this.fights = Collections.synchronizedList(new ArrayList<>());
-    }
-
-    public List<PlayerFight> getFights() {
-        synchronized (fights) {
-            return new ArrayList<>(fights);
-        }
     }
 
     public boolean isFighting() {
@@ -47,12 +45,51 @@ public class PlayerCombat {
         }
     }
 
-    public boolean isActivelyFighting(long hit, long damage) { // todo
+    public boolean isActivelyFighting(SpartanPlayer target, long hit, long damage, boolean both) {
+        if (!fights.isEmpty()) {
+            boolean hitB = false,
+                    damageB = false,
+                    hasTarget = target != null;
+
+            for (PlayerFight fight : fights) {
+                PlayerOpponent[] opponents = fight.getOpponent(profile);
+
+                if (!hasTarget || opponents[1].player.equals(target)) {
+                    if (!damageB && opponents[0].getLastDamage(true) <= damage) {
+                        if (both) {
+                            damageB = true;
+
+                            if (hitB) {
+                                return true;
+                            }
+                        } else {
+                            return true;
+                        }
+                    }
+                    if (!hitB && opponents[0].getLastHit(true) <= hit) {
+                        if (both) {
+                            hitB = true;
+
+                            if (damageB) {
+                                return true;
+                            }
+                        } else {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
-    public boolean isActivelyFighting(boolean hit, boolean damage) {
-        return isActivelyFighting(hit ? 2_500L : -1L, damage ? 2_500L : -1L);
+    public boolean isActivelyFighting(SpartanPlayer target, boolean hit, boolean damage, boolean both) {
+        return isActivelyFighting(
+                target,
+                hit ? CombatUtils.combatTimeRequirement : -1L,
+                damage ? 2_500L : -1L,
+                both
+        );
     }
 
     public PlayerFight getFight(SpartanPlayer opponent) {
@@ -73,7 +110,12 @@ public class PlayerCombat {
                 }
             }
         }
-        return new PlayerFight(new PlayerOpponent(profile.getSpartanPlayer()), new PlayerOpponent(opponent));
+        PlayerFight fight = new PlayerFight(
+                new PlayerOpponent(profile.getSpartanPlayer()),
+                new PlayerOpponent(opponent)
+        );
+        fights.add(fight);
+        return fight;
     }
 
     public void track() {

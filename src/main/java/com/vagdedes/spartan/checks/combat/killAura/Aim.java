@@ -15,7 +15,6 @@ import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.TrigonometryUtils;
 import com.vagdedes.spartan.utils.math.statistics.LinearRegression;
@@ -227,7 +226,7 @@ public class Aim extends DetectionExecutor {
                 entity,
                 width, height,
                 location.getYaw(), location.getPitch(),
-                PlayerData.combatTimeRequirement,
+                CombatUtils.combatTimeRequirement,
                 true
         );
     }

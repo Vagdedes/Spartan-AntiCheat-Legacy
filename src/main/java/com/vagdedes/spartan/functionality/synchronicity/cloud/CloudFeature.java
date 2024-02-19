@@ -35,8 +35,7 @@ public class CloudFeature {
             disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length),
             specificDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length),
             allDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
-    static final CopyOnWriteArrayList<UUID> punishedPlayers = new CopyOnWriteArrayList<>(),
-            updatedPunishedPlayers = new CopyOnWriteArrayList<>();
+    static final List<UUID> punishedPlayers = new ArrayList<>();
 
     // Exception
     static final int exceptionCooldownMinutes = 5 * 1200;
@@ -208,8 +207,10 @@ public class CloudFeature {
             disabledDetections.clear();
             specificDisabledDetections.clear();
             allDisabledDetections.clear();
-            punishedPlayers.clear();
-            updatedPunishedPlayers.clear();
+
+            synchronized (punishedPlayers) {
+                punishedPlayers.clear();
+            }
         } else {
             identification = "identification=" + IDs.user() + "|" + IDs.nonce();
         }
