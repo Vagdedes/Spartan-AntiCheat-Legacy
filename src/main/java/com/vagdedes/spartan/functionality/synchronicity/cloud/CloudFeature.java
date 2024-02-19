@@ -21,9 +21,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-public class CloudFeature {
+public class CloudFeature { // todo simplify and improve punished players
 
     // URLs
     static final String website = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL21pbmVjcmFmdC9jbG91ZC8=",
@@ -82,13 +81,6 @@ public class CloudFeature {
                 }
             }, 1L, 1L);
         }
-    }
-
-    public static String getMaximumServerLimitMessage() {
-        return "You have reached your Maximum Server Limit. " +
-                "Register your account on §nhttps://www.vagdedes.com/account/profile§r " +
-                "§lOR§r join the Discord server " +
-                "§lOR§r use the " + IDs.getPlatform(true) + " platform to verify";
     }
 
     // Separator
@@ -180,21 +172,13 @@ public class CloudFeature {
 
     // Separator
 
-    static boolean recentError(long ms, boolean includePreview) {
-        return connectionFailedCooldown >= ms && (includePreview || !IDs.isPreview());
-    }
-
-    static boolean recentError(long ms) {
-        return recentError(ms, false);
-    }
-
     public static void throwError(Exception object, String function) {
         long ms = System.currentTimeMillis();
 
-        if (!recentError(ms)) {
+        if (connectionFailedCooldown >= ms) {
             connectionFailedCooldown = ms + (connectionRefreshFrequencyInMinutes * 60_000L);
 
-            if (!hasException() && AwarenessNotifications.areEnabled()) {
+            if (AwarenessNotifications.areEnabled()) {
                 AwarenessNotifications.forcefullySend("(" + function + ") Failed to connect to the Game Cloud.");
                 AwarenessNotifications.forcefullySend("Error: " + object.getMessage());
                 AwarenessNotifications.forcefullySend("In Depth: " + object);
@@ -219,7 +203,7 @@ public class CloudFeature {
     public static void refresh(boolean independent) {
         long ms = System.currentTimeMillis();
 
-        if (!recentError(ms) && connectionRefreshCooldown[independent ? 0 : 1] <= ms) {
+        if (connectionRefreshCooldown[independent ? 0 : 1] <= ms) {
             connectionRefreshCooldown[independent ? 0 : 1] = ms + 60_000L;
             connectionRefreshTimer = connectionRefreshFrequencyInMinutes * 1200;
             boolean async = !SpartanBukkit.isSynchronised(),

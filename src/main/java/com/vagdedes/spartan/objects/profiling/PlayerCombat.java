@@ -114,8 +114,10 @@ public class PlayerCombat {
                 new PlayerOpponent(profile.getSpartanPlayer()),
                 new PlayerOpponent(opponent)
         );
-        fights.add(fight);
-        return fight;
+        synchronized (fights) {
+            fights.add(fight);
+            return fight;
+        }
     }
 
     public void track() {

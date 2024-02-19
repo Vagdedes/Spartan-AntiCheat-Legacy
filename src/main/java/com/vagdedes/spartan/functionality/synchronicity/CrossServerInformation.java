@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class CrossServerInformation {
+public class CrossServerInformation { // todo simplify
 
 
     private static int max = 200, ticks = 0, importantTicks = 0;
@@ -120,7 +120,7 @@ public class CrossServerInformation {
                                 // Separator
                                 type = "notification";
 
-                                if (notifications.size() > 0) {
+                                if (!notifications.isEmpty()) {
                                     String[] notificationsArray = notifications.toArray(new String[0]);
                                     notifications.clear();
 

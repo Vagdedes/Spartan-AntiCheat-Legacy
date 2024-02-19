@@ -13,7 +13,7 @@ import org.bukkit.entity.Wolf;
 import java.util.UUID;
 
 public class mcMMO {
-    
+
     public static boolean hasAbility(SpartanPlayer p) {
         return Compatibility.CompatibilityType.mcMMO.isFunctional() && BackgroundMcMMO.hasAbility(p)
                 || hasAxeAbility(p)
@@ -21,13 +21,11 @@ public class mcMMO {
                 || hasTamingAbility(p);
     }
 
-    private static boolean hasAxeAbility(SpartanPlayer p) { // todo
+    private static boolean hasAxeAbility(SpartanPlayer p) {
         if (Compatibility.CompatibilityType.mcMMO.isFunctional()) {
             Material m = p.getItemInHand().getType();
             return PlayerData.isAxeItem(m)
-                    && PlayerData.isInActivePlayerCombat(p)
-                    && p.getProfile().getCombat().isActivelyFighting(null, true, true, false)
-                    && PlayerData.getEntitiesNumber(p, CombatUtils.maxHitDistance, false) > 0;
+                    && p.getEnemiesNumber(CombatUtils.maxHitDistance, true) > 0;
         }
         return false;
     }

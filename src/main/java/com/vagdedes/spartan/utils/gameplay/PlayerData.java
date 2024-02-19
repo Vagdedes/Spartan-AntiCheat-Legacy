@@ -33,7 +33,7 @@ import java.util.Map;
 
 import static org.bukkit.potion.PotionEffectType.*;
 
-public class PlayerData { // todo incorporate fights methods in combat object
+public class PlayerData {
 
     private static final Material
             gold_axe = MaterialUtils.get("gold_axe"),
@@ -442,7 +442,7 @@ public class PlayerData { // todo incorporate fights methods in combat object
 
     // Entities
 
-    public static int getEntitiesNumber(SpartanPlayer p, double distance, boolean findPusher) {
+    public static int getEntitiesNumber(SpartanPlayer p, double distance, boolean findPusher) { // todo remove
         int i = 0;
         boolean pusherFound = false;
 
