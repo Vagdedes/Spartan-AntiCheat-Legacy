@@ -58,7 +58,7 @@ public class NoSlowdown extends CheckExecutor {
             if (!check.isSilent(player.getWorld().getName(), player)
                     && check.getBooleanOption("check_bow_shots", true)
                     && !PlayerData.hasJumpEffect(player)
-                    && getMovementCase(player, true) != 0) {
+                    && getMovementCase(player) != 0) {
                 return canDo() && !PlayerData.hasSpeedEffect(player, player.getLocation());
             }
         } else if (object instanceof FoodLevelChangeEvent) {
@@ -82,7 +82,7 @@ public class NoSlowdown extends CheckExecutor {
                     return false;
                 }
             }
-            int cases = getMovementCase(player, false);
+            int cases = getMovementCase(player);
 
             if (cases != 0) {
                 cancel("type: food-eating, case: " + cases, player.getLocation(), 10, true);
@@ -121,7 +121,7 @@ public class NoSlowdown extends CheckExecutor {
                 || !player.hasShield()
                 && !PlayerData.holdsFood(player)
                 && player.getItemInHand().getType() != Material.POTION)) {
-            int cases = getMovementCase(player, false);
+            int cases = getMovementCase(player);
 
             if (cases != 0) {
                 Material[] materials = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ?
@@ -170,10 +170,9 @@ public class NoSlowdown extends CheckExecutor {
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse);
     }
 
-    private int getMovementCase(SpartanPlayer p, boolean lenient) {
-        return (lenient ? p.isCustomSprinting() : p.isSprinting()) ? 1 :
-                p.isWalking() ? 2 :
-                        p.isSprintJumping() ? 3 :
-                                p.isWalkJumping() ? 4 : 0;
+    private int getMovementCase(SpartanPlayer p) {
+        return p.isSprinting() ? 1 :
+                p.isSprintJumping() ? 3 :
+                        p.isWalkJumping() ? 4 : 0;
     }
 }

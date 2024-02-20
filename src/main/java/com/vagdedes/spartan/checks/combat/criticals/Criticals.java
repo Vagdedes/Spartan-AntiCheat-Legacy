@@ -130,7 +130,7 @@ public class Criticals extends CheckExecutor {
 
     private void checkMiniJump() {
         if (hackType.getCheck().getBooleanOption("check_mini_jump", true)
-                && !player.isSneaking() && player.getSneakingCount() == 0
+                && !player.isSneaking()
                 && isBlockFree(1.0)) {
             float fallDistance = player.getFallDistance();
 

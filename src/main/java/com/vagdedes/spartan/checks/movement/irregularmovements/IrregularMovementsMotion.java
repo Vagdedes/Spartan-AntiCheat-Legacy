@@ -243,7 +243,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     && !velocityScenarioASYNC
                     && !jumpEffectASYNC
                     && player.isJumping(vertical)) {
-                if (player.isVanillaSprinting()) {
+                if (player.isSprinting()) {
                     if (Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(

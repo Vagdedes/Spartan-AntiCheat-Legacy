@@ -29,8 +29,7 @@ public class DetectionLocation {
                 update(p, location, true);
             } else if (distance >= 1.0
                     && (p.getTimer().get("from-location=protection") > 10_000L
-                    || p.getLastViolation().getLastViolationTime(false) > 1_000L
-                    || !p.hasViolations())) {
+                    || !p.isDetected(true))) {
                 update(p, location, false);
             }
         } else {

@@ -75,51 +75,31 @@ import org.bukkit.util.Vector;
 import java.net.InetSocketAddress;
 import java.util.*;
 
-public class SpartanPlayer {
+public class SpartanPlayer { // todo simplify
 
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
     private static final Map<World, List<Entity>> worldEntities
             = Collections.synchronizedMap(new LinkedHashMap<>(Math.max(Bukkit.getWorlds().size(), 1)));
 
-    final String name;
+    private float walkSpeed, flySpeed, fallDistance;
+    private boolean gliding, swimming, sprinting, sneaking, frozen, onGroundCustom,
+            dead, sleeping, flying, usingItem, invulnerable;
+    private int ping, maximumNoDamageTicks, foodLevel, fireTicks;
+    private double eyeHeight, health;
+    private GameMode gameMode;
+    private final boolean bedrockPlayer;
+    private long damageTick, lastHeadMovement;
+    private final long creationTime, lastPlayed;
+    private final String name;
     private final UUID uuid;
     private final String ipAddress;
-    private boolean flying;
-    private boolean allowFlight;
-    private boolean dead;
-    private boolean sleeping;
-    private WeatherType playerWeather;
     private final Collection<PotionEffect> potionEffects;
-    private float walkSpeed;
-    private float flySpeed;
-    private SpartanInventory inventory;
-    private boolean gliding;
-    private boolean swimming;
-    private boolean sprinting;
-    private boolean sneaking;
-    private boolean frozen;
-    private double eyeHeight;
-    private GameMode gameMode;
-    private double health;
-    private boolean invulnerable;
-    private final boolean bedrockPlayer;
     private final ResearchEngine.DataType dataType;
     private final InetSocketAddress address;
-    private final long creationTime;
-    private final long lastPlayed;
-    private final long firstPlayed;
-    private boolean usingItem;
-    private int fireTicks;
-    private long damageTick;
     private EntityDamageEvent lastDamageCause;
+    private SpartanInventory inventory;
     private SpartanOpenInventory openInventory;
-    private int ping;
-    private int maximumNoDamageTicks;
-    private float fallDistance;
-    private int foodLevel;
-    private boolean onGroundCustom;
-    private long lastHeadMovement;
 
     // Data
 
@@ -160,8 +140,6 @@ public class SpartanPlayer {
             lastOffSprint,
             lastFall,
             lastJump,
-            walking, jumpWalking,
-            sprintingTime, jumpSprinting,
             swimmingTime,
             flyingTime,
             lastLiquidTime;
@@ -319,7 +297,6 @@ public class SpartanPlayer {
                             p.setInvulnerable(p.isFrozen() || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && n.isInvulnerable());
 
                             // Bad
-                            p.setPlayerWeather(n.getPlayerWeather());
                             p.setHealth(n.getHealth());
                             p.setSleeping(n.isSleeping());
                             p.setInventory(n.getInventory(), n.getOpenInventory());
@@ -332,7 +309,7 @@ public class SpartanPlayer {
                                 p.setSwimming(n.isSwimming(), -1);
                             }
                             p.setGameMode(n.getGameMode());
-                            p.setFlying(n.isFlying(), n.getAllowFlight());
+                            p.setFlying(n.isFlying());
                             p.setFoodLevel(n.getFoodLevel(), false);
                             p.setDead(n.isDead());
                             EntityDamageEvent lastDamageCause = n.getLastDamageCause();
@@ -400,7 +377,6 @@ public class SpartanPlayer {
         this.ipAddress = PlayerLimitPerIP.get(p);
         this.name = p.getName();
         this.flying = p.isFlying();
-        this.allowFlight = p.getAllowFlight();
         this.dead = p.isDead();
         this.sleeping = p.isSleeping();
         this.walkSpeed = p.getWalkSpeed();
@@ -420,11 +396,9 @@ public class SpartanPlayer {
         this.fallDistance = p.getFallDistance();
         this.foodLevel = p.getFoodLevel();
         this.potionEffects = Collections.synchronizedList(new ArrayList<>(p.getActivePotionEffects()));
-        this.playerWeather = p.getPlayerWeather();
         this.ping = Latency.ping(p);
         this.frozen = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && p.isFrozen();
         this.lastPlayed = p.getLastPlayed();
-        this.firstPlayed = p.getFirstPlayed();
         this.customDistance = 0.0;
         this.customHorizontalDistance = 0.0;
         this.customVerticalDistance = 0.0;
@@ -440,10 +414,6 @@ public class SpartanPlayer {
         this.fallingTicks = 0;
         this.groundTicks = 0;
         this.extraPackets = 0;
-        this.sprintingTime = 0L;
-        this.jumpSprinting = 0L;
-        this.walking = 0L;
-        this.jumpWalking = 0;
         this.swimmingTime = 0L;
         this.flyingTime = 0L;
         this.lastLiquidTime = 0L;
@@ -641,15 +611,6 @@ public class SpartanPlayer {
             }
             return false;
         }
-    }
-
-    public boolean hasViolations() {
-        for (LiveViolation liveViolation : violations) {
-            if (liveViolation.hasLevel()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public int getViolationCount() {
@@ -960,21 +921,9 @@ public class SpartanPlayer {
         return ipAddress;
     }
 
-    public WeatherType getPlayerWeather() {
-        return playerWeather;
-    }
-
-    public synchronized void setPlayerWeather(WeatherType weatherType) {
-        playerWeather = weatherType;
-    }
-
     public boolean isFlying() {
         Entity vehicle = getVehicle();
         return vehicle != null ? vehicle instanceof Player && ((Player) vehicle).isFlying() : flying;
-    }
-
-    public boolean getAllowFlight() {
-        return allowFlight;
     }
 
     public boolean wasFlying() {
@@ -993,12 +942,11 @@ public class SpartanPlayer {
         lastLiquidTime = 0L;
     }
 
-    public synchronized void setFlying(boolean flying, boolean allowFlight) {
+    public synchronized void setFlying(boolean flying) {
         if (!flying) {
             flying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && gameMode == GameMode.SPECTATOR;
         }
         this.flying = flying;
-        this.allowFlight = allowFlight;
 
         if (flying) {
             this.flyingTime = System.currentTimeMillis() + 3_000L;
@@ -1040,20 +988,15 @@ public class SpartanPlayer {
             Double nmsDistance = getNmsDistance();
             return nmsDistance != null && nmsDistance >= 0.1
                     || getCustomDistance() >= 0.1
-                    || isSprinting() || isWalking()
-                    || isSprintJumping() || isWalkJumping()
+                    || isSprinting() || isSprintJumping() || isWalkJumping()
                     || Damage.getLastReceived(this) <= 100L;
         } else {
             return false;
         }
     }
 
-    public boolean isVanillaSprinting() {
-        return sprinting;
-    }
-
     public boolean isSprinting() {
-        return sprinting || isCustomSprinting();
+        return sprinting;
     }
 
     public synchronized void setSprinting(boolean sprinting) {
@@ -1084,12 +1027,7 @@ public class SpartanPlayer {
     }
 
     public boolean refreshOnGroundCustom(SpartanLocation from) {
-        if (!TestServer.isIdentified() && this.isOnGround()
-
-                && (Config.settings.getBoolean("Performance.use_vanilla_ground_method")
-                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional())) {
-            this.onGroundCustom = true; // Vanilla On-Ground When Necessary
-        } else if (PlayerData.isOnGround(this, this.getLocation(), 0.0)) {
+        if (PlayerData.isOnGround(this, this.getLocation(), 0.0)) {
             this.onGroundCustom = true; // Server Current Location
         } else if (from != null && PlayerData.isOnGround(this, from, 0.0)) {
             this.onGroundCustom = true; // Server Previous Location
@@ -1438,10 +1376,6 @@ public class SpartanPlayer {
 
     public long getLastPlayed() {
         return lastPlayed;
-    }
-
-    public long getFirstPlayed() {
-        return firstPlayed;
     }
 
     public boolean isUsingItem() {
@@ -1831,10 +1765,6 @@ public class SpartanPlayer {
         return isOnGroundCustom() != isOnGround();
     }
 
-    public boolean isAnyOnGround() {
-        return isOnGroundCustom() || isOnGround();
-    }
-
     // Jumping
 
     public boolean isJumping(double d) {
@@ -1944,10 +1874,6 @@ public class SpartanPlayer {
     }
 
     // Speed
-
-    public int getSneakingCount() {
-        return getBuffer().get("sneaking-counter");
-    }
 
     public long getLastOffSprint() {
         return System.currentTimeMillis() - lastOffSprint;
@@ -2084,25 +2010,13 @@ public class SpartanPlayer {
 
     // Border
 
-    public boolean isOutsideOfTheBorder() {
+    public boolean isOutsideOfTheBorder(double deviation) {
         SpartanLocation loc = getLocation();
         WorldBorder border = getWorld().getWorldBorder();
-        double size = border.getSize() / 2.0;
+        double size = (border.getSize() / 2.0) + deviation;
         Location center = border.getCenter();
         return Math.abs(loc.getX() - center.getX()) > size
                 || Math.abs(loc.getZ() - center.getZ()) > size;
-    }
-
-    public boolean isInTheBorder() {
-        SpartanLocation loc = getLocation();
-        WorldBorder border = getWorld().getWorldBorder();
-        double sizeMinus = (border.getSize() / 2.0) - 1.0,
-                sizePlus = sizeMinus + 2.0;
-        Location center = border.getCenter();
-        double x = Math.abs(loc.getX() - center.getX()),
-                z = Math.abs(loc.getZ() - center.getZ());
-        return x >= sizeMinus && x <= sizePlus
-                || z >= sizeMinus && z <= sizePlus;
     }
 
     // Counters
@@ -2160,72 +2074,12 @@ public class SpartanPlayer {
 
     // Movement
 
-    public boolean isCustomSprinting() {
-        return sprintingTime > System.currentTimeMillis();
-    }
-
-    public synchronized void setSprinting(int ticks) {
-        this.sprintingTime = System.currentTimeMillis() + (ticks * 50L);
-
-        if (ticks > 0) {
-            removeLastLiquidTime();
-            handlers.removeMany(Handlers.HandlerFamily.Velocity);
-
-            if (!Liquid.isLocation(this, this.getLocation())) {
-                this.removeLastLiquidTime();
-            }
-        }
-    }
-
-    public boolean isWalking() {
-        return walking > System.currentTimeMillis();
-    }
-
-    public synchronized void setWalking(int ticks) {
-        this.walking = System.currentTimeMillis() + (ticks * 50L);
-
-        if (ticks > 0) {
-            removeLastLiquidTime();
-            handlers.removeMany(Handlers.HandlerFamily.Velocity);
-
-            if (!Liquid.isLocation(this, this.getLocation())) {
-                this.removeLastLiquidTime();
-            }
-        }
-    }
-
     public boolean isWalkJumping() {
-        return jumpWalking > System.currentTimeMillis();
-    }
-
-    public synchronized void setJumpWalking(int ticks) {
-        this.jumpWalking = System.currentTimeMillis() + (ticks * 50L);
-
-        if (ticks > 0) {
-            removeLastLiquidTime();
-            handlers.removeMany(Handlers.HandlerFamily.Velocity);
-
-            if (!Liquid.isLocation(this, this.getLocation())) {
-                this.removeLastLiquidTime();
-            }
-        }
+        return !sprinting && getLastJump() <= (TPS.tickTime * 2L);
     }
 
     public boolean isSprintJumping() {
-        return jumpSprinting > System.currentTimeMillis();
-    }
-
-    public synchronized void setJumpSprinting(int ticks) {
-        this.jumpSprinting = System.currentTimeMillis() + (ticks * 50L);
-
-        if (ticks > 0) {
-            removeLastLiquidTime();
-            handlers.removeMany(Handlers.HandlerFamily.Velocity);
-
-            if (!Liquid.isLocation(this, this.getLocation())) {
-                this.removeLastLiquidTime();
-            }
-        }
+        return sprinting && getLastJump() <= (TPS.tickTime * 2L);
     }
 
     public boolean isCrawling() {

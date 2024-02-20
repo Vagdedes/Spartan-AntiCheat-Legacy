@@ -2,7 +2,6 @@ package com.vagdedes.spartan.handlers.tracking;
 
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.handlers.stability.Cache;
-import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Decimals;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -36,8 +35,7 @@ public class CombatProcessing {
         remove(p);
     }
 
-    public static void runMove(SpartanPlayer p, SpartanLocation to,
-                               Cooldowns cooldowns, Decimals decimals) {
+    public static void runMove(SpartanPlayer p, SpartanLocation to) {
         if (p.canRunChecks(false)) {
             UUID uuid = p.getUniqueId();
             Vector[] directions = directionalComparison.get(uuid);
@@ -45,11 +43,11 @@ public class CombatProcessing {
 
             if (directions != null) {
                 Vector yawDirection = CombatUtils.getDirection(yawVar, 0.0f);
-                decimals.add(baseKey + yawDifference, Math.toDegrees(yawDirection.distance(directions[0])), pastTicks);
-                cooldowns.add(baseKey + yawDifference + cooldownKey, pastTicks);
+                p.getDecimals().add(baseKey + yawDifference, Math.toDegrees(yawDirection.distance(directions[0])), pastTicks);
+                p.getCooldowns().add(baseKey + yawDifference + cooldownKey, pastTicks);
                 Vector pitchDirection = CombatUtils.getDirection(0.0f, pitchVar);
-                decimals.add(baseKey + pitchDifference, Math.toDegrees(pitchDirection.distance(directions[1])), pastTicks);
-                cooldowns.add(baseKey + pitchDifference + cooldownKey, pastTicks);
+                p.getDecimals().add(baseKey + pitchDifference, Math.toDegrees(pitchDirection.distance(directions[1])), pastTicks);
+                p.getCooldowns().add(baseKey + pitchDifference + cooldownKey, pastTicks);
                 directionalComparison.put(uuid, new Vector[]{yawDirection, pitchDirection});
             } else {
                 directionalComparison.put(uuid, new Vector[]{
@@ -57,10 +55,10 @@ public class CombatProcessing {
                         CombatUtils.getDirection(0.0f, pitchVar)
                 });
             }
-            decimals.add(baseKey + yaw, yawVar, pastTicks);
-            cooldowns.add(baseKey + yaw + cooldownKey, pastTicks);
-            decimals.add(baseKey + pitch, pitchVar, pastTicks);
-            cooldowns.add(baseKey + pitch + cooldownKey, pastTicks);
+            p.getDecimals().add(baseKey + yaw, yawVar, pastTicks);
+            p.getCooldowns().add(baseKey + yaw + cooldownKey, pastTicks);
+            p.getDecimals().add(baseKey + pitch, pitchVar, pastTicks);
+            p.getCooldowns().add(baseKey + pitch + cooldownKey, pastTicks);
         }
     }
 

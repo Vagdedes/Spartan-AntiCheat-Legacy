@@ -14,9 +14,6 @@ import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import com.vagdedes.spartan.handlers.tracking.MovementProcessing;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Cooldowns;
-import com.vagdedes.spartan.objects.data.Decimals;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -25,7 +22,6 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -80,7 +76,7 @@ public class EventsHandler7 implements Listener {
         }
 
         // Objects
-        p.setFlying(e.isCancelled() ? n.isFlying() : e.isFlying() || n.isFlying(), n.getAllowFlight());
+        p.setFlying(e.isCancelled() ? n.isFlying() : e.isFlying() || n.isFlying());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -116,7 +112,6 @@ public class EventsHandler7 implements Listener {
             return;
         }
         PlayerData.update(p, n, false);
-        Decimals decimals = p.getDecimals();
         boolean cancelled = e.isCancelled();
 
         if (!p.canDo(false)) {
@@ -148,9 +143,7 @@ public class EventsHandler7 implements Listener {
         }
 
         // Lag
-        Buffer buffer = p.getBuffer();
-
-        if (buffer.start("move-event", 1) > 1
+        if (p.getBuffer().start("move-event", 1) > 1
                 && TPS.areLow(p)) {
             return;
         }
@@ -160,14 +153,14 @@ public class EventsHandler7 implements Listener {
                 toY = to.getY(),
                 fromY = from.getY(),
                 dis = Math.sqrt(preXZ + AlgebraUtils.getPreDistance(toY, fromY)),
-                rem = toY - to.getBlockY(),
+                box = toY - to.getBlockY(),
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
         boolean crawling = p.isCrawling();
 
         // Handlers
-        Cooldowns cooldowns = p.getCooldowns();
-        CombatProcessing.runMove(p, to, cooldowns, decimals);
+        MovementProcessing.run(p, dis, hor, ver, box, crawling);
+        CombatProcessing.runMove(p, to);
 
         // Detections
         if (!crawling) {
@@ -182,12 +175,6 @@ public class EventsHandler7 implements Listener {
                 && p.isOnGround() && p.isOnGroundCustom()) {
             return;
         }
-
-        // Values
-        Entity vehicle = p.getVehicle();
-
-        // Utils
-        MovementProcessing.run(p, to, vehicle, buffer, cooldowns, decimals, dis, hor, ver, rem, crawling); // Optimised
 
         // Detections
         if (!crawling) {
@@ -217,7 +204,6 @@ public class EventsHandler7 implements Listener {
         }
         // Object
         p.resetLocationData();
-        p.setPlayerWeather(n.getPlayerWeather());
 
         // Detections
         CheckProtection.cancel(p.getUniqueId(), 20, true);

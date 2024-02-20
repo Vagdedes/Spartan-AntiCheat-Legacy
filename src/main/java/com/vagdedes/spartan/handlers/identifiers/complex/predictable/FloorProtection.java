@@ -25,7 +25,7 @@ public class FloorProtection {
                     || dmg == EntityDamageEvent.DamageCause.VOID
                     || dmg == EntityDamageEvent.DamageCause.POISON
                     || dmg == EntityDamageEvent.DamageCause.WITHER
-                    || dmg == EntityDamageEvent.DamageCause.SUFFOCATION && !p.isOutsideOfTheBorder()
+                    || dmg == EntityDamageEvent.DamageCause.SUFFOCATION && !p.isOutsideOfTheBorder(0.0)
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) && dmg == EntityDamageEvent.DamageCause.HOT_FLOOR
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) && dmg == EntityDamageEvent.DamageCause.MAGIC
                     || dmg == EntityDamageEvent.DamageCause.CONTACT) {

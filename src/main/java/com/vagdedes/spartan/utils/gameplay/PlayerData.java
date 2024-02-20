@@ -17,7 +17,6 @@ import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -438,28 +437,6 @@ public class PlayerData {
             return buffer.getRemainingTicks(key) > 0 ? buffer.get(key, 0) : 0;
         }
         return 0;
-    }
-
-    // Entities
-
-    public static int getEntitiesNumber(SpartanPlayer p, double distance, boolean findPusher) { // todo remove
-        int i = 0;
-        boolean pusherFound = false;
-
-        for (Entity e : p.getNearbyEntities(distance, distance, distance)) {
-            if (e instanceof LivingEntity && (!(e instanceof Player) || p.canSee((Player) e))) {
-                if (findPusher
-                        && (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && !e.getPassengers().isEmpty()
-                        || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && e.getPassenger() != null)) {
-                    pusherFound = true;
-                } else {
-                    i++;
-                }
-            } else if (e instanceof Boat) {
-                i++;
-            }
-        }
-        return pusherFound ? Integer.MAX_VALUE : i;
     }
 
     // Ground

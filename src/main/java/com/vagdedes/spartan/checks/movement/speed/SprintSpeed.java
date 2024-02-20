@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.DetectionExecutor;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -29,7 +28,10 @@ public class SprintSpeed extends DetectionExecutor {
             new Direction("diagonal-2", -135.0f, true)
     };
     private final Map<Integer, SpartanLocation> locationMemory = new LinkedHashMap<>(directions.length);
-    private static final double distanceRequirement = 0.01;
+    private static final double
+            distanceRequirement = 0.01,
+            sprintingMaxSpeed = 0.287;
+
     private static final String key = "sprint=";
 
     // Separator
@@ -77,21 +79,10 @@ public class SprintSpeed extends DetectionExecutor {
             return;
         }
         runAsync(() -> {
-            int attempts;
-            boolean vanillaSprinting = player.isSprinting(),
-                    customSprinting = player.isCustomSprinting();
-
-            if (customSprinting) {
-                attempts = buffer.increase("sprint", 1);
-            } else {
-                buffer.remove("sprint");
-                attempts = 0;
-            }
-
             if (player.getFoodLevel() <= 6) {
-                int cases = customSprinting && attempts >= 10 ? 2 :
-                        vanillaSprinting ? 1 :
-                                player.isSprintJumping() ? 3 : 0;
+                int cases = player.isSprinting() ? 1 :
+                        player.isSprintJumping() ? 3
+                                : 0;
 
                 if (cases != 0 && buffer.start("food=level", 15) >= 10) {
                     cancel("type: sprint(food-level), case: " + cases, from);
@@ -111,7 +102,7 @@ public class SprintSpeed extends DetectionExecutor {
             return;
         }
         runAsync(() -> {
-            double limit = player.getDecimals(hackType).get(key + "limit", MovementProcessing.sprintingMaxSpeed);
+            double limit = player.getDecimals(hackType).get(key + "limit", sprintingMaxSpeed);
             float yaw = to.getYaw();
             boolean violated = false,
                     jumping = player.getLastJump() <= 1_000L;

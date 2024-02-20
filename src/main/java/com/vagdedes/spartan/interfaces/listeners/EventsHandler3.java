@@ -9,7 +9,6 @@ import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.functionality.protections.InteractionsPerTick;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
-import com.vagdedes.spartan.handlers.bug.FalseFallDamage;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -100,12 +99,8 @@ public class EventsHandler3 implements Listener {
                 // Detections
                 ((NoFall) p.getExecutor(Enums.HackType.NoFall)).manageRatio(dmg, e.getDamage(), false);
 
-                if (FalseFallDamage.runDamage(p, dmg)) {
-                    e.setCancelled(true);
-                } else {
-                    // Protections
-                    FloorProtection.runDamage(p, dmg);
-                }
+                // Protections
+                FloorProtection.runDamage(p, dmg);
             }
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
@@ -194,13 +189,13 @@ public class EventsHandler3 implements Listener {
                 p.getExecutor(Enums.HackType.ItemDrops).handle(false, e);
 
                 // Protections
-                    if (InteractionsPerTick.run(p, b, action)/* || FenceClick.run(p, b, action)*/) {
-                        e.setCancelled(true);
-                    } else if (!customBlock) {
-                        // Detections
-                        p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
-                        Liquid.runInteract(p, action);
-                    }
+                if (InteractionsPerTick.run(p, b, action)/* || FenceClick.run(p, b, action)*/) {
+                    e.setCancelled(true);
+                } else if (!customBlock) {
+                    // Detections
+                    p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
+                    Liquid.runInteract(p, action);
+                }
             } else {
                 // Detections
                 p.getExecutor(Enums.HackType.FastClicks).handle(false, e);
