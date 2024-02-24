@@ -43,17 +43,10 @@ public class BackgroundAPI {
         return Config.settings.getBoolean(path);
     }
 
+    @Deprecated
     static String getCategory(Player p, HackType hackType) {
-        SpartanPlayer player = SpartanBukkit.getPlayer(p);
-
-        if (player != null) {
-            return Check.getCategoryFromViolations(
-                    player.getViolations(hackType).getLevel(),
-                    hackType,
-                    player.getProfile().isSuspectedOrHacker(hackType)
-            ).toString();
-        }
-        return Enums.PunishmentCategory.UNLIKE.toString();
+        AwarenessNotifications.forcefullySend("The API method 'getCategory' has been removed.");
+        return null;
     }
 
     @Deprecated

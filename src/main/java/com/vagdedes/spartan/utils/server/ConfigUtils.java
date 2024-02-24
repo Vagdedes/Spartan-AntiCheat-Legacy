@@ -11,12 +11,10 @@ import com.vagdedes.spartan.objects.profiling.PunishmentHistory;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
-import com.vagdedes.spartan.objects.system.LiveViolation;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -131,15 +129,8 @@ public class ConfigUtils {
         message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
 
         if (hackType != null) {
-            LiveViolation liveViolation = p.getViolations(hackType);
-            int lastLevel = liveViolation.getLastCancelledLevel();
-            boolean cancelled = lastLevel != 0;
-            int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
-            String category = cancelled ? Enums.PunishmentCategory.UNLIKE.toString() : Check.getCategoryFromViolations(violations, hackType, p.getProfile().isSuspectedOrHacker(hackType)).toString();
             message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
-            message = replace(message, "{vls:detection}", String.valueOf(violations));
-            message = replace(message, "{category:detection}", category);
-            message = replace(message, "{detection:category:adverb}", (category.endsWith("ly") ? category : category + "ly"));
+            message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getLevel()));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }
@@ -181,15 +172,8 @@ public class ConfigUtils {
                 message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
 
                 if (hasHackType) {
-                    LiveViolation liveViolation = p.getViolations(hackType);
-                    int lastLevel = liveViolation.getLastCancelledLevel();
-                    boolean cancelled = lastLevel != 0;
-                    int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
-                    String category = cancelled ? Enums.PunishmentCategory.UNLIKE.toString() : Check.getCategoryFromViolations(violations, hackType, p.getProfile().isSuspectedOrHacker(hackType)).toString();
                     message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
-                    message = replace(message, "{vls:detection}", String.valueOf(violations));
-                    message = replace(message, "{category:detection}", category);
-                    message = replace(message, "{detection:category:adverb}", (category.endsWith("ly") ? category : category + "ly"));
+                    message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getLevel()));
                 }
             } else if (hasHackType) {
                 PlayerProfile profile = ResearchEngine.getPlayerProfileAdvanced(name, false);

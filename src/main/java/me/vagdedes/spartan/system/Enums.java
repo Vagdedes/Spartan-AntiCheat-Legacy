@@ -48,44 +48,6 @@ public class Enums {
         }
     }
 
-    public enum PunishmentCategory {
-        UNLIKE, POTENTIAL, CERTAIN, DEFINITE, ABSOLUTE;
-
-        private final String string;
-        private final double multiplier;
-
-        PunishmentCategory() {
-            string = this.name().toLowerCase();
-
-            switch (this.ordinal()) {
-                case 0:
-                    multiplier = 1.0;
-                    break;
-                case 1:
-                    multiplier = 2.0;
-                    break;
-                case 2:
-                    multiplier = 3.5;
-                    break;
-                case 3:
-                    multiplier = 5.5;
-                    break;
-                default:
-                    multiplier = 8.0;
-                    break;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return string;
-        }
-
-        public double getMultiplier() {
-            return multiplier;
-        }
-    }
-
     public enum Permission {
         CONDITION, STAFF_CHAT, WAVE, RECONNECT, ADMIN, RELOAD,
         KICK, BYPASS, MANAGE, INFO, CHAT_PROTECTION, WARN, USE_BYPASS,

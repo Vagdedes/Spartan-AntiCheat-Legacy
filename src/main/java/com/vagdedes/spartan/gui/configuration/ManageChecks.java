@@ -145,37 +145,11 @@ public class ManageChecks extends InventoryMenu {
         }
 
         // Separator
-        if (Config.isLegacy()) {
-            lore.add("");
-            lore.add("§7Punishment Categories§8:");
-
-            for (Enums.PunishmentCategory category : Enums.PunishmentCategory.values()) {
-                int violations = Check.getCategoryPunishment(hackType, ResearchEngine.DataType.Universal, category);
-
-                if (violations == 1) {
-                    lore.add("§4" + category + " §c" + violations + " Violation");
-                } else {
-                    lore.add("§4" + category + " §c" + violations + " Violations");
-                }
-            }
-        }
-
-        // Separator
         lore.add("");
         lore.add((enabled ? "§a" : "§c") + "Enabled §8/ "
                 + (silent ? "§a" : "§c") + "Silent §8/ "
                 + (check.canPunish() ? "§a" : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");
-
-        /*int violationDivisor = ViolationDivisor.get(p, null, HackType);
-        int defaultViolationDivisor = DefaultConfiguration.getViolationDivisor(HackType);
-        lore.add("§7Violation Divisor§8: §4" + violationDivisor + (violationDivisor != defaultViolationDivisor ? " (Default: " + defaultViolationDivisor + ")" : ""));
-
-        if (Config.canBeSilent(HackType)) {
-            int cancelViolation = CancelViolation.getPreferred(HackType, world);
-            int defaultCancelDivisor = DefaultConfiguration.getCancelAfterViolation(HackType) + 1;
-            lore.add("§7Cancel Violation§8: §4" + cancelViolation + (cancelViolation != defaultCancelDivisor ? " (Default: " + defaultViolationDivisor + ")" : ""));
-        }*/
 
         if (Config.isLegacy()) {
             for (int i = 1; i <= Check.maxViolationsPerCycle; i++) {

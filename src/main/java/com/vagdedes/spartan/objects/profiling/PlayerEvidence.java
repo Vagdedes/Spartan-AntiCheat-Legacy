@@ -14,6 +14,8 @@ import java.util.*;
 
 public class PlayerEvidence {
 
+    public static final double standardRatio = 3.5;
+
     enum EvidenceType {
         Hacker(2),
         Suspected(1),
@@ -149,12 +151,11 @@ public class PlayerEvidence {
                             - AlgebraUtils.integerCeil(Latency.getDelay(player));
 
                     if (violationCount > 0) {
-                        double violationRatio = (violationCount / ((double) CancelViolation.get(hackType, profile.getDataType()))),
-                                thresholdSurpassing = violationRatio / Check.analysisMultiplier;
+                        double ratio = (violationCount / ((double) CancelViolation.get(hackType, profile.getDataType())));
 
-                        if (thresholdSurpassing >= 1.0) {
+                        if (ratio >= standardRatio) {
                             this.live.put(hackType,
-                                    "Average: " + AlgebraUtils.integerRound(thresholdSurpassing * 100.0) + "%"
+                                    "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
                             );
                             this.judgeLocal();
                             SpartanMenu.playerInfo.refresh(player.getName());

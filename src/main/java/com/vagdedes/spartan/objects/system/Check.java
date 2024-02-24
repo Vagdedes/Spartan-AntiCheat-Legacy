@@ -4,9 +4,9 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TestServer;
+import com.vagdedes.spartan.objects.profiling.PlayerEvidence;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -23,44 +23,15 @@ import java.util.*;
 
 public class Check {
 
-    // Static Values
+    // Static
 
     public static final long violationCycleSeconds = 60_000L;
-
     public static final int
             maxCommands = 10,
             maxMath = 10,
             maxViolationsPerCycle = 100,
             minimumDefaultCancelViolation = 1,
             maximumDefaultCancelViolation = 6;
-
-    public static final Enums.PunishmentCategory analysisMultiplierCategory = Enums.PunishmentCategory.CERTAIN;
-    public static final double analysisMultiplier = analysisMultiplierCategory.getMultiplier();
-
-    // Static Methods
-
-    public static int getCategoryPunishment(int cancelViolation, Enums.PunishmentCategory category) {
-        return AlgebraUtils.integerRound(cancelViolation * category.getMultiplier());
-    }
-
-    public static int getCategoryPunishment(Enums.HackType hackType, ResearchEngine.DataType dataType, Enums.PunishmentCategory category) {
-        return getCategoryPunishment(CancelViolation.get(hackType, dataType), category);
-    }
-
-    public static Enums.PunishmentCategory getCategoryFromViolations(int violations, Enums.HackType hackType, boolean suspectedOrHacker) {
-        if (!suspectedOrHacker) {
-            int cancelViolation = hackType.getCheck().getCancelViolation();
-
-            for (Enums.PunishmentCategory category : Enums.PunishmentCategory.values()) {
-                if (violations <= (cancelViolation * category.getMultiplier())) {
-                    return category;
-                }
-            }
-        }
-        return Enums.PunishmentCategory.ABSOLUTE;
-    }
-
-    // Separator
 
     private static boolean canPunishByDefault(Enums.HackType hackType) {
         return hackType != Enums.HackType.GhostHand;
@@ -74,7 +45,7 @@ public class Check {
         return hackType != Enums.HackType.AutoRespawn;
     }
 
-    // Object Values
+    // Object
 
     private final Enums.HackType hackType;
     private String name;
@@ -411,7 +382,11 @@ public class Check {
                     try {
                         if (file.exists() || file.createNewFile()) {
                             for (int position = 0; position < Check.maxCommands; position++) {
-                                ConfigUtils.add(file, hackType + ".punishments." + analysisMultiplierCategory + "." + (position + 1), Config.settings.getDefaultPunishmentCommands().get(position));
+                                ConfigUtils.add(
+                                        file,
+                                        hackType + ".punishments." + AlgebraUtils.integerRound(this.cancelViolation * PlayerEvidence.standardRatio) + "." + (position + 1),
+                                        Config.settings.getDefaultPunishmentCommands().get(position)
+                                );
                             }
                         } else {
                             AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
@@ -1039,111 +1014,66 @@ public class Check {
             commandsFound = new ArrayList<>();
             String punishmentKey = hackType + ".punishments.";
 
-            // Categories Handler
-            Enums.PunishmentCategory[] categories = Enums.PunishmentCategory.values();
-            Set<Enums.PunishmentCategory> categoriesFound = new HashSet<>(categories.length);
-
-            for (Enums.PunishmentCategory category : categories) {
-                String loopKey = punishmentKey + category.toString();
-
-                if (config.contains(loopKey)) {
-                    categoriesFound.add(category);
-                }
-            }
-            boolean containsCategory = !categoriesFound.isEmpty();
-
-            if (containsCategory) {
-                int defaultCancelViolation = this.getCancelViolation();
-
-                for (Enums.PunishmentCategory category : categoriesFound) {
-                    String string = category.toString();
-                    int violationModifiable = AlgebraUtils.integerRound(defaultCancelViolation * category.getMultiplier());
-
-                    if (!commandsLegacy.containsKey(violationModifiable)) {
-                        List<String> commandsFoundModifiable = new LinkedList<>();
-
-                        for (int command = 1; command <= maxCommands; command++) {
-                            String punishmentKeyModifiable = punishmentKey + string + "." + command;
-
-                            if (config.contains(punishmentKeyModifiable)) {
-                                String commandContent = config.getString(punishmentKeyModifiable);
-
-                                if (commandContent != null && commandContent.length() > 0) {
-                                    commandsFoundModifiable.add(commandContent);
-                                }
-                            }
-                        }
-                        commandsLegacy.put(violationModifiable, commandsFoundModifiable);
-
-                        if (violation == violationModifiable) {
-                            commandsFound = commandsFoundModifiable;
-                        }
-                    }
-                }
-            }
-
             // Numbers Handler
-            if (commandsFound.isEmpty()) {
-                boolean containsNumber = config.contains(punishmentKey + violation);
-                Set<Integer> mathFound = new HashSet<>(maxMath);
+            boolean containsNumber = config.contains(punishmentKey + violation);
+            Set<Integer> mathFound = new HashSet<>(maxMath);
 
-                for (int math = 1; math <= maxMath; math++) {
-                    if (math > 1 && config.contains(punishmentKey + violation + "*" + math) || config.contains(punishmentKey + violation + "+" + math)) {
-                        mathFound.add(math);
-                    }
+            for (int math = 1; math <= maxMath; math++) {
+                if (math > 1 && config.contains(punishmentKey + violation + "*" + math) || config.contains(punishmentKey + violation + "+" + math)) {
+                    mathFound.add(math);
                 }
-                boolean containsMath = !mathFound.isEmpty();
+            }
+            boolean containsMath = !mathFound.isEmpty();
 
-                // Search Handler
-                if (containsNumber || containsMath) {
-                    for (int command = 1; command <= maxCommands; command++) {
-                        boolean multiply = false;
-                        String punishmentKeyModifiable = punishmentKey + violation;
-                        int mathKey = 0;
+            // Search Handler
+            if (containsNumber || containsMath) {
+                for (int command = 1; command <= maxCommands; command++) {
+                    boolean multiply = false;
+                    String punishmentKeyModifiable = punishmentKey + violation;
+                    int mathKey = 0;
 
-                        if (containsMath) {
-                            for (int math : mathFound) {
-                                String key = punishmentKeyModifiable + "*" + math + "." + command;
+                    if (containsMath) {
+                        for (int math : mathFound) {
+                            String key = punishmentKeyModifiable + "*" + math + "." + command;
+
+                            if (config.contains(key)) {
+                                multiply = true;
+                                mathKey = math;
+                                punishmentKeyModifiable = key;
+                                break;
+                            } else {
+                                key = punishmentKeyModifiable + "+" + math + "." + command;
 
                                 if (config.contains(key)) {
-                                    multiply = true;
                                     mathKey = math;
                                     punishmentKeyModifiable = key;
                                     break;
-                                } else {
-                                    key = punishmentKeyModifiable + "+" + math + "." + command;
-
-                                    if (config.contains(key)) {
-                                        mathKey = math;
-                                        punishmentKeyModifiable = key;
-                                        break;
-                                    }
                                 }
                             }
                         }
-                        if (mathKey == 0) {
-                            punishmentKeyModifiable = punishmentKeyModifiable + "." + command;
-                        }
+                    }
+                    if (mathKey == 0) {
+                        punishmentKeyModifiable = punishmentKeyModifiable + "." + command;
+                    }
 
-                        if (config.contains(punishmentKeyModifiable)) {
-                            String commandContent = config.getString(punishmentKeyModifiable);
+                    if (config.contains(punishmentKeyModifiable)) {
+                        String commandContent = config.getString(punishmentKeyModifiable);
 
-                            if (commandContent != null && !commandContent.isEmpty()) {
-                                commandsFound.add(commandContent);
-                                commandsLegacy.put(violation, commandsFound);
+                        if (commandContent != null && !commandContent.isEmpty()) {
+                            commandsFound.add(commandContent);
+                            commandsLegacy.put(violation, commandsFound);
 
-                                if (mathKey > 0 && violation > 0) {
-                                    int violationModifiable = violation;
+                            if (mathKey > 0 && violation > 0) {
+                                int violationModifiable = violation;
 
-                                    while (violationModifiable <= maxViolationsPerCycle) {
+                                while (violationModifiable <= maxViolationsPerCycle) {
 
-                                        if (multiply) {
-                                            violationModifiable *= mathKey;
-                                        } else {
-                                            violationModifiable += mathKey;
-                                        }
-                                        commandsLegacy.putIfAbsent(violationModifiable, commandsFound);
+                                    if (multiply) {
+                                        violationModifiable *= mathKey;
+                                    } else {
+                                        violationModifiable += mathKey;
                                     }
+                                    commandsLegacy.putIfAbsent(violationModifiable, commandsFound);
                                 }
                             }
                         }
