@@ -40,7 +40,7 @@ public class SuspicionNotifications {
         }
     }
 
-    private static boolean run(SpartanPlayer p) {
+    private static void run(SpartanPlayer p) {
         boolean isNull = p == null;
 
         if (!isNull) {
@@ -160,9 +160,8 @@ public class SuspicionNotifications {
                         message,
                         true
                 );
-                return true;
+                return;
             }
         }
-        return false;
     }
 }
