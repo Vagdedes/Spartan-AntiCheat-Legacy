@@ -11,36 +11,40 @@ import com.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameRule;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 public class AutoRespawn extends CheckExecutor {
 
     private static final HackType check = HackType.AutoRespawn;
     private static final long limit = 750L;
-    private static final Map<UUID, Long> hm = Cache.store(new ConcurrentHashMap<>(Config.getMaxPlayers()));
+    private static final Map<UUID, Long> memory
+            = Cache.store(Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers())));
 
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                if (!hm.isEmpty()) {
-                    for (Map.Entry<UUID, Long> entry : hm.entrySet()) {
-                        long time = System.currentTimeMillis() - entry.getValue();
+                if (!memory.isEmpty()) {
+                    synchronized (memory) {
+                        Iterator<Map.Entry<UUID, Long>> iterator = memory.entrySet().iterator();
 
-                        if (time <= limit) {
-                            SpartanPlayer p = SpartanBukkit.getPlayer(entry.getKey());
+                        while (iterator.hasNext()) {
+                            Map.Entry<UUID, Long> entry = iterator.next();
+                            long time = System.currentTimeMillis() - entry.getValue();
 
-                            if (p != null) {
-                                SpartanBukkit.runTask(p, () -> {
-                                    if (p != null && !p.isDead()) {
-                                        p.getExecutor(check).handle(false, time);
-                                    }
-                                });
+                            if (time <= limit) {
+                                SpartanPlayer p = SpartanBukkit.getPlayer(entry.getKey());
+
+                                if (p != null) {
+                                    SpartanBukkit.runTask(p, () -> {
+                                        if (p != null && !p.isDead()) {
+                                            p.getExecutor(check).handle(false, time);
+                                        }
+                                    });
+                                }
                             }
+                            iterator.remove();
                         }
                     }
-                    hm.clear();
                 }
             }, 1L, 1L);
         }
@@ -59,7 +63,11 @@ public class AutoRespawn extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
-            hm.put(player.getUniqueId(), System.currentTimeMillis());
+            long time = System.currentTimeMillis();
+
+            synchronized (memory) {
+                memory.put(player.getUniqueId(), time);
+            }
         }
         return false;
     }

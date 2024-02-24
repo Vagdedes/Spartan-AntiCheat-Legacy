@@ -7,12 +7,12 @@ import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MaximumCheckedPlayers {
 
-    private static final CopyOnWriteArrayList<UUID> list = new CopyOnWriteArrayList<>();
-    private static final List<UUID> priority = new ArrayList<>();
+    private static final List<UUID>
+            list = Collections.synchronizedList(new ArrayList<>()),
+            priority = new ArrayList<>();
     private static final int minimumPlayers = 20, refreshTicks = 20;
     public static final String option = "Performance.maximum_checked_players_at_once";
     private static int ticks = 0;
@@ -37,7 +37,7 @@ public class MaximumCheckedPlayers {
                             List<UUID> newList = new ArrayList<>(optionAmount);
 
                             // Add prioritised players first
-                            if (priority.size() > 0) {
+                            if (!priority.isEmpty()) {
                                 Iterator<UUID> iterator = priority.iterator();
 
                                 while (iterator.hasNext() && newList.size() < optionAmount) {
@@ -78,12 +78,6 @@ public class MaximumCheckedPlayers {
                 }
             }, 1L, 1L);
         }
-    }
-
-    static boolean isActive() {
-        int optionAmount = Config.settings.getInteger(option);
-        return optionAmount > 0
-                && SpartanBukkit.getPlayerCount() > Math.max(optionAmount, minimumPlayers);
     }
 
     public static void remove(SpartanPlayer player) {

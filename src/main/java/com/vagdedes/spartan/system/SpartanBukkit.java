@@ -16,7 +16,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanBukkit {
 
@@ -54,7 +53,8 @@ public class SpartanBukkit {
 
     public static final int hashCodeMultiplier = 31;
     public static final long hashCodeMultiplierLong = 31L;
-    private static final ConcurrentHashMap<UUID, SpartanPlayer> players = new ConcurrentHashMap<>(Config.getMaxPlayers());
+    private static final Map<UUID, SpartanPlayer> players =
+            Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     public static final UUID uuid = UUID.randomUUID();
     public static final Class<?> craftPlayer = ReflectionUtils.getClass(
             ReflectionUtils.class.getPackage().getName().substring(0, 19) // Package
@@ -62,20 +62,26 @@ public class SpartanBukkit {
     );
 
     public static void clear() {
-        players.clear();
+        synchronized (players) {
+            players.clear();
+        }
     }
 
     public static boolean isPlayer(UUID uuid) {
-        return players.containsKey(uuid);
+        synchronized (players) {
+            return players.containsKey(uuid);
+        }
     }
 
     public static SpartanPlayer getPlayer(String name) {
         if (!players.isEmpty()) {
             name = name.toLowerCase();
 
-            for (SpartanPlayer p : players.values()) {
-                if (p.getName().toLowerCase().equals(name)) {
-                    return p;
+            synchronized (players) {
+                for (SpartanPlayer p : players.values()) {
+                    if (p.getName().toLowerCase().equals(name)) {
+                        return p;
+                    }
                 }
             }
         }
@@ -90,18 +96,23 @@ public class SpartanBukkit {
     public static SpartanPlayer getPlayer(Player real) {
         if (!ProtocolLib.isTemporaryPLayer(real)) { // Temporary players have no UUIDs
             UUID uuid = real.getUniqueId();
-            SpartanPlayer player = players.get(uuid);
 
-            if (player == null && real.getAddress() != null) {
-                players.put(uuid, player = new SpartanPlayer(real, uuid));
+            synchronized (players) {
+                SpartanPlayer player = players.get(uuid);
+
+                if (player == null && real.getAddress() != null) {
+                    players.put(uuid, player = new SpartanPlayer(real, uuid));
+                }
+                return player;
             }
-            return player;
         }
         return null;
     }
 
     public static SpartanPlayer removePlayer(Player real) {
-        return players.remove(real.getUniqueId());
+        synchronized (players) {
+            return players.remove(real.getUniqueId());
+        }
     }
 
     public static int getPlayerCount() {
@@ -109,11 +120,15 @@ public class SpartanBukkit {
     }
 
     public static Set<UUID> getUUIDs() {
-        return new HashSet<>(players.keySet());
+        synchronized (players) {
+            return new HashSet<>(players.keySet());
+        }
     }
 
     public static List<SpartanPlayer> getPlayers() {
-        return new ArrayList<>(players.values());
+        synchronized (players) {
+            return new ArrayList<>(players.values());
+        }
     }
 
     // Separator

@@ -141,12 +141,9 @@ public class MorePackets extends CheckExecutor {
                                 });
 
                                 boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
-                                SpartanLocation handlerFrom = DetectionLocation.get(player, true);
-                                SpartanLocation teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
+                                SpartanLocation handlerFrom = DetectionLocation.get(player, true),
+                                        teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
 
-                                if (instant) {
-                                    DetectionLocation.set(player, teleportLocation);
-                                }
                                 cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", decreased-requirement: " + decreasedRequirement,
                                         instant ? teleportLocation : null, instant ? teleportTicks : 0);
                             }
@@ -189,8 +186,7 @@ public class MorePackets extends CheckExecutor {
                             } else {
                                 CancelViolation.force(player, hackType);
                             }
-                            DetectionLocation.set(player, initialLocation);
-                            cancel("type: horizontal(" + horizontalType + ")" + verbose, instant ? initialLocation : null, instant ? teleportTicks : 0);
+                            cancel("type: horizontal(" + horizontalType + ")" + verbose, initialLocation, instant ? teleportTicks : 0);
                             detected = true;
                         } else {
                             double totalVerticalMotionLimit = 0.5;
@@ -204,8 +200,7 @@ public class MorePackets extends CheckExecutor {
                                 } else {
                                     CancelViolation.force(player, hackType);
                                 }
-                                DetectionLocation.set(player, initialLocation);
-                                cancel("type: vertical" + verbose, instant ? initialLocation : null, instant ? teleportTicks : 0);
+                                cancel("type: vertical" + verbose, initialLocation, instant ? teleportTicks : 0);
                                 detected = true;
                             } else {
                                 detected = false;

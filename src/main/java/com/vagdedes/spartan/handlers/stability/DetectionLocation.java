@@ -6,15 +6,15 @@ import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DetectionLocation {
 
     private static final Map<UUID, SpartanLocation>
-            loc = new ConcurrentHashMap<>(Config.getMaxPlayers()),
-            set = new ConcurrentHashMap<>(Config.getMaxPlayers());
+            loc = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
 
     public static void run(SpartanPlayer p) {
         UUID uuid = p.getUniqueId();
@@ -27,9 +27,7 @@ public class DetectionLocation {
             if (distance > (MoveUtils.chunk * 2)
                     && !p.getProfile().isHacker()) {
                 update(p, location, true);
-            } else if (distance >= 1.0
-                    && (p.getTimer().get("from-location=protection") > 10_000L
-                    || !p.isDetected(true))) {
+            } else if (distance >= 1.0 && !p.isDetected(true)) {
                 update(p, location, false);
             }
         } else {
@@ -38,19 +36,18 @@ public class DetectionLocation {
     }
 
     public static void remove(SpartanPlayer p) {
-        UUID uuid = p.getUniqueId();
-        loc.remove(uuid);
-        set.remove(uuid);
+        synchronized (loc) {
+            loc.remove(p.getUniqueId());
+        }
     }
 
     public static SpartanLocation get(SpartanPlayer p, boolean replaceNull) {
-        UUID uuid = p.getUniqueId();
-        SpartanLocation location = set.remove(uuid);
-
-        if (location == null) {
-            location = loc.get(uuid);
+        synchronized (loc) {
+            SpartanLocation location = loc.get(p.getUniqueId());
+            return location != null
+                    ? location
+                    : (replaceNull ? p.getEventFromLocation() : null);
         }
-        return location != null ? location : (replaceNull ? p.getEventFromLocation() : null);
     }
 
     public static void update(SpartanPlayer p, SpartanLocation location, boolean force) {
@@ -63,9 +60,5 @@ public class DetectionLocation {
             loc.put(p.getUniqueId(), location);
             p.getTimer().set("from-location=protection");
         }
-    }
-
-    public static void set(SpartanPlayer p, SpartanLocation location) {
-        set.put(p.getUniqueId(), location);
     }
 }

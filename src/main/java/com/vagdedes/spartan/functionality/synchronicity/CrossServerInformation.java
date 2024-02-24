@@ -16,11 +16,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 
 public class CrossServerInformation {
 
@@ -29,10 +25,10 @@ public class CrossServerInformation {
     private static final char colorSyntaxCharacter = '&';
     private static long cooldown = 0L;
     private static String serverName = null;
-    private static final CopyOnWriteArrayList<String>
-            notifications = new CopyOnWriteArrayList<>(),
-            logs = new CopyOnWriteArrayList<>(),
-            configurations = new CopyOnWriteArrayList<>();
+    private static final List<String>
+            notifications = Collections.synchronizedList(new ArrayList<>()),
+            logs = Collections.synchronizedList(new ArrayList<>()),
+            configurations = Collections.synchronizedList(new ArrayList<>());
     private static final Runnable generalTask = () -> {
         if (Config.settings.getBoolean(Settings.cloudSynchroniseFilesOption)) {
             String serverName = getOptionValue();
