@@ -6,7 +6,6 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.protections.Explosion;
-import com.vagdedes.spartan.functionality.protections.InteractionsPerTick;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
@@ -188,11 +187,8 @@ public class EventsHandler3 implements Listener {
                 p.getExecutor(Enums.HackType.NoSlowdown).handle(false, e);
                 p.getExecutor(Enums.HackType.ItemDrops).handle(false, e);
 
-                // Protections
-                if (InteractionsPerTick.run(p, b, action)/* || FenceClick.run(p, b, action)*/) {
-                    e.setCancelled(true);
-                } else if (!customBlock) {
-                    // Detections
+                // Detections
+                if (!customBlock) {
                     p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
                     Liquid.runInteract(p, action);
                 }

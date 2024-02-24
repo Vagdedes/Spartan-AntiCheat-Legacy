@@ -85,7 +85,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Protections.use_teleport_protection", false); // test server
         addOption("Protections.avoid_self_bow_damage", true);
         addOption("Protections.player_limit_per_ip", 0);
-        addOption("Protections.interactions_per_tick", 10);
         addOption("Protections.disallowed_building", true); // test server
 
         addOption("Important.op_bypass", false);
