@@ -59,7 +59,7 @@ public class HackPrevention {
         player.getViolations(hackType).queue(this, check);
     }
 
-    void handle(SpartanPlayer player, Enums.HackType hackType) { // todo fix cancels
+    void handle(SpartanPlayer player, Enums.HackType hackType) { // todo fix location
         SpartanLocation preventionFrom = this.location;
         boolean teleported = false;
 

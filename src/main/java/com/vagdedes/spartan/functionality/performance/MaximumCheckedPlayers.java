@@ -87,7 +87,8 @@ public class MaximumCheckedPlayers {
     }
 
     private static boolean add(UUID uuid, int optionAmount) {
-        if (list.size() < Math.max(optionAmount, minimumPlayers) && list.addIfAbsent(uuid)) {
+        if (list.size() < Math.max(optionAmount, minimumPlayers) && !list.contains(uuid)) {
+            list.add(uuid);
             priority.remove(uuid);
             return true;
         }

@@ -16,49 +16,51 @@ public class DetectionLocation {
     private static final Map<UUID, SpartanLocation>
             loc = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
 
-    public static void run(SpartanPlayer p) {
-        UUID uuid = p.getUniqueId();
-        SpartanLocation old = loc.get(uuid);
+    public static void run(SpartanPlayer player) {
+        synchronized (loc) {
+            SpartanLocation old = loc.get(player.getUniqueId());
 
-        if (old != null) {
-            SpartanLocation location = p.getLocation();
-            double distance = location.distance(old);
+            if (old != null) {
+                SpartanLocation location = player.getLocation();
+                double distance = location.distance(old);
 
-            if (distance > (MoveUtils.chunk * 2)
-                    && !p.getProfile().isHacker()) {
-                update(p, location, true);
-            } else if (distance >= 1.0 && !p.isDetected(true)) {
-                update(p, location, false);
+                if (distance > (MoveUtils.chunk * 2)
+                        && !player.getProfile().isHacker()) {
+                    loc.put(player.getUniqueId(), location);
+                } else if (distance >= 1.0 && !player.isDetected(true)) {
+                    loc.put(player.getUniqueId(), location);
+                }
+            } else {
+                loc.put(player.getUniqueId(), player.getLocation());
             }
-        } else {
-            update(p, p.getLocation(), true);
         }
     }
 
-    public static void remove(SpartanPlayer p) {
+    public static void remove(SpartanPlayer player) {
         synchronized (loc) {
-            loc.remove(p.getUniqueId());
+            loc.remove(player.getUniqueId());
         }
     }
 
-    public static SpartanLocation get(SpartanPlayer p, boolean replaceNull) {
+    public static SpartanLocation get(SpartanPlayer player, boolean replaceNull) {
         synchronized (loc) {
-            SpartanLocation location = loc.get(p.getUniqueId());
+            SpartanLocation location = loc.get(player.getUniqueId());
             return location != null
                     ? location
-                    : (replaceNull ? p.getEventFromLocation() : null);
+                    : (replaceNull ? player.getEventFromLocation() : null);
         }
     }
 
-    public static void update(SpartanPlayer p, SpartanLocation location, boolean force) {
-        if (force || !p.isDetected(true)) {
-            int minHeight = BlockUtils.getMinHeight(p.getWorld());
+    public static void update(SpartanPlayer player, SpartanLocation location, boolean force) {
+        if (force || !player.isDetected(true)) {
+            int minHeight = BlockUtils.getMinHeight(player.getWorld());
 
             if (location.getBlockY() < minHeight) {
                 location.setY(minHeight);
             }
-            loc.put(p.getUniqueId(), location);
-            p.getTimer().set("from-location=protection");
+            synchronized (loc) {
+                loc.put(player.getUniqueId(), location);
+            }
         }
     }
 }
