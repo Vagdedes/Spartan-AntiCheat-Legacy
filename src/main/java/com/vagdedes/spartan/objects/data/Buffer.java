@@ -36,7 +36,8 @@ public class Buffer {
     // Runnable
 
     public void run(SpartanPlayer player) {
-        if (hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
+        if (hackType != null
+                && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
                 && !storage.isEmpty()) {
             Iterator<BufferChild> iterator;
 
@@ -139,7 +140,8 @@ public class Buffer {
         synchronized (storage) {
             obj = storage.computeIfAbsent(name, k -> new BufferChild(0));
         }
-        boolean combat = hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT;
+        boolean combat = hackType != null
+                && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT;
 
         if (this.getRemainingTicks(obj) == 0) {
             obj.ticks = combat
@@ -155,7 +157,8 @@ public class Buffer {
     }
 
     private int getRemainingTicks(BufferChild object) {
-        if (hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT) {
+        if (hackType != null
+                && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT) {
             return (int) object.ticks;
         } else {
             long ticks = object.ticks - TPS.getTick(player);
@@ -179,7 +182,7 @@ public class Buffer {
             object = storage.get(name);
         }
         if (object != null) {
-            object.ticks = hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
+            object.ticks = hackType != null && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
                     ? ticks
                     : TPS.getTick(player) + ticks;
         }
