@@ -11,7 +11,6 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.protections.ServerFlying;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.Cache;
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
 import com.vagdedes.spartan.handlers.tracking.MovementProcessing;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -142,12 +141,6 @@ public class EventsHandler7 implements Listener {
             }
         }
 
-        // Lag
-        if (p.getBuffer().start("move-event", 1) > 1
-                && TPS.areLow(p)) {
-            return;
-        }
-
         // Values
         double preXZ = AlgebraUtils.getPreDistance(to.getX(), from.getX()) + AlgebraUtils.getPreDistance(to.getZ(), from.getZ()),
                 toY = to.getY(),
@@ -206,7 +199,7 @@ public class EventsHandler7 implements Listener {
         p.resetLocationData();
 
         // Detections
-        CheckProtection.cancel(p.getUniqueId(), 20, true);
+        CheckProtection.cancel(p.getUniqueId(), 20);
 
         // System
         Cache.clear(p, n, false, true, true, false, p.getLocation());

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.handlers.identifiers.simple;
 
 import com.vagdedes.spartan.configuration.Compatibility;
+import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -32,13 +33,8 @@ public class CheckProtection {
         }
         checksAffectedByCombatOrMovement = checksAffectedByCombatArray.toArray(new Enums.HackType[0]);
     }
-
-    public static void cancel(UUID uuid, int ticks, boolean ignoreNumbers) {
+    public static void cancel(UUID uuid, int ticks) {
         SpartanBukkit.cooldowns.add(uuid + "=check=protection", ticks);
-
-        if (ignoreNumbers) {
-            SpartanBukkit.cooldowns.add(uuid + "=check=protection=ignore-numbers", ticks);
-        }
     }
 
     public static void cancel(int ticks, int secondsDelay) {
@@ -48,7 +44,7 @@ public class CheckProtection {
             if (secondsDelay > 0) {
                 delay = ms + (secondsDelay * 1_000L);
             }
-            cooldown = ms + (ticks * 50L);
+            cooldown = ms + (ticks * TPS.tickTime);
         }
     }
 

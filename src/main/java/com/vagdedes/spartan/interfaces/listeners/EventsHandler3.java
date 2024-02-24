@@ -132,7 +132,7 @@ public class EventsHandler3 implements Listener {
         UUID uuid = n.getUniqueId();
 
         // Protections
-        CheckProtection.cancel(uuid, SpartanBukkit.hasResourcePack ? 100 : 5, false);
+        CheckProtection.cancel(uuid, SpartanBukkit.hasResourcePack ? 100 : 5);
 
         // Configuration
         ReconnectCooldown.run(n, e);

@@ -451,7 +451,6 @@ public class SpartanPlayer {
 
         for (Enums.HackType hackType : hackTypes) {
             int id = hackType.ordinal();
-            boolean async = hackType.getCheck().canBeAsynchronous();
             this.buffer[id] = new Buffer(this, hackType);
             this.timer[id] = new Timer();
             this.decimals[id] = new Decimals();

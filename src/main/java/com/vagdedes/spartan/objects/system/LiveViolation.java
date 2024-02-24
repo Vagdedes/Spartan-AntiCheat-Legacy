@@ -446,11 +446,11 @@ public class LiveViolation {
     // Separator
 
     public CancelCause getDisableCause() {
-        return disableCause != null && !disableCause.hasExpired() ? disableCause : null;
+        return disableCause;
     }
 
     public CancelCause getSilentCause() {
-        return silentCause != null && !silentCause.hasExpired() ? silentCause : null;
+        return silentCause;
     }
 
     public void addDisableCause(String reason, String pointer, int ticks) {

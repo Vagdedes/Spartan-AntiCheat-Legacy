@@ -15,6 +15,7 @@ public class Buffer {
     private final Map<String, BufferChild> storage;
     private final Enums.HackType hackType;
     private final SpartanPlayer player;
+    private final boolean combat;
 
     private static class BufferChild {
 
@@ -31,14 +32,14 @@ public class Buffer {
         this.player = player;
         this.storage = Collections.synchronizedMap(new LinkedHashMap<>());
         this.hackType = hackType;
+        this.combat = hackType != null
+                && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT;
     }
 
     // Runnable
 
     public void run(SpartanPlayer player) {
-        if (hackType != null
-                && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
-                && !storage.isEmpty()) {
+        if (combat && !storage.isEmpty()) {
             Iterator<BufferChild> iterator;
 
             synchronized (storage) {
@@ -140,8 +141,6 @@ public class Buffer {
         synchronized (storage) {
             obj = storage.computeIfAbsent(name, k -> new BufferChild(0));
         }
-        boolean combat = hackType != null
-                && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT;
 
         if (this.getRemainingTicks(obj) == 0) {
             obj.ticks = combat
@@ -157,8 +156,7 @@ public class Buffer {
     }
 
     private int getRemainingTicks(BufferChild object) {
-        if (hackType != null
-                && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT) {
+        if (combat) {
             return (int) object.ticks;
         } else {
             long ticks = object.ticks - TPS.getTick(player);
@@ -182,9 +180,7 @@ public class Buffer {
             object = storage.get(name);
         }
         if (object != null) {
-            object.ticks = hackType != null && hackType.getCheck().getCheckType() == Enums.CheckType.COMBAT
-                    ? ticks
-                    : TPS.getTick(player) + ticks;
+            object.ticks = combat ? ticks : TPS.getTick(player) + ticks;
         }
     }
 

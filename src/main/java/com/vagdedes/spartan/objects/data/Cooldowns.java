@@ -23,12 +23,6 @@ public class Cooldowns {
         }
     }
 
-    public boolean has(String name) {
-        synchronized (storage) {
-            return storage.containsKey(name);
-        }
-    }
-
     public int get(String name) {
         Long object;
 
@@ -39,11 +33,11 @@ public class Cooldowns {
             return 0;
         } else {
             if (player == null) {
-                object = System.currentTimeMillis() - object;
+                object -= System.currentTimeMillis();
             } else {
-                object = TPS.getTick(player) - object;
+                object -= TPS.getTick(player);
             }
-            return object < 0 ? 0 : object.intValue();
+            return object < 0L ? 0 : object.intValue();
         }
     }
 

@@ -199,7 +199,7 @@ public class Handlers {
         if (ticks == null) {
             return 0;
         } else {
-            ticks = TPS.getTick(player) - ticks;
+            ticks -= TPS.getTick(player);
             return ticks < 0 ? 0 : ticks.intValue();
         }
     }
