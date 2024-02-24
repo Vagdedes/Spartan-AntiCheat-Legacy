@@ -5,7 +5,6 @@ import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
@@ -52,11 +51,7 @@ public class EventsHandler1 implements Listener {
 
         SpartanBukkit.runDelayedTask(p, () -> {
             if (p != null) {
-                // Configuration
                 Config.settings.runOnLogin(p);
-
-                // Features
-                SuspicionNotifications.run(p);
                 CloudFeature.announce(p);
             }
         }, 10);

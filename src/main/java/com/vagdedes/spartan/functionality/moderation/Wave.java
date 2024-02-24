@@ -17,13 +17,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Wave {
 
     private static File file = new File(Register.plugin.getDataFolder() + "/storage.yml");
     private static final String section = "Wave";
-    private static final ConcurrentHashMap<UUID, String> commands = new ConcurrentHashMap<>(Config.getMaxPlayers());
+    private static final Map<UUID, String> commands = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static boolean run = false, pause = false;
 
     public static void clearCache() {

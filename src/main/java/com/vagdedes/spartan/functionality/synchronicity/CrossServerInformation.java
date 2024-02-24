@@ -36,52 +36,51 @@ public class CrossServerInformation {
                 String type = "configuration";
 
                 if (!configurations.isEmpty()) {
-                    String[] configurationsArray = configurations.toArray(new String[0]);
-                    configurations.clear();
+                    String[] configurationsArray;
+
+                    synchronized (configurations) {
+                        configurationsArray = configurations.toArray(new String[0]);
+                        configurations.clear();
+                    }
                     CloudConnections.sendCrossServerInformation(type, serverName, configurationsArray);
                 }
 
                 String[] incomingInformation = CloudConnections.getCrossServerInformation(type, serverName);
 
-                if (incomingInformation != null) {
-                    if (incomingInformation.length > 0) {
-                        for (String information : incomingInformation) {
-                            String[] split = information.split(CloudFeature.separator, 4);
+                if (incomingInformation.length > 0) {
+                    for (String information : incomingInformation) {
+                        String[] split = information.split(CloudFeature.separator, 4);
 
-                            if (split.length == 3) {
-                                File file = new File(split[0]);
+                        if (split.length == 3) {
+                            File file = new File(split[0]);
 
-                                if (file.exists()) {
-                                    String key = split[1];
+                            if (file.exists()) {
+                                String key = split[1];
 
-                                    if (!key.equals(Settings.cloudServerNameOption)) {
-                                        String value = split[2];
+                                if (!key.equals(Settings.cloudServerNameOption)) {
+                                    String value = split[2];
 
-                                        if (value.equals("NULL")) {
-                                            ConfigUtils.set(file, key, null);
-                                        } else if (value.equals("true") || value.equals("false")) {
-                                            ConfigUtils.set(file, key, Boolean.parseBoolean(value));
+                                    if (value.equals("NULL")) {
+                                        ConfigUtils.set(file, key, null);
+                                    } else if (value.equals("true") || value.equals("false")) {
+                                        ConfigUtils.set(file, key, Boolean.parseBoolean(value));
+                                    } else {
+                                        Double decimal = AlgebraUtils.returnValidDecimal(value);
+
+                                        if (decimal != null) {
+                                            ConfigUtils.set(file, key, decimal);
+                                        } else if (AlgebraUtils.validInteger(value)) {
+                                            ConfigUtils.set(file, key, Integer.parseInt(value));
                                         } else {
-                                            Double decimal = AlgebraUtils.returnValidDecimal(value);
-
-                                            if (decimal != null) {
-                                                ConfigUtils.set(file, key, decimal);
-                                            } else if (AlgebraUtils.validInteger(value)) {
-                                                ConfigUtils.set(file, key, Integer.parseInt(value));
-                                            } else {
-                                                ConfigUtils.set(file, key, value);
-                                            }
+                                            ConfigUtils.set(file, key, value);
                                         }
                                     }
                                 }
                             }
                         }
-                        Config.refreshVariables(false);
-                        Config.createConfigurations(true);
                     }
-                } else {
-                    configurations.clear();
-                    return;
+                    Config.refreshVariables(false);
+                    Config.createConfigurations(true);
                 }
 
                 // Separator
@@ -154,8 +153,6 @@ public class CrossServerInformation {
         }
     }
 
-    // Separator
-
     public static void refresh() {
         serverName = null;
     }
@@ -172,15 +169,11 @@ public class CrossServerInformation {
         }
     }
 
-    // Separator
-
     public static void queueLog(String string) {
         synchronized (logs) {
             logs.add(string);
         }
     }
-
-    // Separator
 
     public static boolean queueNotification(String string, boolean absent) {
         string = string.replace(ChatColor.COLOR_CHAR, colorSyntaxCharacter);
@@ -210,12 +203,6 @@ public class CrossServerInformation {
         }
     }
 
-    // Separator
-
-    public static boolean isEnabled() {
-        return isOptionValid(getOptionValue());
-    }
-
     public static boolean isOptionValid(String option) {
         return !option.isEmpty()
                 && !option.equals("specify server name")
@@ -241,7 +228,7 @@ public class CrossServerInformation {
     // Separator
 
     public static void sendConfiguration(File file) {
-        if (isEnabled()
+        if (isOptionValid(getOptionValue())
                 && Config.settings.getBoolean(Settings.cloudSynchroniseFilesOption)
                 && file.exists()) {
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -255,7 +242,9 @@ public class CrossServerInformation {
                     Object value = configuration.get(key);
                     list.add(file.getPath() + CloudFeature.separator + key + CloudFeature.separator + (value == null ? "NULL" : value.toString()));
                 }
-                configurations.addAll(list);
+                synchronized (configurations) {
+                    configurations.addAll(list);
+                }
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.Chunks;
 import com.vagdedes.spartan.objects.replicates.SpartanBlock;
@@ -11,15 +10,15 @@ import com.vagdedes.spartan.utils.java.MemoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PatternUtils {
 
     private static final Map<Integer, Map<Integer, Boolean>> memory
-            = Cache.store(MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>());
+            = Cache.store(Collections.synchronizedMap(new LinkedHashMap<>()));
 
     private static final int
             waterLogHash = "water-log".hashCode(),
@@ -39,7 +38,7 @@ public class PatternUtils {
     }
 
     public static boolean cache(SpartanLocation location, Enums.HackType hackType, String key, boolean result) {
-        memory.computeIfAbsent(location.getIdentifier(), childMap -> new ConcurrentHashMap<>())
+        memory.computeIfAbsent(location.getIdentifier(), childMap -> new LinkedHashMap<>())
                 .put(customHash(hackType, key), result);
         return result;
     }
@@ -132,7 +131,7 @@ public class PatternUtils {
                 }
             }
         } else {
-            childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+            childMap = new LinkedHashMap<>();
             memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
@@ -192,7 +191,7 @@ public class PatternUtils {
                     return result;
                 }
             } else {
-                childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+                childMap = new LinkedHashMap<>();
                 memory.put(locationIdentifier, childMap);
             }
 
@@ -261,7 +260,7 @@ public class PatternUtils {
                 }
             }
         } else {
-            childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+            childMap = new LinkedHashMap<>();
             memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
@@ -309,7 +308,7 @@ public class PatternUtils {
                     return result;
                 }
             } else {
-                childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+                childMap = new LinkedHashMap<>();
                 memory.put(locationIdentifier, childMap);
             }
 
@@ -368,7 +367,7 @@ public class PatternUtils {
                 }
             }
         } else {
-            childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+            childMap = new LinkedHashMap<>();
             memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
@@ -416,7 +415,7 @@ public class PatternUtils {
                     return result;
                 }
             } else {
-                childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+                childMap = new LinkedHashMap<>();
                 memory.put(locationIdentifier, childMap);
             }
 
@@ -475,7 +474,7 @@ public class PatternUtils {
                 }
             }
         } else {
-            childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+            childMap = new LinkedHashMap<>();
             memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
@@ -523,7 +522,7 @@ public class PatternUtils {
                     return result;
                 }
             } else {
-                childMap = MultiVersion.folia ? new LinkedHashMap<>() : new ConcurrentHashMap<>();
+                childMap = new LinkedHashMap<>();
                 memory.put(locationIdentifier, childMap);
             }
 
