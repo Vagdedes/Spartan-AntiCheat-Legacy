@@ -28,7 +28,7 @@ public class ViolationStatistics { // todo use pie equation
 
         public TimePeriod() {
             this.players = new HashSet<>();
-            this.violations = new HashMap<>();
+            this.violations = new LinkedHashMap<>();
         }
 
         public void add(PlayerProfile profile, PlayerViolation playerViolation) {
@@ -43,7 +43,7 @@ public class ViolationStatistics { // todo use pie equation
             int size = this.violations.size();
 
             if (size > 0) {
-                Map<Integer, Double> violations = new HashMap<>(size);
+                Map<Integer, Double> violations = new LinkedHashMap<>(size);
                 double players = this.players.size();
 
                 for (Map.Entry<Integer, Integer> entry : this.violations.entrySet()) {

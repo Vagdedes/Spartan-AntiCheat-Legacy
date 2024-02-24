@@ -797,7 +797,7 @@ public class ResearchEngine {
                     for (DataType dataType : dataTypes) {
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
                             boolean bedrock = dataType == DataType.Bedrock;
-                            Map<Integer, ViolationStatistics.TimePeriod> averages = new HashMap<>();
+                            Map<Integer, ViolationStatistics.TimePeriod> averages = new LinkedHashMap<>();
 
                             for (PlayerProfile playerProfile : playerProfiles) {
                                 if (bedrock == playerProfile.isBedrockPlayer()
@@ -823,8 +823,8 @@ public class ResearchEngine {
                             }
 
                             if (!averages.isEmpty()) {
-                                HashMap<Integer, Double> violationAverages = new HashMap<>();
-                                HashMap<Integer, Integer> violationAveragesDivisor = new HashMap<>();
+                                Map<Integer, Double> violationAverages = new LinkedHashMap<>();
+                                Map<Integer, Integer> violationAveragesDivisor = new LinkedHashMap<>();
 
                                 // Add the average violations for the executed detections based on each time period
                                 for (ViolationStatistics.TimePeriod timePeriod : averages.values()) {

@@ -22,9 +22,6 @@ public class DiscordWebhooks {
             case "Staff Chat":
                 webhook = "communication";
                 break;
-            case "Suspicion":
-                webhook = "checks";
-                break;
             default:
                 return;
         }

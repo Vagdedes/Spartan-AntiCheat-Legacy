@@ -28,7 +28,9 @@ public class PatternUtils {
     // Separator
 
     public static void synchronizeClearance(SpartanBlock block) {
-        memory.remove(block.getIdentifier());
+        synchronized (memory) {
+            memory.remove(block.getIdentifier());
+        }
     }
 
     // Separator
@@ -38,14 +40,18 @@ public class PatternUtils {
     }
 
     public static boolean cache(SpartanLocation location, Enums.HackType hackType, String key, boolean result) {
-        memory.computeIfAbsent(location.getIdentifier(), childMap -> new LinkedHashMap<>())
-                .put(customHash(hackType, key), result);
+        synchronized (memory) {
+            memory.computeIfAbsent(location.getIdentifier(), childMap -> new LinkedHashMap<>())
+                    .put(customHash(hackType, key), result);
+        }
         return result;
     }
 
     public static Boolean getCached(SpartanLocation location, Enums.HackType hackType, String key) {
-        Map<Integer, Boolean> childMap = memory.get(location.getIdentifier());
-        return childMap != null ? childMap.get(customHash(hackType, key)) : null;
+        synchronized (memory) {
+            Map<Integer, Boolean> childMap = memory.get(location.getIdentifier());
+            return childMap != null ? childMap.get(customHash(hackType, key)) : null;
+        }
     }
 
     // Separator
@@ -132,7 +138,6 @@ public class PatternUtils {
             }
         } else {
             childMap = new LinkedHashMap<>();
-            memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
@@ -162,6 +167,9 @@ public class PatternUtils {
                         }
                     }
                 }
+            }
+            synchronized (memory) {
+                memory.put(locationIdentifier, childMap);
             }
         }
         return false;
@@ -261,7 +269,6 @@ public class PatternUtils {
             }
         } else {
             childMap = new LinkedHashMap<>();
-            memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
@@ -283,6 +290,9 @@ public class PatternUtils {
                         }
                     }
                 }
+            }
+            synchronized (memory) {
+                memory.put(locationIdentifier, childMap);
             }
         }
         return false;
@@ -368,7 +378,6 @@ public class PatternUtils {
             }
         } else {
             childMap = new LinkedHashMap<>();
-            memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
@@ -390,6 +399,9 @@ public class PatternUtils {
                         }
                     }
                 }
+            }
+            synchronized (memory) {
+                memory.put(locationIdentifier, childMap);
             }
         }
         return false;
@@ -475,7 +487,6 @@ public class PatternUtils {
             }
         } else {
             childMap = new LinkedHashMap<>();
-            memory.put(locationIdentifier, childMap);
 
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
@@ -497,6 +508,9 @@ public class PatternUtils {
                         }
                     }
                 }
+            }
+            synchronized (memory) {
+                memory.put(locationIdentifier, childMap);
             }
         }
         return false;
