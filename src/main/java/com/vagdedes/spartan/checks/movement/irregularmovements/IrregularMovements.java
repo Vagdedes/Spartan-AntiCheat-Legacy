@@ -9,6 +9,7 @@ import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
+import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
@@ -504,7 +505,7 @@ public class IrregularMovements extends CheckExecutor {
             cancel(
                     "type: " + instance + "(" + buffer + (hasBuffer ? "/" + time + "/" + bufferAmount : "") + "), "
                             + information + (extra == null ? "" : ", extra: 1, " + extra),
-                    violate ? player.getEventFromLocation() : null,
+                    violate ? DetectionLocation.get(player, true) : null,
                     0,
                     groundTeleport,
                     0.0,

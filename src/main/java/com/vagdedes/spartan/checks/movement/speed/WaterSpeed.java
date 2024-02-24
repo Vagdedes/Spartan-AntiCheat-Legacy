@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
+import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
@@ -219,7 +220,7 @@ public class WaterSpeed extends DetectionExecutor {
                                         + ", limit: " + limit + "(" + limitType + ")"
                                         + ", dynamic-limit: " + modifiedLimit
                                         + (vehicle != null ? ", entity: " + vehicle.getType().toString().toLowerCase().replace("_", "-") : ""),
-                                from.clone().add(0, -box, 0)
+                                DetectionLocation.get(player, true).clone().add(0, -box, 0)
                         );
                     }
                 }

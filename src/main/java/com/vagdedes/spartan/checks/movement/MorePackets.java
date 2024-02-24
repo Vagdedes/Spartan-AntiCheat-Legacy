@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
-import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.*;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -120,8 +119,7 @@ public class MorePackets extends CheckExecutor {
                         }
                         // Second stage
                         if (cases != 0) {
-                            SpartanLocation customFrom = player.getFromLocation();
-                            double overallDistance = to.distance(customFrom),
+                            double overallDistance = to.distance(player.getFromLocation()),
                                     overallLimit = 1.5 + (decreasedRequirement ? 0.0 : MoveUtils.chunk / 3.0);
                             boolean passedLimit;
 
@@ -139,13 +137,9 @@ public class MorePackets extends CheckExecutor {
                                         instantMotionKey + "=first=special",
                                         instantMotionKey + "=second"
                                 });
-
                                 boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
-                                SpartanLocation handlerFrom = DetectionLocation.get(player, true),
-                                        teleportLocation = overallDistance > to.distance(handlerFrom) ? customFrom : handlerFrom;
-
                                 cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", decreased-requirement: " + decreasedRequirement,
-                                        instant ? teleportLocation : null, instant ? teleportTicks : 0);
+                                        instant ? initialLocation : null, instant ? teleportTicks : 0);
                             }
                         }
                     }

@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.movement;
 
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -84,7 +85,7 @@ public class NoSlowdown extends CheckExecutor {
             int cases = getMovementCase(player);
 
             if (cases != 0) {
-                cancel("type: food-eating, case: " + cases, player.getLocation(), 10, true);
+                cancel("type: food-eating, case: " + cases, DetectionLocation.get(player, true), 10, true);
             }
         } else if (object instanceof PlayerItemHeldEvent) {
             player.getCooldowns(hackType).add("held", 3);
@@ -153,7 +154,7 @@ public class NoSlowdown extends CheckExecutor {
                                 + ", last-sprint: " + player.getLastOffSprint()
                                 + ", horizontal: " + horizontal
                                 + ", vertical: " + vertical;
-                        cancel(verbose, player.getEventFromLocation(), 10, true);
+                        cancel(verbose, DetectionLocation.get(player, true), 10, true);
                         return true;
                     }
                 }

@@ -165,7 +165,7 @@ public class SuspicionNotifications {
                             0,
                             0,
                             0,
-                            "Kick",
+                            "Suspicion",
                             message,
                             true
                     );

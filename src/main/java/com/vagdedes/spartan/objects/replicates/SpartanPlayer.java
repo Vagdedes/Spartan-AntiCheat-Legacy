@@ -332,6 +332,7 @@ public class SpartanPlayer {
                             }
 
                             // External
+                            p.playerProfile.getCombat().track();
                             if (MultiVersion.folia || !SpartanBukkit.isSynchronised()) {
                                 PlayerData.update(p, n, true);
                             }

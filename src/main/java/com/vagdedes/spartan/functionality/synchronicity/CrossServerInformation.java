@@ -6,7 +6,6 @@ import com.vagdedes.spartan.configuration.Settings;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
@@ -89,21 +88,31 @@ public class CrossServerInformation {
                 type = "log";
 
                 if (!logs.isEmpty()) {
-                    String[] logsArray = logs.toArray(new String[0]);
-                    logs.clear();
+                    String[] logsArray;
+
+                    synchronized (logs) {
+                        logsArray = logs.toArray(new String[0]);
+                        logs.clear();
+                    }
                     CloudConnections.sendCrossServerInformation(type, serverName, logsArray);
                 }
             }
         } else {
-            configurations.clear();
+            synchronized (configurations) {
+                configurations.clear();
+            }
         }
     };
     private static final Runnable notificationsTask = () -> {
         String type = "notification";
 
         if (!notifications.isEmpty()) {
-            String[] notificationsArray = notifications.toArray(new String[0]);
-            notifications.clear();
+            String[] notificationsArray;
+
+            synchronized (notifications) {
+                notificationsArray = notifications.toArray(new String[0]);
+                notifications.clear();
+            }
             CloudConnections.sendCrossServerInformation(type, serverName, notificationsArray);
         }
         String[] incomingInformation = CloudConnections.getCrossServerInformation(type, null);
@@ -149,34 +158,38 @@ public class CrossServerInformation {
 
     public static void refresh() {
         serverName = null;
-        ticks = 50;
     }
 
     public static void clear() {
-        refresh();
-        notifications.clear();
-        logs.clear();
-        configurations.clear();
+        synchronized (notifications) {
+            synchronized (logs) {
+                synchronized (configurations) {
+                    notifications.clear();
+                    logs.clear();
+                    configurations.clear();
+                }
+            }
+        }
     }
 
     // Separator
 
-    public static boolean queueLog(String string) {
-        if (string.length() <= ResearchEngine.maxDataLength) {
+    public static void queueLog(String string) {
+        synchronized (logs) {
             logs.add(string);
-            return true;
         }
-        return false;
     }
 
     // Separator
 
     public static boolean queueNotification(String string, boolean absent) {
-        if (string.length() <= ResearchEngine.maxDataLength) {
-            string = string.replace(ChatColor.COLOR_CHAR, colorSyntaxCharacter);
-            return absent ? notifications.addIfAbsent(string) : notifications.add(string);
+        string = string.replace(ChatColor.COLOR_CHAR, colorSyntaxCharacter);
+
+        synchronized (notifications) {
+            return absent
+                    ? !notifications.contains(string) && notifications.add(string)
+                    : notifications.add(string);
         }
-        return false;
     }
 
     public static void queueNotificationWithWebhook(UUID uuid, String name, int x, int y, int z, String type, String string, boolean absent) {

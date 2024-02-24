@@ -4,7 +4,6 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.profiling.PlayerFight;
 
 public class Analysis extends DetectionExecutor {
@@ -14,25 +13,23 @@ public class Analysis extends DetectionExecutor {
     }
 
     void run(PlayerFight fight) {
-        if (!ResearchEngine.isCaching()) {
-            double percentage = hackType.getCheck().getDecimalOption("analysis_percentage", 2.0);
+        double percentage = hackType.getCheck().getDecimalOption("analysis_percentage", 2.0);
 
-            if (percentage > 0.0) {
-                if (percentage > 5.0) {
-                    percentage = 5.0;
-                }
-                forceAsync(() -> {
-                    // direction change
-                    // directions difference
-                    // clicks per second
-                    // hit-damage ratio
-                    // hit-enemy-hit ratio
-                    // hit reach
-                    // hit time
-                    // hit combo
-                    // fight duration
-                });
+        if (percentage > 0.0) {
+            if (percentage > 5.0) {
+                percentage = 5.0;
             }
+            forceAsync(() -> {
+                // direction change
+                // directions difference
+                // clicks per second
+                // hit-damage ratio
+                // hit-enemy-hit ratio
+                // hit reach
+                // hit time
+                // hit combo
+                // fight duration
+            });
         }
     }
 }

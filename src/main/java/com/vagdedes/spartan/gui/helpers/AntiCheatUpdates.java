@@ -20,9 +20,8 @@ public class AntiCheatUpdates {
         double players;
         List<String> array = new ArrayList<>(arraySize),
                 statisticsArray = showStatistics ? new ArrayList<>(arraySize) : null;
-        boolean caching = ResearchEngine.isCaching();
 
-        if (!showStatistics || caching) {
+        if (!showStatistics) {
             players = 0.0;
         } else {
             StatisticalProgress object = ResearchEngine.getProgress();
@@ -106,8 +105,6 @@ public class AntiCheatUpdates {
 
             if (!statisticsArray.isEmpty()) {
                 array.addAll(statisticsArray);
-            } else if (caching) {
-                array.add("§7" + PlayerStateLists.calculatingData);
             } else {
                 array.add("§7" + PlayerStateLists.noDataAvailable);
             }

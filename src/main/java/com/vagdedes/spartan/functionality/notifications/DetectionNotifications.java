@@ -172,17 +172,14 @@ public class DetectionNotifications {
                             true,
                             player.getViolations(XRay.check).getLevel()
                     );
+                    MiningHistory miningHistory = player.getProfile().getMiningHistory(ore);
 
-                    if (!ResearchEngine.isCaching()) {
-                        MiningHistory miningHistory = player.getProfile().getMiningHistory(ore);
-
-                        if (miningHistory != null) {
-                            String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
-                            miningHistory.increaseMines(environment, amount);
-                            player.getExecutor(Enums.HackType.XRay).handle(
-                                    cancelled,
-                                    new Object[]{environment, miningHistory, ore, pluralKey});
-                        }
+                    if (miningHistory != null) {
+                        String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
+                        miningHistory.increaseMines(environment, amount);
+                        player.getExecutor(Enums.HackType.XRay).handle(
+                                cancelled,
+                                new Object[]{environment, miningHistory, ore, pluralKey});
                     }
                 }
             }

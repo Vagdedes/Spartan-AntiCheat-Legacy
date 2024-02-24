@@ -137,9 +137,7 @@ public class MainMenu extends InventoryMenu {
                 + " - " + (tps >= TPS.excellent ? "Excellent" : tps >= TPS.good ? "Good" : tps >= TPS.minimum ? "Mediocre" : "Unstable"));
         long maxMemory = runtime.maxMemory();
         lore.add("§7Server Memory Usage§8: §a" + AlgebraUtils.cut(((maxMemory - runtime.freeMemory()) / ((double) maxMemory)) * 100.0, 2) + "%");
-        lore.add("§7Research Engine§8: §a" +
-                (ResearchEngine.isCaching() ? "Calculating Data..." :
-                        ResearchEngine.getProgress().logs + " Logs") + (ResearchEngine.isFull() ? " §c(Maxed Out)" : ""));
+        lore.add("§7Research Engine§8: §a" + ResearchEngine.getProgress().logs + " Logs" + (ResearchEngine.isFull() ? " §c(Maxed Out)" : ""));
 
         if (SpartanBukkit.canAdvertise) {
             boolean preview = IDs.isPreview();

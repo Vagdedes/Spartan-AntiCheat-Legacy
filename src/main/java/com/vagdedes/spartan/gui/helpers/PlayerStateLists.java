@@ -23,7 +23,6 @@ public class PlayerStateLists {
             inactiveColour = "§8",
 
     noDataAvailable = "No data available at this time",
-            calculatingData = "Calculating available data...",
             viewData = "§7Click this item to §eview the player's information§7.";
     public static final String[] menuList = new String[]{
             hackerPlayers,
@@ -57,7 +56,7 @@ public class PlayerStateLists {
         List<String> lore = new ArrayList<>(description.size() + 10);
         InventoryUtils.prepareDescription(lore, title);
 
-        if (description.size() > 0) {
+        if (!description.isEmpty()) {
             lore.addAll(description);
             lore.add("");
         }
@@ -166,13 +165,7 @@ public class PlayerStateLists {
 
                 if (option) {
                     InventoryUtils.prepareDescription(lore, title);
-
-                    if (ResearchEngine.isCaching()) {
-                        lore.add("§7" + calculatingData);
-                    } else {
-                        lore.add("§7" + noDataAvailable);
-                    }
-                    // do not translate or make it modifiable
+                    lore.add("§7" + noDataAvailable);
                     lore.add("");
                     lore.add("§cEmpty items like this will be filled with");
                     lore.add("§cuseful information about your players");

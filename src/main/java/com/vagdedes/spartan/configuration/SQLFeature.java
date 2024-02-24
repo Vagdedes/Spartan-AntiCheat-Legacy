@@ -5,7 +5,6 @@ import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -309,7 +308,7 @@ public class SQLFeature extends ConfigurationBuilder {
                         "online_players INT(11), " +
 
                         "type VARCHAR(32), " +
-                        "information VARCHAR(" + ResearchEngine.maxDataLength + "), " +
+                        "information VARCHAR(4096), " +
 
                         "player_uuid VARCHAR(36), " +
                         "player_latency INT(11), " +

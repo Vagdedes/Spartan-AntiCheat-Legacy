@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.DetectionExecutor;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
+import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.objects.data.Buffer;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -66,15 +67,15 @@ public class SprintSpeed extends DetectionExecutor {
             if (nmsHorizontalDistance != null && nmsHorizontalDistance >= 0.25) {
                 SpartanLocation from = player.getEventFromLocation();
                 Buffer buffer = player.getBuffer(hackType);
-                checkFoodSprint(from, buffer);
-                checkOmnidirectional(player.getEventToLocation(), from, buffer);
+                checkFoodSprint(buffer);
+                checkOmnidirectional(player.getEventToLocation(), buffer);
             }
         }
     }
 
     // Separator
 
-    private void checkFoodSprint(SpartanLocation from, Buffer buffer) {
+    private void checkFoodSprint(Buffer buffer) {
         if (!hackType.getCheck().getBooleanOption("check_food_sprinting", true) || player.isBedrockPlayer()) {
             return;
         }
@@ -85,13 +86,16 @@ public class SprintSpeed extends DetectionExecutor {
                                 : 0;
 
                 if (cases != 0 && buffer.start("food=level", 15) >= 10) {
-                    cancel("type: sprint(food-level), case: " + cases, from);
+                    cancel(
+                            "type: sprint(food-level), case: " + cases,
+                            DetectionLocation.get(player, true)
+                    );
                 }
             }
         });
     }
 
-    private void checkOmnidirectional(SpartanLocation to, SpartanLocation from, Buffer buffer) {
+    private void checkOmnidirectional(SpartanLocation to, Buffer buffer) {
         if (!hackType.getCheck().getBooleanOption("check_omnidirectional_sprinting", true)
                 || Damage.hasCooldown(player)
                 || player.getHandlers().has(Handlers.HandlerType.Explosion)
@@ -119,14 +123,16 @@ public class SprintSpeed extends DetectionExecutor {
                         if (distance <= distanceRequirement
                                 && (!jumping || buffer.start(key + direction.name, 20) == 12)) {
                             violated = true;
-                            cancel("type: sprint(omnidirectional)"
+                            cancel(
+                                    "type: sprint(omnidirectional)"
                                     + ", direction: " + direction.name
                                     + ", yaw: " + yaw
                                     + ", yaw-modification: " + direction.yaw
                                     + ", positive-vector: " + direction.plus
                                     + ", limit: " + limit
                                     + ", distance: " + distance
-                                    + ", distance-requirement: " + distanceRequirement, from
+                                    + ", distance-requirement: " + distanceRequirement,
+                                    DetectionLocation.get(player, true)
                             );
                         }
                     }

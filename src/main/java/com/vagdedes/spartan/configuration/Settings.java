@@ -97,7 +97,6 @@ public class Settings extends ConfigurationBuilder {
         addOption(showEcosystemOption, true);
         addOption("Important.bedrock_player_prefix", ".");
         addOption("Important.inventory_menu_empty_heads", true);
-        addOption("Important.load_player_head_textures", false);
 
         addOption(cloudServerNameOption, "specify server name");
         addOption(cloudSynchroniseFilesOption, true);

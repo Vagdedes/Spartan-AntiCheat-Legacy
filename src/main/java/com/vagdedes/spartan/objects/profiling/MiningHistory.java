@@ -3,11 +3,16 @@ package com.vagdedes.spartan.objects.profiling;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
 
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class MiningHistory {
 
     public final Enums.MiningOre ore;
     private final int[] mines;
-    private int days;
+    private final Set<String> days;
 
     MiningHistory(Enums.MiningOre ore, int mines, int days) {
         World.Environment[] environments = World.Environment.values();
@@ -17,7 +22,7 @@ public class MiningHistory {
             this.mines[environment.ordinal()] = mines;
         }
         this.ore = ore;
-        this.days = days;
+        this.days = Collections.synchronizedSet(new HashSet<>());
     }
 
     public int getMines() {
@@ -33,15 +38,22 @@ public class MiningHistory {
         return mines[environment.ordinal()];
     }
 
-    public int increaseMines(World.Environment environment, int amount) {
+    public int increaseMines(World.Environment environment, int amount, String date) {
+        synchronized (days) {
+            days.add(date);
+        }
         return mines[environment.ordinal()] += amount;
     }
 
-    public int getDays() {
-        return days;
+    public int increaseMines(World.Environment environment, int amount) {
+        return increaseMines(
+                environment,
+                amount,
+                new Timestamp(System.currentTimeMillis()).toString().substring(0, 10)
+        );
     }
 
-    public int increaseDays() {
-        return days += 1;
+    public int getDays() {
+        return days.size();
     }
 }

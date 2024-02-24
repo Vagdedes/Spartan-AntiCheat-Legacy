@@ -26,13 +26,10 @@ import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
-import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -42,68 +39,34 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchEngine {
 
     public static final int
-            maxDataLength = 4096,
             logRequirement = Check.maxViolationsPerCycle,
             profileRequirement = logRequirement / 10,
             maxRows = Cache.enoughRAM ? 100_000 : 20_000,
-            maxBytes = maxRows * maxDataLength;
+            maxBytes = maxRows * 1024 * 1024;
 
-    public static final double downloadedVersion = Double.parseDouble(API.getVersion().substring(6));
     private static final double minimumAverageMining = 16.0;
 
     private static final long cacheTimeLimit = 60_000L * 4; // Despite being 4, realistically it is 5 minutes if extra calculations are accounted for
-    public static final int
-            cacheRefreshTicks = 1200,
-            databaseRefreshTicks = cacheRefreshTicks * 10;
+    private static final int cacheRefreshTicks = 1200;
     private static int schedulerTicks = 0;
 
     private static boolean
-            isCaching = false,
             isFull = false,
             enoughData = false;
 
     public static final DataType[] usableDataTypes = new DataType[]{DataType.Java, DataType.Bedrock};
     private static StatisticalProgress statisticalProgress = new StatisticalProgress();
-    private static String date = new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
 
-    private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>(Config.getMaxPlayers());
-    private static final Map<String, ItemStack> skulls = new ConcurrentHashMap<>(logRequirement);
+    private static final Map<String, PlayerProfile> playerProfiles
+            = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private static final Map<String, ItemStack> skulls
+            = Collections.synchronizedMap(new LinkedHashMap<>(logRequirement));
     private static final Map<Enums.MiningOre, Double> averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
     private static final double[] defaultAverageMining = new double[Enums.MiningOre.values().length];
-
-    private static final Runnable skullsAndFightsRunnable = () -> {
-        Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
-
-        if (!playerProfiles.isEmpty()) {
-            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-            if (!players.isEmpty()) {
-                boolean added = !Config.settings.getBoolean("Important.load_player_head_textures")
-                        || skulls.size() == logRequirement;
-                Inventory inv = Bukkit.createInventory(players.get(0).getPlayer(), 9, "");
-
-                for (PlayerProfile playerProfile : playerProfiles) {
-                    playerProfile.getCombat().track();
-
-                    if (!added && !playerProfile.isBedrockPlayer()) {
-                        String name = playerProfile.getName();
-
-                        if (!skulls.containsKey(name)) {
-                            ItemStack skull = playerProfile.getSkull();
-                            inv.addItem(skull);
-                            skulls.put(name, skull);
-                            added = true;
-                        }
-                    }
-                }
-            }
-        }
-    };
 
     static {
         for (Enums.MiningOre ore : Enums.MiningOre.values()) {
@@ -126,27 +89,23 @@ public class ResearchEngine {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
                 if (schedulerTicks == 0) {
-                    schedulerTicks = databaseRefreshTicks;
+                    schedulerTicks = cacheRefreshTicks * 10;
 
                     SpartanBukkit.analysisThread.executeIfFree(() -> {
-                        skullsAndFightsRunnable.run();
-
                         if (isDatabaseMode()) {
                             refresh(false, Register.isPluginEnabled());
                         } else if (schedulerTicks % cacheRefreshTicks == 0) {
-                            updateCache();
+                            updateComprehensionCache();
+                            MainMenu.refresh();
                         }
                     });
                 } else {
                     schedulerTicks -= 1;
 
-                    if (schedulerTicks % 20 == 0) {
+                    if (schedulerTicks % cacheRefreshTicks == 0) {
                         SpartanBukkit.analysisThread.executeIfFree(() -> {
-                            skullsAndFightsRunnable.run();
-
-                            if (schedulerTicks % cacheRefreshTicks == 0) {
-                                updateCache();
-                            }
+                            updateComprehensionCache();
+                            MainMenu.refresh();
                         });
                     }
                 }
@@ -172,17 +131,19 @@ public class ResearchEngine {
     }
 
     public static boolean enoughData() {
-        Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
-
-        if (playerProfiles.size() >= profileRequirement) {
+        if (enoughData) {
+            return true;
+        } else if (playerProfiles.size() >= profileRequirement) {
             int logs = 0, profiles = 0;
 
-            for (PlayerProfile playerProfile : playerProfiles) {
-                profiles++;
-                logs += playerProfile.getUsefulLogs();
+            synchronized (playerProfiles) {
+                for (PlayerProfile playerProfile : playerProfiles.values()) {
+                    profiles++;
+                    logs += playerProfile.getUsefulLogs();
 
-                if (logs >= logRequirement && profiles >= profileRequirement) {
-                    return enoughData = true;
+                    if (logs >= logRequirement && profiles >= profileRequirement) {
+                        return enoughData = true;
+                    }
                 }
             }
         }
@@ -195,50 +156,42 @@ public class ResearchEngine {
 
     // Separator
 
-    public static boolean isCaching() {
-        return isCaching;
-    }
-
     public static ItemStack getSkull(String name) {
-        return skulls.getOrDefault(name, InventoryUtils.getHead());
+        synchronized (skulls) {
+            return skulls.getOrDefault(name, InventoryUtils.getHead());
+        }
     }
 
     // Separator
 
     public static void refresh(boolean message, boolean enabledPlugin) {
-        if (!enabledPlugin || !isCaching()) {
+        Runnable runnable = () -> {
             // Complete Storage
             AntiCheatLogs.refresh();
             Config.sql.refreshDatabase();
             Criticals.clear();
 
             if (enabledPlugin) {
-                isCaching = true;
+                CloudFeature.refresh(true);
+                String status = recalculateCache();
+                CloudFeature.refresh(false);
 
-                Runnable runnable = () -> {
-                    CloudFeature.refresh(true);
-                    String status = recalculateCache();
-                    CloudFeature.refresh(false);
-
-                    if (message && status != null) {
-                        AwarenessNotifications.forcefullySend(status);
-                    }
-                    isCaching = false;
-                };
-
-                if (!SpartanBukkit.isSynchronised()) { // Other Threads
-                    runnable.run();
-                } else { // Main Thread
-                    SpartanBukkit.analysisThread.execute(runnable);
+                if (message && status != null) {
+                    AwarenessNotifications.forcefullySend(status);
                 }
             } else {
-                isCaching = false;
                 isFull = false;
                 skulls.clear();
                 CloudFeature.clear(true);
                 CancelViolation.clear();
                 ViolationStatistics.clear();
             }
+        };
+
+        if (!SpartanBukkit.isSynchronised()) {
+            runnable.run();
+        } else {
+            SpartanBukkit.analysisThread.executeIfFree(runnable);
         }
     }
 
@@ -279,29 +232,15 @@ public class ResearchEngine {
 
     // Separator
 
-    public static List<PlayerProfile> getPunishedProfiles() {
-        int size = playerProfiles.size();
-
-        if (size > 0) {
-            ArrayList<PlayerProfile> profiles = new ArrayList<>(size);
-
-            for (PlayerProfile playerProfile : playerProfiles.values()) {
-                if (playerProfile.getPunishmentHistory().getOverall() > 0) {
-                    profiles.add(playerProfile);
-                }
-            }
-            return profiles;
-        }
-        return new ArrayList<>(0);
-    }
-
     public static List<PlayerProfile> getHackers() {
         if (!playerProfiles.isEmpty()) {
             List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
-            for (PlayerProfile playerProfile : playerProfiles.values()) {
-                if (playerProfile.isHacker()) {
-                    list.add(playerProfile);
+            synchronized (playerProfiles) {
+                for (PlayerProfile playerProfile : playerProfiles.values()) {
+                    if (playerProfile.isHacker()) {
+                        list.add(playerProfile);
+                    }
                 }
             }
             return list;
@@ -314,9 +253,11 @@ public class ResearchEngine {
         if (!playerProfiles.isEmpty()) {
             List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
-            for (PlayerProfile playerProfile : playerProfiles.values()) {
-                if (playerProfile.isSuspected()) {
-                    list.add(playerProfile);
+            synchronized (playerProfiles) {
+                for (PlayerProfile playerProfile : playerProfiles.values()) {
+                    if (playerProfile.isSuspected()) {
+                        list.add(playerProfile);
+                    }
                 }
             }
             return list;
@@ -329,9 +270,11 @@ public class ResearchEngine {
         if (!playerProfiles.isEmpty()) {
             List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
-            for (PlayerProfile playerProfile : playerProfiles.values()) {
-                if (playerProfile.isLegitimate()) {
-                    list.add(playerProfile);
+            synchronized (playerProfiles) {
+                for (PlayerProfile playerProfile : playerProfiles.values()) {
+                    if (playerProfile.isLegitimate()) {
+                        list.add(playerProfile);
+                    }
                 }
             }
             return list;
@@ -341,52 +284,56 @@ public class ResearchEngine {
     }
 
     public static List<PlayerProfile> getPlayerProfiles() {
-        return new ArrayList<>(playerProfiles.values());
+        synchronized (playerProfiles) {
+            return new ArrayList<>(playerProfiles.values());
+        }
     }
 
     // Separator
 
     public static PlayerProfile getPlayerProfile(String name) {
-        PlayerProfile playerProfile = playerProfiles.get(name);
+        synchronized (playerProfiles) {
+            PlayerProfile playerProfile = playerProfiles.get(name);
 
-        if (playerProfile != null) {
+            if (playerProfile != null) {
+                return playerProfile;
+            }
+            playerProfile = new PlayerProfile(name);
+            playerProfiles.put(name, playerProfile);
             return playerProfile;
         }
-        playerProfile = new PlayerProfile(name);
-        playerProfiles.put(name, playerProfile);
-        return playerProfile;
     }
 
     public static PlayerProfile getPlayerProfile(SpartanPlayer player) {
-        String name = player.getName();
-        PlayerProfile playerProfile = playerProfiles.get(name);
+        synchronized (playerProfiles) {
+            String name = player.getName();
+            PlayerProfile playerProfile = playerProfiles.get(name);
 
-        if (playerProfile != null) {
+            if (playerProfile != null) {
+                return playerProfile;
+            }
+            playerProfile = new PlayerProfile(player);
+            playerProfiles.put(name, playerProfile);
             return playerProfile;
         }
-        playerProfile = new PlayerProfile(player);
-        playerProfiles.put(name, playerProfile);
-        return playerProfile;
     }
 
     public static PlayerProfile getPlayerProfileAdvanced(String name, boolean deep) {
-        PlayerProfile profile = playerProfiles.get(name);
+        synchronized (playerProfiles) {
+            PlayerProfile profile = playerProfiles.get(name);
 
-        if (profile != null) {
-            return profile;
-        }
-        if (deep) {
-            Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
-
-            if (!playerProfiles.isEmpty()) {
-                for (PlayerProfile playerProfile : playerProfiles) {
+            if (profile != null) {
+                return profile;
+            }
+            if (deep && !playerProfiles.isEmpty()) {
+                for (PlayerProfile playerProfile : playerProfiles.values()) {
                     if (playerProfile.getName().equalsIgnoreCase(name)) {
                         return playerProfile;
                     }
                 }
             }
+            return null;
         }
-        return null;
     }
 
     public static ViolationHistory getViolationHistory(Enums.HackType hackType, DataType dataType, Collection<PlayerProfile> profiles) {
@@ -422,21 +369,18 @@ public class ResearchEngine {
 
     public static void resetData(Enums.HackType hackType) {
         SpartanBukkit.storageThread.execute(() -> {
-            while (isCaching()) {
-                // Wait here until the caching is finished
-            }
             String hackTypeString = hackType.toString();
             hackType.getCheck().clearMaxCancelledViolations();
             CancelViolation.clear(hackType);
 
             // Separator
 
-            Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
-
             if (!playerProfiles.isEmpty()) {
-                for (PlayerProfile playerProfile : playerProfiles) {
-                    playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.getEvidence().remove(hackType, true, true, true);
+                synchronized (playerProfiles) {
+                    for (PlayerProfile playerProfile : playerProfiles.values()) {
+                        playerProfile.getViolationHistory(hackType).clear();
+                        playerProfile.getEvidence().remove(hackType, true, true, true);
+                    }
                 }
             }
 
@@ -474,67 +418,59 @@ public class ResearchEngine {
     }
 
     public static void resetData(String playerName) {
-        if (playerName != null) {
-            PlayerProfile playerProfile = playerProfiles.get(playerName);
+        // Clear Violations
+        SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
+        boolean foundPlayer = p != null;
 
-            if (playerProfile != null) {
-                if (isStorageMode()) {
-                    // Clear Violations
-                    SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
-                    boolean foundPlayer = p != null;
-
-                    if (foundPlayer) {
-                        for (Enums.HackType hackType : Enums.HackType.values()) {
-                            p.getViolations(hackType).reset();
-                        }
-                    }
-
-                    // Clear Files/Database
-                    SpartanBukkit.storageThread.execute(() -> {
-                        while (isCaching()) {
-                            // Wait here until the caching is finished
-                        }
-                        playerProfiles.remove(playerName);
-
-                        if (foundPlayer) {
-                            p.setProfile(getPlayerProfile(p));
-                        }
-                        if (Config.sql.isEnabled()) {
-                            Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
-                        }
-                        Collection<File> files = getFiles();
-
-                        if (!files.isEmpty()) {
-                            for (File file : files) {
-                                YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-
-                                for (String key : configuration.getKeys(false)) {
-                                    String value = configuration.getString(key);
-
-                                    if (value != null && value.contains(playerName)) {
-                                        configuration.set(key, null);
-                                    }
-                                }
-                                try {
-                                    configuration.save(file);
-                                } catch (Exception ignored) {
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    playerProfiles.remove(playerName);
-                    SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
-
-                    if (p != null) {
-                        p.setProfile(getPlayerProfile(p));
-                    }
-                }
-                enoughData = false;
-                MainMenu.refresh();
-                SpartanMenu.playerInfo.refresh(playerName);
+        if (foundPlayer) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
+                p.getViolations(hackType).reset();
             }
         }
+
+        if (isStorageMode()) {
+            // Clear Files/Database
+            SpartanBukkit.storageThread.execute(() -> {
+                synchronized (playerProfiles) {
+                    playerProfiles.remove(playerName);
+                }
+                if (foundPlayer) {
+                    p.setProfile(getPlayerProfile(p));
+                }
+                if (Config.sql.isEnabled()) {
+                    Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
+                }
+                Collection<File> files = getFiles();
+
+                if (!files.isEmpty()) {
+                    for (File file : files) {
+                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+
+                        for (String key : configuration.getKeys(false)) {
+                            String value = configuration.getString(key);
+
+                            if (value != null && value.contains(playerName)) {
+                                configuration.set(key, null);
+                            }
+                        }
+                        try {
+                            configuration.save(file);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+            });
+        } else {
+            synchronized (playerProfiles) {
+                playerProfiles.remove(playerName);
+            }
+            if (foundPlayer) {
+                p.setProfile(getPlayerProfile(p));
+            }
+        }
+        enoughData = false;
+        MainMenu.refresh();
+        SpartanMenu.playerInfo.refresh(playerName);
     }
 
     // Separator
@@ -587,17 +523,13 @@ public class ResearchEngine {
                     String key = AntiCheatLogs.syntaxDate(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now()), AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1));
 
                     for (String information : incomingInformation) {
-                        if (isLogValid(information)) {
-                            AntiCheatLogs.logInfo(null, information, null, null, null, false, -1);
-                            cache.put(key, information);
-                            byteSize += key.length() + information.length();
+                        AntiCheatLogs.logInfo(null, information, null, null, null, false, -1);
+                        cache.put(key, information);
+                        byteSize += key.length() + information.length();
 
-                            if (byteSize >= maxBytes) {
-                                isFull = true;
-                                break;
-                            } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
-                                break;
-                            }
+                        if (byteSize >= maxBytes) {
+                            isFull = true;
+                            break;
                         } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
                             break;
                         }
@@ -616,19 +548,14 @@ public class ResearchEngine {
                     if (rs != null) {
                         while (rs.next()) {
                             String data = rs.getString("information");
+                            Timestamp t = rs.getTimestamp("creation_date");
+                            String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1) + ")[" + TimeUtils.getYearMonthDay(t) + " " + TimeUtils.getTime(t) + "]";
+                            cache.put(date, data);
+                            byteSize += date.length() + data.length();
 
-                            if (isLogValid(data)) {
-                                Timestamp t = rs.getTimestamp("creation_date");
-                                String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1) + ")[" + TimeUtils.getYearMonthDay(t) + " " + TimeUtils.getTime(t) + "]";
-                                cache.put(date, data);
-                                byteSize += date.length() + data.length();
-
-                                if (byteSize >= maxBytes) {
-                                    isFull = true;
-                                    break;
-                                } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
-                                    break;
-                                }
+                            if (byteSize >= maxBytes) {
+                                isFull = true;
+                                break;
                             } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
                                 break;
                             }
@@ -663,7 +590,7 @@ public class ResearchEngine {
                     for (String key : c.getKeys(false)) {
                         String data = c.getString(key);
 
-                        if (data != null && isLogValid(data)) {
+                        if (data != null) {
                             cache.put(key, data);
                             byteSize += key.length() + data.length();
 
@@ -690,39 +617,6 @@ public class ResearchEngine {
         return (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + dataType.hashCode();
     }
 
-    public static int getOnlinePlayers(String data) {
-        int startString = data.indexOf("(Online: ");
-
-        if (startString > -1) {
-            data = data.substring(startString + 9);
-            int endString = data.indexOf(")");
-
-            try {
-                return Integer.parseInt(data.substring(0, endString));
-            } catch (Exception ignored) {
-            }
-        }
-        return -1;
-    }
-
-    private static boolean isLogValid(String log) {
-        if (log.length() <= maxDataLength) {
-            String start = "[Spartan Phase ";
-            int index = log.indexOf(start);
-
-            if (index > -1) {
-                index += start.length();
-                String number = log.substring(index, index + 3);
-
-                if (AlgebraUtils.validNumber(number)) {
-                    return (downloadedVersion - Double.parseDouble(number)) <= 25.0;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
     // Separator
 
     private static String recalculateCache() {
@@ -738,7 +632,6 @@ public class ResearchEngine {
 
                 try {
                     String construct = Config.getConstruct();
-                    Map<String, Set<String>> miningDays = new LinkedHashMap<>(size);
 
                     for (Map.Entry<String, String> entry : logs.entrySet()) {
                         String key = entry.getKey();
@@ -825,19 +718,7 @@ public class ResearchEngine {
                                                 World.Environment environment = World.Environment.valueOf(
                                                         split[8].toUpperCase().replace("-", "_")
                                                 );
-                                                miningHistory.increaseMines(environment, 1);
-
-                                                // Separator
-                                                Set<String> days = miningDays.get(name);
-
-                                                if (days == null) {
-                                                    days = new HashSet<>();
-                                                    days.add(partialDate);
-                                                    miningDays.put(name, days);
-                                                    miningHistory.increaseDays();
-                                                } else if (days.add(partialDate)) {
-                                                    miningHistory.increaseDays();
-                                                }
+                                                miningHistory.increaseMines(environment, 1, partialDate);
                                             }
                                         }
                                     } catch (Exception ignored) {
@@ -847,7 +728,8 @@ public class ResearchEngine {
                         }
                     }
                     enoughData = false;
-                    updateCache();
+                    updateComprehensionCache();
+                    MainMenu.refresh();
 
                     // Separator
                     toReturn = "Done loading " + size + " rows of data to the Research Engine.";
@@ -865,33 +747,13 @@ public class ResearchEngine {
         }
     }
 
-    private static void updateCache() {
-        String currentDate = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDateTime.now());
-
-        // When day changes
-        if (!date.equals(currentDate)) {
-            date = currentDate;
-            Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
-
-            if (!playerProfiles.isEmpty()) {
-                for (PlayerProfile playerProfile : playerProfiles) {
-                    for (MiningHistory miningHistory : playerProfile.getMiningHistory()) {
-                        miningHistory.increaseDays();
-                    }
-                }
-            }
-        }
-        if (!SpartanBukkit.isSynchronised()) {
-            updateComprehensionCache(); // Always First
-        }
-        MainMenu.refresh();
-    }
-
     private static void updateComprehensionCache() {
-        Collection<PlayerProfile> playerProfiles = ResearchEngine.playerProfiles.values();
-        int size = playerProfiles.size();
+        if (!playerProfiles.isEmpty()) {
+            Collection<PlayerProfile> playerProfiles;
 
-        if (size > 0) {
+            synchronized (ResearchEngine.playerProfiles) {
+                playerProfiles = new ArrayList<>(ResearchEngine.playerProfiles.values());
+            }
             Enums.HackType[] hackTypes = Enums.HackType.values();
             DataType[] dataTypes = getDynamicUsableDataTypes(false);
             List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();

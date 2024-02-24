@@ -198,7 +198,7 @@ public class PlayerProfile {
         return miningHistory;
     }
 
-    public MiningHistory getOverallMiningHistory() {
+    public MiningHistory getOverallMiningHistory() { // todo lookup
         int mines = 0, days = 0;
 
         for (MiningHistory miningHistory : getMiningHistory()) {

@@ -3,7 +3,6 @@ package com.vagdedes.spartan.objects.system;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
-import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -59,20 +58,11 @@ public class HackPrevention {
         player.getViolations(hackType).queue(this, check);
     }
 
-    void handle(SpartanPlayer player, Enums.HackType hackType) { // todo fix location
+    void handle(SpartanPlayer player, Enums.HackType hackType) {
         SpartanLocation preventionFrom = this.location;
-        boolean teleported = false;
+        boolean teleported = preventionFrom != null
+                && player.safeTeleport(preventionFrom);
 
-        if (preventionFrom != null) {
-            SpartanLocation fromLocation = DetectionLocation.get(player, false);
-
-            if (fromLocation != null) {
-                preventionFrom = fromLocation;
-            }
-            if (player.safeTeleport(preventionFrom)) { // Attention First
-                teleported = true;
-            }
-        }
         if (this.groundTeleport
                 && player.groundTeleport(true)) {
             teleported = true;
