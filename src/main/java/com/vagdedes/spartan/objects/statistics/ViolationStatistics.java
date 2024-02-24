@@ -166,7 +166,7 @@ public class ViolationStatistics { // todo use pie equation
 
                 if (!violations.isEmpty()) {
                     for (PlayerViolation violation : violations) {
-                        long time = AlgebraUtils.floorToNearest(violation.time, (int) Check.violationCycleSeconds);
+                        long time = AlgebraUtils.floorToNearest(violation.time, (int) Check.violationCycleMilliseconds);
                         PlayerViolation highest = highestViolation.get(time);
 
                         if (highest == null || violation.level > highest.level) {

@@ -13,7 +13,6 @@ import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -59,8 +58,10 @@ public class BackgroundAPI {
         return player != null && DetectionNotifications.isEnabled(player);
     }
 
+    @Deprecated
     static int getViolationResetTime() {
-        return (int) (Check.violationCycleSeconds / 1_000L);
+        AwarenessNotifications.forcefullySend("The API method 'getViolationResetTime' has been removed.");
+        return 0;
     }
 
     @Deprecated

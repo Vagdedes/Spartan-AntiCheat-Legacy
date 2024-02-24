@@ -41,6 +41,7 @@ public class API {
         return BackgroundAPI.hasNotificationsEnabled(p);
     }
 
+    @Deprecated
     public static int getViolationResetTime() {
         return BackgroundAPI.getViolationResetTime();
     }

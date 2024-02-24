@@ -3,7 +3,6 @@ package com.vagdedes.spartan.handlers.stability;
 import com.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
-import com.vagdedes.spartan.objects.system.LiveViolation;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.LinkedHashMap;
@@ -40,10 +39,8 @@ public class CancelViolation {
 
     // Separator
 
-    public static boolean isForced(SpartanPlayer player, Enums.HackType hackType,
-                                   LiveViolation liveViolation, int hash) {
-        return liveViolation.hasMaxCancelledLevel(hash)
-                || !player.getCooldowns().canDo(masterKey + hackType.ordinal())
+    public static boolean isForced(SpartanPlayer player, Enums.HackType hackType) {
+        return !player.getCooldowns().canDo(masterKey + hackType.ordinal())
                 || UltimateStatistics.isSuspected(player.getUniqueId());
     }
 

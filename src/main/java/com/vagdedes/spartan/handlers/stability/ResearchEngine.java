@@ -789,7 +789,7 @@ public class ResearchEngine {
             // Separator (Find False Positives)
 
             if (enoughData()) {
-                double duration = 1000.0; // 1 tick
+                double duration = 1000.0; // 1 second
 
                 for (Enums.HackType hackType : hackTypes) {
                     hackType.getCheck().clearMaxCancelledViolations();
@@ -842,7 +842,7 @@ public class ResearchEngine {
                                 }
 
                                 // Calculate the average violations for each executed detection and multiply to get the bigger image
-                                duration = Check.violationCycleSeconds / duration;
+                                duration = Check.violationCycleMilliseconds / duration;
 
                                 for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
                                     entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * duration);

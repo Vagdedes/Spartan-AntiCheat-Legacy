@@ -67,7 +67,7 @@ public class LiveViolation {
 
     private final SpartanPlayer player;
     public final Enums.HackType hackType;
-    private long cycleExpiration, lastViolation, lastTick;
+    private long cycleExpiration, lastTick;
     private final Map<Integer, Long> cancelledLevel;
     private int level;
     private CancelCause disableCause, silentCause;
@@ -78,7 +78,6 @@ public class LiveViolation {
         this.hackType = hackType;
         this.level = 0;
         this.cancelledLevel = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.lastViolation = 0L;
         this.lastTick = 0L;
         this.queue = Collections.synchronizedMap(new LinkedHashMap<>());
         reset(); // Do not make it local as it takes part in object initiation and is not important
@@ -105,7 +104,7 @@ public class LiveViolation {
                 hp = iterator.next();
                 processed = hp.processed;
 
-                if (hp.expiration < System.currentTimeMillis()) {
+                if (hp.expiration < TPS.getTick(player)) {
                     iterator.remove();
                 } else {
                     hp.processed = true;
@@ -141,12 +140,13 @@ public class LiveViolation {
                         && (silentCause == null
                         || !silentCause.pointerMatches(hp.information))
                         && (suspectedOrHacker
-                        || CancelViolation.isForced(player, hackType, this, playerViolation.similarityIdentity)
+                        || hasMaxCancelledLevel(playerViolation.similarityIdentity)
+                        || CancelViolation.isForced(player, hackType)
                         || violations >= CancelViolation.get(hackType, player.getDataType()));
                 falsePositive = false;
                 violations += 1;
             }
-            this.setLastViolationTime(hp.time);
+            this.setLastViolation(hp.tick);
 
             if (falsePositive) {
                 synchronized (maxLevel) {
@@ -167,7 +167,6 @@ public class LiveViolation {
                     switch (hp.violation) {
                         case 2:
                             // Algorithm will redirect this to case '1'.
-
                             synchronized (maxLevel) {
                                 maxLevel.put(this, hp.information);
                             }
@@ -225,22 +224,6 @@ public class LiveViolation {
     public int getLevel() {
         timeReset();
         return level;
-    }
-
-    public int getCancelledLevel(int hash) {
-        Long time;
-
-        synchronized (cancelledLevel) {
-            time = cancelledLevel.get(hash);
-        }
-        if (time == null) {
-            return 0;
-        } else {
-            time -= System.currentTimeMillis();
-            return time > 0L
-                    ? Math.min(AlgebraUtils.integerCeil(time / 1000.0), Check.maxViolationsPerCycle)
-                    : 0;
-        }
     }
 
     public boolean hasLevel() {
@@ -313,6 +296,7 @@ public class LiveViolation {
     }
 
     private void reset(boolean local) {
+        long tick = TPS.getTick(player);
         ViolationResetEvent event;
 
         if (SpartanBukkit.isSynchronised()) {
@@ -333,33 +317,26 @@ public class LiveViolation {
             event = null;
         }
 
-        if (event == null || !event.isCancelled()) {
-            synchronized (maxLevel) {
-                maxLevel.remove(this);
-            }
-            this.level = 0;
-        } else if ((System.currentTimeMillis() - this.cycleExpiration) > Check.violationCycleSeconds) { // Forceful reset to keep potential developer API usage within hardcoded thresholds
+        if (event == null
+                || !event.isCancelled()
+                || this.cycleExpiration <= tick) {
             synchronized (maxLevel) {
                 maxLevel.remove(this);
             }
             this.level = 0;
         }
-        this.cycleExpiration = System.currentTimeMillis() + Check.violationCycleSeconds;
+        this.cycleExpiration = tick + Check.violationCycleTicks;
 
         // Always last
-        if (player != null) {
-            player.getProfile().getEvidence().remove(hackType, true, false, true);
+        player.getProfile().getEvidence().remove(hackType, true, false, true);
 
-            if (local) {
-                SpartanMenu.playerInfo.refresh(player.getName());
-            }
+        if (local) {
+            SpartanMenu.playerInfo.refresh(player.getName());
         }
     }
 
     private void timeReset() {
-        long time = System.currentTimeMillis();
-
-        if (this.cycleExpiration < time) {
+        if (this.cycleExpiration <= TPS.getTick(player)) {
             reset(true);
         }
     }
@@ -376,13 +353,8 @@ public class LiveViolation {
         return lastTick;
     }
 
-    public long getLastViolationTime(boolean maxIfNull) {
-        return maxIfNull && this.lastViolation == 0L ? Long.MAX_VALUE : System.currentTimeMillis() - this.lastViolation;
-    }
-
-    public void setLastViolationTime(long time) {
-        this.lastViolation = time;
-        this.lastTick = TPS.getTick(player);
+    public void setLastViolation(long tick) {
+        this.lastTick = tick;
         this.player.setLastViolation(this);
     }
 

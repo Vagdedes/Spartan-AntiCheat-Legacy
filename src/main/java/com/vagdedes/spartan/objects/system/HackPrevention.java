@@ -3,6 +3,7 @@ package com.vagdedes.spartan.objects.system;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
+import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
@@ -19,7 +20,7 @@ public class HackPrevention {
     final boolean groundTeleport;
     boolean processed;
     final double damage;
-    final long time, expiration;
+    final long time, tick, expiration;
 
     private static final Cooldowns cooldowns = new Cooldowns(null);
 
@@ -30,7 +31,8 @@ public class HackPrevention {
                           double damage, int violation) {
         // Object Data
         this.time = System.currentTimeMillis();
-        this.expiration = cancelTicks == 0 ? 0L : this.time + (cancelTicks * 50L);
+        this.tick = TPS.getTick(player);
+        this.expiration = cancelTicks == 0 ? 0L : this.tick + cancelTicks;
         this.information = verbose;
         this.location = location;
         this.groundTeleport = groundTeleport;

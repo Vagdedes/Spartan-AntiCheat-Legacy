@@ -5,6 +5,7 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
+import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.objects.profiling.PlayerEvidence;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -25,13 +26,15 @@ public class Check {
 
     // Static
 
-    public static final long violationCycleSeconds = 60_000L;
     public static final int
+            violationCycleSeconds = 60,
+            violationCycleTicks = TPS.tickTimeInteger * violationCycleSeconds,
             maxCommands = 10,
             maxMath = 10,
             maxViolationsPerCycle = 100,
             minimumDefaultCancelViolation = 1,
             maximumDefaultCancelViolation = 6;
+    public static final long violationCycleMilliseconds = violationCycleSeconds * 1_000L;
 
     private static boolean canPunishByDefault(Enums.HackType hackType) {
         return hackType != Enums.HackType.GhostHand;
