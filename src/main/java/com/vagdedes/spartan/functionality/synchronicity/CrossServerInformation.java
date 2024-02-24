@@ -140,13 +140,16 @@ public class CrossServerInformation {
             SpartanBukkit.runRepeatingTask(() -> {
                 if (ticks == 0) {
                     ticks = 1200;
-                    generalTask.run();
-                    notificationsTask.run();
+
+                    SpartanBukkit.connectionThread.execute(() -> {
+                        generalTask.run();
+                        notificationsTask.run();
+                    });
                 } else {
                     ticks -= 1;
 
                     if (ticks % 200 == 0) {
-                        notificationsTask.run();
+                        SpartanBukkit.connectionThread.execute(notificationsTask::run);
                     }
                 }
             }, 1L, 1L);
