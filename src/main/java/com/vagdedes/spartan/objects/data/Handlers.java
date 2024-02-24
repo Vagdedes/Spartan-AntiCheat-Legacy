@@ -21,7 +21,7 @@ public class Handlers {
         Piston(HandlerFamily.Velocity), WaterElevator(HandlerFamily.Velocity), Damage(HandlerFamily.Velocity),
         Explosion(HandlerFamily.Velocity), ExtremeCollision(HandlerFamily.Velocity),
 
-        ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part), GameMode(HandlerFamily.Part), Teleport(HandlerFamily.Part),
+        ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part), GameMode(HandlerFamily.Part),
 
         ElytraUse(HandlerFamily.Motion), Trident(HandlerFamily.Motion);
 
@@ -132,7 +132,7 @@ public class Handlers {
     }
 
     private boolean has(long ticks) {
-        return ticks == -1L || ticks >= TPS.getTick(player);
+        return ticks == -1L || ticks > TPS.getTick(player);
     }
 
     public boolean has() {

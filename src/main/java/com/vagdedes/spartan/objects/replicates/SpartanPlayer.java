@@ -36,7 +36,6 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
@@ -606,6 +605,19 @@ public class SpartanPlayer {
         } else {
             for (LiveViolation liveViolation : violations) {
                 if (liveViolation.isDetected(prevention)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public boolean wasDetected(boolean prevention) {
+        if (lastViolation.wasDetected(prevention)) {
+            return true;
+        } else {
+            for (LiveViolation liveViolation : violations) {
+                if (liveViolation.wasDetected(prevention)) {
                     return true;
                 }
             }
@@ -1725,9 +1737,8 @@ public class SpartanPlayer {
     // Damage
 
     public void applyFallDamage(double d) {
-        handlers.disable(Handlers.HandlerType.Floor, Teleport.ticks);
-        handlers.disable(Handlers.HandlerType.Velocity, Teleport.ticks);
-        handlers.disable(Handlers.HandlerType.Teleport, 1);
+        handlers.disable(Handlers.HandlerType.Floor, 3);
+        handlers.disable(Handlers.HandlerType.Velocity, 3);
         damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 

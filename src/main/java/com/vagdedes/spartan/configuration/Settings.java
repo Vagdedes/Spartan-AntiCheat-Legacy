@@ -82,7 +82,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Protections.reconnect_cooldown", 1);
         addOption(tpsProtectionOption, true); // test server
         addOption(maxSupportedLatencyOption, 500); // test server
-        addOption("Protections.use_teleport_protection", false); // test server
         addOption("Protections.avoid_self_bow_damage", true);
         addOption("Protections.player_limit_per_ip", 0);
         addOption("Protections.disallowed_building", true); // test server

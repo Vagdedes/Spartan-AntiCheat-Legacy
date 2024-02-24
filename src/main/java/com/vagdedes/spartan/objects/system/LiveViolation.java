@@ -146,7 +146,8 @@ public class LiveViolation {
                 falsePositive = false;
                 violations += 1;
             }
-            this.setLastViolation(hp.tick);
+            this.lastTick = hp.tick;
+            this.player.setLastViolation(this);
 
             if (falsePositive) {
                 synchronized (maxLevel) {
@@ -156,8 +157,8 @@ public class LiveViolation {
                         maxLevel.remove(this);
                     }
                 }
-                violations = this.increaseCancelledLevel(playerViolation.similarityIdentity, 1.0 + player.getProfile().getEvidence().getKnowledgeList().size());
-                performNotification(hp.information, violations, false, true, canPrevent, suspectedOrHacker);
+                violations = this.increaseCancelledLevel(playerViolation.similarityIdentity);
+                performNotification(hp.information, violations, false, true, false, suspectedOrHacker);
             } else {
                 boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
 
@@ -252,12 +253,7 @@ public class LiveViolation {
         // Violations
         if (amount < Check.maxViolationsPerCycle) {
             this.level = amount;
-            increaseCancelledLevel(
-                    hash,
-                    this.player.getProfile().isHacker() ? 2.0
-                            : this.player.getProfile().isSuspected(hackType) ? 1.5
-                            : 1.0
-            ); // Increase it in case a player has reached the max level and is still cheating
+            increaseCancelledLevel(hash); // Increase it in case a player has reached the max level and is still cheating
         }
         timeReset(); // Always after changing the level
 
@@ -267,7 +263,9 @@ public class LiveViolation {
         }
     }
 
-    private int increaseCancelledLevel(int hash, double multiplier) {
+    private int increaseCancelledLevel(int hash) {
+        double multiplier = 1.0 + player.getProfile().getEvidence().getKnowledgeList().size();
+
         synchronized (cancelledLevel) {
             Long time = cancelledLevel.get(hash);
 
@@ -302,8 +300,7 @@ public class LiveViolation {
         if (SpartanBukkit.isSynchronised()) {
             Player player = this.player.getPlayer();
 
-            if (player != null
-                    && player.isOnline()) {
+            if (player != null && player.isOnline()) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     event = new ViolationResetEvent(player, this.hackType);
                     Register.manager.callEvent(event);
@@ -349,13 +346,14 @@ public class LiveViolation {
                 || !hackType.getCheck().isSilent(player.getWorld().getName()));
     }
 
-    public long getLastTick() {
-        return lastTick;
+    public boolean wasDetected(boolean prevention) {
+        return lastTick >= (TPS.getTick(player) - 1)
+                && (!prevention
+                || !hackType.getCheck().isSilent(player.getWorld().getName()));
     }
 
-    public void setLastViolation(long tick) {
-        this.lastTick = tick;
-        this.player.setLastViolation(this);
+    public long getLastTick() {
+        return lastTick;
     }
 
     // Separator

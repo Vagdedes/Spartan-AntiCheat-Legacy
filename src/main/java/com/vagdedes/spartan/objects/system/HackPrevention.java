@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.objects.system;
 
 import com.vagdedes.spartan.checks.movement.speed.Speed;
-import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.data.Cooldowns;
@@ -46,13 +45,7 @@ public class HackPrevention {
             if (VehicleAccess.hasExitCooldown(player, hackType)) {
                 this.violation = 0;
             } else {
-                CancelCause silentCause = player.getViolations(hackType).getSilentCause();
-
-                if (silentCause != null && silentCause.getReason().equals(Teleport.reason)) {
-                    this.violation = 0;
-                } else {
-                    this.violation = violation;
-                }
+                this.violation = violation;
             }
         } else {
             this.violation = violation;

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.interfaces.listeners;
 
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.protections.Teleport;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
@@ -47,7 +46,7 @@ public class EventsHandler2 implements Listener {
         }
 
         // System
-        boolean distance = to.distance(e.getFrom()) >= MoveUtils.chunk && !p.isDetected(true);
+        boolean distance = to.distance(e.getFrom()) >= MoveUtils.chunk && !p.wasDetected(true);
         Cache.clear(p, n,
                 false,
                 distance,
@@ -57,9 +56,6 @@ public class EventsHandler2 implements Listener {
 
         if (!cancelled) {
             CombatProcessing.runTeleport(p);
-
-            // Protections
-            Teleport.run(p);
         }
     }
 
