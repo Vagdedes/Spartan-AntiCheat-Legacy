@@ -14,7 +14,7 @@ public class MiningHistory {
     private final int[] mines;
     private final Set<String> days;
 
-    MiningHistory(Enums.MiningOre ore, int mines, int days) {
+    MiningHistory(Enums.MiningOre ore, int mines) {
         World.Environment[] environments = World.Environment.values();
         this.mines = new int[environments.length];
 

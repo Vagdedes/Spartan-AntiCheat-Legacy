@@ -153,11 +153,12 @@ public class CloudConnections {
                     list.add(StringUtils.decodeBase64(result));
                 }
                 return list.toArray(new String[0]);
+            } else {
+                return new String[]{};
             }
-            return null;
         } catch (Exception e) {
             CloudFeature.throwError(e, "crossServerInformation:GET");
-            return null;
+            return new String[]{};
         }
     }
 
