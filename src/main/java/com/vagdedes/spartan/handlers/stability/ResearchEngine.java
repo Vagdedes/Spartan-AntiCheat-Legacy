@@ -4,6 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.checks.combat.criticals.Criticals;
 import com.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
 import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.configuration.Settings;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
@@ -14,7 +15,6 @@ import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.gui.spartan.MainMenu;
-import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.objects.features.StatisticalProgress;
 import com.vagdedes.spartan.objects.profiling.*;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -413,9 +413,9 @@ public class ResearchEngine {
 
     // Separator
 
-    public static double getMiningHistoryAverage(Enums.MiningOre ore, double multiplier) {
+    public static double getMiningHistoryAverage(Enums.MiningOre ore) {
         Double average = averageMining.get(ore);
-        return average == null ? defaultAverageMining[ore.ordinal()] : (average * multiplier);
+        return average == null ? defaultAverageMining[ore.ordinal()] : average;
     }
 
     // Separator
@@ -577,7 +577,7 @@ public class ResearchEngine {
         boolean continueWithYAML = false;
 
         // Separator
-        if (IDs.isValid() && CloudFeature.canSynchroniseFiles(true)) {
+        if (Config.settings.getBoolean(Settings.cloudSynchroniseFilesOption)) {
             String crossServerInformationOption = CrossServerInformation.getOptionValue();
 
             if (CrossServerInformation.isOptionValid(crossServerInformationOption)) {

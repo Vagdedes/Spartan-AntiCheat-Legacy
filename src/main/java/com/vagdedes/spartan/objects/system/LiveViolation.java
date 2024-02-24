@@ -212,7 +212,7 @@ public class LiveViolation {
                         }
                     }
 
-                    if (canPrevent && !check.isSilent(player.getWorld().getName(), player)) {
+                    if (canPrevent && !check.isSilent(player.getWorld().getName())) {
                         if (enabledDeveloperAPI) {
                             CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getPlayer(), hackType);
                             Register.manager.callEvent(checkCancelEvent);
@@ -426,7 +426,7 @@ public class LiveViolation {
     public boolean isDetected(boolean prevention) {
         return lastTick == TPS.getTick(player)
                 && (!prevention
-                || !hackType.getCheck().isSilent(player.getWorld().getName(), player));
+                || !hackType.getCheck().isSilent(player.getWorld().getName()));
     }
 
     public long getLastTick() {
@@ -624,7 +624,7 @@ public class LiveViolation {
                                 + Config.getConstruct() + player.getName() + " failed " + hackType + " (VL: " + level
                                 + ") " + "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString()
                                 + "), (C-V: " + cancelViolationString + ") (Silent: "
-                                + hackType.getCheck().isSilent(player.getWorld().getName(), player) + "), "
+                                + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
                                 + "(Ping: " + player.getPing() + "ms), (TPS: "
                                 + AlgebraUtils.cut(TPS.get(player, false), 3) + "), (Hacker: " + suspectedOrHacker
                                 + "), (Online: " + playerCount + "), " +

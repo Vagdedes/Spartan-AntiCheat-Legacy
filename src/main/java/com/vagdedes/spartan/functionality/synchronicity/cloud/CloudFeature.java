@@ -2,6 +2,7 @@ package com.vagdedes.spartan.functionality.synchronicity.cloud;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.configuration.Settings;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
@@ -22,7 +23,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public class CloudFeature { // todo simplify and improve punished players
+public class CloudFeature {
 
     // URLs
     static final String website = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL21pbmVjcmFmdC9jbG91ZC8=",
@@ -34,23 +35,13 @@ public class CloudFeature { // todo simplify and improve punished players
             disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length),
             specificDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length),
             allDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
-    static final List<UUID> punishedPlayers = new ArrayList<>();
 
-    // Exception
-    static final int exceptionCooldownMinutes = 5 * 1200;
-    static int cloudExceptionCooldown = 0;
-
-    // Frequencies, Cooldowns & Timers
-    private static final int connectionRefreshFrequencyInMinutes = 10;
-    private static int connectionRefreshTimer = connectionRefreshFrequencyInMinutes * 1200;
+    // Functionality
     private static long connectionFailedCooldown = 0L;
     private static final long[] connectionRefreshCooldown = new long[2];
+    private static int outdatedVersion = AutoUpdater.NOT_CHECKED;
 
-    // Features
-    static int outdatedVersion = AutoUpdater.NOT_CHECKED;
-    static boolean ignoreServerLimits = false, serverLimited = false;
-
-    // Arguments
+    // Parameters
     static String identification = "", token = null;
     static final double version = Math.abs(Piracy.version);
     public static final String separator = ">@#&!%<;=";
@@ -60,25 +51,10 @@ public class CloudFeature { // todo simplify and improve punished players
 
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
-                if (cloudExceptionCooldown > 0) {
-                    cloudExceptionCooldown -= 1;
-
-                    if (cloudExceptionCooldown == 0) {
-                        SpartanBukkit.connectionThread.execute(() -> {
-                            refresh(true);
-                            refresh(false);
-                        });
-                    }
-                } else if (cloudExceptionCooldown == 0) {
-                    if (connectionRefreshTimer == 0) {
-                        SpartanBukkit.connectionThread.execute(() -> {
-                            refresh(true);
-                            refresh(false);
-                        });
-                    } else {
-                        connectionRefreshTimer -= 1;
-                    }
-                }
+                SpartanBukkit.connectionThread.execute(() -> {
+                    refresh(true);
+                    refresh(false);
+                });
             }, 1L, 1L);
         }
     }
@@ -95,24 +71,6 @@ public class CloudFeature { // todo simplify and improve punished players
 
     public static String getRawToken() {
         return token;
-    }
-
-    // Separator
-
-    public static boolean canSynchroniseFiles(boolean exception) {
-        return Config.settings.getBoolean("Cloud.synchronise_files")
-                && !IDs.isPreview()
-                && (!exception || !hasException());
-    }
-
-    // Separator
-
-    public static boolean hasException() {
-        return cloudExceptionCooldown != 0;
-    }
-
-    public static boolean isServerLimited() { // Once
-        return serverLimited;
     }
 
     // Separator
@@ -176,7 +134,7 @@ public class CloudFeature { // todo simplify and improve punished players
         long ms = System.currentTimeMillis();
 
         if (connectionFailedCooldown >= ms) {
-            connectionFailedCooldown = ms + (connectionRefreshFrequencyInMinutes * 60_000L);
+            connectionFailedCooldown = ms + 60_000L;
 
             if (AwarenessNotifications.areEnabled()) {
                 AwarenessNotifications.forcefullySend("(" + function + ") Failed to connect to the Game Cloud.");
@@ -191,10 +149,6 @@ public class CloudFeature { // todo simplify and improve punished players
             disabledDetections.clear();
             specificDisabledDetections.clear();
             allDisabledDetections.clear();
-
-            synchronized (punishedPlayers) {
-                punishedPlayers.clear();
-            }
         } else {
             identification = "identification=" + IDs.user() + "|" + IDs.nonce();
         }
@@ -205,30 +159,23 @@ public class CloudFeature { // todo simplify and improve punished players
 
         if (connectionRefreshCooldown[independent ? 0 : 1] <= ms) {
             connectionRefreshCooldown[independent ? 0 : 1] = ms + 60_000L;
-            connectionRefreshTimer = connectionRefreshFrequencyInMinutes * 1200;
-            boolean async = !SpartanBukkit.isSynchronised(),
-                    validIDs = IDs.isValid();
+            boolean async = !SpartanBukkit.isSynchronised();
 
             // Separator
             if (independent) {
                 if (async) {
-                    if (validIDs) {
-                        SpartanEdition.refresh();
-                    }
-                } else if (validIDs) {
+                    SpartanEdition.refresh();
+                } else {
                     SpartanBukkit.connectionThread.execute(SpartanEdition::refresh);
                 }
             } else if (async) {
-                if (validIDs) {
-                    CloudConnections.punishPlayers();
-                }
-            } else if (validIDs) {
+                CloudConnections.punishPlayers();
+            } else {
                 SpartanBukkit.connectionThread.execute(CloudConnections::punishPlayers);
             }
 
             // Separator
             if (independent
-                    && validIDs
                     && outdatedVersion == AutoUpdater.NOT_CHECKED) {
                 Runnable runnable = () -> {
                     try {
@@ -238,9 +185,7 @@ public class CloudFeature { // todo simplify and improve punished players
                         if (results.length > 0) {
                             String data = results[0];
 
-                            if (data.equals("exception")) {
-                                cloudExceptionCooldown = exceptionCooldownMinutes;
-                            } else if (data.equals("true")) {
+                            if (data.equals("true")) {
                                 String token = getToken();
 
                                 if (token != null) {
@@ -269,7 +214,7 @@ public class CloudFeature { // todo simplify and improve punished players
             }
 
             // Separator
-            if (independent && validIDs && canSynchroniseFiles(true)) {
+            if (independent && Config.settings.getBoolean(Settings.cloudSynchroniseFilesOption)) {
                 Runnable runnable = () -> {
                     try {
                         String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
@@ -279,42 +224,37 @@ public class CloudFeature { // todo simplify and improve punished players
                             boolean changed = false;
 
                             for (String data : results) {
-                                if (data.contains("exception")) {
-                                    cloudExceptionCooldown = exceptionCooldownMinutes;
-                                    break;
-                                } else {
-                                    String[] split = data.split("\\|");
-                                    boolean valueCondition = split.length == 3;
+                                String[] split = data.split("\\|");
+                                boolean valueCondition = split.length == 3;
 
-                                    if (valueCondition || split.length == 2) {
-                                        File file = new File(Register.plugin.getDataFolder() + "/" + split[0] + ".yml");
+                                if (valueCondition || split.length == 2) {
+                                    File file = new File(Register.plugin.getDataFolder() + "/" + split[0] + ".yml");
 
-                                        if (file.exists()) {
-                                            String desiredValue = valueCondition ? split[2] : null;
-                                            split = split[1].split(":");
+                                    if (file.exists()) {
+                                        String desiredValue = valueCondition ? split[2] : null;
+                                        split = split[1].split(":");
 
-                                            if (split.length == 2) {
-                                                String option = split[0];
-                                                YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+                                        if (split.length == 2) {
+                                            String option = split[0];
+                                            YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
 
-                                                for (String key : filea.getKeys(true)) {
-                                                    if (key.contains(option)) {
-                                                        String value = split[1];
-                                                        Object currentValue;
+                                            for (String key : filea.getKeys(true)) {
+                                                if (key.contains(option)) {
+                                                    String value = split[1];
+                                                    Object currentValue;
 
-                                                        if (!valueCondition // There is no if-value statement
-                                                                || (currentValue = filea.get(option)) == null // Current value did not return correctly or is non-existent
-                                                                || currentValue.toString().equals(desiredValue)) { // Current value matches desired value
-                                                            Double validDecimal = AlgebraUtils.returnValidDecimal(value);
-                                                            filea.set(key, validDecimal != null ? validDecimal :
-                                                                    AlgebraUtils.validInteger(value) ? Integer.parseInt(value) :
-                                                                            value.equals("true") || value.equals("false") ? Boolean.parseBoolean(value) :
-                                                                                    value);
-                                                            filea.save(file);
-                                                            changed = true;
-                                                        }
-                                                        break;
+                                                    if (!valueCondition // There is no if-value statement
+                                                            || (currentValue = filea.get(option)) == null // Current value did not return correctly or is non-existent
+                                                            || currentValue.toString().equals(desiredValue)) { // Current value matches desired value
+                                                        Double validDecimal = AlgebraUtils.returnValidDecimal(value);
+                                                        filea.set(key, validDecimal != null ? validDecimal :
+                                                                AlgebraUtils.validInteger(value) ? Integer.parseInt(value) :
+                                                                        value.equals("true") || value.equals("false") ? Boolean.parseBoolean(value) :
+                                                                                value);
+                                                        filea.save(file);
+                                                        changed = true;
                                                     }
+                                                    break;
                                                 }
                                             }
                                         }
@@ -339,27 +279,23 @@ public class CloudFeature { // todo simplify and improve punished players
             }
 
             // Separator
-            if (!independent && validIDs) {
+            if (!independent) {
                 Runnable runnable = () -> {
                     try {
                         String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
                                 + "&action=get&data=customerSupportCommands&version=" + version + "&value=" + Bukkit.getPort());
 
                         if (results.length > 0) {
-                            if (results[0].equals("exception")) {
-                                cloudExceptionCooldown = exceptionCooldownMinutes;
-                            } else {
-                                for (String result : results) {
-                                    String[] split = result.split(separator);
+                            for (String result : results) {
+                                String[] split = result.split(separator);
 
-                                    if (split.length == 2) {
-                                        // 0 = user, 1 = functionality
-                                        String functionality = StringUtils.decodeBase64(split[1]);
+                                if (split.length == 2) {
+                                    // 0 = user, 1 = functionality
+                                    String functionality = StringUtils.decodeBase64(split[1]);
 
-                                        if (!functionality.equals("NULL")) {
-                                            AwarenessNotifications.forcefullySend("Customer Support Command: " +
-                                                    CloudConnections.sendCustomerSupport(null, functionality, "Customer Support Command", true));
-                                        }
+                                    if (!functionality.equals("NULL")) {
+                                        AwarenessNotifications.forcefullySend("Customer Support Command: " +
+                                                CloudConnections.sendCustomerSupport(null, functionality, "Customer Support Command", true));
                                     }
                                 }
                             }
@@ -391,49 +327,44 @@ public class CloudFeature { // todo simplify and improve punished players
 
                         if (results.length > 0) {
                             for (String data : results) {
-                                if (data.contains("exception")) {
-                                    cloudExceptionCooldown = exceptionCooldownMinutes;
-                                    break;
-                                } else {
-                                    Enums.HackType hackType = null;
-                                    Set<String>
-                                            detections = new LinkedHashSet<>(),
-                                            hiddenDetections = new LinkedHashSet<>(),
-                                            allDetections = new LinkedHashSet<>();
+                                Enums.HackType hackType = null;
+                                Set<String>
+                                        detections = new LinkedHashSet<>(),
+                                        hiddenDetections = new LinkedHashSet<>(),
+                                        allDetections = new LinkedHashSet<>();
 
-                                    for (String detection : data.split("\\|")) {
-                                        if (hackType == null) {
-                                            for (Enums.HackType original : Enums.HackType.values()) {
-                                                if (detection.equalsIgnoreCase(original.toString())) {
-                                                    hackType = original;
-                                                    break;
-                                                }
-                                            }
-
-                                            // Not Found
-                                            if (hackType == null) {
+                                for (String detection : data.split("\\|")) {
+                                    if (hackType == null) {
+                                        for (Enums.HackType original : Enums.HackType.values()) {
+                                            if (detection.equalsIgnoreCase(original.toString())) {
+                                                hackType = original;
                                                 break;
                                             }
-                                        } else {
-                                            detection = detection.replace("__", " ");
-
-                                            if (detection.startsWith(" ")) {
-                                                hiddenDetections.add(detection);
-                                            } else {
-                                                detections.add(detection);
-                                            }
-                                            allDetections.add(detection);
                                         }
+
+                                        // Not Found
+                                        if (hackType == null) {
+                                            break;
+                                        }
+                                    } else {
+                                        detection = detection.replace("__", " ");
+
+                                        if (detection.startsWith(" ")) {
+                                            hiddenDetections.add(detection);
+                                        } else {
+                                            detections.add(detection);
+                                        }
+                                        allDetections.add(detection);
                                     }
-                                    if (!detections.isEmpty()) {
-                                        disabledDetections.put(hackType, detections.toArray(new String[0]));
-                                    }
-                                    if (!hiddenDetections.isEmpty()) {
-                                        hiddenDisabledDetections.put(hackType, hiddenDetections.toArray(new String[0]));
-                                    }
-                                    if (!allDetections.isEmpty()) {
-                                        allDisabledDetections.put(hackType, allDetections.toArray(new String[0]));
-                                    }
+                                }
+                                if (!detections.isEmpty()) {
+                                    disabledDetections.put(hackType, detections.toArray(new String[0]));
+                                }
+                                if (!hiddenDetections.isEmpty()) {
+                                    hiddenDisabledDetections.put(hackType, hiddenDetections.toArray(new String[0]));
+                                }
+                                if (!allDetections.isEmpty()) {
+                                    allDisabledDetections.put(hackType, allDetections.toArray(new String[0]));
                                 }
                             }
                             CloudFeature.disabledDetections.clear();
@@ -460,7 +391,7 @@ public class CloudFeature { // todo simplify and improve punished players
             }
 
             // Separator
-            if (independent && validIDs) {
+            if (independent) {
                 Runnable runnable = () -> {
                     String[][] announcements = CloudConnections.getStaffAnnouncements();
 

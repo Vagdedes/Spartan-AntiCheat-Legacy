@@ -3,8 +3,6 @@ package com.vagdedes.spartan.checks.world;
 import com.vagdedes.spartan.abstraction.CheckExecutor;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.profiling.MiningHistory;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -16,14 +14,10 @@ import org.bukkit.WorldType;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.List;
 
 public class XRay extends CheckExecutor {
 
     public static final Enums.HackType check = Enums.HackType.XRay;
-    public static final double
-            lenientStatisticalRatio = 0.8,
-            strictStatisticalRatio = 2.0 - lenientStatisticalRatio;
 
     static {
         if (check.getCheck().isEnabled(null, null, null)
@@ -61,31 +55,14 @@ public class XRay extends CheckExecutor {
             int mines = miningHistory.getMines(World.Environment.valueOf(objects[0].toString()));
 
             if (mines > 0) {
-                double globalAverage = ResearchEngine.getMiningHistoryAverage((Enums.MiningOre) objects[2], strictStatisticalRatio);
+                double globalAverage = ResearchEngine.getMiningHistoryAverage((Enums.MiningOre) objects[2]),
+                        average = mines / ((double) miningHistory.getDays());
 
-                if (globalAverage < 0.0) { // When below zero, it means data is not yet coming from player profiles but backup variables
+                if (globalAverage < 0.0) {
                     globalAverage = Math.abs(globalAverage);
-                    String checkDefaultName = hackType.toString(),
-                            checkName = hackType.getCheck().getName(),
-                            message = AwarenessNotifications.getOptionalNotification(
-                                    "The '" + (checkName.equals(checkDefaultName) ? checkDefaultName : checkDefaultName + " (" + checkName + ")") + "' check has insufficient data to work with. "
-                                            + "If you plan on testing this check, try again in a few days and after normal everyday players have had the chance to mine blocks."
-                            );
-
-                    if (message != null) {
-                        List<SpartanPlayer> players = Permissions.getStaff();
-
-                        if (!players.isEmpty()) {
-                            for (SpartanPlayer o : players) {
-                                if (AwarenessNotifications.canSend(o.getUniqueId(), hackType.toString())) {
-                                    o.sendMessage(message);
-                                }
-                            }
-                        }
-                    }
+                } else {
+                    globalAverage = globalAverage * 1.5;
                 }
-                double average = mines / ((double) miningHistory.getDays());
-
                 if (average > globalAverage) {
                     double points = AlgebraUtils.cut(average - globalAverage, 2);
                     cancel(

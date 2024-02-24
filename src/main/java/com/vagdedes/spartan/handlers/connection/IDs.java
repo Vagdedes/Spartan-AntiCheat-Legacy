@@ -54,14 +54,6 @@ public class IDs {
 
     // Platforms
 
-    public static boolean isValid() {
-        if (Piracy.enabled) {
-            return true;
-        }
-        String user = user();
-        return !user.equals(defaultLocalID) && user.equals(resource());
-    }
-
     public static void setPlatform(int id) {
         platform = id;
     }

@@ -117,7 +117,7 @@ public class BackgroundAPI {
     }
 
     static boolean isSilent(HackType HackType) {
-        return HackType.getCheck().isSilent(null, null);
+        return HackType.getCheck().isSilent(null);
     }
 
     static int getVL(Player p, HackType hackType) {

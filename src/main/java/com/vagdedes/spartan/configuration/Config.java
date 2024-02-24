@@ -5,11 +5,9 @@ import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.functionality.synchronicity.DiscordWebhooks;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
-import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.Chunks;
@@ -30,16 +28,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.List;
-import java.util.UUID;
 
 public class Config {
 
     public static final String
             legacyFileName = "config.yml",
-            fileName = "checks.yml",
-            defaultConstruct = "[Spartan " + API.getVersion() + "] ";
+            fileName = "checks.yml";
     private static YamlConfiguration configuration = null;
-    private static String construct = defaultConstruct;
+    private static String construct = null;
     private static boolean legacyFile = false;
     private static int maxPlayers = 20;
     public static Settings settings = new Settings();
@@ -146,13 +142,7 @@ public class Config {
         }
 
         // Identification & Labelling
-        if (Piracy.enabled) {
-            construct = "[Spartan " + API.getVersion() + "/" + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "] ";
-        } else if (IDs.isValid()) {
-            construct = "[Spartan " + API.getVersion() + "/" + IDs.hide(IDs.user()) + "] ";
-        } else {
-            construct = defaultConstruct;
-        }
+        construct = "[Spartan " + API.getVersion() + "/" + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "] ";
         CloudFeature.clear(false);
         CrossServerInformation.refresh();
 
@@ -234,37 +224,6 @@ public class Config {
 
         // Listeners
         EventsHandler7.refresh();
-
-        // Notifications (Always Last)
-        if (enabledPlugin && AwarenessNotifications.areEnabled()) {
-            boolean legacy = isLegacy(),
-                    discord = DiscordWebhooks.isUsing() && !ResearchEngine.enoughData();
-
-            if (legacy || discord) {
-                String legacyConfigurationMessage = AwarenessNotifications.getNotification(
-                        "You are using the '" + legacyFileName + "' file, which is a legacy configuration that can cause detection instabilities. " +
-                                "Unless you know what you are doing, it's recommended to revert to the new one by deleting '" + legacyFileName + "' and running the command '/spartan reload'.",
-                        true
-                ), discordWebhooksMessage = AwarenessNotifications.getOptionalNotification(
-                        "The Discord Webhooks feature is enabled but needs significant data to function. " +
-                                "Please be patient while this data is collected by the anti-cheat."
-                );
-                List<SpartanPlayer> players = Permissions.getStaff();
-
-                if (!players.isEmpty()) {
-                    for (SpartanPlayer p : players) {
-                        UUID uuid = p.getUniqueId();
-
-                        if (legacy && AwarenessNotifications.canSend(uuid, "config")) {
-                            p.sendMessage(legacyConfigurationMessage);
-                        }
-                        if (discord && AwarenessNotifications.canSend(uuid, "discord")) {
-                            p.sendMessage(discordWebhooksMessage);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public static void reload(Object sender) {

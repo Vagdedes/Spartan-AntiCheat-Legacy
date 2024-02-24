@@ -55,8 +55,7 @@ public class NoSlowdown extends CheckExecutor {
         } else if (object instanceof EntityShootBowEvent) {
             Check check = hackType.getCheck();
 
-            if (!check.isSilent(player.getWorld().getName(), player)
-                    && check.getBooleanOption("check_bow_shots", true)
+            if (check.getBooleanOption("check_bow_shots", true)
                     && !PlayerData.hasJumpEffect(player)
                     && getMovementCase(player) != 0) {
                 return canDo() && !PlayerData.hasSpeedEffect(player, player.getLocation());

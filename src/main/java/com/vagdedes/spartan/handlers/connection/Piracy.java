@@ -44,11 +44,8 @@ public class Piracy implements Listener {
             });
         }
 
-        if (IDs.isValid()) {
-            SpartanEdition.refresh();
-            CloudConnections.checkServerLimits();
-            CloudConnections.logServerSpecifications();
-        }
+        SpartanEdition.refresh();
+        CloudConnections.logServerSpecifications();
 
         // Separator
         long delay = 1200L;

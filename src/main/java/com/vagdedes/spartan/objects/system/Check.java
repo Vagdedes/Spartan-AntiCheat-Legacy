@@ -895,11 +895,10 @@ public class Check {
         return supportsSilent;
     }
 
-    public boolean isSilent(String world, SpartanPlayer player) { // todo fix silent-cause not being specific
+    public boolean isSilent(String world) {
         return !supportsSilent()
                 || silent
-                || world != null && isSilentOnWorld(world)
-                || player != null && player.getViolations(hackType).getSilentCause() != null;
+                || world != null && isSilentOnWorld(world);
     }
 
     public boolean isSilentOnWorld(String world) {

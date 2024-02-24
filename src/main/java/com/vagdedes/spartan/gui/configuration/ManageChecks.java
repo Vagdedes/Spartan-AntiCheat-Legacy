@@ -81,7 +81,7 @@ public class ManageChecks extends InventoryMenu {
     private void addCheck(SpartanPlayer player, HackType hackType) {
         Check check = hackType.getCheck();
         boolean enabled = check.isEnabled(null, null, null),
-                silent = check.isSilent(null, null),
+                silent = check.isSilent(null),
                 bypassing = Permissions.isBypassing(player, hackType);
         String[] disabledDetections = CloudFeature.getShownDisabledDetections(hackType);
         int cancelViolation = check.getCancelViolation();
@@ -251,7 +251,7 @@ public class ManageChecks extends InventoryMenu {
         Check check = Config.getCheckByName(item);
 
         if (check != null) {
-            if (check.isSilent(null, null)) {
+            if (check.isSilent(null)) {
                 check.setSilent(false);
             } else {
                 check.setSilent(true);

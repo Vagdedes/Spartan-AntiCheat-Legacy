@@ -68,7 +68,6 @@ public class CloudConnections {
 
                                         if (AlgebraUtils.validInteger(line)) {
                                             CloudFeature.token = name;
-                                            CloudFeature.ignoreServerLimits = true;
                                             return Integer.parseInt(line);
                                         }
                                     }
@@ -91,9 +90,7 @@ public class CloudConnections {
             if (reply.length > 0) {
                 String line = reply[0];
 
-                if (line.contains("exception")) {
-                    CloudFeature.cloudExceptionCooldown = -CloudFeature.exceptionCooldownMinutes;
-                } else if (AlgebraUtils.validInteger(line)) {
+                if (AlgebraUtils.validInteger(line)) {
                     return Integer.parseInt(line);
                 }
             }
@@ -117,45 +114,10 @@ public class CloudConnections {
                     + Base64.getEncoder().encodeToString(motd.getBytes());
 
             try {
-                String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification + "&action=add&data=serverSpecifications"
+                RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification + "&action=add&data=serverSpecifications"
                         + "&value=" + URLEncoder.encode(specs, "UTF-8") + "&version=" + CloudFeature.version);
-
-                if (results.length > 0 && results[0].equals("exception")) {
-                    CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                }
             } catch (Exception e) {
                 CloudFeature.throwError(e, "serverSpecifications:ADD");
-            }
-        });
-    }
-
-    public static void checkServerLimits() { // Once
-        SpartanBukkit.connectionThread.execute(() -> {
-            try {
-                String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification
-                        + "&action=get&data=serverLimitations&version=" + CloudFeature.version + "&value=" + Bukkit.getPort());
-
-                if (results.length > 0) {
-                    String reply = results[0];
-
-                    if (reply.contains("false")) {
-                        if (!CloudFeature.ignoreServerLimits) {
-                            CloudFeature.serverLimited = true;
-                        }
-                    } else if (reply.contains("exception")) {
-                        CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                    } else if (AlgebraUtils.validInteger(reply)) {
-                        int number = Integer.parseInt(reply);
-
-                        if (number > 1) {
-                            if (!CloudFeature.ignoreServerLimits) {
-                                CloudFeature.serverLimited = true;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                CloudFeature.throwError(e, "serverLimitations:GET");
             }
         });
     }
@@ -166,13 +128,7 @@ public class CloudConnections {
                     + "&action=get&data=ownsProduct&version=" + CloudFeature.version + "&value=" + productID);
 
             if (results.length > 0) {
-                String reply = results[0];
-
-                if (reply.contains("exception")) {
-                    CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                } else {
-                    return reply.equals("true");
-                }
+                return results[0].equals("true");
             }
         } catch (Exception e) {
             CloudFeature.throwError(e, "ownsProduct:GET");
@@ -182,7 +138,7 @@ public class CloudConnections {
 
     // Multiple
 
-    public static String[] getCrossServerInformation(String type, String name) { // todo simplify
+    public static String[] getCrossServerInformation(String type, String name) {
         // Doesn't need ID validation due to its validated method call
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification
@@ -191,19 +147,12 @@ public class CloudConnections {
                     "GET", null, RequestUtils.defaultTimeOut / 2);
 
             if (results.length > 0) {
-                String data = results[0];
+                List<String> list = new LinkedList<>();
 
-                if (data.equals("exception")) {
-                    CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                    return null;
-                } else {
-                    List<String> list = new LinkedList<>();
-
-                    for (String result : results) {
-                        list.add(StringUtils.decodeBase64(result));
-                    }
-                    return list.toArray(new String[0]);
+                for (String result : results) {
+                    list.add(StringUtils.decodeBase64(result));
                 }
+                return list.toArray(new String[0]);
             }
             return null;
         } catch (Exception e) {
@@ -218,19 +167,13 @@ public class CloudConnections {
                     + "&action=get&data=staffAnnouncements&version=" + CloudFeature.version);
 
             if (results.length > 0) {
-                String reply = results[0];
+                String[] announcements = results[0].split(CloudFeature.separator);
+                String[][] array = new String[results.length][0];
 
-                if (reply.contains("exception")) {
-                    CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                } else {
-                    String[] announcements = reply.split(CloudFeature.separator);
-                    String[][] array = new String[results.length][0];
-
-                    for (int i = 0; i < announcements.length; i++) {
-                        array[i] = StringUtils.decodeBase64(announcements[i]).split(CloudFeature.separator);
-                    }
-                    return array;
+                for (int i = 0; i < announcements.length; i++) {
+                    array[i] = StringUtils.decodeBase64(announcements[i]).split(CloudFeature.separator);
                 }
+                return array;
             }
         } catch (Exception e) {
             CloudFeature.throwError(e, "staffAnnouncements:GET");
@@ -238,7 +181,7 @@ public class CloudConnections {
         return new String[][]{};
     }
 
-    public static boolean sendCrossServerInformation(String type, String name, String[] array) {
+    public static void sendCrossServerInformation(String type, String name, String[] array) {
         // Doesn't need ID validation due to its validated method call
         try {
             StringBuilder information = new StringBuilder();
@@ -251,26 +194,14 @@ public class CloudConnections {
 
             if (length > separatorLength) {
                 information = new StringBuilder(information.substring(0, length - separatorLength));
-                String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + " " +
+                RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + " " +
                                 CloudFeature.identification + "&action=add&data=crossServerInformation&version=" + CloudFeature.version
                                 + "&value=" + URLEncoder.encode(Bukkit.getPort() + CloudFeature.separator + type + CloudFeature.separator + name + CloudFeature.separator + information, "UTF-8"),
                         "POST", null, RequestUtils.defaultTimeOut / 2);
-
-                if (results.length > 0) {
-                    String data = results[0];
-
-                    if (data.equals("exception")) {
-                        CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
             }
         } catch (Exception e) {
             CloudFeature.throwError(e, "crossServerInformation:ADD");
         }
-        return false;
     }
 
     static void punishPlayers() {
@@ -287,29 +218,18 @@ public class CloudConnections {
 
                     if (offlinePlayer != null && !offlinePlayer.isOp()) {
                         UUID uuid = offlinePlayer.getUniqueId();
-                        boolean pass = false;
+                        String ipAddress;
 
-                        synchronized (CloudFeature.punishedPlayers) {
-                            if (!CloudFeature.punishedPlayers.contains(uuid)) {
-                                CloudFeature.punishedPlayers.add(uuid);
-                                pass = true;
-                            }
-                        }
+                        if (!isNull && offlinePlayer.isOnline()) {
+                            ipAddress = player.getIpAddress();
 
-                        if (pass) {
-                            String ipAddress;
-
-                            if (!isNull && offlinePlayer.isOnline()) {
-                                ipAddress = player.getIpAddress();
-
-                                if (ipAddress == null) {
-                                    ipAddress = "NULL";
-                                }
-                            } else {
+                            if (ipAddress == null) {
                                 ipAddress = "NULL";
                             }
-                            value.append(StringUtils.encodeBase64(uuid + CloudFeature.separator + ipAddress)).append(CloudFeature.separator);
+                        } else {
+                            ipAddress = "NULL";
                         }
+                        value.append(StringUtils.encodeBase64(uuid + CloudFeature.separator + ipAddress)).append(CloudFeature.separator);
                     }
                 }
             }
@@ -318,14 +238,10 @@ public class CloudConnections {
                 value = new StringBuilder(value.substring(0, value.length() - CloudFeature.separator.length()));
 
                 try {
-                    String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + " " +
+                    RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + " " +
                                     CloudFeature.identification + "&action=add&data=punishedPlayers&version=" + CloudFeature.version
                                     + "&value=" + URLEncoder.encode(value.toString(), "UTF-8"),
                             "POST");
-
-                    if (results.length > 0 && results[0].equals("exception")) {
-                        CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                    }
                 } catch (Exception e) {
                     CloudFeature.throwError(e, "punishedPlayers:ADD");
                 }
@@ -334,26 +250,13 @@ public class CloudConnections {
     }
 
     public static void updatePunishedPlayer(UUID uuid, String ipAddress) {
-        synchronized (CloudFeature.punishedPlayers) {
-            if (!CloudFeature.punishedPlayers.contains(uuid)) {
-                return;
-            }
-        }
         if (ipAddress == null) {
             ipAddress = "NULL";
         }
         try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification + "&action=get&data=punishedPlayers&version=" + CloudFeature.version
+            RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification + "&action=get&data=punishedPlayers&version=" + CloudFeature.version
                             + "&value=" + URLEncoder.encode(uuid + CloudFeature.separator + ipAddress, "UTF-8"),
                     RequestUtils.minimumTimeOut);
-
-            if (results.length > 0) {
-                String data = results[0];
-
-                if (data.equals("exception")) {
-                    CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                }
-            }
         } catch (Exception e) {
             CloudFeature.throwError(e, "punishedPlayers:GET");
         }
@@ -371,7 +274,7 @@ public class CloudConnections {
                     try {
                         int webhookVersion = 2;
                         String crossServerInformationOption = CrossServerInformation.getOptionValue();
-                        String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification
+                        RequestUtils.get(StringUtils.decodeBase64(CloudFeature.website) + "?" + CloudFeature.identification
                                 + "&action=add&data=discordWebhooks&version=" + CloudFeature.version + "&value="
                                 + URLEncoder.encode(
                                 webhookVersion + CloudFeature.separator
@@ -386,14 +289,6 @@ public class CloudConnections {
                                         + StringUtils.getClearColorString(type) + CloudFeature.separator
                                         + StringUtils.getClearColorString(information) + CloudFeature.separator
                                         + Config.settings.getBoolean(Settings.showEcosystemOption), "UTF-8"));
-
-                        if (results.length > 0) {
-                            String data = results[0];
-
-                            if (data.equals("exception")) {
-                                CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                            }
-                        }
                     } catch (Exception e) {
                         CloudFeature.throwError(e, "discordWebhooks:ADD");
                     }
@@ -458,7 +353,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Enabled: ").append(check.isEnabled(null, null, null))
                         .append(newLine);
-                softwareInformation.append("Preventions: ").append(!check.isSilent(null, null))
+                softwareInformation.append("Preventions: ").append(!check.isSilent(null))
                         .append(newLine);
                 softwareInformation.append("Punishments: ").append(check.canPunish())
                         .append(newLine);
@@ -600,19 +495,13 @@ public class CloudConnections {
                     if (results.length > 0) {
                         String data = results[0];
 
-                        if (data.equals("exception")) {
-                            CloudFeature.cloudExceptionCooldown = CloudFeature.exceptionCooldownMinutes;
-                            return "A server exception has occurred while completing this request.";
-                        } else if (data.equals("false")) {
+                        if (data.equals("false")) {
                             return "Failed to complete request, reach support if this continues.";
                         } else if (data.equals("true")) {
                             return "Thanks for reporting" + (name != null ? " " + name : "") + ", we will get back to you if needed. You can join our Discord server at: §n" + DiscordMemberCount.discordURL;
-                        } else {
-                            return data.isEmpty() ? "No results were returned from the server, try updating and reach support if this continues." : data;
                         }
-                    } else {
-                        return "No results were returned from the server, try updating and reach support if this continues.";
                     }
+                    return "No results were returned from the server, try updating and reach support if this continues.";
                 } catch (Exception e) {
                     CloudFeature.throwError(e, "customerSupport:ADD");
                     return "A programming exception has occurred, reach support if this continues.";

@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
-import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.system.SpartanBukkit;
@@ -52,15 +51,10 @@ public class CommandExecution implements CommandExecutor {
         if (!isPlayer || Permissions.has((Player) sender)) {
             String v = API.getVersion();
             sender.sendMessage("");
-            String command = "§4" + SpartanEdition.getProductName(false);
+            String command = "§4" + SpartanEdition.getProductName(false)
+                    + " §8[§7(§fVersion: " + v + "§7)§8, §7(§fID: "
+                    + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
 
-            if (Piracy.enabled) {
-                command += " §8[§7(§fVersion: " + v + "§7)§8, §7(§fID: " + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
-            } else if (IDs.isValid()) {
-                command += " §8[§7(§fVersion: " + v + "§7)§8, §7(§fID: " + IDs.hide(IDs.user()) + "§7)§8]";
-            } else {
-                command += " §8" + v;
-            }
             sender.sendMessage(command);
             sender.sendMessage("§8§l<> §7Required command argument");
             sender.sendMessage("§8§l[] §7Optional command argument");

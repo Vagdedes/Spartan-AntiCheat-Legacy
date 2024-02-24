@@ -75,7 +75,7 @@ import org.bukkit.util.Vector;
 import java.net.InetSocketAddress;
 import java.util.*;
 
-public class SpartanPlayer { // todo simplify
+public class SpartanPlayer {
 
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;

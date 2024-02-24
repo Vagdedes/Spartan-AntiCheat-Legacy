@@ -260,7 +260,7 @@ public class PlayerInfo extends InventoryMenu {
                         notChecked ? "Temporarily Not Checked" :
                                 tpsDropping ? "Server Lag" + delay :
                                         disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                                                (returnNull ? null : (check.isSilent(worldName, player) ? "Silent " : "") + "Checking" + delay);
+                                                (returnNull ? null : (check.isSilent(worldName) ? "Silent " : "") + "Checking" + delay);
     }
 
     public void refresh(String targetName) {

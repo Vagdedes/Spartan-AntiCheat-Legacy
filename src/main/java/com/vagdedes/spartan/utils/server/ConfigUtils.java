@@ -136,7 +136,7 @@ public class ConfigUtils {
             boolean cancelled = lastLevel != 0;
             int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
             String category = cancelled ? Enums.PunishmentCategory.UNLIKE.toString() : Check.getCategoryFromViolations(violations, hackType, p.getProfile().isSuspectedOrHacker(hackType)).toString();
-            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, p)));
+            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
             message = replace(message, "{vls:detection}", String.valueOf(violations));
             message = replace(message, "{category:detection}", category);
             message = replace(message, "{detection:category:adverb}", (category.endsWith("ly") ? category : category + "ly"));
@@ -186,7 +186,7 @@ public class ConfigUtils {
                     boolean cancelled = lastLevel != 0;
                     int violations = cancelled ? liveViolation.getCancelledLevel(lastLevel) : liveViolation.getLevel();
                     String category = cancelled ? Enums.PunishmentCategory.UNLIKE.toString() : Check.getCategoryFromViolations(violations, hackType, p.getProfile().isSuspectedOrHacker(hackType)).toString();
-                    message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName, p)));
+                    message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
                     message = replace(message, "{vls:detection}", String.valueOf(violations));
                     message = replace(message, "{category:detection}", category);
                     message = replace(message, "{detection:category:adverb}", (category.endsWith("ly") ? category : category + "ly"));
@@ -197,10 +197,10 @@ public class ConfigUtils {
                 if (profile != null) {
                     message = replace(message, "{player:type}", profile.getDataType().lowerCase);
                 }
-                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
+                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null)));
             }
         } else if (hasHackType) {
-            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
+            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null)));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }

@@ -31,7 +31,9 @@ public class Settings extends ConfigurationBuilder {
             permissionOption = "Important.use_permission_cache", // test server
             showEcosystemOption = "Important.show_ecosystem",
             tpsProtectionOption = "Protections.use_tps_protection",
-            maxSupportedLatencyOption = "Protections.max_supported_player_latency";
+            maxSupportedLatencyOption = "Protections.max_supported_player_latency",
+            cloudServerNameOption = "Cloud.server_name",
+            cloudSynchroniseFilesOption = "Cloud.synchronise_files";
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
     private Collection<String> punishments = null;
 
@@ -97,8 +99,8 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.inventory_menu_empty_heads", true);
         addOption("Important.load_player_head_textures", false);
 
-        addOption("Cloud.server_name", "specify server name");
-        addOption("Cloud.synchronise_files", true);
+        addOption(cloudServerNameOption, "specify server name");
+        addOption(cloudSynchroniseFilesOption, true);
 
         addOption("Detections.ground_teleport_on_detection", true); // test server
         addOption("Detections.fall_damage_on_teleport", false); // test server

@@ -48,7 +48,7 @@ public class SuspicionNotifications {
             send = true;
 
             if (!isNull) {
-                if (!TestServer.isIdentified() // todo
+                if (!TestServer.isIdentified()
                         && ResearchEngine.enoughData()
                         && !Config.settings.getBoolean("Notifications.individual_only_notifications")) {
                     Integer divisor = DetectionNotifications.getDivisor(p, false);
@@ -159,7 +159,16 @@ public class SuspicionNotifications {
                     if (!isNull) {
                         p.sendMessage(message);
                     }
-                    CrossServerInformation.queueNotification(message, true);
+                    CrossServerInformation.queueNotificationWithWebhook(
+                            player.getUniqueId(),
+                            player.getName(),
+                            0,
+                            0,
+                            0,
+                            "Kick",
+                            message,
+                            true
+                    );
                     return true;
                 }
             }
