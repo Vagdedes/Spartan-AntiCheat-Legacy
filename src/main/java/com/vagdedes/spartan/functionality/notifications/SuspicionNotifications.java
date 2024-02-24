@@ -4,7 +4,6 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TestServer;
-import com.vagdedes.spartan.objects.profiling.PlayerEvidence;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanLocation;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -14,7 +13,6 @@ import me.vagdedes.spartan.system.Enums;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 public class SuspicionNotifications {
 

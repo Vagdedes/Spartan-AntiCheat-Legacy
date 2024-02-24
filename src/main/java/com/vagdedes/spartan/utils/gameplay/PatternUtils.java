@@ -93,8 +93,11 @@ public class PatternUtils {
         int locationIdentifier = location.getIdentifier(),
                 searchHash = Boolean.hashCode(surroundings);
         int[] positionIdentifiers = new int[positions.length];
-        Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+        Map<Integer, Boolean> childMap;
 
+        synchronized (memory) {
+            childMap = memory.get(locationIdentifier);
+        }
         for (Set<Material> set : sets) {
             searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + MemoryUtils.fastHashCode(set);
         }
@@ -105,7 +108,11 @@ public class PatternUtils {
                 if (coordinates.length == 3 || coordinates[3] == 1.0) {
                     int positionIdentifier = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
                     positionIdentifiers[position] = positionIdentifier;
-                    Boolean result = childMap.get(positionIdentifier);
+                    Boolean result;
+
+                    synchronized (memory) {
+                        result = childMap.get(positionIdentifier);
+                    }
 
                     if (result != null) {
                         if (result) {
@@ -118,7 +125,9 @@ public class PatternUtils {
 
                                 for (Set<Material> set : sets) {
                                     if (set.contains(material)) {
-                                        childMap.put(positionIdentifiers[position], true);
+                                        synchronized (memory) {
+                                            childMap.put(positionIdentifiers[position], true);
+                                        }
                                         return true;
                                     }
                                 }
@@ -128,7 +137,9 @@ public class PatternUtils {
 
                             for (Set<Material> set : sets) {
                                 if (set.contains(material)) {
-                                    childMap.put(positionIdentifiers[position], true);
+                                    synchronized (memory) {
+                                        childMap.put(positionIdentifiers[position], true);
+                                    }
                                     return true;
                                 }
                             }
@@ -183,7 +194,7 @@ public class PatternUtils {
         if (coordinates.length == 3 || coordinates[3] == 1.0) {
             int locationIdentifier = location.getIdentifier(),
                     searchHash = Boolean.hashCode(surroundings);
-            Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+            Map<Integer, Boolean> childMap;
 
             // Calculate hashes and check them if cache is available
             for (Set<Material> set : sets) {
@@ -192,15 +203,19 @@ public class PatternUtils {
             double x = coordinates[0], y = coordinates[1], z = coordinates[2];
             int positionIdentifier = (Chunks.positionIdentifier(x, y, z) * SpartanBukkit.hashCodeMultiplier) + searchHash;
 
-            if (childMap != null) {
-                Boolean result = childMap.get(positionIdentifier);
+            synchronized (memory) {
+                childMap = memory.get(locationIdentifier);
 
-                if (result != null) {
-                    return result;
+                if (childMap != null) {
+                    Boolean result = childMap.get(positionIdentifier);
+
+                    if (result != null) {
+                        return result;
+                    }
+                } else {
+                    childMap = new LinkedHashMap<>();
+                    memory.put(locationIdentifier, childMap);
                 }
-            } else {
-                childMap = new LinkedHashMap<>();
-                memory.put(locationIdentifier, childMap);
             }
 
             // Calculate and add them in cache
@@ -210,7 +225,9 @@ public class PatternUtils {
 
                     for (Set<Material> set : sets) {
                         if (set.contains(material)) {
-                            childMap.put(positionIdentifier, true);
+                            synchronized (memory) {
+                                childMap.put(positionIdentifier, true);
+                            }
                             return true;
                         }
                     }
@@ -220,7 +237,9 @@ public class PatternUtils {
 
                 for (Set<Material> set : sets) {
                     if (set.contains(material)) {
-                        childMap.put(positionIdentifier, true);
+                        synchronized (memory) {
+                            childMap.put(positionIdentifier, true);
+                        }
                         return true;
                     }
                 }
@@ -237,8 +256,11 @@ public class PatternUtils {
         int locationIdentifier = location.getIdentifier(),
                 searchHash = (Boolean.hashCode(surroundings) * SpartanBukkit.hashCodeMultiplier) + waterLogHash;
         int[] positionIdentifiers = new int[positions.length];
-        Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+        Map<Integer, Boolean> childMap;
 
+        synchronized (memory) {
+            childMap = memory.get(locationIdentifier);
+        }
         if (childMap != null) {
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
@@ -246,8 +268,11 @@ public class PatternUtils {
                 if (coordinates.length == 3 || coordinates[3] == 1.0) {
                     int positionIdentifier = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
                     positionIdentifiers[position] = positionIdentifier;
-                    Boolean result = childMap.get(positionIdentifier);
+                    Boolean result;
 
+                    synchronized (memory) {
+                        result = childMap.get(positionIdentifier);
+                    }
                     if (result != null) {
                         if (result) {
                             return true;
@@ -256,12 +281,16 @@ public class PatternUtils {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                                 if (surroundingLocation.getBlock().isWaterLogged()) {
-                                    childMap.put(positionIdentifiers[position], true);
+                                    synchronized (memory) {
+                                        childMap.put(positionIdentifiers[position], true);
+                                    }
                                     return true;
                                 }
                             }
                         } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isWaterLogged()) {
-                            childMap.put(positionIdentifiers[position], true);
+                            synchronized (memory) {
+                                childMap.put(positionIdentifiers[position], true);
+                            }
                             return true;
                         }
                     }
@@ -305,33 +334,41 @@ public class PatternUtils {
             int locationIdentifier = location.getIdentifier(),
                     searchHash = Boolean.hashCode(surroundings);
             searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + waterLogHash;
-            Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+            Map<Integer, Boolean> childMap;
 
             // Calculate hashes and check them if cache is available
             double x = coordinates[0], y = coordinates[1], z = coordinates[2];
             int positionIdentifier = (Chunks.positionIdentifier(x, y, z) * SpartanBukkit.hashCodeMultiplier) + searchHash;
 
-            if (childMap != null) {
-                Boolean result = childMap.get(positionIdentifier);
+            synchronized (memory) {
+                childMap = memory.get(locationIdentifier);
 
-                if (result != null) {
-                    return result;
+                if (childMap != null) {
+                    Boolean result = childMap.get(positionIdentifier);
+
+                    if (result != null) {
+                        return result;
+                    }
+                } else {
+                    childMap = new LinkedHashMap<>();
+                    memory.put(locationIdentifier, childMap);
                 }
-            } else {
-                childMap = new LinkedHashMap<>();
-                memory.put(locationIdentifier, childMap);
             }
 
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
                     if (surroundingLocation.getBlock().isWaterLogged()) {
-                        childMap.put(positionIdentifier, true);
+                        synchronized (memory) {
+                            childMap.put(positionIdentifier, true);
+                        }
                         return true;
                     }
                 }
             } else if (location.clone().add(x, y, z).getBlock().isWaterLogged()) {
-                childMap.put(positionIdentifier, true);
+                synchronized (memory) {
+                    childMap.put(positionIdentifier, true);
+                }
                 return true;
             }
         }
@@ -346,8 +383,11 @@ public class PatternUtils {
         int locationIdentifier = location.getIdentifier(),
                 searchHash = (Boolean.hashCode(surroundings) * SpartanBukkit.hashCodeMultiplier) + liquidHash;
         int[] positionIdentifiers = new int[positions.length];
-        Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+        Map<Integer, Boolean> childMap;
 
+        synchronized (memory) {
+            childMap = memory.get(locationIdentifier);
+        }
         if (childMap != null) {
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
@@ -355,8 +395,11 @@ public class PatternUtils {
                 if (coordinates.length == 3 || coordinates[3] == 1.0) {
                     int positionIdentifier = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
                     positionIdentifiers[position] = positionIdentifier;
-                    Boolean result = childMap.get(positionIdentifier);
+                    Boolean result;
 
+                    synchronized (memory) {
+                        result = childMap.get(positionIdentifier);
+                    }
                     if (result != null) {
                         if (result) {
                             return true;
@@ -365,12 +408,16 @@ public class PatternUtils {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                                 if (surroundingLocation.getBlock().isLiquid()) {
-                                    childMap.put(positionIdentifiers[position], true);
+                                    synchronized (memory) {
+                                        childMap.put(positionIdentifiers[position], true);
+                                    }
                                     return true;
                                 }
                             }
                         } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquid()) {
-                            childMap.put(positionIdentifiers[position], true);
+                            synchronized (memory) {
+                                childMap.put(positionIdentifiers[position], true);
+                            }
                             return true;
                         }
                     }
@@ -414,33 +461,41 @@ public class PatternUtils {
             int locationIdentifier = location.getIdentifier(),
                     searchHash = Boolean.hashCode(surroundings);
             searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + liquidHash;
-            Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+            Map<Integer, Boolean> childMap;
 
             // Calculate hashes and check them if cache is available
             double x = coordinates[0], y = coordinates[1], z = coordinates[2];
             int positionIdentifier = (Chunks.positionIdentifier(x, y, z) * SpartanBukkit.hashCodeMultiplier) + searchHash;
 
-            if (childMap != null) {
-                Boolean result = childMap.get(positionIdentifier);
+            synchronized (memory) {
+                childMap = memory.get(locationIdentifier);
 
-                if (result != null) {
-                    return result;
+                if (childMap != null) {
+                    Boolean result = childMap.get(positionIdentifier);
+
+                    if (result != null) {
+                        return result;
+                    }
+                } else {
+                    childMap = new LinkedHashMap<>();
+                    memory.put(locationIdentifier, childMap);
                 }
-            } else {
-                childMap = new LinkedHashMap<>();
-                memory.put(locationIdentifier, childMap);
             }
 
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
                     if (surroundingLocation.getBlock().isLiquid()) {
-                        childMap.put(positionIdentifier, true);
+                        synchronized (memory) {
+                            childMap.put(positionIdentifier, true);
+                        }
                         return true;
                     }
                 }
             } else if (location.clone().add(x, y, z).getBlock().isLiquid()) {
-                childMap.put(positionIdentifier, true);
+                synchronized (memory) {
+                    childMap.put(positionIdentifier, true);
+                }
                 return true;
             }
         }
@@ -455,8 +510,11 @@ public class PatternUtils {
         int locationIdentifier = location.getIdentifier(),
                 searchHash = (Boolean.hashCode(surroundings) * SpartanBukkit.hashCodeMultiplier) + nonWaterLoggedLiquidHash;
         int[] positionIdentifiers = new int[positions.length];
-        Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+        Map<Integer, Boolean> childMap;
 
+        synchronized (memory) {
+            childMap = memory.get(locationIdentifier);
+        }
         if (childMap != null) {
             for (int position = 0; position < positions.length; position++) {
                 double[] coordinates = positions[position];
@@ -464,8 +522,11 @@ public class PatternUtils {
                 if (coordinates.length == 3 || coordinates[3] == 1.0) {
                     int positionIdentifier = (Chunks.positionIdentifier(coordinates[0], coordinates[1], coordinates[2]) * SpartanBukkit.hashCodeMultiplier) + searchHash;
                     positionIdentifiers[position] = positionIdentifier;
-                    Boolean result = childMap.get(positionIdentifier);
+                    Boolean result;
 
+                    synchronized (memory) {
+                        result = childMap.get(positionIdentifier);
+                    }
                     if (result != null) {
                         if (result) {
                             return true;
@@ -474,12 +535,16 @@ public class PatternUtils {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                                 if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
-                                    childMap.put(positionIdentifiers[position], true);
+                                    synchronized (memory) {
+                                        childMap.put(positionIdentifiers[position], true);
+                                    }
                                     return true;
                                 }
                             }
                         } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid()) {
-                            childMap.put(positionIdentifiers[position], true);
+                            synchronized (memory) {
+                                childMap.put(positionIdentifiers[position], true);
+                            }
                             return true;
                         }
                     }
@@ -523,33 +588,41 @@ public class PatternUtils {
             int locationIdentifier = location.getIdentifier(),
                     searchHash = Boolean.hashCode(surroundings);
             searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + nonWaterLoggedLiquidHash;
-            Map<Integer, Boolean> childMap = memory.get(locationIdentifier);
+            Map<Integer, Boolean> childMap;
 
             // Calculate hashes and check them if cache is available
             double x = coordinates[0], y = coordinates[1], z = coordinates[2];
             int positionIdentifier = (Chunks.positionIdentifier(x, y, z) * SpartanBukkit.hashCodeMultiplier) + searchHash;
 
-            if (childMap != null) {
-                Boolean result = childMap.get(positionIdentifier);
+            synchronized (memory) {
+                childMap = memory.get(locationIdentifier);
 
-                if (result != null) {
-                    return result;
+                if (childMap != null) {
+                    Boolean result = childMap.get(positionIdentifier);
+
+                    if (result != null) {
+                        return result;
+                    }
+                } else {
+                    childMap = new LinkedHashMap<>();
+                    memory.put(locationIdentifier, childMap);
                 }
-            } else {
-                childMap = new LinkedHashMap<>();
-                memory.put(locationIdentifier, childMap);
             }
 
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
                     if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
-                        childMap.put(positionIdentifier, true);
+                        synchronized (memory) {
+                            childMap.put(positionIdentifier, true);
+                        }
                         return true;
                     }
                 }
             } else if (location.clone().add(x, y, z).getBlock().isNonWaterLoggedLiquid()) {
-                childMap.put(positionIdentifier, true);
+                synchronized (memory) {
+                    childMap.put(positionIdentifier, true);
+                }
                 return true;
             }
         }
