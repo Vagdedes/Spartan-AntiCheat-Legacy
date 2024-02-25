@@ -167,7 +167,7 @@ public class KillAura extends CheckExecutor {
                         if (width != 0.0
                                 && height != 0.0) {
                             SpartanLocation location = player.getLocation();
-                            boolean isFightParticipant = player.getProfile().getCombat().isFighting();
+                            boolean isFightParticipant = player.getProfile().playerCombat.isFighting();
 
                             runDetection(
                                     "check_irregular",

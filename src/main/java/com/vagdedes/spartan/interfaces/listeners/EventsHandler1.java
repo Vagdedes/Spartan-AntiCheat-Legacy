@@ -109,7 +109,7 @@ public class EventsHandler1 implements Listener {
             SpartanPlayer p2 = SpartanBukkit.getPlayer(killer);
 
             if (p2 != null) {
-                PlayerFight fight = p.getProfile().getCombat().getFight(p2);
+                PlayerFight fight = p.getProfile().playerCombat.getFight(p2);
 
                 if (fight != null) {
                     fight.setWinner(p2);

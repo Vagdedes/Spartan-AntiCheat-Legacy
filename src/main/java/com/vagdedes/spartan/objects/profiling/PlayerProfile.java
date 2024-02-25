@@ -15,15 +15,15 @@ import java.util.UUID;
 public class PlayerProfile {
 
     private UUID uuid;
-    private final String name;
+    public final String name;
     private final ViolationHistory[] violationHistory;
     private final MiningHistory[] miningHistory;
-    private final PunishmentHistory punishmentHistory;
-    private final PlayerEvidence evidence;
+    public final PunishmentHistory punishmentHistory;
+    public final PlayerEvidence evidence;
     private boolean bedrockPlayer, bedrockPlayerCheck;
     private ItemStack skull;
     private OfflinePlayer offlinePlayer;
-    private final PlayerCombat playerCombat;
+    public final PlayerCombat playerCombat;
 
     // Separator
 
@@ -188,12 +188,6 @@ public class PlayerProfile {
 
     // Separator
 
-    public PlayerEvidence getEvidence() {
-        return evidence;
-    }
-
-    // Separator
-
     public MiningHistory[] getMiningHistory() {
         return miningHistory;
     }
@@ -215,15 +209,15 @@ public class PlayerProfile {
     // Separator
 
     public boolean isLegitimate() {
-        return getEvidence().has(PlayerEvidence.EvidenceType.Legitimate);
+        return evidence.has(PlayerEvidence.EvidenceType.Legitimate);
     }
 
     public boolean isHacker() {
-        return getEvidence().has(PlayerEvidence.EvidenceType.Hacker);
+        return evidence.has(PlayerEvidence.EvidenceType.Hacker);
     }
 
     public boolean isSuspected() {
-        return getEvidence().has(PlayerEvidence.EvidenceType.Suspected);
+        return evidence.has(PlayerEvidence.EvidenceType.Suspected);
     }
 
     public boolean isSuspected(Enums.HackType[] hackTypes) {
@@ -268,16 +262,8 @@ public class PlayerProfile {
         for (ViolationHistory violationHistory : getViolationHistory()) {
             sum += (violationHistory.getCount()
                     + getOverallMiningHistory().getMines()
-                    + getPunishmentHistory().getOverall());
+                    + punishmentHistory.getOverall());
         }
         return sum;
-    }
-
-    public PunishmentHistory getPunishmentHistory() {
-        return punishmentHistory;
-    }
-
-    public PlayerCombat getCombat() {
-        return playerCombat;
     }
 }

@@ -347,7 +347,7 @@ public class ResearchEngine {
 
         // Separator
         for (PlayerProfile playerProfile : profiles) {
-            if (universal || ((dataType == DataType.Bedrock) == playerProfile.bedrockPlayer)) {
+            if (universal || ((dataType == DataType.Bedrock) == playerProfile.isBedrockPlayer())) {
                 list.addAll(playerProfile.getViolationHistory(hackType).getRawCollection());
             }
         }
@@ -379,7 +379,7 @@ public class ResearchEngine {
                 synchronized (playerProfiles) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
                         playerProfile.getViolationHistory(hackType).clear();
-                        playerProfile.getEvidence().remove(hackType, true, true, true);
+                        playerProfile.evidence.remove(hackType, true, true, true);
                     }
                 }
             }
@@ -664,11 +664,11 @@ public class ResearchEngine {
                                     }
                                 }
                             } else if (data.contains(PunishmentHistory.warningMessage)) {
-                                getPlayerProfile(split[0]).getPunishmentHistory().increaseWarnings(null, null);
+                                getPlayerProfile(split[0]).punishmentHistory.increaseWarnings(null, null);
                             } else if (data.contains(PunishmentHistory.kickMessage)) {
-                                getPlayerProfile(split[0]).getPunishmentHistory().increaseKicks(null, null);
+                                getPlayerProfile(split[0]).punishmentHistory.increaseKicks(null, null);
                             } else if (data.contains(PunishmentHistory.punishmentMessage)) {
-                                getPlayerProfile(split[0]).getPunishmentHistory().increasePunishments(null, null);
+                                getPlayerProfile(split[0]).punishmentHistory.increasePunishments(null, null);
                             } else if (data.contains(" failed ")) {
                                 if (split.length >= 3) {
                                     if (!data.startsWith(falsePositiveDisclaimer)) {
@@ -761,8 +761,8 @@ public class ResearchEngine {
             ViolationStatistics.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                playerProfile.getEvidence().judge();
-                PunishmentHistory punishmentHistory = playerProfile.getPunishmentHistory();
+                playerProfile.evidence.judge();
+                PunishmentHistory punishmentHistory = playerProfile.punishmentHistory;
                 logs += playerProfile.getUsefulLogs();
                 mines += playerProfile.getOverallMiningHistory().getMines();
                 kicks += punishmentHistory.getKicks();
@@ -800,7 +800,7 @@ public class ResearchEngine {
                             Map<Integer, ViolationStatistics.TimePeriod> averages = new LinkedHashMap<>();
 
                             for (PlayerProfile playerProfile : playerProfiles) {
-                                if (bedrock == playerProfile.bedrockPlayer
+                                if (bedrock == playerProfile.isBedrockPlayer()
                                         && playerProfile.isLegitimate()) {
                                     Collection<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getCollection();
 

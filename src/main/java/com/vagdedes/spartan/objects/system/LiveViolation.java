@@ -66,7 +66,7 @@ public class LiveViolation {
     }
 
     private final SpartanPlayer player;
-    public final Enums.HackType hackType;
+    private final Enums.HackType hackType;
     private long cycleExpiration, lastTick;
     private final Map<Integer, Long> cancelledLevel;
     private int level;
@@ -264,7 +264,7 @@ public class LiveViolation {
     }
 
     private int increaseCancelledLevel(int hash) {
-        double multiplier = 1.0 + player.getProfile().getEvidence().getKnowledgeList().size();
+        double multiplier = 1.0 + player.getProfile().evidence.getKnowledgeList().size();
 
         synchronized (cancelledLevel) {
             Long time = cancelledLevel.get(hash);
@@ -325,7 +325,7 @@ public class LiveViolation {
         this.cycleExpiration = tick + Check.violationCycleTicks;
 
         // Always last
-        player.getProfile().getEvidence().remove(hackType, true, false, true);
+        player.getProfile().evidence.remove(hackType, true, false, true);
 
         if (local) {
             SpartanMenu.playerInfo.refresh(player.name);
@@ -436,7 +436,7 @@ public class LiveViolation {
                             }
                         }
                     } else {
-                        Collection<Enums.HackType> detectedHacks = player.getProfile().getEvidence().calculate(player, hackType);
+                        Collection<Enums.HackType> detectedHacks = player.getProfile().evidence.calculate(player, hackType);
                         detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish());
 
                         if (!detectedHacks.isEmpty()) {
@@ -481,7 +481,7 @@ public class LiveViolation {
                         String commandsString = StringUtils.toString(commands, "\n");
 
                         if (!commandsString.isEmpty()) {
-                            player.getProfile().getPunishmentHistory().increasePunishments(player, commandsString);
+                            player.getProfile().punishmentHistory.increasePunishments(player, commandsString);
                         }
                     } else if (found && AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-cancelled-punishment-event")) {
                         String notification = "Just a reminder that the punishments of the '" + hackType + "' check were just cancelled via code by a third-party plugin."

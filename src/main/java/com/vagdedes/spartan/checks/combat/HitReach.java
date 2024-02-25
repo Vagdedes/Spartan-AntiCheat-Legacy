@@ -84,7 +84,7 @@ public class HitReach extends CheckExecutor {
                                             : player.getProfile().isSuspectedOrHacker(hackType)
                                             || player.hasAttackCooldown()
                                             || nmsDistance != null && nmsDistance <= 0.1
-                                            || !player.getProfile().getCombat().isActivelyFighting(damaged, true, true, false) ? 3 : 4;
+                                            || !player.getProfile().playerCombat.isActivelyFighting(damaged, true, true, false) ? 3 : 4;
                             Buffer buffer = player.getBuffer(hackType);
 
                             if (minimumNotReached && limit < 4.0) {

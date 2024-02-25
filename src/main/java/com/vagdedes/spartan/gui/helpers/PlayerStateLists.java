@@ -105,7 +105,7 @@ public class PlayerStateLists {
 
                     if ((listSize = playerProfiles.size()) > 0) {
                         for (PlayerProfile playerProfile : playerProfiles) {
-                            Collection<Enums.HackType> evidenceDetails = playerProfile.getEvidence().getKnowledgeList();
+                            Collection<Enums.HackType> evidenceDetails = playerProfile.evidence.getKnowledgeList();
 
                             if (!evidenceDetails.isEmpty()) {
                                 lore.clear();
@@ -127,7 +127,7 @@ public class PlayerStateLists {
 
                     if ((listSize = playerProfiles.size()) > 0) {
                         for (PlayerProfile playerProfile : playerProfiles) {
-                            Collection<Enums.HackType> evidenceDetails = playerProfile.getEvidence().getKnowledgeList();
+                            Collection<Enums.HackType> evidenceDetails = playerProfile.evidence.getKnowledgeList();
 
                             if (!evidenceDetails.isEmpty()) {
                                 lore.clear();

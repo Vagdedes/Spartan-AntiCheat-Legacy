@@ -95,7 +95,7 @@ public class PlayerInfo extends InventoryMenu {
                     new ItemStack(Material.QUARTZ_BLOCK);
             add("§2Mining History", lore, item, 16);
 
-            PunishmentHistory punishmentHistory = playerProfile.getPunishmentHistory();
+            PunishmentHistory punishmentHistory = playerProfile.punishmentHistory;
             lore.clear();
             lore.add("");
             lore.add("§7Warnings§8:§c " + punishmentHistory.getWarnings());
@@ -106,7 +106,7 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§7CPS (Clicks Per Second)§8:§a " + target.getClicks().getCount());
                 lore.add("§7Player Latency§8:§a " + target.getPing() + "ms");
                 lore.add("§7Overall Violations§8:§a " + violations);
-                lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + target.dataType + ")");
+                lore.add("§7Player State§8:§a " + playerProfile.evidence.getType() + " (" + target.dataType + ")");
                 add("§2Information", lore, new ItemStack(Material.BOOK, Math.max(1, Math.min(violations, 64))), information);
 
                 lore.clear();
@@ -115,7 +115,7 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§cRight click to delete the player's stored data.");
                 add("§4Reset", lore, new ItemStack(Material.REDSTONE), reset);
             } else {
-                lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + playerProfile.getDataType() + ")");
+                lore.add("§7Player State§8:§a " + playerProfile.evidence.getType() + " (" + playerProfile.getDataType() + ")");
                 add("§2Information", lore, new ItemStack(Material.BOOK), information);
 
                 lore.clear();
@@ -165,7 +165,7 @@ public class PlayerInfo extends InventoryMenu {
             if (hackType.getCheck().getCheckType() == checkType) {
                 violations = isOnline ? player.getViolations(hackType).getLevel() : 0;
                 boolean hasViolations = violations > 0,
-                        hasData = playerProfile.getEvidence().has(hackType);
+                        hasData = playerProfile.evidence.has(hackType);
 
                 String state = getDetectionState(player, hackType, dataType, cancellableCompatibility, delayNumber, isOnline,
                         tpsDropping, notChecked, detectionsNotAvailable, !SpartanEdition.supportsCheck(dataType, hackType),
@@ -173,7 +173,7 @@ public class PlayerInfo extends InventoryMenu {
 
                 if (hasViolations || hasData || state != null) {
                     String color = "§c";
-                    String data = playerProfile.getEvidence().getKnowledge(hackType, color);
+                    String data = playerProfile.evidence.getKnowledge(hackType, color);
                     listedChecks = true;
                     lore.add("§6" + hackType.getCheck().getName() + "§8[§e" + state + "§8] " + color
                             + (hasData ? data : hasViolations ? violations + " " + (violations == 1 ? "violation" : "violations") : "")
@@ -197,7 +197,7 @@ public class PlayerInfo extends InventoryMenu {
                 new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(violations, 64), (short) 14) :
                 new ItemStack(Material.QUARTZ_BLOCK);
         boolean hasViolations = violations > 0,
-                hasData = playerProfile.getEvidence().has(hackType);
+                hasData = playerProfile.evidence.has(hackType);
         ResearchEngine.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         String state = getDetectionState(player,
                 hackType,
@@ -217,7 +217,7 @@ public class PlayerInfo extends InventoryMenu {
 
             if (hasData) {
                 String color = "§c";
-                lore.add(color + playerProfile.getEvidence().getKnowledge(hackType, color));
+                lore.add(color + playerProfile.evidence.getKnowledge(hackType, color));
             }
         } else {
             lore.add("§c" + PlayerStateLists.noDataAvailable);

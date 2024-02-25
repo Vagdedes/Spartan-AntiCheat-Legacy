@@ -329,7 +329,7 @@ public class SpartanPlayer {
                             }
 
                             // External
-                            p.playerProfile.getCombat().track();
+                            p.playerProfile.playerCombat.track();
                             if (MultiVersion.folia || !SpartanBukkit.isSynchronised()) {
                                 PlayerData.update(p, n, true);
                             }
@@ -657,7 +657,7 @@ public class SpartanPlayer {
 
     public void calculateClickData(Action action, boolean runRegardless) {
         if (!runRegardless) {
-            if (playerProfile.getCombat().isActivelyFighting(null, true, true, false)) {
+            if (playerProfile.playerCombat.isActivelyFighting(null, true, true, false)) {
                 runRegardless = true;
             } else {
                 SpartanBlock block = getTargetBlock(CombatUtils.maxHitDistance);
@@ -1116,7 +1116,7 @@ public class SpartanPlayer {
                 }
             }
 
-            playerProfile.getPunishmentHistory().increaseKicks(this, kick);
+            playerProfile.punishmentHistory.increaseKicks(this, kick);
             target.kickPlayer(kick);
         }
     }
@@ -1141,7 +1141,7 @@ public class SpartanPlayer {
             target.sendMessage(warning);
             punisher.sendMessage(feedback);
 
-            playerProfile.getPunishmentHistory().increaseWarnings(this, reason);
+            playerProfile.punishmentHistory.increaseWarnings(this, reason);
         }
     }
 
@@ -1606,7 +1606,7 @@ public class SpartanPlayer {
                         SpartanPlayer target = SpartanBukkit.getPlayer((Player) e);
 
                         if (target != null
-                                && playerProfile.getCombat().isActivelyFighting(
+                                && playerProfile.playerCombat.isActivelyFighting(
                                 target,
                                 true,
                                 true,

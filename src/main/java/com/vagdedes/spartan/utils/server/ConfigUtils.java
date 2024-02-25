@@ -124,7 +124,7 @@ public class ConfigUtils {
         message = replace(message, "{time-online}", String.valueOf(TimeUtils.getDifference(new Timestamp(p.lastPlayed), 1000)));
         message = replace(message, "{moving}", String.valueOf(p.isMoving(true)));
 
-        PunishmentHistory punishmentHistory = p.getProfile().getPunishmentHistory();
+        PunishmentHistory punishmentHistory = p.getProfile().punishmentHistory;
         message = replace(message, "{kicks}", String.valueOf(punishmentHistory.getKicks()));
         message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
 
@@ -167,7 +167,7 @@ public class ConfigUtils {
                 message = replace(message, "{time-online}", String.valueOf(TimeUtils.getDifference(new Timestamp(p.lastPlayed), 1000)));
                 message = replace(message, "{moving}", String.valueOf(p.getCustomDistance() > 0.0));
 
-                PunishmentHistory punishmentHistory = p.getProfile().getPunishmentHistory();
+                PunishmentHistory punishmentHistory = p.getProfile().punishmentHistory;
                 message = replace(message, "{kicks}", String.valueOf(punishmentHistory.getKicks()));
                 message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
 

@@ -80,7 +80,7 @@ public class ViolationStatistics { // todo use pie equation
                                ResearchEngine.DataType dataType) {
         for (PlayerProfile profile : playerProfiles) {
             if (profile.getDataType() == dataType) {
-                profile.getEvidence().remove(hackType, false, true, false);
+                profile.evidence.remove(hackType, false, true, false);
             }
         }
     }
@@ -145,7 +145,7 @@ public class ViolationStatistics { // todo use pie equation
             }
         } else if (!playerProfiles.isEmpty()) {
             for (PlayerProfile profile : playerProfiles) {
-                profile.getEvidence().clear(false, true, false);
+                profile.evidence.clear(false, true, false);
             }
         }
     }
@@ -227,7 +227,7 @@ public class ViolationStatistics { // todo use pie equation
                             probability = wave.getChance(probability);
 
                             if (probability <= 0.1) {
-                                profile.getEvidence().add(
+                                profile.evidence.add(
                                         hackType,
                                         "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
                                         false,
@@ -235,7 +235,7 @@ public class ViolationStatistics { // todo use pie equation
                                         false
                                 );
                             } else {
-                                profile.getEvidence().remove(hackType, false, true, false);
+                                profile.evidence.remove(hackType, false, true, false);
                             }
                         }
                     }

@@ -35,7 +35,7 @@ public class NoSlowdown extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (hackType.getCheck().getBooleanOption("check_item_usage", true)
-                && !player.getProfile().getCombat().isActivelyFighting(null, true, true, false)) {
+                && !player.getProfile().playerCombat.isActivelyFighting(null, true, true, false)) {
             return runUse("item-use", player.isUsingItem(), 6);
         } else {
             return false;

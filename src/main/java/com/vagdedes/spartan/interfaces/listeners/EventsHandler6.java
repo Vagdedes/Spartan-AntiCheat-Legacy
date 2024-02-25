@@ -137,7 +137,7 @@ public class EventsHandler6 implements Listener {
                     SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
 
                     if (target != null) {
-                        player.getProfile().getCombat().getFight(target).update(player);
+                        player.getProfile().playerCombat.getFight(target).update(player);
                     }
                 }
             }
