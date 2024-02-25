@@ -51,7 +51,7 @@ public class CheckProtection {
     public static boolean hasCooldown(SpartanPlayer player) {
         return cooldown >= System.currentTimeMillis()
                 || player.getHandlers().has(Handlers.HandlerType.GameMode)
-                || !SpartanBukkit.cooldowns.canDo(player.getUniqueId() + "=check=protection");
+                || !SpartanBukkit.cooldowns.canDo(player.uuid + "=check=protection");
     }
 
     public static void evadeCommonFalsePositives(SpartanPlayer player, Compatibility.CompatibilityType compatibilityType, Enums.HackType[] hackTypes, int ticks) {

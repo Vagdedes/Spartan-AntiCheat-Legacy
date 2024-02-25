@@ -237,7 +237,7 @@ public class Speed extends CheckExecutor {
             } else if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && player.isSneaking()) {
                 reason = "sneaking";
                 dm = cacheLimit(decimals, dm, sneaking, 0);
-            } else if ((material = to.getBlock().getType()) == Material.SOUL_SAND || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && material == Material.SOUL_SOIL) {
+            } else if ((material = to.getBlock().material) == Material.SOUL_SAND || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && material == Material.SOUL_SOIL) {
                 reason = "soul-sand";
 
                 if (PlayerData.hasSoulSpeedEnchantment(player, to)) {
@@ -246,7 +246,7 @@ public class Speed extends CheckExecutor {
                     dm = cacheLimit(decimals, dm, soul_sand_ground, 5);
                 }
             } else {
-                material = locM1.getBlock().getType();
+                material = locM1.getBlock().material;
 
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && material == Material.SLIME_BLOCK || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && material == Material.HONEY_BLOCK) {
                     dm = cacheLimit(decimals, dm, ground_slime, 0);
@@ -338,7 +338,7 @@ public class Speed extends CheckExecutor {
             }
         }
         String reasonCopy = reason;
-        boolean bedrockPlayer = player.isBedrockPlayer(),
+        boolean bedrockPlayer = player.bedrockPlayer,
                 vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                 explosion = !hasTrident && player.getHandlers().has(Handlers.HandlerType.Explosion),
@@ -803,13 +803,13 @@ public class Speed extends CheckExecutor {
         if (pattern != null) {
             return pattern;
         }
-        Material l1 = to.getBlock().getType();
+        Material l1 = to.getBlock().material;
 
         // Certain (Phase 1)
         if (BlockUtils.areCarpets(l1) || BlockUtils.areTrapdoors(l1)) {
             return PatternUtils.cache(to, hackType, "solid", true);
         }
-        Material l2 = to.clone().add(0, 2, 0).getBlock().getType();
+        Material l2 = to.clone().add(0, 2, 0).getBlock().material;
 
         // Certain (Phase 2)
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && l2 == Material.END_ROD

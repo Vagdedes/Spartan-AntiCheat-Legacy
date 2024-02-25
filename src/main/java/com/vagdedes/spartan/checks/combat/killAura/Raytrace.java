@@ -12,7 +12,6 @@ import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
@@ -33,7 +32,7 @@ public class Raytrace extends DetectionExecutor {
     private static final int maxEntities = 5; // 5 because after that there are far too many to safely check for collisions
 
     void run(SpartanLocation location, LivingEntity entity, double distance) {
-        if (!player.isBedrockPlayer()) {
+        if (!player.bedrockPlayer) {
             double entityWidth = CombatUtils.getWidthAndHeight(entity)[0];
 
             if (distance > entityWidth) {
@@ -64,14 +63,13 @@ public class Raytrace extends DetectionExecutor {
                         if (raytracedLocationX != entityLocationX || raytracedLocationZ != entityLocationZ) { // Do not check the x & z coordinates of the entity
                             double raytracedLocationY = raytracedLocation.getBlockY(), distanceToBlock;
 
-                            if (raytracedLocationX != block.getX()
-                                    || raytracedLocationY != block.getY()
-                                    || raytracedLocationZ != block.getZ()) {
+                            if (raytracedLocationX != block.x
+                                    || raytracedLocationY != block.y
+                                    || raytracedLocationZ != block.z) {
                                 block = raytracedLocation.getBlock();
                                 distanceToBlock = raytracedLocation.distance(block.getLocation());
-                                Material type = block.getType();
-                                fullSolid = (!handlers.has(Handlers.HandlerType.SensitiveBlockBreak) || !BlockUtils.isSensitive(player, type))
-                                        && BlockUtils.isFullSolid(type);
+                                fullSolid = (!handlers.has(Handlers.HandlerType.SensitiveBlockBreak) || !BlockUtils.isSensitive(player, block.material))
+                                        && BlockUtils.isFullSolid(block.material);
                                 //(playerProfile.isSuspectedOrHacker(hackType) || distanceToBlock <= 1.0) Attention: recently removed
                             } else {
                                 distanceToBlock = 0.0;

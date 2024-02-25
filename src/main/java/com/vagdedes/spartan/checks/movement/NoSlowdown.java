@@ -125,7 +125,7 @@ public class NoSlowdown extends CheckExecutor {
 
             if (cases != 0) {
                 Material[] materials = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ?
-                        new Material[]{player.getItemInHand().getType(), player.getInventory().getItemInOffHand().getType()} :
+                        new Material[]{player.getItemInHand().getType(), player.getInventory().itemInOffHand.getType()} :
                         new Material[]{player.getItemInHand().getType()};
                 StringBuilder items = new StringBuilder();
                 boolean allAir = true;

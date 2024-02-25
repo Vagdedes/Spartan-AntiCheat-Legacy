@@ -84,8 +84,7 @@ public class MorePackets extends CheckExecutor {
                 decimals.remove(new String[]{horizontalKey, verticalKey, lastTickKey});
                 return false;
             }
-            boolean bedrockPlayer = player.isBedrockPlayer(),
-                    hacker = player.getProfile().isSuspectedOrHacker(hackType);
+            boolean hacker = player.getProfile().isSuspectedOrHacker(hackType);
 
             // Detections
             if (timer.has(lastTick)) { // Do not start detection if not all cache is available
@@ -104,7 +103,7 @@ public class MorePackets extends CheckExecutor {
                         if (tickBuffer >= 10) {
                             cases = 1; // Allow the player to pass when they reach the ticks requirement
                             decreasedRequirement = false;
-                        } else if (!bedrockPlayer
+                        } else if (!player.bedrockPlayer
                                 && !player.isUsingItem()
                                 && !Damage.hasCooldown(player)
                                 && !player.getHandlers().has(Handlers.HandlerType.Explosion)
@@ -137,7 +136,7 @@ public class MorePackets extends CheckExecutor {
                                         instantMotionKey + "=first=special",
                                         instantMotionKey + "=second"
                                 });
-                                boolean instant = !bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
+                                boolean instant = !player.bedrockPlayer && (hacker || overallDistance >= (overallLimit * tickCycles));
                                 cancel("type: instant, overall: " + overallDistance + ", last-tick: " + lastTick + ", decreased-requirement: " + decreasedRequirement,
                                         instant ? initialLocation : null, instant ? teleportTicks : 0);
                             }
@@ -158,7 +157,7 @@ public class MorePackets extends CheckExecutor {
                     if (Math.round(tickAverage) <= 50.0 && extraTicks >= 5) {
                         boolean instantExtraTicks = extraTicks >= maxTicks,
                                 instantExtraPackets = extraPackets >= (maxTicks / 2),
-                                instant = !bedrockPlayer
+                                instant = !player.bedrockPlayer
                                         && (instantExtraPackets
                                         || instantExtraTicks
                                         || hacker);

@@ -100,7 +100,8 @@ public class ImpossibleInventory extends CheckExecutor {
         if (item.getType() != Material.AIR) {
             SpartanLocation loc = player.getLocation();
 
-            if (loc.getBlock().getType() == nether_portal || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
+            if (loc.getBlock().material == nether_portal
+                    || loc.clone().add(0, 1, 0).getBlock().material == nether_portal) {
                 cancel("type: portal-inventory");
             }
         }

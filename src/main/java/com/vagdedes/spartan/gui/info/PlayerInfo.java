@@ -55,7 +55,7 @@ public class PlayerInfo extends InventoryMenu {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
             return false;
         } else {
-            setTitle(player, menu + (isOnline ? target.getName() : playerProfile.getName()));
+            setTitle(player, menu + (isOnline ? target.name : playerProfile.getName()));
             List<String> lore = new ArrayList<>(20);
 
             int i = 10;
@@ -106,7 +106,7 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§7CPS (Clicks Per Second)§8:§a " + target.getClicks().getCount());
                 lore.add("§7Player Latency§8:§a " + target.getPing() + "ms");
                 lore.add("§7Overall Violations§8:§a " + violations);
-                lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + target.getDataType() + ")");
+                lore.add("§7Player State§8:§a " + playerProfile.getEvidence().getType() + " (" + target.dataType + ")");
                 add("§2Information", lore, new ItemStack(Material.BOOK, Math.max(1, Math.min(violations, 64))), information);
 
                 lore.clear();
@@ -154,9 +154,9 @@ public class PlayerInfo extends InventoryMenu {
         // Separator
 
         double delayNumber = isOnline ? AlgebraUtils.roundToHalf(Latency.getDelay(player)) : 0.0; // Base
-        ResearchEngine.DataType dataType = isOnline ? player.getDataType() : playerProfile.getDataType();
+        ResearchEngine.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         boolean tpsDropping = isOnline && TPS.areLow(player),
-                notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),
+                notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
                 detectionsNotAvailable = SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
@@ -198,7 +198,7 @@ public class PlayerInfo extends InventoryMenu {
                 new ItemStack(Material.QUARTZ_BLOCK);
         boolean hasViolations = violations > 0,
                 hasData = playerProfile.getEvidence().has(hackType);
-        ResearchEngine.DataType dataType = isOnline ? player.getDataType() : playerProfile.getDataType();
+        ResearchEngine.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         String state = getDetectionState(player,
                 hackType,
                 dataType,
@@ -206,7 +206,7 @@ public class PlayerInfo extends InventoryMenu {
                 isOnline ? AlgebraUtils.roundToHalf(Latency.getDelay(player)) : 0.0,
                 isOnline,
                 isOnline && TPS.areLow(player),
-                isOnline && !MaximumCheckedPlayers.isChecked(player.getUniqueId()),
+                isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
                 SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
                 !SpartanEdition.supportsCheck(dataType, hackType),
                 !hasViolations && !hasData);
@@ -252,7 +252,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName, null)) { // Do not put player because we calculate it below
             return returnNull ? null : "Disabled";
         }
-        UUID uuid = player.getUniqueId();
+        UUID uuid = player.uuid;
         String delay = delayNumber == 0.0 ? "" : " (" + (Math.floor(delayNumber) == delayNumber ? String.valueOf((int) delayNumber) : String.valueOf(delayNumber)) + ")";
         CancelCause disabledCause = player.getViolations(hackType).getDisableCause();
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
@@ -313,7 +313,7 @@ public class PlayerInfo extends InventoryMenu {
                     for (HackType hackType : Enums.HackType.values()) {
                         t.getViolations(hackType).reset();
                     }
-                    String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.getName());
+                    String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.name);
                     player.sendMessage(message);
                 } else {
                     String name = Bukkit.getOfflinePlayer(playerName).getName();

@@ -40,18 +40,17 @@ public class FastBreak extends CheckExecutor {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                long time = player.getTimer(hackType).get("delay=" + Objects.hash(block.getWorld().getName(), block.getType(), block.getX(), block.getY(), block.getZ()), 0L);
+                long time = player.getTimer(hackType).get("delay=" + Objects.hash(block.world.getName(), block.material, block.x, block.y, block.z), 0L);
 
                 if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
-                    Material blockType = block.getType();
                     ItemStack itemStack = player.getItemInHand();
-                    long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, blockType),
+                    long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, block.material),
                             limit = originalLimit;
 
                     if (limit > -1L) { // Make sure the limit can be calculated on this specific server
                         limit -= 250L; // Subtract ms for software/connection inconsistencies
 
-                        if (player.isBedrockPlayer()) {
+                        if (player.bedrockPlayer) {
                             limit *= AlgebraUtils.twoThirds;
                         }
 
@@ -90,12 +89,12 @@ public class FastBreak extends CheckExecutor {
                                     + ", original-limit: " + originalLimit
                                     + ", limit: " + limit
                                     + ", difference: " + (limit - time)
-                                    + ", block: " + BlockUtils.materialToString(blockType)
+                                    + ", block: " + BlockUtils.materialToString(block.material)
                                     + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                     + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]")
                                     + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
 
-                            if (BlockUtils.isSensitive(blockType, originalLimit)) {
+                            if (BlockUtils.isSensitive(block.material, originalLimit)) {
                                 cancel(prevention, null, 0, false, 0.0, 0);
                             } else {
                                 cancel(prevention, null, seconds);
@@ -136,26 +135,22 @@ public class FastBreak extends CheckExecutor {
             int limit = hackType.getCheck().getNumericalOption("indirect_surroundings_per_second", 15);
 
             if (limit > 0) {
-                UUID uuid = player.getUniqueId();
                 String key = "indirect-surroundings";
                 Buffer buffer = player.getBuffer(hackType);
                 int bufferTime = 20, bufferThreshold;
 
                 if (lastBlock != null) {
-                    int x = block.getX(), y = block.getY(), z = block.getZ(),
-                            previousX = lastBlock.getX(), previousY = lastBlock.getY(), previousZ = lastBlock.getZ();
-
-                    if (!(x == previousX && y == previousY && z == previousZ // Same
-                            || x == (previousX + 1) && y == previousY && z == previousZ // Left
-                            || x == (previousX - 1) && y == previousY && z == previousZ // Right
-                            || x == previousX && y == previousY && z == (previousZ + 1) // Front
-                            || x == previousX && y == previousY && z == (previousZ - 1) // Back
-                            || x == (previousX + 1) && y == previousY && z == (previousZ + 1) // Left-Diagonal
-                            || x == (previousX - 1) && y == previousY && z == (previousZ - 1) // Right-Diagonal
-                            || x == (previousX + 1) && y == previousY && z == (previousZ - 1) // Front-Diagonal
-                            || x == (previousX - 1) && y == previousY && z == (previousZ + 1) // Back-Diagonal
-                            || x == previousX && y == (previousY + 1) && z == previousZ // Up
-                            || x == previousX && y == (previousY - 1) && z == previousZ)) { // Down
+                    if (!(block.x == lastBlock.x && block.y == lastBlock.y && block.z == lastBlock.z // Same
+                            || block.x == (lastBlock.x + 1) && block.y == lastBlock.y && block.z == lastBlock.z // Left
+                            || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == lastBlock.z // Right
+                            || block.x == lastBlock.x && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Front
+                            || block.x == lastBlock.x && block.y == lastBlock.y && block.z == (lastBlock.z - 1) // Back
+                            || block.x == (lastBlock.x + 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Left-Diagonal
+                            || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z - 1) // Right-Diagonal
+                            || block.x == (lastBlock.x + 1) && block.y == lastBlock.y && block.z == (lastBlock.z - 1) // Front-Diagonal
+                            || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Back-Diagonal
+                            || block.x == lastBlock.x && block.y == (lastBlock.y + 1) && block.z == lastBlock.z // Up
+                            || block.x == lastBlock.x && block.y == (lastBlock.y - 1) && block.z == lastBlock.z)) { // Down
                         bufferThreshold = buffer.start(key, bufferTime);
                     } else {
                         bufferThreshold = buffer.get(key);
@@ -166,12 +161,11 @@ public class FastBreak extends CheckExecutor {
 
                 if (bufferThreshold >= limit) {
                     buffer.remove(key);
-                    Material blockType = block.getType();
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)
                             + ", limit: " + limit;
 
-                    if (BlockUtils.isSensitive(player, blockType)) {
+                    if (BlockUtils.isSensitive(player, block.material)) {
                         cancel(prevention, null, 0, false, 0.0, 0);
                     } else {
                         cancel(prevention, null, seconds);
@@ -191,7 +185,7 @@ public class FastBreak extends CheckExecutor {
                 SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
 
                 if (player.canRunCheck(hackType, false)) {
-                    player.getTimer(hackType).set("delay=" + Objects.hash(b.getWorld().getName(), b.getType(), b.getX(), b.getY(), b.getZ()));
+                    player.getTimer(hackType).set("delay=" + Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z));
                 }
             }
         } else if (canDo()) {

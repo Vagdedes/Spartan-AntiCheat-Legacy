@@ -31,13 +31,13 @@ public class BlockReach extends CheckExecutor {
     }
 
     private double getMultiplier() {
-        return player.isBedrockPlayer() || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
+        return player.bedrockPlayer || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && player.getVehicle() instanceof Strider ? 1.5 :
                         1; // Building
     }
 
     private boolean canDo(SpartanBlock b) {
-        return !BlockUtils.isScaffoldingBlock(b.getType())
+        return !BlockUtils.isScaffoldingBlock(b.material)
                 && !TreeFeller.canCancel(player, b);
     }
 
@@ -54,7 +54,7 @@ public class BlockReach extends CheckExecutor {
             if (canDo()) {
                 SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
-                if (canDo(block) && BlockUtils.isSensitive(player, block.getType())) {
+                if (canDo(block) && BlockUtils.isSensitive(player, block.material)) {
                     Material item = player.getItemInHand().getType();
 
                     if (item != Material.FLINT_AND_STEEL
@@ -98,16 +98,15 @@ public class BlockReach extends CheckExecutor {
             if (BlockUtils.isFullSolid(baLoc)
                     && player.getItemInHand().getType() != (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))) {
                 SpartanBlock block = new SpartanBlock(player, event.getBlock());
-                Material type = block.getType();
 
-                if (!BlockUtils.areBeds(type)
-                        && type != Material.BEDROCK) {
+                if (!BlockUtils.areBeds(block.material)
+                        && block.material != Material.BEDROCK) {
                     SpartanLocation to = player.getLocation(), bloc = block.getLocation();
                     double ypos = bloc.getY() - to.getY(),
                             distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                             ab_distance = to.distance(baLoc) + 0.4;
 
-                    if (!player.isBedrockPlayer()
+                    if (!player.bedrockPlayer
                             && player.getVehicle() == null
                             && !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                             && ypos <= 0.5

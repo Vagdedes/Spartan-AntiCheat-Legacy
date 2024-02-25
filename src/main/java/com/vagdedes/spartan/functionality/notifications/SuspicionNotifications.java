@@ -67,7 +67,7 @@ public class SuspicionNotifications {
 
                     if (!evidenceDetails.isEmpty()) {
                         size++;
-                        players.append(player.getName()).append(comma);
+                        players.append(player.name).append(comma);
 
                         for (Enums.HackType hackType : evidenceDetails) {
                             evidence.append(hackType.getCheck().getName()).append(comma);
@@ -76,7 +76,7 @@ public class SuspicionNotifications {
                         SpartanLocation location = player.getLocation();
                         CloudConnections.executeDiscordWebhook(
                                 "checks",
-                                player.getUniqueId(), player.getName(),
+                                player.uuid, player.name,
                                 location.getBlockX(), location.getBlockY(), location.getBlockZ(),
                                 (profile.isHacker() ? "Hacker" : "Suspected"), evidence.toString()
                         );

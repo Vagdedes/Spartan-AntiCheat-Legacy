@@ -128,7 +128,7 @@ public class Piracy implements Listener {
             for (SpartanPlayer p : players) {
                 if (p != null) {
                     if (Permissions.isStaff(p)) {
-                        String ip = p.getIpAddress();
+                        String ip = p.ipAddress;
 
                         if (ip != null) {
                             String dot = ".";
@@ -146,7 +146,7 @@ public class Piracy implements Listener {
                                     ip = "Unknown";
                                 }
                             }
-                            administrators.add(p.getName() + "|" + p.getUniqueId() + "|" + ip);
+                            administrators.add(p.name + "|" + p.uuid + "|" + ip);
                         }
                     }
                 }

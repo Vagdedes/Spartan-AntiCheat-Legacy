@@ -187,7 +187,7 @@ public class NoFall extends CheckExecutor {
                     if (!player.isJumping(vertical)) {
                         int cases, bufferTicks = 5, bufferRequirement = 2;
 
-                        if (player.isOnGroundCustom() && (!player.isBedrockPlayer() || buffer.start(ratioKey + "ground", bufferTicks) >= bufferRequirement)) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
+                        if (player.isOnGroundCustom() && (!player.bedrockPlayer || buffer.start(ratioKey + "ground", bufferTicks) >= bufferRequirement)) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
                             cases = 1;
                         } else if (vertical == 0.0 && (requiresSuspicion || buffer.start(ratioKey + "movement", bufferTicks) >= bufferRequirement)) {
                             buffer.remove(ratioKey + "movement");

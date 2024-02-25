@@ -76,7 +76,7 @@ public class SprintSpeed extends DetectionExecutor {
     // Separator
 
     private void checkFoodSprint(Buffer buffer) {
-        if (!hackType.getCheck().getBooleanOption("check_food_sprinting", true) || player.isBedrockPlayer()) {
+        if (!hackType.getCheck().getBooleanOption("check_food_sprinting", true) || player.bedrockPlayer) {
             return;
         }
         runAsync(() -> {

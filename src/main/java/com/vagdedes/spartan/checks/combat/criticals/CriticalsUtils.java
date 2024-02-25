@@ -33,7 +33,7 @@ public class CriticalsUtils {
     // Cache
 
     static boolean canCollectFrom(SpartanPlayer player) {
-        if (!player.isBedrockPlayer()) {
+        if (!player.bedrockPlayer) {
             PlayerProfile profile = player.getProfile();
             return !profile.isSuspectedOrHacker(Criticals.check);
         }

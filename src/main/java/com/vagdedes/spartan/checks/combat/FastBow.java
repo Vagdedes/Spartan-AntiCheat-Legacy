@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class FastBow extends CheckExecutor {
 
@@ -28,9 +27,9 @@ public class FastBow extends CheckExecutor {
         } else if (canDo()
                 && ((PlayerInteractEvent)object).getAction() == Action.RIGHT_CLICK_AIR) {
             SpartanInventory inventory = player.getInventory();
-            ItemStack item = inventory.getItemInHand();
 
-            if (item.getType() == Material.BOW && inventory.contains(Material.ARROW)) {
+            if (inventory.itemInHand.getType() == Material.BOW
+                    && inventory.contains(Material.ARROW)) {
                 player.getTimer(hackType).set("interact");
             }
         }

@@ -43,7 +43,7 @@ public class PlayerProfile {
         SpartanPlayer player = this.getSpartanPlayer();
 
         if (player != null) {
-            this.bedrockPlayer = player.isBedrockPlayer();
+            this.bedrockPlayer = player.bedrockPlayer;
             this.bedrockPlayerCheck = true;
         } else {
             this.bedrockPlayer = BedrockCompatibility.isPlayer(name);
@@ -64,15 +64,15 @@ public class PlayerProfile {
 
     public PlayerProfile(SpartanPlayer player) {
         Enums.HackType[] hackTypes = Enums.HackType.values();
-        this.uuid = player.getUniqueId();
-        this.name = player.getName();
+        this.uuid = player.uuid;
+        this.name = player.name;
         this.offlinePlayer = player.getPlayer(); // Attention
         this.punishmentHistory = new PunishmentHistory(this);
         this.playerCombat = new PlayerCombat(this);
         this.evidence = new PlayerEvidence(this);
         this.skull = null;
         this.offlinePlayer = null;
-        this.bedrockPlayer = player.isBedrockPlayer(); // Attention
+        this.bedrockPlayer = player.bedrockPlayer; // Attention
         this.bedrockPlayerCheck = true;
 
         this.violationHistory = new ViolationHistory[hackTypes.length];
@@ -93,7 +93,7 @@ public class PlayerProfile {
             SpartanPlayer player = getSpartanPlayer();
 
             if (player != null) {
-                this.uuid = player.getUniqueId();
+                this.uuid = player.uuid;
 
                 if (!bedrockPlayerCheck && BedrockCompatibility.isPlayer(uuid, name)) {
                     this.bedrockPlayerCheck = true;
@@ -141,7 +141,7 @@ public class PlayerProfile {
             if (player != null) {
                 bedrockPlayerCheck = true;
 
-                if (player.isBedrockPlayer()) {
+                if (player.bedrockPlayer) {
                     return bedrockPlayer = true;
                 }
             }

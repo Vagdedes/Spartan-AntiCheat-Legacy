@@ -306,7 +306,7 @@ public class ResearchEngine {
 
     public static PlayerProfile getPlayerProfile(SpartanPlayer player) {
         synchronized (playerProfiles) {
-            String name = player.getName();
+            String name = player.name;
             PlayerProfile playerProfile = playerProfiles.get(name);
 
             if (playerProfile != null) {
@@ -347,7 +347,7 @@ public class ResearchEngine {
 
         // Separator
         for (PlayerProfile playerProfile : profiles) {
-            if (universal || ((dataType == DataType.Bedrock) == playerProfile.isBedrockPlayer())) {
+            if (universal || ((dataType == DataType.Bedrock) == playerProfile.bedrockPlayer)) {
                 list.addAll(playerProfile.getViolationHistory(hackType).getRawCollection());
             }
         }
@@ -800,7 +800,7 @@ public class ResearchEngine {
                             Map<Integer, ViolationStatistics.TimePeriod> averages = new LinkedHashMap<>();
 
                             for (PlayerProfile playerProfile : playerProfiles) {
-                                if (bedrock == playerProfile.isBedrockPlayer()
+                                if (bedrock == playerProfile.bedrockPlayer
                                         && playerProfile.isLegitimate()) {
                                     Collection<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getCollection();
 

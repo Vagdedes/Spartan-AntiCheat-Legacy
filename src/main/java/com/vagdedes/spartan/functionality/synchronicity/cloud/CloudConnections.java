@@ -222,7 +222,7 @@ public class CloudConnections {
                         String ipAddress;
 
                         if (!isNull && offlinePlayer.isOnline()) {
-                            ipAddress = player.getIpAddress();
+                            ipAddress = player.ipAddress;
 
                             if (ipAddress == null) {
                                 ipAddress = "NULL";

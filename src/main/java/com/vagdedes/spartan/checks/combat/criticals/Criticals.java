@@ -51,7 +51,7 @@ public class Criticals extends CheckExecutor {
 
     private void checkDamage(double damage, LivingEntity entity) {
         if (hackType.getCheck().getBooleanOption("check_damage", true)
-                && !player.isBedrockPlayer()
+                && !player.bedrockPlayer
                 && !player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)
                 && !CombatUtils.isNewPvPMechanic(player, entity)) {
             double[] widthAndHeight = CombatUtils.getWidthAndHeight(entity);
@@ -81,8 +81,8 @@ public class Criticals extends CheckExecutor {
                                 && (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? !attackCooldown : // Collect data only when there is no attack cooldown
                                 damageDecimals == 0.0 || damageDecimals == 0.5)) { // When method is not available, check the validity of the damage
                             double originalDamage = damage - sharpnessDamage - smiteDamage;
-                            CriticalsUtils.cache(player.getName(), itemType, originalDamage);
-                            AntiCheatLogs.logInfo(player.getName() + CriticalsUtils.criticalHitMessage + BlockUtils.materialToString(itemType) + " and " + originalDamage + " damage", false);
+                            CriticalsUtils.cache(player.name, itemType, originalDamage);
+                            AntiCheatLogs.logInfo(player.name + CriticalsUtils.criticalHitMessage + BlockUtils.materialToString(itemType) + " and " + originalDamage + " damage", false);
                         }
                     }
 
@@ -215,10 +215,10 @@ public class Criticals extends CheckExecutor {
         if (object instanceof Boolean) {
             if ((boolean) object) {
                 if (!CriticalsUtils.canCollectFrom(player)) {
-                    CriticalsUtils.memory.remove(player.getName());
+                    CriticalsUtils.memory.remove(player.name);
                 }
             } else {
-                CriticalsUtils.memory.remove(player.getName());
+                CriticalsUtils.memory.remove(player.name);
             }
         } else if (canDo()) {
             Object[] objects = (Object[]) object;

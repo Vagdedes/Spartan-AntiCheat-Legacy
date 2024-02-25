@@ -71,7 +71,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.net.InetSocketAddress;
 import java.util.*;
 
 public class SpartanPlayer {
@@ -87,15 +86,14 @@ public class SpartanPlayer {
     private int ping, maximumNoDamageTicks, foodLevel, fireTicks;
     private double eyeHeight, health;
     private GameMode gameMode;
-    private final boolean bedrockPlayer;
+    public final boolean bedrockPlayer;
     private long damageTick, lastHeadMovement;
-    private final long creationTime, lastPlayed;
-    private final String name;
-    private final UUID uuid;
-    private final String ipAddress;
+    public final long creationTime, lastPlayed;
+    public final String name;
+    public final UUID uuid;
+    public final String ipAddress;
     private final Collection<PotionEffect> potionEffects;
-    private final ResearchEngine.DataType dataType;
-    private final InetSocketAddress address;
+    public final ResearchEngine.DataType dataType;
     private EntityDamageEvent lastDamageCause;
     private SpartanInventory inventory;
     private SpartanOpenInventory openInventory;
@@ -319,7 +317,7 @@ public class SpartanPlayer {
 
                             // Check Allowance Cache
                             if (TPS.getTick(p) <= 100
-                                    || !MaximumCheckedPlayers.isChecked(p.getUniqueId())
+                                    || !MaximumCheckedPlayers.isChecked(p.uuid)
                                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && p.getGameMode() == GameMode.SPECTATOR
                                     || IDs.isPreview()
                                     || p.getCancellableCompatibility() != null) {
@@ -386,7 +384,6 @@ public class SpartanPlayer {
         this.flySpeed = p.getFlySpeed();
         this.gameMode = p.getGameMode();
         this.health = p.getHealth();
-        this.address = p.getAddress();
         this.usingItem = p.isBlocking();
         this.fireTicks = p.getFireTicks();
         this.damageTick = 0L;
@@ -664,7 +661,7 @@ public class SpartanPlayer {
                 runRegardless = true;
             } else {
                 SpartanBlock block = getTargetBlock(CombatUtils.maxHitDistance);
-                runRegardless = block == null || BlockUtils.areAir(block.getType());
+                runRegardless = block == null || BlockUtils.areAir(block.material);
             }
         }
 
@@ -686,21 +683,9 @@ public class SpartanPlayer {
             }
 
             if (success && clicks.canDistributeInformation()) {
-                SpartanMenu.playerInfo.refresh(getName());
+                SpartanMenu.playerInfo.refresh(name);
             }
         }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public UUID getUniqueId() {
-        return uuid;
-    }
-
-    public ResearchEngine.DataType getDataType() {
-        return dataType;
     }
 
     private SpartanLocation getVehicleLocation() {
@@ -927,10 +912,6 @@ public class SpartanPlayer {
                 ItemsAdder.is(this) ? Compatibility.CompatibilityType.ItemsAdder.toString() :
                         CustomEnchantsPlus.has(this) ? Compatibility.CompatibilityType.CustomEnchantsPlus.toString() :
                                 EcoEnchants.has(this) ? Compatibility.CompatibilityType.EcoEnchants.toString() : null;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
     }
 
     public boolean isFlying() {
@@ -1295,10 +1276,6 @@ public class SpartanPlayer {
         this.eyeHeight = eyeHeight;
     }
 
-    public boolean isBedrockPlayer() {
-        return bedrockPlayer;
-    }
-
     public boolean isGliding() {
         return gliding;
     }
@@ -1336,7 +1313,7 @@ public class SpartanPlayer {
     }
 
     public ItemStack getItemInHand() {
-        return inventory.getItemInHand();
+        return inventory.itemInHand;
     }
 
     public SpartanOpenInventory getOpenInventory() {
@@ -1376,18 +1353,6 @@ public class SpartanPlayer {
             prepareForAbstractMovement();
             p.setVelocity(vector);
         }
-    }
-
-    public InetSocketAddress getAddress() {
-        return address;
-    }
-
-    public long getCreationTime() {
-        return creationTime;
-    }
-
-    public long getLastPlayed() {
-        return lastPlayed;
     }
 
     public boolean isUsingItem() {
@@ -1706,7 +1671,7 @@ public class SpartanPlayer {
 
         for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
-            Material material = loopLocation.getBlock().getType();
+            Material material = loopLocation.getBlock().material;
 
             if (iterations != maxIterations
                     && (BlockUtils.canClimb(material)
@@ -2009,14 +1974,14 @@ public class SpartanPlayer {
                 try {
                     SpartanBlock targetBlock = getTargetBlock(Math.max(Math.floor(distance), 1.0));
 
-                    if (targetBlock != null && BlockUtils.isSolid(targetBlock.getType())) {
+                    if (targetBlock != null && BlockUtils.isSolid(targetBlock.material)) {
                         SpartanLocation targetBlockLocation = targetBlock.getLocation();
 
                         if (clickedBlockLocation.distance(targetBlockLocation) >= (handlers.has(Handlers.HandlerType.ElytraUse) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
 
-                                && (targetBlock.getX() != clickedBlock.getX()
-                                || targetBlock.getY() != clickedBlock.getY()
-                                || targetBlock.getZ() != clickedBlock.getZ())
+                                && (targetBlock.x != clickedBlock.x
+                                || targetBlock.y != clickedBlock.y
+                                || targetBlock.z != clickedBlock.z)
 
                                 && (editableClickedBlock && !BlockUtils.isLiquid(targetBlockLocation)
                                 || BlockUtils.isFullSolid(targetBlockLocation))) {

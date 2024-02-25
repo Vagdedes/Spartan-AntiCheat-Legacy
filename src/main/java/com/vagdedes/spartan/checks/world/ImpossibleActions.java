@@ -82,7 +82,7 @@ public class ImpossibleActions extends CheckExecutor {
                     cancel("type: item-usage, event: break, block: " + BlockUtils.blockToString(b));
                 } else if (hackType.getCheck().getBooleanOption("check_liquids", true)
                         && !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                    Material m = bloc.getBlock().getType();
+                    Material m = bloc.getBlock().material;
 
                     if (BlockUtils.isBaseLiquid(m)) {
                         cancel("type: liquids(break), block: " + BlockUtils.materialToString(m));
@@ -149,8 +149,8 @@ public class ImpossibleActions extends CheckExecutor {
         }
         Material itemStackType = player.getItemInHand().getType();
         SpartanLocation bloc = block.getLocation();
-        Material blockType = block.getType();
-        Material blockAgainstType = blockAgainst.getType();
+        Material blockType = block.material;
+        Material blockAgainstType = blockAgainst.material;
         SpartanLocation blockAgainstLocation = blockAgainst.getLocation();
         boolean sameItem = itemStackType == blockType;
 
@@ -164,7 +164,7 @@ public class ImpossibleActions extends CheckExecutor {
                 || blockFace == BlockFace.SELF
                 && BlockUtils.isFullSolid(blockType)
                 && blockAgainstLocation.distance(bloc) == 0.0
-                && bloc.getBlock().getType() == Material.AIR)) {
+                && bloc.getBlock().material == Material.AIR)) {
             cancel(
                     "type: liquids(place), block: " + BlockUtils.materialToString(blockType)
                             + ", block-against: " + BlockUtils.materialToString(blockAgainstType)
@@ -207,7 +207,7 @@ public class ImpossibleActions extends CheckExecutor {
 
                         if (scaffold) {
                             access = hackType.getCheck().getBooleanOption("check_scaffold", true)
-                                    && blockY == (blockAgainst.getY() + 1) && horizontalDistance < 1.5;
+                                    && blockY == (blockAgainst.y + 1) && horizontalDistance < 1.5;
                         } else if (hackType.getCheck().getBooleanOption("check_tower", true)
                                 && !BouncingBlocks.isBelow(player)) {
                             if (cache == null) {

@@ -29,7 +29,7 @@ public class FastEat extends CheckExecutor {
     }
 
     private long getDelay() {
-        for (ItemStack itemStack : new ItemStack[]{player.getItemInHand(), player.getInventory().getItemInOffHand()}) {
+        for (ItemStack itemStack : new ItemStack[]{player.getItemInHand(), player.getInventory().itemInOffHand}) {
             if (itemStack != null) {
                 Material type = itemStack.getType();
 
@@ -110,7 +110,7 @@ public class FastEat extends CheckExecutor {
                     }
                 }
             }
-        } else if (!player.isBedrockPlayer() && canDo()) {
+        } else if (!player.bedrockPlayer && canDo()) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             switch (e.getAction()) {

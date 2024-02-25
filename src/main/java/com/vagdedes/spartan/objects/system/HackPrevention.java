@@ -63,7 +63,7 @@ public class HackPrevention {
             teleported = true;
         }
         if (teleported) {
-            String key = player.getUniqueId() + "velocity";
+            String key = player.uuid + "velocity";
 
             if (cooldowns.canDo(key)
                     && (hackType == Enums.HackType.IrregularMovements

@@ -48,7 +48,7 @@ public class ManageConfiguration extends InventoryMenu {
     }
 
     public void save(SpartanPlayer player, boolean leave) {
-        UUID uuid = player.getUniqueId();
+        UUID uuid = player.uuid;
         Integer number = map.get(uuid);
 
         if (number != null) {
@@ -278,7 +278,7 @@ public class ManageConfiguration extends InventoryMenu {
                     reload(true);
 
                     // Inventory
-                    map.put(player.getUniqueId(), 1);
+                    map.put(player.uuid, 1);
                     openChild(player, config, slot, list);
                 }
             }

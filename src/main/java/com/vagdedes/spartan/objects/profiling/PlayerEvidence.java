@@ -158,7 +158,7 @@ public class PlayerEvidence {
                                     "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
                             );
                             this.judgeLocal();
-                            SpartanMenu.playerInfo.refresh(player.getName());
+                            SpartanMenu.playerInfo.refresh(player.name);
                             MainMenu.refresh();
                             return getRawKnowledgeList();
                         }

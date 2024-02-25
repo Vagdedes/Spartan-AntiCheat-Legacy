@@ -228,7 +228,7 @@ public class SpartanEdition {
                         checkTime = time;
                         boolean bedrockIsMissingDetection = missingDetection == ResearchEngine.DataType.Bedrock;
 
-                        if (bedrockIsMissingDetection == player.isBedrockPlayer()) {
+                        if (bedrockIsMissingDetection == player.bedrockPlayer) {
                             notify = true;
                             sendNotification(player, missingDetection);
                         } else {
@@ -241,7 +241,7 @@ public class SpartanEdition {
                                 checkedProfiles = new ArrayList<>(size);
 
                                 for (SpartanPlayer otherPlayer : players) {
-                                    if (bedrockIsMissingDetection == otherPlayer.isBedrockPlayer()) {
+                                    if (bedrockIsMissingDetection == otherPlayer.bedrockPlayer) {
                                         notify = true;
                                         sendNotification(player, missingDetection);
                                         return;
@@ -263,7 +263,7 @@ public class SpartanEdition {
 
                                 if (!playerProfiles.isEmpty()) {
                                     for (PlayerProfile profile : playerProfiles) {
-                                        if (bedrockIsMissingDetection == profile.isBedrockPlayer()) {
+                                        if (bedrockIsMissingDetection == profile.bedrockPlayer) {
                                             notify = true;
                                             sendNotification(player, missingDetection);
                                             return;
@@ -284,7 +284,7 @@ public class SpartanEdition {
                     notificationMessage.replace(type, dataType.toString()).replace(productID, get1_0_ProductID(dataType)) // Keep 1.0 here as it is the base product
             );
 
-            if (AwarenessNotifications.canSend(player.getUniqueId(), notificationKey)) {
+            if (AwarenessNotifications.canSend(player.uuid, notificationKey)) {
                 player.sendImportantMessage(message);
             }
         }

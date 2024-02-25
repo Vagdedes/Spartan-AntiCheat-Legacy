@@ -33,12 +33,12 @@ public class GhostHand extends CheckExecutor {
 
                 if (canDo(b)
                         && hackType.getCheck().getBooleanOption("check_block_breaking", true)
-                        && !BlockUtils.isSensitive(player, b.getType())) {
+                        && !BlockUtils.isSensitive(player, b.material)) {
                     SpartanBlock itb = player.getIllegalTargetBlock(b);
 
                     if (itb != null
                             && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
-                            || BlockUtils.isFullSolid(itb.getType()))) {
+                            || BlockUtils.isFullSolid(itb.material))) {
                         cancel("type: break, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
                                 null, 1, false, 0.0, 0);
                     }
@@ -58,7 +58,7 @@ public class GhostHand extends CheckExecutor {
 
                     if (itb != null
                             && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
-                            || BlockUtils.isFullSolid(itb.getType()))) {
+                            || BlockUtils.isFullSolid(itb.material))) {
                         cancel("type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
                                 null, 1, false, 0.0, 0);
                     }
@@ -74,8 +74,7 @@ public class GhostHand extends CheckExecutor {
     }
 
     private boolean canDo(SpartanBlock b) {
-        return b.getWorld() == player.getWorld()
-                && !BlockUtils.areWires(b.getType());
+        return b.world == player.getWorld() && !BlockUtils.areWires(b.material);
     }
 
     @Override

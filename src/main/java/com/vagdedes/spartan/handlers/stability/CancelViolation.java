@@ -41,7 +41,7 @@ public class CancelViolation {
 
     public static boolean isForced(SpartanPlayer player, Enums.HackType hackType) {
         return !player.getCooldowns().canDo(masterKey + hackType.ordinal())
-                || UltimateStatistics.isSuspected(player.getUniqueId());
+                || UltimateStatistics.isSuspected(player.uuid);
     }
 
     public static void force(SpartanPlayer player, Enums.HackType hackType) {

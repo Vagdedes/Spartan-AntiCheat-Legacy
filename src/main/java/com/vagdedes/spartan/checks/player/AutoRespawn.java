@@ -66,7 +66,7 @@ public class AutoRespawn extends CheckExecutor {
             long time = System.currentTimeMillis();
 
             synchronized (memory) {
-                memory.put(player.getUniqueId(), time);
+                memory.put(player.uuid, time);
             }
         }
         return false;

@@ -80,9 +80,9 @@ public class WaterSpeed extends DetectionExecutor {
             freezeBuffers(buffer, 1);
             return;
         }
-        if (to.getBlock().isWaterLogged()
-                || from.getBlock().isWaterLogged()
-                || to.clone().add(0, -0.5, 0).getBlock().isWaterLogged()) {
+        if (to.getBlock().waterLogged
+                || from.getBlock().waterLogged
+                || to.clone().add(0, -0.5, 0).getBlock().waterLogged) {
             freezeBuffers(buffer, 1);
             return;
         }
@@ -140,7 +140,7 @@ public class WaterSpeed extends DetectionExecutor {
                         limit = (player.isSprinting() ? stable_extra : stable);
                         limit *= bootsLevel;
                         limitType += 3;
-                    } else if (to.getBlock().getType() == material) {
+                    } else if (to.getBlock().material == material) {
                         if (clearMovement) { // Clear Movement
                             if (canCheckWater) {
                                 limit = in_water + (bootsLevel * 3.5);
@@ -289,7 +289,7 @@ public class WaterSpeed extends DetectionExecutor {
             freezeBuffers(buffer, 1);
             return false;
         }
-        return loc1.getBlock().getType() == m
+        return loc1.getBlock().material == m
                 || to.areBlocks(m, BlockUtils.hitbox_max, true)
                 || locM1.areBlocks(m, BlockUtils.hitbox_max, true)
                 || to.clone().add(0, -remaining, 0).areBlocks(m, BlockUtils.hitbox_max, true)
@@ -312,7 +312,7 @@ public class WaterSpeed extends DetectionExecutor {
         } else if (boatStepping || selfHit || horizontalBuffer < 0 || vehicle instanceof Horse
                 || !cooldowns.canDo("ice") || player.getHandlers().has(Handlers.HandlerType.Explosion)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), premature));
-        } else if (player.isBedrockPlayer()
+        } else if (player.bedrockPlayer
                 || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                 || player.getHandlers().has(Handlers.HandlerType.TowerBuilding)) {
             modifiedLimit = Math.max(modifiedLimit, instability);

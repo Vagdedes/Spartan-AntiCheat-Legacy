@@ -28,8 +28,8 @@ public class FastPlace extends CheckExecutor {
         if (canDo()) {
             SpartanBlock b = new SpartanBlock(player, ((BlockPlaceEvent) object).getBlock());
 
-            if (!BlockUtils.isScaffoldingBlock(b.getType())) {
-                Material material = b.getType();
+            if (!BlockUtils.isScaffoldingBlock(b.material)) {
+                Material material = b.material;
 
                 if (material != Material.FIRE
                         && material != Material.AIR
@@ -48,7 +48,7 @@ public class FastPlace extends CheckExecutor {
                             String detection = "type: fast";
 
                             if (!CloudFeature.isInformationCancelled(hackType, detection)
-                                    && !player.isBedrockPlayer()
+                                    && !player.bedrockPlayer
                                     && hackType.getCheck().getBooleanOption("check_fast", true)
                                     && !Compatibility.CompatibilityType.VeinMiner.isFunctional()
                                     && buffer.start("fast", ticks) >= 4) {

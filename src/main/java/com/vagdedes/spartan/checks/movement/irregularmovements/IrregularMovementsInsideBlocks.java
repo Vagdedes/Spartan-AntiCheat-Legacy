@@ -23,10 +23,10 @@ public class IrregularMovementsInsideBlocks extends DetectionExecutor {
 
             runAsync(() -> {
                 if (from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) { // Make sure player changed blocks
-                    Material toMaterial = to.getBlock().getType(),
-                            fromMaterial = from.getBlock().getType(),
-                            to1 = to.clone().add(0, 1, 0).getBlock().getType(),
-                            from1 = from.clone().add(0, 1, 0).getBlock().getType();
+                    Material toMaterial = to.getBlock().material,
+                            fromMaterial = from.getBlock().material,
+                            to1 = to.clone().add(0, 1, 0).getBlock().material,
+                            from1 = from.clone().add(0, 1, 0).getBlock().material;
 
                     if ((isValidBlock(toMaterial) || isValidBlock(to1)) // Make sure new blocks are solid
                             && (isValidBlock(fromMaterial) || isValidBlock(from1))) {  // Make sure old blocks were solid

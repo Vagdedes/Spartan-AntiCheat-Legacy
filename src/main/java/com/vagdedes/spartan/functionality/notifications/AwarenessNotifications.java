@@ -94,7 +94,7 @@ public class AwarenessNotifications {
             } else if (sender instanceof SpartanPlayer) {
                 SpartanPlayer spartanPlayer = (SpartanPlayer) sender;
                 spartanPlayer.sendMessage(message);
-                Bukkit.getConsoleSender().sendMessage("(" + spartanPlayer.getName() + ") " + message);
+                Bukkit.getConsoleSender().sendMessage("(" + spartanPlayer.name + ") " + message);
             }
         } else { // Console
             Bukkit.getConsoleSender().sendMessage(message);

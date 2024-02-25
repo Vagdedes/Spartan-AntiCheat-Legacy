@@ -44,7 +44,7 @@ public class Sensitivity extends DetectionExecutor {
     }
 
     void run(SpartanLocation location, Buffer buffer) {
-        if (!player.isBedrockPlayer()) {
+        if (!player.bedrockPlayer) {
             boolean suspectedOrHacker = player.getProfile().isSuspectedOrHacker(hackType);
             Decimals decimals = player.getDecimals(hackType);
 
