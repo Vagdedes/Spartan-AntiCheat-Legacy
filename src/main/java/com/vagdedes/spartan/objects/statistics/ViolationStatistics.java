@@ -217,13 +217,8 @@ public class ViolationStatistics { // todo use pie equation
 
             if (probabilityData != null) {
                 Map<PlayerProfile, Double> probabilityAverage = profileAverageProbability.get(majorHash);
-                ProbabilityRank wave = new ProbabilityRank();
+                ProbabilityRank wave = new ProbabilityRank().addMultiple(probabilityData);
 
-                for (Map.Entry<Double, Integer> entry : probabilityData.entrySet()) {
-                    for (int i = 0; i < entry.getValue(); i++) {
-                        wave.add(entry.getKey());
-                    }
-                }
                 for (PlayerProfile profile : playerProfiles) {
                     if (profile.getDataType() == dataType) {
                         Double probability = probabilityAverage.get(profile);
