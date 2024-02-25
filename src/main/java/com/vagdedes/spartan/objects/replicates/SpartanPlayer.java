@@ -231,7 +231,7 @@ public class SpartanPlayer {
                 clearCache = false;
                 syncTicks--;
 
-                if (syncTicks % 20 == 0) {
+                if (!MultiVersion.folia && syncTicks % 20 == 0) {
                     synchronized (worldEntities) {
                         worldEntities.clear();
 
@@ -1546,11 +1546,17 @@ public class SpartanPlayer {
                 if (p != null) {
                     nearbyEntitiesDistance = max;
 
-                    if (MultiVersion.folia || SpartanBukkit.isSynchronised()) {
+                    if (MultiVersion.folia) {
                         SpartanBukkit.runTask(this, () -> {
                             nearbyEntities.clear();
                             nearbyEntities.addAll(p.getNearbyEntities(x, y, z));
                         });
+                        return new ArrayList<>(nearbyEntities);
+                    } else if (SpartanBukkit.isSynchronised()) {
+                        List<Entity> entities = p.getNearbyEntities(x, y, z);
+                        nearbyEntities.clear();
+                        nearbyEntities.addAll(entities);
+                        return entities;
                     } else {
                         SpartanLocation loc = this.getLocation();
                         List<Entity> entities;
@@ -1578,12 +1584,15 @@ public class SpartanPlayer {
                             }
                             nearbyEntities.clear();
                             nearbyEntities.addAll(entities);
+                            return entities;
                         } else {
                             nearbyEntities.clear();
+                            return new ArrayList<>(0);
                         }
                     }
                 } else {
                     nearbyEntities.clear();
+                    return new ArrayList<>(0);
                 }
             } else if (!nearbyEntities.isEmpty()) {
                 SpartanLocation loc = this.getLocation();
@@ -1605,8 +1614,10 @@ public class SpartanPlayer {
                 }
                 nearbyEntities.clear();
                 nearbyEntities.addAll(entities);
+                return entities;
+            } else {
+                return new ArrayList<>(0);
             }
-            return nearbyEntities;
         }
     }
 
@@ -1620,8 +1631,8 @@ public class SpartanPlayer {
                 int count = 0;
 
                 for (Entity e : getNearbyEntities(distance, distance, distance)) {
-                    if (e instanceof Mob) {
-                        LivingEntity target = ((Mob) e).getTarget();
+                    if (e instanceof Monster) {
+                        LivingEntity target = ((Monster) e).getTarget();
 
                         if (target != null && target.equals(n)) {
                             count++;
