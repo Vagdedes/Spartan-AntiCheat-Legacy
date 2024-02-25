@@ -30,6 +30,22 @@ public class ProbabilityPie {
 
     // Separator
 
+    public ProbabilityPie addMultiple(Collection<? extends Number> numbers) {
+        for (Number number : numbers) {
+            this.add(number);
+        }
+        return this;
+    }
+
+    public ProbabilityPie addMultiplePatterns(Collection<PatternValue> values) {
+        for (PatternValue value : values) {
+            this.add(value.number);
+        }
+        return this;
+    }
+
+    // Separator
+
     public ProbabilityPie create(Number number, int amount) {
         Integer count = this.map.get(number);
 
@@ -43,20 +59,6 @@ public class ProbabilityPie {
 
     public ProbabilityPie add(Number number) {
         return this.increase(number, 1);
-    }
-
-    public ProbabilityPie addMultiple(Collection<? extends Number> numbers) {
-        for (Number number : numbers) {
-            this.add(number);
-        }
-        return this;
-    }
-
-    public ProbabilityPie addMultiplePatterns(Collection<PatternValue> values) {
-        for (PatternValue value : values) {
-            this.add(value.number);
-        }
-        return this;
     }
 
     public ProbabilityPie increase(Number number, int amount) {

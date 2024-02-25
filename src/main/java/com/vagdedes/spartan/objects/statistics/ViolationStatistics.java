@@ -10,7 +10,7 @@ import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
 
-public class ViolationStatistics { // todo use pie equation
+public class ViolationStatistics {
 
     private static final Map<Integer, Map<Integer, Integer>> violationProbabilityPie
             = Collections.synchronizedMap(new LinkedHashMap<>());
