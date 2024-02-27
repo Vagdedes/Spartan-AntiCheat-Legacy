@@ -68,9 +68,26 @@ public class ManageChecks extends InventoryMenu {
             item = item.split(" ")[0];
 
             if (clickType == ClickType.LEFT) {
-                setEnable(player, item);
+                Check check = Config.getCheckByName(item);
+
+                if (check != null) {
+                    check.setEnabled(null, !check.isEnabled(null, null, null));
+                }
+                open(player);
             } else if (clickType == ClickType.RIGHT) {
-                setSilent(player, item);
+                Check check = Config.getCheckByName(item);
+
+                if (check != null) {
+                    check.setSilent(!check.isSilent(null));
+                }
+                open(player);
+            } else if (clickType.isShiftClick()) {
+                Check check = Config.getCheckByName(item);
+
+                if (check != null) {
+                    ResearchEngine.resetData(check.hackType);
+                }
+                //todo message
             }
         }
         return true;
@@ -83,10 +100,7 @@ public class ManageChecks extends InventoryMenu {
                 bypassing = Permissions.isBypassing(player, hackType);
         String[] disabledDetections = CloudFeature.getShownDisabledDetections(hackType);
         int problematicDetections = check.getProblematicDetections();
-
-        String enabledOption;
-        String silentOption = null;
-        String colour, secondColour;
+        String enabledOption, silentOption, colour, secondColour;
         ItemStack item;
 
         if (check.supportsSilent) {
@@ -95,6 +109,8 @@ public class ManageChecks extends InventoryMenu {
             } else {
                 silentOption = "§7Right click to §aenable §7silent checking.";
             }
+        } else {
+            silentOption = null;
         }
 
         if (enabled) {
@@ -193,6 +209,7 @@ public class ManageChecks extends InventoryMenu {
         if (silentOption != null) {
             lore.add(silentOption);
         }
+        lore.add("§7Shift click to §edelete §7the check's data.");
 
         // Separator
 
@@ -200,27 +217,5 @@ public class ManageChecks extends InventoryMenu {
             item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
         add(colour + check.getName() + " " + secondColour + check.type.toString() + " Check", lore, item, -1);
-    }
-
-    private void setEnable(SpartanPlayer player, String item) {
-        Check check = Config.getCheckByName(item);
-
-        if (check != null) {
-            if (check.isEnabled(null, null, null)) {
-                check.setEnabled(null, false);
-            } else {
-                check.setEnabled(null, true);
-            }
-        }
-        open(player);
-    }
-
-    private void setSilent(SpartanPlayer player, String item) {
-        Check check = Config.getCheckByName(item);
-
-        if (check != null) {
-            check.setSilent(!check.isSilent(null));
-        }
-        open(player);
     }
 }

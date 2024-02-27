@@ -17,9 +17,7 @@ import java.util.List;
 
 public class SpartanEdition {
 
-    private static final boolean
-            java = true, // false for bedrock
-            fullEdition = false; // change this when necessary
+    private static final boolean javaEdition = true;
 
     private static long checkTime = 0L;
     public static final String[] jarNames = new String[]{
@@ -37,48 +35,46 @@ public class SpartanEdition {
             notificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat."
                     + (SpartanBukkit.canAdvertise ? "\nClick §n" + productLink + productID + " §r§cto fix this." : "")
                     + "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Config.settings.getFile().getName() + "' to disable this notification.";
-    private static final boolean javaEdition;
     private static boolean
             notify = false,
-            v_2_0 = false,
-            alternativeVersion;
-
-    static {
-        if (SpartanBukkit.canAdvertise) {
-            javaEdition = java || fullEdition;
-            alternativeVersion = fullEdition;
-        } else { // SpigotMC
-            javaEdition = true;
             alternativeVersion = false;
-        }
-    }
+    private static final boolean[] secondGeneration = new boolean[2];
 
     // Verification
 
     public static void refresh() {
         Runnable runnable = () -> {
             if (SpartanBukkit.canAdvertise && !alternativeVersion) {
-                ResearchEngine.DataType dataType = getOppositeVersion();
+                boolean changed = false;
+                ResearchEngine.DataType current, opposite;
+
+                if (javaEdition) {
+                    current = ResearchEngine.DataType.Java;
+                    opposite = ResearchEngine.DataType.Bedrock;
+                } else {
+                    current = ResearchEngine.DataType.Bedrock;
+                    opposite = ResearchEngine.DataType.Java;
+                }
+
+                secondGeneration[current.ordinal()] = CloudConnections.ownsProduct(
+                        get2_0_ProductID(opposite)
+                );
 
                 if (CloudConnections.ownsProduct(
-                        get2_0_ProductID(dataType)
+                        get1_0_ProductID(opposite)
                 )) {
                     alternativeVersion = true;
-                    v_2_0 = true;
-                    Config.messages.clear();
-                } else if (CloudConnections.ownsProduct(
-                        get1_0_ProductID(dataType)
-                )) {
-                    alternativeVersion = true;
-                    Config.messages.clear();
-                } else if (CloudConnections.ownsProduct(
-                        get2_0_ProductID(getVersion())
-                )) {
-                    v_2_0 = true;
-                    Config.messages.clear();
+                    secondGeneration[opposite.ordinal()] = CloudConnections.ownsProduct(
+                            get2_0_ProductID(opposite)
+                    );
+                    changed = true;
                 }
-                for (Enums.HackType hackType : Enums.HackType.values()) {
-                    hackType.resetCheck();
+                if (changed) {
+                    Config.messages.clear();
+
+                    for (Enums.HackType hackType : Enums.HackType.values()) {
+                        hackType.resetCheck();
+                    }
                 }
             }
         };
@@ -88,16 +84,6 @@ public class SpartanEdition {
         } else {
             runnable.run();
         }
-    }
-
-    // 2.0
-
-    public static boolean is2ndGeneration() {
-        return v_2_0;
-    }
-
-    public static String getGeneration() {
-        return is2ndGeneration() ? "2.0" : "1.0";
     }
 
     // Detections
@@ -151,25 +137,11 @@ public class SpartanEdition {
     }
 
     public static ResearchEngine.DataType getMissingDetection() {
-        return hasDetectionsPurchased(ResearchEngine.DataType.Java) ?
-                (hasDetectionsPurchased(ResearchEngine.DataType.Bedrock) ? null : ResearchEngine.DataType.Bedrock) :
-                ResearchEngine.DataType.Java;
-    }
-
-    public static ResearchEngine.DataType getVersion() {
-        return javaEdition ? ResearchEngine.DataType.Java : ResearchEngine.DataType.Bedrock;
-    }
-
-    public static ResearchEngine.DataType getOppositeVersion() {
-        return javaEdition ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
+        return alternativeVersion ? null :
+                javaEdition ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
     }
 
     // Product
-
-    public static String getProductID(ResearchEngine.DataType dataType) {
-        return is2ndGeneration() ? get2_0_ProductID(dataType) : get1_0_ProductID(dataType);
-    }
-
 
     public static String get1_0_ProductID(ResearchEngine.DataType dataType) {
         switch (dataType) {
@@ -190,25 +162,33 @@ public class SpartanEdition {
     }
 
     public static String getProductName(boolean cloudFeature) {
-        ResearchEngine.DataType missingDetection = getMissingDetection();
+        ResearchEngine.DataType current, opposite;
 
-        if (missingDetection != null) {
-            switch (missingDetection) {
-                case Java:
-                    return cloudFeature ?
-                            getProductID(ResearchEngine.DataType.Bedrock) :
-                            "Spartan " + getGeneration() + ": " + ResearchEngine.DataType.Bedrock + " Edition";
-                case Bedrock:
-                    return cloudFeature ?
-                            getProductID(ResearchEngine.DataType.Java) :
-                            "Spartan " + getGeneration() + ": " + ResearchEngine.DataType.Java + " Edition";
-                default:
-                    break;
-            }
+        if (javaEdition) {
+            current = ResearchEngine.DataType.Java;
+            opposite = ResearchEngine.DataType.Bedrock;
+        } else {
+            current = ResearchEngine.DataType.Bedrock;
+            opposite = ResearchEngine.DataType.Java;
         }
-        return cloudFeature ?
-                getProductID(ResearchEngine.DataType.Java) :
-                "Spartan " + getGeneration() + ": " + ResearchEngine.DataType.Java + " & " + ResearchEngine.DataType.Bedrock + " Edition";
+
+        if (alternativeVersion) {
+            if (secondGeneration[current.ordinal()]) {
+                if (secondGeneration[opposite.ordinal()]) {
+                    return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 2.0: Java & Bedrock Edition";
+                } else {
+                    return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 2.0: " + current + " Edition | Spartan AntiCheat 1.0: " + opposite + " Edition";
+                }
+            } else if (secondGeneration[opposite.ordinal()]) {
+                return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 1.0: " + current + " Edition | Spartan AntiCheat 2.0: " + opposite + " Edition";
+            } else {
+                return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 1.0: Java & Bedrock Edition";
+            }
+        } else if (secondGeneration[current.ordinal()]) {
+            return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 2.0: " + current + " Edition";
+        } else {
+            return cloudFeature ? get1_0_ProductID(current) : "Spartan AntiCheat 1.0: " + current + " Edition";
+        }
     }
 
     // Notifications

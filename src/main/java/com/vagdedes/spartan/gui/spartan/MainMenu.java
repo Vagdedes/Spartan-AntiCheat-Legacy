@@ -34,8 +34,10 @@ import java.util.UUID;
 
 public class MainMenu extends InventoryMenu {
 
+    private static final String name = "§0Spartan AntiCheat | Page ".substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
+
     public MainMenu() {
-        super(getMenuName(), 54, new Permission[]{Permission.MANAGE, Permission.INFO});
+        super(name, 54, new Permission[]{Permission.MANAGE, Permission.INFO});
     }
 
     public static void refresh() {
@@ -44,8 +46,6 @@ public class MainMenu extends InventoryMenu {
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
                 if (!players.isEmpty()) {
-                    String menuName = getMenuName();
-
                     for (SpartanPlayer p : players) {
                         SpartanBukkit.runTask(p, () -> {
                             Player n = p.getPlayer();
@@ -53,7 +53,7 @@ public class MainMenu extends InventoryMenu {
                             if (n != null) {
                                 String title = n.getOpenInventory().getTitle();
 
-                                if (title.startsWith(menuName)) {
+                                if (title.startsWith(name)) {
                                     DiscordMemberCount.ignore();
                                     SpartanMenu.mainMenu.open(p);
                                 }
@@ -71,34 +71,12 @@ public class MainMenu extends InventoryMenu {
         }
     }
 
-    private static String getMenuName() {
-        String name;
-        ResearchEngine.DataType missingDetection = SpartanEdition.getMissingDetection();
-
-        if (missingDetection != null) {
-            switch (missingDetection) {
-                case Java:
-                    name = "Spartan for " + ResearchEngine.DataType.Bedrock;
-                    break;
-                case Bedrock:
-                    name = "Spartan " + ResearchEngine.DataType.Java + " Edition";
-                    break;
-                default:
-                    name = "Spartan AntiCheat";
-                    break;
-            }
-        } else {
-            name = "Spartan AntiCheat";
-        }
-        return ("§0" + name + " | Page ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
-    }
-
     @Override
     public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
         List<String> lore = new ArrayList<>(20);
         UUID uuid = player.uuid;
         int page = PlayerStateLists.getPage(uuid), previousPageSlot = 18, nextPageSlot = 26;
-        setTitle(player, getMenuName() + page);
+        setTitle(player, name + page);
 
         // AntiCheat Updates
         add("§a" + AntiCheatUpdates.name,
@@ -198,7 +176,6 @@ public class MainMenu extends InventoryMenu {
         if (item.equals("Auto Updater")) {
             player.sendInventoryCloseMessage("");
             player.sendMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
-            player.sendMessage("§6Spartan Tutorial§8: §e§nhttps://bit.ly/3Itw7Fd");
             player.sendMessage("");
 
         } else if (item.equals("Compatibilities")) {
@@ -214,7 +191,12 @@ public class MainMenu extends InventoryMenu {
                         player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
                     }
                 } else {
-                    //todo
+                    player.sendInventoryCloseMessage(
+                            "§7You need §aFileGUI §7to access this feature§8:\n§2"
+                                    + (IDs.isBuiltByBit() ? "https://builtbybit.com/resources/13185"
+                                    : IDs.isPolymart() ? "https://polymart.org/resource/984"
+                                    : "https://www.spigotmc.org/resources/73893")
+                    );
                 }
             }
 
