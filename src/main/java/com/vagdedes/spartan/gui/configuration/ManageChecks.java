@@ -71,8 +71,6 @@ public class ManageChecks extends InventoryMenu {
                 setEnable(player, item);
             } else if (clickType == ClickType.RIGHT) {
                 setSilent(player, item);
-            } else if (clickType.isShiftClick()) {
-                manageOptions(player, item);
             }
         }
         return true;
@@ -196,9 +194,6 @@ public class ManageChecks extends InventoryMenu {
         if (silentOption != null) {
             lore.add(silentOption);
         }
-        if (!check.getStoredOptions().isEmpty()) {
-            lore.add("§7Shift click to §emanage options");
-        }
 
         // Separator
 
@@ -225,20 +220,8 @@ public class ManageChecks extends InventoryMenu {
         Check check = Config.getCheckByName(item);
 
         if (check != null) {
-            if (check.isSilent(null)) {
-                check.setSilent(false);
-            } else {
-                check.setSilent(true);
-            }
+            check.setSilent(!check.isSilent(null));
         }
         open(player);
-    }
-
-    private void manageOptions(SpartanPlayer player, String item) {
-        Check check = Config.getCheckByName(item);
-
-        if (check != null) {
-            SpartanMenu.manageOptions.open(player, check.getHackType());
-        }
     }
 }

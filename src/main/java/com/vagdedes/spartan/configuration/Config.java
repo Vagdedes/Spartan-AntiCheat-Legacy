@@ -33,7 +33,13 @@ public class Config {
 
     public static final String
             legacyFileName = "config.yml",
-            fileName = "checks.yml";
+            fileName = "checks.yml",
+            checksFileName = "checks.yml";
+    public static final String[] configs = new String[]{
+            "config.yml", "Config.settings.yml", checksFileName,
+            "compatibility.yml", "messages.yml", "sql.yml"
+    };
+
     private static YamlConfiguration configuration = null;
     private static String construct = null;
     private static boolean legacyFile = false;

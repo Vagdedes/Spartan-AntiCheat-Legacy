@@ -1917,40 +1917,56 @@ public class SpartanPlayer {
         return value == null ? def : value;
     }
 
-    public synchronized Double getNmsDistance() {
-        return nmsDistance.get(nmsDistance.size() - 1);
+    public Double getNmsDistance() {
+        synchronized (nmsDistance) {
+            return nmsDistance.get(nmsDistance.size() - 1);
+        }
     }
 
-    public synchronized Double getPreviousNmsDistance() {
-        int size = nmsDistance.size();
-        return size > 1 ? nmsDistance.get(size - 2) : null;
+    public Double getPreviousNmsDistance() {
+        synchronized (nmsDistance) {
+            int size = nmsDistance.size();
+            return size > 1 ? nmsDistance.get(size - 2) : null;
+        }
     }
 
-    public synchronized Double getNmsHorizontalDistance() {
-        return nmsHorizontalDistance.get(nmsHorizontalDistance.size() - 1);
+    public Double getNmsHorizontalDistance() {
+        synchronized (nmsHorizontalDistance) {
+            return nmsHorizontalDistance.get(nmsHorizontalDistance.size() - 1);
+        }
     }
 
-    public synchronized Double getPreviousNmsHorizontalDistance() {
-        int size = nmsHorizontalDistance.size();
-        return size > 1 ? nmsHorizontalDistance.get(size - 2) : null;
+    public Double getPreviousNmsHorizontalDistance() {
+        synchronized (nmsHorizontalDistance) {
+            int size = nmsHorizontalDistance.size();
+            return size > 1 ? nmsHorizontalDistance.get(size - 2) : null;
+        }
     }
 
-    public synchronized Double getNmsVerticalDistance() {
-        return nmsVerticalDistance.get(nmsVerticalDistance.size() - 1);
+    public Double getNmsVerticalDistance() {
+        synchronized (nmsVerticalDistance) {
+            return nmsVerticalDistance.get(nmsVerticalDistance.size() - 1);
+        }
     }
 
-    public synchronized Double getPreviousNmsVerticalDistance() {
-        int size = nmsVerticalDistance.size();
-        return size > 1 ? nmsVerticalDistance.get(size - 2) : null;
+    public Double getPreviousNmsVerticalDistance() {
+        synchronized (nmsVerticalDistance) {
+            int size = nmsVerticalDistance.size();
+            return size > 1 ? nmsVerticalDistance.get(size - 2) : null;
+        }
     }
 
-    public synchronized Double getNmsBox() {
-        return nmsBox.get(nmsBox.size() - 1);
+    public Double getNmsBox() {
+        synchronized (nmsBox) {
+            return nmsBox.get(nmsBox.size() - 1);
+        }
     }
 
-    public synchronized Double getPreviousNmsBox() {
-        int size = nmsBox.size();
-        return size > 1 ? nmsBox.get(size - 2) : null;
+    public Double getPreviousNmsBox() {
+        synchronized (nmsBox) {
+            int size = nmsBox.size();
+            return size > 1 ? nmsBox.get(size - 2) : null;
+        }
     }
 
     // Direction

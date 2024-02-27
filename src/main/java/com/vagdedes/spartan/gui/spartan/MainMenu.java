@@ -9,7 +9,6 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import com.vagdedes.spartan.handlers.connection.DiscordMemberCount;
@@ -55,7 +54,6 @@ public class MainMenu extends InventoryMenu {
                                 String title = n.getOpenInventory().getTitle();
 
                                 if (title.startsWith(menuName)) {
-                                    SpartanMenu.manageConfiguration.clear();
                                     DiscordMemberCount.ignore();
                                     SpartanMenu.mainMenu.open(p);
                                 }
@@ -148,8 +146,7 @@ public class MainMenu extends InventoryMenu {
         }
         lore.add("");
         lore.add("§7Left click to §amanage checks§7.");
-        lore.add("§7Right click to §emanage configurations§7.");
-        lore.add("§7Shift click to §creload the plugin's memory contents§7.");
+        lore.add("§7Right click to §creload the plugin's memory contents§7.");
         add("§aConfiguration", lore, new ItemStack(MaterialUtils.get("crafting_table")), 50);
 
         // Compatibilities
@@ -215,10 +212,10 @@ public class MainMenu extends InventoryMenu {
                     if (n != null && n.isOnline() && n.hasPermission(FileGUI.permission)) {
                         FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
                     } else {
-                        SpartanMenu.manageConfiguration.openChild(player, ManageConfiguration.compatibilityFileName);
+                        player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
                     }
                 } else {
-                    SpartanMenu.manageConfiguration.openChild(player, ManageConfiguration.compatibilityFileName);
+                    SpartanMenu.manageConfiguration.openChild(player, Config.compatibilityFileName);
                 }
             }
 
@@ -229,8 +226,6 @@ public class MainMenu extends InventoryMenu {
                 if (clickType == ClickType.LEFT) {
                     SpartanMenu.manageChecks.open(player);
                 } else if (clickType == ClickType.RIGHT) {
-                    SpartanMenu.manageConfiguration.open(player);
-                } else if (clickType.isShiftClick()) {
                     if (!Permissions.has(player, Permission.RELOAD)) {
                         player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
                         return true;

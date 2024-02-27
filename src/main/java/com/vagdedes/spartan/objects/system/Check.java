@@ -355,7 +355,7 @@ public class Check {
             boolean hasOldOption = oldOptionValue instanceof Boolean;
 
             if (hasOldOption) {
-                setOption("enabled", null, false);
+                setOption("enabled", null);
             }
 
             for (ResearchEngine.DataType dataType : dataTypes) {
@@ -583,7 +583,7 @@ public class Check {
                             player.getViolations(hackType).reset();
                         }
                     }
-                    setOption("enabled." + type.lowerCase, b, false);
+                    setOption("enabled." + type.lowerCase, b);
                 }
             }
         }
@@ -640,16 +640,12 @@ public class Check {
             }
         }
         this.name = name;
-        setOption("name", name, false);
+        setOption("name", name);
     }
 
     // Separator
 
-    public boolean setOption(String option, Object value) {
-        return setOption(option, value, true);
-    }
-
-    private boolean setOption(String option, Object value, boolean production) {
+    private boolean setOption(String option, Object value) {
         File file = Config.getFile();
 
         try {
@@ -666,11 +662,7 @@ public class Check {
                         if (Config.isLegacy()) {
                             Register.plugin.reloadConfig();
                         }
-                        if (production) {
-                            this.hackType.resetCheck();
-                        } else {
-                            options.remove(key); // Remove instead of modifying to be on demand and have the chance to catch changes by the user
-                        }
+                        options.remove(key); // Remove instead of modifying to be on demand and have the chance to catch changes by the user
                     } catch (Exception ex) {
                         AwarenessNotifications.forcefullySend("Failed to store '" + key + "' option in '" + file.getName() + "' file.");
                         ex.printStackTrace();
@@ -907,7 +899,7 @@ public class Check {
                 }
             }
             this.silent = b;
-            setOption("silent", b, false);
+            setOption("silent", b);
         }
     }
 
@@ -935,16 +927,6 @@ public class Check {
 
     public boolean canPunish() {
         return canPunish;
-    }
-
-    // Separator
-
-    public boolean hasMinimumDefaultCancelViolation() {
-        return cancelViolation == minimumDefaultCancelViolation;
-    }
-
-    public boolean hasMaximumDefaultCancelViolation() {
-        return cancelViolation == maximumDefaultCancelViolation;
     }
 
     // Separator

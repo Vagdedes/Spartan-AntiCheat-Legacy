@@ -9,7 +9,6 @@ import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
-import com.vagdedes.spartan.gui.configuration.ManageConfiguration;
 import com.vagdedes.spartan.handlers.connection.DiscordMemberCount;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
@@ -397,14 +396,14 @@ public class CloudConnections {
                 softwareInformation.append("Configuration:").append(newLine);
                 String dataFolder = Register.plugin.getDataFolder() + "/";
 
-                for (String fileName : ManageConfiguration.configs) {
+                for (String fileName : Config.configs) {
                     softwareInformation.append(fileName).append(":").append(newLine);
                     File file = new File(dataFolder + fileName);
 
                     if (file.exists() && file.isFile()
                             && !fileName.equals(Config.messages.getFile().getName())) {
                         switch (fileName) {
-                            case ManageConfiguration.checksFileName:
+                            case Config.checksFileName:
                                 Collection<Map.Entry<String, Object>> options = check.getOptions();
 
                                 if (!options.isEmpty()) {
