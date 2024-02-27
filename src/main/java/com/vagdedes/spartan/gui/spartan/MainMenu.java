@@ -138,11 +138,10 @@ public class MainMenu extends InventoryMenu {
         lore.add("§7Research Engine§8: §a" + ResearchEngine.getProgress().logs + " Logs" + (ResearchEngine.isFull() ? " §c(Maxed Out)" : ""));
 
         if (SpartanBukkit.canAdvertise) {
-            boolean preview = IDs.isPreview();
             lore.add("§7Detections Available§8: "
-                    + (!preview && SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Java) ? "§a" : "§c") + ResearchEngine.DataType.Java
+                    + (SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Java) ? "§a" : "§c") + ResearchEngine.DataType.Java
                     + " §8/ "
-                    + (!preview && SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Bedrock) ? "§a" : "§c") + ResearchEngine.DataType.Bedrock);
+                    + (SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Bedrock) ? "§a" : "§c") + ResearchEngine.DataType.Bedrock);
         }
         lore.add("");
         lore.add("§7Left click to §amanage checks§7.");
@@ -215,7 +214,7 @@ public class MainMenu extends InventoryMenu {
                         player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
                     }
                 } else {
-                    SpartanMenu.manageConfiguration.openChild(player, Config.compatibilityFileName);
+                    //todo
                 }
             }
 

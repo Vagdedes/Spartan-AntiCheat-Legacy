@@ -332,9 +332,6 @@ public class CloudConnections {
             String checkName = check.getName();
 
             if (check.toString().equals(columnInformation) || checkName.equalsIgnoreCase(columnInformation)) {
-                if (!local && !check.supportsLiveEvidence()) {
-                    return "This check does not support live evidence, therefore we cannot accept a report about it.";
-                }
                 ViolationHistory violationHistory = ResearchEngine.getViolationHistory(hackType, ResearchEngine.DataType.Universal, ResearchEngine.getLegitimatePlayers());
 
                 if (violationHistory == null) {
@@ -355,7 +352,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Preventions: ").append(!check.isSilent(null))
                         .append(newLine);
-                softwareInformation.append("Punishments: ").append(check.canPunish())
+                softwareInformation.append("Punishments: ").append(check.canPunish)
                         .append(newLine);
                 softwareInformation.append("Cancel Violation: ").append(CancelViolation.get(hackType, ResearchEngine.DataType.Universal))
                         .append(newLine);

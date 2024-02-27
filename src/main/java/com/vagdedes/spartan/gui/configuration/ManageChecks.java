@@ -82,7 +82,6 @@ public class ManageChecks extends InventoryMenu {
                 silent = check.isSilent(null),
                 bypassing = Permissions.isBypassing(player, hackType);
         String[] disabledDetections = CloudFeature.getShownDisabledDetections(hackType);
-        int cancelViolation = check.getCancelViolation();
         int problematicDetections = check.getProblematicDetections();
 
         String enabledOption;
@@ -90,7 +89,7 @@ public class ManageChecks extends InventoryMenu {
         String colour, secondColour;
         ItemStack item;
 
-        if (check.supportsSilent()) {
+        if (check.supportsSilent) {
             if (silent) {
                 silentOption = "§7Right click to §cdisable §7silent checking.";
             } else {
@@ -136,7 +135,7 @@ public class ManageChecks extends InventoryMenu {
         lore.add("");
 
         for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
-            lore.add("§7§l" + dataType.toString() + " §r§7Cancel Violation§8:§c " + Math.max(cancelViolation, CancelViolation.get(hackType, dataType)));
+            lore.add("§7§l" + dataType.toString() + " §r§7Cancel Violation§8:§c " + CancelViolation.get(hackType, dataType));
         }
         if (problematicDetections > 0) {
             lore.add("§7Problematic Detections§8: " + problematicDetections);
@@ -146,7 +145,7 @@ public class ManageChecks extends InventoryMenu {
         lore.add("");
         lore.add((enabled ? "§a" : "§c") + "Enabled §8/ "
                 + (silent ? "§a" : "§c") + "Silent §8/ "
-                + (check.canPunish() ? "§a" : "§c") + "Punishments §8/ "
+                + (check.canPunish ? "§a" : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");
 
         if (Config.isLegacy()) {
@@ -200,7 +199,7 @@ public class ManageChecks extends InventoryMenu {
         if (enabled && silent) {
             item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         }
-        add(colour + check.getName() + " " + secondColour + check.getCheckType().toString() + " Check", lore, item, -1);
+        add(colour + check.getName() + " " + secondColour + check.type.toString() + " Check", lore, item, -1);
     }
 
     private void setEnable(SpartanPlayer player, String item) {

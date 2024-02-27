@@ -319,7 +319,6 @@ public class SpartanPlayer {
                             if (TPS.getTick(p) <= 100
                                     || !MaximumCheckedPlayers.isChecked(p.uuid)
                                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && p.getGameMode() == GameMode.SPECTATOR
-                                    || IDs.isPreview()
                                     || p.getCancellableCompatibility() != null) {
                                 p.runChecks[0] = false;
                                 p.runChecks[1] = false;

@@ -145,7 +145,7 @@ public class PlayerEvidence {
             } else {
                 Check check = hackType.getCheck();
 
-                if (check.supportsLiveEvidence()) {
+                if (check.supportsLiveEvidence) {
                     int violationCount = player.getViolations(hackType).getLevel()
                             - CancelViolation.get(hackType, profile.getDataType())
                             - AlgebraUtils.integerCeil(Latency.getDelay(player));

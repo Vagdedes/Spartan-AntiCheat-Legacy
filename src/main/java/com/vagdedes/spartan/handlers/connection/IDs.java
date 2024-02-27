@@ -18,7 +18,6 @@ public class IDs {
 
     public static final boolean
             hasUserIDByDefault = !user.startsWith("%%__");
-    static boolean preview = !Piracy.enabled && !hasUserIDByDefault;
 
     private static int platform = 0;
 
@@ -30,7 +29,6 @@ public class IDs {
 
     static void setUserID(int id) {
         localID = Integer.toString(id);
-        preview = false;
         Config.refreshVariables(false);
     }
 
@@ -68,10 +66,6 @@ public class IDs {
 
     public static boolean isPolymart() {
         return platform == 3 || "%%__POLYMART__%%".length() == 1;
-    }
-
-    public static boolean isPreview() {
-        return preview && Piracy.isSupplied();
     }
 
     public static boolean isSpigotMC(boolean dismissOthers) {

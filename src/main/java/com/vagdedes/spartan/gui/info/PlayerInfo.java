@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
-import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.profiling.MiningHistory;
@@ -139,7 +138,7 @@ public class PlayerInfo extends InventoryMenu {
 
         if (isOnline) {
             for (HackType hackType : hackTypes) {
-                if (hackType.getCheck().getCheckType() == checkType) {
+                if (hackType.getCheck().type == checkType) {
                     violations += player.getViolations(hackType).getLevel();
                 }
             }
@@ -162,7 +161,7 @@ public class PlayerInfo extends InventoryMenu {
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
 
         for (HackType hackType : hackTypes) {
-            if (hackType.getCheck().getCheckType() == checkType) {
+            if (hackType.getCheck().type == checkType) {
                 violations = isOnline ? player.getViolations(hackType).getLevel() : 0;
                 boolean hasViolations = violations > 0,
                         hasData = playerProfile.evidence.has(hackType);
@@ -234,9 +233,6 @@ public class PlayerInfo extends InventoryMenu {
                                      boolean detectionMissing,
                                      boolean detectionUnsupported,
                                      boolean returnNull) {
-        if (IDs.isPreview()) {
-            return "Preview Mode";
-        }
         if (!hasPlayer) {
             return returnNull ? null : "Offline";
         }

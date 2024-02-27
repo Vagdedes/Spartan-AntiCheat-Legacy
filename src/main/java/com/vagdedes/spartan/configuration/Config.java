@@ -154,20 +154,8 @@ public class Config {
 
         // Check Cache
         if (clearChecksCache) {
-            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-            if (!players.isEmpty()) {
-                for (HackType hackType : Enums.HackType.values()) {
-                    hackType.resetCheck();
-
-                    for (SpartanPlayer p : players) {
-                        p.getViolations(hackType).reset();
-                    }
-                }
-            } else {
-                for (HackType hackType : Enums.HackType.values()) {
-                    hackType.resetCheck();
-                }
+            for (HackType hackType : Enums.HackType.values()) {
+                hackType.resetCheck();
             }
         }
     }
@@ -219,7 +207,6 @@ public class Config {
         Permissions.clear();
 
         // Features
-        SpartanMenu.manageConfiguration.clear();
         AwarenessNotifications.refresh();
 
         // Objects

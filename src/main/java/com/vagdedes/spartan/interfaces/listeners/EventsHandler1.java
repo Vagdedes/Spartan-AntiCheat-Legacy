@@ -73,7 +73,6 @@ public class EventsHandler1 implements Listener {
         PlayerLimitPerIP.remove(p);
 
         // Features
-        SpartanMenu.manageConfiguration.save(p, true);
         ReconnectCooldown.remove(n);
         ChatProtection.remove(p);
 

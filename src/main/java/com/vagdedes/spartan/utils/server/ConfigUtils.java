@@ -97,7 +97,7 @@ public class ConfigUtils {
                 message = replace(message, "{detection}", check.getName());
                 message = replace(message, "{detection:real}", hackType.toString());
             }
-            message = replace(message, "{punish:detection}", String.valueOf(check.canPunish()));
+            message = replace(message, "{punish:detection}", String.valueOf(check.canPunish));
         }
         return message;
     }

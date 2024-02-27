@@ -263,7 +263,11 @@ public class CloudFeature {
                             }
 
                             if (changed) {
-                                SpartanMenu.manageConfiguration.reload(true);
+                                Config.settings.clear();
+                                Config.messages.clear();
+                                Config.sql.refreshConfiguration();
+                                Config.compatibility.clear();
+                                Config.refreshVariables(true);
                             }
                         }
                     } catch (Exception e) {

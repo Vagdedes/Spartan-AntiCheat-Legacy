@@ -48,9 +48,6 @@ public class EventsHandler8 implements Listener {
             }
             // Objects
             p.setInventory(n.getInventory(), null);
-
-            // Features
-            SpartanMenu.manageConfiguration.save(p, false);
         }
     }
 

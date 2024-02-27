@@ -21,7 +21,7 @@ public class NotifyViolation {
             } else {
                 double multiplier = Math.max(playerCount / 25.0, 1.0);
                 int defaultDivisor = Math.min(
-                        AlgebraUtils.integerRound(hackType.getCheck().getCancelViolation() * multiplier),
+                        AlgebraUtils.integerRound(hackType.getCheck().cancelViolation * multiplier),
                         Check.maximumDefaultCancelViolation
                 );
 

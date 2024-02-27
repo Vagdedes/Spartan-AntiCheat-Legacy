@@ -86,7 +86,7 @@ public class LiveViolation {
     // Separator
 
     void queue(HackPrevention hackPrevention, Check check) {
-        if (queue.size() < check.getCancelViolation()) {
+        if (queue.size() < check.cancelViolation) {
             synchronized (queue) {
                 queue.putIfAbsent(hackPrevention.information.hashCode(), hackPrevention);
             }
@@ -399,7 +399,7 @@ public class LiveViolation {
     private void performPunishments(int violation) {
         Check check = hackType.getCheck();
 
-        if (check.canPunish()) {
+        if (check.canPunish) {
             boolean legacy = Config.isLegacy();
             Collection<String> commands = legacy
                     ? check.getLegacyCommands(violation)
@@ -437,7 +437,7 @@ public class LiveViolation {
                         }
                     } else {
                         Collection<Enums.HackType> detectedHacks = player.getProfile().evidence.calculate(player, hackType);
-                        detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish());
+                        detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish);
 
                         if (!detectedHacks.isEmpty()) {
                             boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
@@ -502,7 +502,7 @@ public class LiveViolation {
             } else if (AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-no-punishment-commands")) {
                 AwarenessNotifications.forcefullySend("Just a reminder that you have set no punishment commands for the '" + hackType + "' check.");
             }
-        } else if (check.canPunish() && AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-disabled-punishments")) {
+        } else if (check.canPunish && AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-disabled-punishments")) {
             AwarenessNotifications.forcefullySend("Just a reminder that punishments have been disabled for the '" + hackType + "' check.");
         }
     }
@@ -527,7 +527,7 @@ public class LiveViolation {
             }
             if (suspectedOrHacker
                     || level % cancelViolation == 0
-                    || !hackType.getCheck().supportsLiveEvidence()) {
+                    || !hackType.getCheck().supportsLiveEvidence) {
                 CrossServerInformation.queueNotification(message, true);
             }
             if (log) {

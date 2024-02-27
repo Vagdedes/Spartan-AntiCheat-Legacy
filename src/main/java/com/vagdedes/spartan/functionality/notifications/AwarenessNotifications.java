@@ -25,13 +25,10 @@ public class AwarenessNotifications {
     }
 
     public static boolean areEnabled() {
-        return Config.settings.getBoolean("Notifications.awareness_notifications") && !IDs.isPreview();
+        return Config.settings.getBoolean("Notifications.awareness_notifications");
     }
 
     public static boolean canSend(UUID uuid, String key, int secondsCooldown) {
-        if (IDs.isPreview()) {
-            return false;
-        }
         boolean hasCooldown = secondsCooldown != Integer.MAX_VALUE;
         Map<String, Long> childMap = map.get(uuid);
         boolean send;
