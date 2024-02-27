@@ -22,9 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class BlockReach extends CheckExecutor {
 
     private static final HackType check = HackType.BlockReach;
-    private static final double
-            minimumLimit = 6.0,
-            extraMinimumLimit = 10.0;
+    private static final double minimumLimit = 6.0;
 
     public BlockReach(SpartanPlayer player) {
         super(check, player);

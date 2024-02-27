@@ -75,7 +75,7 @@ public class IrregularMovements extends CheckExecutor {
                 horizontal = player.getNmsHorizontalDistance(),
                 oldHorizontal = player.getPreviousNmsHorizontalDistance(),
                 box = player.getNmsBox(),
-                oldBox = player.getOld_NmsBox();
+                oldBox = player.getPreviousNmsBox();
 
         if (vertical == null
                 || oldVertical == null

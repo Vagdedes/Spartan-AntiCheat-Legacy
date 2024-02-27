@@ -89,7 +89,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
         Double vertical = player.getNmsVerticalDistance(),
                 oldVertical = player.getPreviousNmsVerticalDistance(),
                 box = player.getNmsBox(),
-                oldBox = player.getOld_NmsBox();
+                oldBox = player.getPreviousNmsBox();
 
         if (vertical == null
                 || oldVertical == null

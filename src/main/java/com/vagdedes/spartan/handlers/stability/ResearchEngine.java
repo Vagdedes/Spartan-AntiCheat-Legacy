@@ -25,12 +25,10 @@ import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.sql.ResultSet;
@@ -63,8 +61,6 @@ public class ResearchEngine {
 
     private static final Map<String, PlayerProfile> playerProfiles
             = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
-    private static final Map<String, ItemStack> skulls
-            = Collections.synchronizedMap(new LinkedHashMap<>(logRequirement));
     private static final Map<Enums.MiningOre, Double> averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
     private static final double[] defaultAverageMining = new double[Enums.MiningOre.values().length];
 
@@ -156,14 +152,6 @@ public class ResearchEngine {
 
     // Separator
 
-    public static ItemStack getSkull(String name) {
-        synchronized (skulls) {
-            return skulls.getOrDefault(name, InventoryUtils.getHead());
-        }
-    }
-
-    // Separator
-
     public static void refresh(boolean message, boolean enabledPlugin) {
         Runnable runnable = () -> {
             // Complete Storage
@@ -181,7 +169,6 @@ public class ResearchEngine {
                 }
             } else {
                 isFull = false;
-                skulls.clear();
                 CloudFeature.clear(true);
                 CancelViolation.clear();
                 ViolationStatistics.clear();

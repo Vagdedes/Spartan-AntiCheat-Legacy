@@ -173,7 +173,7 @@ public class Speed extends CheckExecutor {
                 oldVer = this.player.getPreviousNmsVerticalDistance(),
                 oldHor = this.player.getPreviousNmsHorizontalDistance(),
                 box = this.player.getNmsBox(),
-                oldBox = this.player.getOld_NmsBox();
+                oldBox = this.player.getPreviousNmsBox();
 
         if (ver == null
                 || oldVer == null

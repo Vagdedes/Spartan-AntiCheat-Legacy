@@ -34,7 +34,7 @@ public class IrregularMovementsLevitation extends DetectionExecutor {
         if (hackType.getCheck().getBooleanOption("check_levitation", true)) {
             Double vertical = player.getNmsVerticalDistance(),
                     box = player.getNmsBox(),
-                    oldBox = player.getOld_NmsBox();
+                    oldBox = player.getPreviousNmsBox();
 
             if (vertical == null
                     || box == null

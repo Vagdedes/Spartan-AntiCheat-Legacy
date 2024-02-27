@@ -263,7 +263,7 @@ public class SpartanEdition {
 
                                 if (!playerProfiles.isEmpty()) {
                                     for (PlayerProfile profile : playerProfiles) {
-                                        if (bedrockIsMissingDetection == profile.bedrockPlayer) {
+                                        if (bedrockIsMissingDetection == profile.isBedrockPlayer()) {
                                             notify = true;
                                             sendNotification(player, missingDetection);
                                             return;

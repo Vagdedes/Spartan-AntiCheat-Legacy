@@ -28,7 +28,7 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
             Double vertical = player.getNmsVerticalDistance(),
                     horizontal = player.getNmsHorizontalDistance(),
                     box = player.getNmsBox(),
-                    oldBox = player.getOld_NmsBox();
+                    oldBox = player.getPreviousNmsBox();
 
             if (vertical == null
                     || horizontal == null

@@ -8,6 +8,7 @@ import com.vagdedes.spartan.utils.server.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -88,41 +89,35 @@ public class PlayerProfile {
 
     // Separator
 
-    public UUID getUniqueId() {
-        if (uuid == null) {
-            SpartanPlayer player = getSpartanPlayer();
-
-            if (player != null) {
-                this.uuid = player.uuid;
-
-                if (!bedrockPlayerCheck && BedrockCompatibility.isPlayer(uuid, name)) {
-                    this.bedrockPlayerCheck = true;
-                    this.bedrockPlayer = true;
-                }
-            } else {
-                OfflinePlayer offlinePlayer = getOfflinePlayer();
-
-                if (offlinePlayer != null) {
-                    this.uuid = offlinePlayer.getUniqueId();
-
-                    if (!bedrockPlayerCheck && BedrockCompatibility.isPlayer(uuid, name)) {
-                        this.bedrockPlayerCheck = true;
-                        this.bedrockPlayer = true;
-                    }
-                }
-            }
-        }
-        return uuid;
-    }
-
     public String getName() {
         return name;
     }
 
-    public ItemStack getSkull() {
+    public ItemStack getSkull(boolean force) {
         if (skull == null) {
-            OfflinePlayer player = getOfflinePlayer();
-            this.skull = player == null ? InventoryUtils.getHead() : InventoryUtils.getSkull(player);
+            if (force) {
+                OfflinePlayer player = getOfflinePlayer();
+
+                if (player == null) {
+                    return InventoryUtils.getHead();
+                } else {
+                    this.skull = InventoryUtils.getSkull(player);
+                }
+            } else {
+                SpartanPlayer spartanPlayer = getSpartanPlayer();
+
+                if (spartanPlayer == null) {
+                    return InventoryUtils.getHead();
+                } else {
+                    Player player = spartanPlayer.getPlayer();
+
+                    if (player == null) {
+                        return InventoryUtils.getHead();
+                    } else {
+                        this.skull = InventoryUtils.getSkull(player);
+                    }
+                }
+            }
         }
         return skull;
     }
@@ -150,10 +145,17 @@ public class PlayerProfile {
     }
 
     public OfflinePlayer getOfflinePlayer() {
-        if (offlinePlayer == null && name != null) {
+        if (offlinePlayer == null) {
             if (this.uuid == null) {
-                this.offlinePlayer = Bukkit.getOfflinePlayer(name);
-                this.uuid = offlinePlayer.getUniqueId();
+                SpartanPlayer player = getSpartanPlayer();
+
+                if (player != null) {
+                    this.uuid = player.uuid;
+                    this.offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                } else {
+                    this.offlinePlayer = Bukkit.getOfflinePlayer(name);
+                    this.uuid = offlinePlayer.getUniqueId();
+                }
             } else {
                 this.offlinePlayer = Bukkit.getOfflinePlayer(uuid);
             }
@@ -167,13 +169,9 @@ public class PlayerProfile {
     }
 
     public SpartanPlayer getSpartanPlayer() {
-        return uuid != null ? SpartanBukkit.getPlayer(uuid) :
-                name != null ? SpartanBukkit.getPlayer(name) :
-                        null;
-    }
-
-    public boolean isOnline() {
-        return getSpartanPlayer() != null;
+        return uuid != null
+                ? SpartanBukkit.getPlayer(uuid)
+                : SpartanBukkit.getPlayer(name);
     }
 
     // Separator

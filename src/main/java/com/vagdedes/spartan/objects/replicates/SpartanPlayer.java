@@ -128,7 +128,7 @@ public class SpartanPlayer {
 
     // Custom
 
-    private final Map<Long, Double>
+    private final List<Double>
             nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
             nmsBox;
     private double
@@ -399,10 +399,10 @@ public class SpartanPlayer {
         this.customDistance = 0.0;
         this.customHorizontalDistance = 0.0;
         this.customVerticalDistance = 0.0;
-        this.nmsDistance = new LinkedHashMap<>();
-        this.nmsHorizontalDistance = new LinkedHashMap<>();
-        this.nmsVerticalDistance = new LinkedHashMap<>();
-        this.nmsBox = new LinkedHashMap<>();
+        this.nmsDistance = Collections.synchronizedList(new LinkedList<>());
+        this.nmsHorizontalDistance = Collections.synchronizedList(new LinkedList<>());
+        this.nmsVerticalDistance = Collections.synchronizedList(new LinkedList<>());
+        this.nmsBox = Collections.synchronizedList(new LinkedList<>());
         this.lastFall = 0L;
         this.lastOffSprint = 0L;
         this.lastJump = 0L;
@@ -1892,34 +1892,25 @@ public class SpartanPlayer {
         return customVerticalDistance;
     }
 
-    private void clearNmsDistance(Map<Long, Double> map) {
-        int size = map.size();
-
-        if (size > 2) {
-            size = size - 2;
-            Iterator<Double> iterator = map.values().iterator();
-
-            while (size > 0 && iterator.hasNext()) {
-                size--;
-                iterator.next();
-                iterator.remove();
-            }
-        }
-    }
-
     public synchronized void setNmsDistance(double distance,
                                             double horizontal,
                                             double vertical,
                                             double box) {
-        long tick = TPS.getTick(this);
-        this.nmsDistance.put(tick, distance);
-        this.nmsHorizontalDistance.put(tick, horizontal);
-        this.nmsVerticalDistance.put(tick, vertical);
-        this.nmsBox.put(tick, box);
-        clearNmsDistance(nmsDistance);
-        clearNmsDistance(nmsHorizontalDistance);
-        clearNmsDistance(nmsVerticalDistance);
-        clearNmsDistance(nmsBox);
+        this.nmsDistance.add(distance);
+        this.nmsHorizontalDistance.add(horizontal);
+        this.nmsVerticalDistance.add(vertical);
+        this.nmsBox.add(box);
+
+        for (List<Double> list : new List[]{
+                nmsDistance,
+                nmsHorizontalDistance,
+                nmsVerticalDistance,
+                nmsBox
+        }) {
+            if (list.size() > 2) {
+                list.remove(0);
+            }
+        }
     }
 
     public double getValueOrDefault(Double value, double def) {
@@ -1927,35 +1918,39 @@ public class SpartanPlayer {
     }
 
     public synchronized Double getNmsDistance() {
-        return nmsDistance.get(TPS.getTick(this));
+        return nmsDistance.get(nmsDistance.size() - 1);
     }
 
     public synchronized Double getPreviousNmsDistance() {
-        return nmsDistance.get(TPS.getTick(this) - 1L);
+        int size = nmsDistance.size();
+        return size > 1 ? nmsDistance.get(size - 2) : null;
     }
 
     public synchronized Double getNmsHorizontalDistance() {
-        return nmsHorizontalDistance.get(TPS.getTick(this));
+        return nmsHorizontalDistance.get(nmsHorizontalDistance.size() - 1);
     }
 
     public synchronized Double getPreviousNmsHorizontalDistance() {
-        return nmsHorizontalDistance.get(TPS.getTick(this) - 1L);
+        int size = nmsHorizontalDistance.size();
+        return size > 1 ? nmsHorizontalDistance.get(size - 2) : null;
     }
 
     public synchronized Double getNmsVerticalDistance() {
-        return nmsVerticalDistance.get(TPS.getTick(this));
+        return nmsVerticalDistance.get(nmsVerticalDistance.size() - 1);
     }
 
     public synchronized Double getPreviousNmsVerticalDistance() {
-        return nmsVerticalDistance.get(TPS.getTick(this) - 1L);
+        int size = nmsVerticalDistance.size();
+        return size > 1 ? nmsVerticalDistance.get(size - 2) : null;
     }
 
     public synchronized Double getNmsBox() {
-        return nmsBox.get(TPS.getTick(this));
+        return nmsBox.get(nmsBox.size() - 1);
     }
 
-    public synchronized Double getOld_NmsBox() {
-        return nmsBox.get(TPS.getTick(this) - 1L);
+    public synchronized Double getPreviousNmsBox() {
+        int size = nmsBox.size();
+        return size > 1 ? nmsBox.get(size - 2) : null;
     }
 
     // Direction
