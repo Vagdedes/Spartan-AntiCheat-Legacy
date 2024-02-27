@@ -29,7 +29,7 @@ public class Piracy implements Listener {
     private static final int
             two = 2,
             nameLength = name.length();
-    public static double version = -((5 * ((((nameLength * (nameLength / two)) + Math.pow(two, two)) * two) * two)) + (10 * 3) + 2.1);
+    public static double version = -((5 * ((((nameLength * (nameLength / two)) + Math.pow(two, two)) * two) * two)) + (10 * 3) + 2.2);
 
     static {
         if (!enabled) {
