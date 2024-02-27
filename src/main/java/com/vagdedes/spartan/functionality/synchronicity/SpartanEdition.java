@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SpartanEdition {
 
-    private static final boolean javaEdition = true;
+    private static final ResearchEngine.DataType dataType = ResearchEngine.DataType.Java;
 
     private static long checkTime = 0L;
     public static final String[] jarNames = new String[]{
@@ -46,20 +46,13 @@ public class SpartanEdition {
         Runnable runnable = () -> {
             if (SpartanBukkit.canAdvertise && !alternativeVersion) {
                 boolean changed = false;
-                ResearchEngine.DataType current, opposite;
-
-                if (javaEdition) {
-                    current = ResearchEngine.DataType.Java;
-                    opposite = ResearchEngine.DataType.Bedrock;
-                } else {
-                    current = ResearchEngine.DataType.Bedrock;
-                    opposite = ResearchEngine.DataType.Java;
-                }
+                ResearchEngine.DataType opposite = dataType == ResearchEngine.DataType.Java
+                        ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
 
                 if (CloudConnections.ownsProduct(
-                        get2_0_ProductID(current)
+                        get2_0_ProductID(dataType)
                 )) {
-                    secondGeneration[current.ordinal()] = true;
+                    secondGeneration[dataType.ordinal()] = true;
                     changed = true;
                 }
 
@@ -133,19 +126,14 @@ public class SpartanEdition {
     }
 
     public static boolean hasDetectionsPurchased(ResearchEngine.DataType dataType) {
-        switch (dataType) {
-            case Java:
-                return javaEdition || alternativeVersion;
-            case Bedrock:
-                return !javaEdition || alternativeVersion;
-            default:
-                return false;
-        }
+        return SpartanEdition.dataType == dataType || alternativeVersion;
     }
 
     public static ResearchEngine.DataType getMissingDetection() {
         return alternativeVersion ? null :
-                javaEdition ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
+                dataType == ResearchEngine.DataType.Java
+                        ? ResearchEngine.DataType.Bedrock
+                        : ResearchEngine.DataType.Java;
     }
 
     // Product
@@ -169,32 +157,25 @@ public class SpartanEdition {
     }
 
     public static String getProductName(boolean cloudFeature) {
-        ResearchEngine.DataType current, opposite;
-
-        if (javaEdition) {
-            current = ResearchEngine.DataType.Java;
-            opposite = ResearchEngine.DataType.Bedrock;
-        } else {
-            current = ResearchEngine.DataType.Bedrock;
-            opposite = ResearchEngine.DataType.Java;
-        }
+        ResearchEngine.DataType opposite = dataType == ResearchEngine.DataType.Java
+                ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
 
         if (alternativeVersion) {
-            if (secondGeneration[current.ordinal()]) {
+            if (secondGeneration[dataType.ordinal()]) {
                 if (secondGeneration[opposite.ordinal()]) {
-                    return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 2.0: Java & Bedrock Edition";
+                    return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: Java & Bedrock Edition";
                 } else {
-                    return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 2.0: " + current + " Edition | Spartan AntiCheat 1.0: " + opposite + " Edition";
+                    return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: " + dataType + " Edition | Spartan AntiCheat 1.0: " + opposite + " Edition";
                 }
             } else if (secondGeneration[opposite.ordinal()]) {
-                return cloudFeature ? get2_0_ProductID(opposite) : "Spartan AntiCheat 1.0: " + current + " Edition | Spartan AntiCheat 2.0: " + opposite + " Edition";
+                return cloudFeature ? get2_0_ProductID(opposite) : "Spartan AntiCheat 1.0: " + dataType + " Edition | Spartan AntiCheat 2.0: " + opposite + " Edition";
             } else {
-                return cloudFeature ? get1_0_ProductID(current) : "Spartan AntiCheat 1.0: Java & Bedrock Edition";
+                return cloudFeature ? get1_0_ProductID(dataType) : "Spartan AntiCheat 1.0: Java & Bedrock Edition";
             }
-        } else if (secondGeneration[current.ordinal()]) {
-            return cloudFeature ? get2_0_ProductID(current) : "Spartan AntiCheat 2.0: " + current + " Edition";
+        } else if (secondGeneration[dataType.ordinal()]) {
+            return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: " + dataType + " Edition";
         } else {
-            return cloudFeature ? get1_0_ProductID(current) : "Spartan AntiCheat 1.0: " + current + " Edition";
+            return cloudFeature ? get1_0_ProductID(dataType) : "Spartan AntiCheat 1.0: " + dataType + " Edition";
         }
     }
 

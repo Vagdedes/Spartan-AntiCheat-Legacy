@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.AutoUpdater;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;

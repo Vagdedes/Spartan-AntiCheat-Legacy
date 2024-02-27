@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.interfaces.listeners;
 
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;

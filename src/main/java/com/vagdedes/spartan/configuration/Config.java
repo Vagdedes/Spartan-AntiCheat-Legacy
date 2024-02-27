@@ -6,7 +6,6 @@ import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.Cache;
@@ -15,7 +14,6 @@ import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
-import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.api.API;
@@ -27,7 +25,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.List;
 
 public class Config {
 

@@ -11,7 +11,6 @@ import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.objects.data.Handlers;

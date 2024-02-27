@@ -6,7 +6,6 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.configuration.Settings;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
