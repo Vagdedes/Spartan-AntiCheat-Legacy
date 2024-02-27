@@ -1918,7 +1918,8 @@ public class SpartanPlayer {
 
     public Double getNmsDistance() {
         synchronized (nmsDistance) {
-            return nmsDistance.get(nmsDistance.size() - 1);
+            int size = nmsDistance.size();
+            return size > 0 ? nmsDistance.get(size - 1) : null;
         }
     }
 
@@ -1931,7 +1932,8 @@ public class SpartanPlayer {
 
     public Double getNmsHorizontalDistance() {
         synchronized (nmsHorizontalDistance) {
-            return nmsHorizontalDistance.get(nmsHorizontalDistance.size() - 1);
+            int size = nmsHorizontalDistance.size();
+            return size > 0 ? nmsHorizontalDistance.get(size - 1) : null;
         }
     }
 
@@ -1944,7 +1946,8 @@ public class SpartanPlayer {
 
     public Double getNmsVerticalDistance() {
         synchronized (nmsVerticalDistance) {
-            return nmsVerticalDistance.get(nmsVerticalDistance.size() - 1);
+            int size = nmsVerticalDistance.size();
+            return size > 0 ? nmsVerticalDistance.get(size - 1) : null;
         }
     }
 
@@ -1957,7 +1960,8 @@ public class SpartanPlayer {
 
     public Double getNmsBox() {
         synchronized (nmsBox) {
-            return nmsBox.get(nmsBox.size() - 1);
+            int size = nmsBox.size();
+            return size > 0 ? nmsBox.get(size - 1) : null;
         }
     }
 
