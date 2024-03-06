@@ -201,7 +201,7 @@ public class CloudFeature {
                             }
                         }
                     } catch (Exception e) {
-                        throwError(e, "OVC:GET");
+                        throwError(e, "outdatedVersionCheck:GET");
                     }
                 };
 
@@ -270,7 +270,7 @@ public class CloudFeature {
                             }
                         }
                     } catch (Exception e) {
-                        throwError(e, "ACC:GET");
+                        throwError(e, "automaticConfigurationChanges:GET");
                     }
                 };
 
@@ -304,7 +304,7 @@ public class CloudFeature {
                             }
                         }
                     } catch (Exception e) {
-                        throwError(e, "CSC:GET");
+                        throwError(e, "customerSupportCommand:GET");
                     }
                 };
 
@@ -382,7 +382,7 @@ public class CloudFeature {
                             CloudFeature.allDisabledDetections.clear();
                         }
                     } catch (Exception e) {
-                        throwError(e, "DD:GET");
+                        throwError(e, "disabledDetections:GET");
                     }
                 };
 

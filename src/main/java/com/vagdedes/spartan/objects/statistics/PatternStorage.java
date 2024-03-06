@@ -28,9 +28,9 @@ public class PatternStorage {
 
     // Separator
 
-    private final String key;
+    public final String key;
     private final int[] generalizations;
-    private final boolean generalization;
+    public final boolean generalization;
     private final Map<Integer, Collection<PatternValue>> available, unavailable;
     private final Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations;
     private final Set<PlayerProfile> blocked;

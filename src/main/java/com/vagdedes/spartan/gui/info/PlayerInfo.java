@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TPS;
@@ -122,8 +121,7 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§cClick to delete the player's stored data.");
                 add("§4Reset", lore, new ItemStack(Material.REDSTONE), reset);
             }
-            add("§c" + (back ? "Back" : "Close"), AntiCheatUpdates.getInformation(false),
-                    new ItemStack(Material.ARROW), 31);
+            add("§c" + (back ? "Back" : "Close"), null, new ItemStack(Material.ARROW), 31);
             return true;
         }
     }

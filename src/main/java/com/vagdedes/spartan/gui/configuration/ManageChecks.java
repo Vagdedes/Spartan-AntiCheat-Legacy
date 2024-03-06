@@ -6,7 +6,6 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -37,8 +36,7 @@ public class ManageChecks extends InventoryMenu {
         add("§cDisable silent checking for all checks", null, new ItemStack(MaterialUtils.get("lead")), 46);
         add("§cDisable all checks", null, new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), 1, (short) 14), 47);
 
-        add("§4Back", AntiCheatUpdates.getInformation(false),
-                new ItemStack(Material.ARROW), 49);
+        add("§4Back", null, new ItemStack(Material.ARROW), 49);
 
         add("§aEnable all checks", null, new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.LIME_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), 1, (short) 5), 51);
         add("§aEnable silent checking for all checks", null, new ItemStack(Material.FEATHER), 52);
@@ -87,7 +85,7 @@ public class ManageChecks extends InventoryMenu {
                 if (check != null) {
                     ResearchEngine.resetData(check.hackType);
                 }
-                //todo message
+                player.sendInventoryCloseMessage(Config.messages.getColorfulString("check_stored_data_delete_message"));
             }
         }
         return true;

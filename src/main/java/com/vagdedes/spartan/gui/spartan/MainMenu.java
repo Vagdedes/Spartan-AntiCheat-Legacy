@@ -9,8 +9,8 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
+import com.vagdedes.spartan.gui.helpers.Summary;
 import com.vagdedes.spartan.handlers.connection.DiscordMemberCount;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
@@ -79,9 +79,7 @@ public class MainMenu extends InventoryMenu {
         setTitle(player, name + page);
 
         // AntiCheat Updates
-        add("§a" + AntiCheatUpdates.name,
-                AntiCheatUpdates.getInformation(true),
-                new ItemStack(Material.CHEST), 46);
+        add("§aSummary", Summary.get(), new ItemStack(Material.CHEST), 46);
         int random = AlgebraUtils.randomInteger(1, 64);
         boolean dividedBy2 = random % 2 == 0;
 
@@ -241,7 +239,7 @@ public class MainMenu extends InventoryMenu {
                 }
             }
         } else if (!name.startsWith(PlayerStateLists.inactiveColour)
-                && !item.equals(AntiCheatUpdates.name)) {
+                && !item.equals("Summary")) {
             SpartanMenu.playerInfo.open(player, false, item);
         }
         return true;

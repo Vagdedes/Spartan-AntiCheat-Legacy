@@ -38,7 +38,6 @@ public class Messages extends ConfigurationBuilder {
         addOption("player_ip_limit_kick_message", "&8[&2" + prefix + "&8]&c The player limit of your IP has been reached.");
 
         // Violations
-        addOption("check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");
         addOption("player_violation_reset_message", "&8[&2" + prefix + "&8]&a Violations successfully reset for player&8: &2{player}");
         addOption("player_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for player&8: &2{player}");
         addOption("detection_notification", "&8[&2" + prefix + "&8] "
@@ -53,6 +52,7 @@ public class Messages extends ConfigurationBuilder {
         addOption("same_message_warning", "&8[&2" + prefix + "&8]&c Please avoid sending the same message again.");
 
         // Checks
+        addOption("check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");
         addOption("check_enable_message", "&8[&2" + prefix + "&8] &aYou enabled the check&8:&7 {detection}");
         addOption("check_disable_message", "&8[&2" + prefix + "&8] &cYou disabled the check&8:&7 {detection}");
         addOption("non_existing_check", "&8[&2" + prefix + "&8] &cThis check doesn't exist.");

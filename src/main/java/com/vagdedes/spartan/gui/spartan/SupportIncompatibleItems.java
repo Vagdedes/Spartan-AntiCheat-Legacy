@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.InventoryMenu;
 import com.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.helpers.AntiCheatUpdates;
 import com.vagdedes.spartan.objects.features.IncompatibleItem;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -67,8 +66,7 @@ public class SupportIncompatibleItems extends InventoryMenu {
 
         add("§2Add Item", null, new ItemStack(MaterialUtils.get("redstone_torch")), 52);
 
-        add("§4Back", AntiCheatUpdates.getInformation(false),
-                new ItemStack(Material.ARROW), 53);
+        add("§4Back", null, new ItemStack(Material.ARROW), 53);
         return true;
     }
 
