@@ -31,9 +31,6 @@ public abstract class PatternFamily {
         this.lastStored = 0L;
         this.patternValues = patternValues;
 
-        for (PatternStorage patternStorage : patternValues) {
-            patternStorage.load();
-        }
         synchronized (instances) {
             instances.add(this);
         }

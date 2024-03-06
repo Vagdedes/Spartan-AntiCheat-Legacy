@@ -209,7 +209,6 @@ public class Config {
         Cache.clearStorage(!enabledPlugin);
         Chunks.reload(enabledPlugin);
         ResearchEngine.refresh(enabledPlugin);
-        PatternFamily.reload();
     }
 
     public static void reload(Object sender) {

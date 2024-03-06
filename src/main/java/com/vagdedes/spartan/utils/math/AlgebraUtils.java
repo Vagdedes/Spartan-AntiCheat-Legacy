@@ -286,6 +286,15 @@ public class AlgebraUtils {
         }
     }
 
+    public static boolean validLong(String str) {
+        try {
+            Long.parseLong(str);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
     public static Double returnValidDecimal(String str) {
         try {
             return Double.parseDouble(str);

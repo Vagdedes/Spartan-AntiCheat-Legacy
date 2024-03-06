@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.handlers.stability;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.PatternFamily;
 import com.vagdedes.spartan.checks.combat.criticals.Criticals;
 import com.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
 import com.vagdedes.spartan.configuration.Config;
@@ -557,6 +558,7 @@ public class ResearchEngine {
             if (enabledPlugin) {
                 CloudFeature.refresh(true);
                 buildCache();
+                PatternFamily.reload();
                 CloudFeature.refresh(false);
             } else {
                 CloudFeature.clear(true);

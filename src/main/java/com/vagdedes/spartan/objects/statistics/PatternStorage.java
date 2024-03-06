@@ -1,23 +1,24 @@
 package com.vagdedes.spartan.objects.statistics;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
 
 public class PatternStorage {
 
-    private static final String directoryPath = Register.plugin.getDataFolder() + "/learning";
+    static final String directoryPath = Register.plugin.getDataFolder() + "/learning";
 
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
 
     public static void consider(PlayerProfile profile) {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
-                instance.considerLocal(profile);
+                instance.objectConsider(profile);
             }
         }
     }
@@ -25,7 +26,7 @@ public class PatternStorage {
     public static void block(PlayerProfile profile) {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
-                instance.blockLocal(profile);
+                instance.objectBlock(profile);
             }
         }
     }
@@ -61,8 +62,7 @@ public class PatternStorage {
     // Separator
 
     public final String key;
-    private final int[] generalizations;
-    public final boolean generalization;
+    private final PatternGeneralization[] generalizations;
     private final Map<Integer, Collection<PatternValue>> available, unavailable;
     private final Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations;
     private final Set<PlayerProfile> blocked;
@@ -71,8 +71,14 @@ public class PatternStorage {
         this.key = key;
         this.blocked = Collections.synchronizedSet(new HashSet<>());
 
-        this.generalizations = generalizations;
-        this.generalization = generalizations.length > 0;
+        this.generalizations = new PatternGeneralization[generalizations.length + 1];
+        this.generalizations[0] = new PatternGeneralization(key, 0);
+
+        if (generalizations.length > 0) {
+            for (int count = 0; count < generalizations.length; count++) {
+                this.generalizations[count + 1] = new PatternGeneralization(key, generalizations[count]);
+            }
+        }
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -93,84 +99,135 @@ public class PatternStorage {
 
     // Separator
 
-    private File getFile() {
-        return new File(directoryPath + this.key + ".yml");
-    }
-
     public void store() {
-        // todo
+        for (PatternGeneralization generalization : this.generalizations) {
+            generalization.store();
+        }
     }
 
     public void reload() {
         store();
+        Map<Integer, Collection<PatternValue>>
+                available = new LinkedHashMap<>(),
+                unavailable = new LinkedHashMap<>();
+        Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations = new LinkedHashMap<>();
+        File directory = new File(directoryPath + "/" + this.key);
 
-        synchronized (this.blocked) {
-            synchronized (this.available) {
-                synchronized (this.unavailable) {
-                    synchronized (this.correlations) {
-                        this.blocked.clear();
-                        this.correlations.clear();
+        if (!directory.exists()) {
+            directory.mkdirs();
+        } else if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
 
-                        for (Collection<PatternValue> collection : this.available.values()) {
-                            collection.clear();
-                        }
-                        for (Collection<PatternValue> collection : this.unavailable.values()) {
-                            collection.clear();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.getName().endsWith(".yml")) {
+                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                        Set<String> keys = configuration.getKeys(false);
+
+                        if (!keys.isEmpty()) {
+                            for (String key : keys) {
+                                try {
+                                    long time = Long.parseLong(key);
+                                    Object pattern = configuration.get(key + ".pattern", null);
+
+                                    if (pattern instanceof Number) {
+                                        String profileName = configuration.getString(key + ".profile", null);
+
+                                        if (profileName != null && !profileName.isEmpty()) {
+                                            Number number = (Number) pattern;
+                                            PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                            Map<Integer, Collection<PatternValue>> map =
+                                                    profile.isLegitimate() ? available : unavailable;
+
+                                            for (PatternGeneralization generalization : this.generalizations) {
+                                                this.rawCache(
+                                                        map,
+                                                        correlations,
+                                                        profile,
+                                                        new PatternValue(
+                                                                profile,
+                                                                number,
+                                                                generalization,
+                                                                time
+                                                        ),
+                                                        generalization,
+                                                        false
+                                                );
+                                            }
+                                        }
+                                    }
+                                } catch (Exception ignored) {
+                                }
+                            }
                         }
                     }
                 }
-
             }
-        }
-        load();
-    }
-
-    public void load() {
-        File file = new File(directoryPath);
-
-        if (!file.exists()) {
-            file.mkdirs();
-        } else if (file.isDirectory()) {
-
         } else {
-            file.delete();
-            file.mkdirs();
+            directory.delete();
+            directory.mkdirs();
+        }
+
+        synchronized (this.correlations) {
+            synchronized (this.available) {
+                synchronized (this.unavailable) {
+                    this.correlations.clear();
+                    this.correlations.putAll(correlations);
+
+                    this.available.clear();
+                    this.available.putAll(available);
+
+                    this.unavailable.clear();
+                    this.unavailable.putAll(unavailable);
+                }
+            }
         }
     }
 
     // Separator
 
     private void rawCache(Map<Integer, Collection<PatternValue>> map,
-                          SpartanPlayer player, PatternValue value, int generalization) {
-        map.get(generalization).add(value);
-        this.correlations.computeIfAbsent(
-                player.getProfile(),
+                          Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations,
+                          PlayerProfile profile, PatternValue value,
+                          PatternGeneralization generalization,
+                          boolean set) {
+        map.get(generalization.generalization).add(value);
+        correlations.computeIfAbsent(
+                profile,
                 k -> new LinkedHashMap<>()
         ).computeIfAbsent(
-                generalization,
+                generalization.generalization,
                 k -> new ArrayList<>()
         ).add(value);
+
+        if (set) {
+            generalization.set(value);
+        }
     }
 
     public void cache(SpartanPlayer player, Number number) {
-        PatternValue value = new PatternValue(player.getProfile(), number);
+        long time = System.currentTimeMillis();
         boolean legitimate = player.getProfile().isLegitimate();
 
         synchronized (legitimate ? this.available : this.unavailable) {
             synchronized (this.correlations) {
                 Map<Integer, Collection<PatternValue>> map =
                         legitimate ? this.available : this.unavailable;
-                this.rawCache(map, player, value, 0);
 
-                if (this.generalization) {
-                    for (int generalization : this.generalizations) {
-                        this.rawCache(
-                                map,
-                                player,
-                                new PatternValue(player.getProfile(), AlgebraUtils.cut(number.doubleValue(), generalization), value.time),
-                                generalization
-                        );
-                    }
+                for (PatternGeneralization generalization : this.generalizations) {
+                    this.rawCache(
+                            map,
+                            this.correlations,
+                            player.getProfile(),
+                            new PatternValue(
+                                    player.getProfile(),
+                                    number,
+                                    generalization,
+                                    time
+                            ),
+                            generalization,
+                            true
+                    );
                 }
             }
         }
@@ -178,7 +235,7 @@ public class PatternStorage {
 
     // Separator
 
-    private void considerLocal(PlayerProfile profile) {
+    private void objectConsider(PlayerProfile profile) {
         synchronized (this.blocked) {
             if (this.blocked.contains(profile)) {
                 this.blocked.remove(profile);
@@ -198,7 +255,7 @@ public class PatternStorage {
         }
     }
 
-    private void blockLocal(PlayerProfile profile) {
+    private void objectBlock(PlayerProfile profile) {
         synchronized (this.blocked) {
             if (!this.blocked.contains(profile)) {
                 this.blocked.add(profile);
@@ -253,6 +310,4 @@ public class PatternStorage {
             return new ArrayList<>(0);
         }
     }
-
-    // Separator
 }
