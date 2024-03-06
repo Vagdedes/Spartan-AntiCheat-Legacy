@@ -4,7 +4,6 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.functionality.synchronicity.AutoUpdater;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
@@ -22,20 +21,9 @@ import java.util.*;
 public class Cache {
 
     private static final List<Object> memory = Collections.synchronizedList(new ArrayList<>());
-    public static final int gradeDivisor = 1024;
 
     public static void clearCheckCache(SpartanPlayer p) {
         for (Enums.HackType hackType : Enums.HackType.values()) {
-            p.getBuffer(hackType).clear();
-            p.getTimer(hackType).clear();
-            p.getDecimals(hackType).clear();
-            p.getCooldowns(hackType).clear();
-            p.getTracker(hackType).clear();
-        }
-    }
-
-    public static void clearCheckCache(SpartanPlayer p, Iterable<Enums.HackType> hackTypes) {
-        for (Enums.HackType hackType : hackTypes) {
             p.getBuffer(hackType).clear();
             p.getTimer(hackType).clear();
             p.getDecimals(hackType).clear();
@@ -134,15 +122,10 @@ public class Cache {
         Threads.disable();
         SpartanBukkit.clear();
 
-        // Utilities
-        SpartanBukkit.cooldowns.clear();
-
         // Features
         DetectionNotifications.clear();
         CrossServerInformation.clear();
         PlayerLimitPerIP.clear();
-        ReconnectCooldown.clear();
-        AwarenessNotifications.clear();
 
         // Configuration
         Config.create();

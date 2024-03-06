@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.objects.data;
 
+import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 
@@ -15,6 +16,10 @@ public class Cooldowns {
     public Cooldowns(SpartanPlayer player) {
         this.storage = Collections.synchronizedMap(new LinkedHashMap<>());
         this.player = player;
+
+        if (player == null) {
+            Cache.store(this.storage);
+        }
     }
 
     public void clear() {

@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.handlers.connection.DiscordMemberCount;
-import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TestServer;
@@ -108,7 +107,7 @@ public class CloudConnections {
             String specs = MultiVersion.versionString() + CloudFeature.separator
                     + Bukkit.getPort() + CloudFeature.separator
                     + runtime.availableProcessors() + CloudFeature.separator
-                    + (runtime.totalMemory() / Cache.gradeDivisor / Cache.gradeDivisor) + CloudFeature.separator
+                    + (runtime.totalMemory() / 1024 / 1024) + CloudFeature.separator
                     + Register.manager.getPlugins().length + CloudFeature.separator
                     + Base64.getEncoder().encodeToString(motd.getBytes());
 

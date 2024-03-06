@@ -78,7 +78,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Chat.blocked_commands", "blockedCommand1, blockedCommand2");
         addOption("Chat.staff_chat_character", "@");
 
-        addOption("Protections.reconnect_cooldown", 1);
         addOption(tpsProtectionOption, true); // test server
         addOption(maxSupportedLatencyOption, 500); // test server
         addOption("Protections.avoid_self_bow_damage", true);

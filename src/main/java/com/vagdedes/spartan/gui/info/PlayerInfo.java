@@ -11,6 +11,7 @@ import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.handlers.stability.TPS;
+import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.profiling.MiningHistory;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.profiling.PunishmentHistory;
@@ -35,8 +36,9 @@ import java.util.UUID;
 
 public class PlayerInfo extends InventoryMenu {
 
-    public static final String menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
+    private static final String menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
     private static final String documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
+    private static final Cooldowns cooldowns = new Cooldowns(null);
 
     public PlayerInfo() {
         super(menu, 36, new Permission[]{Permission.MANAGE, Permission.INFO});
@@ -258,11 +260,9 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        String key = "player-info=inventory-menu";
-
         if (Config.settings.getBoolean("Important.refresh_inventory_menu")
-                && SpartanBukkit.cooldowns.canDo(SpartanBukkit.uuid + "=" + key)) {
-            SpartanBukkit.cooldowns.add(SpartanBukkit.uuid + "=" + key, 1);
+                && cooldowns.canDo("")) {
+            cooldowns.add("", 1);
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (!players.isEmpty()) {

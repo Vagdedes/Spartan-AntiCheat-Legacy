@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.handlers.stability.Cache;
@@ -70,7 +69,6 @@ public class EventsHandler1 implements Listener {
         PlayerLimitPerIP.remove(p);
 
         // Features
-        ReconnectCooldown.remove(n);
         ChatProtection.remove(p);
 
         // System

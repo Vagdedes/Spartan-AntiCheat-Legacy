@@ -102,7 +102,27 @@ public class PatternStorage {
     }
 
     public void reload() {
-        // todo
+        store();
+
+        synchronized (this.blocked) {
+            synchronized (this.available) {
+                synchronized (this.unavailable) {
+                    synchronized (this.correlations) {
+                        this.blocked.clear();
+                        this.correlations.clear();
+
+                        for (Collection<PatternValue> collection : this.available.values()) {
+                            collection.clear();
+                        }
+                        for (Collection<PatternValue> collection : this.unavailable.values()) {
+                            collection.clear();
+                        }
+                    }
+                }
+
+            }
+        }
+        load();
     }
 
     public void load() {

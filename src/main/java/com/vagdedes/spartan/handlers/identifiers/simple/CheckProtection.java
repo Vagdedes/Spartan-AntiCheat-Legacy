@@ -2,9 +2,9 @@ package com.vagdedes.spartan.handlers.identifiers.simple;
 
 import com.vagdedes.spartan.configuration.Compatibility;
 import com.vagdedes.spartan.handlers.stability.TPS;
+import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.data.Handlers;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ public class CheckProtection {
 
     private static final Enums.HackType[] mostlyAffected;
     private static long cooldown = 0L, delay = 0L;
+    private static Cooldowns cooldowns = new Cooldowns(null);
 
     static {
         Enums.HackType[] hackTypes = Enums.HackType.values();
@@ -34,7 +35,7 @@ public class CheckProtection {
         mostlyAffected = checksAffectedByCombatArray.toArray(new Enums.HackType[0]);
     }
     public static void cancel(UUID uuid, int ticks) {
-        SpartanBukkit.cooldowns.add(uuid + "=check=protection", ticks);
+        cooldowns.add(uuid.toString(), ticks);
     }
 
     public static void cancel(int ticks, int secondsDelay) {
@@ -51,7 +52,7 @@ public class CheckProtection {
     public static boolean hasCooldown(SpartanPlayer player) {
         return cooldown >= System.currentTimeMillis()
                 || player.getHandlers().has(Handlers.HandlerType.GameMode)
-                || !SpartanBukkit.cooldowns.canDo(player.uuid + "=check=protection");
+                || !cooldowns.canDo(player.uuid.toString());
     }
 
     public static void evadeCommonFalsePositives(SpartanPlayer player, Compatibility.CompatibilityType compatibilityType, Enums.HackType[] hackTypes, int ticks) {

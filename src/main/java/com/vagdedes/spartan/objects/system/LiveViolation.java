@@ -483,7 +483,7 @@ public class LiveViolation {
                         if (!commandsString.isEmpty()) {
                             player.getProfile().punishmentHistory.increasePunishments(player, commandsString);
                         }
-                    } else if (found && AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-cancelled-punishment-event")) {
+                    } else if (found && AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-cancelled-punishment-event")) {
                         String notification = "Just a reminder that the punishments of the '" + hackType + "' check were just cancelled via code by a third-party plugin."
                                 + " Please do not reach support for this as it relates only to your server.";
                         List<Plugin> dependentPlugins = PluginUtils.getDependentPlugins(Register.plugin.getName());
@@ -499,11 +499,9 @@ public class LiveViolation {
                         AwarenessNotifications.forcefullySend(notification);
                     }
                 }
-            } else if (AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-no-punishment-commands")) {
+            } else if (AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-no-punishment-commands")) {
                 AwarenessNotifications.forcefullySend("Just a reminder that you have set no punishment commands for the '" + hackType + "' check.");
             }
-        } else if (check.canPunish && AwarenessNotifications.canSend(SpartanBukkit.uuid, hackType + "-disabled-punishments")) {
-            AwarenessNotifications.forcefullySend("Just a reminder that punishments have been disabled for the '" + hackType + "' check.");
         }
     }
 

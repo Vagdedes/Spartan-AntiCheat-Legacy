@@ -68,7 +68,7 @@ public class AntiCheatLogs {
 
         if (!playerRelated || (id % 10) == 0) {
             if (SpartanBukkit.isSynchronised()) {
-                SpartanBukkit.storageThread.executeIfFreeElseHere(AntiCheatLogs::saveRaw);
+                SpartanBukkit.dataThread.executeIfFreeElseHere(AntiCheatLogs::saveRaw);
             } else {
                 saveRaw();
             }

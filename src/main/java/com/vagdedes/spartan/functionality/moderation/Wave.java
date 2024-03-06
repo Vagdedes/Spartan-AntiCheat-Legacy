@@ -58,7 +58,7 @@ public class Wave {
         boolean exists = file.exists();
 
         if (!exists) {
-            ConfigUtils.add(file, section + "." + SpartanBukkit.uuid + ".command", "ban {player} wave punishment example");
+            ConfigUtils.add(file, section + "." + UUID.randomUUID() + ".command", "ban {player} wave punishment example");
         }
 
         if (!local && exists) {
@@ -154,7 +154,7 @@ public class Wave {
                     }
                 }
 
-                SpartanBukkit.storageThread.executeIfFreeElseHere(() -> {
+                SpartanBukkit.dataThread.executeIfFreeElseHere(() -> {
                     for (UUID uuid : uuids) {
                         try {
                             String command = getCommand(uuid);

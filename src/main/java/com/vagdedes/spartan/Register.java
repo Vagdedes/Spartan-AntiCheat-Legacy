@@ -5,7 +5,6 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.handlers.connection.DiscordMemberCount;
 import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
@@ -64,7 +63,6 @@ public class Register extends JavaPlugin {
         // Base
         Config.settings.runOnLogin();
         PlayerLimitPerIP.cache();
-        ReconnectCooldown.loadCooldowns();
         VehicleAccess.run();
         SuspicionNotifications.run();
 

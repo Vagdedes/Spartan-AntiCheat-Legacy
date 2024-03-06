@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.objects.data.Cooldowns;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Threads;
 import com.vagdedes.spartan.utils.server.ReflectionUtils;
@@ -23,7 +22,6 @@ public class SpartanBukkit {
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
             canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isSongoda() || IDs.isPolymart(),
             hasResourcePack;
-    public static Cooldowns cooldowns = new Cooldowns(null);
 
     static {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)) {
@@ -44,10 +42,9 @@ public class SpartanBukkit {
     }
 
     public static final Threads.ThreadPool
-            analysisThread = new Threads.ThreadPool(TPS.tickTime),
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
-            storageThread = new Threads.ThreadPool(5L),
             playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(2L),
+            dataThread = new Threads.ThreadPool(1L),
             chunkThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L),
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
 
@@ -55,7 +52,6 @@ public class SpartanBukkit {
     public static final long hashCodeMultiplierLong = 31L;
     private static final Map<UUID, SpartanPlayer> players =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
-    public static final UUID uuid = UUID.randomUUID();
     public static final Class<?> craftPlayer = ReflectionUtils.getClass(
             ReflectionUtils.class.getPackage().getName().substring(0, 19) // Package
                     + "org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".entity.CraftPlayer" // Version

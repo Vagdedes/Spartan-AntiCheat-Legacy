@@ -84,7 +84,7 @@ public class ResearchEngine {
                 if (schedulerTicks == 0) {
                     schedulerTicks = cacheRefreshTicks * 10;
 
-                    SpartanBukkit.analysisThread.executeIfFree(() -> {
+                    SpartanBukkit.dataThread.executeIfFree(() -> {
                         if (Config.sql.isEnabled()) {
                             refresh(Register.isPluginEnabled());
                         } else if (schedulerTicks % cacheRefreshTicks == 0) {
@@ -96,7 +96,7 @@ public class ResearchEngine {
                     schedulerTicks -= 1;
 
                     if (schedulerTicks % cacheRefreshTicks == 0) {
-                        SpartanBukkit.analysisThread.executeIfFree(() -> {
+                        SpartanBukkit.dataThread.executeIfFree(() -> {
                             updateCache();
                             MainMenu.refresh();
                         });
@@ -305,7 +305,7 @@ public class ResearchEngine {
     // Separator
 
     public static void resetData(Enums.HackType hackType) {
-        SpartanBukkit.storageThread.execute(() -> {
+        SpartanBukkit.dataThread.execute(() -> {
             String hackTypeString = hackType.toString();
             hackType.getCheck().clearMaxCancelledViolations();
             CancelViolation.clear(hackType);
@@ -373,7 +373,7 @@ public class ResearchEngine {
 
         if (isStorageMode()) {
             // Clear Files/Database
-            SpartanBukkit.storageThread.execute(() -> {
+            SpartanBukkit.dataThread.execute(() -> {
                 synchronized (playerProfiles) {
                     playerProfiles.remove(playerName);
                 }
@@ -568,7 +568,7 @@ public class ResearchEngine {
         if (!SpartanBukkit.isSynchronised()) {
             runnable.run();
         } else {
-            SpartanBukkit.analysisThread.executeIfFree(runnable);
+            SpartanBukkit.dataThread.executeIfFree(runnable);
         }
     }
 

@@ -180,7 +180,7 @@ public class SQLFeature extends ConfigurationBuilder {
         addOption("escape_special_characters", false);
         refreshConfiguration();
 
-        SpartanBukkit.storageThread.execute(this::connect);
+        SpartanBukkit.dataThread.execute(this::connect);
 
         if (!local && exists) {
             CrossServerInformation.sendConfiguration(file);
@@ -378,7 +378,7 @@ public class SQLFeature extends ConfigurationBuilder {
                 };
 
                 if (SpartanBukkit.isSynchronised()) {
-                    SpartanBukkit.storageThread.execute(runnable);
+                    SpartanBukkit.dataThread.execute(runnable);
                 } else {
                     runnable.run();
                 }

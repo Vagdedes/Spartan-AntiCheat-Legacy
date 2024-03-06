@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.configuration;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.PatternFamily;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
@@ -182,26 +183,33 @@ public class Config {
         // Utilities
         refreshFields(true);
 
-        // Configuration
         if (enabledPlugin) {
+            // Configuration
             createConfigurations(false); // Always First
+
+            // System
+            AwarenessNotifications.refresh();
         } else {
+            // Configuration
             settings.clear();
             sql.refreshConfiguration();
             messages.clear();
             compatibility.clear();
             Wave.clearCache();
+
+            // System
+            AwarenessNotifications.clear();
         }
+
+        // Objects
+        SpartanPlayer.clear();
 
         // System
         PluginUtils.clear();
         Cache.clearStorage(!enabledPlugin);
         Chunks.reload(enabledPlugin);
         ResearchEngine.refresh(enabledPlugin);
-        AwarenessNotifications.refresh();
-
-        // Objects
-        SpartanPlayer.clear();
+        PatternFamily.reload();
     }
 
     public static void reload(Object sender) {

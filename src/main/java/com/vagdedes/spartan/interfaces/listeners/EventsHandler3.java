@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.important.MultiVersion;
 import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.protections.ReconnectCooldown;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
@@ -133,9 +132,6 @@ public class EventsHandler3 implements Listener {
 
         // Protections
         CheckProtection.cancel(uuid, SpartanBukkit.hasResourcePack ? 100 : 5);
-
-        // Configuration
-        ReconnectCooldown.run(n, e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
