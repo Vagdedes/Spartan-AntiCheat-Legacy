@@ -84,8 +84,12 @@ public class ManageChecks extends InventoryMenu {
 
                 if (check != null) {
                     ResearchEngine.resetData(check.hackType);
+                    player.sendInventoryCloseMessage(
+                            Config.messages.getColorfulString("check_stored_data_delete_message")
+                                    .replace("{check}", check.getName())
+                    );
+
                 }
-                player.sendInventoryCloseMessage(Config.messages.getColorfulString("check_stored_data_delete_message"));
             }
         }
         return true;

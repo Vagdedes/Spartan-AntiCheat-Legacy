@@ -21,6 +21,7 @@ import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
+import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

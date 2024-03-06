@@ -43,18 +43,15 @@ public class ResearchEngine {
     public static final int
             logRequirement = Check.maxViolationsPerCycle,
             profileRequirement = logRequirement / 10,
-            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.01),
-            maxRows = 0; // todo
+            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
+            maxRows = maxBytes / 1024;
 
     private static final double minimumAverageMining = 16.0;
 
-    private static final long cacheTimeLimit = 60_000L * 4; // Despite being 4, realistically it is 5 minutes if extra calculations are accounted for
     private static final int cacheRefreshTicks = 1200;
     private static int schedulerTicks = 0;
 
-    private static boolean
-            isFull = false,
-            enoughData = false;
+    private static boolean enoughData = false;
 
     public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.Java, Enums.DataType.Bedrock};
     private static StatisticalProgress statisticalProgress = new StatisticalProgress();
@@ -450,10 +447,9 @@ public class ResearchEngine {
     }
 
     public static Map<String, String> getLogs() {
-        long startTime = System.currentTimeMillis();
         Map<String, String> cache = new LinkedHashMap<>();
         int byteSize = 0;
-        isFull = false;
+        boolean isFull = false;
         boolean continueWithYAML = false;
 
         // Separator
@@ -473,8 +469,6 @@ public class ResearchEngine {
 
                         if (byteSize >= maxBytes) {
                             isFull = true;
-                            break;
-                        } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
                             break;
                         }
                     }
@@ -499,8 +493,6 @@ public class ResearchEngine {
 
                             if (byteSize >= maxBytes) {
                                 isFull = true;
-                                break;
-                            } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
                                 break;
                             }
                         }
@@ -541,14 +533,10 @@ public class ResearchEngine {
                             if (byteSize >= maxBytes) {
                                 isFull = true;
                                 break;
-                            } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
-                                break;
                             }
-                        } else if (System.currentTimeMillis() - startTime >= cacheTimeLimit) {
-                            break;
                         }
                     }
-                    if (isFull || System.currentTimeMillis() - startTime >= cacheTimeLimit) {
+                    if (isFull) {
                         break;
                     }
                 }
@@ -571,7 +559,6 @@ public class ResearchEngine {
                 buildCache();
                 CloudFeature.refresh(false);
             } else {
-                isFull = false;
                 CloudFeature.clear(true);
                 CancelViolation.clear();
                 ViolationStatistics.clear();
@@ -698,10 +685,7 @@ public class ResearchEngine {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-            } else {
             }
-        } else {
-            isFull = false;
         }
     }
 
