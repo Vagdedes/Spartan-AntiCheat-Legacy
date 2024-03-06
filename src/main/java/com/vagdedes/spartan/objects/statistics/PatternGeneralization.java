@@ -23,7 +23,7 @@ public class PatternGeneralization {
 
     PatternGeneralization(String key, int generalization) {
         this.generalization = generalization;
-        this.file = new File(path(key, generalization) + "/fileName" + ".yml"); // todo
+        this.file = new File(path(key, generalization) + "/fileName" + ".yml"); // todo find reliable name
 
         if (!this.file.exists()) {
             try {

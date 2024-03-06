@@ -28,7 +28,7 @@ public class PatternStorage {
         }
     }
 
-    public static void delete(PlayerProfile profile) {
+    public static void delete(PlayerProfile profile) { // todo delete in files too
         synchronized (instances) {
             for (PatternStorage instance : instances) {
                 synchronized (instance.blocked) {
@@ -68,7 +68,11 @@ public class PatternStorage {
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
         this.store = false;
+
         this.blocked = Collections.synchronizedSet(new HashSet<>());
+        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.available = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.unavailable = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.generalizations = new PatternGeneralization[generalizations.length + 1];
         this.generalizations[0] = new PatternGeneralization(key, 0);
@@ -79,18 +83,11 @@ public class PatternStorage {
             }
         }
 
-        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
-
-        this.available = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.available.put(0, new ArrayList<>());
-
-        this.unavailable = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.unavailable.put(0, new ArrayList<>());
-
-        for (int generalization : generalizations) {
-            this.available.put(generalization, new ArrayList<>());
-            this.unavailable.put(generalization, new ArrayList<>());
+        for (PatternGeneralization generalization : this.generalizations) {
+            this.available.put(generalization.generalization, new ArrayList<>());
+            this.unavailable.put(generalization.generalization, new ArrayList<>());
         }
+
         synchronized (instances) {
             instances.add(this);
         }
@@ -100,10 +97,11 @@ public class PatternStorage {
 
     public void store() {
         if (this.store) {
+            this.store = false;
+
             for (PatternGeneralization generalization : this.generalizations) {
                 generalization.store();
             }
-            this.store = false;
         }
     }
 
@@ -138,18 +136,14 @@ public class PatternStorage {
                                             String profileName = configuration.getString(key + ".profile", null);
 
                                             if (profileName != null && !profileName.isEmpty()) {
-                                                Number number = (Number) pattern;
                                                 PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
-                                                Map<Integer, Collection<PatternValue>> map =
-                                                        profile.isLegitimate() ? available : unavailable;
-
                                                 this.rawCache(
-                                                        map,
+                                                        profile.isLegitimate() ? available : unavailable,
                                                         correlations,
                                                         profile,
                                                         new PatternValue(
                                                                 profile,
-                                                                number,
+                                                                (Number) pattern,
                                                                 time
                                                         ),
                                                         generalization,
