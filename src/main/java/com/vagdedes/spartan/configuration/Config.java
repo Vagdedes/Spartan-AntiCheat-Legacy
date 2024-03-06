@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.configuration;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.PatternFamily;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;

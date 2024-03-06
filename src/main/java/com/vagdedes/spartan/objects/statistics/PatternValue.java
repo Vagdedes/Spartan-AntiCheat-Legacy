@@ -7,7 +7,7 @@ public class PatternValue {
 
     public final Number number;
     final PlayerProfile profile;
-    public final long time;
+    final long time;
 
     // Use for cache to be stored
     PatternValue(PlayerProfile profile, Number number, PatternGeneralization generalization, long time) {

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.objects.statistics;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
@@ -10,8 +9,6 @@ import java.io.File;
 import java.util.*;
 
 public class PatternStorage {
-
-    static final String directoryPath = Register.plugin.getDataFolder() + "/learning";
 
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
 
@@ -116,35 +113,36 @@ public class PatternStorage {
                 available = new LinkedHashMap<>(),
                 unavailable = new LinkedHashMap<>();
         Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations = new LinkedHashMap<>();
-        File directory = new File(directoryPath + "/" + this.key);
 
-        if (!directory.exists()) {
-            directory.mkdirs();
-        } else if (directory.isDirectory()) {
-            File[] files = directory.listFiles();
+        for (PatternGeneralization generalization : this.generalizations) {
+            File directory = new File(PatternGeneralization.path(this.key, generalization.generalization));
 
-            if (files != null) {
-                for (File file : files) {
-                    if (file.getName().endsWith(".yml")) {
-                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                        Set<String> keys = configuration.getKeys(false);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            } else if (directory.isDirectory()) {
+                File[] files = directory.listFiles();
 
-                        if (!keys.isEmpty()) {
-                            for (String key : keys) {
-                                try {
-                                    long time = Long.parseLong(key);
-                                    Object pattern = configuration.get(key + ".pattern", null);
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.getName().endsWith(".yml")) {
+                            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                            Set<String> keys = configuration.getKeys(false);
 
-                                    if (pattern instanceof Number) {
-                                        String profileName = configuration.getString(key + ".profile", null);
+                            if (!keys.isEmpty()) {
+                                for (String key : keys) {
+                                    try {
+                                        long time = Long.parseLong(key);
+                                        Object pattern = configuration.get(key + ".pattern", null);
 
-                                        if (profileName != null && !profileName.isEmpty()) {
-                                            Number number = (Number) pattern;
-                                            PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
-                                            Map<Integer, Collection<PatternValue>> map =
-                                                    profile.isLegitimate() ? available : unavailable;
+                                        if (pattern instanceof Number) {
+                                            String profileName = configuration.getString(key + ".profile", null);
 
-                                            for (PatternGeneralization generalization : this.generalizations) {
+                                            if (profileName != null && !profileName.isEmpty()) {
+                                                Number number = (Number) pattern;
+                                                PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                                Map<Integer, Collection<PatternValue>> map =
+                                                        profile.isLegitimate() ? available : unavailable;
+
                                                 this.rawCache(
                                                         map,
                                                         correlations,
@@ -159,17 +157,17 @@ public class PatternStorage {
                                                 );
                                             }
                                         }
+                                    } catch (Exception ignored) {
                                     }
-                                } catch (Exception ignored) {
                                 }
                             }
                         }
                     }
                 }
+            } else {
+                directory.delete();
+                directory.mkdirs();
             }
-        } else {
-            directory.delete();
-            directory.mkdirs();
         }
 
         synchronized (this.correlations) {
@@ -308,7 +306,7 @@ public class PatternStorage {
 
                     if (size > count) {
                         size--;
-                        return new ArrayList<>(values).subList(size - count - 1, size - 1);
+                        return new ArrayList<>(values).subList(size - count, size);
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.handlers.stability;
 
 import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.synchronicity.AutoUpdater;
