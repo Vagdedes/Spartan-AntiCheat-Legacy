@@ -4,7 +4,6 @@ import com.vagdedes.spartan.checks.inventory.ImpossibleInventory;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.protections.Explosion;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
@@ -68,7 +67,6 @@ public class EventsHandler1 implements Listener {
         MaximumCheckedPlayers.remove(p);
 
         // Utils
-        Permissions.remove(p);
         PlayerLimitPerIP.remove(p);
 
         // Features

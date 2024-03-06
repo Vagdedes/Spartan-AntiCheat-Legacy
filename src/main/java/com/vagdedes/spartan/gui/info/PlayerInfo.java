@@ -151,7 +151,7 @@ public class PlayerInfo extends InventoryMenu {
         // Separator
 
         double delayNumber = isOnline ? AlgebraUtils.roundToHalf(Latency.getDelay(player)) : 0.0; // Base
-        ResearchEngine.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
+        Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         boolean tpsDropping = isOnline && TPS.areLow(player),
                 notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
                 detectionsNotAvailable = SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
@@ -195,7 +195,7 @@ public class PlayerInfo extends InventoryMenu {
                 new ItemStack(Material.QUARTZ_BLOCK);
         boolean hasViolations = violations > 0,
                 hasData = playerProfile.evidence.has(hackType);
-        ResearchEngine.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
+        Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         String state = getDetectionState(player,
                 hackType,
                 dataType,
@@ -222,7 +222,7 @@ public class PlayerInfo extends InventoryMenu {
         add("§2" + hackType.getCheck().getName() + " Check", lore, item, slot);
     }
 
-    private String getDetectionState(SpartanPlayer player, HackType hackType, ResearchEngine.DataType dataType,
+    private String getDetectionState(SpartanPlayer player, HackType hackType, Enums.DataType dataType,
                                      String cancellableCompatibility,
                                      double delayNumber,
                                      boolean hasPlayer,

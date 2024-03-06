@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SpartanEdition {
 
-    private static final ResearchEngine.DataType dataType = ResearchEngine.DataType.Java;
+    private static final Enums.DataType dataType = Enums.DataType.Java;
 
     private static long checkTime = 0L;
     public static final String[] jarNames = new String[]{
@@ -46,8 +46,8 @@ public class SpartanEdition {
         Runnable runnable = () -> {
             if (SpartanBukkit.canAdvertise && !alternativeVersion) {
                 boolean changed = false;
-                ResearchEngine.DataType opposite = dataType == ResearchEngine.DataType.Java
-                        ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
+                Enums.DataType opposite = dataType == Enums.DataType.Java
+                        ? Enums.DataType.Bedrock : Enums.DataType.Java;
 
                 if (CloudConnections.ownsProduct(
                         get2_0_ProductID(dataType)
@@ -88,7 +88,7 @@ public class SpartanEdition {
 
     // Detections
 
-    public static boolean supportsCheck(ResearchEngine.DataType dataType, Enums.HackType hackType) {
+    public static boolean supportsCheck(Enums.DataType dataType, Enums.HackType hackType) {
         switch (dataType) {
             case Java:
                 return true;
@@ -125,20 +125,20 @@ public class SpartanEdition {
         }
     }
 
-    public static boolean hasDetectionsPurchased(ResearchEngine.DataType dataType) {
+    public static boolean hasDetectionsPurchased(Enums.DataType dataType) {
         return SpartanEdition.dataType == dataType || alternativeVersion;
     }
 
-    public static ResearchEngine.DataType getMissingDetection() {
+    public static Enums.DataType getMissingDetection() {
         return alternativeVersion ? null :
-                dataType == ResearchEngine.DataType.Java
-                        ? ResearchEngine.DataType.Bedrock
-                        : ResearchEngine.DataType.Java;
+                dataType == Enums.DataType.Java
+                        ? Enums.DataType.Bedrock
+                        : Enums.DataType.Java;
     }
 
     // Product
 
-    private static String get1_0_ProductID(ResearchEngine.DataType dataType) {
+    private static String get1_0_ProductID(Enums.DataType dataType) {
         switch (dataType) {
             case Bedrock:
                 return "16";
@@ -147,7 +147,7 @@ public class SpartanEdition {
         }
     }
 
-    private static String get2_0_ProductID(ResearchEngine.DataType dataType) {
+    private static String get2_0_ProductID(Enums.DataType dataType) {
         switch (dataType) {
             case Bedrock:
                 return "22";
@@ -157,8 +157,8 @@ public class SpartanEdition {
     }
 
     public static String getProductName(boolean cloudFeature) {
-        ResearchEngine.DataType opposite = dataType == ResearchEngine.DataType.Java
-                ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
+        Enums.DataType opposite = dataType == Enums.DataType.Java
+                ? Enums.DataType.Bedrock : Enums.DataType.Java;
 
         if (alternativeVersion) {
             if (secondGeneration[dataType.ordinal()]) {
@@ -182,7 +182,7 @@ public class SpartanEdition {
     // Notifications
 
     public static void attemptNotification(SpartanPlayer player) {
-        ResearchEngine.DataType missingDetection = getMissingDetection();
+        Enums.DataType missingDetection = getMissingDetection();
 
         if (missingDetection != null && Config.settings.getBoolean(Settings.showEcosystemOption)) {
             if (notify) {
@@ -192,7 +192,7 @@ public class SpartanEdition {
 
                 if ((time - checkTime) >= 60_000L) {
                     checkTime = time;
-                    boolean bedrockIsMissingDetection = missingDetection == ResearchEngine.DataType.Bedrock;
+                    boolean bedrockIsMissingDetection = missingDetection == Enums.DataType.Bedrock;
 
                     if (bedrockIsMissingDetection == player.bedrockPlayer) {
                         notify = true;
@@ -243,7 +243,7 @@ public class SpartanEdition {
         }
     }
 
-    private static void sendNotification(SpartanPlayer player, ResearchEngine.DataType dataType) {
+    private static void sendNotification(SpartanPlayer player, Enums.DataType dataType) {
         if (Permissions.isStaff(player)) {
             String message = AwarenessNotifications.getNotification(
                     notificationMessage.replace(type, dataType.toString()).replace(productID, get1_0_ProductID(dataType)) // Keep 1.0 here as it is the base product

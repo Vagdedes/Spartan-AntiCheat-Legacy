@@ -332,7 +332,7 @@ public class CloudConnections {
             String checkName = check.getName();
 
             if (check.toString().equals(columnInformation) || checkName.equalsIgnoreCase(columnInformation)) {
-                ViolationHistory violationHistory = ResearchEngine.getViolationHistory(hackType, ResearchEngine.DataType.Universal, ResearchEngine.getLegitimatePlayers());
+                ViolationHistory violationHistory = ResearchEngine.getViolationHistory(hackType, Enums.DataType.Universal, ResearchEngine.getLegitimatePlayers());
 
                 if (violationHistory == null) {
                     return "No useful information was found for this check, try again later.";
@@ -354,7 +354,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Punishments: ").append(check.canPunish)
                         .append(newLine);
-                softwareInformation.append("Cancel Violation: ").append(CancelViolation.get(hackType, ResearchEngine.DataType.Universal))
+                softwareInformation.append("Cancel Violation: ").append(CancelViolation.get(hackType, Enums.DataType.Universal))
                         .append(newLine);
                 softwareInformation.append("Violation Count: ").append(violationHistory.getCount())
                         .append(newLine);

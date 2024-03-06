@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.configuration;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.functionality.important.Permissions;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
@@ -11,7 +10,6 @@ import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.stability.Chunks;
 import com.vagdedes.spartan.handlers.stability.ResearchEngine;
-import com.vagdedes.spartan.interfaces.listeners.EventsHandler7;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
@@ -47,7 +45,7 @@ public class Config {
     public static Compatibility compatibility = new Compatibility();
 
     static {
-        refreshVariables(false);
+        refreshFields(false);
     }
 
     // Separator
@@ -109,7 +107,7 @@ public class Config {
 
     // Separator
 
-    public static void refreshVariables(boolean clearChecksCache) {
+    public static void refreshFields(boolean clearChecksCache) {
         // Config Utilities Cache
         ConfigUtils.clear();
 
@@ -181,10 +179,10 @@ public class Config {
     public static void create() {
         boolean enabledPlugin = Register.isPluginEnabled();
 
-        // Utilities (Always Before Configuration)
-        refreshVariables(true);
+        // Utilities
+        refreshFields(true);
 
-        // Configuration (Always First)
+        // Configuration
         if (enabledPlugin) {
             createConfigurations(false); // Always First
         } else {
@@ -195,25 +193,15 @@ public class Config {
             Wave.clearCache();
         }
 
-        // Utilities
-        PluginUtils.clear();
-
         // System
+        PluginUtils.clear();
         Cache.clearStorage(!enabledPlugin);
         Chunks.reload(enabledPlugin);
-        Permissions.clear();
-
-        // Features
+        ResearchEngine.refresh(enabledPlugin);
         AwarenessNotifications.refresh();
 
         // Objects
         SpartanPlayer.clear();
-
-        // Handlers
-        ResearchEngine.refresh(true, enabledPlugin);
-
-        // Listeners
-        EventsHandler7.refresh();
     }
 
     public static void reload(Object sender) {

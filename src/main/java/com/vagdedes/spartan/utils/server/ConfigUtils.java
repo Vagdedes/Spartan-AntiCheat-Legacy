@@ -230,18 +230,4 @@ public class ConfigUtils {
         Register.plugin.saveConfig();
         Register.plugin.reloadConfig();
     }
-
-    public static int getDirectorySize(String directory) {
-        File[] files = new File(directory).listFiles();
-        int i = 0;
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile()) {
-                    i++;
-                }
-            }
-        }
-        return i;
-    }
 }

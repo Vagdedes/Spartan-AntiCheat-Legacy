@@ -2,7 +2,25 @@ package com.vagdedes.spartan.abstraction;
 
 import com.vagdedes.spartan.objects.statistics.PatternStorage;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 public abstract class PatternFamily {
+
+    private static final Collection<PatternFamily> instances = Collections.synchronizedList(new ArrayList<>());
+
+    public static void reload() {
+        synchronized (instances) {
+            for (PatternFamily instance : instances) {
+                for (PatternStorage patternStorage : instance.patternValues) {
+                    patternStorage.reload();
+                }
+            }
+        }
+    }
+
+    // Separator
 
     protected final long storeFrequency;
     protected long lastStored;
@@ -12,6 +30,13 @@ public abstract class PatternFamily {
         this.storeFrequency = storeFrequency;
         this.lastStored = 0L;
         this.patternValues = patternValues;
+
+        for (PatternStorage patternStorage : patternValues) {
+            patternStorage.load();
+        }
+        synchronized (instances) {
+            instances.add(this);
+        }
     }
 
     public void store() {

@@ -7,7 +7,6 @@ import com.vagdedes.spartan.configuration.Config;
 import com.vagdedes.spartan.configuration.Settings;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
@@ -18,6 +17,7 @@ import com.vagdedes.spartan.gui.spartan.MainMenu;
 import com.vagdedes.spartan.objects.features.StatisticalProgress;
 import com.vagdedes.spartan.objects.profiling.*;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.objects.statistics.PatternStorage;
 import com.vagdedes.spartan.objects.statistics.ViolationStatistics;
 import com.vagdedes.spartan.objects.system.Check;
 import com.vagdedes.spartan.objects.system.LiveViolation;
@@ -43,8 +43,8 @@ public class ResearchEngine {
     public static final int
             logRequirement = Check.maxViolationsPerCycle,
             profileRequirement = logRequirement / 10,
-            maxRows = Cache.enoughRAM ? 100_000 : 20_000,
-            maxBytes = maxRows * 1024 * 1024;
+            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.01),
+            maxRows = 0; // todo
 
     private static final double minimumAverageMining = 16.0;
 
@@ -56,7 +56,7 @@ public class ResearchEngine {
             isFull = false,
             enoughData = false;
 
-    public static final DataType[] usableDataTypes = new DataType[]{DataType.Java, DataType.Bedrock};
+    public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.Java, Enums.DataType.Bedrock};
     private static StatisticalProgress statisticalProgress = new StatisticalProgress();
 
     private static final Map<String, PlayerProfile> playerProfiles
@@ -88,10 +88,10 @@ public class ResearchEngine {
                     schedulerTicks = cacheRefreshTicks * 10;
 
                     SpartanBukkit.analysisThread.executeIfFree(() -> {
-                        if (isDatabaseMode()) {
-                            refresh(false, Register.isPluginEnabled());
+                        if (Config.sql.isEnabled()) {
+                            refresh(Register.isPluginEnabled());
                         } else if (schedulerTicks % cacheRefreshTicks == 0) {
-                            updateComprehensionCache();
+                            updateCache();
                             MainMenu.refresh();
                         }
                     });
@@ -100,7 +100,7 @@ public class ResearchEngine {
 
                     if (schedulerTicks % cacheRefreshTicks == 0) {
                         SpartanBukkit.analysisThread.executeIfFree(() -> {
-                            updateComprehensionCache();
+                            updateCache();
                             MainMenu.refresh();
                         });
                     }
@@ -110,21 +110,17 @@ public class ResearchEngine {
     }
 
     public static boolean isStorageMode() {
-        return Config.settings.getBoolean("Logs.log_file") || isDatabaseMode();
+        return Config.settings.getBoolean("Logs.log_file") || Config.sql.isEnabled();
     }
 
-    public static DataType[] getDynamicUsableDataTypes(boolean universal) {
-        DataType dataType = SpartanEdition.getMissingDetection();
-        return dataType == null ? (universal ? DataType.values() : usableDataTypes) :
-                dataType == DataType.Bedrock ? (universal ? new DataType[]{DataType.Universal, DataType.Java} : new DataType[]{DataType.Java}) :
-                        (universal ? new DataType[]{DataType.Universal, DataType.Bedrock} : new DataType[]{DataType.Bedrock});
+    public static Enums.DataType[] getDynamicUsableDataTypes(boolean universal) {
+        Enums.DataType dataType = SpartanEdition.getMissingDetection();
+        return dataType == null ? (universal ? Enums.DataType.values() : usableDataTypes) :
+                dataType == Enums.DataType.Bedrock ? (universal ? new Enums.DataType[]{Enums.DataType.Universal, Enums.DataType.Java} : new Enums.DataType[]{Enums.DataType.Java}) :
+                        (universal ? new Enums.DataType[]{Enums.DataType.Universal, Enums.DataType.Bedrock} : new Enums.DataType[]{Enums.DataType.Bedrock});
     }
 
     // Separator
-
-    public static boolean isDatabaseMode() {
-        return Config.sql.isEnabled();
-    }
 
     public static boolean enoughData() {
         if (enoughData) {
@@ -146,56 +142,13 @@ public class ResearchEngine {
         return false;
     }
 
-    public static boolean isFull() {
-        return isFull;
-    }
-
-    // Separator
-
-    public static void refresh(boolean message, boolean enabledPlugin) {
-        Runnable runnable = () -> {
-            // Complete Storage
-            AntiCheatLogs.refresh();
-            Config.sql.refreshDatabase();
-            Criticals.clear();
-
-            if (enabledPlugin) {
-                CloudFeature.refresh(true);
-                String status = recalculateCache();
-                CloudFeature.refresh(false);
-
-                if (message && status != null) {
-                    AwarenessNotifications.forcefullySend(status);
-                }
-            } else {
-                isFull = false;
-                CloudFeature.clear(true);
-                CancelViolation.clear();
-                ViolationStatistics.clear();
-            }
-        };
-
-        if (!SpartanBukkit.isSynchronised()) {
-            runnable.run();
-        } else {
-            SpartanBukkit.analysisThread.executeIfFree(runnable);
-        }
-    }
-
     // Separator
 
     public static String getDetectionInformation(String s) {
-        if (s.contains(PunishmentHistory.kickMessage)
-                || s.contains(PunishmentHistory.warningMessage)
-                || s.contains(PunishmentHistory.punishmentMessage)) {
-            return null;
-        }
         String[] split = s.split("\\), \\(");
         s = split[split.length - 1];
-        return s.substring(0, s.length() - 2);
+        return s.length() < 2 ? null : s.substring(0, s.length() - 2);
     }
-
-    // Separator
 
     public static int getDetectionViolationLevel(String s) {
         int index1 = s.indexOf("(VL: ");
@@ -323,18 +276,20 @@ public class ResearchEngine {
         }
     }
 
-    public static ViolationHistory getViolationHistory(Enums.HackType hackType, DataType dataType, Collection<PlayerProfile> profiles) {
+    // Separator
+
+    public static ViolationHistory getViolationHistory(Enums.HackType hackType, Enums.DataType dataType, Collection<PlayerProfile> profiles) {
         int size = profiles.size();
 
         if (size == 0) {
             return null;
         }
         Collection<PlayerViolation> list = new ArrayList<>(size);
-        boolean universal = dataType == DataType.Universal;
+        boolean universal = dataType == Enums.DataType.Universal;
 
         // Separator
         for (PlayerProfile playerProfile : profiles) {
-            if (universal || ((dataType == DataType.Bedrock) == playerProfile.isBedrockPlayer())) {
+            if (universal || ((dataType == Enums.DataType.Bedrock) == playerProfile.isBedrockPlayer())) {
                 list.addAll(playerProfile.getViolationHistory(hackType).getRawCollection());
             }
         }
@@ -344,8 +299,6 @@ public class ResearchEngine {
         }
         return new ViolationHistory(list, false);
     }
-
-    // Separator
 
     public static double getMiningHistoryAverage(Enums.MiningOre ore) {
         Double average = averageMining.get(ore);
@@ -408,12 +361,18 @@ public class ResearchEngine {
         // Clear Violations
         SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
         boolean foundPlayer = p != null;
+        PlayerProfile profile;
 
         if (foundPlayer) {
+            profile = p.getProfile();
+
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 p.getViolations(hackType).reset();
             }
+        } else {
+            profile = getPlayerProfile(playerName);
         }
+        PatternStorage.delete(profile);
 
         if (isStorageMode()) {
             // Clear Files/Database
@@ -489,8 +448,6 @@ public class ResearchEngine {
         }
         return new ArrayList<>(0);
     }
-
-    // Separator
 
     public static Map<String, String> getLogs() {
         long startTime = System.currentTimeMillis();
@@ -600,18 +557,39 @@ public class ResearchEngine {
         return cache;
     }
 
-    public static int getStorageKey(Enums.HackType hackType, DataType dataType) {
-        return (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + dataType.hashCode();
-    }
-
     // Separator
 
-    private static String recalculateCache() {
+    public static void refresh(boolean enabledPlugin) {
+        Runnable runnable = () -> {
+            // Complete Storage
+            AntiCheatLogs.refresh();
+            Config.sql.refreshDatabase();
+            Criticals.clear();
+
+            if (enabledPlugin) {
+                CloudFeature.refresh(true);
+                buildCache();
+                CloudFeature.refresh(false);
+            } else {
+                isFull = false;
+                CloudFeature.clear(true);
+                CancelViolation.clear();
+                ViolationStatistics.clear();
+            }
+        };
+
+        if (!SpartanBukkit.isSynchronised()) {
+            runnable.run();
+        } else {
+            SpartanBukkit.analysisThread.executeIfFree(runnable);
+        }
+    }
+
+    private static void buildCache() {
         if (isStorageMode()) {
             Map<String, String> logs = getLogs();
 
             // Separator
-            String toReturn;
             int size = logs.size();
 
             if (size > 0) {
@@ -715,26 +693,19 @@ public class ResearchEngine {
                         }
                     }
                     enoughData = false;
-                    updateComprehensionCache();
+                    updateCache();
                     MainMenu.refresh();
-
-                    // Separator
-                    toReturn = "Done loading " + size + " rows of data to the Research Engine.";
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    toReturn = null;
                 }
             } else {
-                toReturn = null;
             }
-            return toReturn;
         } else {
             isFull = false;
-            return "Research Engine will function with memory only due to all log saving options being disabled.";
         }
     }
 
-    private static void updateComprehensionCache() {
+    private static void updateCache() {
         if (!playerProfiles.isEmpty()) {
             Collection<PlayerProfile> playerProfiles;
 
@@ -742,7 +713,7 @@ public class ResearchEngine {
                 playerProfiles = new ArrayList<>(ResearchEngine.playerProfiles.values());
             }
             Enums.HackType[] hackTypes = Enums.HackType.values();
-            DataType[] dataTypes = getDynamicUsableDataTypes(false);
+            Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
             List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();
             int mines = 0, logs = 0, kicks = 0, warnings = 0, punishments = 0;
             ViolationStatistics.calculateData(playerProfiles);
@@ -781,9 +752,9 @@ public class ResearchEngine {
                 for (Enums.HackType hackType : hackTypes) {
                     hackType.getCheck().clearMaxCancelledViolations();
 
-                    for (DataType dataType : dataTypes) {
+                    for (Enums.DataType dataType : dataTypes) {
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
-                            boolean bedrock = dataType == DataType.Bedrock;
+                            boolean bedrock = dataType == Enums.DataType.Bedrock;
                             Map<Integer, ViolationStatistics.TimePeriod> averages = new LinkedHashMap<>();
 
                             for (PlayerProfile playerProfile : playerProfiles) {
@@ -886,28 +857,6 @@ public class ResearchEngine {
 
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 hackType.getCheck().clearMaxCancelledViolations();
-            }
-        }
-    }
-
-    // Separator
-
-    public enum DataType {
-        Java, Bedrock, Universal;
-
-        public final String lowerCase;
-
-        DataType() {
-            switch (this.ordinal()) {
-                case 0:
-                    lowerCase = "java";
-                    break;
-                case 1:
-                    lowerCase = "bedrock";
-                    break;
-                default:
-                    lowerCase = "universal";
-                    break;
             }
         }
     }

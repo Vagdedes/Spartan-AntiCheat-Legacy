@@ -33,7 +33,6 @@ import org.bukkit.event.server.ServerCommandEvent;
 
 public class EventsHandler7 implements Listener {
 
-    private static boolean heavyMovementChecks = false;
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
             NoFall.check,
             IrregularMovements.check,
@@ -43,27 +42,6 @@ public class EventsHandler7 implements Listener {
             ImpossibleInventory.check,
             Exploits.check
     };
-
-    static {
-        refresh();
-    }
-
-    public static void refresh() {
-        heavyMovementChecks = false;
-
-        for (Enums.HackType hackType :
-                new Enums.HackType[]{
-                        NoFall.check,
-                        IrregularMovements.check,
-                        NoSlowdown.check,
-                        Speed.check,
-                        MorePackets.check}) {
-            if (hackType.getCheck().isEnabled(null, null, null)) {
-                heavyMovementChecks = true;
-                break;
-            }
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void PlayerFlight(PlayerToggleFlightEvent e) {
@@ -175,16 +153,14 @@ public class EventsHandler7 implements Listener {
             p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.CHUNK);
             p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.SPRINT);
         }
-        if (heavyMovementChecks) {
-            if (!crawling) {
-                p.getExecutor(Enums.HackType.NoFall).run(cancelled);
-                p.getExecutor(Enums.HackType.NoSlowdown).run(cancelled);
-            }
-            p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
-            p.getExecutor(Enums.HackType.Speed).run(cancelled);
-            p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.WATER);
-            p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
+        if (!crawling) {
+            p.getExecutor(Enums.HackType.NoFall).run(cancelled);
+            p.getExecutor(Enums.HackType.NoSlowdown).run(cancelled);
         }
+        p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
+        p.getExecutor(Enums.HackType.Speed).run(cancelled);
+        p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.WATER);
+        p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

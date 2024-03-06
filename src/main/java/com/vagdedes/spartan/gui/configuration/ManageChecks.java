@@ -148,7 +148,7 @@ public class ManageChecks extends InventoryMenu {
         }
         lore.add("");
 
-        for (ResearchEngine.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
+        for (Enums.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
             lore.add("§7§l" + dataType.toString() + " §r§7Cancel Violation§8:§c " + CancelViolation.get(hackType, dataType));
         }
         if (problematicDetections > 0) {

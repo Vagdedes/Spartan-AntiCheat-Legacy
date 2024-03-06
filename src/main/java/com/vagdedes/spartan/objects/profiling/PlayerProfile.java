@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.objects.profiling;
 
 import com.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
@@ -122,8 +121,8 @@ public class PlayerProfile {
         return skull;
     }
 
-    public ResearchEngine.DataType getDataType() {
-        return isBedrockPlayer() ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
+    public Enums.DataType getDataType() {
+        return isBedrockPlayer() ? Enums.DataType.Bedrock : Enums.DataType.Java;
     }
 
     public boolean isBedrockPlayer() {

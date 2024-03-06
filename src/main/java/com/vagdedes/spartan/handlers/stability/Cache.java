@@ -23,7 +23,6 @@ public class Cache {
 
     private static final List<Object> memory = Collections.synchronizedList(new ArrayList<>());
     public static final int gradeDivisor = 1024;
-    public static final boolean enoughRAM = (Runtime.getRuntime().maxMemory() / gradeDivisor / gradeDivisor) >= 900;
 
     public static void clearCheckCache(SpartanPlayer p) {
         for (Enums.HackType hackType : Enums.HackType.values()) {

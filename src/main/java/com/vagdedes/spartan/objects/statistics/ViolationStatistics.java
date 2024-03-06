@@ -77,7 +77,7 @@ public class ViolationStatistics {
 
     private static void remove(Collection<PlayerProfile> playerProfiles,
                                Enums.HackType hackType,
-                               ResearchEngine.DataType dataType) {
+                               Enums.DataType dataType) {
         for (PlayerProfile profile : playerProfiles) {
             if (profile.getDataType() == dataType) {
                 profile.evidence.remove(hackType, false, true, false);
@@ -92,10 +92,10 @@ public class ViolationStatistics {
 
         if (!playerProfiles.isEmpty() && ResearchEngine.enoughData()) {
             playerProfiles = new ArrayList<>(playerProfiles);
-            ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+            Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
 
             for (Enums.HackType hackType : Enums.HackType.values()) {
-                for (ResearchEngine.DataType dataType : dataTypes) {
+                for (Enums.DataType dataType : dataTypes) {
                     int majorHash = Objects.hash(hackType, dataType);
 
                     if (hackType.getCheck().isEnabled(dataType, null, null)) {
@@ -152,7 +152,7 @@ public class ViolationStatistics {
 
     private static void calculateProfileProbability(Collection<PlayerProfile> playerProfiles,
                                                     Enums.HackType hackType,
-                                                    ResearchEngine.DataType dataType,
+                                                    Enums.DataType dataType,
                                                     int majorHash,
                                                     int totalViolations) {
         Map<Integer, Integer> violationProbability = violationProbabilityPie.get(majorHash);
@@ -210,7 +210,7 @@ public class ViolationStatistics {
 
     private static void judgeProbability(Collection<PlayerProfile> playerProfiles,
                                          Enums.HackType hackType,
-                                         ResearchEngine.DataType dataType,
+                                         Enums.DataType dataType,
                                          int majorHash) {
         synchronized (profileProbabilityWave) {
             Map<Double, Integer> probabilityData = profileProbabilityWave.get(majorHash);

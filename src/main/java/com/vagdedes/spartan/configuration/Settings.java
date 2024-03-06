@@ -28,7 +28,6 @@ public class Settings extends ConfigurationBuilder {
     }
 
     public static final String explosionOption = "Protections.explosion_detection_cooldown",
-            permissionOption = "Important.use_permission_cache", // test server
             showEcosystemOption = "Important.show_ecosystem",
             tpsProtectionOption = "Protections.use_tps_protection",
             maxSupportedLatencyOption = "Protections.max_supported_player_latency",
@@ -87,7 +86,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Protections.disallowed_building", true); // test server
 
         addOption("Important.op_bypass", false);
-        addOption("Important.enable_permissions", true);
         addOption("Important.violations_reset_on_kick", false); // test server
         addOption("Important.modify_server_configuration", false);
         addOption("Important.refresh_inventory_menu", true);

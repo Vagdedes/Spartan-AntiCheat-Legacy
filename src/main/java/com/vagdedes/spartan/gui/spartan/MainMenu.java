@@ -111,13 +111,13 @@ public class MainMenu extends InventoryMenu {
                 + " - " + (tps >= TPS.excellent ? "Excellent" : tps >= TPS.good ? "Good" : tps >= TPS.minimum ? "Mediocre" : "Unstable"));
         long maxMemory = runtime.maxMemory();
         lore.add("§7Server Memory Usage§8: §a" + AlgebraUtils.cut(((maxMemory - runtime.freeMemory()) / ((double) maxMemory)) * 100.0, 2) + "%");
-        lore.add("§7Research Engine§8: §a" + ResearchEngine.getProgress().logs + " Logs" + (ResearchEngine.isFull() ? " §c(Maxed Out)" : ""));
+        lore.add("§7Research Engine§8: §a" + ResearchEngine.getProgress().logs + " Logs");
 
         if (SpartanBukkit.canAdvertise) {
             lore.add("§7Detections Available§8: "
-                    + (SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Java) ? "§a" : "§c") + ResearchEngine.DataType.Java
+                    + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.Java) ? "§a" : "§c") + Enums.DataType.Java
                     + " §8/ "
-                    + (SpartanEdition.hasDetectionsPurchased(ResearchEngine.DataType.Bedrock) ? "§a" : "§c") + ResearchEngine.DataType.Bedrock);
+                    + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.Bedrock) ? "§a" : "§c") + Enums.DataType.Bedrock);
         }
         lore.add("");
         lore.add("§7Left click to §amanage checks§7.");

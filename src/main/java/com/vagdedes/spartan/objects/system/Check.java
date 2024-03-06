@@ -306,7 +306,7 @@ public class Check {
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
-        ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
         this.enabled = new boolean[ResearchEngine.usableDataTypes.length];
 
         if (legacy) {
@@ -316,7 +316,7 @@ public class Check {
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
 
-            for (ResearchEngine.DataType dataType : dataTypes) {
+            for (Enums.DataType dataType : dataTypes) {
                 this.enabled[dataType.ordinal()] = boolValue;
             }
         } else {
@@ -327,7 +327,7 @@ public class Check {
                 setOption("enabled", null);
             }
 
-            for (ResearchEngine.DataType dataType : dataTypes) {
+            for (Enums.DataType dataType : dataTypes) {
                 Object optionValue = getOption(
                         "enabled." + dataType.lowerCase,
                         hasOldOption ? oldOptionValue : true,
@@ -490,11 +490,11 @@ public class Check {
 
     // Separator
 
-    public boolean isEnabled(ResearchEngine.DataType dataType, String world, SpartanPlayer player) {
-        ResearchEngine.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+    public boolean isEnabled(Enums.DataType dataType, String world, SpartanPlayer player) {
+        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
 
         if (dataType == null) {
-            for (ResearchEngine.DataType type : dataTypes) {
+            for (Enums.DataType type : dataTypes) {
                 if (this.enabled[type.ordinal()]) {
                     return true;
                 }
@@ -507,17 +507,17 @@ public class Check {
                 && (player == null || player.getViolations(hackType).getDisableCause() == null);
     }
 
-    public void setEnabled(ResearchEngine.DataType dataType, boolean b) {
-        ResearchEngine.DataType[] dataTypes;
+    public void setEnabled(Enums.DataType dataType, boolean b) {
+        Enums.DataType[] dataTypes;
 
         if (dataType == null) {
             dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
         } else {
             dataTypes = null;
 
-            for (ResearchEngine.DataType type : ResearchEngine.getDynamicUsableDataTypes(false)) {
+            for (Enums.DataType type : ResearchEngine.getDynamicUsableDataTypes(false)) {
                 if (type == dataType) {
-                    dataTypes = new ResearchEngine.DataType[]{dataType};
+                    dataTypes = new Enums.DataType[]{dataType};
                     break;
                 }
             }
@@ -526,7 +526,7 @@ public class Check {
                 return;
             }
         }
-        for (ResearchEngine.DataType type : dataTypes) {
+        for (Enums.DataType type : dataTypes) {
             int ordinal = type.ordinal();
 
             if (enabled[ordinal] != b) {
@@ -880,7 +880,7 @@ public class Check {
         }
     }
 
-    public void setMaxCancelledViolations(ResearchEngine.DataType dataType, Map<Integer, Double> map) {
+    public void setMaxCancelledViolations(Enums.DataType dataType, Map<Integer, Double> map) {
         synchronized (maxCancelledViolations) {
             if (!map.isEmpty()) {
                 for (Map.Entry<Integer, Double> entry : map.entrySet()) {
@@ -903,7 +903,7 @@ public class Check {
         return maxCancelledViolations;
     }
 
-    public int getMaxCancelledViolations(ResearchEngine.DataType dataType, int hash) {
+    public int getMaxCancelledViolations(Enums.DataType dataType, int hash) {
         synchronized (maxCancelledViolations) {
             return maxCancelledViolations.getOrDefault(
                     (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + hash,

@@ -151,7 +151,7 @@ public class BackgroundAPI {
     }
 
     static int getCancelViolation(HackType hackType) {
-        return CancelViolation.get(hackType, ResearchEngine.DataType.Universal);
+        return CancelViolation.get(hackType, Enums.DataType.Universal);
     }
 
     @Deprecated
@@ -166,15 +166,17 @@ public class BackgroundAPI {
         }
     }
 
+    @Deprecated
     static void reloadPermissions() {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            Permissions.clear();
+            AwarenessNotifications.forcefullySend("The API method 'reloadPermissions' has been removed.");
         }
     }
 
+    @Deprecated
     static void reloadPermissions(Player p) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            Permissions.remove(p.getUniqueId());
+            AwarenessNotifications.forcefullySend("The API method 'reloadPermissions' has been removed.");
         }
     }
 
@@ -401,9 +403,10 @@ public class BackgroundAPI {
         AwarenessNotifications.forcefullySend("The API method 'warnPlayer' has been removed.");
     }
 
+    @Deprecated
     static void addPermission(Player p, Permission permission) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            Permissions.add(p, permission);
+            AwarenessNotifications.forcefullySend("The API method 'addPermission' has been removed.");
         }
     }
 

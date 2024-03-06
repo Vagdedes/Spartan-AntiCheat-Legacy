@@ -131,4 +131,24 @@ public class Enums {
     public enum ArmorState {
         Full, Semi, Empty
     }
+
+    public enum DataType {
+        Java, Bedrock, Universal;
+
+        public final String lowerCase;
+
+        DataType() {
+            switch (this.ordinal()) {
+                case 0:
+                    lowerCase = "java";
+                    break;
+                case 1:
+                    lowerCase = "bedrock";
+                    break;
+                default:
+                    lowerCase = "universal";
+                    break;
+            }
+        }
+    }
 }

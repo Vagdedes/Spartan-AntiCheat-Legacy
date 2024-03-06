@@ -37,14 +37,9 @@ import java.util.*;
 public class CommandExecution implements CommandExecutor {
 
     public static final int maxConnectedArgumentLength = 4096;
-    private static final String[] timeCharacters = new String[]{"m", "h", "d", "w", "y"};
 
     private static void buildCommand(CommandSender sender, ChatColor chatColor, String command, String description) {
         ClickableMessage.sendCommand(sender, chatColor + command, description, command);
-    }
-
-    public static boolean isCustomCommand(String command) {
-        return command.length() > 0 && !command.toLowerCase().startsWith(Register.plugin.getName().toLowerCase());
     }
 
     public static boolean spartanMessage(CommandSender sender, boolean isPlayer) {

@@ -266,7 +266,7 @@ public class CloudFeature {
                                 Config.messages.clear();
                                 Config.sql.refreshConfiguration();
                                 Config.compatibility.clear();
-                                Config.refreshVariables(true);
+                                Config.refreshFields(true);
                             }
                         }
                     } catch (Exception e) {

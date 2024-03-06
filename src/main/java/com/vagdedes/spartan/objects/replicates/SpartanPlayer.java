@@ -93,7 +93,7 @@ public class SpartanPlayer {
     public final UUID uuid;
     public final String ipAddress;
     private final Collection<PotionEffect> potionEffects;
-    public final ResearchEngine.DataType dataType;
+    public final Enums.DataType dataType;
     private EntityDamageEvent lastDamageCause;
     private SpartanInventory inventory;
     private SpartanOpenInventory openInventory;
@@ -368,7 +368,7 @@ public class SpartanPlayer {
         this.runCheck = new LinkedHashMap<>(hackTypes.length);
         this.runCheckAccountLag = new LinkedHashMap<>(hackTypes.length);
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
-        this.dataType = bedrockPlayer ? ResearchEngine.DataType.Bedrock : ResearchEngine.DataType.Java;
+        this.dataType = bedrockPlayer ? Enums.DataType.Bedrock : Enums.DataType.Java;
         this.handlers = new Handlers(this);
 
         this.ipAddress = PlayerLimitPerIP.get(p);

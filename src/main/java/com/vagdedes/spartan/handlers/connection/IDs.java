@@ -29,7 +29,7 @@ public class IDs {
 
     static void setUserID(int id) {
         localID = Integer.toString(id);
-        Config.refreshVariables(false);
+        Config.refreshFields(false);
     }
 
     // Platforms

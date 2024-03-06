@@ -79,7 +79,7 @@ public class CrossServerInformation {
                             }
                         }
                     }
-                    Config.refreshVariables(false);
+                    Config.refreshFields(false);
                     Config.createConfigurations(true);
                 }
 

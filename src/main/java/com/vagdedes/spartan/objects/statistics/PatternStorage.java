@@ -1,12 +1,16 @@
 package com.vagdedes.spartan.objects.statistics;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.objects.profiling.PlayerProfile;
 import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
+import java.io.File;
 import java.util.*;
 
 public class PatternStorage {
+
+    private static final String directoryPath = Register.plugin.getDataFolder() + "/learning";
 
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
 
@@ -22,6 +26,34 @@ public class PatternStorage {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
                 instance.blockLocal(profile);
+            }
+        }
+    }
+
+    public static void delete(PlayerProfile profile) {
+        synchronized (instances) {
+            for (PatternStorage instance : instances) {
+                synchronized (instance.blocked) {
+                    synchronized (instance.correlations) {
+                        Map<Integer, Collection<PatternValue>> map = instance.correlations.get(profile);
+
+                        if (map != null) {
+                            if (instance.blocked.remove(profile)) {
+                                synchronized (instance.unavailable) {
+                                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
+                                        instance.unavailable.get(entry.getKey()).removeAll(entry.getValue());
+                                    }
+                                }
+                            } else {
+                                synchronized (instance.available) {
+                                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
+                                        instance.available.get(entry.getKey()).removeAll(entry.getValue());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -61,12 +93,29 @@ public class PatternStorage {
 
     // Separator
 
+    private File getFile() {
+        return new File(directoryPath + this.key + ".yml");
+    }
+
     public void store() {
         // todo
     }
 
-    public void load() {
+    public void reload() {
         // todo
+    }
+
+    public void load() {
+        File file = new File(directoryPath);
+
+        if (!file.exists()) {
+            file.mkdirs();
+        } else if (file.isDirectory()) {
+
+        } else {
+            file.delete();
+            file.mkdirs();
+        }
     }
 
     // Separator
@@ -84,7 +133,7 @@ public class PatternStorage {
     }
 
     public void cache(SpartanPlayer player, Number number) {
-        PatternValue value = new PatternValue(number);
+        PatternValue value = new PatternValue(player.getProfile(), number);
         boolean legitimate = player.getProfile().isLegitimate();
 
         synchronized (legitimate ? this.available : this.unavailable) {
@@ -98,7 +147,7 @@ public class PatternStorage {
                         this.rawCache(
                                 map,
                                 player,
-                                new PatternValue(AlgebraUtils.cut(number.doubleValue(), generalization), value.time),
+                                new PatternValue(player.getProfile(), AlgebraUtils.cut(number.doubleValue(), generalization), value.time),
                                 generalization
                         );
                     }
@@ -167,7 +216,7 @@ public class PatternStorage {
 
     public Collection<PatternValue> get(SpartanPlayer player, int generalization, int count) {
         synchronized (this.correlations) {
-            Map<Integer, Collection<PatternValue>> map = this.correlations.get(player.uuid);
+            Map<Integer, Collection<PatternValue>> map = this.correlations.get(player.getProfile());
 
             if (map != null) {
                 Collection<PatternValue> values = map.get(generalization);
