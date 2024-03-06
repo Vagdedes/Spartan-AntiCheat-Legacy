@@ -66,9 +66,11 @@ public class PatternStorage {
     private final Map<Integer, Collection<PatternValue>> available, unavailable;
     private final Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations;
     private final Set<PlayerProfile> blocked;
+    private boolean store;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
+        this.store = false;
         this.blocked = Collections.synchronizedSet(new HashSet<>());
 
         this.generalizations = new PatternGeneralization[generalizations.length + 1];
@@ -100,8 +102,11 @@ public class PatternStorage {
     // Separator
 
     public void store() {
-        for (PatternGeneralization generalization : this.generalizations) {
-            generalization.store();
+        if (this.store) {
+            for (PatternGeneralization generalization : this.generalizations) {
+                generalization.store();
+            }
+            this.store = false;
         }
     }
 
@@ -147,7 +152,6 @@ public class PatternStorage {
                                                         new PatternValue(
                                                                 profile,
                                                                 number,
-                                                                generalization,
                                                                 time
                                                         ),
                                                         generalization,
@@ -202,6 +206,7 @@ public class PatternStorage {
 
         if (set) {
             generalization.set(value);
+            this.store = true;
         }
     }
 
