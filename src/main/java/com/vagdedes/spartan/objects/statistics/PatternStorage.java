@@ -208,12 +208,9 @@ public class PatternStorage {
 
         synchronized (legitimate ? this.available : this.unavailable) {
             synchronized (this.correlations) {
-                Map<Integer, Collection<PatternValue>> map =
-                        legitimate ? this.available : this.unavailable;
-
                 for (PatternGeneralization generalization : this.generalizations) {
                     this.rawCache(
-                            map,
+                            legitimate ? this.available : this.unavailable,
                             this.correlations,
                             player.getProfile(),
                             new PatternValue(
