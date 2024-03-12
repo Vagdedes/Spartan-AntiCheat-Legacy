@@ -1,11 +1,11 @@
-package com.vagdedes.spartan.gui.spartan;
+package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.spartan.abstraction.functionality.IncompatibleItem;
-import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -75,7 +75,7 @@ public class SupportIncompatibleItems extends InventoryMenu {
         String item = itemStack.getItemMeta().getDisplayName();
 
         if (itemStack.getType() == Material.ARROW && item.equals("§4Back")) {
-            SpartanMenu.mainMenu.open(player);
+            InteractiveInventory.mainMenu.open(player);
         } else if (itemStack.getType() == MaterialUtils.get("redstone_torch")
                 && item.equals("§2Add Item")) {
             Player n = player.getPlayer();

@@ -43,6 +43,7 @@ import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Dama
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.ElytraUse;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Velocity;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
@@ -52,7 +53,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.server.TestServer;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.listeners.EventsHandler7;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.*;
@@ -686,7 +686,7 @@ public class SpartanPlayer {
             }
 
             if (success && clicks.canDistributeInformation()) {
-                SpartanMenu.playerInfo.refresh(name);
+                InteractiveInventory.playerInfo.refresh(name);
             }
         }
     }

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
+import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
 import com.vagdedes.spartan.abstraction.pattern.PatternStorage;
 import com.vagdedes.spartan.abstraction.profiling.*;
@@ -16,11 +17,10 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.spartan.MainMenu;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
@@ -416,7 +416,7 @@ public class ResearchEngine {
         }
         enoughData = false;
         MainMenu.refresh();
-        SpartanMenu.playerInfo.refresh(playerName);
+        InteractiveInventory.playerInfo.refresh(playerName);
     }
 
     // Separator

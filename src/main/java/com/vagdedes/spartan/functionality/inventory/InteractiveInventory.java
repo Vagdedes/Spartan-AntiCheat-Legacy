@@ -1,12 +1,12 @@
-package com.vagdedes.spartan.gui;
+package com.vagdedes.spartan.functionality.inventory;
 
-import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
-import com.vagdedes.spartan.gui.configuration.ManageChecks;
-import com.vagdedes.spartan.gui.info.PlayerInfo;
-import com.vagdedes.spartan.gui.spartan.MainMenu;
-import com.vagdedes.spartan.gui.spartan.SupportIncompatibleItems;
+import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
+import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
+import com.vagdedes.spartan.abstraction.inventory.implementation.ManageChecks;
+import com.vagdedes.spartan.abstraction.inventory.implementation.PlayerInfo;
+import com.vagdedes.spartan.abstraction.inventory.implementation.SupportIncompatibleItems;
 
-public class SpartanMenu {
+public class InteractiveInventory {
 
     public static final ManageChecks manageChecks = new ManageChecks();
     public static final MainMenu mainMenu = new MainMenu();

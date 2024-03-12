@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.functionality;
+package com.vagdedes.spartan.abstraction.inventory;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;

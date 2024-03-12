@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
@@ -18,7 +19,6 @@ import com.vagdedes.spartan.functionality.protections.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.server.TestServer;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -261,7 +261,7 @@ public class LiveViolation {
 
         // Always last
         if (previousLevel != level) {
-            SpartanMenu.playerInfo.refresh(player.name);
+            InteractiveInventory.playerInfo.refresh(player.name);
         }
     }
 
@@ -330,7 +330,7 @@ public class LiveViolation {
         player.getProfile().evidence.remove(hackType, true, false, true);
 
         if (local) {
-            SpartanMenu.playerInfo.refresh(player.name);
+            InteractiveInventory.playerInfo.refresh(player.name);
         }
     }
 
@@ -374,7 +374,7 @@ public class LiveViolation {
         } else {
             disableCause = new CancelCause(reason, pointer, ticks);
         }
-        SpartanMenu.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.name);
     }
 
     public void addSilentCause(String reason, String pointer, int ticks) {
@@ -383,17 +383,17 @@ public class LiveViolation {
         } else {
             silentCause = new CancelCause(reason, pointer, ticks);
         }
-        SpartanMenu.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.name);
     }
 
     public void removeDisableCause() {
         this.disableCause = null;
-        SpartanMenu.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.name);
     }
 
     public void removeSilentCause() {
         this.silentCause = null;
-        SpartanMenu.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.name);
     }
 
     // Separator

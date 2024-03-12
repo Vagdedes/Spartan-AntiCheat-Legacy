@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.listeners;
 
-import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Piston;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.protections.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -98,7 +98,7 @@ public class EventsHandler4 implements Listener {
                     | p.getViolations(Enums.HackType.InventoryClicks).process()) {
                 e.setCancelled(true);
             } else if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                for (InventoryMenu menu : SpartanMenu.menus) {
+                for (InventoryMenu menu : InteractiveInventory.menus) {
                     if (menu.handle(p, title, item, click, slot)) {
                         e.setCancelled(true);
                         break;

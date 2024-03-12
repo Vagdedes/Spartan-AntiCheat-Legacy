@@ -1,22 +1,22 @@
-package com.vagdedes.spartan.gui.spartan;
+package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.filegui.api.FileGUIAPI;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.FileGUI;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
+import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
+import com.vagdedes.spartan.functionality.inventory.Summary;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.server.TestServer;
-import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
-import com.vagdedes.spartan.gui.helpers.Summary;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
@@ -56,7 +56,7 @@ public class MainMenu extends InventoryMenu {
 
                                 if (title.startsWith(name)) {
                                     DiscordMemberCount.ignore();
-                                    SpartanMenu.mainMenu.open(p);
+                                    InteractiveInventory.mainMenu.open(p);
                                 }
                             }
                         });
@@ -204,7 +204,7 @@ public class MainMenu extends InventoryMenu {
                 player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
                 if (clickType == ClickType.LEFT) {
-                    SpartanMenu.manageChecks.open(player);
+                    InteractiveInventory.manageChecks.open(player);
                 } else if (clickType == ClickType.RIGHT) {
                     if (!Permissions.has(player, Permission.RELOAD)) {
                         player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
@@ -241,7 +241,7 @@ public class MainMenu extends InventoryMenu {
             }
         } else if (!name.startsWith(PlayerStateLists.inactiveColour)
                 && !item.equals("Summary")) {
-            SpartanMenu.playerInfo.open(player, false, item);
+            InteractiveInventory.playerInfo.open(player, false, item);
         }
         return true;
     }

@@ -1,15 +1,15 @@
-package com.vagdedes.spartan.gui.configuration;
+package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -49,7 +49,7 @@ public class ManageChecks extends InventoryMenu {
         item = item.startsWith("§") ? item.substring(2) : item;
 
         if (item.equals("Back")) {
-            SpartanMenu.mainMenu.open(player);
+            InteractiveInventory.mainMenu.open(player);
         } else if (item.equals("Disable all checks")) {
             Config.disableChecks();
             open(player);

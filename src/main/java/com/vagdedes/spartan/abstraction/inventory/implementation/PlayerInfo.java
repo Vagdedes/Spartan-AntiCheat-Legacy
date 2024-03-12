@@ -1,23 +1,23 @@
-package com.vagdedes.spartan.gui.info;
+package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.spartan.abstraction.check.CancelCause;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
+import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.helpers.PlayerStateLists;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -282,7 +282,7 @@ public class PlayerInfo extends InventoryMenu {
                                     break;
                                 }
                             }
-                            SpartanMenu.playerInfo.open(o, targetName);
+                            InteractiveInventory.playerInfo.open(o, targetName);
                         }
                     }
                 }
@@ -324,7 +324,7 @@ public class PlayerInfo extends InventoryMenu {
         } else if (item.equals("Close")) {
             player.sendInventoryCloseMessage(null);
         } else if (item.equals("Back")) {
-            SpartanMenu.mainMenu.open(player);
+            InteractiveInventory.mainMenu.open(player);
         } else {
             player.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
         }

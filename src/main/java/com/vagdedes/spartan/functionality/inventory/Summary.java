@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.gui.helpers;
+package com.vagdedes.spartan.functionality.inventory;
 
 import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;

@@ -8,13 +8,13 @@ import com.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
@@ -182,7 +182,7 @@ public class CommandExecution implements CommandExecutor {
             }
             if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
-                    SpartanMenu.mainMenu.open(player);
+                    InteractiveInventory.mainMenu.open(player);
 
                 } else if (args[0].equalsIgnoreCase("Moderation")) {
                     completeMessage(sender, args[0].toLowerCase());
@@ -202,7 +202,7 @@ public class CommandExecution implements CommandExecutor {
                         sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                         return true;
                     }
-                    SpartanMenu.playerInfo.open(player, sender.getName());
+                    InteractiveInventory.playerInfo.open(player, sender.getName());
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
                     if (!DetectionNotifications.hasPermission(player)) {
@@ -240,7 +240,7 @@ public class CommandExecution implements CommandExecutor {
                     sender.sendMessage("");
 
                     if (isPlayer) {
-                        SpartanMenu.supportIncompatibleItems.open(player);
+                        InteractiveInventory.supportIncompatibleItems.open(player);
                     }
 
                 } else {
@@ -298,7 +298,7 @@ public class CommandExecution implements CommandExecutor {
                             sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                             return true;
                         }
-                        SpartanMenu.playerInfo.open(player, ConfigUtils.replaceWithSyntax(args[1], null));
+                        InteractiveInventory.playerInfo.open(player, ConfigUtils.replaceWithSyntax(args[1], null));
 
                     } else if (args[0].equalsIgnoreCase("Toggle")) {
                         String check = args[1];
@@ -577,7 +577,7 @@ public class CommandExecution implements CommandExecutor {
 
                                 if (AlgebraUtils.validInteger(seconds) && MinigameMaker.addItem(args[1], args[2], args[4], args[3], Math.max(Integer.parseInt(seconds), 1))) {
                                     if (isPlayer) {
-                                        SpartanMenu.supportIncompatibleItems.open(player);
+                                        InteractiveInventory.supportIncompatibleItems.open(player);
                                     } else {
                                         sender.sendMessage(ChatColor.GREEN + "Incompatible item successfully added.");
                                     }
@@ -593,7 +593,7 @@ public class CommandExecution implements CommandExecutor {
 
                                 if (AlgebraUtils.validInteger(seconds) && MinigameMaker.addItem(args[1], args[2], args[3], "%spc%", Math.max(Integer.parseInt(seconds), 1))) {
                                     if (isPlayer) {
-                                        SpartanMenu.supportIncompatibleItems.open(player);
+                                        InteractiveInventory.supportIncompatibleItems.open(player);
                                     } else {
                                         sender.sendMessage(ChatColor.GREEN + "Incompatible item successfully added.");
                                     }
@@ -669,7 +669,7 @@ public class CommandExecution implements CommandExecutor {
                         completeMessage(sender, "default");
                     }
                 }
-            } else if (isPlayer && SpartanMenu.mainMenu.open(player, false)) {
+            } else if (isPlayer && InteractiveInventory.mainMenu.open(player, false)) {
                 completeMessage(sender, "commands");
             } else {
                 completeMessage(sender, "default");

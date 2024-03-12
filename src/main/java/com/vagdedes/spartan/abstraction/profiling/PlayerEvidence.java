@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.PatternStorage;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.Latency;
+import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.performance.CancelViolation;
-import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.spartan.MainMenu;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
@@ -158,7 +158,7 @@ public class PlayerEvidence {
                                     "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
                             );
                             this.judgeLocal();
-                            SpartanMenu.playerInfo.refresh(player.name);
+                            InteractiveInventory.playerInfo.refresh(player.name);
                             MainMenu.refresh();
                             return getRawKnowledgeList();
                         }
