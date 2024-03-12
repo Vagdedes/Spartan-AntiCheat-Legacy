@@ -61,16 +61,26 @@ public class AntiCheatLogs {
 
     private static void storeInFile(boolean playerRelated, String information) {
         id++;
-        fileConfiguration.set(
+        Runnable runnable = () -> fileConfiguration.set(
                 syntaxDate(DateTimeFormatter.ofPattern(dateFormat).format(LocalDateTime.now()), id),
                 information
         );
 
         if (!playerRelated || (id % 10) == 0) {
             if (SpartanBukkit.isSynchronised()) {
-                SpartanBukkit.dataThread.executeIfFreeElseHere(AntiCheatLogs::saveRaw);
+                SpartanBukkit.dataThread.executeIfFreeElseHere(() -> {
+                    runnable.run();
+                    saveRaw();
+                });
             } else {
+                runnable.run();
                 saveRaw();
+            }
+        } else {
+            if (SpartanBukkit.isSynchronised()) {
+                SpartanBukkit.dataThread.executeIfFreeElseHere(runnable);
+            } else {
+                runnable.run();
             }
         }
     }

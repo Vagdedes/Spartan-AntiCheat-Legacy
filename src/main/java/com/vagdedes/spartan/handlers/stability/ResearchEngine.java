@@ -370,11 +370,12 @@ public class ResearchEngine {
         } else {
             profile = getPlayerProfile(playerName);
         }
-        PatternStorage.delete(profile);
 
         if (isStorageMode()) {
             // Clear Files/Database
             SpartanBukkit.dataThread.execute(() -> {
+                PatternStorage.delete(profile);
+
                 synchronized (playerProfiles) {
                     playerProfiles.remove(playerName);
                 }
@@ -405,6 +406,8 @@ public class ResearchEngine {
                 }
             });
         } else {
+            SpartanBukkit.dataThread.execute(() -> PatternStorage.delete(profile));
+
             synchronized (playerProfiles) {
                 playerProfiles.remove(playerName);
             }

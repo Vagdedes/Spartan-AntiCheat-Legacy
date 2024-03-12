@@ -5,6 +5,7 @@ import com.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.Objects;
 
 public class PatternGeneralization {
 
@@ -15,24 +16,33 @@ public class PatternGeneralization {
                 + "/" + generalization;
     }
 
+    static final String
+            profileOption = ".profile",
+            patternOption = ".pattern";
+
     // Separator
 
+    final String key;
     final int generalization;
-    private final File file;
-    private final YamlConfiguration configuration;
+    private int count;
+    private File file;
+    private YamlConfiguration configuration;
 
     PatternGeneralization(String key, int generalization) {
+        this.key = key;
         this.generalization = generalization;
-        this.file = new File(path(key, generalization) + "/fileName" + ".yml"); // todo find reliable name
+        this.count = 0;
+        this.reload();
+    }
 
-        if (!this.file.exists()) {
-            try {
-                this.file.createNewFile();
-            } catch (Exception ignored) {
-            }
-        } else if (!this.file.isFile()) {
-            this.file.delete();
+    private void reload() {
+        int hash = Objects.hash(this.key, this.generalization, System.currentTimeMillis());
+        this.file = new File(path(key, generalization) + "/" + hash + ".yml");
 
+        if (this.file.exists()) {
+            this.reload();
+            return;
+        } else {
             try {
                 this.file.createNewFile();
             } catch (Exception ignored) {
@@ -42,14 +52,22 @@ public class PatternGeneralization {
     }
 
     void set(PatternValue value) {
-        this.configuration.set(value.time + ".pattern", value.number);
-        this.configuration.set(value.time + ".profile", value.profile);
+        SpartanBukkit.dataThread.execute(() -> {
+            this.count++;
+            this.configuration.set(value.time + patternOption, value.number);
+            this.configuration.set(value.time + profileOption, value.profile);
+        });
     }
 
     void store() {
         SpartanBukkit.dataThread.execute(() -> {
             try {
                 this.configuration.save(this.file);
+
+                if (this.count >= 10_000) {
+                    this.count = 0;
+                    this.reload();
+                }
             } catch (Exception ignored) {
             }
         });

@@ -28,7 +28,7 @@ public class PatternStorage {
         }
     }
 
-    public static void delete(PlayerProfile profile) { // todo delete in files too
+    public static void delete(PlayerProfile profile) {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
                 synchronized (instance.blocked) {
@@ -36,17 +36,65 @@ public class PatternStorage {
                         Map<Integer, Collection<PatternValue>> map = instance.correlations.get(profile);
 
                         if (map != null) {
+                            Runnable delete = () -> {
+                                for (PatternGeneralization generalization : instance.generalizations) {
+                                    File directory = new File(PatternGeneralization.path(instance.key, generalization.generalization));
+
+                                    if (directory.isDirectory()) {
+                                        File[] files = directory.listFiles();
+
+                                        if (files != null) {
+                                            for (File file : files) {
+                                                if (file.isFile()
+                                                        && file.getName().endsWith(".yml")) {
+                                                    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                                                    Set<String> keys = configuration.getKeys(false);
+
+                                                    if (!keys.isEmpty()) {
+                                                        boolean found = false;
+
+                                                        for (String key : keys) {
+                                                            try {
+                                                                String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
+
+                                                                if (profileName != null
+                                                                        && profileName.equals(profile.getName())) {
+                                                                    configuration.set(key + PatternGeneralization.profileOption, null);
+                                                                    configuration.set(key + PatternGeneralization.patternOption, null);
+                                                                    configuration.set(key, null);
+                                                                    found = true;
+                                                                }
+                                                            } catch (Exception ignored) {
+                                                            }
+                                                        }
+
+                                                        if (found) {
+                                                            try {
+                                                                configuration.save(file);
+                                                            } catch (Exception ignored) {
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            };
+
                             if (instance.blocked.remove(profile)) {
                                 synchronized (instance.unavailable) {
                                     for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
                                         instance.unavailable.get(entry.getKey()).removeAll(entry.getValue());
                                     }
+                                    delete.run();
                                 }
                             } else {
                                 synchronized (instance.available) {
                                     for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
                                         instance.available.get(entry.getKey()).removeAll(entry.getValue());
                                     }
+                                    delete.run();
                                 }
                             }
                         }
@@ -122,7 +170,8 @@ public class PatternStorage {
 
                 if (files != null) {
                     for (File file : files) {
-                        if (file.getName().endsWith(".yml")) {
+                        if (file.isFile()
+                                && file.getName().endsWith(".yml")) {
                             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
                             Set<String> keys = configuration.getKeys(false);
 
@@ -130,12 +179,13 @@ public class PatternStorage {
                                 for (String key : keys) {
                                     try {
                                         long time = Long.parseLong(key);
-                                        Object pattern = configuration.get(key + ".pattern", null);
+                                        Object pattern = configuration.get(key + PatternGeneralization.patternOption, null);
 
                                         if (pattern instanceof Number) {
-                                            String profileName = configuration.getString(key + ".profile", null);
+                                            String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
 
-                                            if (profileName != null && !profileName.isEmpty()) {
+                                            if (profileName != null
+                                                    && !profileName.isEmpty()) {
                                                 PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
                                                 this.rawCache(
                                                         profile.isLegitimate() ? available : unavailable,
