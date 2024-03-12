@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.functionality.synchronicity;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.configuration.Settings;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

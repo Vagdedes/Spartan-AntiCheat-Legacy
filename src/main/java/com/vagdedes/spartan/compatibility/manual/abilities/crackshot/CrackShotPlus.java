@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.compatibility.manual.abilities.crackshot;
 
-import com.vagdedes.spartan.configuration.Compatibility;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.DeeCaaD.CrackShotPlus.Events.WeaponSecondScopeEvent;
 import org.bukkit.event.EventHandler;

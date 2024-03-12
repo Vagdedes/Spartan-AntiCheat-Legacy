@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.gui;
 
-import com.vagdedes.spartan.abstraction.InventoryMenu;
+import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
 import com.vagdedes.spartan.gui.configuration.ManageChecks;
 import com.vagdedes.spartan.gui.info.PlayerInfo;
 import com.vagdedes.spartan.gui.spartan.MainMenu;

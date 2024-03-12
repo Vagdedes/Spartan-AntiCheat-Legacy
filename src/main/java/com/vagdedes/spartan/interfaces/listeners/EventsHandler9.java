@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.interfaces.listeners;
 
-import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.PluginUtils;
 import org.bukkit.entity.Entity;

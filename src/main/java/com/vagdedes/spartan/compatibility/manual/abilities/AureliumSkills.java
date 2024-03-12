@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.compatibility.manual.abilities;
 
 import com.archyx.aureliumskills.api.event.TerraformBlockBreakEvent;
-import com.vagdedes.spartan.configuration.Compatibility;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

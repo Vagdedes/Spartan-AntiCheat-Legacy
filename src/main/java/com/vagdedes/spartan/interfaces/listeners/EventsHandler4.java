@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.interfaces.listeners;
 
-import com.vagdedes.spartan.abstraction.InventoryMenu;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Piston;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.system.Enums;

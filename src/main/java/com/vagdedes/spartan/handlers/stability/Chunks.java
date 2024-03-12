@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.handlers.stability;
 
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;

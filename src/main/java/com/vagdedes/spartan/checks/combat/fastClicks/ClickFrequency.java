@@ -2,10 +2,10 @@ package com.vagdedes.spartan.checks.combat.fastClicks;
 
 // Study of the time between clicks
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Clicks;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Clicks;
 
 public class ClickFrequency extends DetectionExecutor {
 

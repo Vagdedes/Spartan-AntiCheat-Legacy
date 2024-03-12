@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.compatibility.necessary;
 
-import com.vagdedes.spartan.configuration.Compatibility;
-import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import me.vagdedes.ultimatestatistics.api.UltimateStatisticsAPI;
 import me.vagdedes.ultimatestatistics.system.Enums;

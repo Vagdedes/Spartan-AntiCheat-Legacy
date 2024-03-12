@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.interfaces.listeners;
 
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import me.vagdedes.spartan.system.Enums;

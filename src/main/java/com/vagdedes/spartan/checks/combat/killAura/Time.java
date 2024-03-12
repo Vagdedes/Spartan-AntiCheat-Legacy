@@ -2,13 +2,13 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of amount of entities hit in a given time
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Timer;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Timer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.Entity;

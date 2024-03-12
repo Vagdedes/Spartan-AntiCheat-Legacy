@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.handlers.identifiers.simple;
 
-import com.vagdedes.spartan.configuration.Compatibility;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.objects.data.Cooldowns;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.ArrayList;

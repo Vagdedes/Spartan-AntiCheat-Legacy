@@ -1,18 +1,17 @@
 package me.vagdedes.spartan.api;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.important.Permissions;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.protections.Latency;
 import com.vagdedes.spartan.handlers.connection.IDs;
-import com.vagdedes.spartan.handlers.stability.CancelViolation;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
+import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.system.Enums;

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.handlers.identifiers.complex.predictable;
 
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 
 public class GroundCollision {

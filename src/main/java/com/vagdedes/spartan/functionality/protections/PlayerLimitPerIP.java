@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.functionality.protections;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import me.vagdedes.spartan.system.Enums;

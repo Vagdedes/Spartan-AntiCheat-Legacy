@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.compatibility.manual.building;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.configuration.Compatibility;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;

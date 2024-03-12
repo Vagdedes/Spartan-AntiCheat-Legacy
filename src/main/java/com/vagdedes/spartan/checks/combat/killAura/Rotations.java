@@ -2,10 +2,10 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the head movement from before to the moment of hitting an entity, but also the activity of the direction
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
-import com.vagdedes.spartan.objects.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;

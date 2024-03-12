@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.handlers.identifiers.complex.predictable;
 
-import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
 import org.bukkit.event.entity.EntityDamageEvent;

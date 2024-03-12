@@ -1,13 +1,13 @@
 package com.vagdedes.spartan.checks.movement;
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.handlers.stability.CancelViolation;
+import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.objects.data.*;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.*;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

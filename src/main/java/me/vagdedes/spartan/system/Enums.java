@@ -1,7 +1,7 @@
 package me.vagdedes.spartan.system;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.objects.system.Check;
+import com.vagdedes.spartan.abstraction.check.Check;
 
 public class Enums {
 

@@ -2,12 +2,12 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of hitting entities behind other entities or blocks
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.profiling.PlayerProfile;
-import com.vagdedes.spartan.objects.replicates.SpartanBlock;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

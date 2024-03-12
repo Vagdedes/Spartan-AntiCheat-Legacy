@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.interfaces.commands;
 
-import com.vagdedes.spartan.functionality.important.Permissions;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.command.Command;

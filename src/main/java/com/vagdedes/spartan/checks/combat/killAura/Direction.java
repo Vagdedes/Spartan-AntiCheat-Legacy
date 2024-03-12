@@ -2,9 +2,9 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the utility
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.objects.data.Buffer;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.LivingEntity;
 

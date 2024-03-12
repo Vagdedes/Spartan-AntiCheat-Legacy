@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.handlers.tracking;
 
-import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
 import com.vagdedes.spartan.handlers.stability.Cache;
-import com.vagdedes.spartan.objects.data.Decimals;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Decimals;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.util.Vector;
 

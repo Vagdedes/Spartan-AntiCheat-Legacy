@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.handlers.identifiers.complex.unpredictable;
 
 import com.vagdedes.spartan.checks.exploits.Exploits;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;

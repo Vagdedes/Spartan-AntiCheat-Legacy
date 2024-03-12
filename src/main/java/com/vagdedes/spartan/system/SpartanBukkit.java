@@ -1,14 +1,15 @@
 package com.vagdedes.spartan.system;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.handlers.connection.IDs;
 import com.vagdedes.spartan.handlers.connection.Piracy;
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.objects.system.Threads;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.utils.server.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -47,6 +48,10 @@ public class SpartanBukkit {
             dataThread = new Threads.ThreadPool(1L),
             chunkThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L),
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
+
+    public static final MovementPatterns
+            movementPatterns = new MovementPatterns(1_000L);
+    // todo add more
 
     public static final int hashCodeMultiplier = 31;
     public static final long hashCodeMultiplierLong = 31L;

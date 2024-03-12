@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.handlers.stability;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.configuration.Settings;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Bukkit;
 

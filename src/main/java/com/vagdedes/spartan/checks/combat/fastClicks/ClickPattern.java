@@ -2,11 +2,11 @@ package com.vagdedes.spartan.checks.combat.fastClicks;
 
 // Study of the time between clicks in regard to pattern
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Clicks;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class ClickPattern extends DetectionExecutor {

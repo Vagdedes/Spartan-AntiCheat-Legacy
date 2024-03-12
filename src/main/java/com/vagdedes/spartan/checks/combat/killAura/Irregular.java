@@ -2,8 +2,8 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of hits that couldn't have been dealt
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 
 public class Irregular extends DetectionExecutor {

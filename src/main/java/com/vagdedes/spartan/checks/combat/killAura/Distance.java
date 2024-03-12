@@ -2,14 +2,14 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of usually legitimate but abnormally long and consistent distance
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.profiling.PlayerFight;
-import com.vagdedes.spartan.objects.profiling.PlayerOpponent;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
+import com.vagdedes.spartan.abstraction.profiling.PlayerOpponent;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;

@@ -2,17 +2,17 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the utility and yaw/pitch movement when in an active fight
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.configuration.Config;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.handlers.tracking.CombatProcessing;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Decimals;
-import com.vagdedes.spartan.objects.data.Timer;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Decimals;
+import com.vagdedes.spartan.abstraction.data.Timer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

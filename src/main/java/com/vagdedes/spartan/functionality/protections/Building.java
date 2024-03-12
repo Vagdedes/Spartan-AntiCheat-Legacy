@@ -1,15 +1,15 @@
 package com.vagdedes.spartan.functionality.protections;
 
 import com.vagdedes.spartan.checks.exploits.Exploits;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.important.Permissions;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.handlers.stability.TestServer;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.data.Timer;
-import com.vagdedes.spartan.objects.replicates.SpartanBlock;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Timer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.BlockFace;
 

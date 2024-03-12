@@ -1,7 +1,7 @@
 package com.vagdedes.spartan;
 
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;

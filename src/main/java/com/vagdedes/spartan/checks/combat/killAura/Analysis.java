@@ -2,9 +2,9 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the data that has been collected
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.objects.profiling.PlayerFight;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 
 public class Analysis extends DetectionExecutor {
 

@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.handlers.connection;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.functionality.important.Permissions;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.RequestUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;

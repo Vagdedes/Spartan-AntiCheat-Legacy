@@ -1,17 +1,17 @@
 package com.vagdedes.spartan.checks.movement.speed;
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.configuration.Compatibility;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.handlers.stability.DetectionLocation;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Cooldowns;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;

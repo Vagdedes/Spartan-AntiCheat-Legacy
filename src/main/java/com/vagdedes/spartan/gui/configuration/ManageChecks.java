@@ -1,15 +1,15 @@
 package com.vagdedes.spartan.gui.configuration;
 
-import com.vagdedes.spartan.abstraction.InventoryMenu;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
-import com.vagdedes.spartan.functionality.important.Permissions;
+import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.handlers.stability.CancelViolation;
-import com.vagdedes.spartan.handlers.stability.ResearchEngine;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
-import com.vagdedes.spartan.objects.system.Check;
+import com.vagdedes.spartan.functionality.performance.CancelViolation;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;

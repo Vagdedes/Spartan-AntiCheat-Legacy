@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.checks.combat.killAura;
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.objects.data.Buffer;
-import com.vagdedes.spartan.objects.data.Decimals;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Decimals;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

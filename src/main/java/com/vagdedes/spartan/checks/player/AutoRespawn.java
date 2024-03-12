@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.checks.player;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.configuration.Config;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.handlers.stability.Cache;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums.HackType;

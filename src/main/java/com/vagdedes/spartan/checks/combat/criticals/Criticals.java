@@ -1,13 +1,13 @@
 package com.vagdedes.spartan.checks.combat.criticals;
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.important.MultiVersion;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.objects.data.Decimals;
-import com.vagdedes.spartan.objects.data.Handlers;
-import com.vagdedes.spartan.objects.replicates.SpartanLocation;
-import com.vagdedes.spartan.objects.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.data.Decimals;
+import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;

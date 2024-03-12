@@ -2,9 +2,9 @@ package com.vagdedes.spartan.checks.combat.fastClicks;
 
 // Study of the amount of clicks in a given time
 
-import com.vagdedes.spartan.abstraction.CheckExecutor;
-import com.vagdedes.spartan.abstraction.DetectionExecutor;
-import com.vagdedes.spartan.objects.data.Clicks;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.data.Clicks;
 
 public class ClicksPerSecond extends DetectionExecutor {
 
