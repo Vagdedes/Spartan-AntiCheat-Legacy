@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.handlers.stability.TPS;
+import com.vagdedes.spartan.functionality.server.TPS;
 
 public class CancelCause {
 

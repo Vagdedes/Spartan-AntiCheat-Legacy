@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.data;
 
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

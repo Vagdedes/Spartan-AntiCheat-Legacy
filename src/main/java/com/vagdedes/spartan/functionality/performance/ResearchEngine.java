@@ -1,26 +1,26 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
-import com.vagdedes.spartan.checks.combat.criticals.Criticals;
-import com.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
-import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.functionality.synchronicity.SpartanEdition;
-import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudConnections;
-import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.gui.spartan.MainMenu;
-import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
-import com.vagdedes.spartan.abstraction.profiling.*;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.pattern.PatternStorage;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
+import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
+import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
+import com.vagdedes.spartan.abstraction.pattern.PatternStorage;
+import com.vagdedes.spartan.abstraction.profiling.*;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.checks.combat.criticals.Criticals;
+import com.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
+import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.gui.SpartanMenu;
+import com.vagdedes.spartan.gui.spartan.MainMenu;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
@@ -558,12 +558,12 @@ public class ResearchEngine {
             Criticals.clear();
 
             if (enabledPlugin) {
-                CloudFeature.refresh(true);
+                CloudBase.refresh(true);
                 buildCache();
                 PatternFamily.reload();
-                CloudFeature.refresh(false);
+                CloudBase.refresh(false);
             } else {
-                CloudFeature.clear(true);
+                CloudBase.clear(true);
                 CancelViolation.clear();
                 ViolationAnalysis.clear();
             }

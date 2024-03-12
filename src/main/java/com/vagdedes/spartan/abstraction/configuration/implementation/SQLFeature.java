@@ -1,13 +1,14 @@
 package com.vagdedes.spartan.abstraction.configuration.implementation;
 
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
-import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

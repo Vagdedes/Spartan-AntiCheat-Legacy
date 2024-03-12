@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
-import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
+import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.ArrayList;
@@ -26,7 +28,19 @@ public class PlayerViolation {
         this.detection = informationAnalysis.detection;
         this.numbers = informationAnalysis.getNumbers();
         this.isOption = informationAnalysis.isOption(hackType);
-        this.similarityIdentity = FalsePositiveDetection.getSimplifiedNumber(hackType, detection, numbers);
+        int hash = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
+
+        if (!this.numbers.isEmpty()) {
+            for (Number number : this.numbers) {
+                if (number instanceof Double) {
+                    hash = (hash * SpartanBukkit.hashCodeMultiplier)
+                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), GroundUtils.maxHeightLength));
+                } else {
+                    hash = (hash * SpartanBukkit.hashCodeMultiplier) + number.intValue();
+                }
+            }
+        }
+        this.similarityIdentity = hash;
     }
 
     boolean isDetectionEnabled() {

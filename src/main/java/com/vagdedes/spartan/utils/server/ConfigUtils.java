@@ -1,16 +1,16 @@
 package com.vagdedes.spartan.utils.server;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.handlers.stability.TPS;
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

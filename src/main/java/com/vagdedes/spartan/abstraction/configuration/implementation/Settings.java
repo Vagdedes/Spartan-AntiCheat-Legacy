@@ -1,15 +1,15 @@
 package com.vagdedes.spartan.abstraction.configuration.implementation;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.connection.cloud.DiscordWebhooks;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.functionality.synchronicity.DiscordWebhooks;
-import com.vagdedes.spartan.handlers.stability.TestServer;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
@@ -32,7 +32,8 @@ public class Settings extends ConfigurationBuilder {
             tpsProtectionOption = "Protections.use_tps_protection",
             maxSupportedLatencyOption = "Protections.max_supported_player_latency",
             cloudServerNameOption = "Cloud.server_name",
-            cloudSynchroniseFilesOption = "Cloud.synchronise_files";
+            cloudSynchroniseFilesOption = "Cloud.synchronise_files",
+    falsePositiveDetection = "Performance.enable_false_positive_detection";
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
     private Collection<String> punishments = null;
 
@@ -100,8 +101,7 @@ public class Settings extends ConfigurationBuilder {
         addOption("Detections.fall_damage_on_teleport", false); // test server
         addOption("Detections.update_blocks_upon_violation", false);
 
-        addOption("Performance.enable_false_positive_detection", true); // test server
-        addOption("Performance.use_vanilla_ground_method", false); // test server
+        addOption(falsePositiveDetection, true); // test server
         addOption(MaximumCheckedPlayers.option, 100); // test server alternative
 
         addOption(DiscordWebhooks.configurationSection + ".webhook_hex_color", "4caf50");

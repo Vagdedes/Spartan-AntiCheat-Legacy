@@ -2,8 +2,8 @@ package com.vagdedes.spartan.compatibility.manual.building;
 
 import com.bgsoftware.wildtools.api.events.ToolUseEvent;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.protections.CheckDelay;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
@@ -22,7 +22,7 @@ public class WildTools implements Listener {
         Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.WildTools;
 
         if (compatibilityType.isFunctional()) {
-            CheckProtection.evadeCommonFalsePositives(p, compatibilityType,
+            CheckDelay.evadeCommonFalsePositives(p, compatibilityType,
                     new Enums.HackType[]{
                             Enums.HackType.FastBreak,
                             Enums.HackType.BlockReach,

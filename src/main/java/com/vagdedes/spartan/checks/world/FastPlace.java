@@ -1,15 +1,15 @@
 package com.vagdedes.spartan.checks.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
-import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
+import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
@@ -47,7 +47,7 @@ public class FastPlace extends CheckExecutor {
                         if (time <= 50L) {
                             String detection = "type: fast";
 
-                            if (!CloudFeature.isInformationCancelled(hackType, detection)
+                            if (!CloudBase.isInformationCancelled(hackType, detection)
                                     && !player.bedrockPlayer
                                     && hackType.getCheck().getBooleanOption("check_fast", true)
                                     && !Compatibility.CompatibilityType.VeinMiner.isFunctional()

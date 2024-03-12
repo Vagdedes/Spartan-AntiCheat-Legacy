@@ -4,9 +4,9 @@ package com.vagdedes.spartan.checks.combat.fastClicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Clicks;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class ClickPattern extends DetectionExecutor {

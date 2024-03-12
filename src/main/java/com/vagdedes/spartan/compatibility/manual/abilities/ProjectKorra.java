@@ -4,8 +4,8 @@ import com.projectkorra.projectkorra.event.AbilityDamageEntityEvent;
 import com.projectkorra.projectkorra.event.AbilityProgressEvent;
 import com.projectkorra.projectkorra.event.AbilityStartEvent;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.protections.CheckDelay;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
@@ -38,8 +38,8 @@ public class ProjectKorra implements Listener {
     private static void evadeCombatFPs(SpartanPlayer player, int ticks) {
         if (player != null) {
             Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.ProjectKorra;
-            CheckProtection.evadeStandardCombatFPs(player, compatibilityType, ticks);
-            CheckProtection.evadeCommonFalsePositives(player, compatibilityType,
+            CheckDelay.evadeStandardCombatFPs(player, compatibilityType, ticks);
+            CheckDelay.evadeCommonFalsePositives(player, compatibilityType,
                     new Enums.HackType[]{
                             Enums.HackType.Criticals,
                             Enums.HackType.NoSwing,

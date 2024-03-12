@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.HashHelper;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;

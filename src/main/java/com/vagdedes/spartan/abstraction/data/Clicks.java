@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.data;
 
-import com.vagdedes.spartan.handlers.stability.TPS;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.Iterator;

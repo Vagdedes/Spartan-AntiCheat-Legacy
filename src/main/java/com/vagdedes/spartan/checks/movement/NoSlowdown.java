@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.checks.movement;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.server.MaterialUtils;

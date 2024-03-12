@@ -17,9 +17,9 @@ import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolL
 import com.vagdedes.spartan.compatibility.manual.vanilla.DragonPhases;
 import com.vagdedes.spartan.compatibility.manual.world.AcidRain;
 import com.vagdedes.spartan.compatibility.necessary.bedrock.plugins.Floodgate;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.gui.spartan.MainMenu;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.PluginUtils;
@@ -395,7 +395,7 @@ public class Compatibility {
         refresh(false);
     }
 
-    static void create(boolean local) {
+    public static void create(boolean local) {
         file = new File(staticDirectory);
         boolean exists = file.exists();
         bool.clear();

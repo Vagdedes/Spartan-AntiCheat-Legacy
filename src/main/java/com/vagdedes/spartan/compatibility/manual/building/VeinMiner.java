@@ -2,8 +2,8 @@ package com.vagdedes.spartan.compatibility.manual.building;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.protections.CheckDelay;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
@@ -25,7 +25,7 @@ public class VeinMiner implements Listener {
             if (p == null) {
                 return;
             }
-            CheckProtection.evadeCommonFalsePositives(p, Compatibility.CompatibilityType.VeinMiner,
+            CheckDelay.evadeCommonFalsePositives(p, Compatibility.CompatibilityType.VeinMiner,
                     new Enums.HackType[]{
                             Enums.HackType.NoSwing,
                             Enums.HackType.FastBreak,

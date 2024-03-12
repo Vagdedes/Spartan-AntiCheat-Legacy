@@ -1,10 +1,9 @@
 package com.vagdedes.spartan.functionality.performance;
 
-import com.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.handlers.stability.TestServer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
+import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 

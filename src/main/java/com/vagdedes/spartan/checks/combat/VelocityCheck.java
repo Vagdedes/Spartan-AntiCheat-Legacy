@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.checks.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import com.vagdedes.spartan.compatibility.manual.essential.Essentials;
-import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
+import com.vagdedes.spartan.compatibility.manual.essential.Essentials;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;

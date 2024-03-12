@@ -1,15 +1,15 @@
 package com.vagdedes.spartan.system;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
-import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.handlers.connection.IDs;
-import com.vagdedes.spartan.handlers.connection.Piracy;
-import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.check.Threads;
+import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.connection.IDs;
+import com.vagdedes.spartan.functionality.connection.Piracy;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.server.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

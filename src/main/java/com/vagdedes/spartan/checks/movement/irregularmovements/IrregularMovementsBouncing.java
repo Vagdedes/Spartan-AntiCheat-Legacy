@@ -2,8 +2,8 @@ package com.vagdedes.spartan.checks.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;

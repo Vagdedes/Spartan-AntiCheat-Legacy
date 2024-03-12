@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.functionality.configuration;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import me.vagdedes.spartan.system.Enums;

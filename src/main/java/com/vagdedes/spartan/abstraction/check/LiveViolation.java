@@ -1,24 +1,24 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.notifications.clickablemessage.ClickableMessage;
-import com.vagdedes.spartan.functionality.performance.FalsePositiveDetection;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
-import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
-import com.vagdedes.spartan.handlers.stability.Cache;
-import com.vagdedes.spartan.functionality.performance.CancelViolation;
-import com.vagdedes.spartan.functionality.performance.NotifyViolation;
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.management.Cache;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
+import com.vagdedes.spartan.functionality.performance.CancelViolation;
+import com.vagdedes.spartan.functionality.performance.NotifyViolation;
+import com.vagdedes.spartan.functionality.protections.CheckDelay;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.server.TestServer;
+import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -116,8 +116,8 @@ public class LiveViolation {
         }
 
         if (hp != null
-                && !CheckProtection.hasCooldown(player)
-                && !CloudFeature.isPublicInformationCancelled(hackType, hp.information)
+                && !CheckDelay.hasCooldown(player)
+                && !CloudBase.isPublicInformationCancelled(hackType, hp.information)
                 && (disableCause == null
                 || !disableCause.pointerMatches(hp.information))) {
             Check check = hackType.getCheck();
@@ -132,7 +132,9 @@ public class LiveViolation {
             );
 
             if (!player.getProfile().isHacker()
-                    && FalsePositiveDetection.canCorrect(playerViolation, this)) {
+                    && !TestServer.isIdentified()
+                    && Config.settings.getBoolean("Performance.enable_false_positive_detection")
+                    && !this.hasMaxCancelledLevel(playerViolation.similarityIdentity)) {
                 canPrevent = false;
                 falsePositive = true;
             } else {
@@ -231,7 +233,7 @@ public class LiveViolation {
         return getLevel() > 0;
     }
 
-    public boolean hasMaxCancelledLevel(int hash) {
+    private boolean hasMaxCancelledLevel(int hash) {
         Long time;
 
         synchronized (cancelledLevel) {

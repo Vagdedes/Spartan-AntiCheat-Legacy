@@ -1,13 +1,13 @@
 package com.vagdedes.spartan.functionality.protections;
 
-import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
-import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.handlers.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Velocity;
-import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
+import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
+import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Velocity;
+import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
+import com.vagdedes.spartan.functionality.server.Permissions;
 
 public class ServerFlying {
 

@@ -1,15 +1,15 @@
 package com.vagdedes.spartan.gui.configuration;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.gui.SpartanMenu;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.gui.SpartanMenu;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -100,7 +100,7 @@ public class ManageChecks extends InventoryMenu {
         boolean enabled = check.isEnabled(null, null, null),
                 silent = check.isSilent(null),
                 bypassing = Permissions.isBypassing(player, hackType);
-        String[] disabledDetections = CloudFeature.getShownDisabledDetections(hackType);
+        String[] disabledDetections = CloudBase.getShownDisabledDetections(hackType);
         int problematicDetections = check.getProblematicDetections();
         String enabledOption, silentOption, colour, secondColour;
         ItemStack item;

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.configuration.implementation;
 
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
-import com.vagdedes.spartan.functionality.synchronicity.CrossServerInformation;
+import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 
 import java.io.File;
 

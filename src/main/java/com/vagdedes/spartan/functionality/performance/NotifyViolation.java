@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.functionality.performance;
 
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.handlers.stability.TestServer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;

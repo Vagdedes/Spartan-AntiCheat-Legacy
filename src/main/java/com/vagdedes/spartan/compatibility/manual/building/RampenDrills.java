@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.compatibility.manual.building;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.handlers.identifiers.simple.CheckProtection;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.protections.CheckDelay;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.rampen88.drills.events.DrillBreakEvent;
 import me.vagdedes.spartan.system.Enums;
@@ -22,7 +22,7 @@ public class RampenDrills implements Listener {
         Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.RampenDrills;
 
         if (compatibilityType.isFunctional()) {
-            CheckProtection.evadeCommonFalsePositives(p, compatibilityType,
+            CheckDelay.evadeCommonFalsePositives(p, compatibilityType,
                     new Enums.HackType[]{
                             Enums.HackType.FastBreak,
                             Enums.HackType.NoSwing,

@@ -1,14 +1,14 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
-import com.vagdedes.spartan.functionality.synchronicity.cloud.CloudFeature;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
@@ -543,7 +543,7 @@ public class Check {
                     this.enabled[ordinal] = b;
 
                     if (b) {
-                        CloudFeature.refresh(true);
+                        CloudBase.refresh(true);
                     } else {
                         clearConfigurationCache();
 

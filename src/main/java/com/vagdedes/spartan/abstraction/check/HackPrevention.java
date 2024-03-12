@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.checks.movement.speed.Speed;
-import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
-import com.vagdedes.spartan.handlers.stability.TPS;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.checks.movement.speed.Speed;
+import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;

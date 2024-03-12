@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.handlers.stability.TestServer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.system.SpartanBukkit;
 
 import java.util.*;

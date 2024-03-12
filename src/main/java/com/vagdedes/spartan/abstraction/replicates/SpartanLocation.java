@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.handlers.stability.Chunks;
-import com.vagdedes.spartan.handlers.stability.TPS;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.server.Chunks;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;

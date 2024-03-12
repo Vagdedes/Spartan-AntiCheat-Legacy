@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.checks.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.utils.gameplay.*;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;

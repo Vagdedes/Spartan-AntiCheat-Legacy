@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
-import com.vagdedes.spartan.handlers.stability.Cache;
+import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.CharUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

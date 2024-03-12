@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.notifications;
 
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.management.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 

@@ -2,10 +2,10 @@ package com.vagdedes.spartan.checks.combat.fastClicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.block.Action;

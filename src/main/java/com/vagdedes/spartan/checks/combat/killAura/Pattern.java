@@ -4,11 +4,11 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.handlers.stability.Cache;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.functionality.management.Cache;
+import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.math.statistics.LinearRegression;
 import org.bukkit.Location;

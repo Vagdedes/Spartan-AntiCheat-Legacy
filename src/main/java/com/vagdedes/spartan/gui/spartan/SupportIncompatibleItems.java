@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.gui.spartan;
 
+import com.vagdedes.spartan.abstraction.functionality.IncompatibleItem;
 import com.vagdedes.spartan.abstraction.functionality.InventoryMenu;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.gui.SpartanMenu;
-import com.vagdedes.spartan.abstraction.functionality.IncompatibleItem;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

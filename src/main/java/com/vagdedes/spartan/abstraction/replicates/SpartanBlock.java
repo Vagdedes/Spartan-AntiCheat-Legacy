@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
+import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.handlers.stability.Chunks;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Material;

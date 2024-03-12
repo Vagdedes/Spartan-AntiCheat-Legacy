@@ -2,13 +2,13 @@ package com.vagdedes.spartan.checks.movement.speed;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.handlers.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.handlers.stability.DetectionLocation;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
+import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
+import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 

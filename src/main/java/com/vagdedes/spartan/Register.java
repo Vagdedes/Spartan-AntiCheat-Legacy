@@ -1,17 +1,17 @@
 package com.vagdedes.spartan;
 
-import com.vagdedes.spartan.abstraction.configuration.implementation.Config;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.command.CommandExecution;
+import com.vagdedes.spartan.functionality.command.CommandTab;
+import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
+import com.vagdedes.spartan.functionality.connection.Piracy;
+import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
+import com.vagdedes.spartan.functionality.management.Cache;
+import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
-import com.vagdedes.spartan.functionality.protections.PlayerLimitPerIP;
-import com.vagdedes.spartan.handlers.connection.DiscordMemberCount;
-import com.vagdedes.spartan.handlers.connection.Piracy;
-import com.vagdedes.spartan.handlers.identifiers.simple.VehicleAccess;
-import com.vagdedes.spartan.handlers.stability.Cache;
-import com.vagdedes.spartan.interfaces.commands.CommandExecution;
-import com.vagdedes.spartan.interfaces.commands.CommandTab;
-import com.vagdedes.spartan.interfaces.listeners.*;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.listeners.*;
 import com.vagdedes.spartan.utils.server.NetworkUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
