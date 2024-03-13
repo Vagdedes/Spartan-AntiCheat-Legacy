@@ -117,6 +117,8 @@ public class HashHelper {
 
     public static long hashPlayer(SpartanPlayer player) {
         long hash = Boolean.hashCode(player.bedrockPlayer);
+        hash = extendLong(hash, player.getGameMode().toString().hashCode());
+
         Entity vehicle = player.getVehicle();
         Collection<PotionEffect> potionEffects;
 

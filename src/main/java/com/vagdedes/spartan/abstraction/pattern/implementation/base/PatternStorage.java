@@ -269,30 +269,36 @@ public class PatternStorage {
         }
     }
 
-    public void collect(SpartanPlayer player, Number number) {
-        long time = System.currentTimeMillis();
-        boolean legitimate = player.getProfile().isLegitimate();
+    public void collect(SpartanPlayer player, Number number, boolean collect) {
+        if (collect) {
+            long time = System.currentTimeMillis();
+            boolean legitimate = player.getProfile().isLegitimate();
 
-        synchronized (legitimate ? this.available : this.unavailable) {
-            synchronized (this.correlations) {
-                for (PatternGeneralization generalization : this.generalizations) {
-                    this.rawCache(
-                            legitimate ? this.available : this.unavailable,
-                            this.correlations,
-                            player,
-                            player.getProfile(),
-                            new PatternValue(
-                                    HashHelper.hashPlayer(player),
-                                    number,
-                                    generalization,
-                                    time
-                            ),
-                            generalization,
-                            generalization instanceof PatternGeneralizationStorage
-                    );
+            synchronized (legitimate ? this.available : this.unavailable) {
+                synchronized (this.correlations) {
+                    for (PatternGeneralization generalization : this.generalizations) {
+                        this.rawCache(
+                                legitimate ? this.available : this.unavailable,
+                                this.correlations,
+                                player,
+                                player.getProfile(),
+                                new PatternValue(
+                                        HashHelper.hashPlayer(player),
+                                        number,
+                                        generalization,
+                                        time
+                                ),
+                                generalization,
+                                generalization instanceof PatternGeneralizationStorage
+                        );
+                    }
                 }
             }
         }
+    }
+
+    public void collect(SpartanPlayer player, Number number) {
+        collect(player, number, true);
     }
 
     // Separator

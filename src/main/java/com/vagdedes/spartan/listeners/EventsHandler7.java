@@ -129,6 +129,15 @@ public class EventsHandler7 implements Listener {
                 hor = Math.sqrt(preXZ);
         boolean crawling = p.isCrawling();
 
+        // Patterns
+        SpartanBukkit.movementPatterns.distance.collect(p, dis,
+                dis != 0.0 || p.getPreviousNmsDistance() != 0.0);
+        SpartanBukkit.movementPatterns.horizontal.collect(p, hor,
+                hor != 0.0 || p.getPreviousNmsHorizontalDistance() != 0.0);
+        SpartanBukkit.movementPatterns.vertical.collect(p, ver,
+                ver != 0.0 || p.getPreviousNmsVerticalDistance() != 0.0);
+        SpartanBukkit.movementPatterns.store();
+
         // Handlers
         MovementProcessing.run(p, dis, hor, ver, box, crawling);
         CombatProcessing.runMove(p, to);
@@ -144,10 +153,6 @@ public class EventsHandler7 implements Listener {
         if (dis == 0.0) {
             return;
         }
-        SpartanBukkit.movementPatterns.distance.collect(p, dis);
-        SpartanBukkit.movementPatterns.horizontal.collect(p, hor);
-        SpartanBukkit.movementPatterns.vertical.collect(p, ver);
-        SpartanBukkit.movementPatterns.store();
 
         // Detections
         if (!crawling) {
