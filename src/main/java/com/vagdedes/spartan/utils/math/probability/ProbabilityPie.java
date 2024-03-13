@@ -39,7 +39,7 @@ public class ProbabilityPie {
 
     public ProbabilityPie addMultiplePatterns(Collection<PatternValue> values) {
         for (PatternValue value : values) {
-            this.add(value.number);
+            this.add(value.pattern);
         }
         return this;
     }
@@ -109,7 +109,9 @@ public class ProbabilityPie {
     }
 
     public Stream<Map.Entry<Number, Integer>> getChancesRanked() {
-        return this.map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        return this.map.entrySet().stream().sorted(
+                Map.Entry.comparingByValue(Comparator.reverseOrder())
+        );
     }
 
     // Separator

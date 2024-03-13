@@ -32,7 +32,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class PlayerInfo extends InventoryMenu {
 
@@ -248,7 +247,6 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName, null)) { // Do not put player because we calculate it below
             return returnNull ? null : "Disabled";
         }
-        UUID uuid = player.uuid;
         String delay = delayNumber == 0.0 ? "" : " (" + (Math.floor(delayNumber) == delayNumber ? String.valueOf((int) delayNumber) : String.valueOf(delayNumber)) + ")";
         CancelCause disabledCause = player.getViolations(hackType).getDisableCause();
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :

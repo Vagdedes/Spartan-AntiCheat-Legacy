@@ -14,6 +14,7 @@ public abstract class PatternGeneralization {
             profileOption = ".profile",
             patternOption = ".pattern",
             situationOption = ".situation";
+    public static final String[] options = {profileOption, patternOption, situationOption};
 
     // Separator
 

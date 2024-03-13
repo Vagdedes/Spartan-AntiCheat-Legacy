@@ -2,9 +2,8 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.utils.java.HashHelper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -14,87 +13,50 @@ public class PatternStorage {
 
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
 
-    public static void consider(PlayerProfile profile) {
-        synchronized (instances) {
-            for (PatternStorage instance : instances) {
-                instance.objectConsider(profile);
-            }
-        }
-    }
-
-    public static void block(PlayerProfile profile) {
-        synchronized (instances) {
-            for (PatternStorage instance : instances) {
-                instance.objectBlock(profile);
-            }
-        }
-    }
-
     public static void delete(PlayerProfile profile) {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
-                synchronized (instance.blocked) {
-                    synchronized (instance.correlations) {
-                        Map<Integer, Collection<PatternValue>> map = instance.correlations.get(profile);
+                synchronized (instance.correlations) {
+                    if (instance.correlations.remove(profile) != null) {
+                        File directory = new File(PatternGeneralization.path(instance.key));
 
-                        if (map != null) {
-                            Runnable delete = () -> {
-                                File directory = new File(PatternGeneralization.path(instance.key));
+                        if (directory.isDirectory()) {
+                            File[] files = directory.listFiles();
 
-                                if (directory.isDirectory()) {
-                                    File[] files = directory.listFiles();
+                            if (files != null) {
+                                for (File file : files) {
+                                    if (file.isFile()
+                                            && file.getName().endsWith(".yml")) {
+                                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                                        Set<String> keys = configuration.getKeys(false);
 
-                                    if (files != null) {
-                                        for (File file : files) {
-                                            if (file.isFile()
-                                                    && file.getName().endsWith(".yml")) {
-                                                YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                                                Set<String> keys = configuration.getKeys(false);
+                                        if (!keys.isEmpty()) {
+                                            boolean found = false;
 
-                                                if (!keys.isEmpty()) {
-                                                    boolean found = false;
+                                            for (String key : keys) {
+                                                try {
+                                                    String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
 
-                                                    for (String key : keys) {
-                                                        try {
-                                                            String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
-
-                                                            if (profileName != null
-                                                                    && profileName.equals(profile.getName())) {
-                                                                configuration.set(key + PatternGeneralization.profileOption, null);
-                                                                configuration.set(key + PatternGeneralization.patternOption, null);
-                                                                configuration.set(key, null);
-                                                                found = true;
-                                                            }
-                                                        } catch (Exception ignored) {
+                                                    if (profileName != null
+                                                            && profileName.equals(profile.getName())) {
+                                                        for (String option : PatternGeneralization.options) {
+                                                            configuration.set(key + option, null);
                                                         }
+                                                        configuration.set(key, null);
+                                                        found = true;
                                                     }
+                                                } catch (Exception ignored) {
+                                                }
+                                            }
 
-                                                    if (found) {
-                                                        try {
-                                                            configuration.save(file);
-                                                        } catch (Exception ignored) {
-                                                        }
-                                                    }
+                                            if (found) {
+                                                try {
+                                                    configuration.save(file);
+                                                } catch (Exception ignored) {
                                                 }
                                             }
                                         }
                                     }
-                                }
-                            };
-
-                            if (instance.blocked.remove(profile)) {
-                                synchronized (instance.unavailable) {
-                                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
-                                        instance.unavailable.get(entry.getKey()).removeAll(entry.getValue());
-                                    }
-                                    delete.run();
-                                }
-                            } else {
-                                synchronized (instance.available) {
-                                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
-                                        instance.available.get(entry.getKey()).removeAll(entry.getValue());
-                                    }
-                                    delete.run();
                                 }
                             }
                         }
@@ -107,7 +69,7 @@ public class PatternStorage {
     public static void reload() {
         synchronized (instances) {
             for (PatternStorage patternStorage : instances) {
-                patternStorage.objectReload();
+                patternStorage.load();
             }
         }
     }
@@ -116,19 +78,12 @@ public class PatternStorage {
 
     public final String key;
     private final PatternGeneralization[] generalizations;
-    private final Map<Integer, Collection<PatternValue>> available, unavailable;
-    private final Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations;
-    private final Set<PlayerProfile> blocked;
-    private boolean store;
+    private final Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
-        this.store = false;
 
-        this.blocked = Collections.synchronizedSet(new HashSet<>());
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.available = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.unavailable = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.generalizations = new PatternGeneralization[generalizations.length + 1];
         this.generalizations[0] = new PatternGeneralizationStorage(key);
@@ -139,11 +94,6 @@ public class PatternStorage {
             }
         }
 
-        for (PatternGeneralization generalization : this.generalizations) {
-            this.available.put(generalization.generalization, new ArrayList<>());
-            this.unavailable.put(generalization.generalization, new ArrayList<>());
-        }
-
         synchronized (instances) {
             instances.add(this);
         }
@@ -152,18 +102,12 @@ public class PatternStorage {
     // Separator
 
     public void store() {
-        if (this.store) {
-            this.store = false;
-            ((PatternGeneralizationStorage) this.generalizations[0]).store();
-        }
+        ((PatternGeneralizationStorage) this.generalizations[0]).store();
     }
 
-    private void objectReload() {
+    private void load() {
         store();
-        Map<Integer, Collection<PatternValue>>
-                available = new LinkedHashMap<>(),
-                unavailable = new LinkedHashMap<>();
-        Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations = new LinkedHashMap<>();
+        Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations = new LinkedHashMap<>();
         File directory = new File(PatternGeneralization.path(this.key));
 
         if (!directory.exists()) {
@@ -182,6 +126,7 @@ public class PatternStorage {
                             for (String key : keys) {
                                 try {
                                     long time = Long.parseLong(key);
+                                    AwarenessNotifications.forcefullySend(key);
                                     Object pattern = configuration.get(key + PatternGeneralization.patternOption, null);
 
                                     if (pattern instanceof Number) {
@@ -196,9 +141,7 @@ public class PatternStorage {
 
                                                 for (PatternGeneralization generalization : this.generalizations) {
                                                     this.rawCache(
-                                                            profile.isLegitimate() ? available : unavailable,
                                                             correlations,
-                                                            null,
                                                             profile,
                                                             new PatternValue(
                                                                     situation,
@@ -210,10 +153,17 @@ public class PatternStorage {
                                                             false
                                                     );
                                                 }
+                                            } else {
+                                                AwarenessNotifications.forcefullySend("-3");
                                             }
+                                        } else {
+                                            AwarenessNotifications.forcefullySend("-2");
                                         }
+                                    } else {
+                                        AwarenessNotifications.forcefullySend("-1");
                                     }
                                 } catch (Exception ignored) {
+                                    AwarenessNotifications.forcefullySend(ignored.getMessage());
                                 }
                             }
                         }
@@ -226,118 +176,52 @@ public class PatternStorage {
         }
 
         synchronized (this.correlations) {
-            synchronized (this.available) {
-                synchronized (this.unavailable) {
-                    this.correlations.clear();
-                    this.correlations.putAll(correlations);
-
-                    for (Collection<PatternValue> values : this.available.values()) {
-                        values.clear();
-                    }
-                    this.available.putAll(available);
-
-                    for (Collection<PatternValue> values : this.unavailable.values()) {
-                        values.clear();
-                    }
-                    this.unavailable.putAll(unavailable);
-                }
-            }
+            this.correlations.clear();
+            this.correlations.putAll(correlations);
         }
     }
 
     // Separator
 
-    private void rawCache(Map<Integer, Collection<PatternValue>> map,
-                          Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations,
-                          SpartanPlayer player,
+    private void rawCache(Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations,
                           PlayerProfile profile,
                           PatternValue value,
                           PatternGeneralization generalization,
                           boolean set) {
-        map.get(generalization.generalization).add(value);
         correlations.computeIfAbsent(
                 profile,
                 k -> new LinkedHashMap<>()
         ).computeIfAbsent(
                 generalization.generalization,
-                k -> new ArrayList<>()
+                k -> new LinkedHashMap<>()
+        ).computeIfAbsent(
+                value.situation,
+                k -> new LinkedList<>() // todo
         ).add(value);
 
         if (set) {
             ((PatternGeneralizationStorage) generalization).set(profile, value);
-            this.store = true;
         }
     }
 
-    public void collect(SpartanPlayer player, Number number, boolean collect) {
+    public void collect(PlayerProfile profile, long situation, Number number, boolean collect) {
         if (collect) {
             long time = System.currentTimeMillis();
-            boolean legitimate = player.getProfile().isLegitimate();
 
-            synchronized (legitimate ? this.available : this.unavailable) {
-                synchronized (this.correlations) {
-                    for (PatternGeneralization generalization : this.generalizations) {
-                        this.rawCache(
-                                legitimate ? this.available : this.unavailable,
-                                this.correlations,
-                                player,
-                                player.getProfile(),
-                                new PatternValue(
-                                        HashHelper.hashPlayer(player),
-                                        number,
-                                        generalization,
-                                        time
-                                ),
-                                generalization,
-                                generalization instanceof PatternGeneralizationStorage
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    public void collect(SpartanPlayer player, Number number) {
-        collect(player, number, true);
-    }
-
-    // Separator
-
-    private void objectConsider(PlayerProfile profile) {
-        synchronized (this.blocked) {
-            if (this.blocked.contains(profile)) {
-                this.blocked.remove(profile);
-                Map<Integer, Collection<PatternValue>> map = this.correlations.get(profile);
-
-                if (map != null) {
-                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
-                        synchronized (this.available) {
-                            synchronized (this.unavailable) {
-                                this.unavailable.get(entry.getKey()).removeAll(entry.getValue());
-                                this.available.get(entry.getKey()).addAll(entry.getValue());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void objectBlock(PlayerProfile profile) {
-        synchronized (this.blocked) {
-            if (!this.blocked.contains(profile)) {
-                this.blocked.add(profile);
-                Map<Integer, Collection<PatternValue>> map = this.correlations.get(profile);
-
-                if (map != null) {
-                    for (Map.Entry<Integer, Collection<PatternValue>> entry : map.entrySet()) {
-                        synchronized (this.available) {
-                            synchronized (this.unavailable) {
-                                this.available.get(entry.getKey()).removeAll(entry.getValue());
-                                this.unavailable.get(entry.getKey()).addAll(entry.getValue());
-                            }
-                        }
-                    }
+            synchronized (this.correlations) {
+                for (PatternGeneralization generalization : this.generalizations) {
+                    this.rawCache(
+                            this.correlations,
+                            profile,
+                            new PatternValue(
+                                    situation,
+                                    number,
+                                    generalization,
+                                    time
+                            ),
+                            generalization,
+                            generalization instanceof PatternGeneralizationStorage
+                    );
                 }
             }
         }
@@ -345,37 +229,46 @@ public class PatternStorage {
 
     // Separator
 
-    public Collection<PatternValue> get() {
-        return this.get(0);
-    }
-
-    public Collection<PatternValue> get(int generalization) {
-        synchronized (this.available) {
-            return this.available.get(generalization);
-        }
-    }
-
-    public Collection<PatternValue> get(SpartanPlayer player, int count) {
-        return this.get(player, 0, count);
-    }
-
-    public Collection<PatternValue> get(SpartanPlayer player, int generalization, int count) {
+    public Collection<Collection<PatternValue>> getAll(long situation, int generalization) {
         synchronized (this.correlations) {
-            Map<Integer, Collection<PatternValue>> map = this.correlations.get(player.getProfile());
+            Collection<Collection<PatternValue>> collections = new ArrayList<>();
 
-            if (map != null) {
-                Collection<PatternValue> values = map.get(generalization);
+            for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
+                if (entry.getKey().isLegitimate()) {
+                    Collection<PatternValue> situations = entry.getValue().get(generalization).get(situation);
 
-                if (values != null) {
+                    if (situations != null) {
+                        collections.add(situations);
+                    }
+
+                }
+            }
+            return collections;
+        }
+    }
+
+    public Collection<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
+        synchronized (this.correlations) {
+            Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
+
+            if (map == null) {
+                return new ArrayList<>(0);
+            } else {
+                List<PatternValue> values = map.get(generalization).get(situation);
+
+                if (values == null) {
+                    return new ArrayList<>(0);
+                } else {
                     int size = values.size();
 
-                    if (size > count) {
+                    if (size < count) {
+                        return new ArrayList<>(values);
+                    } else {
                         size--;
-                        return new ArrayList<>(values).subList(size - count, size);
+                        return values.subList(size - count, size);
                     }
                 }
             }
-            return new ArrayList<>(0);
         }
     }
 }

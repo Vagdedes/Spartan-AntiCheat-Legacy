@@ -10,13 +10,15 @@ import java.util.Objects;
 
 public class PatternGeneralizationStorage extends PatternGeneralization {
 
-    private int count;
+    private short count;
     private File file;
     private YamlConfiguration configuration;
+    private byte store;
 
     PatternGeneralizationStorage(String key) {
         super(key, 0);
         this.count = 0;
+        this.store = 0;
         this.reload();
     }
 
@@ -41,21 +43,30 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
             this.count++;
             this.configuration.set(value.time + profileOption, profile.getName());
             this.configuration.set(value.time + situationOption, value.situation);
-            this.configuration.set(value.time + patternOption, value.number);
+            this.configuration.set(value.time + patternOption, value.pattern);
+
+            if (this.store == 0) {
+                this.store = 1;
+            }
         });
     }
 
     void store() {
-        SpartanBukkit.dataThread.execute(() -> {
-            try {
-                this.configuration.save(this.file);
+        if (this.store == 1) {
+            this.store = 2;
 
-                if (this.count >= 10_000) {
-                    this.count = 0;
-                    this.reload();
+            SpartanBukkit.dataThread.execute(() -> {
+                try {
+                    this.configuration.save(this.file);
+                    this.store = 0;
+
+                    if (this.count < 0) { // Short has overflowed (32767)
+                        this.count = 0;
+                        this.reload();
+                    }
+                } catch (Exception ignored) {
                 }
-            } catch (Exception ignored) {
-            }
-        });
+            });
+        }
     }
 }

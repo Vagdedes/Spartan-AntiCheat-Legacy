@@ -16,8 +16,11 @@ import com.vagdedes.spartan.functionality.protections.ServerFlying;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.java.HashHelper;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.probability.ProbabilityPredictor;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -30,6 +33,10 @@ import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class EventsHandler7 implements Listener {
 
@@ -130,13 +137,52 @@ public class EventsHandler7 implements Listener {
         boolean crawling = p.isCrawling();
 
         // Patterns
-        SpartanBukkit.movementPatterns.distance.collect(p, dis,
-                dis != 0.0 || p.getPreviousNmsDistance() != 0.0);
-        SpartanBukkit.movementPatterns.horizontal.collect(p, hor,
-                hor != 0.0 || p.getPreviousNmsHorizontalDistance() != 0.0);
-        SpartanBukkit.movementPatterns.vertical.collect(p, ver,
-                ver != 0.0 || p.getPreviousNmsVerticalDistance() != 0.0);
+        long situation = HashHelper.hashPlayer(p);
+        SpartanBukkit.movementPatterns.distance.collect(
+                p.getProfile(),
+                situation,
+                dis,
+                dis != 0.0 || p.getValueOrDefault(p.getPreviousNmsDistance(), 0.0) != 0.0
+        );
+        SpartanBukkit.movementPatterns.horizontal.collect(
+                p.getProfile(),
+                situation,
+                hor,
+                hor != 0.0 || p.getValueOrDefault(p.getPreviousNmsHorizontalDistance(), 0.0) != 0.0
+        );
+        SpartanBukkit.movementPatterns.vertical.collect(
+                p.getProfile(),
+                situation,
+                ver,
+                ver != 0.0 || p.getValueOrDefault(p.getPreviousNmsVerticalDistance(), 0.0) != 0.0
+        );
         SpartanBukkit.movementPatterns.store();
+
+        ProbabilityPredictor probabilityPredictor = new ProbabilityPredictor(
+                SpartanBukkit.movementPatterns.vertical.getAll(situation, GroundUtils.maxHeightLength),
+                SpartanBukkit.movementPatterns.vertical.getSpecific(p.getProfile(), situation, GroundUtils.maxHeightLength, 5)
+        );
+
+        Stream<Map.Entry<Number, Integer>> stream = probabilityPredictor.pie.getChancesRanked();
+        Iterator<Map.Entry<Number, Integer>> iterator = stream.iterator();
+        int count = 0;
+
+        while (iterator.hasNext()) {
+            count++;
+            Map.Entry<Number, Integer> entry = iterator.next();
+            p.debug(false, true,
+                    entry.getKey() + ": " + probabilityPredictor.pie.getChance(entry.getKey()),
+                    ver,
+                    p.getPreviousNmsVerticalDistance()
+            );
+
+            if (count == 5) {
+                break;
+            }
+        }
+        p.debug(false, false,
+                probabilityPredictor.patternSignificance,
+                "-");
 
         // Handlers
         MovementProcessing.run(p, dis, hor, ver, box, crawling);

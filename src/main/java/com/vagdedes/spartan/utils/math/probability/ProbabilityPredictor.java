@@ -1,80 +1,53 @@
 package com.vagdedes.spartan.utils.math.probability;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
-import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.HashHelper;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class ProbabilityPredictor {
 
-    private final Map<Long, ProbabilityPredictorOutcome> outcomes;
+    public final ProbabilityPie pie;
+    public final double patternSignificance;
 
-    private static class ProbabilityPredictorOutcome {
-        public final ProbabilityPie pie;
-        public final double patternSignificance;
+    public ProbabilityPredictor(Collection<Collection<PatternValue>> totalPatterns,
+                                Collection<PatternValue> currentPattern) {
+        this.pie = new ProbabilityPie();
 
-        public ProbabilityPredictorOutcome(ProbabilityPie pie,
-                                           int patternCount,
-                                           int patternSize,
-                                           int allPatternsCount) {
-            this.pie = pie;
-            this.patternSignificance = (patternCount * patternSize) / (double) allPatternsCount;
-        }
-    }
+        if (!totalPatterns.isEmpty()) {
+            long currentPatternHash = HashHelper.collection(currentPattern);
+            int currentPatternSize = currentPattern.size(),
+                    totalPatternSize = 0,
+                    currentPatternCount = 0;
 
-    public ProbabilityPredictor() {
-        this(-1);
-    }
+            for (Collection<PatternValue> allPatterns : totalPatterns) {
+                int allPatternsSize = allPatterns.size();
 
-    public ProbabilityPredictor(int capacity) {
-        this.outcomes = capacity >= 0 ? new LinkedHashMap<>(capacity) : new LinkedHashMap<>();
-    }
-
-    public ProbabilityPredictorOutcome calculate(Collection<PatternValue> allPatterns,
-                                                 Collection<PatternValue> currentPattern) {
-        int allPatternsSize = allPatterns.size();
-
-        if (allPatternsSize > 0) {
-            int patternSize = currentPattern.size();
-            long patternHash = HashHelper.collection(currentPattern);
-
-            if (patternSize <= allPatternsSize) {
-                long hash = (HashHelper.fastCollection(allPatterns) * SpartanBukkit.hashCodeMultiplierLong)
-                        + patternHash;
-                ProbabilityPredictorOutcome outcome = this.outcomes.get(hash);
-
-                if (outcome != null) {
-                    return outcome;
-                } else {
-                    ProbabilityPie pie = new ProbabilityPie();
+                if (currentPatternSize <= allPatternsSize) {
+                    totalPatternSize += allPatternsSize;
                     boolean next = false;
-                    int pos = 0, patternCount = 0;
+                    int pos = currentPatternSize;
 
                     for (PatternValue pattern : allPatterns) {
                         if (next) {
                             next = false;
-                            patternCount++;
-                            pie.add(pattern.number);
+                            currentPatternCount++;
+                            this.pie.add(pattern.pattern);
                         }
-                        if (patternHash == HashHelper.collection(allPatterns, pos - patternSize, pos)) {
+                        if (currentPatternHash == HashHelper.collection(allPatterns, pos - currentPatternSize, pos)) {
                             next = true;
                         }
                         pos++;
                     }
-                    outcome = new ProbabilityPredictorOutcome(
-                            pie,
-                            patternCount,
-                            patternSize,
-                            allPatternsSize
-                    );
-                    this.outcomes.put(hash, outcome);
-                    return outcome;
                 }
             }
+            if (totalPatternSize > 0) {
+                this.patternSignificance = (currentPatternCount * currentPatternSize) / (double) totalPatternSize;
+            } else {
+                this.patternSignificance = 0.0;
+            }
+        } else {
+            this.patternSignificance = 0.0;
         }
-        return null;
     }
 }

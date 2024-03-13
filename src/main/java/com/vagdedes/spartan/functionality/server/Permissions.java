@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
@@ -36,9 +37,7 @@ public class Permissions {
     }
 
     public static boolean has(Player p, Enums.Permission permission) {
-        if (permission == Enums.Permission.BYPASS) {
-            return isBypassing(p, null);
-        } else if (p.hasPermission(permission.getKey())) {
+        if (p.hasPermission(permission.getKey())) {
             return true;
         } else {
             Enums.Permission admin = Enums.Permission.ADMIN;
@@ -52,10 +51,14 @@ public class Permissions {
     // Separator
 
     public static boolean isBypassing(SpartanPlayer p, Enums.HackType hackType) {
-        Player n = p.getPlayer();
-        return n != null && n.isOnline()
-                && (isBypassing(n, null)
-                || hackType != null && isBypassing(n, hackType));
+        if (p.isOp()) {
+            return Config.settings.getBoolean("Important.op_bypass");
+        } else {
+            Player n = p.getPlayer();
+            return n != null && n.isOnline()
+                    && (isBypassing(n, null)
+                    || hackType != null && isBypassing(n, hackType));
+        }
     }
 
     private static boolean isBypassing(Player p, Enums.HackType hackType) {

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -180,12 +179,10 @@ public class PlayerEvidence {
                 type = evidenceType;
 
                 if (evidenceType != EvidenceType.Legitimate) {
-                    PatternStorage.block(this.profile);
                     break;
                 }
             }
         }
-        PatternStorage.consider(this.profile);
         this.type = type;
     }
 

@@ -71,11 +71,11 @@ public class HashHelper {
 
     public static long fastCollection(Collection<PatternValue> collection) {
         Iterator<PatternValue> iterator = collection.iterator();
-        long hash = (iterator.next().number.hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
+        long hash = (iterator.next().pattern.hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
         Number value = null;
 
         while (iterator.hasNext()) {
-            value = iterator.next().number;
+            value = iterator.next().pattern;
         }
         if (value != null) {
             hash = extendLong(hash, value.hashCode());
@@ -84,12 +84,12 @@ public class HashHelper {
     }
 
     public static long collection(Collection<PatternValue> collection) {
-        long result = 1L;
+        long hash = 1L;
 
         for (PatternValue value : collection) {
-            result = extendLong(result, value.number.hashCode());
+            hash = extendLong(hash, value.pattern.hashCode());
         }
-        return result;
+        return hash;
     }
 
     public static long collection(Collection<PatternValue> collection, int start, int end) {
@@ -103,22 +103,20 @@ public class HashHelper {
             }
         }
         while (iterator.hasNext()) {
+            hash = extendLong(hash, iterator.next().pattern.hashCode());
+            pos++;
+
             if (pos >= end) {
-                break;
-            } else {
-                hash = extendLong(hash, iterator.next().number.hashCode());
-                pos++;
+                return hash;
             }
         }
-        return hash;
+        return 1L;
     }
 
     // Separator
 
     public static long hashPlayer(SpartanPlayer player) {
         long hash = Boolean.hashCode(player.bedrockPlayer);
-        hash = extendLong(hash, player.getGameMode().toString().hashCode());
-
         Entity vehicle = player.getVehicle();
         Collection<PotionEffect> potionEffects;
 
@@ -136,12 +134,14 @@ public class HashHelper {
             if (damage != null && TPS.getTick(player) == player.getDamageTick()) {
                 hash = extendLong(hash, damage.getCause().ordinal());
             }
+            hash = extendLong(hash, player.getGameMode().toString().hashCode());
             hash = extendLong(hash, Double.hashCode(player.getEyeHeight()));
             hash = extendLong(hash, Boolean.hashCode(player.isGliding()));
             hash = extendLong(hash, Boolean.hashCode(player.isSwimming()));
             hash = extendLong(hash, Boolean.hashCode(player.isCrawling()));
             hash = extendLong(hash, Boolean.hashCode(player.isFrozen()));
             hash = extendLong(hash, Boolean.hashCode(player.isSneaking()));
+            hash = extendLong(hash, Boolean.hashCode(player.isFlying()));
             potionEffects = player.getActivePotionEffects();
         }
         if (!potionEffects.isEmpty()) {

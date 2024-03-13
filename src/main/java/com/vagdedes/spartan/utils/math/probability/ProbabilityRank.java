@@ -44,7 +44,7 @@ public class ProbabilityRank {
 
     public ProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
         for (PatternValue value : values) {
-            this.numbers.add(value.number.doubleValue());
+            this.numbers.add(value.pattern.doubleValue());
         }
         this.sorted = false;
         return this;
