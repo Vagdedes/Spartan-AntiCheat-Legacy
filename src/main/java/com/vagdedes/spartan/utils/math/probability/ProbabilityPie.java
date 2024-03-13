@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.math.probability;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternValue;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 
 import java.util.Collection;
 import java.util.Comparator;

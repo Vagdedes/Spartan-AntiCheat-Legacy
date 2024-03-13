@@ -1,5 +1,6 @@
-package com.vagdedes.spartan.abstraction.pattern;
+package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,13 +14,10 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     private File file;
     private YamlConfiguration configuration;
 
-    PatternGeneralizationStorage(String key, int generalization) {
-        super(key, generalization);
+    PatternGeneralizationStorage(String key) {
+        super(key, 0);
         this.count = 0;
-
-        if (generalization == 0) {
-            this.reload();
-        }
+        this.reload();
     }
 
     private void reload() {

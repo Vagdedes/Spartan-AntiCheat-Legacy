@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.java;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternValue;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;

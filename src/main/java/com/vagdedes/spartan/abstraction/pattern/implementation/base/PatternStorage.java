@@ -1,5 +1,6 @@
-package com.vagdedes.spartan.abstraction.pattern;
+package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -102,6 +103,14 @@ public class PatternStorage {
         }
     }
 
+    public static void reload() {
+        synchronized (instances) {
+            for (PatternStorage patternStorage : instances) {
+                patternStorage.objectReload();
+            }
+        }
+    }
+
     // Separator
 
     public final String key;
@@ -121,7 +130,7 @@ public class PatternStorage {
         this.unavailable = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.generalizations = new PatternGeneralization[generalizations.length + 1];
-        this.generalizations[0] = new PatternGeneralizationStorage(key, 0);
+        this.generalizations[0] = new PatternGeneralizationStorage(key);
 
         if (generalizations.length > 0) {
             for (int count = 0; count < generalizations.length; count++) {
@@ -148,7 +157,7 @@ public class PatternStorage {
         }
     }
 
-    void reload() {
+    private void objectReload() {
         store();
         Map<Integer, Collection<PatternValue>>
                 available = new LinkedHashMap<>(),

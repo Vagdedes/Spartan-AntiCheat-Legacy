@@ -4,7 +4,7 @@ import com.vagdedes.spartan.Register;
 
 public abstract class PatternGeneralization {
 
-    static String path(String key) {
+    public static String path(String key) {
         return Register.plugin.getDataFolder()
                 + "/learning"
                 + "/" + key;
@@ -16,8 +16,8 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    final String key;
-    final int generalization;
+    public final String key;
+    public final int generalization;
 
 
     public PatternGeneralization(String key, int generalization) {

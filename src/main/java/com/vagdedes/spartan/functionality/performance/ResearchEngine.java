@@ -6,8 +6,7 @@ import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
-import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
-import com.vagdedes.spartan.abstraction.pattern.PatternStorage;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
 import com.vagdedes.spartan.abstraction.profiling.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.checks.combat.criticals.Criticals;
@@ -560,7 +559,7 @@ public class ResearchEngine {
             if (enabledPlugin) {
                 CloudBase.refresh(true);
                 buildCache();
-                PatternFamily.reload();
+                PatternStorage.reload();
                 CloudBase.refresh(false);
             } else {
                 CloudBase.clear(true);
