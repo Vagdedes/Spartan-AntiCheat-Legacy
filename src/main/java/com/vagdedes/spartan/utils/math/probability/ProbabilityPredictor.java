@@ -4,6 +4,8 @@ import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue
 import com.vagdedes.spartan.utils.java.HashHelper;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 public class ProbabilityPredictor {
 
@@ -17,8 +19,7 @@ public class ProbabilityPredictor {
         if (!totalPatterns.isEmpty()) {
             long currentPatternHash = HashHelper.collection(currentPattern);
             int currentPatternSize = currentPattern.size(),
-                    totalPatternSize = 0,
-                    currentPatternCount = 0;
+                    totalPatternSize = 0;
 
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
@@ -26,23 +27,30 @@ public class ProbabilityPredictor {
                 if (currentPatternSize <= allPatternsSize) {
                     totalPatternSize += allPatternsSize;
                     boolean next = false;
-                    int pos = currentPatternSize;
+                    Iterator<PatternValue> iterator = allPatterns.iterator();
+                    LinkedList<PatternValue> list = new LinkedList<>();
 
-                    for (PatternValue pattern : allPatterns) {
+                    for (int i = 0; i < currentPatternSize; i++) {
+                        list.add(iterator.next());
+                    }
+
+                    while (iterator.hasNext()) {
+                        PatternValue pattern = iterator.next();
+                        list.add(pattern);
+                        list.removeFirst();
+
                         if (next) {
                             next = false;
-                            currentPatternCount++;
                             this.pie.add(pattern.pattern);
                         }
-                        if (currentPatternHash == HashHelper.collection(allPatterns, pos - currentPatternSize, pos)) {
+                        if (currentPatternHash == HashHelper.collection(list)) {
                             next = true;
                         }
-                        pos++;
                     }
                 }
             }
             if (totalPatternSize > 0) {
-                this.patternSignificance = (currentPatternCount * currentPatternSize) / (double) totalPatternSize;
+                this.patternSignificance = (this.pie.getTotal() * currentPatternSize) / (double) totalPatternSize;
             } else {
                 this.patternSignificance = 0.0;
             }

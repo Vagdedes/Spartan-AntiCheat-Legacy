@@ -92,23 +92,29 @@ public class HashHelper {
         return hash;
     }
 
-    public static long collection(Collection<PatternValue> collection, int start, int end) {
-        long hash = 1L;
-        int pos = 0;
+    public static long collection(Collection<PatternValue> collection, int fromIndex, int toIndex) {
         Iterator<PatternValue> iterator = collection.iterator();
 
-        if (start > 0) {
-            for (int i = 0; i < start; i++) {
-                iterator.next();
+        if (fromIndex > 0) {
+            for (int i = 0; i < fromIndex; i++) {
+                if (iterator.hasNext()) {
+                    iterator.next();
+                } else {
+                    return 1L;
+                }
             }
+
         }
+        long hash = 1L;
+        int pos = fromIndex;
+
         while (iterator.hasNext()) {
             hash = extendLong(hash, iterator.next().pattern.hashCode());
-            pos++;
 
-            if (pos >= end) {
+            if (pos == toIndex) {
                 return hash;
             }
+            pos++;
         }
         return 1L;
     }

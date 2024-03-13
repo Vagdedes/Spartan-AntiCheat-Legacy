@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -126,7 +125,6 @@ public class PatternStorage {
                             for (String key : keys) {
                                 try {
                                     long time = Long.parseLong(key);
-                                    AwarenessNotifications.forcefullySend(key);
                                     Object pattern = configuration.get(key + PatternGeneralization.patternOption, null);
 
                                     if (pattern instanceof Number) {
@@ -153,17 +151,10 @@ public class PatternStorage {
                                                             false
                                                     );
                                                 }
-                                            } else {
-                                                AwarenessNotifications.forcefullySend("-3");
                                             }
-                                        } else {
-                                            AwarenessNotifications.forcefullySend("-2");
                                         }
-                                    } else {
-                                        AwarenessNotifications.forcefullySend("-1");
                                     }
                                 } catch (Exception ignored) {
-                                    AwarenessNotifications.forcefullySend(ignored.getMessage());
                                 }
                             }
                         }

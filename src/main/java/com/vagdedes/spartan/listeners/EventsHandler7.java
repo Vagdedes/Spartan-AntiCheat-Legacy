@@ -165,24 +165,20 @@ public class EventsHandler7 implements Listener {
 
         Stream<Map.Entry<Number, Integer>> stream = probabilityPredictor.pie.getChancesRanked();
         Iterator<Map.Entry<Number, Integer>> iterator = stream.iterator();
-        int count = 0;
 
         while (iterator.hasNext()) {
-            count++;
             Map.Entry<Number, Integer> entry = iterator.next();
-            p.debug(false, true,
-                    entry.getKey() + ": " + probabilityPredictor.pie.getChance(entry.getKey()),
-                    ver,
-                    p.getPreviousNmsVerticalDistance()
-            );
+            double probability = probabilityPredictor.pie.getChance(entry.getKey());
 
-            if (count == 5) {
-                break;
+            if (probability >= 0.1) {
+                p.debug(false, false,
+                        "Prediction: " + entry.getKey(),
+                        "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
+                        "Actual: " + AlgebraUtils.cut(ver, GroundUtils.maxHeightLength)
+                );
             }
         }
-        p.debug(false, false,
-                probabilityPredictor.patternSignificance,
-                "-");
+        p.debug(false, false, "-");
 
         // Handlers
         MovementProcessing.run(p, dis, hor, ver, box, crawling);
