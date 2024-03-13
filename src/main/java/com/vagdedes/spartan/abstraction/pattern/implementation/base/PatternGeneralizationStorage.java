@@ -39,8 +39,9 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     void set(PlayerProfile profile, PatternValue value) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
+            this.configuration.set(value.time + profileOption, profile.getName());
+            this.configuration.set(value.time + situationOption, value.situation);
             this.configuration.set(value.time + patternOption, value.number);
-            this.configuration.set(value.time + profileOption, profile);
         });
     }
 

@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.utils.java.HashHelper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -150,7 +151,7 @@ public class PatternStorage {
 
     // Separator
 
-    void store() {
+    public void store() {
         if (this.store) {
             this.store = false;
             ((PatternGeneralizationStorage) this.generalizations[0]).store();
@@ -184,25 +185,31 @@ public class PatternStorage {
                                     Object pattern = configuration.get(key + PatternGeneralization.patternOption, null);
 
                                     if (pattern instanceof Number) {
-                                        String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
+                                        long situation = configuration.getLong(key + PatternGeneralization.situationOption, Long.MIN_VALUE);
 
-                                        if (profileName != null
-                                                && !profileName.isEmpty()) {
-                                            PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                        if (situation != Long.MIN_VALUE) {
+                                            String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
 
-                                            for (PatternGeneralization generalization : this.generalizations) {
-                                                this.rawCache(
-                                                        profile.isLegitimate() ? available : unavailable,
-                                                        correlations,
-                                                        profile,
-                                                        new PatternValue(
-                                                                (Number) pattern,
-                                                                generalization,
-                                                                time
-                                                        ),
-                                                        generalization,
-                                                        false
-                                                );
+                                            if (profileName != null
+                                                    && !profileName.isEmpty()) {
+                                                PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+
+                                                for (PatternGeneralization generalization : this.generalizations) {
+                                                    this.rawCache(
+                                                            profile.isLegitimate() ? available : unavailable,
+                                                            correlations,
+                                                            null,
+                                                            profile,
+                                                            new PatternValue(
+                                                                    situation,
+                                                                    (Number) pattern,
+                                                                    generalization,
+                                                                    time
+                                                            ),
+                                                            generalization,
+                                                            false
+                                                    );
+                                                }
                                             }
                                         }
                                     }
@@ -224,10 +231,14 @@ public class PatternStorage {
                     this.correlations.clear();
                     this.correlations.putAll(correlations);
 
-                    this.available.clear();
+                    for (Collection<PatternValue> values : this.available.values()) {
+                        values.clear();
+                    }
                     this.available.putAll(available);
 
-                    this.unavailable.clear();
+                    for (Collection<PatternValue> values : this.unavailable.values()) {
+                        values.clear();
+                    }
                     this.unavailable.putAll(unavailable);
                 }
             }
@@ -238,7 +249,9 @@ public class PatternStorage {
 
     private void rawCache(Map<Integer, Collection<PatternValue>> map,
                           Map<PlayerProfile, Map<Integer, Collection<PatternValue>>> correlations,
-                          PlayerProfile profile, PatternValue value,
+                          SpartanPlayer player,
+                          PlayerProfile profile,
+                          PatternValue value,
                           PatternGeneralization generalization,
                           boolean set) {
         map.get(generalization.generalization).add(value);
@@ -266,14 +279,16 @@ public class PatternStorage {
                     this.rawCache(
                             legitimate ? this.available : this.unavailable,
                             this.correlations,
+                            player,
                             player.getProfile(),
                             new PatternValue(
+                                    HashHelper.hashPlayer(player),
                                     number,
                                     generalization,
                                     time
                             ),
                             generalization,
-                            generalization.generalization == 0
+                            generalization instanceof PatternGeneralizationStorage
                     );
                 }
             }

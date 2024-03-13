@@ -12,7 +12,8 @@ public abstract class PatternGeneralization {
 
     public static final String
             profileOption = ".profile",
-            patternOption = ".pattern";
+            patternOption = ".pattern",
+            situationOption = ".situation";
 
     // Separator
 

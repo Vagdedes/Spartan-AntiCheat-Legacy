@@ -13,15 +13,15 @@ public class MovementPatterns extends PatternFamily {
         this.addPatterns(
                 new PatternStorage[]{
                         this.horizontal = new PatternStorage(
-                                "horizontal",
+                                "movement/distance/horizontal",
                                 new int[]{GroundUtils.maxHeightLength}
                         ),
                         this.vertical = new PatternStorage(
-                                "vertical",
+                                "movement/distance/vertical",
                                 new int[]{GroundUtils.maxHeightLength}
                         ),
                         this.distance = new PatternStorage(
-                                "all",
+                                "movement/distance/all",
                                 new int[]{GroundUtils.maxHeightLength}
                         )
                 }
