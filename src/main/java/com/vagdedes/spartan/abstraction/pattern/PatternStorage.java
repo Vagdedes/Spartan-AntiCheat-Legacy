@@ -121,11 +121,11 @@ public class PatternStorage {
         this.unavailable = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.generalizations = new PatternGeneralization[generalizations.length + 1];
-        this.generalizations[0] = new PatternGeneralization(key, 0);
+        this.generalizations[0] = new PatternGeneralizationStorage(key, 0);
 
         if (generalizations.length > 0) {
             for (int count = 0; count < generalizations.length; count++) {
-                this.generalizations[count + 1] = new PatternGeneralization(key, generalizations[count]);
+                this.generalizations[count + 1] = new PatternGeneralizationMemory(key, generalizations[count]);
             }
         }
 
@@ -144,7 +144,7 @@ public class PatternStorage {
     void store() {
         if (this.store) {
             this.store = false;
-            this.generalizations[0].store();
+            ((PatternGeneralizationStorage) this.generalizations[0]).store();
         }
     }
 
@@ -242,7 +242,7 @@ public class PatternStorage {
         ).add(value);
 
         if (set) {
-            generalization.set(profile, value);
+            ((PatternGeneralizationStorage) generalization).set(profile, value);
             this.store = true;
         }
     }
