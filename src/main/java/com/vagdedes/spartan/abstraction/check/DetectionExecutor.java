@@ -1,11 +1,17 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.probability.ProbabilityPredictor;
 import me.vagdedes.spartan.system.Enums;
+
+import java.util.Iterator;
+import java.util.Map;
 
 public abstract class DetectionExecutor {
 
@@ -61,5 +67,63 @@ public abstract class DetectionExecutor {
 
     protected final void cancel(String verbose) {
         new HackPrevention(player, hackType, verbose, null, 0, false, 0.0, 1);
+    }
+
+    protected final String predictionToString(PatternStorage patternStorage,
+                                              int generalization,
+                                              Number client,
+                                              ProbabilityPredictor probabilityPredictor,
+                                              double allowedChance,
+                                              double maxDeviation,
+                                              double minSignificance) {
+        if (probabilityPredictor.pie.hasData()) {
+            int count = 0;
+            StringBuilder sb = new StringBuilder()
+                    .append("data: ")
+                    .append(patternStorage.key)
+                    .append(", generalization: ")
+                    .append(generalization)
+                    .append(", client: ")
+                    .append(client)
+                    .append(", significance: ")
+                    .append(AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2))
+                    .append(", max-deviation: ")
+                    .append(maxDeviation);
+            boolean run = probabilityPredictor.patternSignificance < minSignificance,
+                    highChanceFound = false;
+            Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getChancesRanked().iterator();
+
+            while (entries.hasNext()) {
+                Map.Entry<Number, Integer> entry = entries.next();
+                double chance = probabilityPredictor.pie.getChanceWithCount(entry.getValue());
+                count++;
+
+                if (!run) {
+                    if (chance >= allowedChance) {
+                        highChanceFound = true;
+                        run = Math.abs(entry.getKey().doubleValue() - client.doubleValue()) > maxDeviation;
+                    } else if (!highChanceFound) {
+                        run = true;
+                    }
+                }
+                if (count <= 10) {
+                    sb.append(entry.getKey())
+                            .append(": ")
+                            .append(AlgebraUtils.cut(chance * 100.0, 2))
+                            .append(", ");
+                } else if (run) {
+                    break;
+                }
+            }
+
+            if (run) {
+                sb.setLength(sb.length() - 2);
+                return sb.toString();
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }

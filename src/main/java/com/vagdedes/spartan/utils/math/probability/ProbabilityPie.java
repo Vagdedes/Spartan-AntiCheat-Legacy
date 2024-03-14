@@ -137,4 +137,8 @@ public class ProbabilityPie {
     public int getTotal() {
         return (int) this.total;
     }
+
+    public boolean hasData() {
+        return this.total > 0;
+    }
 }

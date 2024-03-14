@@ -1908,11 +1908,12 @@ public class SpartanPlayer {
         this.nmsBox.add(box);
         this.nmsFall.add(fall);
 
-        for (List<Double> list : new List[]{
+        for (List list : new List[]{
                 nmsDistance,
                 nmsHorizontalDistance,
                 nmsVerticalDistance,
-                nmsBox
+                nmsBox,
+                nmsFall
         }) {
             if (list.size() > 2) {
                 list.remove(0);
