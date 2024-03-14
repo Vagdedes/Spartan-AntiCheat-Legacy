@@ -8,7 +8,7 @@ public abstract class PatternFamily {
     protected long lastStored;
     protected final PatternStorage[] patterns;
 
-    public PatternFamily(long storeFrequency, int patterns) {
+    protected PatternFamily(long storeFrequency, int patterns) {
         this.storeFrequency = storeFrequency;
         this.lastStored = 0L;
         this.patterns = new PatternStorage[patterns];

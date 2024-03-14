@@ -165,26 +165,6 @@ public class EventsHandler7 implements Listener {
         );
         SpartanBukkit.movementPatterns.store();
 
-        ProbabilityPredictor probabilityPredictor = new ProbabilityPredictor(
-                SpartanBukkit.movementPatterns.vertical.getAll(p, situation, GroundUtils.maxHeightLength),
-                SpartanBukkit.movementPatterns.vertical.getSpecific(p.getProfile(), situation, GroundUtils.maxHeightLength, 5)
-        );
-        Iterator<Map.Entry<Number, Integer>> iterator = probabilityPredictor.pie.getChancesRanked().iterator();
-
-        while (false && iterator.hasNext()) {
-            Map.Entry<Number, Integer> entry = iterator.next();
-            double probability = probabilityPredictor.pie.getChanceWithCount(entry.getValue());
-            p.debug(
-                    false,
-                    false,
-                    "pre: " + entry.getKey(),
-                    "pro: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
-                    "act: " + AlgebraUtils.cut(ver, GroundUtils.maxHeightLength),
-                    "sig: " + AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2) + "%"
-            );
-        }
-        p.debug(false, false, "-", p.getFallDistance());
-
         // Handlers
         MovementProcessing.run(p, dis, hor, ver, box, fall, crawling);
         CombatProcessing.runMove(p, to);

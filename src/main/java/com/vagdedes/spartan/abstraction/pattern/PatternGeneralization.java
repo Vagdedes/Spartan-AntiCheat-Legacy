@@ -22,7 +22,7 @@ public abstract class PatternGeneralization {
     public final int generalization;
 
 
-    public PatternGeneralization(String key, int generalization) {
+    protected PatternGeneralization(String key, int generalization) {
         this.key = key;
         this.generalization = generalization;
     }

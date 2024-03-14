@@ -563,6 +563,7 @@ public class ResearchEngine {
                 CloudBase.refresh(false);
             } else {
                 CloudBase.clear(true);
+                PatternStorage.clear();
                 CancelViolation.clear();
                 ViolationAnalysis.clear();
             }

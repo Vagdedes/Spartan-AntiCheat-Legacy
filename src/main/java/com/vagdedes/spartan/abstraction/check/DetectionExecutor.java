@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityPredictor;
+import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Iterator;
@@ -70,12 +71,12 @@ public abstract class DetectionExecutor {
     }
 
     protected final String linearPredictionToDetection(PatternStorage patternStorage,
-                                              int generalization,
-                                              Number client,
-                                              ProbabilityPredictor probabilityPredictor,
-                                              double allowedChance,
-                                              double maxDeviation,
-                                              double minSignificance) {
+                                                       int generalization,
+                                                       Number client,
+                                                       ProbabilityPredictor probabilityPredictor,
+                                                       double allowedChance,
+                                                       double maxDeviation,
+                                                       double minSignificance) {
         if (probabilityPredictor.pie.hasData()) {
             int count = 0;
             StringBuilder sb = new StringBuilder()
@@ -127,7 +128,11 @@ public abstract class DetectionExecutor {
         }
     }
 
-    protected final String rankedPredictionToDetection() {
+    protected final String rankedPredictionToDetection(PatternStorage patternStorage,
+                                                       int generalization,
+                                                       Number client,
+                                                       ProbabilityRank probabilityRank,
+                                                       double minProbability) {
         return null; // todo
     }
 }

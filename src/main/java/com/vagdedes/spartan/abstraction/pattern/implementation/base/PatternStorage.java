@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -17,6 +18,9 @@ public class PatternStorage {
 
     private static final boolean debug = true;
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
+    private static final Map<Integer, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Integer, PatternSpecificCache> specificCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Integer, PatternRankedCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public static void delete(PlayerProfile profile) {
         synchronized (instances) {
@@ -75,6 +79,21 @@ public class PatternStorage {
         synchronized (instances) {
             for (PatternStorage patternStorage : instances) {
                 patternStorage.load();
+            }
+        }
+    }
+
+    public static void clear() {
+        synchronized (instances) {
+            synchronized (allCache) {
+                synchronized (specificCache) {
+                    synchronized (rankedCache) {
+                        instances.clear();
+                        allCache.clear();
+                        specificCache.clear();
+                        rankedCache.clear();
+                    }
+                }
             }
         }
     }
@@ -196,7 +215,7 @@ public class PatternStorage {
                 k -> new LinkedHashMap<>()
         ).computeIfAbsent(
                 value.situation,
-                k -> new ArrayList<>(1024 * 1024)
+                k -> new ArrayList<>(100)
         );
         list.add(value);
 
@@ -252,33 +271,29 @@ public class PatternStorage {
 
     // Separator
 
-    public Collection<Collection<PatternValue>> getAll(Object playerOrProfile, long situation, int generalization) {
+    public Collection<Collection<PatternValue>> getAll(SpartanPlayer player, long situation, int generalization) {
         if (this.correlations.isEmpty()) {
             return new ArrayList<>(0);
         } else {
-            PlayerProfile profile;
-            SpartanPlayer player;
-
-            if (playerOrProfile instanceof PlayerProfile) {
-                profile = (PlayerProfile) playerOrProfile;
-                player = profile.getSpartanPlayer();
-            } else {
-                player = (SpartanPlayer) playerOrProfile;
-                profile = player.getProfile();
-            }
             boolean notifications = DetectionNotifications.isEnabled(player);
+            int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
 
             if (!notifications) {
-                // todo cache
+                PatternAllCache cache;
+
+                synchronized (allCache) {
+                    cache = allCache.get(hash);
+                }
+                if (cache != null && !cache.isExpired()) {
+                    return cache.data;
+                }
             }
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.correlations.size());
             int count = 0;
 
             synchronized (this.correlations) {
                 for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
-                    if (entry.getKey().isLegitimate()
-                            && (debug
-                            || !entry.getKey().equals(profile))) {
+                    if (entry.getKey().isLegitimate()) {
                         Collection<PatternValue> data = entry.getValue().get(generalization).get(situation);
 
                         if (data != null) {
@@ -295,27 +310,49 @@ public class PatternStorage {
                 if (notifications) {
                     notify(player, situation);
                 }
-                return new ArrayList<>(0);
-            } else {
-                return collections;
+                collections = new ArrayList<>(0);
             }
+            synchronized (allCache) {
+                allCache.put(
+                        hash,
+                        new PatternAllCache(collections)
+                );
+            }
+            return collections;
         }
     }
 
     public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
+        int hash = (profile.hashCode() * SpartanBukkit.hashCodeMultiplier) + Long.hashCode(situation);
+        hash = (hash * SpartanBukkit.hashCodeMultiplier) + generalization;
+        PatternSpecificCache cache;
+
+        synchronized (specificCache) {
+            cache = specificCache.get(hash);
+        }
+        if (cache != null && !cache.isExpired()) {
+            return cache.data;
+        }
         synchronized (this.correlations) {
             Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
+            List<PatternValue> list;
 
             if (map == null) {
-                return new ArrayList<>(0);
+                list = new ArrayList<>(0);
             } else {
                 List<PatternValue> specific = map.get(generalization).get(situation);
 
                 if (specific == null) {
-                    return new ArrayList<>(0);
+                    list = new ArrayList<>(0);
                 } else {
-                    return this.subList(specific, count);
+                    list = this.subList(specific, count);
                 }
+            }
+            synchronized (specificCache) {
+                specificCache.put(
+                        hash,
+                        new PatternSpecificCache(list)
+                );
             }
         }
     }
@@ -326,39 +363,35 @@ public class PatternStorage {
         if (size < count) {
             return new ArrayList<>(0);
         } else {
-            return specific.subList(size - count, size - 1);
+            return specific.subList(size - count, size);
         }
     }
 
     // Separator
 
-    public ProbabilityRank getRanked(Object playerOrProfile, long situation, int generalization) {
+    public ProbabilityRank getRanked(SpartanPlayer player, long situation, int generalization) {
         if (this.correlations.isEmpty()) {
             return new ProbabilityRank();
         } else {
-            PlayerProfile profile;
-            SpartanPlayer player;
-
-            if (playerOrProfile instanceof PlayerProfile) {
-                profile = (PlayerProfile) playerOrProfile;
-                player = profile.getSpartanPlayer();
-            } else {
-                player = (SpartanPlayer) playerOrProfile;
-                profile = player.getProfile();
-            }
             boolean notifications = DetectionNotifications.isEnabled(player);
+            int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
 
-            if (!DetectionNotifications.isEnabled(player)) {
-                // todo cache
+            if (!notifications) {
+                PatternRankedCache cache;
+
+                synchronized (rankedCache) {
+                    cache = rankedCache.get(hash);
+                }
+                if (cache != null && !cache.isExpired()) {
+                    return cache.data;
+                }
             }
             ProbabilityRank rank = new ProbabilityRank(this.correlations.size());
             int profiles = 0;
 
             synchronized (this.correlations) {
                 for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
-                    if (entry.getKey().isLegitimate()
-                            && (debug
-                            || !entry.getKey().equals(profile))) {
+                    if (entry.getKey().isLegitimate()) {
                         Collection<PatternValue> data = entry.getValue().get(generalization).get(situation);
 
                         if (data != null) {
@@ -375,10 +408,15 @@ public class PatternStorage {
                 if (notifications) {
                     notify(player, situation);
                 }
-                return new ProbabilityRank(0);
-            } else {
-                return rank;
+                rank = new ProbabilityRank(0);
             }
+            synchronized (rankedCache) {
+                rankedCache.put(
+                        hash,
+                        new PatternRankedCache(rank)
+                );
+            }
+            return rank;
         }
     }
 }

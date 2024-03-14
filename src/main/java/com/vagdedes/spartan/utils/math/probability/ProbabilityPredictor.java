@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.utils.math.probability;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.utils.java.HashHelper;
 
 import java.util.Collection;
