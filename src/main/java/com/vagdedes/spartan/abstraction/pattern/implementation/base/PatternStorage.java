@@ -354,6 +354,7 @@ public class PatternStorage {
                         new PatternSpecificCache(list)
                 );
             }
+            return list;
         }
     }
 
