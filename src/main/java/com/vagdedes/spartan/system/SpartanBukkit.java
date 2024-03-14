@@ -21,26 +21,7 @@ public class SpartanBukkit {
 
     public static final boolean
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
-            canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isSongoda() || IDs.isPolymart(),
-            hasResourcePack;
-
-    static {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)) {
-            boolean result = false;
-
-            for (String option : new String[]{
-                    Bukkit.getResourcePack(), Bukkit.getResourcePackHash(), Bukkit.getResourcePackPrompt()
-            }) {
-                if (!option.isEmpty()) {
-                    result = true;
-                    break;
-                }
-            }
-            hasResourcePack = result;
-        } else {
-            hasResourcePack = false;
-        }
-    }
+            canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isSongoda() || IDs.isPolymart();
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
@@ -51,7 +32,6 @@ public class SpartanBukkit {
 
     public static final MovementPatterns
             movementPatterns = new MovementPatterns(1_000L);
-    // todo add more
 
     public static final int hashCodeMultiplier = 31;
     public static final long hashCodeMultiplierLong = 31L;

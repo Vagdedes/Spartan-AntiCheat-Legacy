@@ -131,7 +131,7 @@ public class EventsHandler3 implements Listener {
         UUID uuid = n.getUniqueId();
 
         // Protections
-        CheckDelay.cancel(uuid, SpartanBukkit.hasResourcePack ? 100 : 5);
+        CheckDelay.cancel(uuid, 5);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

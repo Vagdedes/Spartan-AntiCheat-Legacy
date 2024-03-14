@@ -238,28 +238,32 @@ public class PatternStorage {
         }
     }
 
-    public Collection<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
+    public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
         synchronized (this.correlations) {
             Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
 
             if (map == null) {
                 return new ArrayList<>(0);
             } else {
-                List<PatternValue> values = map.get(generalization).get(situation);
+                List<PatternValue> specific = map.get(generalization).get(situation);
 
-                if (values == null) {
+                if (specific == null) {
                     return new ArrayList<>(0);
                 } else {
-                    int size = values.size();
-
-                    if (size < count) {
-                        return new ArrayList<>(values);
-                    } else {
-                        size--;
-                        return values.subList(size - count, size);
-                    }
+                    return this.subList(specific, count);
                 }
             }
+        }
+    }
+
+    public List<PatternValue> subList(List<PatternValue> specific, int count) {
+        int size = specific.size();
+
+        if (size < count) {
+            return new ArrayList<>(0);
+        } else {
+            size--;
+            return specific.subList(size - count, size);
         }
     }
 }

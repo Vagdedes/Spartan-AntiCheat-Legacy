@@ -99,6 +99,10 @@ public class ProbabilityPie {
 
     // Separator
 
+    public double getChanceWithCount(int count) {
+        return count / this.total;
+    }
+
     public double getChance(Number number) {
         return this.getChance(number, 0.0);
     }

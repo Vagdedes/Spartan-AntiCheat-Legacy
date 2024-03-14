@@ -36,7 +36,6 @@ import org.bukkit.event.server.ServerCommandEvent;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class EventsHandler7 implements Listener {
 
@@ -138,6 +137,7 @@ public class EventsHandler7 implements Listener {
 
         // Patterns
         long situation = HashHelper.hashPlayer(p);
+        situation = HashHelper.extendLong(situation, HashHelper.hashEnvironment(p, to));
         SpartanBukkit.movementPatterns.distance.collect(
                 p.getProfile(),
                 situation,
@@ -162,21 +162,19 @@ public class EventsHandler7 implements Listener {
                 SpartanBukkit.movementPatterns.vertical.getAll(situation, GroundUtils.maxHeightLength),
                 SpartanBukkit.movementPatterns.vertical.getSpecific(p.getProfile(), situation, GroundUtils.maxHeightLength, 5)
         );
-
-        Stream<Map.Entry<Number, Integer>> stream = probabilityPredictor.pie.getChancesRanked();
-        Iterator<Map.Entry<Number, Integer>> iterator = stream.iterator();
+        Iterator<Map.Entry<Number, Integer>> iterator = probabilityPredictor.pie.getChancesRanked().iterator();
 
         while (iterator.hasNext()) {
             Map.Entry<Number, Integer> entry = iterator.next();
-            double probability = probabilityPredictor.pie.getChance(entry.getKey());
-
-            if (probability >= 0.1) {
-                p.debug(false, false,
-                        "Prediction: " + entry.getKey(),
-                        "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
-                        "Actual: " + AlgebraUtils.cut(ver, GroundUtils.maxHeightLength)
-                );
-            }
+            double probability = probabilityPredictor.pie.getChanceWithCount(entry.getValue());
+            p.debug(
+                    false,
+                    false,
+                    "pre: " + entry.getKey(),
+                    "pro: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
+                    "act: " + AlgebraUtils.cut(ver, GroundUtils.maxHeightLength),
+                    "sig: " + AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2) + "%"
+            );
         }
         p.debug(false, false, "-");
 
