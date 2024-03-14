@@ -133,12 +133,13 @@ public class EventsHandler7 implements Listener {
                 box = toY - to.getBlockY(),
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
+        float fall = p.getFallDistance();
         boolean crawling = p.isCrawling();
 
         // Patterns
         long situation = HashHelper.hashPlayer(p);
         situation = HashHelper.extendLong(situation, HashHelper.hashEnvironment(p, to));
-        SpartanBukkit.movementPatterns.distance.collect(
+        SpartanBukkit.movementPatterns.all.collect(
                 p.getProfile(),
                 situation,
                 dis,
@@ -156,15 +157,21 @@ public class EventsHandler7 implements Listener {
                 ver,
                 ver != 0.0 || p.getValueOrDefault(p.getPreviousNmsVerticalDistance(), 0.0) != 0.0
         );
+        SpartanBukkit.movementPatterns.fall.collect(
+                p.getProfile(),
+                situation,
+                fall,
+                fall != 0.0 || p.getValueOrDefault(p.getPreviousNmsFall(), 0.0f) != 0.0
+        );
         SpartanBukkit.movementPatterns.store();
 
         ProbabilityPredictor probabilityPredictor = new ProbabilityPredictor(
-                SpartanBukkit.movementPatterns.vertical.getAll(situation, GroundUtils.maxHeightLength),
+                SpartanBukkit.movementPatterns.vertical.getAll(p.getProfile(), situation, GroundUtils.maxHeightLength),
                 SpartanBukkit.movementPatterns.vertical.getSpecific(p.getProfile(), situation, GroundUtils.maxHeightLength, 5)
         );
         Iterator<Map.Entry<Number, Integer>> iterator = probabilityPredictor.pie.getChancesRanked().iterator();
 
-        while (iterator.hasNext()) {
+        while (false && iterator.hasNext()) {
             Map.Entry<Number, Integer> entry = iterator.next();
             double probability = probabilityPredictor.pie.getChanceWithCount(entry.getValue());
             p.debug(
@@ -176,10 +183,10 @@ public class EventsHandler7 implements Listener {
                     "sig: " + AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2) + "%"
             );
         }
-        p.debug(false, false, "-");
+        p.debug(false, false, "-", p.getFallDistance());
 
         // Handlers
-        MovementProcessing.run(p, dis, hor, ver, box, crawling);
+        MovementProcessing.run(p, dis, hor, ver, box, fall, crawling);
         CombatProcessing.runMove(p, to);
 
         // Detections

@@ -102,7 +102,10 @@ public class MainMenu extends InventoryMenu {
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
         Runtime runtime = Runtime.getRuntime();
-        lore.add("§7Server Type§8: §a" + (TestServer.isIdentified() ? "Testing (" + TestServer.getIdentification() + ")" : "Production"));
+
+        if (TestServer.isIdentified()) {
+            lore.add("§7Test Server§8: §aType " + TestServer.getIdentification());
+        }
         if (!MultiVersion.unknownFork || !MultiVersion.other) {
             lore.add("§7Server Information§8: §a" + (MultiVersion.unknownFork ? "Version" : MultiVersion.fork())
                     + (MultiVersion.other ? "" : " " + MultiVersion.versionString()));

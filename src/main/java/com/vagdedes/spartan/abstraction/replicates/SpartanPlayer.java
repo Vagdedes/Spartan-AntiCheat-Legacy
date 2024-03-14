@@ -135,6 +135,7 @@ public class SpartanPlayer {
     private final List<Double>
             nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
             nmsBox;
+    private final List<Float> nmsFall;
     private double
             customDistance, customHorizontalDistance, customVerticalDistance;
     private long
@@ -406,6 +407,7 @@ public class SpartanPlayer {
         this.nmsHorizontalDistance = Collections.synchronizedList(new LinkedList<>());
         this.nmsVerticalDistance = Collections.synchronizedList(new LinkedList<>());
         this.nmsBox = Collections.synchronizedList(new LinkedList<>());
+        this.nmsFall = Collections.synchronizedList(new LinkedList<>());
         this.lastFall = 0L;
         this.lastOffSprint = 0L;
         this.lastJump = 0L;
@@ -1898,11 +1900,13 @@ public class SpartanPlayer {
     public synchronized void setNmsDistance(double distance,
                                             double horizontal,
                                             double vertical,
-                                            double box) {
+                                            double box,
+                                            float fall) {
         this.nmsDistance.add(distance);
         this.nmsHorizontalDistance.add(horizontal);
         this.nmsVerticalDistance.add(vertical);
         this.nmsBox.add(box);
+        this.nmsFall.add(fall);
 
         for (List<Double> list : new List[]{
                 nmsDistance,
@@ -1917,6 +1921,10 @@ public class SpartanPlayer {
     }
 
     public double getValueOrDefault(Double value, double def) {
+        return value == null ? def : value;
+    }
+
+    public float getValueOrDefault(Float value, float def) {
         return value == null ? def : value;
     }
 
@@ -1973,6 +1981,20 @@ public class SpartanPlayer {
         synchronized (nmsBox) {
             int size = nmsBox.size();
             return size > 1 ? nmsBox.get(size - 2) : null;
+        }
+    }
+
+    public Float getNmsFall() {
+        synchronized (nmsFall) {
+            int size = nmsFall.size();
+            return size > 0 ? nmsFall.get(size - 1) : null;
+        }
+    }
+
+    public Float getPreviousNmsFall() {
+        synchronized (nmsFall) {
+            int size = nmsFall.size();
+            return size > 1 ? nmsFall.get(size - 2) : null;
         }
     }
 

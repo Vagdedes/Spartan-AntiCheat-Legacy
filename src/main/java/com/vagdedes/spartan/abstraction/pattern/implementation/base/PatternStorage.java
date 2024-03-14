@@ -10,6 +10,7 @@ import java.util.*;
 
 public class PatternStorage {
 
+    private static final boolean debug = true;
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
 
     public static void delete(PlayerProfile profile) {
@@ -77,7 +78,8 @@ public class PatternStorage {
 
     public final String key;
     private final PatternGeneralization[] generalizations;
-    private final Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations;
+    // Profile -> Generalization -> Situation -> Patterns
+    private final Map<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> correlations;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
@@ -106,7 +108,7 @@ public class PatternStorage {
 
     private void load() {
         store();
-        Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations = new LinkedHashMap<>();
+        Map<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> correlations = new LinkedHashMap<>();
         File directory = new File(PatternGeneralization.path(this.key));
 
         if (!directory.exists()) {
@@ -115,6 +117,8 @@ public class PatternStorage {
             File[] files = directory.listFiles();
 
             if (files != null) {
+                Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+
                 for (File file : files) {
                     if (file.isFile()
                             && file.getName().endsWith(".yml")) {
@@ -174,12 +178,12 @@ public class PatternStorage {
 
     // Separator
 
-    private void rawCache(Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations,
+    private void rawCache(Map<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> correlations,
                           PlayerProfile profile,
                           PatternValue value,
                           PatternGeneralization generalization,
                           boolean set) {
-        correlations.computeIfAbsent(
+        LinkedList<PatternValue> list = correlations.computeIfAbsent(
                 profile,
                 k -> new LinkedHashMap<>()
         ).computeIfAbsent(
@@ -188,7 +192,8 @@ public class PatternStorage {
         ).computeIfAbsent(
                 value.situation,
                 k -> new LinkedList<>() // todo
-        ).add(value);
+        );
+        list.add(value);
 
         if (set) {
             ((PatternGeneralizationStorage) generalization).set(profile, value);
@@ -220,27 +225,30 @@ public class PatternStorage {
 
     // Separator
 
-    public Collection<Collection<PatternValue>> getAll(long situation, int generalization) {
-        synchronized (this.correlations) {
-            Collection<Collection<PatternValue>> collections = new ArrayList<>();
+    public Collection<Collection<PatternValue>> getAll(PlayerProfile dismiss, long situation, int generalization) {
+        Collection<Collection<PatternValue>> collections = new ArrayList<>();
 
-            for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
-                if (entry.getKey().isLegitimate()) {
+        synchronized (this.correlations) {
+            for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> entry : this.correlations.entrySet()) {
+                if (entry.getKey().isLegitimate()
+                        && (debug
+                        || !entry.getKey().equals(dismiss))) {
                     Collection<PatternValue> situations = entry.getValue().get(generalization).get(situation);
 
                     if (situations != null) {
                         collections.add(situations);
                     }
-
                 }
             }
-            return collections;
         }
+        return !debug && collections.size() < ResearchEngine.profileRequirement
+                ? new ArrayList<>(0)
+                : collections;
     }
 
     public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
         synchronized (this.correlations) {
-            Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
+            Map<Integer, Map<Long, LinkedList<PatternValue>>> map = this.correlations.get(profile);
 
             if (map == null) {
                 return new ArrayList<>(0);
@@ -262,8 +270,7 @@ public class PatternStorage {
         if (size < count) {
             return new ArrayList<>(0);
         } else {
-            size--;
-            return specific.subList(size - count, size);
+            return specific.subList(size - count, size - 1);
         }
     }
 }

@@ -8,14 +8,14 @@ import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 public class MovementProcessing {
 
     public static void run(SpartanPlayer p,
-                           double dis, double hor, double ver, double box,
+                           double dis, double hor, double ver, double box, float fall,
                            boolean crawling) {
         if (p.canRunChecks(false)) {
             // Damage
             Damage.runMove(p);
 
             // NMS Distance Caching
-            p.setNmsDistance(dis, hor, ver, box);
+            p.setNmsDistance(dis, hor, ver, box, fall);
 
             if (!crawling) {
                 // Jump/Fall Identifier

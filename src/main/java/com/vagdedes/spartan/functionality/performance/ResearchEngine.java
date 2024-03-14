@@ -41,7 +41,7 @@ public class ResearchEngine {
 
     public static final int
             logRequirement = Check.maxViolationsPerCycle,
-            profileRequirement = logRequirement / 10,
+            profileRequirement = AlgebraUtils.integerRound(logRequirement / 15.0),
             maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
             maxRows = maxBytes / 1024;
 

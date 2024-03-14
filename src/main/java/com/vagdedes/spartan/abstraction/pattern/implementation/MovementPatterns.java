@@ -6,10 +6,10 @@ import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 
 public class MovementPatterns extends PatternFamily {
 
-    public PatternStorage horizontal, vertical, distance;
+    public PatternStorage horizontal, vertical, all, fall;
 
     public MovementPatterns(long storeFrequency) {
-        super(storeFrequency, 3);
+        super(storeFrequency, 4);
         this.addPatterns(
                 new PatternStorage[]{
                         this.horizontal = new PatternStorage(
@@ -20,9 +20,13 @@ public class MovementPatterns extends PatternFamily {
                                 "movement/distance/vertical",
                                 new int[]{GroundUtils.maxHeightLength}
                         ),
-                        this.distance = new PatternStorage(
+                        this.all = new PatternStorage(
                                 "movement/distance/all",
                                 new int[]{GroundUtils.maxHeightLength}
+                        ),
+                        this.fall = new PatternStorage(
+                                "movement/distance/fall",
+                                new int[]{}
                         )
                 }
         );
