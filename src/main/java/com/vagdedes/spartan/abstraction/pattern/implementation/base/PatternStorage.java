@@ -2,7 +2,12 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -79,7 +84,7 @@ public class PatternStorage {
     public final String key;
     private final PatternGeneralization[] generalizations;
     // Profile -> Generalization -> Situation -> Patterns
-    private final Map<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> correlations;
+    private final Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
@@ -108,7 +113,7 @@ public class PatternStorage {
 
     private void load() {
         store();
-        Map<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> correlations = new LinkedHashMap<>();
+        Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations = new LinkedHashMap<>();
         File directory = new File(PatternGeneralization.path(this.key));
 
         if (!directory.exists()) {
@@ -178,12 +183,12 @@ public class PatternStorage {
 
     // Separator
 
-    private void rawCache(Map<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> correlations,
+    private void rawCache(Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations,
                           PlayerProfile profile,
                           PatternValue value,
                           PatternGeneralization generalization,
                           boolean set) {
-        LinkedList<PatternValue> list = correlations.computeIfAbsent(
+        List<PatternValue> list = correlations.computeIfAbsent(
                 profile,
                 k -> new LinkedHashMap<>()
         ).computeIfAbsent(
@@ -191,9 +196,13 @@ public class PatternStorage {
                 k -> new LinkedHashMap<>()
         ).computeIfAbsent(
                 value.situation,
-                k -> new LinkedList<>() // todo
+                k -> new ArrayList<>(1024 * 1024)
         );
         list.add(value);
+
+        if (list.size() > (SpartanEdition.is2ndGeneration() ? 3_000_000 : 1_000_000)) {
+            list.remove(0);
+        }
 
         if (set) {
             ((PatternGeneralizationStorage) generalization).set(profile, value);
@@ -225,30 +234,77 @@ public class PatternStorage {
 
     // Separator
 
-    public Collection<Collection<PatternValue>> getAll(PlayerProfile dismiss, long situation, int generalization) {
-        Collection<Collection<PatternValue>> collections = new ArrayList<>();
+    private void notify(SpartanPlayer player, long situation) {
+        String message = AwarenessNotifications.getOptionalNotification(
+                "Spartan's Machine Learning algorithms have insufficient data to check you. "
+                        + (player.getProfile().isLegitimate()
+                        ? "Continue playing LEGITIMATELY to train the algorithm so you can try again later."
+                        : "Since you are " + player.getProfile().evidence.getType() + ", either clear your data via '/spartan info'"
+                        + " and play LEGITIMATELY or find a legitimate player to help train the algorithm so you can try again later.")
+        );
 
-        synchronized (this.correlations) {
-            for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, LinkedList<PatternValue>>>> entry : this.correlations.entrySet()) {
-                if (entry.getKey().isLegitimate()
-                        && (debug
-                        || !entry.getKey().equals(dismiss))) {
-                    Collection<PatternValue> situations = entry.getValue().get(generalization).get(situation);
+        if (message != null
+                && AwarenessNotifications.canSend(player.uuid, "pattern-storage-" + situation, 120)
+                && AwarenessNotifications.canSend(player.uuid, "pattern-storage", 60)) {
+            player.sendMessage(message);
+        }
+    }
 
-                    if (situations != null) {
-                        collections.add(situations);
+    // Separator
+
+    public Collection<Collection<PatternValue>> getAll(Object playerOrProfile, long situation, int generalization) {
+        if (this.correlations.isEmpty()) {
+            return new ArrayList<>(0);
+        } else {
+            PlayerProfile profile;
+            SpartanPlayer player;
+
+            if (playerOrProfile instanceof PlayerProfile) {
+                profile = (PlayerProfile) playerOrProfile;
+                player = profile.getSpartanPlayer();
+            } else {
+                player = (SpartanPlayer) playerOrProfile;
+                profile = player.getProfile();
+            }
+            boolean notifications = DetectionNotifications.isEnabled(player);
+
+            if (!notifications) {
+                // todo cache
+            }
+            Collection<Collection<PatternValue>> collections = new ArrayList<>(this.correlations.size());
+            int count = 0;
+
+            synchronized (this.correlations) {
+                for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
+                    if (entry.getKey().isLegitimate()
+                            && (debug
+                            || !entry.getKey().equals(profile))) {
+                        Collection<PatternValue> data = entry.getValue().get(generalization).get(situation);
+
+                        if (data != null) {
+                            collections.add(data);
+                            count += data.size();
+                        }
                     }
                 }
             }
+
+            if (!debug
+                    && (collections.size() < ResearchEngine.profileRequirement
+                    || count < ResearchEngine.dataRequirement)) {
+                if (notifications) {
+                    notify(player, situation);
+                }
+                return new ArrayList<>(0);
+            } else {
+                return collections;
+            }
         }
-        return !debug && collections.size() < ResearchEngine.profileRequirement
-                ? new ArrayList<>(0)
-                : collections;
     }
 
     public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
         synchronized (this.correlations) {
-            Map<Integer, Map<Long, LinkedList<PatternValue>>> map = this.correlations.get(profile);
+            Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
 
             if (map == null) {
                 return new ArrayList<>(0);
@@ -271,6 +327,58 @@ public class PatternStorage {
             return new ArrayList<>(0);
         } else {
             return specific.subList(size - count, size - 1);
+        }
+    }
+
+    // Separator
+
+    public ProbabilityRank getRanked(Object playerOrProfile, long situation, int generalization) {
+        if (this.correlations.isEmpty()) {
+            return new ProbabilityRank();
+        } else {
+            PlayerProfile profile;
+            SpartanPlayer player;
+
+            if (playerOrProfile instanceof PlayerProfile) {
+                profile = (PlayerProfile) playerOrProfile;
+                player = profile.getSpartanPlayer();
+            } else {
+                player = (SpartanPlayer) playerOrProfile;
+                profile = player.getProfile();
+            }
+            boolean notifications = DetectionNotifications.isEnabled(player);
+
+            if (!DetectionNotifications.isEnabled(player)) {
+                // todo cache
+            }
+            ProbabilityRank rank = new ProbabilityRank(this.correlations.size());
+            int profiles = 0;
+
+            synchronized (this.correlations) {
+                for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
+                    if (entry.getKey().isLegitimate()
+                            && (debug
+                            || !entry.getKey().equals(profile))) {
+                        Collection<PatternValue> data = entry.getValue().get(generalization).get(situation);
+
+                        if (data != null) {
+                            rank.addMultiplePatterns(data);
+                            profiles++;
+                        }
+                    }
+                }
+            }
+
+            if (!debug
+                    && (profiles < ResearchEngine.profileRequirement
+                    || rank.getTotal() < ResearchEngine.dataRequirement)) {
+                if (notifications) {
+                    notify(player, situation);
+                }
+                return new ProbabilityRank(0);
+            } else {
+                return rank;
+            }
         }
     }
 }

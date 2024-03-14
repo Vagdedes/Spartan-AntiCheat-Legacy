@@ -40,8 +40,8 @@ import java.util.*;
 public class ResearchEngine {
 
     public static final int
-            logRequirement = Check.maxViolationsPerCycle,
-            profileRequirement = AlgebraUtils.integerRound(logRequirement / 15.0),
+            dataRequirement = Check.maxViolationsPerCycle,
+            profileRequirement = AlgebraUtils.integerRound(dataRequirement / 15.0), // 7
             maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
             maxRows = maxBytes / 1024;
 
@@ -129,7 +129,7 @@ public class ResearchEngine {
                     profiles++;
                     logs += playerProfile.getUsefulLogs();
 
-                    if (logs >= logRequirement && profiles >= profileRequirement) {
+                    if (logs >= dataRequirement && profiles >= profileRequirement) {
                         return enoughData = true;
                     }
                 }

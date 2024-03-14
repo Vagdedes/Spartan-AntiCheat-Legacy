@@ -16,7 +16,8 @@ import java.util.List;
 
 public class SpartanEdition {
 
-    private static final Enums.DataType dataType = Enums.DataType.Java;
+    private static final Enums.DataType dataType = Enums.DataType.Java,
+            oppositeType = dataType == Enums.DataType.Java ? Enums.DataType.Bedrock : Enums.DataType.Java;
 
     private static long checkTime = 0L;
     public static final String[] jarNames = new String[]{
@@ -45,8 +46,6 @@ public class SpartanEdition {
         Runnable runnable = () -> {
             if (SpartanBukkit.canAdvertise && !alternativeVersion) {
                 boolean changed = false;
-                Enums.DataType opposite = dataType == Enums.DataType.Java
-                        ? Enums.DataType.Bedrock : Enums.DataType.Java;
 
                 if (CloudConnections.ownsProduct(
                         get2_0_ProductID(dataType)
@@ -56,13 +55,13 @@ public class SpartanEdition {
                 }
 
                 if (CloudConnections.ownsProduct(
-                        get2_0_ProductID(opposite)
+                        get2_0_ProductID(oppositeType)
                 )) {
                     alternativeVersion = true;
-                    secondGeneration[opposite.ordinal()] = true;
+                    secondGeneration[oppositeType.ordinal()] = true;
                     changed = true;
                 } else if (CloudConnections.ownsProduct(
-                        get1_0_ProductID(opposite)
+                        get1_0_ProductID(oppositeType)
                 )) {
                     alternativeVersion = true;
                     changed = true;
@@ -83,6 +82,13 @@ public class SpartanEdition {
         } else {
             runnable.run();
         }
+    }
+
+    // General
+
+    public static boolean is2ndGeneration() {
+        return secondGeneration[dataType.ordinal()]
+                || secondGeneration[oppositeType.ordinal()];
     }
 
     // Detections
@@ -129,10 +135,7 @@ public class SpartanEdition {
     }
 
     public static Enums.DataType getMissingDetection() {
-        return alternativeVersion ? null :
-                dataType == Enums.DataType.Java
-                        ? Enums.DataType.Bedrock
-                        : Enums.DataType.Java;
+        return alternativeVersion ? null : oppositeType;
     }
 
     // Product
@@ -156,18 +159,15 @@ public class SpartanEdition {
     }
 
     public static String getProductName(boolean cloudFeature) {
-        Enums.DataType opposite = dataType == Enums.DataType.Java
-                ? Enums.DataType.Bedrock : Enums.DataType.Java;
-
         if (alternativeVersion) {
             if (secondGeneration[dataType.ordinal()]) {
-                if (secondGeneration[opposite.ordinal()]) {
+                if (secondGeneration[oppositeType.ordinal()]) {
                     return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: Java & Bedrock Edition";
                 } else {
-                    return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: " + dataType + " Edition | Spartan AntiCheat 1.0: " + opposite + " Edition";
+                    return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: " + dataType + " Edition | Spartan AntiCheat 1.0: " + oppositeType + " Edition";
                 }
-            } else if (secondGeneration[opposite.ordinal()]) {
-                return cloudFeature ? get2_0_ProductID(opposite) : "Spartan AntiCheat 1.0: " + dataType + " Edition | Spartan AntiCheat 2.0: " + opposite + " Edition";
+            } else if (secondGeneration[oppositeType.ordinal()]) {
+                return cloudFeature ? get2_0_ProductID(oppositeType) : "Spartan AntiCheat 1.0: " + dataType + " Edition | Spartan AntiCheat 2.0: " + oppositeType + " Edition";
             } else {
                 return cloudFeature ? get1_0_ProductID(dataType) : "Spartan AntiCheat 1.0: Java & Bedrock Edition";
             }
@@ -183,7 +183,8 @@ public class SpartanEdition {
     public static void attemptNotification(SpartanPlayer player) {
         Enums.DataType missingDetection = getMissingDetection();
 
-        if (missingDetection != null && Config.settings.getBoolean(Settings.showEcosystemOption)) {
+        if (missingDetection != null
+                && Config.settings.getBoolean(Settings.showEcosystemOption)) {
             if (notify) {
                 sendNotification(player, missingDetection);
             } else {

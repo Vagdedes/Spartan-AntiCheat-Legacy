@@ -150,6 +150,7 @@ public class HashHelper {
             hash = extendLong(hash, Boolean.hashCode(player.isFlying()));
             hash = extendLong(hash, Boolean.hashCode(player.isOnGround()));
             hash = extendLong(hash, Math.min(player.getTicksOnAir(), 20));
+            hash = extendLong(hash, AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal));
             potionEffects = player.getActivePotionEffects();
         }
         if (!potionEffects.isEmpty()) {

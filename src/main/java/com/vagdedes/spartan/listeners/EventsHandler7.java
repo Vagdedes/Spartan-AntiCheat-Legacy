@@ -166,7 +166,7 @@ public class EventsHandler7 implements Listener {
         SpartanBukkit.movementPatterns.store();
 
         ProbabilityPredictor probabilityPredictor = new ProbabilityPredictor(
-                SpartanBukkit.movementPatterns.vertical.getAll(p.getProfile(), situation, GroundUtils.maxHeightLength),
+                SpartanBukkit.movementPatterns.vertical.getAll(p, situation, GroundUtils.maxHeightLength),
                 SpartanBukkit.movementPatterns.vertical.getSpecific(p.getProfile(), situation, GroundUtils.maxHeightLength, 5)
         );
         Iterator<Map.Entry<Number, Integer>> iterator = probabilityPredictor.pie.getChancesRanked().iterator();

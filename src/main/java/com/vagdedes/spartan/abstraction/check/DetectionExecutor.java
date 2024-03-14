@@ -69,7 +69,7 @@ public abstract class DetectionExecutor {
         new HackPrevention(player, hackType, verbose, null, 0, false, 0.0, 1);
     }
 
-    protected final String predictionToString(PatternStorage patternStorage,
+    protected final String linearPredictionToDetection(PatternStorage patternStorage,
                                               int generalization,
                                               Number client,
                                               ProbabilityPredictor probabilityPredictor,
@@ -96,7 +96,6 @@ public abstract class DetectionExecutor {
             while (entries.hasNext()) {
                 Map.Entry<Number, Integer> entry = entries.next();
                 double chance = probabilityPredictor.pie.getChanceWithCount(entry.getValue());
-                count++;
 
                 if (!run) {
                     if (chance >= allowedChance) {
@@ -106,7 +105,7 @@ public abstract class DetectionExecutor {
                         run = true;
                     }
                 }
-                if (count <= 10) {
+                if (count < 10) {
                     sb.append(entry.getKey())
                             .append(": ")
                             .append(AlgebraUtils.cut(chance * 100.0, 2))
@@ -114,6 +113,7 @@ public abstract class DetectionExecutor {
                 } else if (run) {
                     break;
                 }
+                count++;
             }
 
             if (run) {
@@ -125,5 +125,9 @@ public abstract class DetectionExecutor {
         } else {
             return null;
         }
+    }
+
+    protected final String rankedPredictionToDetection() {
+        return null; // todo
     }
 }

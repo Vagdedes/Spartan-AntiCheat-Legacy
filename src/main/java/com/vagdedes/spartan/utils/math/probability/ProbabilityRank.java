@@ -82,4 +82,14 @@ public class ProbabilityRank {
         }
         return ((start + end) / 2.0) / this.numbers.size();
     }
+
+    // Separator
+
+    public boolean hasData() {
+        return !this.numbers.isEmpty();
+    }
+
+    public int getTotal() {
+        return this.numbers.size();
+    }
 }
