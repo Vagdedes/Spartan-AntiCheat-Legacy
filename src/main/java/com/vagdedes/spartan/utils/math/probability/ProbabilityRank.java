@@ -80,7 +80,9 @@ public class ProbabilityRank {
                 break;
             }
         }
-        return start == -1 ? def : ((start + end) / 2.0) / this.numbers.size();
+        return start == -1
+                ? def
+                : ((start + end) / 2.0) / this.numbers.size();
     }
 
     // Separator
