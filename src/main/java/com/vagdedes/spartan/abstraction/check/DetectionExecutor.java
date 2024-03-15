@@ -102,35 +102,39 @@ public abstract class DetectionExecutor {
                     .append(minProbability)
                     .append(", max-deviation: ")
                     .append(maxDeviation);
-            boolean run = probabilityPredictor.patternSignificance < minSignificance,
-                    highChanceFound = false;
+            boolean significantPattern = probabilityPredictor.patternSignificance >= minSignificance,
+                    highChanceFound = false,
+                    validComparisonMade = false;
             Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getChancesRanked().iterator();
 
             while (entries.hasNext()) {
                 Map.Entry<Number, Integer> entry = entries.next();
-                double chance = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
+                double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
 
-                if (!run) {
-                    if (chance >= minProbability) {
-                        highChanceFound = true;
-                        run = Math.abs(entry.getKey().doubleValue() - client.doubleValue()) > maxDeviation;
-                    } else if (!highChanceFound) {
-                        run = true;
+                if (probability >= minProbability) {
+                    highChanceFound = true;
+
+                    if (Math.abs(entry.getKey().doubleValue() - client.doubleValue()) <= maxDeviation) {
+                        validComparisonMade = true;
                     }
                 }
-                if (count < 10) {
+                count++;
+
+                if (count <= 10) {
                     sb.append(entry.getKey())
                             .append(": ")
-                            .append(AlgebraUtils.cut(chance * 100.0, 2))
+                            .append(AlgebraUtils.cut(probability * 100.0, 2))
                             .append(", ");
-                } else if (run) {
-                    break;
                 }
-                count++;
             }
 
-            if (run) {
-                sb.setLength(sb.length() - 2);
+            if (!significantPattern
+                    || !highChanceFound
+                    || !validComparisonMade) {
+                sb.append("scenario: ")
+                        .append(significantPattern ? 1 : 0)
+                        .append(highChanceFound ? 1 : 0)
+                        .append(validComparisonMade ? 1 : 0);
                 return sb.toString();
             } else {
                 return null;
