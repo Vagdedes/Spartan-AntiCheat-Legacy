@@ -43,6 +43,8 @@ public abstract class DetectionExecutor {
         SpartanBukkit.detectionThread.execute(runnable);
     }
 
+    // Spearator
+
     protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
                                 boolean groundTeleport, double damage, int violation) {
         new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, violation);
@@ -70,11 +72,13 @@ public abstract class DetectionExecutor {
         new HackPrevention(player, hackType, verbose, null, 0, false, 0.0, 1);
     }
 
+    // Separator
+
     protected final String linearPredictionToDetection(PatternStorage patternStorage,
                                                        int generalization,
                                                        Number client,
                                                        ProbabilityPredictor probabilityPredictor,
-                                                       double allowedChance,
+                                                       double minProbability,
                                                        double maxDeviation,
                                                        double minSignificance) {
         if (probabilityPredictor.pie.hasData()) {
@@ -86,8 +90,16 @@ public abstract class DetectionExecutor {
                     .append(generalization)
                     .append(", client: ")
                     .append(client)
+                    .append(", pie-slices: ")
+                    .append(probabilityPredictor.pie.getSlices())
+                    .append(", pie-total: ")
+                    .append(probabilityPredictor.pie.getTotal())
                     .append(", significance: ")
                     .append(AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2))
+                    .append(", min-significance: ")
+                    .append(minSignificance)
+                    .append(", min-probability: ")
+                    .append(minProbability)
                     .append(", max-deviation: ")
                     .append(maxDeviation);
             boolean run = probabilityPredictor.patternSignificance < minSignificance,
@@ -96,10 +108,10 @@ public abstract class DetectionExecutor {
 
             while (entries.hasNext()) {
                 Map.Entry<Number, Integer> entry = entries.next();
-                double chance = probabilityPredictor.pie.getChanceWithCount(entry.getValue());
+                double chance = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
 
                 if (!run) {
-                    if (chance >= allowedChance) {
+                    if (chance >= minProbability) {
                         highChanceFound = true;
                         run = Math.abs(entry.getKey().doubleValue() - client.doubleValue()) > maxDeviation;
                     } else if (!highChanceFound) {
@@ -133,14 +145,31 @@ public abstract class DetectionExecutor {
                                                        Number client,
                                                        ProbabilityRank probabilityRank,
                                                        double minProbability) {
-        return null; // todo
+        if (probabilityRank.hasData()) {
+            double probability = probabilityRank.getChance(client);
+
+            if (probability < minProbability) {
+                return "data: " + patternStorage.key
+                        + ", generalization: " + generalization
+                        + ", client: " + client
+                        + ", total: " + probabilityRank.getTotal()
+                        + ", probability: " + probability
+                        + ", min-probability: " + minProbability;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
-    protected final ProbabilityPredictor getPredictor(SpartanPlayer player,
-                                                      PatternStorage storage,
-                                                      long situation,
-                                                      int generalization,
-                                                      int count) {
+    // Separator
+
+    protected final ProbabilityPredictor buildPredictor(SpartanPlayer player,
+                                                        PatternStorage storage,
+                                                        long situation,
+                                                        int generalization,
+                                                        int count) {
         return new ProbabilityPredictor(
                 storage.getAll(player, situation, generalization),
                 storage.getSpecific(player.getProfile(), situation, generalization, count)

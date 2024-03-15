@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternCache;
 
-import java.util.Collection;
 import java.util.List;
 
 public class PatternSpecificCache extends PatternCache {

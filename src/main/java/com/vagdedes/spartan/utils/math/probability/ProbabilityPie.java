@@ -99,15 +99,15 @@ public class ProbabilityPie {
 
     // Separator
 
-    public double getChanceWithCount(int count) {
+    public double getProbabilityWithCount(int count) {
         return count / this.total;
     }
 
-    public double getChance(Number number) {
-        return this.getChance(number, 0.0);
+    public double getProbability(Number number) {
+        return this.getProbability(number, 0.0);
     }
 
-    public double getChance(Number number, double defaultValue) {
+    public double getProbability(Number number, double defaultValue) {
         Integer count = this.map.get(number);
         return count != null ? count / this.total : defaultValue;
     }
