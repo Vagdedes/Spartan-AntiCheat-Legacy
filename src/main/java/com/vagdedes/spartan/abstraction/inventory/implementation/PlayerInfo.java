@@ -155,7 +155,7 @@ public class PlayerInfo extends InventoryMenu {
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         boolean tpsDropping = isOnline && TPS.areLow(player),
                 notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
-                detectionsNotAvailable = SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
+                detectionsNotAvailable = !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
 
@@ -205,7 +205,7 @@ public class PlayerInfo extends InventoryMenu {
                 isOnline,
                 isOnline && TPS.areLow(player),
                 isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
-                SpartanBukkit.canAdvertise && !SpartanEdition.hasDetectionsPurchased(dataType),
+                !SpartanEdition.hasDetectionsPurchased(dataType),
                 !SpartanEdition.supportsCheck(dataType, hackType),
                 !hasViolations && !hasData);
 
