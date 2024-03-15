@@ -68,12 +68,12 @@ public class IDs {
         return platform == 3 || "%%__POLYMART__%%".length() == 1;
     }
 
-    public static boolean isSpigotMC(boolean dismissOthers) {
-        return platform == 1 || Piracy.enabled && !CloudBase.hasToken() && (!dismissOthers || !isBuiltByBit() && !isSongoda() && !isPolymart());
+    public static boolean isSpigotMC() {
+        return platform == 1 || Piracy.enabled && !CloudBase.hasToken() && !isBuiltByBit() && !isSongoda() && !isPolymart();
     }
 
     public static String getPlatform(boolean notNull) {
-        return IDs.isBuiltByBit() ? "BuiltByBit" : IDs.isPolymart() ? "Polymart" : IDs.isSongoda() ? "Songoda" : notNull || isSpigotMC(false) ? "SpigotMC" : null;
+        return IDs.isBuiltByBit() ? "BuiltByBit" : IDs.isPolymart() ? "Polymart" : IDs.isSongoda() ? "Songoda" : notNull || isSpigotMC() ? "SpigotMC" : null;
     }
 
     public static String hide(String id) {
