@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.server;
 
-import com.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;

@@ -3,7 +3,7 @@ package com.vagdedes.spartan.compatibility.manual.building;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.protections.CheckDelay;
-import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.rampen88.drills.events.DrillBreakEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;

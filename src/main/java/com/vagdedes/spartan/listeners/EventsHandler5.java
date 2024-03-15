@@ -8,7 +8,7 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explos
 import com.vagdedes.spartan.functionality.identifiers.simple.Building;
 import com.vagdedes.spartan.functionality.identifiers.simple.SensitiveBlockBreak;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

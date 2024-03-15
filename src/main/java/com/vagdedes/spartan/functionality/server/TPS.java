@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.system.SpartanBukkit;
 import org.bukkit.Bukkit;
 
 import java.util.*;

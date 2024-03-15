@@ -6,7 +6,7 @@ import com.vagdedes.spartan.compatibility.necessary.Authentication;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import me.vagdedes.spartan.system.Enums;
 

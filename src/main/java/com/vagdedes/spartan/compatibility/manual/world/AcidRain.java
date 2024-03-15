@@ -3,7 +3,7 @@ package com.vagdedes.spartan.compatibility.manual.world;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.wasteofplastic.acidisland.events.AcidEvent;
 import com.wasteofplastic.acidisland.events.AcidRainEvent;
 import org.bukkit.event.EventHandler;

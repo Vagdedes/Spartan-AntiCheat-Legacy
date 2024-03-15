@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.system;
+package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
@@ -8,8 +8,6 @@ import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolL
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.Piracy;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.server.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

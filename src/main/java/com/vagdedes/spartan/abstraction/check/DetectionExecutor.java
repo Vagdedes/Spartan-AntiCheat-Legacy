@@ -4,8 +4,8 @@ import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStora
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.system.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityPredictor;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;

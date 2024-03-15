@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.connection;
 
-import com.vagdedes.spartan.system.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.RequestUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
