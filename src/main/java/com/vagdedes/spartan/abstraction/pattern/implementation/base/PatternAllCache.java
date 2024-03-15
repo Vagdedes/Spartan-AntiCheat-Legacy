@@ -13,8 +13,9 @@ public class PatternAllCache extends PatternCache {
         this.data = cached;
     }
 
-    void update(Collection<Collection<PatternValue>> cached) {
+    Collection<Collection<PatternValue>> update(Collection<Collection<PatternValue>> cached) {
         this.data = cached;
         this.refresh();
+        return this.data;
     }
 }

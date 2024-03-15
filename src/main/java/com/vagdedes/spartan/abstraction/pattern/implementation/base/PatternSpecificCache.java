@@ -13,4 +13,9 @@ public class PatternSpecificCache extends PatternCache {
         super();
         this.data = cached;
     }
+
+    void update(List<PatternValue> cached) {
+        this.data = cached;
+        this.refresh();
+    }
 }

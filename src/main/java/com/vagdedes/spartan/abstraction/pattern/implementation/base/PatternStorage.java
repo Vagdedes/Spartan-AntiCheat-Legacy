@@ -262,32 +262,58 @@ public class PatternStorage {
                         + " and play LEGITIMATELY or find a legitimate player to help train the algorithm so you can try again later.")
         );
 
-        if (message != null
-                && AwarenessNotifications.canSend(player.uuid, "pattern-storage-" + situation, 120)
-                && AwarenessNotifications.canSend(player.uuid, "pattern-storage", 60)) {
-            player.sendMessage(message);
+        if (message != null) {
+            String s = "pattern-storage-" + key;
+
+            if (AwarenessNotifications.canSend(player.uuid, s + "-" + situation, 120)
+                    && AwarenessNotifications.canSend(player.uuid, s, 60)) {
+                player.sendMessage(message);
+            }
         }
     }
 
     // Separator
 
     public Collection<Collection<PatternValue>> getAll(SpartanPlayer player, long situation, int generalization) {
-        if (this.correlations.isEmpty()) {
-            return new ArrayList<>(0);
-        } else {
-            boolean notifications = DetectionNotifications.isEnabled(player);
-            int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
+        int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
 
-            if (!notifications) {
-                PatternAllCache cache;
+        if (DetectionNotifications.isEnabled(player)) {
+            Collection<Collection<PatternValue>> result = this.getAllRaw(situation, generalization);
 
-                synchronized (allCache) {
-                    cache = allCache.get(hash);
+            synchronized (allCache) {
+                PatternAllCache cache = allCache.get(hash);
+
+                if (result.isEmpty()) {
+                    notify(player, situation);
                 }
-                if (cache != null && !cache.isExpired()) {
+                if (cache == null) {
+                    allCache.put(hash, new PatternAllCache(result));
+                    return result;
+                } else {
+                    return cache.update(result);
+                }
+            }
+        } else {
+            synchronized (allCache) {
+                PatternAllCache cache = allCache.get(hash);
+
+                if (cache == null) {
+                    Collection<Collection<PatternValue>> result = this.getAllRaw(situation, generalization);
+                    allCache.put(hash, new PatternAllCache(result));
+                    return result;
+                } else if (cache.isExpired()) {
+                    return cache.update(this.getAllRaw(situation, generalization));
+                } else {
                     return cache.data;
                 }
             }
+        }
+    }
+
+    private Collection<Collection<PatternValue>> getAllRaw(long situation, int generalization) {
+        if (this.correlations.isEmpty()) {
+            return new ArrayList<>(0);
+        } else {
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.correlations.size());
             int count = 0;
 
@@ -303,58 +329,52 @@ public class PatternStorage {
                     }
                 }
             }
-
-            if (!debug
-                    && (collections.size() < ResearchEngine.profileRequirement
-                    || count < ResearchEngine.dataRequirement)) {
-                if (notifications) {
-                    notify(player, situation);
-                }
-                collections = new ArrayList<>(0);
-            }
-            synchronized (allCache) {
-                allCache.put(
-                        hash,
-                        new PatternAllCache(collections)
-                );
-            }
-            return collections;
+            return !debug && (collections.size() < ResearchEngine.profileRequirement
+                    || count < ResearchEngine.dataRequirement)
+                    ? new ArrayList<>(0)
+                    : collections;
         }
     }
+
+    // Separator
 
     public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
         int hash = (profile.hashCode() * SpartanBukkit.hashCodeMultiplier) + Long.hashCode(situation);
         hash = (hash * SpartanBukkit.hashCodeMultiplier) + generalization;
-        PatternSpecificCache cache;
 
         synchronized (specificCache) {
-            cache = specificCache.get(hash);
-        }
-        if (cache != null && !cache.isExpired()) {
-            return cache.data;
-        }
-        synchronized (this.correlations) {
-            Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
-            List<PatternValue> list;
+            PatternSpecificCache cache = specificCache.get(hash);
+            boolean notNull = cache != null;
 
-            if (map == null) {
-                list = new ArrayList<>(0);
+            if (notNull && !cache.isExpired()) {
+                return cache.data;
             } else {
-                List<PatternValue> specific = map.get(generalization).get(situation);
+                synchronized (this.correlations) {
+                    Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
+                    List<PatternValue> list;
 
-                if (specific == null) {
-                    list = new ArrayList<>(0);
-                } else {
-                    list = this.subList(specific, count);
+                    if (map == null) {
+                        list = new ArrayList<>(0);
+                    } else {
+                        List<PatternValue> specific = map.get(generalization).get(situation);
+
+                        if (specific == null) {
+                            list = new ArrayList<>(0);
+                        } else {
+                            list = this.subList(specific, count);
+                        }
+                    }
+                    if (notNull) {
+                        cache.update(list);
+                    } else {
+                        specificCache.put(
+                                hash,
+                                new PatternSpecificCache(list)
+                        );
+                    }
+                    return list;
                 }
             }
-            synchronized (specificCache) {
-                specificCache.put(
-                        hash,
-                        new PatternSpecificCache(list)
-                );
-            }
-            return list;
         }
     }
 
@@ -371,22 +391,48 @@ public class PatternStorage {
     // Separator
 
     public ProbabilityRank getRanked(SpartanPlayer player, long situation, int generalization) {
-        if (this.correlations.isEmpty()) {
-            return new ProbabilityRank();
-        } else {
-            boolean notifications = DetectionNotifications.isEnabled(player);
-            int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
+        int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
 
-            if (!notifications) {
-                PatternRankedCache cache;
+        if (DetectionNotifications.isEnabled(player)) {
+            ProbabilityRank result = this.getRankedRaw(situation, generalization);
 
-                synchronized (rankedCache) {
-                    cache = rankedCache.get(hash);
+            synchronized (rankedCache) {
+                PatternRankedCache cache = rankedCache.get(hash);
+
+                if (!result.hasData()) {
+                    notify(player, situation);
                 }
-                if (cache != null && !cache.isExpired()) {
+                if (cache == null) {
+                    rankedCache.put(hash, new PatternRankedCache(result));
+                    return result;
+                } else {
+                    return cache.update(result);
+                }
+            }
+        } else {
+            synchronized (rankedCache) {
+                PatternRankedCache cache = rankedCache.get(hash);
+
+                if (cache == null) {
+                    ProbabilityRank result = this.getRankedRaw(situation, generalization);
+                    rankedCache.put(
+                            hash,
+                            new PatternRankedCache(result)
+                    );
+                    return result;
+                } else if (cache.isExpired()) {
+                    return cache.update(this.getRankedRaw(situation, generalization));
+                } else {
                     return cache.data;
                 }
             }
+        }
+    }
+
+    public ProbabilityRank getRankedRaw(long situation, int generalization) {
+        if (this.correlations.isEmpty()) {
+            return new ProbabilityRank(0);
+        } else {
             ProbabilityRank rank = new ProbabilityRank(this.correlations.size());
             int profiles = 0;
 
@@ -402,22 +448,11 @@ public class PatternStorage {
                     }
                 }
             }
-
-            if (!debug
+            return !debug
                     && (profiles < ResearchEngine.profileRequirement
-                    || rank.getTotal() < ResearchEngine.dataRequirement)) {
-                if (notifications) {
-                    notify(player, situation);
-                }
-                rank = new ProbabilityRank(0);
-            }
-            synchronized (rankedCache) {
-                rankedCache.put(
-                        hash,
-                        new PatternRankedCache(rank)
-                );
-            }
-            return rank;
+                    || rank.getTotal() < ResearchEngine.dataRequirement)
+                    ? new ProbabilityRank(0)
+                    : rank;
         }
     }
 }

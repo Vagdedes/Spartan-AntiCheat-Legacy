@@ -14,8 +14,9 @@ public class PatternRankedCache extends PatternCache {
         this.data = cached;
     }
 
-    void update(ProbabilityRank cached) {
+    ProbabilityRank update(ProbabilityRank cached) {
         this.data = cached;
         this.refresh();
+        return this.data;
     }
 }
