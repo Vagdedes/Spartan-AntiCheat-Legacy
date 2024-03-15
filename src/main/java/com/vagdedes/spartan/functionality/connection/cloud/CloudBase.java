@@ -296,7 +296,7 @@ public class CloudBase {
 
                                     if (!functionality.equals("NULL")) {
                                         AwarenessNotifications.forcefullySend("Customer Support Command: " +
-                                                CloudConnections.sendCustomerSupport(null, functionality, "Customer Support Command", true));
+                                                CloudConnections.sendCustomerSupport(null, functionality, "Customer Support Command"));
                                     }
                                 }
                             }
