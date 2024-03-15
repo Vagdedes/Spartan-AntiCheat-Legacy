@@ -135,4 +135,15 @@ public abstract class DetectionExecutor {
                                                        double minProbability) {
         return null; // todo
     }
+
+    protected final ProbabilityPredictor getPredictor(SpartanPlayer player,
+                                                      PatternStorage storage,
+                                                      long situation,
+                                                      int generalization,
+                                                      int count) {
+        return new ProbabilityPredictor(
+                storage.getAll(player, situation, generalization),
+                storage.getSpecific(player.getProfile(), situation, generalization, count)
+        );
+    }
 }
