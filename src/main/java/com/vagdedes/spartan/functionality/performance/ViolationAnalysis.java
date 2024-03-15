@@ -223,7 +223,7 @@ public class ViolationAnalysis {
                         Double probability = probabilityAverage.get(profile);
 
                         if (probability != null) {
-                            probability = wave.getChance(probability);
+                            probability = wave.getProbability(probability, 0.0);
 
                             if (probability <= 0.1) {
                                 profile.evidence.add(

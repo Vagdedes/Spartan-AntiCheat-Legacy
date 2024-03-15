@@ -150,9 +150,10 @@ public abstract class DetectionExecutor {
                                                        ProbabilityRank probabilityRank,
                                                        double minProbability) {
         if (probabilityRank.hasData()) {
-            double probability = probabilityRank.getChance(client);
+            double probability = probabilityRank.getProbability(client, -1.0);
 
-            if (probability < minProbability) {
+            if (probability != -1.0
+                    && probability < minProbability) {
                 return "data: " + patternStorage.key
                         + ", generalization: " + generalization
                         + ", client: " + client
