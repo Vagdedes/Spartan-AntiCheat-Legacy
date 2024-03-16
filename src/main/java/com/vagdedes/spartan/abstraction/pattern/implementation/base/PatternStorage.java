@@ -19,7 +19,6 @@ public class PatternStorage {
     private static final boolean debug = true;
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
     private static final Map<Integer, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<Integer, PatternSpecificCache> specificCache = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<Integer, PatternRankedCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public static void delete(PlayerProfile profile) {
@@ -86,13 +85,10 @@ public class PatternStorage {
     public static void clear() {
         synchronized (instances) {
             synchronized (allCache) {
-                synchronized (specificCache) {
-                    synchronized (rankedCache) {
-                        instances.clear();
-                        allCache.clear();
-                        specificCache.clear();
-                        rankedCache.clear();
-                    }
+                synchronized (rankedCache) {
+                    instances.clear();
+                    allCache.clear();
+                    rankedCache.clear();
                 }
             }
         }
@@ -339,41 +335,18 @@ public class PatternStorage {
     // Separator
 
     public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
-        int hash = (profile.hashCode() * SpartanBukkit.hashCodeMultiplier) + Long.hashCode(situation);
-        hash = (hash * SpartanBukkit.hashCodeMultiplier) + generalization;
+        synchronized (this.correlations) {
+            Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
 
-        synchronized (specificCache) {
-            PatternSpecificCache cache = specificCache.get(hash);
-            boolean notNull = cache != null;
-
-            if (notNull && !cache.isExpired()) {
-                return cache.data;
+            if (map == null) {
+                return new ArrayList<>(0);
             } else {
-                synchronized (this.correlations) {
-                    Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
-                    List<PatternValue> list;
+                List<PatternValue> specific = map.get(generalization).get(situation);
 
-                    if (map == null) {
-                        list = new ArrayList<>(0);
-                    } else {
-                        List<PatternValue> specific = map.get(generalization).get(situation);
-
-                        if (specific == null) {
-                            list = new ArrayList<>(0);
-                        } else {
-                            list = this.subList(specific, count);
-                        }
-                    }
-                    if (notNull) {
-                        return cache.update(list);
-                    } else {
-                        cache = new PatternSpecificCache(list);
-                        specificCache.put(
-                                hash,
-                                new PatternSpecificCache(list)
-                        );
-                        return cache.data;
-                    }
+                if (specific == null) {
+                    return new ArrayList<>(0);
+                } else {
+                    return this.subList(specific, count);
                 }
             }
         }

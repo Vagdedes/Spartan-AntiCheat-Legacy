@@ -170,7 +170,7 @@ public class EventsHandler7 implements Listener {
 
         if (p.isOp()) {
             p.getExecutor(Enums.HackType.IrregularMovements).handle(false, new Object[]{
-                    situation, to, ver
+                    situation, ver
             });
         }
 

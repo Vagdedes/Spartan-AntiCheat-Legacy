@@ -43,7 +43,7 @@ public class IrregularMovementsNew extends CheckExecutor {
             }
             String detection = linearPredictionToDetection(
                     SpartanBukkit.movementPatterns.vertical,
-                    (double) objects[2],
+                    (double) objects[1],
                     predictor,
                     minProbability,
                     minSignificance
