@@ -17,14 +17,14 @@ public class ProbabilityPredictor {
     public ProbabilityPredictor(Collection<Collection<PatternValue>> totalPatterns,
                                 Collection<PatternValue> currentPattern,
                                 int generalization) {
-        this.pie = new ProbabilityPie();
         this.generalization = generalization;
         this.count = currentPattern.size();
         this.currentPattern = currentPattern;
 
-        if (!totalPatterns.isEmpty()) {
+        if (!totalPatterns.isEmpty() && this.count > 0) {
             long currentPatternHash = HashHelper.collection(currentPattern);
             int totalPatternSize = 0;
+            ProbabilityPie pie = new ProbabilityPie();
 
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
@@ -46,7 +46,7 @@ public class ProbabilityPredictor {
 
                         if (next) {
                             next = false;
-                            this.pie.add(pattern.pattern);
+                            pie.add(pattern.pattern);
                         }
                         if (currentPatternHash == HashHelper.collection(list)) {
                             next = true;
@@ -55,11 +55,14 @@ public class ProbabilityPredictor {
                 }
             }
             if (totalPatternSize > 0) {
+                this.pie = pie;
                 this.patternSignificance = (this.pie.getTotal() * this.generalization) / (double) totalPatternSize;
             } else {
+                this.pie = null;
                 this.patternSignificance = 0.0;
             }
         } else {
+            this.pie = null;
             this.patternSignificance = 0.0;
         }
     }

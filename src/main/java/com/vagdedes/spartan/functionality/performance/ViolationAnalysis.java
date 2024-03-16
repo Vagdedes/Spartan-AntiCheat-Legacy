@@ -116,7 +116,7 @@ public class ViolationAnalysis {
                             }
                         }
 
-                        if (totalViolations >= ResearchEngine.dataRequirement) {
+                        if (totalViolations >= Check.maxViolationsPerCycle) {
                             calculateProfileProbability(
                                     playerProfiles,
                                     hackType,

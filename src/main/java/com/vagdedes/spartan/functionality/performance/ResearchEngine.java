@@ -40,8 +40,7 @@ import java.util.*;
 public class ResearchEngine {
 
     public static final int
-            dataRequirement = Check.maxViolationsPerCycle,
-            profileRequirement = AlgebraUtils.integerRound(dataRequirement / 15.0), // 7
+            profileRequirement = 10,
             maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
             maxRows = maxBytes / 1024;
 
@@ -122,15 +121,16 @@ public class ResearchEngine {
         if (enoughData) {
             return true;
         } else if (playerProfiles.size() >= profileRequirement) {
-            int logs = 0, profiles = 0;
+            int profiles = 0;
 
             synchronized (playerProfiles) {
                 for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    profiles++;
-                    logs += playerProfile.getUsefulLogs();
+                    if (playerProfile.isLegitimate()) {
+                        profiles++;
 
-                    if (logs >= dataRequirement && profiles >= profileRequirement) {
-                        return enoughData = true;
+                        if (profiles >= profileRequirement) {
+                            return enoughData = true;
+                        }
                     }
                 }
             }
@@ -703,13 +703,12 @@ public class ResearchEngine {
             Enums.HackType[] hackTypes = Enums.HackType.values();
             Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
             List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();
-            int mines = 0, logs = 0, kicks = 0, warnings = 0, punishments = 0;
+            int mines = 0, kicks = 0, warnings = 0, punishments = 0;
             ViolationAnalysis.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
                 playerProfile.evidence.judge();
                 PunishmentHistory punishmentHistory = playerProfile.punishmentHistory;
-                logs += playerProfile.getUsefulLogs();
                 mines += playerProfile.getOverallMiningHistory().getMines();
                 kicks += punishmentHistory.getKicks();
                 warnings += punishmentHistory.getWarnings();
@@ -725,7 +724,6 @@ public class ResearchEngine {
             }
             statisticalProgress = new StatisticalProgress(
                     mines,
-                    logs,
                     kicks,
                     warnings,
                     punishments,

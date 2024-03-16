@@ -315,22 +315,21 @@ public class PatternStorage {
             return new ArrayList<>(0);
         } else {
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.correlations.size());
-            int count = 0;
+            int profiles = 0;
 
             synchronized (this.correlations) {
                 for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
                     if (entry.getKey().isLegitimate()) {
+                        profiles++;
                         Collection<PatternValue> data = entry.getValue().get(generalization).get(situation);
 
                         if (data != null) {
                             collections.add(data);
-                            count += data.size();
                         }
                     }
                 }
             }
-            return !debug && (collections.size() < ResearchEngine.profileRequirement
-                    || count < ResearchEngine.dataRequirement)
+            return !debug && profiles < ResearchEngine.profileRequirement
                     ? new ArrayList<>(0)
                     : collections;
         }
@@ -439,18 +438,16 @@ public class PatternStorage {
             synchronized (this.correlations) {
                 for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
                     if (entry.getKey().isLegitimate()) {
+                        profiles++;
                         Collection<PatternValue> data = entry.getValue().get(generalization).get(situation);
 
                         if (data != null) {
                             rank.addMultiplePatterns(data);
-                            profiles++;
                         }
                     }
                 }
             }
-            return !debug
-                    && (profiles < ResearchEngine.profileRequirement
-                    || rank.getTotal() < ResearchEngine.dataRequirement)
+            return !debug && profiles < ResearchEngine.profileRequirement
                     ? new ProbabilityRank(0)
                     : rank;
         }

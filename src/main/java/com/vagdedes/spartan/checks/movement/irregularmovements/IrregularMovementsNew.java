@@ -29,7 +29,7 @@ public class IrregularMovementsNew extends CheckExecutor {
         long hash = HashHelper.hashPlayer(player);
         hash = HashHelper.extendLong(hash, HashHelper.hashEnvironment(player, (SpartanLocation) objects[0]));
 
-        for (int count : new int[]{3}) {
+        for (int count : new int[]{2}) {
             ProbabilityPredictor predictor = buildPredictor(
                     player,
                     SpartanBukkit.movementPatterns.vertical,

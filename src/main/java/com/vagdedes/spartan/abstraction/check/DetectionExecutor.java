@@ -80,14 +80,16 @@ public abstract class DetectionExecutor {
                                                        double minProbability,
                                                        double maxDeviation,
                                                        double minSignificance) {
-        if (probabilityPredictor.pie.hasData()) {
+        if (probabilityPredictor.pie != null) {
             int count = 0;
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
-                    .append(", generalization: ")
+                    .append("(")
                     .append(probabilityPredictor.generalization)
-                    .append(", client: ")
+                    .append("x")
+                    .append(probabilityPredictor.count)
+                    .append("), client: ")
                     .append(client instanceof Double
                             ? AlgebraUtils.cut(client.doubleValue(), probabilityPredictor.generalization)
                             : client)
@@ -156,8 +158,7 @@ public abstract class DetectionExecutor {
 
             if (probability != -1.0
                     && probability < minProbability) {
-                return "data: " + patternStorage.key
-                        + ", generalization: " + generalization
+                return "data: " + patternStorage.key + "(" + generalization + ")"
                         + ", client: " + client
                         + ", total: " + probabilityRank.getTotal()
                         + ", probability: " + probability

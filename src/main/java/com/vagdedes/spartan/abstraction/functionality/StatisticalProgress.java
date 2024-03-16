@@ -7,14 +7,13 @@ import java.util.Collection;
 
 public class StatisticalProgress {
 
-    public final int mines, logs, kicks, warnings, punishments;
+    public final int mines, kicks, warnings, punishments;
     private final Collection<SpartanPlayer> staffOnline;
 
-    public StatisticalProgress(int mines, int logs,
+    public StatisticalProgress(int mines,
                                int kicks, int warnings, int punishments,
                                Collection<SpartanPlayer> staffOnline) {
         this.mines = mines;
-        this.logs = logs;
         this.kicks = kicks;
         this.punishments = punishments;
         this.warnings = warnings;
@@ -22,7 +21,7 @@ public class StatisticalProgress {
     }
 
     public StatisticalProgress() {
-        this(0, 0, 0, 0, 0, new ArrayList<>(0));
+        this(0, 0, 0, 0, new ArrayList<>(0));
     }
 
     public Collection<SpartanPlayer> getStaffOnline() {

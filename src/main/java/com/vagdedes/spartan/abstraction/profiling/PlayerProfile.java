@@ -250,17 +250,4 @@ public class PlayerProfile {
     public boolean isSuspectedOrHacker(Enums.HackType hackType) {
         return isHacker() || isSuspected(hackType);
     }
-
-    // Separator
-
-    public int getUsefulLogs() {
-        int sum = 0;
-
-        for (ViolationHistory violationHistory : getViolationHistory()) {
-            sum += (violationHistory.getCount()
-                    + getOverallMiningHistory().getMines()
-                    + punishmentHistory.getOverall());
-        }
-        return sum;
-    }
 }
