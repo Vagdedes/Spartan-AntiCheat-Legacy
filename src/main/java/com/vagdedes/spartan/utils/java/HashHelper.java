@@ -149,7 +149,6 @@ public class HashHelper {
             hash = extendLong(hash, Boolean.hashCode(player.isSneaking()));
             hash = extendLong(hash, Boolean.hashCode(player.isFlying()));
             hash = extendLong(hash, Boolean.hashCode(player.isOnGround()));
-            hash = extendLong(hash, Math.min(player.getTicksOnAir(), 20));
             hash = extendLong(hash, Math.min(AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal), 1000));
             potionEffects = player.getActivePotionEffects();
         }
@@ -240,7 +239,7 @@ public class HashHelper {
             if (GroundUtils.heightExists(box)) {
                 hash = extendLong(hash, Double.hashCode(box));
             } else {
-                hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 1)));
+                hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
             }
         }
         return hash;

@@ -5,7 +5,7 @@ import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
 
 public class PatternRankedCache extends PatternCache {
 
-    private ProbabilityRank data;
+     ProbabilityRank data;
 
     PatternRankedCache(ProbabilityRank cached) {
         super();
@@ -15,10 +15,6 @@ public class PatternRankedCache extends PatternCache {
     ProbabilityRank update(ProbabilityRank cached) {
         this.data = cached;
         this.refresh();
-        return this.get();
-    }
-
-    ProbabilityRank get() {
-        return this.canShow() ? this.data : new ProbabilityRank(0);
+        return this.data;
     }
 }

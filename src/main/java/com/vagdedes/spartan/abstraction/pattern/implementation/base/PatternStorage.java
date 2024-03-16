@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternCache;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -288,8 +287,9 @@ public class PatternStorage {
                     notify(player, situation);
                 }
                 if (cache == null) {
-                    allCache.put(hash, new PatternAllCache(result));
-                    return new ArrayList<>(0); // Access count protection
+                    cache = new PatternAllCache(result);
+                    allCache.put(hash, cache);
+                    return cache.data;
                 } else {
                     return cache.update(result);
                 }
@@ -301,11 +301,11 @@ public class PatternStorage {
                 if (cache == null) {
                     Collection<Collection<PatternValue>> result = this.getAllRaw(situation, generalization);
                     allCache.put(hash, new PatternAllCache(result));
-                    return new ArrayList<>(0); // Access count protection
+                    return result;
                 } else if (cache.isExpired()) {
                     return cache.update(this.getAllRaw(situation, generalization));
                 } else {
-                    return cache.get();
+                    return cache.data;
                 }
             }
         }
@@ -347,7 +347,7 @@ public class PatternStorage {
             boolean notNull = cache != null;
 
             if (notNull && !cache.isExpired()) {
-                return cache.get();
+                return cache.data;
             } else {
                 synchronized (this.correlations) {
                     Map<Integer, Map<Long, List<PatternValue>>> map = this.correlations.get(profile);
@@ -367,11 +367,12 @@ public class PatternStorage {
                     if (notNull) {
                         return cache.update(list);
                     } else {
+                        cache = new PatternSpecificCache(list);
                         specificCache.put(
                                 hash,
                                 new PatternSpecificCache(list)
                         );
-                        return new ArrayList<>(0); // Access count protection
+                        return cache.data;
                     }
                 }
             }
@@ -403,8 +404,9 @@ public class PatternStorage {
                     notify(player, situation);
                 }
                 if (cache == null) {
-                    rankedCache.put(hash, new PatternRankedCache(result));
-                    return new ProbabilityRank(0); // Access count protection
+                    cache = new PatternRankedCache(result);
+                    rankedCache.put(hash, cache);
+                    return cache.data;
                 } else {
                     return cache.update(result);
                 }
@@ -414,15 +416,16 @@ public class PatternStorage {
                 PatternRankedCache cache = rankedCache.get(hash);
 
                 if (cache == null) {
+                    cache = new PatternRankedCache(this.getRankedRaw(situation, generalization));
                     rankedCache.put(
                             hash,
-                            new PatternRankedCache(this.getRankedRaw(situation, generalization))
+                            cache
                     );
-                    return new ProbabilityRank(0); // Access count protection
+                    return cache.data;
                 } else if (cache.isExpired()) {
                     return cache.update(this.getRankedRaw(situation, generalization));
                 } else {
-                    return cache.get();
+                    return cache.data;
                 }
             }
         }

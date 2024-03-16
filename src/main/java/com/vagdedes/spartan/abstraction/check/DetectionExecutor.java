@@ -95,9 +95,9 @@ public abstract class DetectionExecutor {
                             : client);
 
             if (probabilityPredictor.pie.hasData()) {
-                sb.append(", pie-slices: ")
+                sb.append(", pie: ")
                         .append(probabilityPredictor.pie.getSlices())
-                        .append(", pie-total: ")
+                        .append("/")
                         .append(probabilityPredictor.pie.getTotal())
                         .append(", significance: ")
                         .append(AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2))
