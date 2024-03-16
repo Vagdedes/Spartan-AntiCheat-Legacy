@@ -34,12 +34,11 @@ public class IrregularMovementsNew extends CheckExecutor {
                     GroundUtils.maxHeightLength,
                     count
             );
-            double minProbability, maxDeviation, minSignificance;
+            double minProbability, minSignificance;
 
             switch (count) {
                 default:
                     minProbability = 0.1;
-                    maxDeviation = MoveUtils.gravityAcceleration + MoveUtils.highPrecision;
                     minSignificance = 0.1;
                     break;
             }
