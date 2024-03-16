@@ -92,56 +92,64 @@ public abstract class DetectionExecutor {
                     .append("), client: ")
                     .append(client instanceof Double
                             ? AlgebraUtils.cut(client.doubleValue(), probabilityPredictor.generalization)
-                            : client)
-                    .append(", pie-slices: ")
-                    .append(probabilityPredictor.pie.getSlices())
-                    .append(", pie-total: ")
-                    .append(probabilityPredictor.pie.getTotal())
-                    .append(", significance: ")
-                    .append(AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2))
-                    .append(", min-significance: ")
-                    .append(minSignificance)
-                    .append(", min-probability: ")
-                    .append(minProbability)
-                    .append(", max-deviation: ")
-                    .append(maxDeviation)
-                    .append(", ");
-            boolean significantPattern = probabilityPredictor.patternSignificance >= minSignificance,
-                    highChanceFound = false,
-                    validComparisonMade = false;
-            Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getChancesRanked().iterator();
+                            : client);
 
-            while (entries.hasNext()) {
-                Map.Entry<Number, Integer> entry = entries.next();
-                double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
+            if (probabilityPredictor.pie.hasData()) {
+                sb.append(", pie-slices: ")
+                        .append(probabilityPredictor.pie.getSlices())
+                        .append(", pie-total: ")
+                        .append(probabilityPredictor.pie.getTotal())
+                        .append(", significance: ")
+                        .append(AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2))
+                        .append(", min-significance: ")
+                        .append(minSignificance)
+                        .append(", min-probability: ")
+                        .append(minProbability)
+                        .append(", max-deviation: ")
+                        .append(maxDeviation)
+                        .append(", ");
 
-                if (probability >= minProbability) {
-                    highChanceFound = true;
+                boolean significantPattern = probabilityPredictor.patternSignificance >= minSignificance,
+                        highChanceFound = false,
+                        validComparisonMade = false;
+                Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getChancesRanked().iterator();
 
-                    if (Math.abs(entry.getKey().doubleValue() - client.doubleValue()) <= maxDeviation) {
-                        validComparisonMade = true;
+                while (entries.hasNext()) {
+                    Map.Entry<Number, Integer> entry = entries.next();
+                    double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
+
+                    if (probability >= minProbability) {
+                        highChanceFound = true;
+
+                        if (Math.abs(entry.getKey().doubleValue() - client.doubleValue()) <= maxDeviation) {
+                            validComparisonMade = true;
+                        }
+                    }
+                    count++;
+
+                    if (count <= 10) {
+                        sb.append(entry.getKey())
+                                .append(": ")
+                                .append(AlgebraUtils.cut(probability * 100.0, 2))
+                                .append(", ");
                     }
                 }
-                count++;
 
-                if (count <= 10) {
-                    sb.append(entry.getKey())
-                            .append(": ")
-                            .append(AlgebraUtils.cut(probability * 100.0, 2))
-                            .append(", ");
+                if (!significantPattern
+                        || !highChanceFound
+                        || !validComparisonMade) {
+                    sb.append("scenario: ")
+                            .append(!significantPattern ? 1 : 0)
+                            .append(!highChanceFound ? 1 : 0)
+                            .append(!validComparisonMade ? 1 : 0)
+                            .append(0);
+                    return sb.toString();
+                } else {
+                    return null;
                 }
-            }
-
-            if (!significantPattern
-                    || !highChanceFound
-                    || !validComparisonMade) {
-                sb.append("scenario: ")
-                        .append(!significantPattern ? 1 : 0)
-                        .append(!highChanceFound ? 1 : 0)
-                        .append(!validComparisonMade ? 1 : 0);
-                return sb.toString();
             } else {
-                return null;
+                sb.append(", scenario: 0001");
+                return sb.toString();
             }
         } else {
             return null;
