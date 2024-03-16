@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.utils.java;
 
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.ChatColor;
 
@@ -113,7 +114,7 @@ public class StringUtils {
         }
     }
 
-    public static String toString(Collection<?> a, String separator) {
+    public static <E> String toString(Collection<E> a, String separator) {
         int iMax = a.size() - 1;
 
         if (iMax == -1) {
@@ -122,7 +123,7 @@ public class StringUtils {
         StringBuilder b = new StringBuilder();
         int i = 0;
 
-       for (Object o : a) {
+        for (Object o : a) {
             b.append(o);
 
             if (i == iMax) {
@@ -134,8 +135,25 @@ public class StringUtils {
         return b.toString();
     }
 
-    public static String toString(Object[] a) {
-        return toString(a, ",");
+    public static String patternToString(Collection<PatternValue> a, String separator) {
+        int iMax = a.size() - 1;
+
+        if (iMax == -1) {
+            return "";
+        }
+        StringBuilder b = new StringBuilder();
+        int i = 0;
+
+        for (PatternValue o : a) {
+            b.append(o.pattern);
+
+            if (i == iMax) {
+                break;
+            }
+            b.append(separator);
+            i++;
+        }
+        return b.toString();
     }
 
     // Separator

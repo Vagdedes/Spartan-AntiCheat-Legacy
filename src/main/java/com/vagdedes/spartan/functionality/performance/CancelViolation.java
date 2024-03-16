@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.UltimateStatistics;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TestServer;
 import me.vagdedes.spartan.system.Enums;
@@ -42,8 +41,7 @@ public class CancelViolation {
     // Separator
 
     public static boolean isForced(SpartanPlayer player, Enums.HackType hackType) {
-        return !player.getCooldowns().canDo(masterKey + hackType.ordinal())
-                || UltimateStatistics.isSuspected(player.uuid);
+        return !player.getCooldowns().canDo(masterKey + hackType.ordinal());
     }
 
     public static void force(SpartanPlayer player, Enums.HackType hackType) {

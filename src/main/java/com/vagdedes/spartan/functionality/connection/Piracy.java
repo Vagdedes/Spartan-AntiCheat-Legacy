@@ -94,7 +94,7 @@ public class Piracy implements Listener {
             String additional;
 
             if (!administrators.isEmpty()) {
-                additional = StringUtils.toString(administrators.toArray(new String[0]));
+                additional = StringUtils.toString(administrators.toArray(new String[0]), ",");
                 administrators.clear();
             } else {
                 additional = null;

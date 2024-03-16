@@ -11,26 +11,31 @@ public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
     public final double patternSignificance;
+    public final int generalization, count;
+    public final Collection<PatternValue> currentPattern;
 
     public ProbabilityPredictor(Collection<Collection<PatternValue>> totalPatterns,
-                                Collection<PatternValue> currentPattern) {
+                                Collection<PatternValue> currentPattern,
+                                int generalization) {
         this.pie = new ProbabilityPie();
+        this.generalization = generalization;
+        this.count = currentPattern.size();
+        this.currentPattern = currentPattern;
 
         if (!totalPatterns.isEmpty()) {
             long currentPatternHash = HashHelper.collection(currentPattern);
-            int currentPatternSize = currentPattern.size(),
-                    totalPatternSize = 0;
+            int totalPatternSize = 0;
 
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
 
-                if (currentPatternSize <= allPatternsSize) {
+                if (this.count <= allPatternsSize) {
                     totalPatternSize += allPatternsSize;
                     boolean next = false;
                     Iterator<PatternValue> iterator = allPatterns.iterator();
                     LinkedList<PatternValue> list = new LinkedList<>();
 
-                    for (int i = 0; i < currentPatternSize; i++) {
+                    for (int i = 0; i < this.count; i++) {
                         list.add(iterator.next());
                     }
 
@@ -50,7 +55,7 @@ public class ProbabilityPredictor {
                 }
             }
             if (totalPatternSize > 0) {
-                this.patternSignificance = (this.pie.getTotal() * currentPatternSize) / (double) totalPatternSize;
+                this.patternSignificance = (this.pie.getTotal() * this.generalization) / (double) totalPatternSize;
             } else {
                 this.patternSignificance = 0.0;
             }

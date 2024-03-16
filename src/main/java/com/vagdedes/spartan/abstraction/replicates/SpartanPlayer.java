@@ -21,6 +21,7 @@ import com.vagdedes.spartan.checks.movement.MorePackets;
 import com.vagdedes.spartan.checks.movement.NoFall;
 import com.vagdedes.spartan.checks.movement.NoSlowdown;
 import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
+import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovementsNew;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.checks.player.AutoRespawn;
 import com.vagdedes.spartan.checks.player.FastEat;
@@ -475,7 +476,9 @@ public class SpartanPlayer {
                     this.executors[id] = new NoSwing(this);
                     break;
                 case IrregularMovements:
-                    this.executors[id] = new IrregularMovements(this);
+                    this.executors[id] = p.isOp() || p.isWhitelisted()
+                            ? new IrregularMovementsNew(this)
+                            : new IrregularMovements(this);
                     break;
                 case NoFall:
                     this.executors[id] = new NoFall(this);

@@ -164,6 +164,12 @@ public class EventsHandler7 implements Listener {
         MovementProcessing.run(p, dis, hor, ver, box, fall, crawling);
         CombatProcessing.runMove(p, to);
 
+        if (p.isOp()) {
+            p.getExecutor(Enums.HackType.IrregularMovements).handle(false, new Object[]{
+                    to, ver
+            });
+        }
+
         // Detections
         if (!crawling) {
             p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD); // Optimised

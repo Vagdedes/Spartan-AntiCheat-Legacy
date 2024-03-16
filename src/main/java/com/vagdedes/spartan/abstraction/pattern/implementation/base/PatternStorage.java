@@ -384,7 +384,7 @@ public class PatternStorage {
         if (size < count) {
             return new ArrayList<>(0);
         } else {
-            return specific.subList(size - count, size);
+            return new ArrayList<>(specific).subList(size - count, size);
         }
     }
 

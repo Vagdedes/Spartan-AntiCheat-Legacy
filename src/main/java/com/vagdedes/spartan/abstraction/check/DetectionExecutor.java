@@ -75,7 +75,6 @@ public abstract class DetectionExecutor {
     // Separator
 
     protected final String linearPredictionToDetection(PatternStorage patternStorage,
-                                                       int generalization,
                                                        Number client,
                                                        ProbabilityPredictor probabilityPredictor,
                                                        double minProbability,
@@ -87,9 +86,11 @@ public abstract class DetectionExecutor {
                     .append("data: ")
                     .append(patternStorage.key)
                     .append(", generalization: ")
-                    .append(generalization)
+                    .append(probabilityPredictor.generalization)
                     .append(", client: ")
-                    .append(client)
+                    .append(client instanceof Double
+                            ? AlgebraUtils.cut(client.doubleValue(), probabilityPredictor.generalization)
+                            : client)
                     .append(", pie-slices: ")
                     .append(probabilityPredictor.pie.getSlices())
                     .append(", pie-total: ")
@@ -101,7 +102,8 @@ public abstract class DetectionExecutor {
                     .append(", min-probability: ")
                     .append(minProbability)
                     .append(", max-deviation: ")
-                    .append(maxDeviation);
+                    .append(maxDeviation)
+                    .append(", ");
             boolean significantPattern = probabilityPredictor.patternSignificance >= minSignificance,
                     highChanceFound = false,
                     validComparisonMade = false;
@@ -132,9 +134,9 @@ public abstract class DetectionExecutor {
                     || !highChanceFound
                     || !validComparisonMade) {
                 sb.append("scenario: ")
-                        .append(significantPattern ? 1 : 0)
-                        .append(highChanceFound ? 1 : 0)
-                        .append(validComparisonMade ? 1 : 0);
+                        .append(!significantPattern ? 1 : 0)
+                        .append(!highChanceFound ? 1 : 0)
+                        .append(!validComparisonMade ? 1 : 0);
                 return sb.toString();
             } else {
                 return null;
@@ -177,7 +179,8 @@ public abstract class DetectionExecutor {
                                                         int count) {
         return new ProbabilityPredictor(
                 storage.getAll(player, situation, generalization),
-                storage.getSpecific(player.getProfile(), situation, generalization, count)
+                storage.getSpecific(player.getProfile(), situation, generalization, count),
+                generalization
         );
     }
 }
