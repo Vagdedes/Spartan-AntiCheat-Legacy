@@ -78,7 +78,6 @@ public abstract class DetectionExecutor {
                                                        Number client,
                                                        ProbabilityPredictor probabilityPredictor,
                                                        double minProbability,
-                                                       double maxDeviation,
                                                        double minSignificance) {
         if (probabilityPredictor.pie != null) {
             int count = 0;
@@ -105,8 +104,6 @@ public abstract class DetectionExecutor {
                         .append(minSignificance)
                         .append(", min-probability: ")
                         .append(minProbability)
-                        .append(", max-deviation: ")
-                        .append(maxDeviation)
                         .append(", ");
 
                 boolean significantPattern = probabilityPredictor.patternSignificance >= minSignificance,
@@ -121,7 +118,7 @@ public abstract class DetectionExecutor {
                     if (probability >= minProbability) {
                         highChanceFound = true;
 
-                        if (Math.abs(entry.getKey().doubleValue() - client.doubleValue()) <= maxDeviation) {
+                        if (entry.getKey().doubleValue() == client.doubleValue()) {
                             validComparisonMade = true;
                         }
                     }

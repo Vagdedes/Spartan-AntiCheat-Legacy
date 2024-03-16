@@ -25,7 +25,7 @@ public class IrregularMovementsNew extends CheckExecutor {
     public boolean handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
 
-        for (int count : new int[]{1}) {
+        for (int count : new int[]{MoveUtils.fallingMotions, MoveUtils.jumpingMotions}) {
             long situation = (long) objects[0];
             ProbabilityPredictor predictor = buildPredictor(
                     player,
@@ -48,12 +48,12 @@ public class IrregularMovementsNew extends CheckExecutor {
                     (double) objects[2],
                     predictor,
                     minProbability,
-                    maxDeviation,
                     minSignificance
             );
 
             if (detection != null) {
                 player.debug(false, false, detection);
+                player.debug(false, false, "-");
                 return true;
             }
         }
