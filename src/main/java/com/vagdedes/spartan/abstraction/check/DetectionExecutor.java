@@ -81,6 +81,10 @@ public abstract class DetectionExecutor {
                                                        double minSignificance) {
         if (probabilityPredictor.pie != null) {
             int count = 0;
+
+            if (client instanceof Double) {
+                client = AlgebraUtils.cut(client.doubleValue(), probabilityPredictor.generalization);
+            }
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
@@ -89,9 +93,7 @@ public abstract class DetectionExecutor {
                     .append("x")
                     .append(probabilityPredictor.count)
                     .append("), client: ")
-                    .append(client instanceof Double
-                            ? AlgebraUtils.cut(client.doubleValue(), probabilityPredictor.generalization)
-                            : client);
+                    .append(client);
 
             if (probabilityPredictor.pie.hasData()) {
                 sb.append(", pie: ")

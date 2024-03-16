@@ -859,7 +859,7 @@ public class SpartanPlayer {
         return false;
     }
 
-    public boolean canRunChecks(boolean accountLag) {
+    private boolean canRunChecks(boolean accountLag) {
         return runChecks[accountLag ? 0 : 1];
     }
 
@@ -1822,14 +1822,6 @@ public class SpartanPlayer {
         }
         return false;
     }
-
-    public boolean canDoAccurately() {
-        return !isDead() && !isFlying() && !isSleeping()
-                && canRunChecks(false)
-                && !Velocity.hasCooldown(this);
-    }
-
-    // Chasing
 
     // Environment
 

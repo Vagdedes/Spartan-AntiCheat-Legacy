@@ -26,11 +26,10 @@ public class IrregularMovementsNew extends CheckExecutor {
         Object[] objects = (Object[]) object;
 
         for (int count : new int[]{MoveUtils.fallingMotions, MoveUtils.jumpingMotions}) {
-            long situation = (long) objects[0];
             ProbabilityPredictor predictor = buildPredictor(
                     player,
                     SpartanBukkit.movementPatterns.vertical,
-                    situation,
+                    (long) objects[0],
                     GroundUtils.maxHeightLength,
                     count
             );

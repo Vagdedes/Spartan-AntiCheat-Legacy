@@ -63,7 +63,7 @@ public class PlayerData {
     public static void run(SpartanPlayer p, Player n, Collection<PotionEffect> potionEffects) {
         update(p, n, false);
 
-        if (p.canDoAccurately() || p.isFlying()) {
+        if (!p.isDead() && !p.isSleeping()) {
             Buffer buffer = p.getBuffer();
 
             // Separator
