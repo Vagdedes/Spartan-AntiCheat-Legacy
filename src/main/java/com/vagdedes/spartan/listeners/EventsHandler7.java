@@ -131,48 +131,50 @@ public class EventsHandler7 implements Listener {
         float fall = p.getFallDistance();
         boolean crawling = p.isCrawling();
 
-        // Patterns
+        // Detections (Always previous so it counts the previous tick and makes the current tick's prediction)
         long situation = HashHelper.hashPlayer(p);
         situation = HashHelper.extendLong(situation, HashHelper.hashEnvironment(p, to));
-        Double previous = p.getPreviousNmsDistance();
-        SpartanBukkit.movementPatterns.all.collect(
-                p.getProfile(),
-                situation,
-                dis,
-                dis != 0.0 || previous == null || previous != 0.0
-        );
-        previous = p.getPreviousNmsHorizontalDistance();
-        SpartanBukkit.movementPatterns.horizontal.collect(
-                p.getProfile(),
-                situation,
-                hor,
-                hor != 0.0 || previous == null || previous != 0.0
-        );
-        previous = p.getPreviousNmsVerticalDistance();
-        SpartanBukkit.movementPatterns.vertical.collect(
-                p.getProfile(),
-                situation,
-                ver,
-                ver != 0.0 || previous == null || previous != 0.0
-        );
-        Float previousF = p.getPreviousNmsFall();
-        SpartanBukkit.movementPatterns.fall.collect(
-                p.getProfile(),
-                situation,
-                fall,
-                fall != 0.0 || previousF == null || previousF != 0.0
-        );
-        SpartanBukkit.movementPatterns.store();
-
-        // Handlers
-        MovementProcessing.run(p, dis, hor, ver, box, fall, crawling);
-        CombatProcessing.runMove(p, to);
 
         if (p.isOp()) {
             p.getExecutor(Enums.HackType.IrregularMovements).handle(false, new Object[]{
                     situation, ver
             });
         }
+
+        // Patterns
+        Double previousDis = p.getPreviousNmsDistance();
+        SpartanBukkit.movementPatterns.all.collect(
+                p.getProfile(),
+                situation,
+                dis,
+                dis != 0.0 || previousDis == null || previousDis != 0.0
+        );
+        Double previousHor = p.getPreviousNmsHorizontalDistance();
+        SpartanBukkit.movementPatterns.horizontal.collect(
+                p.getProfile(),
+                situation,
+                hor,
+                hor != 0.0 || previousHor == null || previousHor != 0.0
+        );
+        Double previousVer = p.getPreviousNmsVerticalDistance();
+        SpartanBukkit.movementPatterns.vertical.collect(
+                p.getProfile(),
+                situation,
+                ver,
+                ver != 0.0 || previousVer == null || previousVer != 0.0
+        );
+        Float previousFall = p.getPreviousNmsFall();
+        SpartanBukkit.movementPatterns.fall.collect(
+                p.getProfile(),
+                situation,
+                fall,
+                fall != 0.0 || previousFall == null || previousFall != 0.0
+        );
+        SpartanBukkit.movementPatterns.store();
+
+        // Handlers
+        MovementProcessing.run(p, dis, hor, ver, box, fall, crawling);
+        CombatProcessing.runMove(p, to);
 
         // Detections
         if (!crawling) {
