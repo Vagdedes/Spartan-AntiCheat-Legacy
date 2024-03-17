@@ -1725,11 +1725,10 @@ public class SpartanPlayer {
     // Ground
 
     public int getBlocksOffGround(int limit, boolean liquid, boolean climbable) {
-        boolean hasLimit = limit > 0;
         SpartanLocation ploc = getLocation();
         Decimals decimals = getDecimals();
         Cooldowns cooldowns = getCooldowns();
-        String key = "blocks-off-ground=" + Objects.hash(ploc.getBlockY(), hasLimit ? limit : 0, liquid, climbable);
+        String key = "blocks-off-ground=" + Objects.hash(ploc.getBlockY(), limit, liquid, climbable);
 
         if (!cooldowns.canDo(key)) {
             return (int) decimals.get(key, 0.0);
@@ -1740,7 +1739,7 @@ public class SpartanPlayer {
             if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, liquid, climbable)) {
                 blocksOffGround++;
 
-                if (hasLimit && blocksOffGround == limit) {
+                if (blocksOffGround == limit) {
                     break;
                 }
             } else {

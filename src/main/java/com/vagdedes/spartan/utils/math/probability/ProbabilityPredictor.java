@@ -11,14 +11,12 @@ public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
     public final int generalization, count;
-    public final Collection<PatternValue> currentPattern;
 
     public ProbabilityPredictor(Collection<Collection<PatternValue>> totalPatterns,
                                 Collection<PatternValue> currentPattern,
                                 int generalization) {
         this.generalization = generalization;
         this.count = currentPattern.size();
-        this.currentPattern = currentPattern;
 
         if (!totalPatterns.isEmpty() && this.count > 0) {
             long currentPatternHash = HashHelper.collection(currentPattern);

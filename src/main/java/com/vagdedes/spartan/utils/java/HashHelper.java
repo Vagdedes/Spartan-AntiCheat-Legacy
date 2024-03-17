@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -242,6 +243,7 @@ public class HashHelper {
                 hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
             }
         }
+        hash = extendLong(hash, player.getBlocksOffGround(MoveUtils.chunkInt, true, true));
         return hash;
     }
 }
