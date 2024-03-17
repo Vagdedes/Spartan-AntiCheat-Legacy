@@ -4,11 +4,15 @@ public abstract class PatternCache {
 
     private long time;
 
-    protected PatternCache() {
-        refresh();
+    protected PatternCache(boolean refresh) {
+        if (refresh) {
+            refresh();
+        } else {
+            this.time = System.currentTimeMillis();
+        }
     }
 
-    protected void refresh() {
+    public void refresh() {
         this.time = System.currentTimeMillis() + 1_000L;
     }
 

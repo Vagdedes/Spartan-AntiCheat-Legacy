@@ -93,7 +93,12 @@ public abstract class DetectionExecutor {
                     .append("x")
                     .append(probabilityPredictor.count)
                     .append("), client: ")
-                    .append(client);
+                    .append(client)
+                    .append(", significance: ")
+                    .append(AlgebraUtils.cut(
+                            patternStorage.getSignificance(client, probabilityPredictor.generalization) * 100.0,
+                            2
+                    ));
 
             if (probabilityPredictor.pie.hasData()) {
                 sb.append(", pie: ")
@@ -104,7 +109,7 @@ public abstract class DetectionExecutor {
                         .append(minProbability)
                         .append(", ");
                 boolean success = false;
-                Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getChancesRanked().iterator();
+                Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
 
                 while (entries.hasNext()) {
                     Map.Entry<Number, Integer> entry = entries.next();
@@ -113,16 +118,14 @@ public abstract class DetectionExecutor {
                     if (probability >= minProbability
                             && entry.getKey().doubleValue() == client.doubleValue()) {
                         success = true;
-                    }
-                    count++;
-
-                    if (count <= 10) {
-                        sb.append(entry.getKey())
-                                .append(": ")
+                        sb.append("probability: ")
                                 .append(AlgebraUtils.cut(probability * 100.0, 2))
+                                .append(", passes: ")
+                                .append(count)
                                 .append(", ");
-                    } else if (success) {
                         break;
+                    } else {
+                        count++;
                     }
                 }
 

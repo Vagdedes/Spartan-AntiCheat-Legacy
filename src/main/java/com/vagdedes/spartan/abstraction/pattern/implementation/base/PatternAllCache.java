@@ -9,7 +9,7 @@ public class PatternAllCache extends PatternCache {
     Collection<Collection<PatternValue>> data;
 
     PatternAllCache(Collection<Collection<PatternValue>> cached) {
-        super();
+        super(true);
         this.data = cached;
     }
 

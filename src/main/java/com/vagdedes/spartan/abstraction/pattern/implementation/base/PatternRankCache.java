@@ -3,12 +3,12 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.abstraction.pattern.PatternCache;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
 
-public class PatternRankedCache extends PatternCache {
+public class PatternRankCache extends PatternCache {
 
-     ProbabilityRank data;
+    ProbabilityRank data;
 
-    PatternRankedCache(ProbabilityRank cached) {
-        super();
+    PatternRankCache(ProbabilityRank cached) {
+        super(true);
         this.data = cached;
     }
 

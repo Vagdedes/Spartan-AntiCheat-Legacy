@@ -112,7 +112,7 @@ public class ProbabilityPie {
         return count != null ? count / this.total : defaultValue;
     }
 
-    public Stream<Map.Entry<Number, Integer>> getChancesRanked() {
+    public Stream<Map.Entry<Number, Integer>> getProbabilitiesRanked() {
         return this.map.entrySet().stream().sorted(
                 Map.Entry.comparingByValue(Comparator.reverseOrder())
         );

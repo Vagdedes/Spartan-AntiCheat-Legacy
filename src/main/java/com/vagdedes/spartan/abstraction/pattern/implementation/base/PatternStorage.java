@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.probability.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -19,7 +20,7 @@ public class PatternStorage {
     private static final boolean debug = true;
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
     private static final Map<Integer, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<Integer, PatternRankedCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Integer, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public static void delete(PlayerProfile profile) {
         synchronized (instances) {
@@ -101,6 +102,7 @@ public class PatternStorage {
     // Profile -> Generalization -> Situation -> Patterns
     private final Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations;
     private final Map<PlayerProfile, Map<Long, PatternRepetition>> repetitions;
+    private final PatternPieCache patternProbability = new PatternPieCache(new ProbabilityPie());
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
@@ -386,13 +388,13 @@ public class PatternStorage {
             ProbabilityRank result = this.getRankedRaw(situation, generalization);
 
             synchronized (rankedCache) {
-                PatternRankedCache cache = rankedCache.get(hash);
+                PatternRankCache cache = rankedCache.get(hash);
 
                 if (!result.hasData()) {
                     notify(player, situation);
                 }
                 if (cache == null) {
-                    cache = new PatternRankedCache(result);
+                    cache = new PatternRankCache(result);
                     rankedCache.put(hash, cache);
                     return cache.data;
                 } else {
@@ -401,10 +403,10 @@ public class PatternStorage {
             }
         } else {
             synchronized (rankedCache) {
-                PatternRankedCache cache = rankedCache.get(hash);
+                PatternRankCache cache = rankedCache.get(hash);
 
                 if (cache == null) {
-                    cache = new PatternRankedCache(this.getRankedRaw(situation, generalization));
+                    cache = new PatternRankCache(this.getRankedRaw(situation, generalization));
                     rankedCache.put(
                             hash,
                             cache
@@ -442,5 +444,33 @@ public class PatternStorage {
                     ? new ProbabilityRank(0)
                     : rank;
         }
+    }
+
+    // Separator
+
+    public double getSignificance(Number number, int generalization) {
+        synchronized (this.patternProbability) {
+            if (this.patternProbability.isExpired()) {
+                this.patternProbability.data.clear();
+
+                synchronized (this.correlations) {
+                    for (Map.Entry<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> entry : this.correlations.entrySet()) {
+                        if (entry.getKey().isLegitimate()) {
+                            Map<Long, List<PatternValue>> data = entry.getValue().get(generalization);
+
+                            if (!data.isEmpty()) {
+                                for (List<PatternValue> list : data.values()) {
+                                    for (PatternValue value : list) {
+                                        this.patternProbability.data.add(value.pattern);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            this.patternProbability.refresh();
+        }
+        return patternProbability.data.getProbability(number);
     }
 }
