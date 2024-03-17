@@ -98,11 +98,13 @@ public class PatternStorage {
 
     public final String key;
     private final PatternGeneralization[] generalizations;
+    private final Number[] bannedNumbers;
     // Profile -> Generalization -> Situation -> Patterns
     private final Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations;
 
-    public PatternStorage(String key, int[] generalizations) {
+    public PatternStorage(String key, int[] generalizations, Number[] bannedNumbers) {
         this.key = key;
+        this.bannedNumbers = bannedNumbers;
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -118,6 +120,21 @@ public class PatternStorage {
         synchronized (instances) {
             instances.add(this);
         }
+    }
+
+    // Separator
+
+    public boolean isValidNumber(Number number) {
+        for (Number banned : this.bannedNumbers) {
+            if (banned == null) {
+                if (number == null) {
+                    return false;
+                }
+            } else if (banned.doubleValue() == number.doubleValue()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Separator
@@ -224,24 +241,35 @@ public class PatternStorage {
         }
     }
 
-    public void collect(PlayerProfile profile, long situation, Number number, boolean collect) {
+    public void collect(PlayerProfile profile, long situation, Number[] numbers, boolean collect) {
         if (collect) {
-            long time = System.currentTimeMillis();
+            collect = false;
 
-            synchronized (this.correlations) {
-                for (PatternGeneralization generalization : this.generalizations) {
-                    this.rawCache(
-                            this.correlations,
-                            profile,
-                            new PatternValue(
-                                    situation,
-                                    number,
-                                    generalization,
-                                    time
-                            ),
-                            generalization,
-                            generalization instanceof PatternGeneralizationStorage
-                    );
+            for (Number number : numbers) {
+                if (isValidNumber(number)) {
+                    collect = true;
+                    break;
+                }
+            }
+
+            if (collect) {
+                long time = System.currentTimeMillis();
+
+                synchronized (this.correlations) {
+                    for (PatternGeneralization generalization : this.generalizations) {
+                        this.rawCache(
+                                this.correlations,
+                                profile,
+                                new PatternValue(
+                                        situation,
+                                        numbers[0],
+                                        generalization,
+                                        time
+                                ),
+                                generalization,
+                                generalization instanceof PatternGeneralizationStorage
+                        );
+                    }
                 }
             }
         }
@@ -346,19 +374,15 @@ public class PatternStorage {
                 if (specific == null) {
                     return new ArrayList<>(0);
                 } else {
-                    return this.subList(specific, count);
+                    int size = specific.size();
+
+                    if (size < count) {
+                        return new ArrayList<>(0);
+                    } else {
+                        return new ArrayList<>(specific).subList(size - count, size);
+                    }
                 }
             }
-        }
-    }
-
-    public List<PatternValue> subList(List<PatternValue> specific, int count) {
-        int size = specific.size();
-
-        if (size < count) {
-            return new ArrayList<>(0);
-        } else {
-            return new ArrayList<>(specific).subList(size - count, size);
         }
     }
 

@@ -142,33 +142,29 @@ public class EventsHandler7 implements Listener {
         }
 
         // Patterns
-        Double previousDis = p.getPreviousNmsDistance();
         SpartanBukkit.movementPatterns.all.collect(
                 p.getProfile(),
                 situation,
-                dis,
-                dis != 0.0 || previousDis == null || previousDis != 0.0
+                new Number[]{dis, p.getPreviousNmsDistance()},
+                true
         );
-        Double previousHor = p.getPreviousNmsHorizontalDistance();
         SpartanBukkit.movementPatterns.horizontal.collect(
                 p.getProfile(),
                 situation,
-                hor,
-                hor != 0.0 || previousHor == null || previousHor != 0.0
+                new Number[]{hor, p.getPreviousNmsHorizontalDistance()},
+                true
         );
-        Double previousVer = p.getPreviousNmsVerticalDistance();
         SpartanBukkit.movementPatterns.vertical.collect(
                 p.getProfile(),
                 situation,
-                ver,
-                ver != 0.0 || previousVer == null || previousVer != 0.0
+                new Number[]{ver, p.getPreviousNmsVerticalDistance()},
+                true
         );
-        Float previousFall = p.getPreviousNmsFall();
         SpartanBukkit.movementPatterns.fall.collect(
                 p.getProfile(),
                 situation,
-                fall,
-                fall != 0.0 || previousFall == null || previousFall != 0.0
+                new Number[]{fall, p.getPreviousNmsFall()},
+                true
         );
         SpartanBukkit.movementPatterns.store();
 
