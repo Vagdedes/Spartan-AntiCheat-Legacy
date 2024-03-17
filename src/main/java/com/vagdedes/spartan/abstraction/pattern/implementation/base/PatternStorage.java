@@ -98,15 +98,15 @@ public class PatternStorage {
 
     public final String key;
     private final PatternGeneralization[] generalizations;
-    private final Number[] bannedNumbers;
     // Profile -> Generalization -> Situation -> Patterns
     private final Map<PlayerProfile, Map<Integer, Map<Long, List<PatternValue>>>> correlations;
+    private final Map<PlayerProfile, Map<Long, PatternRepetition>> repetitions;
 
-    public PatternStorage(String key, int[] generalizations, Number[] bannedNumbers) {
+    public PatternStorage(String key, int[] generalizations) {
         this.key = key;
-        this.bannedNumbers = bannedNumbers;
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.repetitions = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.generalizations = new PatternGeneralization[generalizations.length + 1];
         this.generalizations[0] = new PatternGeneralizationStorage(key);
@@ -120,21 +120,6 @@ public class PatternStorage {
         synchronized (instances) {
             instances.add(this);
         }
-    }
-
-    // Separator
-
-    public boolean isValidNumber(Number number) {
-        for (Number banned : this.bannedNumbers) {
-            if (banned == null) {
-                if (number == null) {
-                    return false;
-                }
-            } else if (banned.doubleValue() == number.doubleValue()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     // Separator
@@ -241,35 +226,41 @@ public class PatternStorage {
         }
     }
 
-    public void collect(PlayerProfile profile, long situation, Number[] numbers, boolean collect) {
+    public void collect(PlayerProfile profile, long situation, Number number, boolean collect) {
         if (collect) {
-            collect = false;
+            long time = System.currentTimeMillis();
 
-            for (Number number : numbers) {
-                if (isValidNumber(number)) {
-                    collect = true;
-                    break;
+            synchronized (this.repetitions) {
+                Map<Long, PatternRepetition> map = this.repetitions.get(profile);
+
+                if (map == null) {
+                    map = new LinkedHashMap<>();
+                    map.put(situation, new PatternRepetition(number));
+                    this.repetitions.put(profile, map);
+                } else {
+                    PatternRepetition repetition = map.get(situation);
+
+                    if (repetition == null) {
+                        map.put(situation, new PatternRepetition(number));
+                    } else if (!repetition.canUse(number)) {
+                        return;
+                    }
                 }
             }
-
-            if (collect) {
-                long time = System.currentTimeMillis();
-
-                synchronized (this.correlations) {
-                    for (PatternGeneralization generalization : this.generalizations) {
-                        this.rawCache(
-                                this.correlations,
-                                profile,
-                                new PatternValue(
-                                        situation,
-                                        numbers[0],
-                                        generalization,
-                                        time
-                                ),
-                                generalization,
-                                generalization instanceof PatternGeneralizationStorage
-                        );
-                    }
+            synchronized (this.correlations) {
+                for (PatternGeneralization generalization : this.generalizations) {
+                    this.rawCache(
+                            this.correlations,
+                            profile,
+                            new PatternValue(
+                                    situation,
+                                    number,
+                                    generalization,
+                                    time
+                            ),
+                            generalization,
+                            generalization instanceof PatternGeneralizationStorage
+                    );
                 }
             }
         }
