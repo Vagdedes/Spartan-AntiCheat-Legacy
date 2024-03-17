@@ -464,7 +464,7 @@ public class PatternStorage {
 
     // Separator
 
-    public void addFailure(PlayerProfile profile) {
+    public void collectFailure(PlayerProfile profile) {
         synchronized (this.profiles) {
             this.profiles.computeIfAbsent(
                     profile,
@@ -473,12 +473,34 @@ public class PatternStorage {
         }
     }
 
-    public void addNoData(PlayerProfile profile) {
+    public void collectNoData(PlayerProfile profile) {
         synchronized (this.profiles) {
             this.profiles.computeIfAbsent(
                     profile,
                     k -> new PatternProfile()
             ).noData.add(System.currentTimeMillis());
+        }
+    }
+
+    public void collectProbability(PlayerProfile profile, double probability) {
+        long time = System.currentTimeMillis();
+
+        synchronized (this.profiles) {
+            this.profiles.computeIfAbsent(
+                    profile,
+                    k -> new PatternProfile()
+            ).successProbability.put(time, probability);
+        }
+    }
+
+    public void collectSignificance(PlayerProfile profile, double significance) {
+        long time = System.currentTimeMillis();
+
+        synchronized (this.profiles) {
+            this.profiles.computeIfAbsent(
+                    profile,
+                    k -> new PatternProfile()
+            ).successSignificance.put(time, significance);
         }
     }
 }

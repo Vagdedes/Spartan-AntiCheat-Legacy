@@ -96,9 +96,11 @@ public abstract class DetectionExecutor {
                     .append(client);
 
             if (probabilityPredictor.pie.hasData()) {
+                double significance = patternStorage.getSignificance(client, probabilityPredictor.generalization);
+                patternStorage.collectSignificance(player.getProfile(), significance);
                 sb.append(", significance: ")
                         .append(AlgebraUtils.cut(
-                                patternStorage.getSignificance(client, probabilityPredictor.generalization) * 100.0,
+                                significance * 100.0,
                                 2
                         ))
                         .append(", pie: ")
@@ -123,6 +125,7 @@ public abstract class DetectionExecutor {
                                 .append(", passes: ")
                                 .append(count)
                                 .append(", ");
+                        patternStorage.collectProbability(player.getProfile(), probability);
                         break;
                     } else {
                         count++;
@@ -130,14 +133,14 @@ public abstract class DetectionExecutor {
                 }
 
                 if (!success) {
-                    patternStorage.addFailure(player.getProfile());
+                    patternStorage.collectFailure(player.getProfile());
                     sb.append("scenario: failure");
                     return sb.toString();
                 } else {
                     return null;
                 }
             } else {
-                patternStorage.addNoData(player.getProfile());
+                patternStorage.collectNoData(player.getProfile());
                 sb.append(", scenario: new");
                 return sb.toString();
             }
