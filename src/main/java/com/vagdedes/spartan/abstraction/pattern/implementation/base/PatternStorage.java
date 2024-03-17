@@ -19,8 +19,8 @@ public class PatternStorage {
 
     private static final boolean debug = true;
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
-    private static final Map<Integer, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<Integer, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Long, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Long, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public static void delete(PlayerProfile profile) {
         synchronized (instances) {
@@ -280,7 +280,7 @@ public class PatternStorage {
     // Separator
 
     public Collection<Collection<PatternValue>> getAll(SpartanPlayer player, long situation, int generalization) {
-        int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
+        long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong) + generalization;
 
         if (DetectionNotifications.isEnabled(player)) {
             Collection<Collection<PatternValue>> result = this.getAllRaw(situation, generalization);
@@ -370,7 +370,7 @@ public class PatternStorage {
     // Separator
 
     public ProbabilityRank getRanked(SpartanPlayer player, long situation, int generalization) {
-        int hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplier) + generalization;
+        long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong) + generalization;
 
         if (DetectionNotifications.isEnabled(player)) {
             ProbabilityRank result = this.getRankedRaw(situation, generalization);
@@ -473,34 +473,43 @@ public class PatternStorage {
         }
     }
 
-    public void collectNoData(PlayerProfile profile) {
+    public void collectNewData(PlayerProfile profile) {
         synchronized (this.profiles) {
             this.profiles.computeIfAbsent(
                     profile,
                     k -> new PatternProfile()
-            ).noData.add(System.currentTimeMillis());
+            ).newData.add(System.currentTimeMillis());
         }
     }
 
-    public void collectProbability(PlayerProfile profile, double probability) {
+    public void collectExistingData(PlayerProfile profile) {
+        synchronized (this.profiles) {
+            this.profiles.computeIfAbsent(
+                    profile,
+                    k -> new PatternProfile()
+            ).existingData.add(System.currentTimeMillis());
+        }
+    }
+
+    public void collectProbability(PlayerProfile profile, double value) {
         long time = System.currentTimeMillis();
 
         synchronized (this.profiles) {
             this.profiles.computeIfAbsent(
                     profile,
                     k -> new PatternProfile()
-            ).successProbability.put(time, probability);
+            ).successProbability.put(time, value);
         }
     }
 
-    public void collectSignificance(PlayerProfile profile, double significance) {
+    public void collectSignificance(PlayerProfile profile, double value) {
         long time = System.currentTimeMillis();
 
         synchronized (this.profiles) {
             this.profiles.computeIfAbsent(
                     profile,
                     k -> new PatternProfile()
-            ).successSignificance.put(time, significance);
+            ).successSignificance.put(time, value);
         }
     }
 }

@@ -9,7 +9,7 @@ import me.vagdedes.spartan.system.Enums;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class CancelViolation {
+public class CancelViolation { // todo replace with maximum violations based on statistics and remove for machine learning checks
 
     private static final String masterKey = "cancel-violation";
     private static final Map<Integer, Integer> memory = new LinkedHashMap<>(Enums.HackType.values().length * Enums.DataType.values().length);

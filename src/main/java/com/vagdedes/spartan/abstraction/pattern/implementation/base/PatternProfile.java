@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class PatternProfile {
 
-    final List<Long> failures, noData;
+    final List<Long> failures, newData, existingData;
     final Map<Long, Double> successProbability, successSignificance;
     // Generalization -> Situation -> Patterns
     final Map<Integer, Map<Long, List<PatternValue>>> correlations;
@@ -15,7 +15,8 @@ public class PatternProfile {
 
     PatternProfile() {
         this.failures = new ArrayList<>();
-        this.noData = new ArrayList<>();
+        this.newData = new ArrayList<>();
+        this.existingData = new ArrayList<>();
         this.successProbability = new LinkedHashMap<>();
         this.successSignificance = new LinkedHashMap<>();
         this.correlations = new LinkedHashMap<>();
@@ -26,13 +27,15 @@ public class PatternProfile {
         return this.failures.size();
     }
 
-    int noData() {
-        return this.noData.size();
-    }
-
     // Separator
 
-    double successProbabilityAverage() {
+    double contribution() {
+        return this.existingData.isEmpty()
+                ? this.newData.size()
+                : this.newData.size() / (double) this.existingData.size();
+    }
+
+    double probability() {
         if (this.successProbability.isEmpty()) {
             return 0.0;
         } else {
@@ -45,7 +48,7 @@ public class PatternProfile {
         }
     }
 
-    double successSignificanceAverage() {
+    double significance() {
         if (this.successSignificance.isEmpty()) {
             return 0.0;
         } else {

@@ -96,6 +96,7 @@ public abstract class DetectionExecutor {
                     .append(client);
 
             if (probabilityPredictor.pie.hasData()) {
+                patternStorage.collectExistingData(player.getProfile());
                 double significance = patternStorage.getSignificance(client, probabilityPredictor.generalization);
                 patternStorage.collectSignificance(player.getProfile(), significance);
                 sb.append(", significance: ")
@@ -140,7 +141,7 @@ public abstract class DetectionExecutor {
                     return null;
                 }
             } else {
-                patternStorage.collectNoData(player.getProfile());
+                patternStorage.collectNewData(player.getProfile());
                 sb.append(", scenario: new");
                 return sb.toString();
             }
