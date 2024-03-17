@@ -93,15 +93,15 @@ public abstract class DetectionExecutor {
                     .append("x")
                     .append(probabilityPredictor.count)
                     .append("), client: ")
-                    .append(client)
-                    .append(", significance: ")
-                    .append(AlgebraUtils.cut(
-                            patternStorage.getSignificance(client, probabilityPredictor.generalization) * 100.0,
-                            2
-                    ));
+                    .append(client);
 
             if (probabilityPredictor.pie.hasData()) {
-                sb.append(", pie: ")
+                sb.append(", significance: ")
+                        .append(AlgebraUtils.cut(
+                                patternStorage.getSignificance(client, probabilityPredictor.generalization) * 100.0,
+                                2
+                        ))
+                        .append(", pie: ")
                         .append(probabilityPredictor.pie.getSlices())
                         .append("/")
                         .append(probabilityPredictor.pie.getTotal())
@@ -130,12 +130,14 @@ public abstract class DetectionExecutor {
                 }
 
                 if (!success) {
-                    sb.append("scenario: failed");
+                    patternStorage.addFailure(player.getProfile());
+                    sb.append("scenario: failure");
                     return sb.toString();
                 } else {
                     return null;
                 }
             } else {
+                patternStorage.addNoData(player.getProfile());
                 sb.append(", scenario: new");
                 return sb.toString();
             }
