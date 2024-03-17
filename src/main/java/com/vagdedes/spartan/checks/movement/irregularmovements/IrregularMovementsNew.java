@@ -25,7 +25,7 @@ public class IrregularMovementsNew extends CheckExecutor {
     public boolean handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
 
-        for (int count : new int[]{MoveUtils.fallingMotions, MoveUtils.jumpingMotions}) {
+        for (int count : new int[]{1}) {
             ProbabilityPredictor predictor = buildPredictor(
                     player,
                     SpartanBukkit.movementPatterns.vertical,
@@ -37,7 +37,7 @@ public class IrregularMovementsNew extends CheckExecutor {
 
             switch (count) {
                 default:
-                    minProbability = 0.1;
+                    minProbability = 0.01;
                     minSignificance = 0.1;
                     break;
             }

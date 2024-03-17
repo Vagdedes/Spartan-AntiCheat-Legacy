@@ -10,7 +10,6 @@ import java.util.LinkedList;
 public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
-    public final double patternSignificance;
     public final int generalization, count;
     public final Collection<PatternValue> currentPattern;
 
@@ -23,14 +22,14 @@ public class ProbabilityPredictor {
 
         if (!totalPatterns.isEmpty() && this.count > 0) {
             long currentPatternHash = HashHelper.collection(currentPattern);
-            int totalPatternSize = 0;
+            boolean comparison = false;
             ProbabilityPie pie = new ProbabilityPie();
 
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
 
                 if (this.count <= allPatternsSize) {
-                    totalPatternSize += allPatternsSize;
+                    comparison = true;
                     boolean next = false;
                     Iterator<PatternValue> iterator = allPatterns.iterator();
                     LinkedList<PatternValue> list = new LinkedList<>();
@@ -54,16 +53,9 @@ public class ProbabilityPredictor {
                     }
                 }
             }
-            if (totalPatternSize > 0) {
-                this.pie = pie;
-                this.patternSignificance = (this.pie.getTotal() * this.generalization) / (double) totalPatternSize;
-            } else {
-                this.pie = null;
-                this.patternSignificance = 0.0;
-            }
+            this.pie = comparison ? pie : null;
         } else {
             this.pie = null;
-            this.patternSignificance = 0.0;
         }
     }
 }

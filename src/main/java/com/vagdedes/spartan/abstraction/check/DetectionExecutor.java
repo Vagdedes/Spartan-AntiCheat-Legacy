@@ -100,29 +100,19 @@ public abstract class DetectionExecutor {
                         .append(probabilityPredictor.pie.getSlices())
                         .append("/")
                         .append(probabilityPredictor.pie.getTotal())
-                        .append(", significance: ")
-                        .append(AlgebraUtils.cut(probabilityPredictor.patternSignificance * 100.0, 2))
-                        .append(", min-significance: ")
-                        .append(minSignificance)
                         .append(", min-probability: ")
                         .append(minProbability)
                         .append(", ");
-
-                boolean significantPattern = probabilityPredictor.patternSignificance >= minSignificance,
-                        highChanceFound = false,
-                        validComparisonMade = false;
+                boolean success = false;
                 Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getChancesRanked().iterator();
 
                 while (entries.hasNext()) {
                     Map.Entry<Number, Integer> entry = entries.next();
                     double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
 
-                    if (probability >= minProbability) {
-                        highChanceFound = true;
-
-                        if (entry.getKey().doubleValue() == client.doubleValue()) {
-                            validComparisonMade = true;
-                        }
+                    if (probability >= minProbability
+                            && entry.getKey().doubleValue() == client.doubleValue()) {
+                        success = true;
                     }
                     count++;
 
@@ -131,23 +121,19 @@ public abstract class DetectionExecutor {
                                 .append(": ")
                                 .append(AlgebraUtils.cut(probability * 100.0, 2))
                                 .append(", ");
+                    } else if (success) {
+                        break;
                     }
                 }
 
-                if (!significantPattern
-                        || !highChanceFound
-                        || !validComparisonMade) {
-                    sb.append("scenario: ")
-                            .append(!significantPattern ? 1 : 0)
-                            .append(!highChanceFound ? 1 : 0)
-                            .append(!validComparisonMade ? 1 : 0)
-                            .append(0);
+                if (!success) {
+                    sb.append("scenario: failed");
                     return sb.toString();
                 } else {
                     return null;
                 }
             } else {
-                sb.append(", scenario: 0001");
+                sb.append(", scenario: new");
                 return sb.toString();
             }
         } else {

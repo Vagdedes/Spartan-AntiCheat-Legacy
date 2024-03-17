@@ -36,8 +36,7 @@ public class MoveUtils {
             height,
             fallDamageBlocks = 4,
             chunkInt = AlgebraUtils.integerRound(chunk),
-            jumpingMotions = 5,
-            fallingMotions = 1;
+            jumpingMotions = 5;
 
     private static final Set<Double> jumps = new HashSet<>(jumpingMotions);
     private static final Map<Integer, Double> gravity = new LinkedHashMap<>();

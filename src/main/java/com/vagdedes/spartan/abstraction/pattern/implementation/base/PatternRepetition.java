@@ -14,12 +14,12 @@ public class PatternRepetition {
 
     boolean canUse(Number number) {
         if (this.number.doubleValue() != number.doubleValue()) {
-            count = 1;
+            this.count = 1;
             this.number = number;
             return true;
         } else {
-            count++;
-            return count <= TPS.tickTimeInteger;
+            this.count++;
+            return this.count <= TPS.tickTimeInteger;
         }
     }
 }
