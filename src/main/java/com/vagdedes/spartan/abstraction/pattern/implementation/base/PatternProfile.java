@@ -1,67 +1,64 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PatternProfile {
 
-    final List<Long> failures, newData, existingData;
-    final Map<Long, Double> successProbability, successSignificance;
+    final Map<Integer, List<Long>> newData; // Local, Publicly accessed
+    final Map<Integer, Map<Long, Double>> probability, significance; // Local, Publicly accessed
     // Generalization -> Situation -> Patterns
-    final Map<Integer, Map<Long, List<PatternValue>>> correlations;
-    final Map<Long, PatternRepetition> repetitions;
+    final Map<Integer, Map<Long, List<PatternValue>>> correlations; // Local
+    final Map<Long, PatternRepetition> repetitions; // Local
 
     PatternProfile() {
-        this.failures = new ArrayList<>();
-        this.newData = new ArrayList<>();
-        this.existingData = new ArrayList<>();
-        this.successProbability = new LinkedHashMap<>();
-        this.successSignificance = new LinkedHashMap<>();
+        this.newData = new LinkedHashMap<>();
+        this.probability = new LinkedHashMap<>();
+        this.significance = new LinkedHashMap<>();
         this.correlations = new LinkedHashMap<>();
         this.repetitions = new LinkedHashMap<>();
     }
 
-    int failures() {
-        return this.failures.size();
-    }
+    // Public
 
-    // Separator
-
-    double contribution() {
-        return this.existingData.isEmpty()
-                ? this.newData.size()
-                : this.newData.size() / (double) this.existingData.size();
-    }
-
-    double probability() {
-        if (this.successProbability.isEmpty()) {
+    public double contribution(int generalization) {
+        if (this.significance.isEmpty()) {
             return 0.0;
         } else {
-            double count = 0.0;
+            int map;
 
-            for (double probability : this.successProbability.values()) {
-                count += probability;
+            synchronized (this.significance) {
+                map = this.countMap(this.significance, generalization);
             }
-            return count / (double) this.successProbability.size();
+
+            if (map == 0) {
+                return 0.0;
+            } else {
+                int collection;
+
+                synchronized (this.newData) {
+                    collection = this.countCollection(this.newData, generalization);
+                }
+                return collection / (double) map;
+            }
         }
     }
 
-    double significance() {
-        if (this.successSignificance.isEmpty()) {
-            return 0.0;
-        } else {
-            double count = 0.0;
-
-            for (double significance : this.successSignificance.values()) {
-                count += significance;
-            }
-            return count / (double) this.successSignificance.size();
+    public double probability(int generalization) {
+        synchronized (this.probability) {
+            return this.average(this.probability, generalization);
         }
     }
 
-    // Separator
+    public double significance(int generalization) {
+        synchronized (this.significance) {
+            return this.average(this.significance, generalization);
+        }
+    }
+
+    // Local
 
     boolean canUsePattern(long situation, Number number) {
         PatternRepetition repetition = this.repetitions.get(situation);
@@ -71,6 +68,45 @@ public class PatternProfile {
             return true;
         } else {
             return repetition.canUse(number);
+        }
+    }
+
+    // Private
+
+    private double average(Map<Integer, Map<Long, Double>> parent, int generalization) {
+        if (parent.isEmpty()) {
+            return 0.0;
+        } else {
+            Map<Long, Double> map = parent.get(generalization);
+
+            if (map == null) {
+                return 0.0;
+            } else {
+                double count = 0.0;
+
+                for (double significance : map.values()) {
+                    count += significance;
+                }
+                return count / (double) parent.size();
+            }
+        }
+    }
+
+    private <K, V> int countMap(Map<Integer, ? extends Map<K, V>> parent, int generalization) {
+        if (parent.isEmpty()) {
+            return 0;
+        } else {
+            Map<K, V> map = parent.get(generalization);
+            return map == null ? 0 : map.size();
+        }
+    }
+
+    private <E> int countCollection(Map<Integer, ? extends Collection<E>> parent, int generalization) {
+        if (parent.isEmpty()) {
+            return 0;
+        } else {
+            Collection<E> map = parent.get(generalization);
+            return map == null ? 0 : map.size();
         }
     }
 }

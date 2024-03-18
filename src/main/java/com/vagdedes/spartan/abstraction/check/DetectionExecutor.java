@@ -96,9 +96,7 @@ public abstract class DetectionExecutor {
                     .append(client);
 
             if (probabilityPredictor.pie.hasData()) {
-                patternStorage.collectExistingData(player.getProfile());
                 double significance = patternStorage.getSignificance(client, probabilityPredictor.generalization);
-                patternStorage.collectSignificance(player.getProfile(), significance);
                 sb.append(", significance: ")
                         .append(AlgebraUtils.cut(
                                 significance * 100.0,
@@ -111,7 +109,6 @@ public abstract class DetectionExecutor {
                         .append(", min-probability: ")
                         .append(minProbability)
                         .append(", ");
-                boolean success = false;
                 Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
 
                 while (entries.hasNext()) {
@@ -120,31 +117,35 @@ public abstract class DetectionExecutor {
 
                     if (probability >= minProbability
                             && entry.getKey().doubleValue() == client.doubleValue()) {
-                        success = true;
                         sb.append("probability: ")
                                 .append(AlgebraUtils.cut(probability * 100.0, 2))
                                 .append(", passes: ")
                                 .append(count)
                                 .append(", ");
-                        patternStorage.collectProbability(player.getProfile(), probability);
-                        break;
+                        patternStorage.collect(
+                                player.getProfile(),
+                                probabilityPredictor.generalization,
+                                significance,
+                                probability
+                        );
+                        return sb.toString();
                     } else {
                         count++;
                     }
                 }
-
-                if (!success) {
-                    patternStorage.collectFailure(player.getProfile());
-                    sb.append("scenario: failure");
-                    return sb.toString();
-                } else {
-                    return null;
-                }
+                patternStorage.collect(
+                        player.getProfile(),
+                        probabilityPredictor.generalization,
+                        significance,
+                        0.0
+                );
             } else {
-                patternStorage.collectNewData(player.getProfile());
-                sb.append(", scenario: new");
-                return sb.toString();
+                patternStorage.collectNewData(
+                        player.getProfile(),
+                        probabilityPredictor.generalization
+                );
             }
+            return sb.toString();
         } else {
             return null;
         }

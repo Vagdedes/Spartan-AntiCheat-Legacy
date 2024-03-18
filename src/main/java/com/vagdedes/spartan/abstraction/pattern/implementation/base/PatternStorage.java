@@ -99,7 +99,7 @@ public class PatternStorage {
 
     public final String key;
     private final PatternGeneralization[] generalizations;
-    private final Map<PlayerProfile, PatternProfile> profiles;
+    final Map<PlayerProfile, PatternProfile> profiles;
     private final PatternPieCache patternProbability = new PatternPieCache(new ProbabilityPie());
 
     public PatternStorage(String key, int[] generalizations) {
@@ -464,52 +464,47 @@ public class PatternStorage {
 
     // Separator
 
-    public void collectFailure(PlayerProfile profile) {
+    public void collectNewData(PlayerProfile profile, int generalization) {
         synchronized (this.profiles) {
             this.profiles.computeIfAbsent(
                     profile,
                     k -> new PatternProfile()
-            ).failures.add(System.currentTimeMillis());
+            ).newData.computeIfAbsent(
+                    generalization,
+                    k -> new ArrayList<>()
+            ).add(System.currentTimeMillis());
         }
     }
 
-    public void collectNewData(PlayerProfile profile) {
-        synchronized (this.profiles) {
-            this.profiles.computeIfAbsent(
-                    profile,
-                    k -> new PatternProfile()
-            ).newData.add(System.currentTimeMillis());
-        }
-    }
-
-    public void collectExistingData(PlayerProfile profile) {
-        synchronized (this.profiles) {
-            this.profiles.computeIfAbsent(
-                    profile,
-                    k -> new PatternProfile()
-            ).existingData.add(System.currentTimeMillis());
-        }
-    }
-
-    public void collectProbability(PlayerProfile profile, double value) {
+    public void collect(PlayerProfile profile,
+                        int generalization,
+                        double significance, double probability) {
         long time = System.currentTimeMillis();
 
         synchronized (this.profiles) {
-            this.profiles.computeIfAbsent(
+            PatternProfile patternProfile = this.profiles.computeIfAbsent(
                     profile,
                     k -> new PatternProfile()
-            ).successProbability.put(time, value);
+            );
+
+            synchronized (patternProfile.probability) {
+                patternProfile.probability.computeIfAbsent(
+                        generalization,
+                        k -> new LinkedHashMap<>()
+                ).put(time, probability);
+            }
+            synchronized (patternProfile.significance) {
+                patternProfile.significance.computeIfAbsent(
+                        generalization,
+                        k -> new LinkedHashMap<>()
+                ).put(time, significance);
+            }
         }
     }
 
-    public void collectSignificance(PlayerProfile profile, double value) {
-        long time = System.currentTimeMillis();
-
+    public PatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profiles) {
-            this.profiles.computeIfAbsent(
-                    profile,
-                    k -> new PatternProfile()
-            ).successSignificance.put(time, value);
+            return this.profiles.get(profile);
         }
     }
 }

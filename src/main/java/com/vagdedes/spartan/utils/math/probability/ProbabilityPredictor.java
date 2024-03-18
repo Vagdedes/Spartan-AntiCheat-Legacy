@@ -18,7 +18,8 @@ public class ProbabilityPredictor {
         this.generalization = generalization;
         this.count = currentPattern.size();
 
-        if (!totalPatterns.isEmpty() && this.count > 0) {
+        if (!totalPatterns.isEmpty() // No general data to compare
+                && this.count > 0) { // No individual data to compare
             long currentPatternHash = HashHelper.collection(currentPattern);
             boolean comparison = false;
             ProbabilityPie pie = new ProbabilityPie();
