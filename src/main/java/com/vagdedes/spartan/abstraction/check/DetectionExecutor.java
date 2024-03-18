@@ -80,7 +80,7 @@ public abstract class DetectionExecutor {
                                                        int generalization,
                                                        int count,
                                                        Number client) {
-        ProbabilityPredictor probabilityPredictor = buildPredictor(
+        ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
                 player,
                 patternStorage,
                 situation,
@@ -176,18 +176,5 @@ public abstract class DetectionExecutor {
         } else {
             return null;
         }
-    }
-
-    // Separator
-
-    protected final ProbabilityPredictor buildPredictor(SpartanPlayer player,
-                                                        PatternStorage storage,
-                                                        long situation,
-                                                        int generalization,
-                                                        int count) {
-        return new ProbabilityPredictor(
-                storage.getAll(player, situation, generalization),
-                storage.getSpecific(player.getProfile(), situation, generalization, count)
-        );
     }
 }
