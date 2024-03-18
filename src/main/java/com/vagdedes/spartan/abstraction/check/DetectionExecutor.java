@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -76,15 +77,14 @@ public abstract class DetectionExecutor {
 
     protected final String linearPredictionToDetection(PatternStorage patternStorage,
                                                        Number client,
-                                                       ProbabilityPredictor probabilityPredictor,
-                                                       double minProbability,
-                                                       double minSignificance) {
+                                                       ProbabilityPredictor probabilityPredictor) {
         if (probabilityPredictor.pie != null) {
             int count = 0;
 
             if (client instanceof Double) {
                 client = AlgebraUtils.cut(client.doubleValue(), probabilityPredictor.generalization);
             }
+            PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
@@ -93,35 +93,32 @@ public abstract class DetectionExecutor {
                     .append("x")
                     .append(probabilityPredictor.count)
                     .append("), client: ")
-                    .append(client);
+                    .append(client)
+                    .append(", probability: ")
+                    .append(AlgebraUtils.cut(
+                            patternProfile.probability(probabilityPredictor.generalization) * 100.0,
+                            2
+                    ))
+                    .append(", significance: ")
+                    .append(AlgebraUtils.cut(
+                            patternProfile.significance(probabilityPredictor.generalization) * 100.0,
+                            2
+                    ))
+                    .append(", contribution: ")
+                    .append(AlgebraUtils.cut(
+                            patternProfile.contribution(probabilityPredictor.generalization) * 100.0,
+                            2
+                    ));
 
             if (probabilityPredictor.pie.hasData()) {
                 double significance = patternStorage.getSignificance(client, probabilityPredictor.generalization);
-                sb.append(", significance: ")
-                        .append(AlgebraUtils.cut(
-                                significance * 100.0,
-                                2
-                        ))
-                        .append(", pie: ")
-                        .append(probabilityPredictor.pie.getSlices())
-                        .append("/")
-                        .append(probabilityPredictor.pie.getTotal())
-                        .append(", min-probability: ")
-                        .append(minProbability)
-                        .append(", ");
                 Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
 
                 while (entries.hasNext()) {
                     Map.Entry<Number, Integer> entry = entries.next();
                     double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
 
-                    if (probability >= minProbability
-                            && entry.getKey().doubleValue() == client.doubleValue()) {
-                        sb.append("probability: ")
-                                .append(AlgebraUtils.cut(probability * 100.0, 2))
-                                .append(", passes: ")
-                                .append(count)
-                                .append(", ");
+                    if (entry.getKey().doubleValue() == client.doubleValue()) {
                         patternStorage.collect(
                                 player.getProfile(),
                                 probabilityPredictor.generalization,

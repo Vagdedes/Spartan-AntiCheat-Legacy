@@ -32,20 +32,10 @@ public class IrregularMovementsNew extends CheckExecutor {
                     GroundUtils.maxHeightLength,
                     count
             );
-            double minProbability, minSignificance;
-
-            switch (count) {
-                default:
-                    minProbability = 0.01;
-                    minSignificance = 0.1;
-                    break;
-            }
             String detection = linearPredictionToDetection(
                     SpartanBukkit.movementPatterns.vertical,
                     (double) objects[1],
-                    predictor,
-                    minProbability,
-                    minSignificance
+                    predictor
             );
 
             if (detection != null) {

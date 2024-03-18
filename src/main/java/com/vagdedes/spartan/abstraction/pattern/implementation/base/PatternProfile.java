@@ -87,7 +87,7 @@ public class PatternProfile {
                 for (double significance : map.values()) {
                     count += significance;
                 }
-                return count / (double) parent.size();
+                return count / (double) map.size();
             }
         }
     }

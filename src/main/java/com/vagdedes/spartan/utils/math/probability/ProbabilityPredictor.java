@@ -27,7 +27,7 @@ public class ProbabilityPredictor {
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
 
-                if (this.count <= allPatternsSize) {
+                if (this.count <= allPatternsSize) { // No enough general data to compare
                     comparison = true;
                     boolean next = false;
                     Iterator<PatternValue> iterator = allPatterns.iterator();
