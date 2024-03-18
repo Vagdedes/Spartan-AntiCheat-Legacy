@@ -1,22 +1,21 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.vagdedes.spartan.abstraction.check.Check;
+
+import java.util.*;
 
 public class PatternProfile {
 
-    final Map<Integer, List<Long>> newData; // Local, Publicly accessed
+    final Map<Integer, Collection<Long>> newData; // Local, Publicly accessed
     final Map<Integer, Map<Long, Double>> probability, significance; // Local, Publicly accessed
     // Generalization -> Situation -> Patterns
     final Map<Integer, Map<Long, List<PatternValue>>> correlations; // Local
     final Map<Long, PatternRepetition> repetitions; // Local
 
     PatternProfile() {
-        this.newData = new LinkedHashMap<>();
-        this.probability = new LinkedHashMap<>();
-        this.significance = new LinkedHashMap<>();
+        this.newData = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.probability = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
         this.correlations = new LinkedHashMap<>();
         this.repetitions = new LinkedHashMap<>();
     }
@@ -79,9 +78,10 @@ public class PatternProfile {
         } else {
             Map<Long, Double> map = parent.get(generalization);
 
-            if (map == null) {
+            if (map == null || map.isEmpty()) {
                 return 0.0;
             } else {
+                this.remove(map.keySet().iterator());
                 double count = 0.0;
 
                 for (double significance : map.values()) {
@@ -92,21 +92,41 @@ public class PatternProfile {
         }
     }
 
-    private <K, V> int countMap(Map<Integer, ? extends Map<K, V>> parent, int generalization) {
+    private int countMap(Map<Integer, Map<Long, Double>> parent, int generalization) {
         if (parent.isEmpty()) {
             return 0;
         } else {
-            Map<K, V> map = parent.get(generalization);
-            return map == null ? 0 : map.size();
+            Map<Long, Double> map = parent.get(generalization);
+
+            if (map == null || map.isEmpty()) {
+                return 0;
+            } else {
+                this.remove(map.keySet().iterator());
+                return map.size();
+            }
         }
     }
 
-    private <E> int countCollection(Map<Integer, ? extends Collection<E>> parent, int generalization) {
+    private int countCollection(Map<Integer, Collection<Long>> parent, int generalization) {
         if (parent.isEmpty()) {
             return 0;
         } else {
-            Collection<E> map = parent.get(generalization);
-            return map == null ? 0 : map.size();
+            Collection<Long> map = parent.get(generalization);
+
+            if (map == null || map.isEmpty()) {
+                return 0;
+            } else {
+                this.remove(map.iterator());
+                return map.size();
+            }
+        }
+    }
+
+    private void remove(Iterator<Long> iterator) {
+        while (iterator.hasNext()) {
+            if (System.currentTimeMillis() - iterator.next() > Check.violationCycleMilliseconds) {
+                iterator.remove();
+            }
         }
     }
 }
