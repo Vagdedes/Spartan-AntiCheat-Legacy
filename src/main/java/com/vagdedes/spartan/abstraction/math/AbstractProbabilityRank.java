@@ -1,30 +1,30 @@
-package com.vagdedes.spartan.utils.math.probability;
+package com.vagdedes.spartan.abstraction.math;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 
 import java.util.*;
 
-public class ProbabilityRank {
+public abstract class AbstractProbabilityRank {
 
-    private final List<Double> numbers;
-    private boolean sorted;
+    protected final List<Double> numbers;
+    protected boolean sorted;
 
-    public ProbabilityRank() {
+    public AbstractProbabilityRank() {
         this(-1);
     }
 
-    public ProbabilityRank(int capacity) {
+    public AbstractProbabilityRank(int capacity) {
         this.numbers = capacity >= 0 ? new ArrayList<>(capacity) : new ArrayList<>();
         this.sorted = false;
     }
 
-    public ProbabilityRank clear() {
+    public AbstractProbabilityRank clear() {
         this.numbers.clear();
         this.sorted = false;
         return this;
     }
 
-    public ProbabilityRank addMultiple(Collection<? extends Number> numbers) {
+    public AbstractProbabilityRank addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.numbers.add(number.doubleValue());
         }
@@ -32,7 +32,7 @@ public class ProbabilityRank {
         return this;
     }
 
-    public ProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
+    public AbstractProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
         for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
             for (int i = 0; i < entry.getValue(); i++) {
                 this.numbers.add(entry.getKey().doubleValue());
@@ -42,7 +42,7 @@ public class ProbabilityRank {
         return this;
     }
 
-    public ProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
+    public AbstractProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
         for (PatternValue value : values) {
             this.numbers.add(value.pattern.doubleValue());
         }
@@ -50,7 +50,7 @@ public class ProbabilityRank {
         return this;
     }
 
-    public ProbabilityRank add(Number number) {
+    public AbstractProbabilityRank add(Number number) {
         this.numbers.add(number.doubleValue());
         this.sorted = false;
         return this;

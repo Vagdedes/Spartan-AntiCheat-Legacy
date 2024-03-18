@@ -9,7 +9,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityPredictor;
-import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Iterator;

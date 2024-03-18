@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternCache;
-import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
 
 public class PatternRankCache extends PatternCache {
 

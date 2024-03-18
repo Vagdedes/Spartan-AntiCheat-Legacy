@@ -9,7 +9,7 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityPie;
-import com.vagdedes.spartan.utils.math.probability.ProbabilityRank;
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
