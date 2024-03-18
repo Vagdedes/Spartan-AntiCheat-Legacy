@@ -10,16 +10,13 @@ import java.util.LinkedList;
 public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
-    public final int generalization, count;
 
     public ProbabilityPredictor(Collection<Collection<PatternValue>> totalPatterns,
-                                Collection<PatternValue> currentPattern,
-                                int generalization) {
-        this.generalization = generalization;
-        this.count = currentPattern.size();
+                                Collection<PatternValue> currentPattern) {
+        int currentPatternSize = currentPattern.size();
 
         if (!totalPatterns.isEmpty() // No general data to compare
-                && this.count > 0) { // No individual data to compare
+                && currentPatternSize > 0) { // No individual data to compare
             long currentPatternHash = HashHelper.collection(currentPattern);
             boolean comparison = false;
             ProbabilityPie pie = new ProbabilityPie();
@@ -27,13 +24,13 @@ public class ProbabilityPredictor {
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
 
-                if (this.count <= allPatternsSize) { // No enough general data to compare
+                if (currentPatternSize <= allPatternsSize) { // No enough general data to compare
                     comparison = true;
                     boolean next = false;
                     Iterator<PatternValue> iterator = allPatterns.iterator();
                     LinkedList<PatternValue> list = new LinkedList<>();
 
-                    for (int i = 0; i < this.count; i++) {
+                    for (int i = 0; i < currentPatternSize; i++) {
                         list.add(iterator.next());
                     }
 

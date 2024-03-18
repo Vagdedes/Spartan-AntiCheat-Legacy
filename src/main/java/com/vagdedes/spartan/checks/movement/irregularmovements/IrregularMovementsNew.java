@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.math.probability.ProbabilityPredictor;
 import me.vagdedes.spartan.system.Enums.HackType;
 
 public class IrregularMovementsNew extends CheckExecutor {
@@ -25,17 +24,12 @@ public class IrregularMovementsNew extends CheckExecutor {
         Object[] objects = (Object[]) object;
 
         for (int count : new int[]{1}) {
-            ProbabilityPredictor predictor = buildPredictor(
-                    player,
+            String detection = linearPredictionToDetection(
                     SpartanBukkit.movementPatterns.vertical,
                     (long) objects[0],
                     GroundUtils.maxHeightLength,
-                    count
-            );
-            String detection = linearPredictionToDetection(
-                    SpartanBukkit.movementPatterns.vertical,
-                    (double) objects[1],
-                    predictor
+                    count,
+                    (Number) objects[1]
             );
 
             if (detection != null) {

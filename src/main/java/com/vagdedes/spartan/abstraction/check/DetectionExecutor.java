@@ -76,42 +76,49 @@ public abstract class DetectionExecutor {
     // Separator
 
     protected final String linearPredictionToDetection(PatternStorage patternStorage,
-                                                       Number client,
-                                                       ProbabilityPredictor probabilityPredictor) {
+                                                       long situation,
+                                                       int generalization,
+                                                       int count,
+                                                       Number client) {
+        ProbabilityPredictor probabilityPredictor = buildPredictor(
+                player,
+                patternStorage,
+                situation,
+                generalization,
+                count
+        );
         if (probabilityPredictor.pie != null) {
-            int count = 0;
-
             if (client instanceof Double) {
-                client = AlgebraUtils.cut(client.doubleValue(), probabilityPredictor.generalization);
+                client = AlgebraUtils.cut(client.doubleValue(), generalization);
             }
             PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
                     .append("(")
-                    .append(probabilityPredictor.generalization)
+                    .append(generalization)
                     .append("x")
-                    .append(probabilityPredictor.count)
+                    .append(count)
                     .append("), client: ")
                     .append(client)
                     .append(", probability: ")
                     .append(AlgebraUtils.cut(
-                            patternProfile.probability(probabilityPredictor.generalization) * 100.0,
+                            patternProfile.probability(generalization) * 100.0,
                             2
                     ))
                     .append(", significance: ")
                     .append(AlgebraUtils.cut(
-                            patternProfile.significance(probabilityPredictor.generalization) * 100.0,
+                            patternProfile.significance(generalization) * 100.0,
                             2
                     ))
                     .append(", contribution: ")
                     .append(AlgebraUtils.cut(
-                            patternProfile.contribution(probabilityPredictor.generalization) * 100.0,
+                            patternProfile.contribution(generalization) * 100.0,
                             2
                     ));
 
             if (probabilityPredictor.pie.hasData()) {
-                double significance = patternStorage.getSignificance(client, probabilityPredictor.generalization);
+                double significance = patternStorage.getSignificance(client, generalization);
                 Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
 
                 while (entries.hasNext()) {
@@ -121,7 +128,7 @@ public abstract class DetectionExecutor {
                     if (entry.getKey().doubleValue() == client.doubleValue()) {
                         patternStorage.collect(
                                 player.getProfile(),
-                                probabilityPredictor.generalization,
+                                generalization,
                                 significance,
                                 probability
                         );
@@ -132,14 +139,14 @@ public abstract class DetectionExecutor {
                 }
                 patternStorage.collect(
                         player.getProfile(),
-                        probabilityPredictor.generalization,
+                        generalization,
                         significance,
                         0.0
                 );
             } else {
                 patternStorage.collectNewData(
                         player.getProfile(),
-                        probabilityPredictor.generalization
+                        generalization
                 );
             }
             return sb.toString();
@@ -180,8 +187,7 @@ public abstract class DetectionExecutor {
                                                         int count) {
         return new ProbabilityPredictor(
                 storage.getAll(player, situation, generalization),
-                storage.getSpecific(player.getProfile(), situation, generalization, count),
-                generalization
+                storage.getSpecific(player.getProfile(), situation, generalization, count)
         );
     }
 }
