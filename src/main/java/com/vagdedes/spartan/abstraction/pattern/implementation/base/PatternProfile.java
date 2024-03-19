@@ -11,6 +11,9 @@ public class PatternProfile {
     // Generalization -> Situation -> Patterns
     final Map<Integer, Map<Long, List<PatternValue>>> correlations; // Local
     final Map<Long, PatternRepetition> repetitions; // Local
+    private final PatternProfileCache probabilityCache, // Private
+            significanceCache, // Private
+            contributionCache; // Private
 
     PatternProfile() {
         this.newData = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -18,6 +21,9 @@ public class PatternProfile {
         this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
         this.correlations = new LinkedHashMap<>();
         this.repetitions = new LinkedHashMap<>();
+        this.probabilityCache = new PatternProfileCache();
+        this.significanceCache = new PatternProfileCache();
+        this.contributionCache = new PatternProfileCache();
     }
 
     // Public
@@ -29,13 +35,13 @@ public class PatternProfile {
             int map;
 
             synchronized (this.significance) {
-                map = this.countMap(this.significance, generalization);
+                map = this.countMap(this.significance, significanceCache, generalization);
             }
 
             if (map == 0) {
                 return 0.0;
             } else {
-                return this.countCollection(this.newData, generalization) / (double) map;
+                return this.countCollection(this.newData, contributionCache, generalization) / (double) map;
             }
         }
     }
@@ -47,7 +53,7 @@ public class PatternProfile {
             int map;
 
             synchronized (this.significance) {
-                map = this.countMap(this.significance, generalization);
+                map = this.countMap(this.significance, significanceCache, generalization);
             }
 
             if (map == 0) {
@@ -56,7 +62,7 @@ public class PatternProfile {
                 int collection;
 
                 synchronized (this.newData) {
-                    collection = this.countCollection(this.newData, generalization);
+                    collection = this.countCollection(this.newData, contributionCache, generalization);
                 }
                 return collection / (double) map;
             }
@@ -64,7 +70,7 @@ public class PatternProfile {
     }
 
     double probabilityRaw(int generalization) {
-        return this.average(this.probability, generalization);
+        return this.average(this.probability, probabilityCache, generalization);
     }
 
     public double probability(int generalization) {
@@ -74,7 +80,7 @@ public class PatternProfile {
     }
 
     double significanceRaw(int generalization) {
-        return this.average(this.significance, generalization);
+        return this.average(this.significance, significanceCache, generalization);
     }
 
     public double significance(int generalization) {
@@ -98,7 +104,9 @@ public class PatternProfile {
 
     // Private
 
-    private double average(Map<Integer, Map<Long, Double>> parent, int generalization) {
+    private double average(Map<Integer, Map<Long, Double>> parent,
+                           PatternProfileCache cache,
+                           int generalization) {
         if (parent.isEmpty()) {
             return 0.0;
         } else {
@@ -107,7 +115,7 @@ public class PatternProfile {
             if (map == null || map.isEmpty()) {
                 return 0.0;
             } else {
-                this.remove(map.keySet().iterator());
+                this.remove(map.keySet().iterator(), cache);
                 double count = 0.0;
 
                 for (double significance : map.values()) {
@@ -118,7 +126,9 @@ public class PatternProfile {
         }
     }
 
-    private int countMap(Map<Integer, Map<Long, Double>> parent, int generalization) {
+    private int countMap(Map<Integer, Map<Long, Double>> parent,
+                         PatternProfileCache cache,
+                         int generalization) {
         if (parent.isEmpty()) {
             return 0;
         } else {
@@ -127,13 +137,15 @@ public class PatternProfile {
             if (map == null || map.isEmpty()) {
                 return 0;
             } else {
-                this.remove(map.keySet().iterator());
+                this.remove(map.keySet().iterator(), cache);
                 return map.size();
             }
         }
     }
 
-    private int countCollection(Map<Integer, Collection<Long>> parent, int generalization) {
+    private int countCollection(Map<Integer, Collection<Long>> parent,
+                                PatternProfileCache cache,
+                                int generalization) {
         if (parent.isEmpty()) {
             return 0;
         } else {
@@ -142,16 +154,20 @@ public class PatternProfile {
             if (map == null || map.isEmpty()) {
                 return 0;
             } else {
-                this.remove(map.iterator());
+                this.remove(map.iterator(), cache);
                 return map.size();
             }
         }
     }
 
-    private void remove(Iterator<Long> iterator) {
-        while (iterator.hasNext()) {
-            if (System.currentTimeMillis() - iterator.next() > Check.violationCycleMilliseconds) {
-                iterator.remove();
+    private void remove(Iterator<Long> iterator, PatternProfileCache cache) {
+        if (cache.isExpired()) {
+            cache.refresh();
+
+            while (iterator.hasNext()) {
+                if (System.currentTimeMillis() - iterator.next() > Check.violationCycleMilliseconds) {
+                    iterator.remove();
+                }
             }
         }
     }
