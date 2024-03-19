@@ -17,7 +17,7 @@ public class PatternComparison {
         private Number number;
         private long time;
 
-        public Comparison(Number number, long time) {
+        private Comparison(Number number, long time) {
             this.number = number;
             this.time = time;
         }

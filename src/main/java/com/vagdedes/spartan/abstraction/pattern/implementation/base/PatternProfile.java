@@ -148,7 +148,9 @@ public class PatternProfile {
                 while (iterator.hasNext()) {
                     count += iterator.next().getValue();
                 }
-                return count / (double) map.size();
+                return map.isEmpty()
+                        ? 0.0
+                        : count / (double) map.size();
             } else {
                 return this.total[index] / (double) map.size();
             }
