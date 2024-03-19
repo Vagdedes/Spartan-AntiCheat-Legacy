@@ -9,7 +9,7 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.math.probability.ProbabilityPie;
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityPie;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -469,7 +469,8 @@ public class PatternStorage {
 
     // Separator
 
-    public void collectNewData(PlayerProfile profile, int generalization) {
+    public void collect(PlayerProfile profile, int generalization) {
+        long time = System.currentTimeMillis();
         PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
 
         synchronized (this.profiles) {
@@ -481,9 +482,9 @@ public class PatternStorage {
                 patternProfile.newData.computeIfAbsent(
                         generalization,
                         k -> new ArrayList<>()
-                ).add(System.currentTimeMillis());
+                ).add(time);
 
-                synchronized (generalizationStorage.significanceRank) {
+                synchronized (generalizationStorage.contributionRank) {
                     generalizationStorage.contributionRank.add(
                             patternProfile.contributionRaw(generalization)
                     );

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.utils.math.probability;
+package com.vagdedes.spartan.abstraction.math;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 
@@ -8,21 +8,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class ProbabilityPie {
+public abstract class AbstractProbabilityPie {
 
     private final Map<Number, Integer> map;
     private double total;
 
-    public ProbabilityPie() {
+    public AbstractProbabilityPie() {
         this(-1);
     }
 
-    public ProbabilityPie(int capacity) {
+    public AbstractProbabilityPie(int capacity) {
         this.map = capacity >= 0 ? new LinkedHashMap<>(capacity) : new LinkedHashMap<>();
         this.total = 0;
     }
 
-    public ProbabilityPie clear() {
+    public AbstractProbabilityPie clear() {
         this.map.clear();
         this.total = 0;
         return this;
@@ -30,14 +30,14 @@ public class ProbabilityPie {
 
     // Separator
 
-    public ProbabilityPie addMultiple(Collection<? extends Number> numbers) {
+    public AbstractProbabilityPie addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.add(number);
         }
         return this;
     }
 
-    public ProbabilityPie addMultiplePatterns(Collection<PatternValue> values) {
+    public AbstractProbabilityPie addMultiplePatterns(Collection<PatternValue> values) {
         for (PatternValue value : values) {
             this.add(value.pattern);
         }
@@ -46,7 +46,7 @@ public class ProbabilityPie {
 
     // Separator
 
-    public ProbabilityPie create(Number number, int amount) {
+    public AbstractProbabilityPie create(Number number, int amount) {
         Integer count = this.map.get(number);
 
         if (count != null) {
@@ -57,11 +57,11 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie add(Number number) {
+    public AbstractProbabilityPie add(Number number) {
         return this.increase(number, 1);
     }
 
-    public ProbabilityPie increase(Number number, int amount) {
+    public AbstractProbabilityPie increase(Number number, int amount) {
         this.map.put(number, this.map.getOrDefault(number, 0) + amount);
         this.total += amount;
         return this;
@@ -69,7 +69,7 @@ public class ProbabilityPie {
 
     // Separator
 
-    public ProbabilityPie delete(Number number) {
+    public AbstractProbabilityPie delete(Number number) {
         Integer count = this.map.remove(number);
 
         if (count != null) {
@@ -78,11 +78,11 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie remove(Number number) {
+    public AbstractProbabilityPie remove(Number number) {
         return this.decrease(number, 1);
     }
 
-    public ProbabilityPie decrease(Number number, int amount) {
+    public AbstractProbabilityPie decrease(Number number, int amount) {
         Integer count = this.map.get(number);
 
         if (count != null) {

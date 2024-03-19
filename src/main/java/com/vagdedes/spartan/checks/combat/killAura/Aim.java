@@ -17,7 +17,7 @@ import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.TrigonometryUtils;
-import com.vagdedes.spartan.utils.math.statistics.LinearRegression;
+import com.vagdedes.spartan.utils.math.LinearRegression;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

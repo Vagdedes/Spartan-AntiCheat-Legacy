@@ -35,39 +35,53 @@ public abstract class PatternGeneralization {
         this.contributionRank = new PatternRankWithPie();
     }
 
-    public double probabilityRank(double value) {
-        synchronized (probabilityRank) {
-            return probabilityRank.getProbability(value, -1.0);
+    public  double[] probabilityRankAndProbability(double value) {
+        synchronized (this.probabilityRank) {
+            this.probabilityRank.maintain();
+            double rank = this.probabilityRank.getProbability(value, -1.0);
+
+            if (rank != -1.0) {
+                return new double[] {
+                        rank,
+                        this.probabilityRank.pie.getProbability(value)
+                };
+            } else {
+                return null;
+            }
         }
     }
 
-    public double probabilityProbability(double value) {
-        synchronized (probabilityRank) {
-            return probabilityRank.pie.getProbability(value);
+    public double[] significanceRankAndProbability(double value) {
+        synchronized (this.significanceRank) {
+            this.significanceRank.maintain();
+            double rank = this.significanceRank.getProbability(value, -1.0);
+
+            if (rank != -1.0) {
+                return new double[] {
+                        rank,
+                        this.significanceRank.pie.getProbability(value)
+                };
+            } else {
+                return null;
+            }
         }
     }
 
-    public double significanceRank(double value) {
-        synchronized (significanceRank) {
-            return significanceRank.getProbability(value, -1.0);
+    public double[] contributionRankAndProbability(double value) {
+        synchronized (this.contributionRank) {
+            this.contributionRank.maintain();
+            double rank = this.contributionRank.getProbability(value, -1.0);
+
+            if (rank != -1.0) {
+                return new double[] {
+                        rank,
+                        this.contributionRank.pie.getProbability(value)
+                };
+            } else {
+                return null;
+            }
         }
     }
 
-    public double significanceProbability(double value) {
-        synchronized (significanceRank) {
-            return significanceRank.pie.getProbability(value);
-        }
-    }
 
-    public double contributionRank(double value) {
-        synchronized (contributionRank) {
-            return contributionRank.getProbability(value, -1.0);
-        }
-    }
-
-    public double contributionProbability(double value) {
-        synchronized (contributionRank) {
-            return contributionRank.pie.getProbability(value);
-        }
-    }
 }

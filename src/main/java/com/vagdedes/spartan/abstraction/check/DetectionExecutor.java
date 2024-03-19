@@ -10,7 +10,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.math.probability.ProbabilityPredictor;
+import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Iterator;
@@ -95,15 +95,9 @@ public abstract class DetectionExecutor {
             }
             PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
             PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
-            double profileProbability = patternProfile.probability(generalization),
-                    profileProbabilityRank = patternGeneralization.probabilityRank(profileProbability),
-                    profileProbabilityProbability = patternGeneralization.probabilityProbability(profileProbability),
-                    profileSignificance = patternProfile.significance(generalization),
-                    profileSignificanceRank = patternGeneralization.significanceRank(profileSignificance),
-                    profileSignificanceProbability = patternGeneralization.significanceProbability(profileSignificance),
-                    profileContribution = patternProfile.contribution(generalization),
-                    profileContributionRank = patternGeneralization.contributionRank(profileContribution),
-                    profileContributionProbability = patternGeneralization.contributionProbability(profileContribution);
+            double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability(generalization)),
+                     significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(generalization)),
+                     contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(generalization));
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
@@ -115,32 +109,32 @@ public abstract class DetectionExecutor {
                     .append(client)
                     .append(", probability: ")
                     .append(AlgebraUtils.cut(
-                            profileProbabilityRank * 100.0,
+                            probabilityRankAndProbability[0] * 100.0,
                             2
                     ))
                     .append("(")
                     .append(AlgebraUtils.cut(
-                            profileProbabilityProbability * 100.0,
+                            probabilityRankAndProbability[1] * 100.0,
                             2
                     ))
                     .append("), significance: ")
                     .append(AlgebraUtils.cut(
-                            profileSignificanceRank * 100.0,
+                            significanceRankAndProbability[0] * 100.0,
                             2
                     ))
                     .append("(")
                     .append(AlgebraUtils.cut(
-                            profileSignificanceProbability * 100.0,
+                            significanceRankAndProbability[1] * 100.0,
                             2
                     ))
                     .append("), contribution: ")
                     .append(AlgebraUtils.cut(
-                            profileContributionRank * 100.0,
+                            contributionRankAndProbability[0] * 100.0,
                             2
                     ))
                     .append("(")
                     .append(AlgebraUtils.cut(
-                            profileContributionProbability * 100.0,
+                            contributionRankAndProbability[1] * 100.0,
                             2
                     ))
                     .append(")");
@@ -172,7 +166,7 @@ public abstract class DetectionExecutor {
                         0.0
                 );
             } else {
-                patternStorage.collectNewData(
+                patternStorage.collect(
                         player.getProfile(),
                         generalization
                 );

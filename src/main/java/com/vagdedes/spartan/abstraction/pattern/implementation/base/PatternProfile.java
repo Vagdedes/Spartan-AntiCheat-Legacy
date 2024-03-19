@@ -15,6 +15,7 @@ public class PatternProfile {
     private final PatternCache probabilityCache, // Private
             significanceCache, // Private
             contributionCache; // Private
+    double previousContribution; // Local
 
     PatternProfile() {
         this.newData = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -119,11 +120,29 @@ public class PatternProfile {
             if (map == null || map.isEmpty()) {
                 return 0.0;
             } else {
-                this.remove(map.keySet().iterator(), cache);
                 double count = 0.0;
 
-                for (double significance : map.values()) {
-                    count += significance;
+
+                if (cache.isExpired()) {
+                    cache.refresh();
+                    Iterator<Map.Entry<Long, Double>> iterator = map.entrySet().iterator();
+
+                    while (iterator.hasNext()) {
+                        Map.Entry<Long, Double> entry = iterator.next();
+
+                        if (System.currentTimeMillis() - entry.getKey() > Check.violationCycleMilliseconds) {
+                            iterator.remove();
+                        } else {
+                            break;
+                        }
+                    }
+                    while (iterator.hasNext()) {
+                        count += iterator.next().getValue();
+                    }
+                } else {
+                    for (double significance : map.values()) {
+                        count += significance;
+                    }
                 }
                 return count / (double) map.size();
             }

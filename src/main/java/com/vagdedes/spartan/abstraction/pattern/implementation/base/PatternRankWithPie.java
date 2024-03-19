@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.math.AbstractProbabilityRank;
-import com.vagdedes.spartan.utils.math.probability.ProbabilityPie;
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityPie;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,8 +31,6 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
 
     @Override
     public AbstractProbabilityRank addMultiple(Collection<? extends Number> numbers) {
-        this.maintain();
-
         for (Number number : numbers) {
             this.pie.add(number);
             this.numbers.add(number.doubleValue());
@@ -43,8 +41,6 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
 
     @Override
     public AbstractProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
-        this.maintain();
-
         for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
             for (int i = 0; i < entry.getValue(); i++) {
                 this.pie.add(entry.getKey());
@@ -57,8 +53,6 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
 
     @Override
     public AbstractProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
-        this.maintain();
-
         for (PatternValue value : values) {
             this.pie.add(value.pattern);
             this.numbers.add(value.pattern.doubleValue());
@@ -69,7 +63,6 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
 
     @Override
     public AbstractProbabilityRank add(Number number) {
-        this.maintain();
         this.pie.add(number);
         return super.add(number);
     }
@@ -80,11 +73,11 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
         return super.remove(number);
     }
 
-    private void maintain() {
+     public void maintain() {
         if (!map.isEmpty()) {
             if (cache.isExpired()) {
                 cache.refresh();
-                
+
                 Iterator<Map.Entry<Long, Number>> iterator = map.entrySet().iterator();
 
                 while (iterator.hasNext()) {
