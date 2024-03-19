@@ -55,7 +55,7 @@ public class PatternComparison {
     }
 
     public double getPosition(Number number, double def) {
-        if (!SpartanBukkit.debug && map.size() <= ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && map.size() < ResearchEngine.profileRequirement) {
             return def;
         } else {
             if (cache.isExpired()) {

@@ -317,7 +317,7 @@ public class PatternStorage {
     }
 
     private Collection<Collection<PatternValue>> getAllRaw(long situation, int generalization) {
-        if (!SpartanBukkit.debug && this.profiles.size() <= ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.profileRequirement) {
             return new ArrayList<>(0);
         } else {
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.profiles.size());
@@ -410,7 +410,7 @@ public class PatternStorage {
     }
 
     public ProbabilityRank getRankedRaw(long situation, int generalization) {
-        if (!SpartanBukkit.debug && this.profiles.size() <= ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.profileRequirement) {
             return new ProbabilityRank(0);
         } else {
             ProbabilityRank rank = new ProbabilityRank(this.profiles.size());
