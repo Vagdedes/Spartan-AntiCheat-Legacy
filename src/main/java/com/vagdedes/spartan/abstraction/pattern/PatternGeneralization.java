@@ -35,13 +35,13 @@ public abstract class PatternGeneralization {
         this.contributionRank = new PatternRankWithPie();
     }
 
-    public  double[] probabilityRankAndProbability(double value) {
+    public double[] probabilityRankAndProbability(double value) {
         synchronized (this.probabilityRank) {
             this.probabilityRank.maintain();
             double rank = this.probabilityRank.getProbability(value, -1.0);
 
             if (rank != -1.0) {
-                return new double[] {
+                return new double[]{
                         rank,
                         this.probabilityRank.pie.getProbability(value)
                 };
@@ -57,7 +57,7 @@ public abstract class PatternGeneralization {
             double rank = this.significanceRank.getProbability(value, -1.0);
 
             if (rank != -1.0) {
-                return new double[] {
+                return new double[]{
                         rank,
                         this.significanceRank.pie.getProbability(value)
                 };
@@ -73,7 +73,7 @@ public abstract class PatternGeneralization {
             double rank = this.contributionRank.getProbability(value, -1.0);
 
             if (rank != -1.0) {
-                return new double[] {
+                return new double[]{
                         rank,
                         this.contributionRank.pie.getProbability(value)
                 };

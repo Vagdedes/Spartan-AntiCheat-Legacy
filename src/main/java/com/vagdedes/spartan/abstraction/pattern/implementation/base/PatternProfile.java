@@ -7,25 +7,33 @@ import java.util.*;
 
 public class PatternProfile {
 
-    final Map<Integer, Collection<Long>> newData; // Local, Publicly accessed
-    final Map<Integer, Map<Long, Double>> probability, significance; // Local, Publicly accessed
+    final Map<Integer, Collection<Long>> newData;
+    final Map<Integer, Map<Long, Double>> probability, significance;
     // Generalization -> Situation -> Patterns
-    final Map<Integer, Map<Long, List<PatternValue>>> correlations; // Local
-    final Map<Long, PatternRepetition> repetitions; // Local
-    private final PatternCache probabilityCache, // Private
-            significanceCache, // Private
-            contributionCache; // Private
-    double previousContribution; // Local
+    final Map<Integer, Map<Long, List<PatternValue>>> correlations;
+    final Map<Long, PatternRepetition> repetitions;
+    private final PatternCache probabilityCache,
+            significanceCache,
+            contributionCache;
+    double previousProbability,
+            previousSignificance,
+            previousContribution;
 
     PatternProfile() {
         this.newData = Collections.synchronizedMap(new LinkedHashMap<>());
         this.probability = Collections.synchronizedMap(new LinkedHashMap<>());
         this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
+        
         this.correlations = new LinkedHashMap<>();
         this.repetitions = new LinkedHashMap<>();
+
         this.probabilityCache = new PatternCache();
         this.significanceCache = new PatternCache();
         this.contributionCache = new PatternCache();
+
+        this.previousProbability = -1.0;
+        this.previousSignificance = -1.0;
+        this.previousContribution = -1.0;
     }
 
     // Public
@@ -121,7 +129,6 @@ public class PatternProfile {
                 return 0.0;
             } else {
                 double count = 0.0;
-
 
                 if (cache.isExpired()) {
                     cache.refresh();

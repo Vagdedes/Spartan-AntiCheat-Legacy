@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityPie;
 import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -9,7 +10,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityPie;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -485,9 +485,11 @@ public class PatternStorage {
                 ).add(time);
 
                 synchronized (generalizationStorage.contributionRank) {
-                    generalizationStorage.contributionRank.add(
-                            patternProfile.contributionRaw(generalization)
-                    );
+                    double value = patternProfile.contributionRaw(generalization);
+                    generalizationStorage.contributionRank.remove(patternProfile.previousContribution);
+                    patternProfile.previousContribution = value;
+                    generalizationStorage.contributionRank.add(value);
+                    generalizationStorage.contributionRank.pie.add(value);
                 }
             }
         }
@@ -512,9 +514,11 @@ public class PatternStorage {
                 ).put(time, probability);
 
                 synchronized (generalizationStorage.probabilityRank) {
-                    generalizationStorage.probabilityRank.add(
-                            patternProfile.probabilityRaw(generalization)
-                    );
+                    double value = patternProfile.probabilityRaw(generalization);
+                    generalizationStorage.probabilityRank.remove(patternProfile.previousProbability);
+                    patternProfile.previousProbability = value;
+                    generalizationStorage.probabilityRank.add(value);
+                    generalizationStorage.probabilityRank.pie.add(value);
                 }
             }
             synchronized (patternProfile.significance) {
@@ -524,9 +528,11 @@ public class PatternStorage {
                 ).put(time, significance);
 
                 synchronized (generalizationStorage.significanceRank) {
-                    generalizationStorage.significanceRank.add(
-                            patternProfile.significanceRaw(generalization)
-                    );
+                    double value = patternProfile.significanceRaw(generalization);
+                    generalizationStorage.significanceRank.remove(patternProfile.previousSignificance);
+                    patternProfile.previousSignificance = value;
+                    generalizationStorage.significanceRank.add(value);
+                    generalizationStorage.significanceRank.pie.add(value);
                 }
             }
         }

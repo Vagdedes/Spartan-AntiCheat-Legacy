@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.math.AbstractProbabilityRank;
 import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityPie;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,55 +28,10 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
         this.cache = new PatternCache();
     }
 
-    @Override
-    public AbstractProbabilityRank addMultiple(Collection<? extends Number> numbers) {
-        for (Number number : numbers) {
-            this.pie.add(number);
-            this.numbers.add(number.doubleValue());
-        }
-        this.sorted = false;
-        return this;
-    }
-
-    @Override
-    public AbstractProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
-        for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
-            for (int i = 0; i < entry.getValue(); i++) {
-                this.pie.add(entry.getKey());
-                this.numbers.add(entry.getKey().doubleValue());
-            }
-        }
-        this.sorted = false;
-        return this;
-    }
-
-    @Override
-    public AbstractProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
-        for (PatternValue value : values) {
-            this.pie.add(value.pattern);
-            this.numbers.add(value.pattern.doubleValue());
-        }
-        this.sorted = false;
-        return this;
-    }
-
-    @Override
-    public AbstractProbabilityRank add(Number number) {
-        this.pie.add(number);
-        return super.add(number);
-    }
-
-    @Override
-    public AbstractProbabilityRank remove(Number number) {
-        this.pie.remove(number);
-        return super.remove(number);
-    }
-
      public void maintain() {
         if (!map.isEmpty()) {
             if (cache.isExpired()) {
                 cache.refresh();
-
                 Iterator<Map.Entry<Long, Number>> iterator = map.entrySet().iterator();
 
                 while (iterator.hasNext()) {
@@ -85,7 +39,8 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
 
                     if (System.currentTimeMillis() - entry.getKey() > Check.violationCycleMilliseconds) {
                         iterator.remove();
-                        this.remove(entry.getValue());
+                        this.pie.remove(entry.getValue());
+                         super.remove(entry.getValue());
                     } else {
                         break;
                     }
