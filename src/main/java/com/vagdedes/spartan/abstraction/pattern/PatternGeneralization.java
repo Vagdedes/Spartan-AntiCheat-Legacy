@@ -37,46 +37,29 @@ public abstract class PatternGeneralization {
 
     public double[] probabilityRankAndProbability(double value) {
         synchronized (this.probabilityRank) {
-            double rank = this.probabilityRank.getPosition(value, -1.0);
-
-            if (rank != -1.0) {
-                return new double[]{
-                        rank,
-                        this.probabilityRank.pie.getProbability(value)
-                };
-            } else {
-                return null;
-            }
+            return this.rankAndProbability(this.probabilityRank, value);
         }
     }
 
     public double[] significanceRankAndProbability(double value) {
         synchronized (this.significanceRank) {
-            double rank = this.significanceRank.getPosition(value, -1.0);
-
-            if (rank != -1.0) {
-                return new double[]{
-                        rank,
-                        this.significanceRank.pie.getProbability(value)
-                };
-            } else {
-                return null;
-            }
+            return this.rankAndProbability(this.significanceRank, value);
         }
     }
 
     public double[] contributionRankAndProbability(double value) {
         synchronized (this.contributionRank) {
-            double rank = this.contributionRank.getPosition(value, -1.0);
+            return this.rankAndProbability(this.contributionRank, value);
+        }
+    }
 
-            if (rank != -1.0) {
-                return new double[]{
-                        rank,
-                        this.contributionRank.pie.getProbability(value)
-                };
-            } else {
-                return null;
-            }
+    private double[] rankAndProbability(PatternComparison object, double value) {
+        double rank = object.getPosition(value, -1.0);
+
+        if (rank != -1.0) {
+            return new double[]{rank, object.pie.getProbability(value)};
+        } else {
+            return null;
         }
     }
 

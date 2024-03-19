@@ -6,8 +6,8 @@ import java.util.*;
 
 public class ProbabilityRank {
 
-    protected final List<Double> numbers;
-    protected boolean sorted;
+    private final List<Double> numbers;
+    private boolean sorted;
 
     public ProbabilityRank() {
         this(-1);
