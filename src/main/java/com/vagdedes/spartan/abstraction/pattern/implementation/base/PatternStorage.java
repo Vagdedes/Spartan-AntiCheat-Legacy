@@ -107,7 +107,7 @@ public class PatternStorage {
         this.patternProbability = new PatternPieCache(new ProbabilityPie());
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
 
-        this.generalizations = Collections.synchronizedMap(new LinkedHashMap<>(generalizations.length + 1));
+        this.generalizations = new LinkedHashMap<>(generalizations.length + 1);
         this.generalizations.put(0, new PatternGeneralizationStorage(key));
 
         if (generalizations.length > 0) {
@@ -499,16 +499,17 @@ public class PatternStorage {
                         generalization,
                         k -> new LinkedHashMap<>()
                 ).put(time, probability);
-                this.generalizations.get(0).probabilityRank.add(probability);
             }
             synchronized (patternProfile.significance) {
                 patternProfile.significance.computeIfAbsent(
                         generalization,
                         k -> new LinkedHashMap<>()
                 ).put(time, significance);
-                this.generalizations.get(0).significanceRank.add(significance);
             }
         }
+        PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
+        generalizationStorage.probabilityRank.add(probability);
+        generalizationStorage.significanceRank.add(significance);
     }
 
     public PatternProfile getProfile(PlayerProfile profile) {

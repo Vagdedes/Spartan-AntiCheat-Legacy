@@ -34,7 +34,6 @@ public class IrregularMovementsNew extends CheckExecutor {
 
             if (detection != null) {
                 player.debug(false, false, detection);
-                player.debug(false, false, "-");
                 return true;
             }
         }
