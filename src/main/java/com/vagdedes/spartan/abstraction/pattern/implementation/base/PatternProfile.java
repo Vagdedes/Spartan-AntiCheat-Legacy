@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class PatternProfile {
 
     // Public
 
-    double contributionRaw(int generalization) {
+    double contributionRaw(int generalization) { // 4 because that's the preferable length of a percentage
         if (this.significance.isEmpty()) {
             return 0.0;
         } else {
@@ -41,12 +42,15 @@ public class PatternProfile {
             if (map == 0) {
                 return 0.0;
             } else {
-                return this.countCollection(this.newData, contributionCache, generalization) / (double) map;
+                return AlgebraUtils.cut(
+                        this.countCollection(this.newData, contributionCache, generalization) / (double) map,
+                        4
+                );
             }
         }
     }
 
-    public double contribution(int generalization) {
+    public double contribution(int generalization) { // 4 because that's the preferable length of a percentage
         if (this.significance.isEmpty()) {
             return 0.0;
         } else {
@@ -64,13 +68,13 @@ public class PatternProfile {
                 synchronized (this.newData) {
                     collection = this.countCollection(this.newData, contributionCache, generalization);
                 }
-                return collection / (double) map;
+                return AlgebraUtils.cut(collection / (double) map, 4);
             }
         }
     }
 
-    double probabilityRaw(int generalization) {
-        return this.average(this.probability, probabilityCache, generalization);
+    double probabilityRaw(int generalization) { // 4 because that's the preferable length of a percentage
+        return AlgebraUtils.cut(this.average(this.probability, probabilityCache, generalization), 4);
     }
 
     public double probability(int generalization) {
@@ -79,8 +83,8 @@ public class PatternProfile {
         }
     }
 
-    double significanceRaw(int generalization) {
-        return this.average(this.significance, significanceCache, generalization);
+    double significanceRaw(int generalization) { // 4 because that's the preferable length of a percentage
+        return AlgebraUtils.cut(this.average(this.significance, significanceCache, generalization), 4);
     }
 
     public double significance(int generalization) {
