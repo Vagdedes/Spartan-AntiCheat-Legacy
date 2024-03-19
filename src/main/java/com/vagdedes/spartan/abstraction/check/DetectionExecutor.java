@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
+import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;

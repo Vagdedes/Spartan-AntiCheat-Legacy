@@ -1,30 +1,30 @@
-package com.vagdedes.spartan.abstraction.math;
+package com.vagdedes.spartan.utils.math;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 
 import java.util.*;
 
-public abstract class AbstractProbabilityRank {
+public class ProbabilityRank {
 
     protected final List<Double> numbers;
     protected boolean sorted;
 
-    public AbstractProbabilityRank() {
+    public ProbabilityRank() {
         this(-1);
     }
 
-    public AbstractProbabilityRank(int capacity) {
+    public ProbabilityRank(int capacity) {
         this.numbers = capacity >= 0 ? new ArrayList<>(capacity) : new ArrayList<>();
         this.sorted = false;
     }
 
-    public AbstractProbabilityRank clear() {
+    public ProbabilityRank clear() {
         this.numbers.clear();
         this.sorted = false;
         return this;
     }
 
-    public AbstractProbabilityRank addMultiple(Collection<? extends Number> numbers) {
+    public ProbabilityRank addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.numbers.add(number.doubleValue());
         }
@@ -32,7 +32,7 @@ public abstract class AbstractProbabilityRank {
         return this;
     }
 
-    public AbstractProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
+    public ProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
         for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
             for (int i = 0; i < entry.getValue(); i++) {
                 this.numbers.add(entry.getKey().doubleValue());
@@ -42,7 +42,7 @@ public abstract class AbstractProbabilityRank {
         return this;
     }
 
-    public AbstractProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
+    public ProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
         for (PatternValue value : values) {
             this.numbers.add(value.pattern.doubleValue());
         }
@@ -50,13 +50,13 @@ public abstract class AbstractProbabilityRank {
         return this;
     }
 
-    public AbstractProbabilityRank add(Number number) {
+    public ProbabilityRank add(Number number) {
         this.numbers.add(number.doubleValue());
         this.sorted = false;
         return this;
     }
 
-    public AbstractProbabilityRank remove(Number number) {
+    public ProbabilityRank remove(Number number) {
         this.numbers.remove(number.doubleValue());
         this.sorted = false;
         return this;

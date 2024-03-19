@@ -15,25 +15,18 @@ public class PatternProfile {
     private final PatternCache probabilityCache,
             significanceCache,
             contributionCache;
-    double previousProbability,
-            previousSignificance,
-            previousContribution;
 
     PatternProfile() {
         this.newData = Collections.synchronizedMap(new LinkedHashMap<>());
         this.probability = Collections.synchronizedMap(new LinkedHashMap<>());
         this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
-        
+
         this.correlations = new LinkedHashMap<>();
         this.repetitions = new LinkedHashMap<>();
 
         this.probabilityCache = new PatternCache();
         this.significanceCache = new PatternCache();
         this.contributionCache = new PatternCache();
-
-        this.previousProbability = -1.0;
-        this.previousSignificance = -1.0;
-        this.previousContribution = -1.0;
     }
 
     // Public

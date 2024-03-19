@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternRankWithPie;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternComparison;
 
 public abstract class PatternGeneralization {
 
@@ -21,7 +21,7 @@ public abstract class PatternGeneralization {
 
     protected final String key;
     public final int generalization;
-    public final PatternRankWithPie
+    public final PatternComparison
             probabilityRank,
             significanceRank,
             contributionRank;
@@ -30,15 +30,15 @@ public abstract class PatternGeneralization {
     protected PatternGeneralization(String key, int generalization) {
         this.key = key;
         this.generalization = generalization;
-        this.probabilityRank = new PatternRankWithPie();
-        this.significanceRank = new PatternRankWithPie();
-        this.contributionRank = new PatternRankWithPie();
+        this.probabilityRank = new PatternComparison();
+        this.significanceRank = new PatternComparison();
+        this.contributionRank = new PatternComparison();
     }
 
     public double[] probabilityRankAndProbability(double value) {
         synchronized (this.probabilityRank) {
             this.probabilityRank.maintain();
-            double rank = this.probabilityRank.getProbability(value, -1.0);
+            double rank = this.probabilityRank.getPosition(value, -1.0);
 
             if (rank != -1.0) {
                 return new double[]{
@@ -54,7 +54,7 @@ public abstract class PatternGeneralization {
     public double[] significanceRankAndProbability(double value) {
         synchronized (this.significanceRank) {
             this.significanceRank.maintain();
-            double rank = this.significanceRank.getProbability(value, -1.0);
+            double rank = this.significanceRank.getPosition(value, -1.0);
 
             if (rank != -1.0) {
                 return new double[]{
@@ -70,7 +70,7 @@ public abstract class PatternGeneralization {
     public double[] contributionRankAndProbability(double value) {
         synchronized (this.contributionRank) {
             this.contributionRank.maintain();
-            double rank = this.contributionRank.getProbability(value, -1.0);
+            double rank = this.contributionRank.getPosition(value, -1.0);
 
             if (rank != -1.0) {
                 return new double[]{
@@ -82,6 +82,5 @@ public abstract class PatternGeneralization {
             }
         }
     }
-
 
 }
