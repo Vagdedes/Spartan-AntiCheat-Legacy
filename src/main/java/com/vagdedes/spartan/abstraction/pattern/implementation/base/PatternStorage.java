@@ -479,7 +479,9 @@ public class PatternStorage {
                     generalization,
                     k -> new ArrayList<>()
             ).add(System.currentTimeMillis());
-            this.generalizations.get(0).contributionRank.add(patternProfile.contribution(generalization));
+            this.generalizations.get(generalization).contributionRank.add(
+                    patternProfile.contribution(generalization)
+            );
         }
     }
 
