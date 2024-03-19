@@ -486,7 +486,6 @@ public class PatternStorage {
                 synchronized (generalizationStorage.contributionRank) {
                     double value = patternProfile.contributionRaw(generalization);
                     generalizationStorage.contributionRank.put(profile, value, time);
-                    generalizationStorage.contributionRank.pie.add(value);
                 }
             }
         }
@@ -514,7 +513,6 @@ public class PatternStorage {
                 synchronized (generalizationStorage.probabilityRank) {
                     double value = patternProfile.probabilityRaw(generalization);
                     generalizationStorage.probabilityRank.put(profile, value, time);
-                    generalizationStorage.probabilityRank.pie.add(value);
                 }
             }
             synchronized (patternProfile.significance) {
@@ -527,7 +525,6 @@ public class PatternStorage {
                 synchronized (generalizationStorage.significanceRank) {
                     double value = patternProfile.significanceRaw(generalization);
                     generalizationStorage.significanceRank.put(profile, value, time);
-                    generalizationStorage.significanceRank.pie.add(value);
                 }
             }
         }

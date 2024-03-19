@@ -57,7 +57,7 @@ public abstract class PatternGeneralization {
         double rank = object.getPosition(value, -1.0);
 
         if (rank != -1.0) {
-            return new double[]{rank, object.pie.getProbability(value)};
+            return new double[]{rank, object.getProbability(value)};
         } else {
             return null;
         }
