@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-public abstract class PatternCache {
+public abstract class AbstractPatternCache {
 
     private long time;
 
-    protected PatternCache(boolean refresh) {
+    protected AbstractPatternCache(boolean refresh) {
         if (refresh) {
             refresh();
         } else {

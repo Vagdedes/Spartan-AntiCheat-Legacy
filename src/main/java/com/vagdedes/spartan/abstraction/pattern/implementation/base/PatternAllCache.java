@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternCache;
+import com.vagdedes.spartan.abstraction.pattern.AbstractPatternCache;
 
 import java.util.Collection;
 
-public class PatternAllCache extends PatternCache {
+public class PatternAllCache extends AbstractPatternCache {
 
     Collection<Collection<PatternValue>> data;
 

@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternCache;
+import com.vagdedes.spartan.abstraction.pattern.AbstractPatternCache;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityPie;
 
-public class PatternPieCache extends PatternCache {
+public class PatternPieCache extends AbstractPatternCache {
 
     ProbabilityPie data;
 

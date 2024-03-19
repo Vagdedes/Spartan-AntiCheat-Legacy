@@ -13,17 +13,20 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
 
     public final ProbabilityPie pie;
     private final Map<Long, Number> map;
+    private final PatternCache cache;
 
     public PatternRankWithPie() {
         super();
         this.pie = new ProbabilityPie();
         this.map = new LinkedHashMap<>();
+        this.cache = new PatternCache();
     }
 
     public PatternRankWithPie(int capacity) {
         super(capacity);
         this.pie = new ProbabilityPie(capacity);
         this.map = new LinkedHashMap<>(capacity);
+        this.cache = new PatternCache();
     }
 
     @Override
@@ -79,16 +82,20 @@ public class PatternRankWithPie extends AbstractProbabilityRank {
 
     private void maintain() {
         if (!map.isEmpty()) {
-            Iterator<Map.Entry<Long, Number>> iterator = map.entrySet().iterator();
+            if (cache.isExpired()) {
+                cache.refresh();
+                
+                Iterator<Map.Entry<Long, Number>> iterator = map.entrySet().iterator();
 
-            while (iterator.hasNext()) {
-                Map.Entry<Long, Number> entry = iterator.next();
+                while (iterator.hasNext()) {
+                    Map.Entry<Long, Number> entry = iterator.next();
 
-                if (System.currentTimeMillis() - entry.getKey() > Check.violationCycleMilliseconds) {
-                    iterator.remove();
-                    this.remove(entry.getValue());
-                } else {
-                    break;
+                    if (System.currentTimeMillis() - entry.getKey() > Check.violationCycleMilliseconds) {
+                        iterator.remove();
+                        this.remove(entry.getValue());
+                    } else {
+                        break;
+                    }
                 }
             }
         }

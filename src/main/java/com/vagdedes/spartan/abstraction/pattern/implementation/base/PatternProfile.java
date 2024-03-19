@@ -12,7 +12,7 @@ public class PatternProfile {
     // Generalization -> Situation -> Patterns
     final Map<Integer, Map<Long, List<PatternValue>>> correlations; // Local
     final Map<Long, PatternRepetition> repetitions; // Local
-    private final PatternProfileCache probabilityCache, // Private
+    private final PatternCache probabilityCache, // Private
             significanceCache, // Private
             contributionCache; // Private
 
@@ -22,9 +22,9 @@ public class PatternProfile {
         this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
         this.correlations = new LinkedHashMap<>();
         this.repetitions = new LinkedHashMap<>();
-        this.probabilityCache = new PatternProfileCache();
-        this.significanceCache = new PatternProfileCache();
-        this.contributionCache = new PatternProfileCache();
+        this.probabilityCache = new PatternCache();
+        this.significanceCache = new PatternCache();
+        this.contributionCache = new PatternCache();
     }
 
     // Public
@@ -109,7 +109,7 @@ public class PatternProfile {
     // Private
 
     private double average(Map<Integer, Map<Long, Double>> parent,
-                           PatternProfileCache cache,
+                           PatternCache cache,
                            int generalization) {
         if (parent.isEmpty()) {
             return 0.0;
@@ -131,7 +131,7 @@ public class PatternProfile {
     }
 
     private int countMap(Map<Integer, Map<Long, Double>> parent,
-                         PatternProfileCache cache,
+                         PatternCache cache,
                          int generalization) {
         if (parent.isEmpty()) {
             return 0;
@@ -148,7 +148,7 @@ public class PatternProfile {
     }
 
     private int countCollection(Map<Integer, Collection<Long>> parent,
-                                PatternProfileCache cache,
+                                PatternCache cache,
                                 int generalization) {
         if (parent.isEmpty()) {
             return 0;
@@ -164,7 +164,7 @@ public class PatternProfile {
         }
     }
 
-    private void remove(Iterator<Long> iterator, PatternProfileCache cache) {
+    private void remove(Iterator<Long> iterator, PatternCache cache) {
         if (cache.isExpired()) {
             cache.refresh();
 
