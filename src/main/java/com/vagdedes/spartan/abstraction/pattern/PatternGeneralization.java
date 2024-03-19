@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRankWithPie;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternRankWithPie;
 
 public abstract class PatternGeneralization {
 
@@ -21,7 +21,7 @@ public abstract class PatternGeneralization {
 
     protected final String key;
     public final int generalization;
-    public final ProbabilityRankWithPie
+    public final PatternRankWithPie
             probabilityRank,
             significanceRank,
             contributionRank;
@@ -30,9 +30,9 @@ public abstract class PatternGeneralization {
     protected PatternGeneralization(String key, int generalization) {
         this.key = key;
         this.generalization = generalization;
-        this.probabilityRank = new ProbabilityRankWithPie();
-        this.significanceRank = new ProbabilityRankWithPie();
-        this.contributionRank = new ProbabilityRankWithPie();
+        this.probabilityRank = new PatternRankWithPie();
+        this.significanceRank = new PatternRankWithPie();
+        this.contributionRank = new PatternRankWithPie();
     }
 
     public double probabilityRank(double value) {

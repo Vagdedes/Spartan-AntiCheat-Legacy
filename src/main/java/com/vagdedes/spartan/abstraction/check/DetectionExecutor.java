@@ -96,8 +96,14 @@ public abstract class DetectionExecutor {
             PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
             PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
             double profileProbability = patternProfile.probability(generalization),
+                    profileProbabilityRank = patternGeneralization.probabilityRank(profileProbability),
+                    profileProbabilityProbability = patternGeneralization.probabilityProbability(profileProbability),
                     profileSignificance = patternProfile.significance(generalization),
-                    profileContribution = patternProfile.contribution(generalization);
+                    profileSignificanceRank = patternGeneralization.significanceRank(profileSignificance),
+                    profileSignificanceProbability = patternGeneralization.significanceProbability(profileSignificance),
+                    profileContribution = patternProfile.contribution(generalization),
+                    profileContributionRank = patternGeneralization.contributionRank(profileContribution),
+                    profileContributionProbability = patternGeneralization.contributionProbability(profileContribution);
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
@@ -109,32 +115,32 @@ public abstract class DetectionExecutor {
                     .append(client)
                     .append(", probability: ")
                     .append(AlgebraUtils.cut(
-                            patternGeneralization.probabilityRank(profileProbability) * 100.0,
+                            profileProbabilityRank * 100.0,
                             2
                     ))
                     .append("(")
                     .append(AlgebraUtils.cut(
-                            patternGeneralization.probabilityProbability(profileProbability) * 100.0,
+                            profileProbabilityProbability * 100.0,
                             2
                     ))
                     .append("), significance: ")
                     .append(AlgebraUtils.cut(
-                            patternGeneralization.significanceRank(profileSignificance) * 100.0,
+                            profileSignificanceRank * 100.0,
                             2
                     ))
                     .append("(")
                     .append(AlgebraUtils.cut(
-                            patternGeneralization.significanceProbability(profileSignificance) * 100.0,
+                            profileSignificanceProbability * 100.0,
                             2
                     ))
                     .append("), contribution: ")
                     .append(AlgebraUtils.cut(
-                            patternGeneralization.contributionRank(profileContribution) * 100.0,
+                            profileContributionRank * 100.0,
                             2
                     ))
                     .append("(")
                     .append(AlgebraUtils.cut(
-                            patternGeneralization.contributionProbability(profileContribution) * 100.0,
+                            profileContributionProbability * 100.0,
                             2
                     ))
                     .append(")");

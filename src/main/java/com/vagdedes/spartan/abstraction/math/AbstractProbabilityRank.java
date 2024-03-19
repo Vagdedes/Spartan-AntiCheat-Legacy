@@ -56,6 +56,12 @@ public abstract class AbstractProbabilityRank {
         return this;
     }
 
+    public AbstractProbabilityRank remove(Number number) {
+        this.numbers.remove(number.doubleValue());
+        this.sorted = false;
+        return this;
+    }
+
     // Separator
 
     public double getProbability(Number number, double def) {

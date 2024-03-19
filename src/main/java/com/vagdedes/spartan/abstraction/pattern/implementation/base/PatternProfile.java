@@ -171,6 +171,8 @@ public class PatternProfile {
             while (iterator.hasNext()) {
                 if (System.currentTimeMillis() - iterator.next() > Check.violationCycleMilliseconds) {
                     iterator.remove();
+                } else {
+                    break;
                 }
             }
         }
