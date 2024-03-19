@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -9,7 +10,6 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.probability.ProbabilityPie;
-import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -98,20 +98,21 @@ public class PatternStorage {
     // Separator
 
     public final String key;
-    private final PatternGeneralization[] generalizations;
+    private final Map<Integer, PatternGeneralization> generalizations;
     final Map<PlayerProfile, PatternProfile> profiles;
-    private final PatternPieCache patternProbability = new PatternPieCache(new ProbabilityPie());
+    private final PatternPieCache patternProbability;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
+        this.patternProbability = new PatternPieCache(new ProbabilityPie());
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
 
-        this.generalizations = new PatternGeneralization[generalizations.length + 1];
-        this.generalizations[0] = new PatternGeneralizationStorage(key);
+        this.generalizations = Collections.synchronizedMap(new LinkedHashMap<>(generalizations.length + 1));
+        this.generalizations.put(0, new PatternGeneralizationStorage(key));
 
         if (generalizations.length > 0) {
-            for (int count = 0; count < generalizations.length; count++) {
-                this.generalizations[count + 1] = new PatternGeneralizationMemory(key, generalizations[count]);
+            for (int generalization : generalizations) {
+                this.generalizations.put(generalization, new PatternGeneralizationMemory(key, generalization));
             }
         }
 
@@ -123,7 +124,7 @@ public class PatternStorage {
     // Separator
 
     public void store() {
-        ((PatternGeneralizationStorage) this.generalizations[0]).store();
+        ((PatternGeneralizationStorage) this.generalizations.get(0)).store();
     }
 
     private void load() {
@@ -161,14 +162,14 @@ public class PatternStorage {
                                                     && !profileName.isEmpty()) {
                                                 PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
-                                                for (PatternGeneralization generalization : this.generalizations) {
+                                                for (PatternGeneralization generalization : this.generalizations.values()) {
                                                     this.rawCache(
                                                             correlations,
                                                             profile,
                                                             new PatternValue(
                                                                     situation,
                                                                     (Number) pattern,
-                                                                    generalization,
+                                                                    generalization.generalization,
                                                                     time
                                                             ),
                                                             generalization,
@@ -238,14 +239,14 @@ public class PatternStorage {
                 } else if (!statistics.canUsePattern(situation, number)) {
                     return;
                 }
-                for (PatternGeneralization generalization : this.generalizations) {
+                for (PatternGeneralization generalization : this.generalizations.values()) {
                     this.rawCache(
                             this.profiles,
                             profile,
                             new PatternValue(
                                     situation,
                                     number,
-                                    generalization,
+                                    generalization.generalization,
                                     time
                             ),
                             generalization,
@@ -462,17 +463,23 @@ public class PatternStorage {
         return patternProbability.data.getProbability(number);
     }
 
+    public PatternGeneralization getGeneralization(int generalization) {
+        return this.generalizations.get(generalization);
+    }
+
     // Separator
 
     public void collectNewData(PlayerProfile profile, int generalization) {
         synchronized (this.profiles) {
-            this.profiles.computeIfAbsent(
+            PatternProfile patternProfile = this.profiles.computeIfAbsent(
                     profile,
                     k -> new PatternProfile()
-            ).newData.computeIfAbsent(
+            );
+            patternProfile.newData.computeIfAbsent(
                     generalization,
                     k -> new ArrayList<>()
             ).add(System.currentTimeMillis());
+            this.generalizations.get(0).contributionRank.add(patternProfile.contribution(generalization));
         }
     }
 
@@ -492,12 +499,14 @@ public class PatternStorage {
                         generalization,
                         k -> new LinkedHashMap<>()
                 ).put(time, probability);
+                this.generalizations.get(0).probabilityRank.add(probability);
             }
             synchronized (patternProfile.significance) {
                 patternProfile.significance.computeIfAbsent(
                         generalization,
                         k -> new LinkedHashMap<>()
                 ).put(time, significance);
+                this.generalizations.get(0).significanceRank.add(significance);
             }
         }
     }
