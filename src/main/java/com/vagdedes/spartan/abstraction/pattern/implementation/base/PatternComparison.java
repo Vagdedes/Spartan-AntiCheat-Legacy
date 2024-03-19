@@ -46,13 +46,16 @@ public class PatternComparison {
             this.rank.remove(comparison.number);
             comparison.number = number;
             comparison.time = time;
-            this.rank.add(number);
+
+            if (profile.isLegitimate()) {
+                this.rank.add(number);
+            }
         }
         this.pie.add(number);
     }
 
     public double getPosition(Number number, double def) {
-        if (SpartanBukkit.debug && map.size() <= ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && map.size() <= ResearchEngine.profileRequirement) {
             return def;
         } else {
             if (cache.isExpired()) {
