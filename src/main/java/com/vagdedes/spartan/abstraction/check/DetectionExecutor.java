@@ -96,8 +96,8 @@ public abstract class DetectionExecutor {
             PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
             PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
             double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability(generalization)),
-                     significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(generalization)),
-                     contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(generalization));
+                    significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(generalization)),
+                    contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(generalization));
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
@@ -106,38 +106,47 @@ public abstract class DetectionExecutor {
                     .append("x")
                     .append(count)
                     .append("), client: ")
-                    .append(client)
-                    .append(", probability: ")
-                    .append(AlgebraUtils.cut(
-                            probabilityRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            probabilityRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append("), significance: ")
-                    .append(AlgebraUtils.cut(
-                            significanceRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            significanceRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append("), contribution: ")
-                    .append(AlgebraUtils.cut(
-                            contributionRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            contributionRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append(")");
+                    .append(client);
+
+            if (probabilityRankAndProbability != null) {
+                sb.append(", probability: ")
+                        .append(AlgebraUtils.cut(
+                                probabilityRankAndProbability[0] * 100.0,
+                                2
+                        ))
+                        .append("(")
+                        .append(AlgebraUtils.cut(
+                                probabilityRankAndProbability[1] * 100.0,
+                                2
+                        ))
+                        .append(")");
+            }
+            if (significanceRankAndProbability != null) {
+                sb.append(", significance: ")
+                        .append(AlgebraUtils.cut(
+                                significanceRankAndProbability[0] * 100.0,
+                                2
+                        ))
+                        .append("(")
+                        .append(AlgebraUtils.cut(
+                                significanceRankAndProbability[1] * 100.0,
+                                2
+                        ))
+                        .append(")");
+            }
+            if (contributionRankAndProbability != null) {
+                sb.append(", contribution: ")
+                        .append(AlgebraUtils.cut(
+                                contributionRankAndProbability[0] * 100.0,
+                                2
+                        ))
+                        .append("(")
+                        .append(AlgebraUtils.cut(
+                                contributionRankAndProbability[1] * 100.0,
+                                2
+                        ))
+                        .append(")");
+            }
 
             if (probabilityPredictor.pie.hasData()) {
                 double significance = patternStorage.getSignificance(client, generalization);
