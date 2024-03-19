@@ -470,6 +470,8 @@ public class PatternStorage {
     // Separator
 
     public void collectNewData(PlayerProfile profile, int generalization) {
+        PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
+
         synchronized (this.profiles) {
             PatternProfile patternProfile = this.profiles.computeIfAbsent(
                     profile,
@@ -479,9 +481,12 @@ public class PatternStorage {
                     generalization,
                     k -> new ArrayList<>()
             ).add(System.currentTimeMillis());
-            this.generalizations.get(generalization).contributionRank.add(
-                    patternProfile.contribution(generalization)
-            );
+
+            synchronized (generalizationStorage.significanceRank) {
+                generalizationStorage.contributionRank.add(
+                        patternProfile.contribution(generalization)
+                );
+            }
         }
     }
 
@@ -489,6 +494,7 @@ public class PatternStorage {
                         int generalization,
                         double significance, double probability) {
         long time = System.currentTimeMillis();
+        PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
 
         synchronized (this.profiles) {
             PatternProfile patternProfile = this.profiles.computeIfAbsent(
@@ -509,9 +515,12 @@ public class PatternStorage {
                 ).put(time, significance);
             }
         }
-        PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
-        generalizationStorage.probabilityRank.add(probability);
-        generalizationStorage.significanceRank.add(significance);
+        synchronized (generalizationStorage.probabilityRank) {
+            generalizationStorage.probabilityRank.add(probability);
+        }
+        synchronized (generalizationStorage.significanceRank) {
+            generalizationStorage.significanceRank.add(significance);
+        }
     }
 
     public PatternProfile getProfile(PlayerProfile profile) {
