@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
@@ -41,17 +42,16 @@ public class PatternComparison {
 
         if (comparison == null) {
             this.map.put(profile, new Comparison(number, time));
-            this.rank.add(number);
         } else {
             this.rank.remove(comparison.number);
             comparison.number = number;
             comparison.time = time;
-
-            if (profile.isLegitimate()) {
-                this.rank.add(number);
-            }
         }
-        this.pie.add(number);
+
+        if (profile.isLegitimate()) {
+            this.rank.add(number);
+            this.pie.add(generalizeNumber(number));
+        }
     }
 
     public double getPosition(Number number, double def) {
@@ -81,6 +81,12 @@ public class PatternComparison {
     }
 
     public double getProbability(Number number) {
-        return this.pie.getProbability(number);
+        return this.pie.getProbability(generalizeNumber(number));
+    }
+
+    private Number generalizeNumber(Number number) {
+        return number instanceof Double
+                ? number
+                : AlgebraUtils.cut(number.doubleValue(), 3);
     }
 }
