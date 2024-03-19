@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
@@ -11,6 +10,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
+import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Iterator;

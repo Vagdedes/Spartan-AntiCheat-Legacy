@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;

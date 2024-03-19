@@ -2,6 +2,8 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 import java.util.Iterator;
@@ -37,17 +39,22 @@ public class PatternComparison {
         if (comparison == null) {
             this.map.put(profile, new Comparison(number, time));
         } else {
-            comparison.time = time;
             comparison.number = number;
+            comparison.time = time;
         }
         this.pie.add(number);
     }
 
     public double getPosition(Number number, double def) {
-        return 0.0;
+        if (SpartanBukkit.debug && map.size() <= ResearchEngine.profileRequirement) {
+            return def;
+        } else {
+            this.maintain();
+            return 0.0;
+        }
     }
 
-    public void maintain() {
+    private void maintain() {
         if (!map.isEmpty()) {
             if (cache.isExpired()) {
                 cache.refresh();

@@ -37,7 +37,6 @@ public abstract class PatternGeneralization {
 
     public double[] probabilityRankAndProbability(double value) {
         synchronized (this.probabilityRank) {
-            this.probabilityRank.maintain();
             double rank = this.probabilityRank.getPosition(value, -1.0);
 
             if (rank != -1.0) {
@@ -53,7 +52,6 @@ public abstract class PatternGeneralization {
 
     public double[] significanceRankAndProbability(double value) {
         synchronized (this.significanceRank) {
-            this.significanceRank.maintain();
             double rank = this.significanceRank.getPosition(value, -1.0);
 
             if (rank != -1.0) {
@@ -69,7 +67,6 @@ public abstract class PatternGeneralization {
 
     public double[] contributionRankAndProbability(double value) {
         synchronized (this.contributionRank) {
-            this.contributionRank.maintain();
             double rank = this.contributionRank.getPosition(value, -1.0);
 
             if (rank != -1.0) {

@@ -17,7 +17,6 @@ import java.util.*;
 
 public class PatternStorage {
 
-    private static final boolean debug = true;
     private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
     private static final Map<Long, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<Long, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -318,7 +317,7 @@ public class PatternStorage {
     }
 
     private Collection<Collection<PatternValue>> getAllRaw(long situation, int generalization) {
-        if (!debug && this.profiles.size() <= ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() <= ResearchEngine.profileRequirement) {
             return new ArrayList<>(0);
         } else {
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.profiles.size());
@@ -336,7 +335,7 @@ public class PatternStorage {
                     }
                 }
             }
-            return !debug && profiles < ResearchEngine.profileRequirement
+            return !SpartanBukkit.debug && profiles < ResearchEngine.profileRequirement
                     ? new ArrayList<>(0)
                     : collections;
         }
@@ -411,7 +410,7 @@ public class PatternStorage {
     }
 
     public ProbabilityRank getRankedRaw(long situation, int generalization) {
-        if (!debug && this.profiles.size() <= ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() <= ResearchEngine.profileRequirement) {
             return new ProbabilityRank(0);
         } else {
             ProbabilityRank rank = new ProbabilityRank(this.profiles.size());
@@ -429,7 +428,7 @@ public class PatternStorage {
                     }
                 }
             }
-            return !debug && profiles < ResearchEngine.profileRequirement
+            return !SpartanBukkit.debug && profiles < ResearchEngine.profileRequirement
                     ? new ProbabilityRank(0)
                     : rank;
         }
@@ -506,6 +505,7 @@ public class PatternStorage {
             );
 
             synchronized (patternProfile.probability) {
+                patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
                 patternProfile.probability.computeIfAbsent(
                         generalization,
                         k -> new LinkedHashMap<>()
@@ -518,6 +518,7 @@ public class PatternStorage {
                 }
             }
             synchronized (patternProfile.significance) {
+                patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
                 patternProfile.significance.computeIfAbsent(
                         generalization,
                         k -> new LinkedHashMap<>()
