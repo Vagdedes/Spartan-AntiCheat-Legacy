@@ -477,15 +477,17 @@ public class PatternStorage {
                     profile,
                     k -> new PatternProfile()
             );
-            patternProfile.newData.computeIfAbsent(
-                    generalization,
-                    k -> new ArrayList<>()
-            ).add(System.currentTimeMillis());
+            synchronized (patternProfile.newData) {
+                patternProfile.newData.computeIfAbsent(
+                        generalization,
+                        k -> new ArrayList<>()
+                ).add(System.currentTimeMillis());
 
-            synchronized (generalizationStorage.significanceRank) {
-                generalizationStorage.contributionRank.add(
-                        patternProfile.contribution(generalization)
-                );
+                synchronized (generalizationStorage.significanceRank) {
+                    generalizationStorage.contributionRank.add(
+                            patternProfile.contributionRaw(generalization)
+                    );
+                }
             }
         }
     }
@@ -507,19 +509,25 @@ public class PatternStorage {
                         generalization,
                         k -> new LinkedHashMap<>()
                 ).put(time, probability);
+
+                synchronized (generalizationStorage.probabilityRank) {
+                    generalizationStorage.probabilityRank.add(
+                            patternProfile.probabilityRaw(generalization)
+                    );
+                }
             }
             synchronized (patternProfile.significance) {
                 patternProfile.significance.computeIfAbsent(
                         generalization,
                         k -> new LinkedHashMap<>()
                 ).put(time, significance);
+
+                synchronized (generalizationStorage.significanceRank) {
+                    generalizationStorage.significanceRank.add(
+                            patternProfile.significanceRaw(generalization)
+                    );
+                }
             }
-        }
-        synchronized (generalizationStorage.probabilityRank) {
-            generalizationStorage.probabilityRank.add(probability);
-        }
-        synchronized (generalizationStorage.significanceRank) {
-            generalizationStorage.significanceRank.add(significance);
         }
     }
 

@@ -22,6 +22,24 @@ public class PatternProfile {
 
     // Public
 
+    double contributionRaw(int generalization) {
+        if (this.significance.isEmpty()) {
+            return 0.0;
+        } else {
+            int map;
+
+            synchronized (this.significance) {
+                map = this.countMap(this.significance, generalization);
+            }
+
+            if (map == 0) {
+                return 0.0;
+            } else {
+                return this.countCollection(this.newData, generalization) / (double) map;
+            }
+        }
+    }
+
     public double contribution(int generalization) {
         if (this.significance.isEmpty()) {
             return 0.0;
@@ -45,15 +63,23 @@ public class PatternProfile {
         }
     }
 
+    double probabilityRaw(int generalization) {
+        return this.average(this.probability, generalization);
+    }
+
     public double probability(int generalization) {
         synchronized (this.probability) {
-            return this.average(this.probability, generalization);
+            return this.probabilityRaw(generalization);
         }
+    }
+
+    double significanceRaw(int generalization) {
+        return this.average(this.significance, generalization);
     }
 
     public double significance(int generalization) {
         synchronized (this.significance) {
-            return this.average(this.significance, generalization);
+            return this.significanceRaw(generalization);
         }
     }
 
