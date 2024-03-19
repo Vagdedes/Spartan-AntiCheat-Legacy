@@ -74,7 +74,9 @@ public class PatternComparison {
                     }
                 }
             }
-            return this.rank.getProbability(number, def);
+            return !SpartanBukkit.debug && this.rank.getTotal() < ResearchEngine.profileRequirement
+                    ? def
+                    : this.rank.getProbability(number, def);
         }
     }
 
