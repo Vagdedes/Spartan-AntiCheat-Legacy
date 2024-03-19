@@ -58,7 +58,6 @@ public class ProbabilityRank {
 
     public ProbabilityRank remove(Number number) {
         this.numbers.remove(number.doubleValue());
-        this.sorted = false;
         return this;
     }
 
