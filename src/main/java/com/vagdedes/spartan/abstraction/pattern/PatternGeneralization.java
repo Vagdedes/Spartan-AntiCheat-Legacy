@@ -35,39 +35,39 @@ public abstract class PatternGeneralization {
         this.contributionRank = new ProbabilityRankWithPie();
     }
 
-    public double getProbabilityRank(Number number) {
+    public double probabilityRank(double value) {
         synchronized (probabilityRank) {
-            return probabilityRank.getProbability(number, -1.0);
+            return probabilityRank.getProbability(value, -1.0);
         }
     }
 
-    public double getProbabilityProbability(Number number) {
+    public double probabilityProbability(double value) {
         synchronized (probabilityRank) {
-            return probabilityRank.pie.getProbability(number);
+            return probabilityRank.pie.getProbability(value);
         }
     }
 
-    public double getSignificanceRank(Number number) {
+    public double significanceRank(double value) {
         synchronized (significanceRank) {
-            return significanceRank.getProbability(number, -1.0);
+            return significanceRank.getProbability(value, -1.0);
         }
     }
 
-    public double getSignificanceProbability(Number number) {
+    public double significanceProbability(double value) {
         synchronized (significanceRank) {
-            return significanceRank.pie.getProbability(number);
+            return significanceRank.pie.getProbability(value);
         }
     }
 
-    public double getContributionRank(Number number) {
+    public double contributionRank(double value) {
         synchronized (contributionRank) {
-            return contributionRank.getProbability(number, -1.0);
+            return contributionRank.getProbability(value, -1.0);
         }
     }
 
-    public double getContributionProbability(Number number) {
+    public double contributionProbability(double value) {
         synchronized (contributionRank) {
-            return contributionRank.pie.getProbability(number);
+            return contributionRank.pie.getProbability(value);
         }
     }
 }

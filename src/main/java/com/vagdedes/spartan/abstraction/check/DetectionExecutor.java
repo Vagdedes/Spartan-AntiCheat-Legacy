@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
@@ -87,11 +88,16 @@ public abstract class DetectionExecutor {
                 generalization,
                 count
         );
+
         if (probabilityPredictor.pie != null) {
             if (client instanceof Double) {
                 client = AlgebraUtils.cut(client.doubleValue(), generalization);
             }
             PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
+            PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
+            double profileProbability = patternProfile.probability(generalization),
+                    profileSignificance = patternProfile.significance(generalization),
+                    profileContribution = patternProfile.contribution(generalization);
             StringBuilder sb = new StringBuilder()
                     .append("data: ")
                     .append(patternStorage.key)
@@ -103,19 +109,35 @@ public abstract class DetectionExecutor {
                     .append(client)
                     .append(", probability: ")
                     .append(AlgebraUtils.cut(
-                            patternProfile.probability(generalization) * 100.0,
+                            patternGeneralization.probabilityRank(profileProbability) * 100.0,
                             2
                     ))
-                    .append(", significance: ")
+                    .append("(")
                     .append(AlgebraUtils.cut(
-                            patternProfile.significance(generalization) * 100.0,
+                            patternGeneralization.probabilityProbability(profileProbability) * 100.0,
                             2
                     ))
-                    .append(", contribution: ")
+                    .append("), significance: ")
                     .append(AlgebraUtils.cut(
-                            patternProfile.contribution(generalization) * 100.0,
+                            patternGeneralization.significanceRank(profileSignificance) * 100.0,
                             2
-                    ));
+                    ))
+                    .append("(")
+                    .append(AlgebraUtils.cut(
+                            patternGeneralization.significanceProbability(profileSignificance) * 100.0,
+                            2
+                    ))
+                    .append("), contribution: ")
+                    .append(AlgebraUtils.cut(
+                            patternGeneralization.contributionRank(profileContribution) * 100.0,
+                            2
+                    ))
+                    .append("(")
+                    .append(AlgebraUtils.cut(
+                            patternGeneralization.contributionProbability(profileContribution) * 100.0,
+                            2
+                    ))
+                    .append(")");
 
             if (probabilityPredictor.pie.hasData()) {
                 double significance = patternStorage.getSignificance(client, generalization);
