@@ -203,20 +203,23 @@ public class PatternStorage {
                           PatternValue value,
                           PatternGeneralization generalization,
                           boolean set) {
-        List<PatternValue> list = correlations.computeIfAbsent(
+        PatternProfile patternProfile = correlations.computeIfAbsent(
                 profile,
                 k -> new PatternProfile()
-        ).correlations.computeIfAbsent(
-                generalization.generalization,
-                k -> new LinkedHashMap<>()
-        ).computeIfAbsent(
-                value.situation,
-                k -> new ArrayList<>(100)
         );
-        list.add(value);
 
-        if (list.size() > (SpartanEdition.is2ndGeneration() ? 3_000_000 : 1_000_000)) {
-            list.remove(0);
+        synchronized (patternProfile.correlations) {
+            List<PatternValue> list = patternProfile.correlationsData(
+                    generalization.generalization
+            ).computeIfAbsent(
+                    value.situation,
+                    k -> new ArrayList<>(100)
+            );
+            list.add(value);
+
+            if (list.size() > (SpartanEdition.is2ndGeneration() ? 3_000_000 : 1_000_000)) {
+                list.remove(0);
+            }
         }
 
         if (set) {
@@ -327,10 +330,13 @@ public class PatternStorage {
                 for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
-                        Collection<PatternValue> data = entry.getValue().correlations.get(generalization).get(situation);
 
-                        if (data != null) {
-                            collections.add(data);
+                        synchronized (entry.getValue().correlations) {
+                            Collection<PatternValue> data = entry.getValue().correlationsData(generalization).get(situation);
+
+                            if (data != null) {
+                                collections.add(data);
+                            }
                         }
                     }
                 }
@@ -345,22 +351,24 @@ public class PatternStorage {
 
     public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
         synchronized (this.profiles) {
-            PatternProfile statistics = this.profiles.get(profile);
+            PatternProfile patternProfile = this.profiles.get(profile);
 
-            if (statistics == null) {
+            if (patternProfile == null) {
                 return new ArrayList<>(0);
             } else {
-                List<PatternValue> specific = statistics.correlations.get(generalization).get(situation);
+                synchronized (patternProfile.correlations) {
+                    List<PatternValue> specific = patternProfile.correlationsData(generalization).get(situation);
 
-                if (specific == null) {
-                    return new ArrayList<>(0);
-                } else {
-                    int size = specific.size();
-
-                    if (size < count) {
+                    if (specific == null) {
                         return new ArrayList<>(0);
                     } else {
-                        return new ArrayList<>(specific).subList(size - count, size);
+                        int size = specific.size();
+
+                        if (size < count) {
+                            return new ArrayList<>(0);
+                        } else {
+                            return new ArrayList<>(specific).subList(size - count, size);
+                        }
                     }
                 }
             }
@@ -420,10 +428,13 @@ public class PatternStorage {
                 for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
-                        Collection<PatternValue> data = entry.getValue().correlations.get(generalization).get(situation);
 
-                        if (data != null) {
-                            rank.addMultiplePatterns(data);
+                        synchronized (entry.getValue().correlations) {
+                            Collection<PatternValue> data = entry.getValue().correlationsData(generalization).get(situation);
+
+                            if (data != null) {
+                                rank.addMultiplePatterns(data);
+                            }
                         }
                     }
                 }
@@ -444,12 +455,14 @@ public class PatternStorage {
                 synchronized (this.profiles) {
                     for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                         if (entry.getKey().isLegitimate()) {
-                            Map<Long, List<PatternValue>> data = entry.getValue().correlations.get(generalization);
+                            synchronized (entry.getValue().correlations) {
+                                Map<Long, List<PatternValue>> data = entry.getValue().correlationsData(generalization);
 
-                            if (!data.isEmpty()) {
-                                for (List<PatternValue> list : data.values()) {
-                                    for (PatternValue value : list) {
-                                        this.patternProbability.data.add(value.pattern);
+                                if (!data.isEmpty()) {
+                                    for (List<PatternValue> list : data.values()) {
+                                        for (PatternValue value : list) {
+                                            this.patternProbability.data.add(value.pattern);
+                                        }
                                     }
                                 }
                             }
@@ -468,8 +481,7 @@ public class PatternStorage {
 
     // Separator
 
-    public void collect(PlayerProfile profile, int generalization) {
-        long time = System.currentTimeMillis();
+    public void collect(PlayerProfile profile, int generalization, long time) {
         PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
 
         synchronized (this.profiles) {
@@ -478,16 +490,15 @@ public class PatternStorage {
                     k -> new PatternProfile()
             );
             synchronized (patternProfile.contribution) {
-                patternProfile.contribution.computeIfAbsent(
-                        generalization,
-                        k -> new LinkedList<>()
-                ).add(time);
+                patternProfile.contributionData(generalization).add(time);
 
-                synchronized (generalizationStorage.contributionRank) {
-                    double value = patternProfile.contributionRaw(generalization);
+                if (time != -1L) {
+                    synchronized (generalizationStorage.contributionRank) {
+                        double value = patternProfile.contributionRaw(generalization);
 
-                    if (value != -1.0) {
-                        generalizationStorage.contributionRank.put(profile, value, time);
+                        if (value != -1.0) {
+                            generalizationStorage.contributionRank.put(profile, value, time);
+                        }
                     }
                 }
             }
@@ -496,8 +507,8 @@ public class PatternStorage {
 
     public void collect(PlayerProfile profile,
                         int generalization,
-                        double significance, double probability) {
-        long time = System.currentTimeMillis();
+                        double significance, double probability,
+                        long time) {
         PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
 
         synchronized (this.profiles) {
@@ -508,10 +519,7 @@ public class PatternStorage {
 
             synchronized (patternProfile.probability) {
                 patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
-                patternProfile.probability.computeIfAbsent(
-                        generalization,
-                        k -> new LinkedList<>()
-                ).add(probability);
+                patternProfile.probabilityData(generalization).add(probability);
 
                 synchronized (generalizationStorage.probabilityRank) {
                     double value = patternProfile.probabilityRaw(generalization);
@@ -523,10 +531,7 @@ public class PatternStorage {
             }
             synchronized (patternProfile.significance) {
                 patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
-                patternProfile.significance.computeIfAbsent(
-                        generalization,
-                        k -> new LinkedList<>()
-                ).add(significance);
+                patternProfile.significanceData(generalization).add(significance);
 
                 synchronized (generalizationStorage.significanceRank) {
                     double value = patternProfile.significanceRaw(generalization);
@@ -541,7 +546,7 @@ public class PatternStorage {
 
     public PatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profiles) {
-            return this.profiles.get(profile);
+            return this.profiles.computeIfAbsent(profile, k -> new PatternProfile());
         }
     }
 }

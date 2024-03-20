@@ -29,18 +29,16 @@ public class ProbabilityPredictor {
     public ProbabilityPredictor(Collection<Collection<PatternValue>> totalPatterns,
                                 Collection<PatternValue> currentPattern) {
         int currentPatternSize = currentPattern.size();
+        this.pie = new ProbabilityPie();
 
         if (!totalPatterns.isEmpty() // No general data to compare
                 && currentPatternSize > 0) { // No individual data to compare
             long currentPatternHash = HashHelper.collection(currentPattern);
-            boolean comparison = false;
-            ProbabilityPie pie = new ProbabilityPie();
 
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
 
                 if (currentPatternSize <= allPatternsSize) { // No enough general data to compare
-                    comparison = true;
                     boolean next = false;
                     Iterator<PatternValue> iterator = allPatterns.iterator();
                     LinkedList<PatternValue> list = new LinkedList<>();
@@ -56,7 +54,7 @@ public class ProbabilityPredictor {
 
                         if (next) {
                             next = false;
-                            pie.add(pattern.pattern);
+                            this.pie.add(pattern.pattern);
                         }
                         if (currentPatternHash == HashHelper.collection(list)) {
                             next = true;
@@ -64,9 +62,6 @@ public class ProbabilityPredictor {
                     }
                 }
             }
-            this.pie = comparison ? pie : null;
-        } else {
-            this.pie = null;
         }
     }
 }

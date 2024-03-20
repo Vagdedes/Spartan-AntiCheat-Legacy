@@ -8,12 +8,13 @@ public class PatternProfile { // todo store
 
     static final int
             PROBABILITY_POSITION = 0,
-            SIGNIFICANCE_POSITION = 1;
+            SIGNIFICANCE_POSITION = 1,
+            CONTRIBUTION_POSITION = 2;
 
     final Map<Integer, Collection<Double>> probability, significance;
     final Map<Integer, Collection<Long>> contribution;
     // Generalization -> Situation -> Patterns
-    final Map<Integer, Map<Long, List<PatternValue>>> correlations;
+     final Map<Integer, Map<Long, List<PatternValue>>> correlations;
     final Map<Long, PatternRepetition> repetitions;
     private final PatternCache probabilityCache, significanceCache, contributionCache;
     final double[] total;
@@ -22,8 +23,8 @@ public class PatternProfile { // todo store
         this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
         this.probability = Collections.synchronizedMap(new LinkedHashMap<>());
         this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.correlations =  Collections.synchronizedMap(new LinkedHashMap<>());
 
-        this.correlations = new LinkedHashMap<>();
         this.repetitions = new LinkedHashMap<>();
 
         this.probabilityCache = new PatternCache();
@@ -52,6 +53,7 @@ public class PatternProfile { // todo store
 
                     if (delete > 0) {
                         while (iterator.hasNext()) {
+                            iterator.next();
                             iterator.remove();
                             delete--;
 
@@ -61,14 +63,27 @@ public class PatternProfile { // todo store
                         }
                     }
                 }
-                long total = 0L, previous = iterator.next();
+                int size = data.size();
 
-                while (iterator.hasNext()) {
-                    long current = iterator.next();
-                    total += current - previous;
-                    previous = current;
+                if (size > 1) {
+                    long total = 0L, previous = iterator.next();
+
+                    while (iterator.hasNext()) {
+                        long current = iterator.next();
+
+                        if (current == -1L) {
+                            size--;
+                        } else {
+                            total += current - previous;
+                            previous = current;
+                        }
+                    }
+                    return size > 1
+                            ? total / (double) (size - 1)
+                            : -1.0;
+                } else {
+                    return -1.0;
                 }
-                return total / (double) (data.size() - 1);
             } else {
                 return -1.0;
             }
@@ -112,6 +127,36 @@ public class PatternProfile { // todo store
         } else {
             return repetition.canUse(number);
         }
+    }
+
+    // Separator
+
+    Map<Long, List<PatternValue>> correlationsData(int generalization) {
+        return this.correlations.computeIfAbsent(
+                generalization,
+                k -> Collections.synchronizedMap(new LinkedHashMap<>())
+        );
+    }
+
+    Collection<Double> probabilityData(int generalization) {
+        return this.probability.computeIfAbsent(
+                generalization,
+                k -> Collections.synchronizedList(new ArrayList<>())
+        );
+    }
+
+    Collection<Double> significanceData(int generalization) {
+        return this.significance.computeIfAbsent(
+                generalization,
+                k -> Collections.synchronizedList(new ArrayList<>())
+        );
+    }
+
+    Collection<Long> contributionData(int generalization) {
+        return this.contribution.computeIfAbsent(
+                generalization,
+                k -> Collections.synchronizedList(new ArrayList<>())
+        );
     }
 
     // Private

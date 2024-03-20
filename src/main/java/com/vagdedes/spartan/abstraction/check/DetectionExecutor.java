@@ -81,6 +81,7 @@ public abstract class DetectionExecutor {
                                                        int generalization,
                                                        int count,
                                                        Number client) {
+        long time = System.currentTimeMillis();
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
                 player,
                 patternStorage,
@@ -88,102 +89,105 @@ public abstract class DetectionExecutor {
                 generalization,
                 count
         );
-
-        if (probabilityPredictor.pie != null) {
-            if (client instanceof Double) {
-                client = AlgebraUtils.cut(client.doubleValue(), generalization);
-            }
-            PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
-            PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
-            double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability(generalization)),
-                    significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(generalization)),
-                    contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(generalization));
-            StringBuilder sb = new StringBuilder()
-                    .append("data: ")
-                    .append(patternStorage.key)
-                    .append("(")
-                    .append(generalization)
-                    .append("x")
-                    .append(count)
-                    .append("), client: ")
-                    .append(client);
-
-            if (probabilityRankAndProbability != null) {
-                sb.append(", probability: ")
-                        .append(AlgebraUtils.cut(
-                                probabilityRankAndProbability[0] * 100.0,
-                                2
-                        ))
-                        .append("(")
-                        .append(AlgebraUtils.cut(
-                                probabilityRankAndProbability[1] * 100.0,
-                                2
-                        ))
-                        .append(")");
-            }
-            if (significanceRankAndProbability != null) {
-                sb.append(", significance: ")
-                        .append(AlgebraUtils.cut(
-                                significanceRankAndProbability[0] * 100.0,
-                                2
-                        ))
-                        .append("(")
-                        .append(AlgebraUtils.cut(
-                                significanceRankAndProbability[1] * 100.0,
-                                2
-                        ))
-                        .append(")");
-            }
-            if (contributionRankAndProbability != null) {
-                sb.append(", contribution: ")
-                        .append(AlgebraUtils.cut(
-                                contributionRankAndProbability[0] * 100.0,
-                                2
-                        ))
-                        .append("(")
-                        .append(AlgebraUtils.cut(
-                                contributionRankAndProbability[1] * 100.0,
-                                2
-                        ))
-                        .append(")");
-            }
-
-            if (probabilityPredictor.pie.hasData()) {
-                double significance = patternStorage.getSignificance(client, generalization);
-                Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
-
-                while (entries.hasNext()) {
-                    Map.Entry<Number, Integer> entry = entries.next();
-                    double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
-
-                    if (entry.getKey().doubleValue() == client.doubleValue()) {
-                        patternStorage.collect(
-                                player.getProfile(),
-                                generalization,
-                                significance,
-                                probability
-                        );
-                        return sb.toString();
-                    } else {
-                        count++;
-                    }
-                }
-                patternStorage.collect(
-                        player.getProfile(),
-                        generalization,
-                        significance,
-                        0.0
-                );
-            } else {
-                patternStorage.collect(
-                        player.getProfile(),
-                        generalization
-                );
-            }
-            return sb.toString();
-        } else {
-            return null;
+        if (client instanceof Double) {
+            client = AlgebraUtils.cut(client.doubleValue(), generalization);
         }
+        PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
+        PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
+        double significance = patternStorage.getSignificance(client, generalization);
+        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability(generalization)),
+                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(generalization)),
+                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(generalization));
+        StringBuilder sb = new StringBuilder()
+                .append("data: ")
+                .append(patternStorage.key)
+                .append("(")
+                .append(generalization)
+                .append("x")
+                .append(count)
+                .append("), client: ")
+                .append(client);
+
+        if (probabilityRankAndProbability != null) {
+            sb.append(", probability: ")
+                    .append(AlgebraUtils.cut(
+                            probabilityRankAndProbability[0] * 100.0,
+                            2
+                    ))
+                    .append("(")
+                    .append(AlgebraUtils.cut(
+                            probabilityRankAndProbability[1] * 100.0,
+                            2
+                    ))
+                    .append(")");
+        }
+        if (significanceRankAndProbability != null) {
+            sb.append(", significance: ")
+                    .append(AlgebraUtils.cut(
+                            significanceRankAndProbability[0] * 100.0,
+                            2
+                    ))
+                    .append("(")
+                    .append(AlgebraUtils.cut(
+                            significanceRankAndProbability[1] * 100.0,
+                            2
+                    ))
+                    .append(")");
+        }
+        if (contributionRankAndProbability != null) {
+            sb.append(", contribution: ")
+                    .append(AlgebraUtils.cut(
+                            contributionRankAndProbability[0] * 100.0,
+                            2
+                    ))
+                    .append("(")
+                    .append(AlgebraUtils.cut(
+                            contributionRankAndProbability[1] * 100.0,
+                            2
+                    ))
+                    .append(")");
+        }
+
+        if (probabilityPredictor.pie.hasData()) {
+            patternStorage.collect(
+                    player.getProfile(),
+                    generalization,
+                    -1L
+            );
+            Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
+
+            while (entries.hasNext()) {
+                Map.Entry<Number, Integer> entry = entries.next();
+                double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
+
+                if (entry.getKey().doubleValue() == client.doubleValue()) {
+                    patternStorage.collect(
+                            player.getProfile(),
+                            generalization,
+                            significance,
+                            probability,
+                            time
+                    );
+                    return sb.toString();
+                } else {
+                    count++;
+                }
+            }
+        } else {
+            patternStorage.collect(
+                    player.getProfile(),
+                    generalization,
+                    System.currentTimeMillis()
+            );
+        }
+        patternStorage.collect(
+                player.getProfile(),
+                generalization,
+                significance,
+                0.0,
+                time
+        );
+        return sb.toString();
     }
 
     protected final String rankedPredictionToDetection(PatternStorage patternStorage,
