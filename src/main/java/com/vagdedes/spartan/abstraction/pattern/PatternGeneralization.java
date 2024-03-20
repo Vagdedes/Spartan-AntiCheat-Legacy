@@ -71,12 +71,16 @@ public abstract class PatternGeneralization {
     }
 
     private double[] rankAndProbability(PatternComparison object, double value) {
-        double rank = object.getPosition(value, -1.0);
-
-        if (rank != -1.0) {
-            return new double[]{rank, object.getProbability(value)};
-        } else {
+        if (value == -1.0) {
             return null;
+        } else {
+            double rank = object.getPosition(value, -1.0);
+
+            if (rank != -1.0) {
+                return new double[]{rank, object.getProbability(value)};
+            } else {
+                return null;
+            }
         }
     }
 
