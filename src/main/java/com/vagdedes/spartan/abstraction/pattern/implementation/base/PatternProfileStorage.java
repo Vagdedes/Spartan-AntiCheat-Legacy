@@ -6,10 +6,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class PatternProfileStorage {
 
@@ -20,10 +17,10 @@ public class PatternProfileStorage {
                 + patternProfile.profile.getName() + "/";
     }
 
-    private static final class GeneralizationFile {
+    static final class GeneralizationFile {
 
         private final PatternProfileStorage parent;
-        private final PatternGeneralization patternGeneralization;
+        private final int generalization;
         private File file;
         private YamlConfiguration configuration;
         private byte store;
@@ -32,7 +29,7 @@ public class PatternProfileStorage {
         public GeneralizationFile(PatternProfileStorage patternProfileStorage,
                                   PatternGeneralization patternGeneralization) {
             this.parent = patternProfileStorage;
-            this.patternGeneralization = patternGeneralization;
+            this.generalization = patternGeneralization.generalization;
             this.count = 0;
             this.store = 0;
             this.reload();
@@ -46,8 +43,8 @@ public class PatternProfileStorage {
                 if (this.store == 0) {
                     this.store = 1;
 
-                    synchronized (this.parent.profile.parent.profilesToStore) {
-                        this.parent.profile.parent.profilesToStore.add(this.parent.profile);
+                    synchronized (this.parent.profile.parent.profileFiles) {
+                        this.parent.profile.parent.profileFiles.add(this);
                     }
                 }
             });
@@ -56,12 +53,12 @@ public class PatternProfileStorage {
         private void reload() {
             int hash = Objects.hash(
                     this.parent.profile.parent.key,
-                    this.patternGeneralization,
+                    this.generalization,
                     System.currentTimeMillis()
             );
             this.file = new File(
                     headPath(this.parent.profile.parent, this.parent.profile)
-                            + patternGeneralization.generalization + "/"
+                            + this.generalization + "/"
                             + this.parent.profile.profile.getName() + "/"
                             + hash + ".yml"
             );
@@ -73,7 +70,7 @@ public class PatternProfileStorage {
             }
         }
 
-        private void store() {
+        void store() {
             if (this.store == 1) {
                 this.store = 2;
 
@@ -110,22 +107,17 @@ public class PatternProfileStorage {
         }
     }
 
-    void store() {
-        if (!this.files.isEmpty()) {
-            synchronized (this.files) {
-                for (GeneralizationFile file : this.files.values()) {
-                    file.store();
-                }
-            }
-        }
-    }
-
     void delete() {
         synchronized (this.files) {
-            this.files.clear();
+            synchronized (this.profile.parent.profileFiles) {
+                Iterator<PatternProfileStorage.GeneralizationFile> iterator = this.profile.parent.profileFiles.iterator();
 
-            synchronized (this.profile.parent.profilesToStore) {
-                this.profile.parent.profilesToStore.remove(this.profile);
+                while (iterator.hasNext()) {
+                    PatternProfileStorage.GeneralizationFile generalizationFile = iterator.next();
+                    this.profile.parent.profileFiles.remove(generalizationFile);
+                    iterator.remove();
+                    SpartanBukkit.dataThread.execute(() -> generalizationFile.file.delete());
+                }
             }
             File file = new File(headPath(this.profile.parent, this.profile));
 

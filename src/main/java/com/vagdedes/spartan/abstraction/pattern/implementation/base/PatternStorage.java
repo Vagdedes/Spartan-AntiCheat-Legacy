@@ -102,14 +102,14 @@ public class PatternStorage {
     public final String key;
     private final Map<Integer, PatternGeneralization> generalizations;
     final Map<PlayerProfile, PatternProfile> profiles;
-    final Set<PatternProfile> profilesToStore;
+    final Set<PatternProfileStorage.GeneralizationFile> profileFiles;
     private final PatternPieCache patternProbability;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
         this.patternProbability = new PatternPieCache(new ProbabilityPie());
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
+        this.profileFiles = Collections.synchronizedSet(new HashSet<>());
 
         this.generalizations = new LinkedHashMap<>(generalizations.length + 1);
         this.generalizations.put(0, new PatternGeneralizationStorage(key));
@@ -130,12 +130,12 @@ public class PatternStorage {
     public void store() {
         ((PatternGeneralizationStorage) this.generalizations.get(0)).store();
 
-        if (!this.profilesToStore.isEmpty()) {
-            synchronized (this.profilesToStore) {
-                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
+        if (!this.profileFiles.isEmpty()) {
+            synchronized (this.profileFiles) {
+                Iterator<PatternProfileStorage.GeneralizationFile> iterator = this.profileFiles.iterator();
 
                 while (iterator.hasNext()) {
-                    iterator.next().storage.store();
+                    iterator.next().store();
                     iterator.remove();
                 }
             }
@@ -148,7 +148,7 @@ public class PatternStorage {
         File directory = new File(PatternGeneralization.path(this.key));
 
         if (!directory.exists()) {
-            directory.mkdirs();
+            SpartanBukkit.dataThread.execute(() -> directory.mkdirs());
         } else if (directory.isDirectory()) {
             File[] files = directory.listFiles();
 
@@ -201,8 +201,10 @@ public class PatternStorage {
                     }
                 }
             } else {
-                directory.delete();
-                directory.mkdirs();
+                SpartanBukkit.dataThread.execute(() -> {
+                    directory.delete();
+                    directory.mkdirs();
+                });
             }
         }
 
