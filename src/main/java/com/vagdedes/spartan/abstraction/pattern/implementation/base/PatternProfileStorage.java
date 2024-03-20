@@ -12,7 +12,7 @@ public class PatternProfileStorage {
 
     private static String headPath(PatternStorage patternStorage, PatternProfile patternProfile) {
         return Register.plugin.getDataFolder()
-                + "/statistics/"
+                + "/comparison/"
                 + patternStorage.key + "/"
                 + patternProfile.profile.getName() + "/";
     }
