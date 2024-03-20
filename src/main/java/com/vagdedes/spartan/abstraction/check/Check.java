@@ -821,13 +821,18 @@ public class Check {
         synchronized (ignoredViolations) {
             if (!map.isEmpty()) {
                 for (Map.Entry<Integer, Double> entry : map.entrySet()) {
-                    ignoredViolations.computeIfAbsent(
+                    for (Enums.DataType data : new Enums.DataType[]{
                             dataType,
-                            k -> new LinkedHashMap<>(maxViolationsPerCycle)
-                    ).put(
-                            entry.getKey(),
-                            AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest
-                    );
+                            Enums.DataType.Universal
+                    }) {
+                        ignoredViolations.computeIfAbsent(
+                                data,
+                                k -> new LinkedHashMap<>(maxViolationsPerCycle)
+                        ).put(
+                                entry.getKey(),
+                                AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest
+                        );
+                    }
                 }
             }
         }
