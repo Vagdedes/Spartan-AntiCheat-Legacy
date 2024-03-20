@@ -22,20 +22,22 @@ public class IrregularMovementsNew extends CheckExecutor {
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
+        String detection = linearPredictionToDetection(
+                SpartanBukkit.movementPatterns.vertical,
+                (long) objects[0],
+                GroundUtils.maxHeightLength,
+                1,
+                (Number) objects[1]
+        );
 
-        for (int count : new int[]{1}) {
-            String detection = linearPredictionToDetection(
-                    SpartanBukkit.movementPatterns.vertical,
-                    (long) objects[0],
-                    GroundUtils.maxHeightLength,
-                    count,
-                    (Number) objects[1]
-            );
-
-            if (detection != null) {
-                player.debug(false, false, detection);
-                return true;
-            }
+        if (detection != null) {
+            player.debug(false, false, "-");
+            player.debug(false, false,
+                    SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).probability(GroundUtils.maxHeightLength),
+                    SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).significance(GroundUtils.maxHeightLength),
+                    SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).contribution(GroundUtils.maxHeightLength));
+            //player.debug(false, false, detection);
+            return true;
         }
         return false;
     }

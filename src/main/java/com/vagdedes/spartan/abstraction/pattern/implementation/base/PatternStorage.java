@@ -477,15 +477,18 @@ public class PatternStorage {
                     profile,
                     k -> new PatternProfile()
             );
-            synchronized (patternProfile.newData) {
-                patternProfile.newData.computeIfAbsent(
+            synchronized (patternProfile.contribution) {
+                patternProfile.contribution.computeIfAbsent(
                         generalization,
-                        k -> new ArrayList<>()
+                        k -> new LinkedList<>()
                 ).add(time);
 
                 synchronized (generalizationStorage.contributionRank) {
                     double value = patternProfile.contributionRaw(generalization);
-                    generalizationStorage.contributionRank.put(profile, value, time);
+
+                    if (value != -1.0) {
+                        generalizationStorage.contributionRank.put(profile, value, time);
+                    }
                 }
             }
         }
@@ -507,24 +510,30 @@ public class PatternStorage {
                 patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
                 patternProfile.probability.computeIfAbsent(
                         generalization,
-                        k -> new LinkedHashMap<>()
-                ).put(time, probability);
+                        k -> new LinkedList<>()
+                ).add(probability);
 
                 synchronized (generalizationStorage.probabilityRank) {
                     double value = patternProfile.probabilityRaw(generalization);
-                    generalizationStorage.probabilityRank.put(profile, value, time);
+
+                    if (value != -1.0) {
+                        generalizationStorage.probabilityRank.put(profile, value, time);
+                    }
                 }
             }
             synchronized (patternProfile.significance) {
                 patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
                 patternProfile.significance.computeIfAbsent(
                         generalization,
-                        k -> new LinkedHashMap<>()
-                ).put(time, significance);
+                        k -> new LinkedList<>()
+                ).add(significance);
 
                 synchronized (generalizationStorage.significanceRank) {
                     double value = patternProfile.significanceRaw(generalization);
-                    generalizationStorage.significanceRank.put(profile, value, time);
+
+                    if (value != -1.0) {
+                        generalizationStorage.significanceRank.put(profile, value, time);
+                    }
                 }
             }
         }
