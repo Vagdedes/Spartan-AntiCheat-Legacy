@@ -8,8 +8,8 @@ public abstract class PatternGeneralization {
 
     public static String path(String key) {
         return Register.plugin.getDataFolder()
-                + "/learning"
-                + "/" + key;
+                + "/learning/"
+                + key;
     }
 
     public static final String

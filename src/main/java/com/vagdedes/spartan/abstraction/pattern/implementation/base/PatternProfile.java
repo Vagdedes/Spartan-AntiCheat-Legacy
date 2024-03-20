@@ -23,11 +23,13 @@ public class PatternProfile {
     final double[] total;
     final PlayerProfile profile;
     private final PatternCache probabilityCache, significanceCache, contributionCache;
-    public final PatternProfileStorage storage;
+    final PatternStorage parent;
+    final PatternProfileStorage storage;
 
     PatternProfile(PatternStorage patternStorage, PlayerProfile profile) {
+        this.parent = patternStorage;
         this.profile = profile;
-        this.storage = new PatternProfileStorage(patternStorage, this);
+        this.storage = new PatternProfileStorage(this);
 
         this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
         this.probability = Collections.synchronizedMap(new LinkedHashMap<>());

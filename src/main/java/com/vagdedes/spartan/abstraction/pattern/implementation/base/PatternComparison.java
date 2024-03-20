@@ -26,7 +26,10 @@ public class PatternComparison {
         this.cache = new PatternCache();
     }
 
-    void put(PatternProfile patternProfile, double number, long time) {
+    void put(PatternProfile patternProfile,
+             PatternGeneralization patternGeneralization,
+             double number,
+             long time) {
         if (number == -1.0) {
             this.remove(patternProfile, !patternProfile.profile.isLegitimate());
         } else {
@@ -54,7 +57,12 @@ public class PatternComparison {
             } else {
                 this.remove(patternProfile, true);
             }
-            patternProfile.storage.set(time, this.key, number);
+            patternProfile.storage.set(
+                    patternGeneralization,
+                    time,
+                    this.key,
+                    number
+            );
         }
     }
 

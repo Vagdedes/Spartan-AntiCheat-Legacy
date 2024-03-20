@@ -520,6 +520,7 @@ public class PatternStorage {
                     synchronized (patternGeneralization.contributionRank) {
                         patternGeneralization.contributionRank.put(
                                 patternProfile,
+                                patternGeneralization,
                                 patternProfile.contributionRaw(patternGeneralization),
                                 time
                         );
@@ -543,6 +544,7 @@ public class PatternStorage {
                 synchronized (patternGeneralization.probabilityRank) {
                     patternGeneralization.probabilityRank.put(
                             patternProfile,
+                            patternGeneralization,
                             patternProfile.probabilityRaw(patternGeneralization),
                             time
                     );
@@ -555,6 +557,7 @@ public class PatternStorage {
                 synchronized (patternGeneralization.significanceRank) {
                     patternGeneralization.significanceRank.put(
                             patternProfile,
+                            patternGeneralization,
                             patternProfile.significanceRaw(patternGeneralization),
                             time
                     );

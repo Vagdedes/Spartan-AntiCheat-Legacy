@@ -1,69 +1,143 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class PatternProfileStorage {
 
-    private final PatternStorage patternStorage;
-    private final PatternProfile patternProfile;
-    private final File file;
-    private YamlConfiguration configuration;
-    private byte store;
-
-    PatternProfileStorage(PatternStorage patternStorage, PatternProfile patternProfile) {
-        this.patternStorage = patternStorage;
-        this.patternProfile = patternProfile;
-        this.file = new File(
-                Register.plugin.getDataFolder()
-                        + patternStorage.key + "/statistics/"
-                        + patternProfile.profile.getName() + ".yml"
-        );
-        this.store = 0;
-        this.configuration = YamlConfiguration.loadConfiguration(this.file);
-        this.reload();
+    private static String headPath(PatternStorage patternStorage, PatternProfile patternProfile) {
+        return Register.plugin.getDataFolder()
+                + "/statistics/"
+                + patternStorage.key + "/"
+                + patternProfile.profile.getName() + "/";
     }
 
-    private void reload() {
-        this.configuration = YamlConfiguration.loadConfiguration(this.file);
-    }
+    private static final class GeneralizationFile {
 
-    void set(long time, String key, Object value) {
-        SpartanBukkit.dataThread.execute(() -> {
-            this.configuration.set(time + "." + key, value);
+        private final PatternProfileStorage parent;
+        private final PatternGeneralization patternGeneralization;
+        private File file;
+        private YamlConfiguration configuration;
+        private byte store;
+        private short count;
 
-            if (this.store == 0) {
-                this.store = 1;
+        public GeneralizationFile(PatternProfileStorage patternProfileStorage,
+                                  PatternGeneralization patternGeneralization) {
+            this.parent = patternProfileStorage;
+            this.patternGeneralization = patternGeneralization;
+            this.count = 0;
+            this.store = 0;
+            this.reload();
+        }
 
-                synchronized (patternStorage.profilesToStore) {
-                    patternStorage.profilesToStore.add(this.patternProfile);
+        void set(long time, String key, Object value) {
+            SpartanBukkit.dataThread.execute(() -> {
+                this.count++;
+                this.configuration.set(time + "." + key, value);
+
+                if (this.store == 0) {
+                    this.store = 1;
+
+                    synchronized (this.parent.profile.parent.profilesToStore) {
+                        this.parent.profile.parent.profilesToStore.add(this.parent.profile);
+                    }
                 }
+            });
+        }
+
+        private void reload() {
+            int hash = Objects.hash(
+                    this.parent.profile.parent.key,
+                    this.patternGeneralization,
+                    System.currentTimeMillis()
+            );
+            this.file = new File(
+                    headPath(this.parent.profile.parent, this.parent.profile)
+                            + patternGeneralization.generalization + "/"
+                            + this.parent.profile.profile.getName() + "/"
+                            + hash + ".yml"
+            );
+
+            if (this.file.exists()) {
+                this.reload();
+            } else {
+                this.configuration = YamlConfiguration.loadConfiguration(this.file);
             }
-        });
+        }
+
+        private void store() {
+            if (this.store == 1) {
+                this.store = 2;
+
+                SpartanBukkit.dataThread.execute(() -> {
+                    try {
+                        this.configuration.save(this.file);
+                        this.store = 0;
+
+                        if (this.count < 0) { // Short has overflowed (32767)
+                            this.count = 0;
+                            this.reload();
+                        }
+                    } catch (Exception ignored) {
+                    }
+                });
+            }
+        }
+    }
+
+    private final PatternProfile profile;
+    private final Map<Integer, GeneralizationFile> files;
+
+    PatternProfileStorage(PatternProfile patternProfile) {
+        this.profile = patternProfile;
+        this.files = Collections.synchronizedMap(new LinkedHashMap<>());
+    }
+
+    void set(PatternGeneralization patternGeneralization, long time, String key, Object value) {
+        synchronized (this.files) {
+            this.files.computeIfAbsent(
+                    patternGeneralization.generalization,
+                    integer -> new GeneralizationFile(this, patternGeneralization)
+            ).set(time, key, value);
+        }
     }
 
     void store() {
-        if (this.store == 1) {
-            this.store = 2;
-
-            SpartanBukkit.dataThread.execute(() -> {
-                try {
-                    this.configuration.save(this.file);
-                    this.store = 0;
-                } catch (Exception ignored) {
+        if (!this.files.isEmpty()) {
+            synchronized (this.files) {
+                for (GeneralizationFile file : this.files.values()) {
+                    file.store();
                 }
-            });
+            }
         }
     }
 
     void delete() {
-        synchronized (this.patternStorage.profilesToStore) {
-            this.patternStorage.profiles.remove(this.patternProfile.profile);
+        synchronized (this.files) {
+            this.files.clear();
+
+            synchronized (this.profile.parent.profilesToStore) {
+                this.profile.parent.profilesToStore.remove(this.profile);
+            }
+            File file = new File(headPath(this.profile.parent, this.profile));
+
+            if (file.exists()) {
+                File[] files = file.listFiles();
+
+                if (files != null) {
+                    for (File f : files) {
+                        f.delete(); // todo fix directory needing to be empty
+                    }
+                }
+            }
         }
-        file.delete();
-        this.reload();
     }
 }
