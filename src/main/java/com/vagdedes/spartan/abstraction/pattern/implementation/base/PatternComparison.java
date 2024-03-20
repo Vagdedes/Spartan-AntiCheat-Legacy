@@ -13,35 +13,26 @@ import java.util.Map;
 
 public class PatternComparison {
 
-    private static final class Comparison {
-
-        private Number number;
-
-        private Comparison(Number number) {
-            this.number = number;
-        }
-    }
-
     private final ProbabilityPie pie;
     private final ProbabilityRank rank;
-    private final Map<PlayerProfile, Comparison> map;
+    private final Map<PlayerProfile, Number> rankMemory;
     private final PatternCache cache;
 
     public PatternComparison() {
         this.pie = new ProbabilityPie();
         this.rank = new ProbabilityRank();
-        this.map = new LinkedHashMap<>();
+        this.rankMemory = new LinkedHashMap<>();
         this.cache = new PatternCache();
     }
 
     void put(PlayerProfile profile, Number number) {
-        Comparison comparison = map.get(profile);
+        Number previous = rankMemory.get(profile);
 
-        if (comparison == null) {
-            this.map.put(profile, new Comparison(number));
+        if (previous == null) {
+            this.rankMemory.put(profile, number);
         } else {
-            this.rank.remove(comparison.number);
-            comparison.number = number;
+            this.rank.remove(previous);
+            this.rankMemory.put(profile, number);
         }
 
         if (profile.isLegitimate()) {
@@ -60,15 +51,15 @@ public class PatternComparison {
     }
 
     void remove(PlayerProfile profile) {
-        Comparison comparison = map.remove(profile);
+        Number number = rankMemory.remove(profile);
 
-        if (comparison != null) {
-            this.rank.remove(comparison.number);
+        if (number != null) {
+            this.rank.remove(number);
         }
     }
 
     public double getPosition(Number number, double def) {
-        if (!SpartanBukkit.debug && map.size() < ResearchEngine.consistentDataRequirement) {
+        if (!SpartanBukkit.debug && rankMemory.size() < ResearchEngine.consistentDataRequirement) {
             return def;
         } else {
             return !SpartanBukkit.debug && this.rank.getTotal() < ResearchEngine.consistentDataRequirement
