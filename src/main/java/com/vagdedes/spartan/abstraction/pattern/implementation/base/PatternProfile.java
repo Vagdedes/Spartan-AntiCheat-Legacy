@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 
 import java.util.*;
 
@@ -8,13 +9,12 @@ public class PatternProfile { // todo store
 
     static final int
             PROBABILITY_POSITION = 0,
-            SIGNIFICANCE_POSITION = 1,
-            CONTRIBUTION_POSITION = 2;
+            SIGNIFICANCE_POSITION = 1;
 
     final Map<Integer, Collection<Double>> probability, significance;
     final Map<Integer, Collection<Long>> contribution;
     // Generalization -> Situation -> Patterns
-     final Map<Integer, Map<Long, List<PatternValue>>> correlations;
+    final Map<Integer, Map<Long, List<PatternValue>>> correlations;
     final Map<Long, PatternRepetition> repetitions;
     private final PatternCache probabilityCache, significanceCache, contributionCache;
     final double[] total;
@@ -23,7 +23,7 @@ public class PatternProfile { // todo store
         this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
         this.probability = Collections.synchronizedMap(new LinkedHashMap<>());
         this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.correlations =  Collections.synchronizedMap(new LinkedHashMap<>());
+        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.repetitions = new LinkedHashMap<>();
 
@@ -44,7 +44,7 @@ public class PatternProfile { // todo store
         } else {
             Collection<Long> data = this.contribution.get(generalization);
 
-            if (data.size() > 1) {
+            if (data.size() >= ResearchEngine.consistentDataRequirement) {
                 Iterator<Long> iterator = data.iterator();
 
                 if (contributionCache.isExpired()) {
@@ -65,7 +65,7 @@ public class PatternProfile { // todo store
                 }
                 int size = data.size();
 
-                if (size > 1) {
+                if (size >= ResearchEngine.consistentDataRequirement) {
                     long total = 0L, previous = iterator.next();
 
                     while (iterator.hasNext()) {
@@ -78,7 +78,7 @@ public class PatternProfile { // todo store
                             previous = current;
                         }
                     }
-                    return size > 1
+                    return size >= (ResearchEngine.consistentDataRequirement + 1)
                             ? total / (double) (size - 1)
                             : -1.0;
                 } else {
@@ -170,7 +170,7 @@ public class PatternProfile { // todo store
         } else {
             Collection<Double> data = parent.get(generalization);
 
-            if (data == null || data.isEmpty()) {
+            if (data == null || data.size() < ResearchEngine.consistentDataRequirement) {
                 return -1.0;
             } else {
                 if (cache.isExpired()) {
