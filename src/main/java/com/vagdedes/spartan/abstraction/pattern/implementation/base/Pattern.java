@@ -221,7 +221,7 @@ public class Pattern {
                           PlayerProfile profile,
                           PatternValue value,
                           PatternGeneralization generalization,
-                          boolean set) {
+                          boolean store) {
         PatternProfile patternProfile = correlations.computeIfAbsent(
                 profile,
                 k -> new PatternProfile(this, profile)
@@ -255,14 +255,15 @@ public class Pattern {
             }
         }
 
-        if (set) {
+        if (store) {
             ((PatternGeneralizationStorage) generalization).set(patternProfile, value);
         }
     }
 
     public void learn(SpartanPlayer player, long situation, Number number, boolean collect) {
-        if (collect && include(player)) {
+        if (collect) {
             long time = System.currentTimeMillis();
+            boolean include = include(player);
 
             synchronized (this.profiles) {
                 PatternProfile statistics = this.profiles.get(player.getProfile());
@@ -285,7 +286,7 @@ public class Pattern {
                                     time
                             ),
                             generalization,
-                            generalization instanceof PatternGeneralizationStorage
+                            include && generalization instanceof PatternGeneralizationStorage
                     );
                 }
             }
@@ -533,22 +534,23 @@ public class Pattern {
                           PatternGeneralization patternGeneralization,
                           long contribution,
                           long time) {
-        if (include(player)) {
-            synchronized (this.profiles) {
-                PatternProfile patternProfile = getProfileRaw(player.getProfile());
-                synchronized (patternProfile.contribution) {
-                    patternProfile.contributionData(patternGeneralization).add(contribution);
+        boolean include = include(player);
 
-                    if (contribution != -1L) {
-                        synchronized (patternGeneralization.contributionRank) {
-                            patternGeneralization.contributionRank.put(
-                                    patternProfile,
-                                    patternGeneralization,
-                                    patternProfile.contributionRaw(patternGeneralization),
-                                    time,
-                                    true
-                            );
-                        }
+        synchronized (this.profiles) {
+            PatternProfile patternProfile = getProfileRaw(player.getProfile());
+
+            synchronized (patternProfile.contribution) {
+                patternProfile.contributionData(patternGeneralization).add(contribution);
+
+                if (include) {
+                    synchronized (patternGeneralization.contributionRank) {
+                        patternGeneralization.contributionRank.put(
+                                patternProfile,
+                                patternGeneralization,
+                                patternProfile.contributionRaw(patternGeneralization),
+                                time,
+                                true
+                        );
                     }
                 }
             }
@@ -559,14 +561,16 @@ public class Pattern {
                           PatternGeneralization patternGeneralization,
                           double probability, double significance,
                           long time) {
-        if (include(player)) {
-            synchronized (this.profiles) {
-                PatternProfile patternProfile = getProfileRaw(player.getProfile());
+        boolean include = include(player);
 
-                synchronized (patternProfile.probability) {
-                    patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
-                    patternProfile.probabilityData(patternGeneralization).add(probability);
+        synchronized (this.profiles) {
+            PatternProfile patternProfile = getProfileRaw(player.getProfile());
 
+            synchronized (patternProfile.probability) {
+                patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
+                patternProfile.probabilityData(patternGeneralization).add(probability);
+
+                if (include) {
                     synchronized (patternGeneralization.probabilityRank) {
                         patternGeneralization.probabilityRank.put(
                                 patternProfile,
@@ -577,10 +581,12 @@ public class Pattern {
                         );
                     }
                 }
-                synchronized (patternProfile.significance) {
-                    patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
-                    patternProfile.significanceData(patternGeneralization).add(significance);
+            }
+            synchronized (patternProfile.significance) {
+                patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
+                patternProfile.significanceData(patternGeneralization).add(significance);
 
+                if (include) {
                     synchronized (patternGeneralization.significanceRank) {
                         patternGeneralization.significanceRank.put(
                                 patternProfile,

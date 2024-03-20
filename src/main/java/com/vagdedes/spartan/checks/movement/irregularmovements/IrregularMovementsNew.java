@@ -35,7 +35,8 @@ public class IrregularMovementsNew extends CheckExecutor {
                     SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).probability(GroundUtils.maxHeightLength),
                     SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).significance(GroundUtils.maxHeightLength),
                     SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).contribution(GroundUtils.maxHeightLength));
-            */player.debug(false, false, detection);
+            */
+            player.debug(false, false, detection);
             return true;
         }
         return false;
