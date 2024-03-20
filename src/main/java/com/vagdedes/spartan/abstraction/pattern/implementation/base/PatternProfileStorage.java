@@ -40,10 +40,10 @@ public class PatternProfileStorage {
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
     }
 
-    void set(String key, Object value) {
+    void set(long time, String key, Object value) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
-            this.configuration.set(null, null);
+            this.configuration.set(time + "." + key, value);
 
             if (this.store == 0) {
                 this.store = 1;
@@ -72,5 +72,9 @@ public class PatternProfileStorage {
                 }
             });
         }
+    }
+
+    void delete() {
+        // todo
     }
 }

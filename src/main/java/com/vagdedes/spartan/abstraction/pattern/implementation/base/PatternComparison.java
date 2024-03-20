@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
@@ -27,7 +26,7 @@ public class PatternComparison {
         this.cache = new PatternCache();
     }
 
-    void put(PatternProfile patternProfile, double number) {
+    void put(PatternProfile patternProfile, double number, long time) {
         if (number == -1.0) {
             Number previous = rankMemory.remove(patternProfile);
 
@@ -57,7 +56,7 @@ public class PatternComparison {
                     }
                 }
             }
-            patternProfile.storage.set(this.key, number);
+            patternProfile.storage.set(time, this.key, number);
         }
     }
 

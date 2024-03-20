@@ -160,21 +160,21 @@ public class PatternProfile {
     Collection<Double> probabilityData(PatternGeneralization patternGeneralization) {
         return this.probability.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> Collections.synchronizedList(new ArrayList<>())
+                k -> Collections.synchronizedList(new LinkedList<>())
         );
     }
 
     Collection<Double> significanceData(PatternGeneralization patternGeneralization) {
         return this.significance.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> Collections.synchronizedList(new ArrayList<>())
+                k -> Collections.synchronizedList(new LinkedList<>())
         );
     }
 
     Collection<Long> contributionData(PatternGeneralization patternGeneralization) {
         return this.contribution.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> Collections.synchronizedList(new ArrayList<>())
+                k -> Collections.synchronizedList(new LinkedList<>())
         );
     }
 

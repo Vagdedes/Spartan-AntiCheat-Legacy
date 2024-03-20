@@ -25,7 +25,10 @@ public class PatternStorage {
         synchronized (instances) {
             for (PatternStorage instance : instances) {
                 synchronized (instance.profiles) {
-                    if (instance.profiles.remove(profile) != null) {
+                    PatternProfile patternProfile = instance.profiles.remove(profile);
+
+                    if (patternProfile != null) {
+                        patternProfile.storage.delete();
                         File directory = new File(PatternGeneralization.path(instance.key));
 
                         if (directory.isDirectory()) {
@@ -240,7 +243,7 @@ public class PatternStorage {
         }
     }
 
-    public void collect(PlayerProfile profile, long situation, Number number, boolean collect) {
+    public void learn(PlayerProfile profile, long situation, Number number, boolean collect) {
         if (collect) {
             long time = System.currentTimeMillis();
 
@@ -504,19 +507,21 @@ public class PatternStorage {
 
     // Separator
 
-    public void collect(PlayerProfile profile,
-                        PatternGeneralization patternGeneralization,
-                        long time) {
+    public void calculate(PlayerProfile profile,
+                          PatternGeneralization patternGeneralization,
+                          long contribution,
+                          long time) {
         synchronized (this.profiles) {
             PatternProfile patternProfile = getProfileRaw(profile);
             synchronized (patternProfile.contribution) {
-                patternProfile.contributionData(patternGeneralization).add(time);
+                patternProfile.contributionData(patternGeneralization).add(contribution);
 
-                if (time != -1L) {
+                if (contribution != -1L) {
                     synchronized (patternGeneralization.contributionRank) {
                         patternGeneralization.contributionRank.put(
                                 patternProfile,
-                                patternProfile.contributionRaw(patternGeneralization)
+                                patternProfile.contributionRaw(patternGeneralization),
+                                time
                         );
                     }
                 }
@@ -524,9 +529,10 @@ public class PatternStorage {
         }
     }
 
-    public void collect(PlayerProfile profile,
-                        PatternGeneralization patternGeneralization,
-                        double significance, double probability) {
+    public void calculate(PlayerProfile profile,
+                          PatternGeneralization patternGeneralization,
+                          double probability, double significance,
+                          long time) {
         synchronized (this.profiles) {
             PatternProfile patternProfile = getProfileRaw(profile);
 
@@ -537,7 +543,8 @@ public class PatternStorage {
                 synchronized (patternGeneralization.probabilityRank) {
                     patternGeneralization.probabilityRank.put(
                             patternProfile,
-                            patternProfile.probabilityRaw(patternGeneralization)
+                            patternProfile.probabilityRaw(patternGeneralization),
+                            time
                     );
                 }
             }
@@ -548,7 +555,8 @@ public class PatternStorage {
                 synchronized (patternGeneralization.significanceRank) {
                     patternGeneralization.significanceRank.put(
                             patternProfile,
-                            patternProfile.significanceRaw(patternGeneralization)
+                            patternProfile.significanceRaw(patternGeneralization),
+                            time
                     );
                 }
             }

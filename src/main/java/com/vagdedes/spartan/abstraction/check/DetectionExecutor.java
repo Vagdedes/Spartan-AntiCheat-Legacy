@@ -149,10 +149,11 @@ public abstract class DetectionExecutor {
         }
 
         if (probabilityPredictor.pie.hasData()) {
-            patternStorage.collect(
+            patternStorage.calculate(
                     player.getProfile(),
                     patternGeneralization,
-                    -1L
+                    -1L,
+                    time
             );
             Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
 
@@ -161,11 +162,12 @@ public abstract class DetectionExecutor {
                 double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
 
                 if (entry.getKey().doubleValue() == client.doubleValue()) {
-                    patternStorage.collect(
+                    patternStorage.calculate(
                             player.getProfile(),
                             patternGeneralization,
+                            probability,
                             significance,
-                            probability
+                            time
                     );
                     return sb.toString();
                 } else {
@@ -173,17 +175,19 @@ public abstract class DetectionExecutor {
                 }
             }
         } else {
-            patternStorage.collect(
+            patternStorage.calculate(
                     player.getProfile(),
                     patternGeneralization,
-                    System.currentTimeMillis()
+                    time,
+                    time
             );
         }
-        patternStorage.collect(
+        patternStorage.calculate(
                 player.getProfile(),
                 patternGeneralization,
+                0.0,
                 significance,
-                0.0
+                time
         );
         return sb.toString();
     }
