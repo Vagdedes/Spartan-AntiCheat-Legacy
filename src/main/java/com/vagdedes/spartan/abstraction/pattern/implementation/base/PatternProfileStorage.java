@@ -14,7 +14,7 @@ public class PatternProfileStorage {
         return Register.plugin.getDataFolder()
                 + "/comparison/"
                 + patternStorage.key + "/"
-                + patternProfile.profile.getName() + "/";
+                + patternProfile.profile.getName();
     }
 
     static final class GeneralizationFile {
@@ -57,7 +57,7 @@ public class PatternProfileStorage {
                     System.currentTimeMillis()
             );
             this.file = new File(
-                    headPath(this.parent.profile.parent, this.parent.profile)
+                    headPath(this.parent.profile.parent, this.parent.profile) + "/"
                             + this.generalization + "/"
                             + hash + ".yml"
             );
@@ -120,15 +120,22 @@ public class PatternProfileStorage {
             }
             File file = new File(headPath(this.profile.parent, this.profile));
 
-            if (file.exists()) {
-                File[] files = file.listFiles();
+            if (file.exists() && file.isDirectory()) {
+                this.deleteFiles(file);
+            }
+        }
+    }
 
-                if (files != null) {
-                    for (File f : files) {
-                        f.delete(); // todo fix directory needing to be empty
-                    }
+    private void deleteFiles(File file) {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+
+            if (files != null) {
+                for (File subFile : files) {
+                    this.deleteFiles(subFile);
                 }
             }
         }
+        file.delete();
     }
 }
