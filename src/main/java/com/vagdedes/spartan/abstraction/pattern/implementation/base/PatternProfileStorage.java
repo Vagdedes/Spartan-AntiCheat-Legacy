@@ -26,8 +26,8 @@ public class PatternProfileStorage {
         private byte store;
         private short count;
 
-        public GeneralizationFile(PatternProfileStorage patternProfileStorage,
-                                  PatternGeneralization patternGeneralization) {
+        private GeneralizationFile(PatternProfileStorage patternProfileStorage,
+                                   PatternGeneralization patternGeneralization) {
             this.parent = patternProfileStorage;
             this.generalization = patternGeneralization.generalization;
             this.count = 0;
@@ -35,7 +35,7 @@ public class PatternProfileStorage {
             this.reload();
         }
 
-        void set(long time, String key, Object value) {
+        private void set(long time, String key, Object value) {
             SpartanBukkit.dataThread.execute(() -> {
                 this.count++;
                 this.configuration.set(time + "." + key, value);
@@ -59,7 +59,6 @@ public class PatternProfileStorage {
             this.file = new File(
                     headPath(this.parent.profile.parent, this.parent.profile)
                             + this.generalization + "/"
-                            + this.parent.profile.profile.getName() + "/"
                             + hash + ".yml"
             );
 
