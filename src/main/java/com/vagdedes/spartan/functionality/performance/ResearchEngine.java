@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.checks.combat.criticals.Criticals;
@@ -369,7 +369,7 @@ public class ResearchEngine {
         if (isStorageMode()) {
             // Clear Files/Database
             SpartanBukkit.dataThread.execute(() -> {
-                PatternStorage.delete(profile);
+                Pattern.delete(profile);
 
                 synchronized (playerProfiles) {
                     playerProfiles.remove(playerName);
@@ -401,7 +401,7 @@ public class ResearchEngine {
                 }
             });
         } else {
-            SpartanBukkit.dataThread.execute(() -> PatternStorage.delete(profile));
+            SpartanBukkit.dataThread.execute(() -> Pattern.delete(profile));
 
             synchronized (playerProfiles) {
                 playerProfiles.remove(playerName);
@@ -556,11 +556,11 @@ public class ResearchEngine {
             if (enabledPlugin) {
                 CloudBase.refresh(true);
                 buildCache();
-                PatternStorage.reload();
+                Pattern.reload();
                 CloudBase.refresh(false);
             } else {
                 CloudBase.clear(true);
-                PatternStorage.clear();
+                Pattern.clear();
                 ViolationAnalysis.clear();
             }
         };

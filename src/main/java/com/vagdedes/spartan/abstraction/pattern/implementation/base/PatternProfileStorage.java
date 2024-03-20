@@ -11,7 +11,7 @@ import java.util.*;
 
 public class PatternProfileStorage {
 
-    private static String headPath(PatternStorage patternStorage, PatternProfile patternProfile) {
+    private static String headPath(Pattern patternStorage, PatternProfile patternProfile) {
         return Register.plugin.getDataFolder()
                 + "/comparison/"
                 + patternStorage.key + "/"

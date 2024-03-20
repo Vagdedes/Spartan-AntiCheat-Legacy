@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.math;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.java.HashHelper;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 public class ProbabilityPredictor {
 
     public static ProbabilityPredictor build(SpartanPlayer player,
-                                             PatternStorage storage,
+                                             Pattern storage,
                                              long situation,
                                              PatternGeneralization patternGeneralization,
                                              int count) {

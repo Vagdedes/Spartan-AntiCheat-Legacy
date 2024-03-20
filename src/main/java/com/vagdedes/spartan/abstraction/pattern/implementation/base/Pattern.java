@@ -15,15 +15,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public class PatternStorage {
+public class Pattern {
 
-    private static final Collection<PatternStorage> instances = Collections.synchronizedList(new ArrayList<>());
+    private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
     private static final Map<Long, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<Long, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public static void delete(PlayerProfile profile) {
         synchronized (instances) {
-            for (PatternStorage instance : instances) {
+            for (Pattern instance : instances) {
                 synchronized (instance.profiles) {
                     PatternProfile patternProfile = instance.profiles.remove(profile);
 
@@ -79,7 +79,7 @@ public class PatternStorage {
 
     public static void reload() {
         synchronized (instances) {
-            for (PatternStorage patternStorage : instances) {
+            for (Pattern patternStorage : instances) {
                 patternStorage.load();
             }
         }
@@ -105,7 +105,7 @@ public class PatternStorage {
     final Set<PatternProfileStorage.GeneralizationFile> profileFiles;
     private final PatternPieCache patternProbability;
 
-    public PatternStorage(String key, int[] generalizations) {
+    public Pattern(String key, int[] generalizations) {
         this.key = key;
         this.patternProbability = new PatternPieCache(new ProbabilityPie());
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());

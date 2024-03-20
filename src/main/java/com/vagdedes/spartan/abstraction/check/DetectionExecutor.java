@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternStorage;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -76,7 +76,7 @@ public abstract class DetectionExecutor {
 
     // Separator
 
-    protected final String linearPredictionToDetection(PatternStorage patternStorage,
+    protected final String linearPredictionToDetection(Pattern patternStorage,
                                                        long situation,
                                                        int generalization,
                                                        int count,
@@ -192,7 +192,7 @@ public abstract class DetectionExecutor {
         return sb.toString();
     }
 
-    protected final String rankedPredictionToDetection(PatternStorage patternStorage,
+    protected final String rankedPredictionToDetection(Pattern patternStorage,
                                                        int generalization,
                                                        Number client,
                                                        ProbabilityRank probabilityRank,

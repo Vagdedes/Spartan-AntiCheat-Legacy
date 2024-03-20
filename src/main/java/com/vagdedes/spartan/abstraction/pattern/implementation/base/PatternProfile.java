@@ -23,10 +23,10 @@ public class PatternProfile {
     final double[] total;
     final PlayerProfile profile;
     private final PatternCache probabilityCache, significanceCache, contributionCache;
-    final PatternStorage parent;
+    final Pattern parent;
     final PatternProfileStorage storage;
 
-    PatternProfile(PatternStorage patternStorage, PlayerProfile profile) {
+    PatternProfile(Pattern patternStorage, PlayerProfile profile) {
         this.parent = patternStorage;
         this.profile = profile;
         this.storage = new PatternProfileStorage(this);
