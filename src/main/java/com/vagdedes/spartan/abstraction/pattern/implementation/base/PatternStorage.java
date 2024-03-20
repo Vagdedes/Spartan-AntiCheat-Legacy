@@ -99,12 +99,14 @@ public class PatternStorage {
     public final String key;
     private final Map<Integer, PatternGeneralization> generalizations;
     final Map<PlayerProfile, PatternProfile> profiles;
+    final Set<PatternProfile> profilesToStore;
     private final PatternPieCache patternProbability;
 
     public PatternStorage(String key, int[] generalizations) {
         this.key = key;
         this.patternProbability = new PatternPieCache(new ProbabilityPie());
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
 
         this.generalizations = new LinkedHashMap<>(generalizations.length + 1);
         this.generalizations.put(0, new PatternGeneralizationStorage(key));
@@ -124,6 +126,17 @@ public class PatternStorage {
 
     public void store() {
         ((PatternGeneralizationStorage) this.generalizations.get(0)).store();
+
+        if (!this.profilesToStore.isEmpty()) {
+            synchronized (this.profilesToStore) {
+                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
+
+                while (iterator.hasNext()) {
+                    iterator.next().storage.store();
+                    iterator.remove();
+                }
+            }
+        }
     }
 
     private void load() {
@@ -168,7 +181,7 @@ public class PatternStorage {
                                                             new PatternValue(
                                                                     situation,
                                                                     (Number) pattern,
-                                                                    generalization.generalization,
+                                                                    generalization,
                                                                     time
                                                             ),
                                                             generalization,
@@ -205,12 +218,12 @@ public class PatternStorage {
                           boolean set) {
         PatternProfile patternProfile = correlations.computeIfAbsent(
                 profile,
-                k -> new PatternProfile()
+                k -> new PatternProfile(this, profile)
         );
 
         synchronized (patternProfile.correlations) {
             List<PatternValue> list = patternProfile.correlationsData(
-                    generalization.generalization
+                    generalization
             ).computeIfAbsent(
                     value.situation,
                     k -> new ArrayList<>(100)
@@ -223,7 +236,7 @@ public class PatternStorage {
         }
 
         if (set) {
-            ((PatternGeneralizationStorage) generalization).set(profile, value);
+            ((PatternGeneralizationStorage) generalization).set(patternProfile, value);
         }
     }
 
@@ -235,7 +248,7 @@ public class PatternStorage {
                 PatternProfile statistics = this.profiles.get(profile);
 
                 if (statistics == null) {
-                    statistics = new PatternProfile();
+                    statistics = new PatternProfile(this, profile);
                     statistics.repetitions.put(situation, new PatternRepetition(number));
                     this.profiles.put(profile, statistics);
                 } else if (!statistics.canUsePattern(situation, number)) {
@@ -248,7 +261,7 @@ public class PatternStorage {
                             new PatternValue(
                                     situation,
                                     number,
-                                    generalization.generalization,
+                                    generalization,
                                     time
                             ),
                             generalization,
@@ -282,11 +295,14 @@ public class PatternStorage {
 
     // Separator
 
-    public Collection<Collection<PatternValue>> getAll(SpartanPlayer player, long situation, int generalization) {
-        long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong) + generalization;
+    public Collection<Collection<PatternValue>> getAll(SpartanPlayer player,
+                                                       long situation,
+                                                       PatternGeneralization patternGeneralization) {
+        long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
+                + patternGeneralization.generalization;
 
         if (DetectionNotifications.isEnabled(player)) {
-            Collection<Collection<PatternValue>> result = this.getAllRaw(situation, generalization);
+            Collection<Collection<PatternValue>> result = this.getAllRaw(situation, patternGeneralization);
 
             synchronized (allCache) {
                 PatternAllCache cache = allCache.get(hash);
@@ -307,11 +323,11 @@ public class PatternStorage {
                 PatternAllCache cache = allCache.get(hash);
 
                 if (cache == null) {
-                    Collection<Collection<PatternValue>> result = this.getAllRaw(situation, generalization);
+                    Collection<Collection<PatternValue>> result = this.getAllRaw(situation, patternGeneralization);
                     allCache.put(hash, new PatternAllCache(result));
                     return result;
                 } else if (cache.isExpired()) {
-                    return cache.update(this.getAllRaw(situation, generalization));
+                    return cache.update(this.getAllRaw(situation, patternGeneralization));
                 } else {
                     return cache.data;
                 }
@@ -319,7 +335,8 @@ public class PatternStorage {
         }
     }
 
-    private Collection<Collection<PatternValue>> getAllRaw(long situation, int generalization) {
+    private Collection<Collection<PatternValue>> getAllRaw(long situation,
+                                                           PatternGeneralization patternGeneralization) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.consistentDataRequirement) {
             return new ArrayList<>(0);
         } else {
@@ -332,7 +349,7 @@ public class PatternStorage {
                         profiles++;
 
                         synchronized (entry.getValue().correlations) {
-                            Collection<PatternValue> data = entry.getValue().correlationsData(generalization).get(situation);
+                            Collection<PatternValue> data = entry.getValue().correlationsData(patternGeneralization).get(situation);
 
                             if (data != null) {
                                 collections.add(data);
@@ -349,7 +366,10 @@ public class PatternStorage {
 
     // Separator
 
-    public List<PatternValue> getSpecific(PlayerProfile profile, long situation, int generalization, int count) {
+    public List<PatternValue> getSpecific(PlayerProfile profile,
+                                          long situation,
+                                          PatternGeneralization patternGeneralization,
+                                          int count) {
         synchronized (this.profiles) {
             PatternProfile patternProfile = this.profiles.get(profile);
 
@@ -357,7 +377,7 @@ public class PatternStorage {
                 return new ArrayList<>(0);
             } else {
                 synchronized (patternProfile.correlations) {
-                    List<PatternValue> specific = patternProfile.correlationsData(generalization).get(situation);
+                    List<PatternValue> specific = patternProfile.correlationsData(patternGeneralization).get(situation);
 
                     if (specific == null) {
                         return new ArrayList<>(0);
@@ -377,11 +397,14 @@ public class PatternStorage {
 
     // Separator
 
-    public ProbabilityRank getRanked(SpartanPlayer player, long situation, int generalization) {
-        long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong) + generalization;
+    public ProbabilityRank getRanked(SpartanPlayer player,
+                                     long situation,
+                                     PatternGeneralization patternGeneralization) {
+        long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
+                + patternGeneralization.generalization;
 
         if (DetectionNotifications.isEnabled(player)) {
-            ProbabilityRank result = this.getRankedRaw(situation, generalization);
+            ProbabilityRank result = this.getRankedRaw(situation, patternGeneralization);
 
             synchronized (rankedCache) {
                 PatternRankCache cache = rankedCache.get(hash);
@@ -402,14 +425,14 @@ public class PatternStorage {
                 PatternRankCache cache = rankedCache.get(hash);
 
                 if (cache == null) {
-                    cache = new PatternRankCache(this.getRankedRaw(situation, generalization));
+                    cache = new PatternRankCache(this.getRankedRaw(situation, patternGeneralization));
                     rankedCache.put(
                             hash,
                             cache
                     );
                     return cache.data;
                 } else if (cache.isExpired()) {
-                    return cache.update(this.getRankedRaw(situation, generalization));
+                    return cache.update(this.getRankedRaw(situation, patternGeneralization));
                 } else {
                     return cache.data;
                 }
@@ -417,7 +440,7 @@ public class PatternStorage {
         }
     }
 
-    public ProbabilityRank getRankedRaw(long situation, int generalization) {
+    public ProbabilityRank getRankedRaw(long situation, PatternGeneralization patternGeneralization) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.consistentDataRequirement) {
             return new ProbabilityRank(0);
         } else {
@@ -430,7 +453,7 @@ public class PatternStorage {
                         profiles++;
 
                         synchronized (entry.getValue().correlations) {
-                            Collection<PatternValue> data = entry.getValue().correlationsData(generalization).get(situation);
+                            Collection<PatternValue> data = entry.getValue().correlationsData(patternGeneralization).get(situation);
 
                             if (data != null) {
                                 rank.addMultiplePatterns(data);
@@ -447,7 +470,7 @@ public class PatternStorage {
 
     // Separator
 
-    public double getSignificance(Number number, int generalization) {
+    public double getSignificance(Number number, PatternGeneralization patternGeneralization) {
         synchronized (this.patternProbability) {
             if (this.patternProbability.isExpired()) {
                 this.patternProbability.data.clear();
@@ -456,7 +479,7 @@ public class PatternStorage {
                     for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                         if (entry.getKey().isLegitimate()) {
                             synchronized (entry.getValue().correlations) {
-                                Map<Long, List<PatternValue>> data = entry.getValue().correlationsData(generalization);
+                                Map<Long, List<PatternValue>> data = entry.getValue().correlationsData(patternGeneralization);
 
                                 if (!data.isEmpty()) {
                                     for (List<PatternValue> list : data.values()) {
@@ -481,26 +504,20 @@ public class PatternStorage {
 
     // Separator
 
-    public void collect(PlayerProfile profile, int generalization, long time) {
-        PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
-
+    public void collect(PlayerProfile profile,
+                        PatternGeneralization patternGeneralization,
+                        long time) {
         synchronized (this.profiles) {
-            PatternProfile patternProfile = this.profiles.computeIfAbsent(
-                    profile,
-                    k -> new PatternProfile()
-            );
+            PatternProfile patternProfile = getProfileRaw(profile);
             synchronized (patternProfile.contribution) {
-                patternProfile.contributionData(generalization).add(time);
+                patternProfile.contributionData(patternGeneralization).add(time);
 
                 if (time != -1L) {
-                    synchronized (generalizationStorage.contributionRank) {
-                        double value = patternProfile.contributionRaw(generalization);
-
-                        if (value != -1.0) {
-                            generalizationStorage.contributionRank.put(profile, value);
-                        } else {
-                            generalizationStorage.contributionRank.remove(profile);
-                        }
+                    synchronized (patternGeneralization.contributionRank) {
+                        patternGeneralization.contributionRank.put(
+                                patternProfile,
+                                patternProfile.contributionRaw(patternGeneralization)
+                        );
                     }
                 }
             }
@@ -508,51 +525,45 @@ public class PatternStorage {
     }
 
     public void collect(PlayerProfile profile,
-                        int generalization,
-                        double significance, double probability,
-                        long time) {
-        PatternGeneralization generalizationStorage = this.generalizations.get(generalization);
-
+                        PatternGeneralization patternGeneralization,
+                        double significance, double probability) {
         synchronized (this.profiles) {
-            PatternProfile patternProfile = this.profiles.computeIfAbsent(
-                    profile,
-                    k -> new PatternProfile()
-            );
+            PatternProfile patternProfile = getProfileRaw(profile);
 
             synchronized (patternProfile.probability) {
                 patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
-                patternProfile.probabilityData(generalization).add(probability);
+                patternProfile.probabilityData(patternGeneralization).add(probability);
 
-                synchronized (generalizationStorage.probabilityRank) {
-                    double value = patternProfile.probabilityRaw(generalization);
-
-                    if (value != -1.0) {
-                        generalizationStorage.probabilityRank.put(profile, value);
-                    } else {
-                        generalizationStorage.probabilityRank.remove(profile);
-                    }
+                synchronized (patternGeneralization.probabilityRank) {
+                    patternGeneralization.probabilityRank.put(
+                            patternProfile,
+                            patternProfile.probabilityRaw(patternGeneralization)
+                    );
                 }
             }
             synchronized (patternProfile.significance) {
                 patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
-                patternProfile.significanceData(generalization).add(significance);
+                patternProfile.significanceData(patternGeneralization).add(significance);
 
-                synchronized (generalizationStorage.significanceRank) {
-                    double value = patternProfile.significanceRaw(generalization);
-
-                    if (value != -1.0) {
-                        generalizationStorage.significanceRank.put(profile, value);
-                    } else {
-                        generalizationStorage.significanceRank.remove(profile);
-                    }
+                synchronized (patternGeneralization.significanceRank) {
+                    patternGeneralization.significanceRank.put(
+                            patternProfile,
+                            patternProfile.significanceRaw(patternGeneralization)
+                    );
                 }
             }
         }
     }
 
+    // Separator
+
+    private PatternProfile getProfileRaw(PlayerProfile profile) {
+        return this.profiles.computeIfAbsent(profile, k -> new PatternProfile(this, profile));
+    }
+
     public PatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profiles) {
-            return this.profiles.computeIfAbsent(profile, k -> new PatternProfile());
+            return this.getProfileRaw(profile);
         }
     }
 }

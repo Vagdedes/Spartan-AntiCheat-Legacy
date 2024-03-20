@@ -82,22 +82,22 @@ public abstract class DetectionExecutor {
                                                        int count,
                                                        Number client) {
         long time = System.currentTimeMillis();
+        PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
                 player,
                 patternStorage,
                 situation,
-                generalization,
+                patternGeneralization,
                 count
         );
         if (client instanceof Double) {
             client = AlgebraUtils.cut(client.doubleValue(), generalization);
         }
         PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
-        PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
-        double significance = patternStorage.getSignificance(client, generalization);
-        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability(generalization)),
-                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(generalization)),
-                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(generalization));
+        double significance = patternStorage.getSignificance(client, patternGeneralization);
+        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability(patternGeneralization)),
+                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(patternGeneralization)),
+                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(patternGeneralization));
         StringBuilder sb = new StringBuilder()
                 .append("data: ")
                 .append(patternStorage.key)
@@ -151,7 +151,7 @@ public abstract class DetectionExecutor {
         if (probabilityPredictor.pie.hasData()) {
             patternStorage.collect(
                     player.getProfile(),
-                    generalization,
+                    patternGeneralization,
                     -1L
             );
             Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
@@ -163,10 +163,9 @@ public abstract class DetectionExecutor {
                 if (entry.getKey().doubleValue() == client.doubleValue()) {
                     patternStorage.collect(
                             player.getProfile(),
-                            generalization,
+                            patternGeneralization,
                             significance,
-                            probability,
-                            time
+                            probability
                     );
                     return sb.toString();
                 } else {
@@ -176,16 +175,15 @@ public abstract class DetectionExecutor {
         } else {
             patternStorage.collect(
                     player.getProfile(),
-                    generalization,
+                    patternGeneralization,
                     System.currentTimeMillis()
             );
         }
         patternStorage.collect(
                 player.getProfile(),
-                generalization,
+                patternGeneralization,
                 significance,
-                0.0,
-                time
+                0.0
         );
         return sb.toString();
     }

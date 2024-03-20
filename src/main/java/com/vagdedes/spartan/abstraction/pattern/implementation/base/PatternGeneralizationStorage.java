@@ -38,10 +38,10 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
     }
 
-    void set(PlayerProfile profile, PatternValue value) {
+    void set(PatternProfile patternProfile, PatternValue value) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
-            this.configuration.set(value.time + profileOption, profile.getName());
+            this.configuration.set(value.time + profileOption, patternProfile.profile.getName());
             this.configuration.set(value.time + situationOption, value.situation);
             this.configuration.set(value.time + patternOption, value.pattern);
 

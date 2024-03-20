@@ -1,25 +1,34 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 
 import java.util.*;
 
-public class PatternProfile { // todo store
+public class PatternProfile {
 
     static final int
             PROBABILITY_POSITION = 0,
             SIGNIFICANCE_POSITION = 1;
+
+    // Separator
 
     final Map<Integer, Collection<Double>> probability, significance;
     final Map<Integer, Collection<Long>> contribution;
     // Generalization -> Situation -> Patterns
     final Map<Integer, Map<Long, List<PatternValue>>> correlations;
     final Map<Long, PatternRepetition> repetitions;
-    private final PatternCache probabilityCache, significanceCache, contributionCache;
     final double[] total;
+    final PlayerProfile profile;
+    private final PatternCache probabilityCache, significanceCache, contributionCache;
+    public final PatternProfileStorage storage;
 
-    PatternProfile() {
+    PatternProfile(PatternStorage patternStorage, PlayerProfile profile) {
+        this.profile = profile;
+        this.storage = new PatternProfileStorage(patternStorage, this);
+
         this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
         this.probability = Collections.synchronizedMap(new LinkedHashMap<>());
         this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -38,11 +47,11 @@ public class PatternProfile { // todo store
 
     // Public
 
-    double contributionRaw(int generalization) {
+    double contributionRaw(PatternGeneralization patternGeneralization) {
         if (this.contribution.isEmpty()) {
             return -1.0;
         } else {
-            Collection<Long> data = this.contribution.get(generalization);
+            Collection<Long> data = this.contribution.get(patternGeneralization.generalization);
 
             if (data.size() >= ResearchEngine.consistentDataRequirement) {
                 Iterator<Long> iterator = data.iterator();
@@ -90,29 +99,39 @@ public class PatternProfile { // todo store
         }
     }
 
-    public double contribution(int generalization) {
+    public double contribution(PatternGeneralization patternGeneralization) {
         synchronized (this.contribution) {
-            return this.contributionRaw(generalization);
+            return this.contributionRaw(patternGeneralization);
         }
     }
 
-    double probabilityRaw(int generalization) {
-        return this.average(this.probability, probabilityCache, PROBABILITY_POSITION, generalization);
+    double probabilityRaw(PatternGeneralization patternGeneralization) {
+        return this.average(
+                this.probability,
+                probabilityCache,
+                PROBABILITY_POSITION,
+                patternGeneralization
+        );
     }
 
-    public double probability(int generalization) {
+    public double probability(PatternGeneralization patternGeneralization) {
         synchronized (this.probability) {
-            return this.probabilityRaw(generalization);
+            return this.probabilityRaw(patternGeneralization);
         }
     }
 
-    double significanceRaw(int generalization) {
-        return this.average(this.significance, significanceCache, SIGNIFICANCE_POSITION, generalization);
+    double significanceRaw(PatternGeneralization patternGeneralization) {
+        return this.average(
+                this.significance,
+                significanceCache,
+                SIGNIFICANCE_POSITION,
+                patternGeneralization
+        );
     }
 
-    public double significance(int generalization) {
+    public double significance(PatternGeneralization patternGeneralization) {
         synchronized (this.significance) {
-            return this.significanceRaw(generalization);
+            return this.significanceRaw(patternGeneralization);
         }
     }
 
@@ -131,30 +150,30 @@ public class PatternProfile { // todo store
 
     // Separator
 
-    Map<Long, List<PatternValue>> correlationsData(int generalization) {
+    Map<Long, List<PatternValue>> correlationsData(PatternGeneralization patternGeneralization) {
         return this.correlations.computeIfAbsent(
-                generalization,
+                patternGeneralization.generalization,
                 k -> Collections.synchronizedMap(new LinkedHashMap<>())
         );
     }
 
-    Collection<Double> probabilityData(int generalization) {
+    Collection<Double> probabilityData(PatternGeneralization patternGeneralization) {
         return this.probability.computeIfAbsent(
-                generalization,
+                patternGeneralization.generalization,
                 k -> Collections.synchronizedList(new ArrayList<>())
         );
     }
 
-    Collection<Double> significanceData(int generalization) {
+    Collection<Double> significanceData(PatternGeneralization patternGeneralization) {
         return this.significance.computeIfAbsent(
-                generalization,
+                patternGeneralization.generalization,
                 k -> Collections.synchronizedList(new ArrayList<>())
         );
     }
 
-    Collection<Long> contributionData(int generalization) {
+    Collection<Long> contributionData(PatternGeneralization patternGeneralization) {
         return this.contribution.computeIfAbsent(
-                generalization,
+                patternGeneralization.generalization,
                 k -> Collections.synchronizedList(new ArrayList<>())
         );
     }
@@ -164,11 +183,11 @@ public class PatternProfile { // todo store
     private double average(Map<Integer, Collection<Double>> parent,
                            PatternCache cache,
                            int index,
-                           int generalization) {
+                           PatternGeneralization patternGeneralization) {
         if (parent.isEmpty()) {
             return -1.0;
         } else {
-            Collection<Double> data = parent.get(generalization);
+            Collection<Double> data = parent.get(patternGeneralization.generalization);
 
             if (data == null || data.size() < ResearchEngine.consistentDataRequirement) {
                 return -1.0;

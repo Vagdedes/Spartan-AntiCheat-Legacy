@@ -13,48 +13,51 @@ import java.util.Map;
 
 public class PatternComparison {
 
+    private final String key;
     private final ProbabilityPie pie;
     private final ProbabilityRank rank;
-    private final Map<PlayerProfile, Number> rankMemory;
+    private final Map<PatternProfile, Number> rankMemory;
     private final PatternCache cache;
 
-    public PatternComparison() {
+    public PatternComparison(String key) {
+        this.key = key;
         this.pie = new ProbabilityPie();
         this.rank = new ProbabilityRank();
         this.rankMemory = new LinkedHashMap<>();
         this.cache = new PatternCache();
     }
 
-    void put(PlayerProfile profile, Number number) {
-        Number previous = rankMemory.get(profile);
+    void put(PatternProfile patternProfile, double number) {
+        if (number == -1.0) {
+            Number previous = rankMemory.remove(patternProfile);
 
-        if (previous == null) {
-            this.rankMemory.put(profile, number);
+            if (previous != null) {
+                this.rank.remove(previous);
+            }
         } else {
-            this.rank.remove(previous);
-            this.rankMemory.put(profile, number);
-        }
+            Number previous = rankMemory.get(patternProfile);
 
-        if (profile.isLegitimate()) {
-            this.rank.add(number);
-            this.pie.add(generalizeNumber(number));
+            if (previous == null) {
+                this.rankMemory.put(patternProfile, number);
+            } else {
+                this.rank.remove(previous);
+                this.rankMemory.put(patternProfile, number);
+            }
 
-            if (cache.isExpired()) {
-                cache.refresh();
-                int delete = this.pie.getTotal() - (Check.violationCycleTicks * ResearchEngine.consistentDataRequirement);
+            if (patternProfile.profile.isLegitimate()) {
+                this.rank.add(number);
+                this.pie.add(generalizeNumber(number));
 
-                if (delete > 0) {
-                    this.pie.removeOld(delete);
+                if (cache.isExpired()) {
+                    cache.refresh();
+                    int delete = this.pie.getTotal() - (Check.violationCycleTicks * ResearchEngine.consistentDataRequirement);
+
+                    if (delete > 0) {
+                        this.pie.removeOld(delete);
+                    }
                 }
             }
-        }
-    }
-
-    void remove(PlayerProfile profile) {
-        Number number = rankMemory.remove(profile);
-
-        if (number != null) {
-            this.rank.remove(number);
+            patternProfile.storage.set(this.key, number);
         }
     }
 

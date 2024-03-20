@@ -8,9 +8,9 @@ public class PatternValue {
     final long situation;
     final long time;
 
-    PatternValue(long situation, Number number, int generalization, long time) {
+    PatternValue(long situation, Number number, PatternGeneralization patternGeneralization, long time) {
         this.time = time;
-        this.pattern = PatternGeneralization.generalize(number, generalization);
+        this.pattern = PatternGeneralization.generalize(number, patternGeneralization.generalization);
         this.situation = situation;
     }
 }
