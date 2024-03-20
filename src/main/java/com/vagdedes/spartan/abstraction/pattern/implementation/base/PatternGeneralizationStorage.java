@@ -27,14 +27,9 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
 
         if (this.file.exists()) {
             this.reload();
-            return;
         } else {
-            try {
-                this.file.createNewFile();
-            } catch (Exception ignored) {
-            }
+            this.configuration = YamlConfiguration.loadConfiguration(this.file);
         }
-        this.configuration = YamlConfiguration.loadConfiguration(this.file);
     }
 
     void set(PatternProfile patternProfile, PatternValue value) {

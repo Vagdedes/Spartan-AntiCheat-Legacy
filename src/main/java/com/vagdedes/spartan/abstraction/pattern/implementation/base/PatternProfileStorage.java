@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -7,42 +8,31 @@ import java.io.File;
 
 public class PatternProfileStorage {
 
-    private final PatternProfile patternProfile;
     private final PatternStorage patternStorage;
-    private short count;
-    private File file;
+    private final PatternProfile patternProfile;
+    private final File file;
     private YamlConfiguration configuration;
     private byte store;
 
     PatternProfileStorage(PatternStorage patternStorage, PatternProfile patternProfile) {
         this.patternStorage = patternStorage;
         this.patternProfile = patternProfile;
-        this.count = 0;
+        this.file = new File(
+                Register.plugin.getDataFolder()
+                        + patternStorage.key + "/statistics/"
+                        + patternProfile.profile.getName() + ".yml"
+        );
         this.store = 0;
+        this.configuration = YamlConfiguration.loadConfiguration(this.file);
         this.reload();
     }
 
     private void reload() {
-        this.file = new File(
-                this.patternStorage.key + "/"
-                        + this.patternProfile.profile.getName() + ".yml"
-        );
-
-        if (this.file.exists()) {
-            this.reload();
-            return;
-        } else {
-            try {
-                this.file.createNewFile();
-            } catch (Exception ignored) {
-            }
-        }
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
     }
 
     void set(long time, String key, Object value) {
         SpartanBukkit.dataThread.execute(() -> {
-            this.count++;
             this.configuration.set(time + "." + key, value);
 
             if (this.store == 0) {
@@ -63,11 +53,6 @@ public class PatternProfileStorage {
                 try {
                     this.configuration.save(this.file);
                     this.store = 0;
-
-                    if (this.count < 0) { // Short has overflowed (32767)
-                        this.count = 0;
-                        this.reload();
-                    }
                 } catch (Exception ignored) {
                 }
             });
@@ -75,6 +60,10 @@ public class PatternProfileStorage {
     }
 
     void delete() {
-        // todo
+        synchronized (this.patternStorage.profilesToStore) {
+            this.patternStorage.profiles.remove(this.patternProfile.profile);
+        }
+        file.delete();
+        this.reload();
     }
 }

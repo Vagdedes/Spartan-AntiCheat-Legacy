@@ -28,11 +28,7 @@ public class PatternComparison {
 
     void put(PatternProfile patternProfile, double number, long time) {
         if (number == -1.0) {
-            Number previous = rankMemory.remove(patternProfile);
-
-            if (previous != null) {
-                this.rank.remove(previous);
-            }
+            this.remove(patternProfile, !patternProfile.profile.isLegitimate());
         } else {
             Number previous = rankMemory.get(patternProfile);
 
@@ -55,8 +51,22 @@ public class PatternComparison {
                         this.pie.removeOld(delete);
                     }
                 }
+            } else {
+                this.remove(patternProfile, true);
             }
             patternProfile.storage.set(time, this.key, number);
+        }
+    }
+
+    private void remove(PatternProfile patternProfile, boolean pie) {
+        Number previous = rankMemory.remove(patternProfile);
+
+        if (previous != null) {
+            this.rank.remove(previous);
+
+            if (pie) {
+                this.pie.remove(previous);
+            }
         }
     }
 
