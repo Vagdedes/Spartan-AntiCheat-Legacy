@@ -26,7 +26,7 @@ public class Enums {
                 this.check.clearConfigurationCache();
                 this.check = new Check(
                         this,
-                        this.check.copyMaxCancelledViolations(),
+                        this.check.copyIgnoredViolations(),
                         true
                 );
             }

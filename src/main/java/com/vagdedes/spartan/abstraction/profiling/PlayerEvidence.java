@@ -5,15 +5,12 @@ import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
-import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
 
 public class PlayerEvidence {
-
-    public static final double standardRatio = 3.5;
 
     enum EvidenceType {
         Hacker(2),
@@ -145,14 +142,15 @@ public class PlayerEvidence {
                 Check check = hackType.getCheck();
 
                 if (check.supportsLiveEvidence) {
-                    int violationCount = player.getViolations(hackType).getLevel()
-                            - CancelViolation.get(hackType, profile.getDataType())
-                            - AlgebraUtils.integerCeil(Latency.getDelay(player));
+                    double averageIgnoredViolations = check.getAverageIgnoredViolations(profile.getDataType()),
+                            violationCount = player.getViolations(hackType).getLevel()
+                                    - AlgebraUtils.integerCeil(Latency.getDelay(player))
+                                    - averageIgnoredViolations;
 
-                    if (violationCount > 0) {
-                        double ratio = (violationCount / ((double) CancelViolation.get(hackType, profile.getDataType())));
+                    if (violationCount > 0.0) {
+                        double ratio = violationCount / averageIgnoredViolations;
 
-                        if (ratio >= standardRatio) {
+                        if (ratio >= Check.standardIgnoredViolations) {
                             this.live.put(hackType,
                                     "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
                             );

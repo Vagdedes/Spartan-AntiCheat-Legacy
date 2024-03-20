@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
@@ -21,7 +20,6 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -306,8 +304,7 @@ public class ResearchEngine {
     public static void resetData(Enums.HackType hackType) {
         SpartanBukkit.dataThread.execute(() -> {
             String hackTypeString = hackType.toString();
-            hackType.getCheck().clearMaxCancelledViolations();
-            CancelViolation.clear(hackType);
+            hackType.getCheck().clearIgnoredViolations();
 
             // Separator
 
@@ -564,7 +561,6 @@ public class ResearchEngine {
             } else {
                 CloudBase.clear(true);
                 PatternStorage.clear();
-                CancelViolation.clear();
                 ViolationAnalysis.clear();
             }
         };
@@ -584,8 +580,6 @@ public class ResearchEngine {
             int size = logs.size();
 
             if (size > 0) {
-                String falsePositiveDisclaimer = StringUtils.getClearColorString(LiveViolation.falsePositiveDisclaimer);
-
                 try {
                     String construct = Config.getConstruct();
 
@@ -627,32 +621,30 @@ public class ResearchEngine {
                                 getPlayerProfile(split[0]).punishmentHistory.increasePunishments(null, null);
                             } else if (data.contains(" failed ")) {
                                 if (split.length >= 3) {
-                                    if (!data.startsWith(falsePositiveDisclaimer)) {
-                                        String name = split[0];
-                                        String hackTypeString = split[2];
-                                        PlayerProfile playerProfile = getPlayerProfile(name);
+                                    String name = split[0];
+                                    String hackTypeString = split[2];
+                                    PlayerProfile playerProfile = getPlayerProfile(name);
 
-                                        for (Enums.HackType hackType : Enums.HackType.values()) {
-                                            if (hackTypeString.equals(hackType.toString())) {
-                                                // Separator
-                                                String detection = getDetectionInformation(data);
+                                    for (Enums.HackType hackType : Enums.HackType.values()) {
+                                        if (hackTypeString.equals(hackType.toString())) {
+                                            // Separator
+                                            String detection = getDetectionInformation(data);
 
-                                                if (detection != null) {
-                                                    int violation = getDetectionViolationLevel(data);
+                                            if (detection != null) {
+                                                int violation = getDetectionViolationLevel(data);
 
-                                                    if (violation != -1) {
-                                                        SimpleDateFormat sdf = new SimpleDateFormat(
-                                                                fullDate.contains(AntiCheatLogs.dateFormatChanger) ?
-                                                                        AntiCheatLogs.dateFormat :
-                                                                        AntiCheatLogs.usualDateFormat
-                                                        );
-                                                        playerProfile.getViolationHistory(hackType).store(
-                                                                new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation)
-                                                        );
-                                                    }
+                                                if (violation != -1) {
+                                                    SimpleDateFormat sdf = new SimpleDateFormat(
+                                                            fullDate.contains(AntiCheatLogs.dateFormatChanger) ?
+                                                                    AntiCheatLogs.dateFormat :
+                                                                    AntiCheatLogs.usualDateFormat
+                                                    );
+                                                    playerProfile.getViolationHistory(hackType).store(
+                                                            new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation)
+                                                    );
                                                 }
-                                                break;
                                             }
+                                            break;
                                         }
                                     }
                                 }
@@ -730,13 +722,13 @@ public class ResearchEngine {
                     staffOnline
             );
 
-            // Separator (Find False Positives)
+            // Separator
 
             if (enoughData()) {
                 double duration = 1000.0; // 1 second
 
                 for (Enums.HackType hackType : hackTypes) {
-                    hackType.getCheck().clearMaxCancelledViolations();
+                    hackType.getCheck().clearIgnoredViolations();
 
                     for (Enums.DataType dataType : dataTypes) {
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
@@ -791,16 +783,16 @@ public class ResearchEngine {
                                 for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
                                     entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * duration);
                                 }
-                                hackType.getCheck().setMaxCancelledViolations(dataType, violationAverages);
+                                hackType.getCheck().setIgnoredViolations(dataType, violationAverages);
                             } else {
-                                hackType.getCheck().clearMaxCancelledViolations();
+                                hackType.getCheck().clearIgnoredViolations();
                             }
                         }
                     }
                 }
             } else {
                 for (Enums.HackType hackType : hackTypes) {
-                    hackType.getCheck().clearMaxCancelledViolations();
+                    hackType.getCheck().clearIgnoredViolations();
                 }
             }
 
@@ -827,22 +819,16 @@ public class ResearchEngine {
                         averageMining.remove(ore);
                     }
                 }
-
-                // Separator
-
-                CancelViolation.refresh(hackTypes); // Always at the end to include all the recently calculated/cached data
             } else {
                 averageMining.clear();
-                CancelViolation.clear(); // We clear because there are no hacker-free players
             }
         } else { // We clear because there are no players
             statisticalProgress = new StatisticalProgress();
             averageMining.clear();
             ViolationAnalysis.clear();
-            CancelViolation.clear();
 
             for (Enums.HackType hackType : Enums.HackType.values()) {
-                hackType.getCheck().clearMaxCancelledViolations();
+                hackType.getCheck().clearIgnoredViolations();
             }
         }
     }

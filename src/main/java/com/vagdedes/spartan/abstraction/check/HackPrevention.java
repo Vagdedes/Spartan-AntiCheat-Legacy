@@ -50,7 +50,7 @@ public class HackPrevention {
         } else {
             this.violation = violation;
         }
-        player.getViolations(hackType).queue(this, check);
+        player.getViolations(hackType).queue(this);
     }
 
     void handle(SpartanPlayer player, Enums.HackType hackType) {

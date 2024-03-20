@@ -498,6 +498,8 @@ public class PatternStorage {
 
                         if (value != -1.0) {
                             generalizationStorage.contributionRank.put(profile, value, time);
+                        } else {
+                            generalizationStorage.contributionRank.remove(profile);
                         }
                     }
                 }
@@ -526,6 +528,8 @@ public class PatternStorage {
 
                     if (value != -1.0) {
                         generalizationStorage.probabilityRank.put(profile, value, time);
+                    } else {
+                        generalizationStorage.probabilityRank.remove(profile);
                     }
                 }
             }
@@ -538,6 +542,8 @@ public class PatternStorage {
 
                     if (value != -1.0) {
                         generalizationStorage.significanceRank.put(profile, value, time);
+                    } else {
+                        generalizationStorage.significanceRank.remove(profile);
                     }
                 }
             }

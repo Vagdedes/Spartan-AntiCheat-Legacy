@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.MoveUtils;
@@ -174,10 +173,7 @@ public class MorePackets extends CheckExecutor {
                             if (!instant) {
                                 if (totalHorizontalMotion >= (totalHorizontalMotionLimit * tickCycles)) {
                                     instant = true;
-                                    CancelViolation.force(player, hackType);
                                 }
-                            } else {
-                                CancelViolation.force(player, hackType);
                             }
                             cancel("type: horizontal(" + horizontalType + ")" + verbose, initialLocation, instant ? teleportTicks : 0);
                             detected = true;
@@ -188,10 +184,7 @@ public class MorePackets extends CheckExecutor {
                                 if (!instant) {
                                     if (totalVerticalMotion >= (totalVerticalMotionLimit * tickCycles)) {
                                         instant = true;
-                                        CancelViolation.force(player, hackType);
                                     }
-                                } else {
-                                    CancelViolation.force(player, hackType);
                                 }
                                 cancel("type: vertical" + verbose, initialLocation, instant ? teleportTicks : 0);
                                 detected = true;

@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
@@ -13,7 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PatternComparison {
+public class PatternComparison { // todo maybe change to not time based
 
     private static final class Comparison {
 
@@ -55,6 +54,14 @@ public class PatternComparison {
         }
     }
 
+    void remove(PlayerProfile profile) {
+        Comparison comparison = map.remove(profile);
+
+        if (comparison != null) {
+            this.rank.remove(comparison.number);
+        }
+    }
+
     public double getPosition(Number number, double def) {
         if (!SpartanBukkit.debug && map.size() < ResearchEngine.consistentDataRequirement) {
             return def;
@@ -86,6 +93,6 @@ public class PatternComparison {
     }
 
     private Number generalizeNumber(Number number) {
-        return PatternGeneralization.generalize(number.doubleValue(), 4);
+        return PatternGeneralization.generalize(number.doubleValue(), 3);
     }
 }

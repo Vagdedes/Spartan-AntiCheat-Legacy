@@ -10,7 +10,6 @@ import com.vagdedes.spartan.abstraction.profiling.ViolationHistory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -362,7 +361,7 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Punishments: ").append(check.canPunish)
                         .append(newLine);
-                softwareInformation.append("Cancel Violation: ").append(CancelViolation.get(hackType, Enums.DataType.Universal))
+                softwareInformation.append("Average Ignored Violations: ").append(check.getAverageIgnoredViolations(Enums.DataType.Universal))
                         .append(newLine);
                 softwareInformation.append("Violation Count: ").append(violationHistory.getCount())
                         .append(newLine);
@@ -484,9 +483,7 @@ public class CloudConnections {
                         .append(newLine)
                         .append("Average Violations: ").append(AlgebraUtils.cut(averageViolations / ((double) totalViolations), 2))
                         .append(newLine)
-                        .append("Maximum Violations: ").append(maxViolations)
-                        .append(newLine)
-                        .append("Problematic Detections: ").append(check.getProblematicDetections());
+                        .append("Maximum Violations: ").append(maxViolations);
 
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + " " + CloudBase.identification

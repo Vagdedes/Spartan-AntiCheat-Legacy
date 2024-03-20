@@ -32,7 +32,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class CommandExecution implements CommandExecutor {
 
@@ -77,7 +79,6 @@ public class CommandExecution implements CommandExecutor {
                     }
                     if (!isPlayer || Permissions.has(player, Permission.ADMIN)) {
                         ClickableMessage.sendCommand(sender, ChatColor.GREEN + "/" + command + " ai-assistance <question>", "This command can be used to ask our AI Assistant about most of the help you may need.", null);
-                        ClickableMessage.sendCommand(sender, ChatColor.GREEN + "/" + command + " customer-support <discord-tag>", "This command can be used to provide crucial details to the developers about problematic detections.", null);
                         ClickableMessage.sendCommand(sender, ChatColor.GREEN + "/" + command + " customer-support <check> <discord-tag> [explanation]", "This command can be used to provide crucial details to the developers about a check.", null);
                     }
                     if (manage) {
@@ -367,37 +368,6 @@ public class CommandExecution implements CommandExecutor {
                             } else {
                                 sender.sendMessage(Config.messages.getColorfulString("non_existing_check"));
                             }
-
-                        } else if (args[0].equalsIgnoreCase("Customer-Support")) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                                return true;
-                            }
-                            AwarenessNotifications.forcefullySend(sender, "Please wait...");
-
-                            SpartanBukkit.connectionThread.execute(() -> {
-                                Enums.HackType[] hackTypes = Enums.HackType.values();
-                                Set<Enums.HackType> set = new HashSet<>(hackTypes.length);
-
-                                for (Enums.HackType hackType : hackTypes) {
-                                    if (hackType.getCheck().getProblematicDetections() > 0) {
-                                        set.add(hackType);
-                                    }
-                                }
-                                int size = set.size();
-
-                                if (size > 0) {
-                                    String discordTag = args[1];
-
-                                    for (Enums.HackType hackType : set) {
-                                        AwarenessNotifications.forcefullySend(sender,
-                                                hackType.getCheck().getName() + ": " + CloudConnections.sendCustomerSupport(discordTag, hackType.toString(), "Identified Problematic Detection")
-                                        );
-                                    }
-                                } else {
-                                    AwarenessNotifications.forcefullySend(sender, "No problematic checks found, please specify a check name instead. (Example: /spartan customer-support " + Enums.HackType.values()[0] + " DiscordName#0001 Explanation)");
-                                }
-                            });
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
                             if (!DetectionNotifications.hasPermission(player)) {

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -32,8 +31,7 @@ public class Check {
             maxCommands = 10,
             maxMath = 10,
             maxViolationsPerCycle = 100,
-            minimumDefaultCancelViolation = 1,
-            maximumDefaultCancelViolation = 6;
+            standardIgnoredViolations = 3;
     public static final long violationCycleMilliseconds = violationCycleSeconds * 1_000L;
 
 
@@ -44,10 +42,9 @@ public class Check {
     public final Enums.CheckType type;
     private final Map<Integer, Collection<String>> commandsLegacy;
     private final Map<String, Object> options;
-    public final int cancelViolation;
     private boolean silent;
     public final boolean handleCancelledEvents;
-    private final Map<Integer, Integer> maxCancelledViolations;
+    private final Map<Integer, Integer> ignoredViolations;
     private final boolean[] enabled;
     public final boolean
             canPunish,
@@ -63,52 +60,7 @@ public class Check {
         this(hackType, new LinkedHashMap<>(), false);
     }
 
-    public Check(Enums.HackType hackType, Map<Integer, Integer> maxCancelledViolations, boolean copy) {
-        switch (hackType) {
-            case FastBow:
-            case FastHeal:
-            case ItemDrops:
-            case BlockReach:
-            case AutoRespawn:
-            case XRay:
-            case InventoryClicks:
-                this.cancelViolation = minimumDefaultCancelViolation;
-                break;
-            case Criticals:
-            case FastPlace:
-            case FastBreak:
-            case FastEat:
-            case NoSwing:
-            case Velocity:
-            case ImpossibleInventory:
-            case ImpossibleActions:
-                this.cancelViolation = 2;
-                break;
-            case KillAura:
-            case FastClicks:
-            case NoFall:
-            case NoSlowdown:
-            case HitReach:
-                this.cancelViolation = 3;
-                break;
-            case Exploits:
-            case MorePackets:
-                this.cancelViolation = 4;
-                break;
-            case Speed:
-            case IrregularMovements:
-                this.cancelViolation = 5;
-                break;
-            case GhostHand:
-                this.cancelViolation = maximumDefaultCancelViolation;
-                break;
-            default:
-                this.cancelViolation = 0;
-                break;
-        }
-
-        // Separator
-
+    public Check(Enums.HackType hackType, Map<Integer, Integer> ignoredViolations, boolean copy) {
         switch (hackType) {
             case KillAura:
                 this.description = new String[]{"This check will prevent client modules",
@@ -293,7 +245,7 @@ public class Check {
         this.options = Collections.synchronizedMap(new LinkedHashMap<>());
         this.hackType = hackType;
         this.commandsLegacy = Collections.synchronizedMap(new LinkedHashMap<>(maxViolationsPerCycle));
-        this.maxCancelledViolations = copy ? maxCancelledViolations : Collections.synchronizedMap(maxCancelledViolations);
+        this.ignoredViolations = copy ? ignoredViolations : Collections.synchronizedMap(ignoredViolations);
 
         // Separator
 
@@ -356,7 +308,7 @@ public class Check {
                             for (int position = 0; position < Check.maxCommands; position++) {
                                 ConfigUtils.add(
                                         file,
-                                        hackType + ".punishments." + AlgebraUtils.integerRound(this.cancelViolation * PlayerEvidence.standardRatio) + "." + (position + 1),
+                                        hackType + ".punishments." + AlgebraUtils.integerRound(standardIgnoredViolations * standardIgnoredViolations) + "." + (position + 1),
                                         Config.settings.getDefaultPunishmentCommands().get(position)
                                 );
                             }
@@ -863,28 +815,11 @@ public class Check {
 
     // Separator
 
-    public int getProblematicDetections() {
-        if (!maxCancelledViolations.isEmpty()) {
-            synchronized (maxCancelledViolations) {
-                int count = 0;
-
-                for (int level : maxCancelledViolations.values()) {
-                    if (level >= cancelViolation) {
-                        count++;
-                    }
-                }
-                return count;
-            }
-        } else {
-            return 0;
-        }
-    }
-
-    public void setMaxCancelledViolations(Enums.DataType dataType, Map<Integer, Double> map) {
-        synchronized (maxCancelledViolations) {
+    public void setIgnoredViolations(Enums.DataType dataType, Map<Integer, Double> map) {
+        synchronized (ignoredViolations) {
             if (!map.isEmpty()) {
                 for (Map.Entry<Integer, Double> entry : map.entrySet()) {
-                    maxCancelledViolations.put(
+                    ignoredViolations.put(
                             (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + entry.getKey(),
                             AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest
                     );
@@ -893,22 +828,28 @@ public class Check {
         }
     }
 
-    public void clearMaxCancelledViolations() {
-        synchronized (maxCancelledViolations) {
-            maxCancelledViolations.clear();
+    public void clearIgnoredViolations() {
+        synchronized (ignoredViolations) {
+            ignoredViolations.clear();
         }
     }
 
-    public Map<Integer, Integer> copyMaxCancelledViolations() {
-        return maxCancelledViolations;
+    public Map<Integer, Integer> copyIgnoredViolations() {
+        return ignoredViolations;
     }
 
-    public int getMaxCancelledViolations(Enums.DataType dataType, int hash) {
-        synchronized (maxCancelledViolations) {
-            return maxCancelledViolations.getOrDefault(
+    public int getIgnoredViolations(Enums.DataType dataType, int hash) {
+        synchronized (ignoredViolations) {
+            return ignoredViolations.getOrDefault(
                     (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + hash,
                     0
             );
+        }
+    }
+
+    public int getAverageIgnoredViolations(Enums.DataType dataType) {
+        synchronized (ignoredViolations) {
+            return 0; // todo
         }
     }
 

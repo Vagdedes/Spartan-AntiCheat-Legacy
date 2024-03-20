@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
-import com.vagdedes.spartan.functionality.performance.CancelViolation;
 import com.vagdedes.spartan.functionality.performance.NotifyViolation;
 import com.vagdedes.spartan.functionality.protections.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -39,7 +38,6 @@ public class LiveViolation {
 
     private static final Map<LiveViolation, String> maxLevel
             = Cache.store(Collections.synchronizedMap(new LinkedHashMap<>()));
-    public static final String falsePositiveDisclaimer = "§4(False Positive)§f ";
 
     static {
         if (Register.isPluginLoaded()) {
@@ -85,8 +83,8 @@ public class LiveViolation {
 
     // Separator
 
-    void queue(HackPrevention hackPrevention, Check check) {
-        if (queue.size() < check.cancelViolation) {
+    void queue(HackPrevention hackPrevention) {
+        if (queue.size() < Check.standardIgnoredViolations) {
             synchronized (queue) {
                 queue.putIfAbsent(hackPrevention.information.hashCode(), hackPrevention);
             }
@@ -143,8 +141,7 @@ public class LiveViolation {
                         || !silentCause.pointerMatches(hp.information))
                         && (suspectedOrHacker
                         || hasMaxCancelledLevel(playerViolation.similarityIdentity)
-                        || CancelViolation.isForced(player, hackType)
-                        || violations >= CancelViolation.get(hackType, player.dataType));
+                        || violations >= check.getAverageIgnoredViolations(player.dataType));
                 falsePositive = false;
                 violations += 1;
             }
@@ -242,7 +239,7 @@ public class LiveViolation {
         if (time != null) {
             time -= System.currentTimeMillis();
             return time > 0L
-                    && (time / 1000.0) >= (hackType.getCheck().getMaxCancelledViolations(player.dataType, hash) - 1); // -1 so we don't ceil the number
+                    && (time / 1000.0) >= (hackType.getCheck().getIgnoredViolations(player.dataType, hash) - 1); // -1 so we don't ceil the number
         } else {
             return false;
         }
@@ -515,28 +512,27 @@ public class LiveViolation {
                                      boolean suspectedOrHacker) {
         if (level < Check.maxViolationsPerCycle) {
             boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
-            int cancelViolation = CancelViolation.get(hackType, player.dataType),
+            int averageIgnoredViolations = hackType.getCheck().getAverageIgnoredViolations(player.dataType),
                     playerCount = SpartanBukkit.getPlayerCount();
             String message = Config.messages.getColorfulString("detection_notification")
                     .replace("{info}", info);
 
             if (falsePositive) {
-                message = falsePositiveDisclaimer + ConfigUtils.replaceWithSyntax(player, message, hackType);
+                message = ConfigUtils.replaceWithSyntax(player, message, hackType);
             } else {
                 message = ConfigUtils.replaceWithSyntax(player, message, hackType);
             }
             if (suspectedOrHacker
-                    || level % cancelViolation == 0
+                    || level % averageIgnoredViolations == 0
                     || !hackType.getCheck().supportsLiveEvidence) {
                 CrossServerInformation.queueNotification(message, true);
             }
             if (log) {
                 SpartanLocation location = player.getLocation();
-                String cancelViolationString = (canPrevent ? "-" : "") + cancelViolation,
-                        information = (falsePositive ? "(False Positive) " : "")
-                                + Config.getConstruct() + player.name + " failed " + hackType + " (VL: " + level
+                String averageIgnoredViolationsString = (canPrevent ? "-" : "") + averageIgnoredViolations,
+                        information = Config.getConstruct() + player.name + " failed " + hackType + " (VL: " + level
                                 + ") " + "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString()
-                                + "), (C-V: " + cancelViolationString + ") (Silent: "
+                                + "), (A-I-V: " + averageIgnoredViolationsString + ") (Silent: "
                                 + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
                                 + "(Ping: " + player.getPing() + "ms), (TPS: "
                                 + AlgebraUtils.cut(TPS.get(player, false), 3) + "), (Hacker: " + suspectedOrHacker
