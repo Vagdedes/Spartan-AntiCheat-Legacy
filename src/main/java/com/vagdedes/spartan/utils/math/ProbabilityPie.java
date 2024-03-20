@@ -2,10 +2,7 @@ package com.vagdedes.spartan.utils.math;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class ProbabilityPie {
@@ -80,6 +77,20 @@ public class ProbabilityPie {
 
     public ProbabilityPie remove(Number number) {
         return this.decrease(number, 1);
+    }
+
+    public ProbabilityPie removeOld(int amount) {
+        Iterator<Number> iterator = this.map.keySet().iterator();
+
+        while (iterator.hasNext()) {
+            iterator.next();
+            iterator.remove();
+
+            if (--amount == 0) {
+                break;
+            }
+        }
+        return this;
     }
 
     public ProbabilityPie decrease(Number number, int amount) {

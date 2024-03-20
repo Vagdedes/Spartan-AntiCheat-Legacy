@@ -497,7 +497,7 @@ public class PatternStorage {
                         double value = patternProfile.contributionRaw(generalization);
 
                         if (value != -1.0) {
-                            generalizationStorage.contributionRank.put(profile, value, time);
+                            generalizationStorage.contributionRank.put(profile, value);
                         } else {
                             generalizationStorage.contributionRank.remove(profile);
                         }
@@ -527,7 +527,7 @@ public class PatternStorage {
                     double value = patternProfile.probabilityRaw(generalization);
 
                     if (value != -1.0) {
-                        generalizationStorage.probabilityRank.put(profile, value, time);
+                        generalizationStorage.probabilityRank.put(profile, value);
                     } else {
                         generalizationStorage.probabilityRank.remove(profile);
                     }
@@ -541,7 +541,7 @@ public class PatternStorage {
                     double value = patternProfile.significanceRaw(generalization);
 
                     if (value != -1.0) {
-                        generalizationStorage.significanceRank.put(profile, value, time);
+                        generalizationStorage.significanceRank.put(profile, value);
                     } else {
                         generalizationStorage.significanceRank.remove(profile);
                     }

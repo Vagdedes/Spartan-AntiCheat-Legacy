@@ -8,20 +8,17 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PatternComparison { // todo maybe change to not time based
+public class PatternComparison {
 
     private static final class Comparison {
 
         private Number number;
-        private long time;
 
-        private Comparison(Number number, long time) {
+        private Comparison(Number number) {
             this.number = number;
-            this.time = time;
         }
     }
 
@@ -37,20 +34,28 @@ public class PatternComparison { // todo maybe change to not time based
         this.cache = new PatternCache();
     }
 
-    void put(PlayerProfile profile, Number number, long time) {
+    void put(PlayerProfile profile, Number number) {
         Comparison comparison = map.get(profile);
 
         if (comparison == null) {
-            this.map.put(profile, new Comparison(number, time));
+            this.map.put(profile, new Comparison(number));
         } else {
             this.rank.remove(comparison.number);
             comparison.number = number;
-            comparison.time = time;
         }
 
         if (profile.isLegitimate()) {
             this.rank.add(number);
             this.pie.add(generalizeNumber(number));
+
+            if (cache.isExpired()) {
+                cache.refresh();
+                int delete = this.pie.getTotal() - Check.violationCycleTicks;
+
+                if (delete > 0) {
+                    this.pie.removeOld(delete);
+                }
+            }
         }
     }
 
@@ -66,22 +71,6 @@ public class PatternComparison { // todo maybe change to not time based
         if (!SpartanBukkit.debug && map.size() < ResearchEngine.consistentDataRequirement) {
             return def;
         } else {
-            if (cache.isExpired()) {
-                cache.refresh();
-                Iterator<Map.Entry<PlayerProfile, Comparison>> iterator = map.entrySet().iterator();
-
-                while (iterator.hasNext()) {
-                    Map.Entry<PlayerProfile, Comparison> entry = iterator.next();
-
-                    if (System.currentTimeMillis() - entry.getValue().time > Check.violationCycleMilliseconds) {
-                        iterator.remove();
-                        this.pie.remove(entry.getValue().number);
-                        this.rank.remove(entry.getValue().number);
-                    } else {
-                        break;
-                    }
-                }
-            }
             return !SpartanBukkit.debug && this.rank.getTotal() < ResearchEngine.consistentDataRequirement
                     ? def
                     : this.rank.getProbability(number, def);
@@ -93,6 +82,6 @@ public class PatternComparison { // todo maybe change to not time based
     }
 
     private Number generalizeNumber(Number number) {
-        return PatternGeneralization.generalize(number.doubleValue(), 3);
+        return PatternGeneralization.generalize(number.doubleValue(), 2);
     }
 }
