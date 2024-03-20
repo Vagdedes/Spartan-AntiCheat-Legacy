@@ -42,6 +42,7 @@ public abstract class PatternGeneralization {
             probabilityRank,
             significanceRank,
             contributionRank;
+    public final PatternComparison[] patternComparisons;
 
 
     protected PatternGeneralization(String key, int generalization) {
@@ -50,6 +51,11 @@ public abstract class PatternGeneralization {
         this.probabilityRank = new PatternComparison("probability");
         this.significanceRank = new PatternComparison("significance");
         this.contributionRank = new PatternComparison("contribution");
+        this.patternComparisons = new PatternComparison[]{
+                this.probabilityRank,
+                this.significanceRank,
+                this.contributionRank
+        };
     }
 
     public double[] probabilityRankAndProbability(double value) {

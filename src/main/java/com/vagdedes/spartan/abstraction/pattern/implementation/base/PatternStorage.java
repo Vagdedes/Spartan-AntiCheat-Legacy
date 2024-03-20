@@ -156,8 +156,7 @@ public class PatternStorage {
                 Arrays.sort(files, Comparator.comparingLong(File::lastModified));
 
                 for (File file : files) {
-                    if (file.isFile()
-                            && file.getName().endsWith(".yml")) {
+                    if (file.isFile() && file.getName().endsWith(".yml")) {
                         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
                         Set<String> keys = configuration.getKeys(false);
 
@@ -524,7 +523,8 @@ public class PatternStorage {
                                 patternProfile,
                                 patternGeneralization,
                                 patternProfile.contributionRaw(patternGeneralization),
-                                time
+                                time,
+                                true
                         );
                     }
                 }
@@ -548,7 +548,8 @@ public class PatternStorage {
                             patternProfile,
                             patternGeneralization,
                             patternProfile.probabilityRaw(patternGeneralization),
-                            time
+                            time,
+                            true
                     );
                 }
             }
@@ -561,7 +562,8 @@ public class PatternStorage {
                             patternProfile,
                             patternGeneralization,
                             patternProfile.significanceRaw(patternGeneralization),
-                            time
+                            time,
+                            true
                     );
                 }
             }

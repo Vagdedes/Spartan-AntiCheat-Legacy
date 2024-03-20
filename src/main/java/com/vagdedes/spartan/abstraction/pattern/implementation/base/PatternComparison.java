@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class PatternComparison {
 
-    private final String key;
+    final String key;
     private final ProbabilityPie pie;
     private final ProbabilityRank rank;
     private final Map<PatternProfile, Number> rankMemory;
@@ -29,7 +29,8 @@ public class PatternComparison {
     void put(PatternProfile patternProfile,
              PatternGeneralization patternGeneralization,
              double number,
-             long time) {
+             long time,
+             boolean storage) {
         if (number == -1.0) {
             this.remove(patternProfile, !patternProfile.profile.isLegitimate());
         } else {
@@ -57,12 +58,15 @@ public class PatternComparison {
             } else {
                 this.remove(patternProfile, true);
             }
-            patternProfile.storage.set(
-                    patternGeneralization,
-                    time,
-                    this.key,
-                    number
-            );
+
+            if (storage) {
+                patternProfile.storage.set(
+                        patternGeneralization,
+                        time,
+                        this.key,
+                        number
+                );
+            }
         }
     }
 
