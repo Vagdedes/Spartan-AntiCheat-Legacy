@@ -40,7 +40,7 @@ import java.util.*;
 public class ResearchEngine {
 
     public static final int
-            profileRequirement = 10,
+            consistentDataRequirement = 10,
             maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
             maxRows = maxBytes / 1024;
 
@@ -120,7 +120,7 @@ public class ResearchEngine {
     public static boolean enoughData() {
         if (enoughData) {
             return true;
-        } else if (playerProfiles.size() >= profileRequirement) {
+        } else if (playerProfiles.size() >= consistentDataRequirement) {
             int profiles = 0;
 
             synchronized (playerProfiles) {
@@ -128,7 +128,7 @@ public class ResearchEngine {
                     if (playerProfile.isLegitimate()) {
                         profiles++;
 
-                        if (profiles >= profileRequirement) {
+                        if (profiles >= consistentDataRequirement) {
                             return enoughData = true;
                         }
                     }

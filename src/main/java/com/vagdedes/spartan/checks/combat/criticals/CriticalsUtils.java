@@ -92,7 +92,7 @@ public class CriticalsUtils {
                 }
             }
 
-            if (providers.size() >= ResearchEngine.profileRequirement) {
+            if (providers.size() >= ResearchEngine.consistentDataRequirement) {
                 return Math.round(collection / ((double) total));
             }
         }

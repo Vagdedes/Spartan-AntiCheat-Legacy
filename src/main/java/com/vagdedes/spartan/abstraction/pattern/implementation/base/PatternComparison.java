@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -55,7 +56,7 @@ public class PatternComparison {
     }
 
     public double getPosition(Number number, double def) {
-        if (!SpartanBukkit.debug && map.size() < ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && map.size() < ResearchEngine.consistentDataRequirement) {
             return def;
         } else {
             if (cache.isExpired()) {
@@ -74,7 +75,7 @@ public class PatternComparison {
                     }
                 }
             }
-            return !SpartanBukkit.debug && this.rank.getTotal() < ResearchEngine.profileRequirement
+            return !SpartanBukkit.debug && this.rank.getTotal() < ResearchEngine.consistentDataRequirement
                     ? def
                     : this.rank.getProbability(number, def);
         }
@@ -85,8 +86,6 @@ public class PatternComparison {
     }
 
     private Number generalizeNumber(Number number) {
-        return number instanceof Double
-                ? number
-                : AlgebraUtils.cut(number.doubleValue(), 3);
+        return PatternGeneralization.generalize(number.doubleValue(), 4);
     }
 }

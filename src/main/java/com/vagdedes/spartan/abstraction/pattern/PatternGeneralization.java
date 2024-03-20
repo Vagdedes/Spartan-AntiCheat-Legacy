@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternComparison;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public abstract class PatternGeneralization {
 
@@ -16,6 +17,22 @@ public abstract class PatternGeneralization {
             patternOption = ".pattern",
             situationOption = ".situation";
     public static final String[] options = {profileOption, patternOption, situationOption};
+
+    public static Number generalize(Number number, int generalization) {
+        if (generalization == 0) {
+            return number;
+        } else if (number instanceof Double) {
+            return AlgebraUtils.cut(number.doubleValue(), generalization);
+        } else if (number instanceof Float) {
+            return AlgebraUtils.cut(number.floatValue(), generalization);
+        } else if (number instanceof Long) {
+            return AlgebraUtils.roundToNearest(number.longValue(), generalization);
+        } else if (number instanceof Integer) {
+            return AlgebraUtils.roundToNearest(number.intValue(), generalization);
+        } else {
+            return AlgebraUtils.roundToNearest(number.shortValue(), generalization);
+        }
+    }
 
     // Separator
 

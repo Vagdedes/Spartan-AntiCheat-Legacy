@@ -320,7 +320,7 @@ public class PatternStorage {
     }
 
     private Collection<Collection<PatternValue>> getAllRaw(long situation, int generalization) {
-        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.consistentDataRequirement) {
             return new ArrayList<>(0);
         } else {
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.profiles.size());
@@ -341,7 +341,7 @@ public class PatternStorage {
                     }
                 }
             }
-            return !SpartanBukkit.debug && profiles < ResearchEngine.profileRequirement
+            return !SpartanBukkit.debug && profiles < ResearchEngine.consistentDataRequirement
                     ? new ArrayList<>(0)
                     : collections;
         }
@@ -418,7 +418,7 @@ public class PatternStorage {
     }
 
     public ProbabilityRank getRankedRaw(long situation, int generalization) {
-        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.profileRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.consistentDataRequirement) {
             return new ProbabilityRank(0);
         } else {
             ProbabilityRank rank = new ProbabilityRank(this.profiles.size());
@@ -439,7 +439,7 @@ public class PatternStorage {
                     }
                 }
             }
-            return !SpartanBukkit.debug && profiles < ResearchEngine.profileRequirement
+            return !SpartanBukkit.debug && profiles < ResearchEngine.consistentDataRequirement
                     ? new ProbabilityRank(0)
                     : rank;
         }
