@@ -22,18 +22,16 @@ public class NotifyViolation {
             } else {
                 double multiplier = Math.max(playerCount / 25.0, 1.0);
                 int defaultDivisor = Math.min(
-                        AlgebraUtils.integerRound(hackType.getCheck().cancelViolation * multiplier),
-                        Check.maximumDefaultCancelViolation
+                        AlgebraUtils.integerRound(
+                                hackType.getCheck().getAverageIgnoredViolations(detectedPlayer.dataType) * multiplier
+                        ),
+                        Check.standardIgnoredViolations * 2
                 );
 
-                if (detectedPlayer != null) {
-                    if (staff.uuid.equals(detectedPlayer.uuid)
-                            || staff.getWorld().equals(detectedPlayer.getWorld())
-                            && AlgebraUtils.getHorizontalDistance(staff.getLocation(), detectedPlayer.getLocation()) <= MoveUtils.chunk) {
-                        return 1;
-                    } else {
-                        return defaultDivisor;
-                    }
+                if (staff.uuid.equals(detectedPlayer.uuid)
+                        || staff.getWorld().equals(detectedPlayer.getWorld())
+                        && AlgebraUtils.getHorizontalDistance(staff.getLocation(), detectedPlayer.getLocation()) <= MoveUtils.chunk) {
+                    return 1;
                 } else {
                     return defaultDivisor;
                 }

@@ -44,7 +44,7 @@ public class Check {
     private final Map<String, Object> options;
     private boolean silent;
     public final boolean handleCancelledEvents;
-    private final Map<Integer, Integer> ignoredViolations;
+    private final Map<Enums.DataType, Map<Integer, Integer>> ignoredViolations;
     private final boolean[] enabled;
     public final boolean
             canPunish,
@@ -60,7 +60,9 @@ public class Check {
         this(hackType, new LinkedHashMap<>(), false);
     }
 
-    public Check(Enums.HackType hackType, Map<Integer, Integer> ignoredViolations, boolean copy) {
+    public Check(Enums.HackType hackType,
+                 Map<Enums.DataType, Map<Integer, Integer>> ignoredViolations,
+                 boolean copy) {
         switch (hackType) {
             case KillAura:
                 this.description = new String[]{"This check will prevent client modules",
@@ -819,8 +821,11 @@ public class Check {
         synchronized (ignoredViolations) {
             if (!map.isEmpty()) {
                 for (Map.Entry<Integer, Double> entry : map.entrySet()) {
-                    ignoredViolations.put(
-                            (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + entry.getKey(),
+                    ignoredViolations.computeIfAbsent(
+                            dataType,
+                            k -> new LinkedHashMap<>(maxViolationsPerCycle)
+                    ).put(
+                            entry.getKey(),
                             AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest
                     );
                 }
@@ -834,22 +839,46 @@ public class Check {
         }
     }
 
-    public Map<Integer, Integer> copyIgnoredViolations() {
+    public Map<Enums.DataType, Map<Integer, Integer>> copyIgnoredViolations() {
         return ignoredViolations;
     }
 
     public int getIgnoredViolations(Enums.DataType dataType, int hash) {
         synchronized (ignoredViolations) {
-            return ignoredViolations.getOrDefault(
-                    (dataType.hashCode() * SpartanBukkit.hashCodeMultiplier) + hash,
-                    0
-            );
+            Map<Integer, Integer> map = ignoredViolations.get(dataType);
+
+            if (map == null) {
+                return standardIgnoredViolations;
+            } else {
+                Integer integer = map.get(hash);
+                return integer == null
+                        ? standardIgnoredViolations
+                        : Math.max(integer, standardIgnoredViolations);
+            }
         }
     }
 
     public int getAverageIgnoredViolations(Enums.DataType dataType) {
-        synchronized (ignoredViolations) {
-            return 0; // todo
+        if (ignoredViolations.isEmpty()) {
+            return standardIgnoredViolations;
+        } else {
+            synchronized (ignoredViolations) {
+                Map<Integer, Integer> map = ignoredViolations.get(dataType);
+
+                if (map == null) {
+                    return standardIgnoredViolations;
+                } else {
+                    int sum = 0;
+
+                    for (int violations : map.values()) {
+                        sum += violations;
+                    }
+                    return Math.max(
+                            standardIgnoredViolations,
+                            AlgebraUtils.integerRound(sum / (double) ignoredViolations.size())
+                    );
+                }
+            }
         }
     }
 
