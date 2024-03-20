@@ -150,7 +150,7 @@ public abstract class DetectionExecutor {
 
         if (probabilityPredictor.pie.hasData()) {
             patternStorage.calculate(
-                    player.getProfile(),
+                    player,
                     patternGeneralization,
                     -1L,
                     time
@@ -163,7 +163,7 @@ public abstract class DetectionExecutor {
 
                 if (entry.getKey().doubleValue() == client.doubleValue()) {
                     patternStorage.calculate(
-                            player.getProfile(),
+                            player,
                             patternGeneralization,
                             probability,
                             significance,
@@ -176,14 +176,14 @@ public abstract class DetectionExecutor {
             }
         } else {
             patternStorage.calculate(
-                    player.getProfile(),
+                    player,
                     patternGeneralization,
                     time,
                     time
             );
         }
         patternStorage.calculate(
-                player.getProfile(),
+                player,
                 patternGeneralization,
                 0.0,
                 significance,

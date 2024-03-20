@@ -104,10 +104,12 @@ public class Pattern {
     final Map<PlayerProfile, PatternProfile> profiles;
     final Set<PatternProfileStorage.GeneralizationFile> profileFiles;
     private final PatternPieCache patternProbability;
+    private final PatternCache patternSizeCache;
 
     public Pattern(String key, int[] generalizations) {
         this.key = key;
         this.patternProbability = new PatternPieCache(new ProbabilityPie());
+        this.patternSizeCache = new PatternCache();
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.profileFiles = Collections.synchronizedSet(new HashSet<>());
 
@@ -234,8 +236,22 @@ public class Pattern {
             );
             list.add(value);
 
-            if (list.size() > (SpartanEdition.is2ndGeneration() ? 3_000_000 : 1_000_000)) {
-                list.remove(0);
+            if (patternSizeCache.isExpired()) {
+                patternSizeCache.refresh();
+                int delete = list.size() - (SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000);
+
+                if (delete > 0) {
+                    Iterator<PatternValue> iterator = list.iterator();
+
+                    while (iterator.hasNext()) {
+                        iterator.next();
+                        iterator.remove();
+
+                        if (--delete == 0) {
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -244,24 +260,24 @@ public class Pattern {
         }
     }
 
-    public void learn(PlayerProfile profile, long situation, Number number, boolean collect) {
-        if (collect) {
+    public void learn(SpartanPlayer player, long situation, Number number, boolean collect) {
+        if (collect && include(player)) {
             long time = System.currentTimeMillis();
 
             synchronized (this.profiles) {
-                PatternProfile statistics = this.profiles.get(profile);
+                PatternProfile statistics = this.profiles.get(player.getProfile());
 
                 if (statistics == null) {
-                    statistics = new PatternProfile(this, profile);
+                    statistics = new PatternProfile(this, player.getProfile());
                     statistics.repetitions.put(situation, new PatternRepetition(number));
-                    this.profiles.put(profile, statistics);
+                    this.profiles.put(player.getProfile(), statistics);
                 } else if (!statistics.canUsePattern(situation, number)) {
                     return;
                 }
                 for (PatternGeneralization generalization : this.generalizations.values()) {
                     this.rawCache(
                             this.profiles,
-                            profile,
+                            player.getProfile(),
                             new PatternValue(
                                     situation,
                                     number,
@@ -295,6 +311,11 @@ public class Pattern {
                 player.sendMessage(message);
             }
         }
+    }
+
+    private boolean include(SpartanPlayer player) {
+        Integer divisor = DetectionNotifications.getDivisor(player, false);
+        return divisor == null || divisor != 69;
     }
 
     // Separator
@@ -508,63 +529,67 @@ public class Pattern {
 
     // Separator
 
-    public void calculate(PlayerProfile profile,
+    public void calculate(SpartanPlayer player,
                           PatternGeneralization patternGeneralization,
                           long contribution,
                           long time) {
-        synchronized (this.profiles) {
-            PatternProfile patternProfile = getProfileRaw(profile);
-            synchronized (patternProfile.contribution) {
-                patternProfile.contributionData(patternGeneralization).add(contribution);
+        if (include(player)) {
+            synchronized (this.profiles) {
+                PatternProfile patternProfile = getProfileRaw(player.getProfile());
+                synchronized (patternProfile.contribution) {
+                    patternProfile.contributionData(patternGeneralization).add(contribution);
 
-                if (contribution != -1L) {
-                    synchronized (patternGeneralization.contributionRank) {
-                        patternGeneralization.contributionRank.put(
-                                patternProfile,
-                                patternGeneralization,
-                                patternProfile.contributionRaw(patternGeneralization),
-                                time,
-                                true
-                        );
+                    if (contribution != -1L) {
+                        synchronized (patternGeneralization.contributionRank) {
+                            patternGeneralization.contributionRank.put(
+                                    patternProfile,
+                                    patternGeneralization,
+                                    patternProfile.contributionRaw(patternGeneralization),
+                                    time,
+                                    true
+                            );
+                        }
                     }
                 }
             }
         }
     }
 
-    public void calculate(PlayerProfile profile,
+    public void calculate(SpartanPlayer player,
                           PatternGeneralization patternGeneralization,
                           double probability, double significance,
                           long time) {
-        synchronized (this.profiles) {
-            PatternProfile patternProfile = getProfileRaw(profile);
+        if (include(player)) {
+            synchronized (this.profiles) {
+                PatternProfile patternProfile = getProfileRaw(player.getProfile());
 
-            synchronized (patternProfile.probability) {
-                patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
-                patternProfile.probabilityData(patternGeneralization).add(probability);
+                synchronized (patternProfile.probability) {
+                    patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
+                    patternProfile.probabilityData(patternGeneralization).add(probability);
 
-                synchronized (patternGeneralization.probabilityRank) {
-                    patternGeneralization.probabilityRank.put(
-                            patternProfile,
-                            patternGeneralization,
-                            patternProfile.probabilityRaw(patternGeneralization),
-                            time,
-                            true
-                    );
+                    synchronized (patternGeneralization.probabilityRank) {
+                        patternGeneralization.probabilityRank.put(
+                                patternProfile,
+                                patternGeneralization,
+                                patternProfile.probabilityRaw(patternGeneralization),
+                                time,
+                                true
+                        );
+                    }
                 }
-            }
-            synchronized (patternProfile.significance) {
-                patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
-                patternProfile.significanceData(patternGeneralization).add(significance);
+                synchronized (patternProfile.significance) {
+                    patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
+                    patternProfile.significanceData(patternGeneralization).add(significance);
 
-                synchronized (patternGeneralization.significanceRank) {
-                    patternGeneralization.significanceRank.put(
-                            patternProfile,
-                            patternGeneralization,
-                            patternProfile.significanceRaw(patternGeneralization),
-                            time,
-                            true
-                    );
+                    synchronized (patternGeneralization.significanceRank) {
+                        patternGeneralization.significanceRank.put(
+                                patternProfile,
+                                patternGeneralization,
+                                patternProfile.significanceRaw(patternGeneralization),
+                                time,
+                                true
+                        );
+                    }
                 }
             }
         }

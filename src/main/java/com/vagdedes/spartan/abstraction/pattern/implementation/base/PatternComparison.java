@@ -10,7 +10,7 @@ import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PatternComparison {
+public class PatternComparison { // todo limit influence in data
 
     final String key;
     private final ProbabilityPie pie;
