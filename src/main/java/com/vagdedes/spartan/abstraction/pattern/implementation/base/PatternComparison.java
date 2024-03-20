@@ -41,7 +41,7 @@ public class PatternComparison {
 
             if (cache.isExpired()) {
                 cache.refresh();
-                int delete = this.pie.getTotal() - Check.violationCycleTicks;
+                int delete = this.pie.getTotal() - (Check.violationCycleTicks * ResearchEngine.consistentDataRequirement);
 
                 if (delete > 0) {
                     this.pie.removeOld(delete);
