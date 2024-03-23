@@ -97,8 +97,8 @@ public class PatternComparison {
             this.rank.remove(data.last);
 
             if (pie) {
-                data.pie.clear();
                 this.pie.data.remove(data.pie);
+                data.pie.clear();
             }
         }
     }
