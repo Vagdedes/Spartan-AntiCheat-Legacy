@@ -221,9 +221,8 @@ public class PatternProfile {
                             while (iterator.hasNext()) {
                                 data.total[index] -= iterator.next();
                                 iterator.remove();
-                                delete--;
 
-                                if (delete == 0) {
+                                if (--delete == 0) {
                                     break;
                                 }
                             }

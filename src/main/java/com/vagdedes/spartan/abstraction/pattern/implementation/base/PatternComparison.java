@@ -28,7 +28,7 @@ public class PatternComparison {
 
         private void add(double number) {
             this.last = number;
-            this.pie.add(number);
+            this.pie.add(generalizeNumber(number));
 
             if (this.pie.getTotal() > Check.violationCycleTicks) {
                 this.pie.removeOld(1);
