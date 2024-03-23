@@ -8,7 +8,7 @@ public class PatternPieCache extends AbstractPatternCache {
     ProbabilityPie data;
 
     PatternPieCache(ProbabilityPie cached) {
-        super(true);
+        super(false);
         this.data = cached;
     }
 }
