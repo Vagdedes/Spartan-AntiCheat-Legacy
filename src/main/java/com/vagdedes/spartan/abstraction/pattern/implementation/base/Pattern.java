@@ -97,7 +97,7 @@ public class Pattern {
         }
     }
 
-    static int dataLimit() {
+    private static int dataLimit() {
         return SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000;
     }
 

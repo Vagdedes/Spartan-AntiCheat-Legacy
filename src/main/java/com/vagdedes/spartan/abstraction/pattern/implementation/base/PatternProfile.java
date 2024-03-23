@@ -12,7 +12,7 @@ public class PatternProfile {
     static final class MutualData {
 
         private final Collection<Double> probability, significance;
-        final double[] total;
+        private final double[] total;
 
         private MutualData() {
             this.probability = new ArrayList<>();
@@ -171,7 +171,7 @@ public class PatternProfile {
     Map<Long, List<PatternValue>> correlationsData(PatternGeneralization patternGeneralization) {
         return this.correlations.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> Collections.synchronizedMap(new LinkedHashMap<>())
+                k -> new LinkedHashMap<>()
         );
     }
 
@@ -185,7 +185,7 @@ public class PatternProfile {
     Collection<Long> contributionData(PatternGeneralization patternGeneralization) {
         return this.contribution.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> Collections.synchronizedList(new ArrayList<>())
+                k -> new ArrayList<>()
         );
     }
 
