@@ -21,7 +21,6 @@ import com.vagdedes.spartan.checks.movement.MorePackets;
 import com.vagdedes.spartan.checks.movement.NoFall;
 import com.vagdedes.spartan.checks.movement.NoSlowdown;
 import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
-import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovementsNew;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.checks.player.AutoRespawn;
 import com.vagdedes.spartan.checks.player.FastEat;
@@ -476,9 +475,7 @@ public class SpartanPlayer {
                     this.executors[id] = new NoSwing(this);
                     break;
                 case IrregularMovements:
-                    this.executors[id] = p.isOp() || p.isWhitelisted()
-                            ? new IrregularMovementsNew(this)
-                            : new IrregularMovements(this);
+                    this.executors[id] = new IrregularMovements(this);
                     break;
                 case NoFall:
                     this.executors[id] = new NoFall(this);
@@ -813,7 +810,8 @@ public class SpartanPlayer {
     }
 
     public boolean debug(boolean broadcast, boolean cutDecimals, Object... message) {
-        if (!Piracy.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
+        if (!Piracy.enabled && SpartanBukkit.debug
+                && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
                 && Bukkit.getMotd().contains(Register.plugin.getName())) {
             Player p = getPlayer();
 

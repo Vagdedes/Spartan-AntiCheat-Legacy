@@ -135,7 +135,7 @@ public class EventsHandler7 implements Listener {
         long situation = HashHelper.hashPlayer(p);
         situation = HashHelper.extendLong(situation, HashHelper.hashEnvironment(p, to));
 
-        if (p.isOp()) {
+        if (SpartanBukkit.debug) {
             p.getExecutor(Enums.HackType.IrregularMovements).handle(false, new Object[]{
                     situation, ver
             });

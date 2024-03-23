@@ -15,6 +15,7 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorP
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.*;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
@@ -526,10 +527,31 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        if (object == null) {
-            oldFrom = null;
+        if (object instanceof Object[]) {
+            Object[] objects = (Object[]) object;
+            String detection = linearPredictionToDetection(
+                    SpartanBukkit.movementPatterns.vertical,
+                    (long) objects[0],
+                    GroundUtils.maxHeightLength,
+                    1,
+                    (Number) objects[1]
+            );
+
+            if (detection != null) {
+                /*player.debug(false, false,
+                        SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).probability(GroundUtils.maxHeightLength),
+                        SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).significance(GroundUtils.maxHeightLength),
+                        SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).contribution(GroundUtils.maxHeightLength));
+                */
+                player.debug(false, false, detection);
+                return true;
+            }
         } else {
-            oldFrom = (SpartanLocation) object;
+            if (object == null) {
+                oldFrom = null;
+            } else {
+                oldFrom = (SpartanLocation) object;
+            }
         }
         return false;
     }
