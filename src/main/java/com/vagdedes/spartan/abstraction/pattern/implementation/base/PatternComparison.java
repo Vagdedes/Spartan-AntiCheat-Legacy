@@ -38,15 +38,13 @@ public class PatternComparison {
 
     final String key;
     private final ProbabilityRank rank;
-    private final ProbabilityPie pie;
-    private final PatternCache pieCache;
+    private final PatternPieCache pie;
     private final Map<PatternProfile, NumberMemory> memory;
 
     public PatternComparison(String key) {
         this.key = key;
         this.rank = new ProbabilityRank();
-        this.pie = new ProbabilityPie();
-        this.pieCache = new PatternCache();
+        this.pie = new PatternPieCache(new ProbabilityPie());
         this.memory = new LinkedHashMap<>();
     }
 
@@ -69,12 +67,12 @@ public class PatternComparison {
                 }
                 this.rank.add(number);
 
-                if (pieCache.isExpired()) {
-                    pieCache.refresh();
-                    this.pie.clear();
+                if (this.pie.isExpired()) {
+                    this.pie.refresh();
+                    this.pie.data.clear();
 
                     for (NumberMemory value : memory.values()) {
-                        this.pie.add(value.pie);
+                        this.pie.data.add(value.pie);
                     }
                 }
             } else {
@@ -100,7 +98,7 @@ public class PatternComparison {
 
             if (pie) {
                 data.pie.clear();
-                this.pie.remove(data.pie);
+                this.pie.data.remove(data.pie);
             }
         }
     }
@@ -116,6 +114,6 @@ public class PatternComparison {
     }
 
     public double getProbability(Number number) {
-        return this.pie.getProbability(generalizeNumber(number));
+        return this.pie.data.getProbability(generalizeNumber(number));
     }
 }
