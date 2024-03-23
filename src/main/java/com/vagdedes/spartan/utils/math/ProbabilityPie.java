@@ -64,6 +64,13 @@ public class ProbabilityPie {
         return this;
     }
 
+    public ProbabilityPie add(ProbabilityPie pie) {
+        for (Map.Entry<Number, Integer> entry : pie.map.entrySet()) {
+            this.increase(entry.getKey(), entry.getValue());
+        }
+        return this;
+    }
+
     // Separator
 
     public ProbabilityPie delete(Number number) {
@@ -77,6 +84,13 @@ public class ProbabilityPie {
 
     public ProbabilityPie remove(Number number) {
         return this.decrease(number, 1);
+    }
+
+    public ProbabilityPie remove(ProbabilityPie pie) {
+        for (Map.Entry<Number, Integer> entry : pie.map.entrySet()) {
+            this.decrease(entry.getKey(), entry.getValue());
+        }
+        return this;
     }
 
     public ProbabilityPie removeOld(int amount) {

@@ -149,7 +149,7 @@ public abstract class DetectionExecutor {
         }
 
         if (probabilityPredictor.pie.hasData()) {
-            patternStorage.calculate(
+            patternStorage.compare(
                     player,
                     patternGeneralization,
                     -1L,
@@ -162,7 +162,7 @@ public abstract class DetectionExecutor {
                 double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
 
                 if (entry.getKey().doubleValue() == client.doubleValue()) {
-                    patternStorage.calculate(
+                    patternStorage.compare(
                             player,
                             patternGeneralization,
                             probability,
@@ -175,14 +175,14 @@ public abstract class DetectionExecutor {
                 }
             }
         } else {
-            patternStorage.calculate(
+            patternStorage.compare(
                     player,
                     patternGeneralization,
                     time,
                     time
             );
         }
-        patternStorage.calculate(
+        patternStorage.compare(
                 player,
                 patternGeneralization,
                 0.0,

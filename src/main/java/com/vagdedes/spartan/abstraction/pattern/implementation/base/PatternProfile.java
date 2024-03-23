@@ -9,18 +9,39 @@ import java.util.*;
 
 public class PatternProfile {
 
-    static final int
+    static final class MutualData {
+
+        private final Collection<Double> probability, significance;
+        final double[] total;
+
+        private MutualData() {
+            this.probability = new ArrayList<>();
+            this.significance = new ArrayList<>();
+
+            this.total = new double[2];
+            this.total[PROBABILITY_POSITION] = 0.0;
+            this.total[SIGNIFICANCE_POSITION] = 0.0;
+        }
+
+        void add(double probability, double significance) {
+            this.total[PatternProfile.PROBABILITY_POSITION] += probability;
+            this.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
+            this.probability.add(probability);
+            this.significance.add(significance);
+        }
+    }
+
+    private static final int
             PROBABILITY_POSITION = 0,
             SIGNIFICANCE_POSITION = 1;
 
     // Separator
 
-    final Map<Integer, Collection<Double>> probability, significance;
+    final Map<Integer, MutualData> mutual;
     final Map<Integer, Collection<Long>> contribution;
     // Generalization -> Situation -> Patterns
     final Map<Integer, Map<Long, List<PatternValue>>> correlations;
     final Map<Long, PatternRepetition> repetitions;
-    final double[] total;
     final PlayerProfile profile;
     private final PatternCache probabilityCache, significanceCache, contributionCache;
     final Pattern parent;
@@ -32,19 +53,14 @@ public class PatternProfile {
         this.storage = new PatternProfileStorage(this);
 
         this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.probability = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.significance = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.mutual = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.correlations = new LinkedHashMap<>();
 
         this.repetitions = new LinkedHashMap<>();
 
         this.probabilityCache = new PatternCache();
         this.significanceCache = new PatternCache();
         this.contributionCache = new PatternCache();
-
-        this.total = new double[2];
-        this.total[PROBABILITY_POSITION] = 0.0;
-        this.total[SIGNIFICANCE_POSITION] = 0.0;
     }
 
     // Public
@@ -109,7 +125,7 @@ public class PatternProfile {
 
     double probabilityRaw(PatternGeneralization patternGeneralization) {
         return this.average(
-                this.probability,
+                this.mutual,
                 probabilityCache,
                 PROBABILITY_POSITION,
                 patternGeneralization
@@ -117,14 +133,14 @@ public class PatternProfile {
     }
 
     public double probability(PatternGeneralization patternGeneralization) {
-        synchronized (this.probability) {
+        synchronized (this.mutual) {
             return this.probabilityRaw(patternGeneralization);
         }
     }
 
     double significanceRaw(PatternGeneralization patternGeneralization) {
         return this.average(
-                this.significance,
+                this.mutual,
                 significanceCache,
                 SIGNIFICANCE_POSITION,
                 patternGeneralization
@@ -132,7 +148,7 @@ public class PatternProfile {
     }
 
     public double significance(PatternGeneralization patternGeneralization) {
-        synchronized (this.significance) {
+        synchronized (this.mutual) {
             return this.significanceRaw(patternGeneralization);
         }
     }
@@ -159,60 +175,62 @@ public class PatternProfile {
         );
     }
 
-    Collection<Double> probabilityData(PatternGeneralization patternGeneralization) {
-        return this.probability.computeIfAbsent(
+    MutualData mutualData(PatternGeneralization patternGeneralization) {
+        return this.mutual.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> Collections.synchronizedList(new LinkedList<>())
-        );
-    }
-
-    Collection<Double> significanceData(PatternGeneralization patternGeneralization) {
-        return this.significance.computeIfAbsent(
-                patternGeneralization.generalization,
-                k -> Collections.synchronizedList(new LinkedList<>())
+                k -> new MutualData()
         );
     }
 
     Collection<Long> contributionData(PatternGeneralization patternGeneralization) {
         return this.contribution.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> Collections.synchronizedList(new LinkedList<>())
+                k -> Collections.synchronizedList(new ArrayList<>())
         );
     }
 
     // Private
 
-    private double average(Map<Integer, Collection<Double>> parent,
+    private double average(Map<Integer, MutualData> parent,
                            PatternCache cache,
                            int index,
                            PatternGeneralization patternGeneralization) {
         if (parent.isEmpty()) {
             return -1.0;
         } else {
-            Collection<Double> data = parent.get(patternGeneralization.generalization);
+            MutualData data = parent.get(patternGeneralization.generalization);
 
-            if (data == null || data.size() < ResearchEngine.consistentDataRequirement) {
+            if (data == null) {
                 return -1.0;
             } else {
-                if (cache.isExpired()) {
-                    cache.refresh();
-                    int delete = data.size() - Check.violationCycleTicks;
+                Collection<Double> collection =
+                        index == PROBABILITY_POSITION
+                                ? data.probability
+                                : data.significance;
 
-                    if (delete > 0) {
-                        Iterator<Double> iterator = data.iterator();
+                if (collection.size() < ResearchEngine.consistentDataRequirement) {
+                    return -1.0;
+                } else {
+                    if (cache.isExpired()) {
+                        cache.refresh();
+                        int delete = collection.size() - Check.violationCycleTicks;
 
-                        while (iterator.hasNext()) {
-                            this.total[index] -= iterator.next();
-                            iterator.remove();
-                            delete--;
+                        if (delete > 0) {
+                            Iterator<Double> iterator = collection.iterator();
 
-                            if (delete == 0) {
-                                break;
+                            while (iterator.hasNext()) {
+                                data.total[index] -= iterator.next();
+                                iterator.remove();
+                                delete--;
+
+                                if (delete == 0) {
+                                    break;
+                                }
                             }
                         }
                     }
+                    return data.total[index] / (double) collection.size();
                 }
-                return this.total[index] / (double) data.size();
             }
         }
     }

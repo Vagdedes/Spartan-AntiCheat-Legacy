@@ -97,6 +97,10 @@ public class Pattern {
         }
     }
 
+    static int dataLimit() {
+        return SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000;
+    }
+
     // Separator
 
     public final String key;
@@ -105,15 +109,19 @@ public class Pattern {
     final Set<PatternProfileStorage.GeneralizationFile> profileFiles;
     private final PatternPieCache patternProbability;
     private final PatternCache patternSizeCache;
+    private boolean load;
 
     public Pattern(String key, int[] generalizations) {
         this.key = key;
+        this.load = false;
         this.patternProbability = new PatternPieCache(new ProbabilityPie());
         this.patternSizeCache = new PatternCache();
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.profileFiles = Collections.synchronizedSet(new HashSet<>());
 
-        this.generalizations = new LinkedHashMap<>(generalizations.length + 1);
+        this.generalizations = Collections.synchronizedMap(
+                new LinkedHashMap<>(generalizations.length + 1)
+        );
         this.generalizations.put(0, new PatternGeneralizationStorage(key));
 
         if (generalizations.length > 0) {
@@ -130,7 +138,9 @@ public class Pattern {
     // Separator
 
     public void store() {
-        ((PatternGeneralizationStorage) this.generalizations.get(0)).store();
+        synchronized (this.generalizations) {
+            ((PatternGeneralizationStorage) this.generalizations.get(0)).store();
+        }
 
         if (!this.profileFiles.isEmpty()) {
             synchronized (this.profileFiles) {
@@ -145,6 +155,10 @@ public class Pattern {
     }
 
     private void load() {
+        if (this.load) {
+            return;
+        }
+        this.load = true;
         store();
         Map<PlayerProfile, PatternProfile> correlations = new LinkedHashMap<>();
         File directory = new File(PatternGeneralization.path(this.key));
@@ -177,20 +191,22 @@ public class Pattern {
                                             if (profileName != null
                                                     && !profileName.isEmpty()) {
                                                 PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                                PatternProfile patternProfile = this.getProfileRaw(correlations, profile);
 
-                                                for (PatternGeneralization generalization : this.generalizations.values()) {
-                                                    this.rawCache(
-                                                            correlations,
-                                                            profile,
-                                                            new PatternValue(
-                                                                    situation,
-                                                                    (Number) pattern,
-                                                                    generalization,
-                                                                    time
-                                                            ),
-                                                            generalization,
-                                                            false
-                                                    );
+                                                synchronized (this.generalizations) {
+                                                    for (PatternGeneralization generalization : this.generalizations.values()) {
+                                                        this.rawCache(
+                                                                patternProfile,
+                                                                new PatternValue(
+                                                                        situation,
+                                                                        (Number) pattern,
+                                                                        generalization,
+                                                                        time
+                                                                ),
+                                                                generalization,
+                                                                false
+                                                        );
+                                                    }
                                                 }
                                             }
                                         }
@@ -209,47 +225,62 @@ public class Pattern {
             }
         }
 
+        // Separator
+        if (!correlations.isEmpty()) {
+            Set<Map.Entry<Integer, PatternGeneralization>> entries;
+
+            synchronized (this.generalizations) {
+                entries = new HashSet<>(this.generalizations.entrySet());
+            }
+            for (Map.Entry<Integer, PatternGeneralization> entry : entries) {
+                PatternGeneralization patternGeneralization =
+                        entry.getValue() instanceof PatternGeneralizationStorage
+                                ? new PatternGeneralizationStorage(key)
+                                : new PatternGeneralizationMemory(key, entry.getKey());
+
+                for (PatternProfile patternProfile : correlations.values()) {
+                    patternProfile.storage.load(patternGeneralization);
+                }
+                synchronized (this.generalizations) {
+                    entry.setValue(patternGeneralization);
+                }
+            }
+        }
+
         synchronized (this.profiles) {
             this.profiles.clear();
             this.profiles.putAll(correlations);
         }
+        this.load = false;
     }
 
     // Separator
 
-    private void rawCache(Map<PlayerProfile, PatternProfile> correlations,
-                          PlayerProfile profile,
+    private void rawCache(PatternProfile patternProfile,
                           PatternValue value,
                           PatternGeneralization generalization,
                           boolean store) {
-        PatternProfile patternProfile = correlations.computeIfAbsent(
-                profile,
-                k -> new PatternProfile(this, profile)
+        List<PatternValue> list = patternProfile.correlationsData(
+                generalization
+        ).computeIfAbsent(
+                value.situation,
+                k -> new ArrayList<>(100)
         );
+        list.add(value);
 
-        synchronized (patternProfile.correlations) {
-            List<PatternValue> list = patternProfile.correlationsData(
-                    generalization
-            ).computeIfAbsent(
-                    value.situation,
-                    k -> new ArrayList<>(100)
-            );
-            list.add(value);
+        if (patternSizeCache.isExpired()) {
+            patternSizeCache.refresh();
+            int delete = list.size() - dataLimit();
 
-            if (patternSizeCache.isExpired()) {
-                patternSizeCache.refresh();
-                int delete = list.size() - (SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000);
+            if (delete > 0) {
+                Iterator<PatternValue> iterator = list.iterator();
 
-                if (delete > 0) {
-                    Iterator<PatternValue> iterator = list.iterator();
+                while (iterator.hasNext()) {
+                    iterator.next();
+                    iterator.remove();
 
-                    while (iterator.hasNext()) {
-                        iterator.next();
-                        iterator.remove();
-
-                        if (--delete == 0) {
-                            break;
-                        }
+                    if (--delete == 0) {
+                        break;
                     }
                 }
             }
@@ -266,28 +297,24 @@ public class Pattern {
             boolean include = include(player);
 
             synchronized (this.profiles) {
-                PatternProfile statistics = this.profiles.get(player.getProfile());
+                PatternProfile patternProfile = this.getProfileRaw(this.profiles, player.getProfile());
 
-                if (statistics == null) {
-                    statistics = new PatternProfile(this, player.getProfile());
-                    statistics.repetitions.put(situation, new PatternRepetition(number));
-                    this.profiles.put(player.getProfile(), statistics);
-                } else if (!statistics.canUsePattern(situation, number)) {
-                    return;
-                }
-                for (PatternGeneralization generalization : this.generalizations.values()) {
-                    this.rawCache(
-                            this.profiles,
-                            player.getProfile(),
-                            new PatternValue(
-                                    situation,
-                                    number,
+                if (patternProfile.canUsePattern(situation, number)) {
+                    synchronized (this.generalizations) {
+                        for (PatternGeneralization generalization : this.generalizations.values()) {
+                            this.rawCache(
+                                    patternProfile,
+                                    new PatternValue(
+                                            situation,
+                                            number,
+                                            generalization,
+                                            time
+                                    ),
                                     generalization,
-                                    time
-                            ),
-                            generalization,
-                            include && generalization instanceof PatternGeneralizationStorage
-                    );
+                                    include && generalization instanceof PatternGeneralizationStorage
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -374,12 +401,10 @@ public class Pattern {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
 
-                        synchronized (entry.getValue().correlations) {
-                            Collection<PatternValue> data = entry.getValue().correlationsData(patternGeneralization).get(situation);
+                        Collection<PatternValue> data = entry.getValue().correlationsData(patternGeneralization).get(situation);
 
-                            if (data != null) {
-                                collections.add(data);
-                            }
+                        if (data != null) {
+                            collections.add(data);
                         }
                     }
                 }
@@ -402,19 +427,17 @@ public class Pattern {
             if (patternProfile == null) {
                 return new ArrayList<>(0);
             } else {
-                synchronized (patternProfile.correlations) {
-                    List<PatternValue> specific = patternProfile.correlationsData(patternGeneralization).get(situation);
+                List<PatternValue> specific = patternProfile.correlationsData(patternGeneralization).get(situation);
 
-                    if (specific == null) {
+                if (specific == null) {
+                    return new ArrayList<>(0);
+                } else {
+                    int size = specific.size();
+
+                    if (size < count) {
                         return new ArrayList<>(0);
                     } else {
-                        int size = specific.size();
-
-                        if (size < count) {
-                            return new ArrayList<>(0);
-                        } else {
-                            return new ArrayList<>(specific).subList(size - count, size);
-                        }
+                        return new ArrayList<>(specific).subList(size - count, size);
                     }
                 }
             }
@@ -478,12 +501,10 @@ public class Pattern {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
 
-                        synchronized (entry.getValue().correlations) {
-                            Collection<PatternValue> data = entry.getValue().correlationsData(patternGeneralization).get(situation);
+                        Collection<PatternValue> data = entry.getValue().correlationsData(patternGeneralization).get(situation);
 
-                            if (data != null) {
-                                rank.addMultiplePatterns(data);
-                            }
+                        if (data != null) {
+                            rank.addMultiplePatterns(data);
                         }
                     }
                 }
@@ -504,14 +525,12 @@ public class Pattern {
                 synchronized (this.profiles) {
                     for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                         if (entry.getKey().isLegitimate()) {
-                            synchronized (entry.getValue().correlations) {
-                                Map<Long, List<PatternValue>> data = entry.getValue().correlationsData(patternGeneralization);
+                            Map<Long, List<PatternValue>> data = entry.getValue().correlationsData(patternGeneralization);
 
-                                if (!data.isEmpty()) {
-                                    for (List<PatternValue> list : data.values()) {
-                                        for (PatternValue value : list) {
-                                            this.patternProbability.data.add(value.pattern);
-                                        }
+                            if (!data.isEmpty()) {
+                                for (List<PatternValue> list : data.values()) {
+                                    for (PatternValue value : list) {
+                                        this.patternProbability.data.add(value.pattern);
                                     }
                                 }
                             }
@@ -525,19 +544,21 @@ public class Pattern {
     }
 
     public PatternGeneralization getGeneralization(int generalization) {
-        return this.generalizations.get(generalization);
+        synchronized (this.generalizations) {
+            return this.generalizations.get(generalization);
+        }
     }
 
     // Separator
 
-    public void calculate(SpartanPlayer player,
-                          PatternGeneralization patternGeneralization,
-                          long contribution,
-                          long time) {
+    public void compare(SpartanPlayer player,
+                        PatternGeneralization patternGeneralization,
+                        long contribution,
+                        long time) {
         boolean include = include(player);
 
         synchronized (this.profiles) {
-            PatternProfile patternProfile = getProfileRaw(player.getProfile());
+            PatternProfile patternProfile = getProfileRaw(this.profiles, player.getProfile());
 
             synchronized (patternProfile.contribution) {
                 patternProfile.contributionData(patternGeneralization).add(contribution);
@@ -557,18 +578,17 @@ public class Pattern {
         }
     }
 
-    public void calculate(SpartanPlayer player,
-                          PatternGeneralization patternGeneralization,
-                          double probability, double significance,
-                          long time) {
+    public void compare(SpartanPlayer player,
+                        PatternGeneralization patternGeneralization,
+                        double probability, double significance,
+                        long time) {
         boolean include = include(player);
 
         synchronized (this.profiles) {
-            PatternProfile patternProfile = getProfileRaw(player.getProfile());
+            PatternProfile patternProfile = getProfileRaw(this.profiles, player.getProfile());
 
-            synchronized (patternProfile.probability) {
-                patternProfile.total[PatternProfile.PROBABILITY_POSITION] += probability;
-                patternProfile.probabilityData(patternGeneralization).add(probability);
+            synchronized (patternProfile.mutual) {
+                patternProfile.mutualData(patternGeneralization).add(probability, significance);
 
                 if (include) {
                     synchronized (patternGeneralization.probabilityRank) {
@@ -580,13 +600,6 @@ public class Pattern {
                                 true
                         );
                     }
-                }
-            }
-            synchronized (patternProfile.significance) {
-                patternProfile.total[PatternProfile.SIGNIFICANCE_POSITION] += significance;
-                patternProfile.significanceData(patternGeneralization).add(significance);
-
-                if (include) {
                     synchronized (patternGeneralization.significanceRank) {
                         patternGeneralization.significanceRank.put(
                                 patternProfile,
@@ -603,13 +616,13 @@ public class Pattern {
 
     // Separator
 
-    private PatternProfile getProfileRaw(PlayerProfile profile) {
-        return this.profiles.computeIfAbsent(profile, k -> new PatternProfile(this, profile));
+    private PatternProfile getProfileRaw(Map<PlayerProfile, PatternProfile> map, PlayerProfile profile) {
+        return map.computeIfAbsent(profile, k -> new PatternProfile(this, profile));
     }
 
     public PatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profiles) {
-            return this.getProfileRaw(profile);
+            return this.getProfileRaw(this.profiles, profile);
         }
     }
 }

@@ -10,20 +10,44 @@ import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PatternComparison { // todo limit influence in pie data
+public class PatternComparison {
+
+    private static Number generalizeNumber(Number number) {
+        return PatternGeneralization.generalize(number.doubleValue(), 2);
+    }
+
+    private static final class NumberMemory {
+
+        private Number last;
+        private final ProbabilityPie pie;
+
+        private NumberMemory(double number) {
+            this.pie = new ProbabilityPie();
+            this.add(number);
+        }
+
+        private void add(double number) {
+            this.last = number;
+            this.pie.add(number);
+
+            if (this.pie.getTotal() > Check.violationCycleTicks) {
+                this.pie.removeOld(1);
+            }
+        }
+    }
 
     final String key;
-    private final ProbabilityPie pie;
     private final ProbabilityRank rank;
-    private final Map<PatternProfile, Number> rankMemory;
-    private final PatternCache cache;
+    private final ProbabilityPie pie;
+    private final PatternCache pieCache;
+    private final Map<PatternProfile, NumberMemory> memory;
 
     public PatternComparison(String key) {
         this.key = key;
-        this.pie = new ProbabilityPie();
         this.rank = new ProbabilityRank();
-        this.rankMemory = new LinkedHashMap<>();
-        this.cache = new PatternCache();
+        this.pie = new ProbabilityPie();
+        this.pieCache = new PatternCache();
+        this.memory = new LinkedHashMap<>();
     }
 
     void put(PatternProfile patternProfile,
@@ -34,25 +58,23 @@ public class PatternComparison { // todo limit influence in pie data
         if (number == -1.0) {
             this.remove(patternProfile, !patternProfile.profile.isLegitimate());
         } else {
-            Number previous = rankMemory.get(patternProfile);
-
-            if (previous == null) {
-                this.rankMemory.put(patternProfile, number);
-            } else {
-                this.rank.remove(previous);
-                this.rankMemory.put(patternProfile, number);
-            }
-
             if (patternProfile.profile.isLegitimate()) {
+                NumberMemory data = memory.get(patternProfile);
+
+                if (data == null) {
+                    this.memory.put(patternProfile, new NumberMemory(number));
+                } else {
+                    this.rank.remove(data.last);
+                    data.add(number);
+                }
                 this.rank.add(number);
-                this.pie.add(generalizeNumber(number));
 
-                if (cache.isExpired()) {
-                    cache.refresh();
-                    int delete = this.pie.getTotal() - (Check.violationCycleTicks * ResearchEngine.consistentDataRequirement);
+                if (pieCache.isExpired()) {
+                    pieCache.refresh();
+                    this.pie.clear();
 
-                    if (delete > 0) {
-                        this.pie.removeOld(delete);
+                    for (NumberMemory value : memory.values()) {
+                        this.pie.add(value.pie);
                     }
                 }
             } else {
@@ -71,19 +93,20 @@ public class PatternComparison { // todo limit influence in pie data
     }
 
     private void remove(PatternProfile patternProfile, boolean pie) {
-        Number previous = rankMemory.remove(patternProfile);
+        NumberMemory data = memory.remove(patternProfile);
 
-        if (previous != null) {
-            this.rank.remove(previous);
+        if (data != null) {
+            this.rank.remove(data.last);
 
             if (pie) {
-                this.pie.remove(previous);
+                data.pie.clear();
+                this.pie.remove(data.pie);
             }
         }
     }
 
     public double getPosition(Number number, double def) {
-        if (!SpartanBukkit.debug && rankMemory.size() < ResearchEngine.consistentDataRequirement) {
+        if (!SpartanBukkit.debug && memory.size() < ResearchEngine.consistentDataRequirement) {
             return def;
         } else {
             return !SpartanBukkit.debug && this.rank.getTotal() < ResearchEngine.consistentDataRequirement
@@ -94,9 +117,5 @@ public class PatternComparison { // todo limit influence in pie data
 
     public double getProbability(Number number) {
         return this.pie.getProbability(generalizeNumber(number));
-    }
-
-    private Number generalizeNumber(Number number) {
-        return PatternGeneralization.generalize(number.doubleValue(), 2);
     }
 }

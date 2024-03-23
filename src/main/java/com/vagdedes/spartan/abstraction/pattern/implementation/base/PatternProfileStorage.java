@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -34,61 +34,6 @@ public class PatternProfileStorage {
             this.count = 0;
             this.store = 0;
             this.reload();
-
-            SpartanBukkit.dataThread.execute(() -> {
-                File file = new File(
-                        headPath(this.parent.profile.parent, this.parent.profile)
-                                + "/" + this.generalization
-                );
-
-                if (file.exists() && file.isDirectory()) {
-                    File[] files = file.listFiles();
-
-                    if (files != null) {
-                        int count = 0;
-                        boolean exit = false;
-                        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
-
-                        for (File subFile : files) {
-                            if (subFile.isFile() && subFile.getName().endsWith(".yml")) {
-                                YamlConfiguration configuration = YamlConfiguration.loadConfiguration(subFile);
-                                Set<String> keys = configuration.getKeys(false);
-
-                                if (!keys.isEmpty()) {
-                                    for (String key : keys) {
-                                        for (PatternComparison patternComparison : patternGeneralization.patternComparisons) {
-                                            double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
-
-                                            if (value != -1.0) {
-                                                patternComparison.put(
-                                                        patternProfileStorage.profile,
-                                                        patternGeneralization,
-                                                        value,
-                                                        Long.parseLong(key),
-                                                        false
-                                                );
-
-                                                if (++count >= (patternGeneralization.patternComparisons.length * Check.violationCycleTicks)) {
-                                                    exit = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if (exit) {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (exit) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            });
         }
 
         private void set(long time, String key, Object value) {
@@ -153,6 +98,53 @@ public class PatternProfileStorage {
         this.files = Collections.synchronizedMap(new LinkedHashMap<>());
     }
 
+    void load(PatternGeneralization patternGeneralization) {
+        SpartanBukkit.dataThread.execute(() -> {
+            File file = new File(
+                    headPath(this.profile.parent, this.profile)
+                            + "/" + patternGeneralization.generalization
+            );
+
+            if (file.exists() && file.isDirectory()) {
+                File[] files = file.listFiles();
+
+                if (files != null) {
+                    Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+
+                    for (int i = 0; i < Math.min(files.length, ResearchEngine.consistentDataRequirement); i++) {
+                        File subFile = files[i];
+
+                        if (subFile.isFile() && subFile.getName().endsWith(".yml")) {
+                            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(subFile);
+                            Set<String> keys = configuration.getKeys(false);
+
+                            if (!keys.isEmpty()) {
+                                for (String key : keys) {
+                                    try {
+                                        for (PatternComparison patternComparison : patternGeneralization.patternComparisons) {
+                                            double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
+
+                                            if (value != -1.0) {
+                                                patternComparison.put(
+                                                        this.profile,
+                                                        patternGeneralization,
+                                                        value,
+                                                        Long.parseLong(key),
+                                                        false
+                                                );
+                                            }
+                                        }
+                                    } catch (Exception ignored) {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     void set(PatternGeneralization patternGeneralization, long time, String key, Object value) {
         synchronized (this.files) {
             this.files.computeIfAbsent(
@@ -192,6 +184,6 @@ public class PatternProfileStorage {
                 }
             }
         }
-        file.delete();
+        SpartanBukkit.dataThread.execute(() -> file.delete());
     }
 }
