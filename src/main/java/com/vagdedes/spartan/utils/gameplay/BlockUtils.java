@@ -1643,8 +1643,7 @@ public class BlockUtils {
     }
 
     public static boolean isSensitive(SpartanLocation loc) {
-        SpartanPlayer p = loc.getPlayer();
-        return p != null ? isSensitive(p, loc.getBlock().material) : isSensitive(loc.getBlock().material);
+        return loc.player != null ? isSensitive(loc.player, loc.getBlock().material) : isSensitive(loc.getBlock().material);
     }
 
     public static boolean isFullSolid(SpartanLocation loc) {
@@ -1677,7 +1676,7 @@ public class BlockUtils {
             return false;
         }
         for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (PlayerData.isOnGround(p, locs, 0.0)) {
+            if (GroundUtils.isOnGround(p, locs, 0.0, true, true)) {
                 return false;
             }
         }

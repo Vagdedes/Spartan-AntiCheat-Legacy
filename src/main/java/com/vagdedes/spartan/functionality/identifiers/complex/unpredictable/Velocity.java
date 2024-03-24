@@ -18,7 +18,7 @@ public class Velocity {
             if (blockY <= 0 || p.getTicksOnAir() <= 20) {
                 return true;
             }
-            int offGroundBlocks = p.getBlocksOffGround(blocksOffGround + 1, true, true); // Do not use limit because of the 'blockY' comparison
+            int offGroundBlocks = p.getBlocksOffGround(blocksOffGround + 1); // Do not use limit because of the 'blockY' comparison
             return offGroundBlocks <= blocksOffGround || offGroundBlocks == blockY;
         }
         return false;

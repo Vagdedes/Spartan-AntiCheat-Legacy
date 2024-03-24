@@ -2,7 +2,6 @@ package com.vagdedes.spartan.utils.gameplay;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -66,8 +65,9 @@ public class PatternUtils {
             double verticalBox;
 
             if (aboveTop) {
-                SpartanPlayer player = location.getPlayer();
-                verticalBox = player != null ? player.getEyeHeight() + (location.getY() - location.getBlockY()) : 1.0;
+                verticalBox = location.player != null
+                        ? location.player.getEyeHeight() + (location.getY() - location.getBlockY())
+                        : 1.0;
             } else {
                 verticalBox = 0.0;
             }

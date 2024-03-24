@@ -47,7 +47,7 @@ public class VelocityCheck extends CheckExecutor {
                 && !player.wasFlying()
                 && !player.hasShield()
                 && !player.wasInLiquids()
-                && player.getBlocksOffGround(3, true, true) <= 2
+                && player.getBlocksOffGround(3) <= 2
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && player.getEnemiesNumber(CombatUtils.maxHitDistance, false) <= 5
                 && !NoHitDelay.hasCooldown(player)

@@ -250,7 +250,7 @@ public class HashHelper {
                 hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
             }
         }
-        hash = extendLong(hash, player.getBlocksOffGround(PlayerData.chunkInt, true, true));
+        hash = extendLong(hash, player.getBlocksOffGround(PlayerData.chunkInt));
         return hash;
     }
 }

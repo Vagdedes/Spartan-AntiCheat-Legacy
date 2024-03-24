@@ -194,7 +194,7 @@ public class Damage {
 
     public static void runMove(SpartanPlayer p) {
         if (p.getHandlers().has(Handlers.HandlerType.Damage, projectileSpamKey)
-                && p.getBlocksOffGround(3, true, true) <= 2) {
+                && p.getBlocksOffGround(3) <= 2) {
             p.getBuffer().remove(projectileSpamKey);
         }
     }
@@ -225,7 +225,7 @@ public class Damage {
                 return true;
             }
             int limit = NoHitDelay.hasCooldown(p) ? (blocksOffGround * 2) : blocksOffGround;
-            return p.getBlocksOffGround(limit + 1, true, true) <= limit;
+            return p.getBlocksOffGround(limit + 1) <= limit;
         }
         return false;
     }

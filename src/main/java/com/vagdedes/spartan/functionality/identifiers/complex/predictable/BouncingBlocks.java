@@ -21,7 +21,7 @@ public class BouncingBlocks {
             Double vertical = p.getNmsVerticalDistance();
 
             if (vertical != null && vertical != 0.0 && !p.isJumping(vertical)
-                    || p.getBlocksOffGround(3, true, true) <= 2) {
+                    || p.getBlocksOffGround(3) <= 2) {
                 SpartanLocation location = p.getLocation();
 
                 if (BlockUtils.isSlime(p, location, slime)) {

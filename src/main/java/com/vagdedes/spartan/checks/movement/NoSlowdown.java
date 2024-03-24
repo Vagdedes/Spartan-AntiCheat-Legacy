@@ -60,7 +60,7 @@ public class NoSlowdown extends CheckExecutor {
             if (check.getBooleanOption("check_bow_shots", true)
                     && !PlayerData.hasJumpEffect(player)
                     && getMovementCase(player) != 0) {
-                return canDo() && !PlayerData.hasSpeedEffect(player, player.getLocation());
+                return canDo() && !PlayerData.hasSpeedEffect(player, player.getLocation(), true);
             }
         } else if (object instanceof FoodLevelChangeEvent) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)

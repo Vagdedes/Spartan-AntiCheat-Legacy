@@ -42,11 +42,11 @@ public class PlayerData {
             gold_spade = MaterialUtils.get("gold_spade"),
             stone_spade = MaterialUtils.get("stone_spade"),
             wood_spade = MaterialUtils.get("wood_spade");
-    public static final double[]
-            jumping = new double[]{0.08307, 0.42f, 0.0001}, // Last one is jump value precision
-            climbing = new double[]{0.03684, 0.07531, 0.11215, 0.11760, 0.12529, 0.15, 0.15444},
-            climbingMinMax = new double[2];
 
+    private static final double
+            climbingMin = 0.03684,
+            climbingMax = 0.15444,
+            climbingDefault = 0.11760;
     public static final double
             postJumpPreFall = 0.00301,
             gravityAcceleration = 0.0784,
@@ -57,8 +57,13 @@ public class PlayerData {
             highPrecision = 0.0019,
             lowPrecision = highPrecision * 2.0,
             chunk = 16.0,
-            climbingScaffoldingMax = climbing[3] + 0.2,
+            climbingScaffoldingMax = climbingDefault + 0.2,
             maxJumpingMotionDifference;
+
+    public static final double[]
+            jumping = new double[]{0.08307, 0.42f, 0.0001}, // Last one is jump value precision
+            climbing = new double[]{climbingMin, 0.07531, 0.11215, climbingDefault, 0.12529, 0.15, climbingMax},
+            climbingMinMax = new double[]{climbingMin, climbingMax};
 
     public static final int
             height,
@@ -84,7 +89,7 @@ public class PlayerData {
 
         // Separator
 
-        jumps.add(jumping[1]); // 0.41999
+        jumps.add(jumping[1]);
         jumps.add(0.33319);
         jumps.add(0.24813);
         jumps.add(0.16477);
@@ -136,18 +141,6 @@ public class PlayerData {
         } else {
             height = 256;
         }
-
-        // Separator
-
-        double max = 0.0,
-                min = Double.MAX_VALUE;
-
-        for (double value : climbing) {
-            max = Math.max(max, value);
-            min = Math.min(min, value);
-        }
-        climbingMinMax[0] = min;
-        climbingMinMax[1] = max;
     }
 
     public static void run(SpartanPlayer p, Player n, Collection<PotionEffect> potionEffects) {
@@ -265,7 +258,7 @@ public class PlayerData {
         return b != null ? b.getEnchantmentLevel(Enchantment.DEPTH_STRIDER) : 0;
     }
 
-    // Speed Effect
+    // Speed
 
     public static boolean hasSoulSpeedEnchantment(SpartanPlayer p, SpartanLocation location) {
         if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
@@ -309,10 +302,6 @@ public class PlayerData {
                 || soulSpeed && hasSoulSpeedEnchantment(p, location));
     }
 
-    public static boolean hasSpeedEffect(SpartanPlayer p, SpartanLocation location) {
-        return hasSpeedEffect(p, location, true);
-    }
-
     // Jumping
 
     public static boolean hasJumpEffect(SpartanPlayer p) {
@@ -344,11 +333,19 @@ public class PlayerData {
     }
 
     public static boolean isJumping(double d, double diff, double offDiff) {
-        if (d > (jumping[0] - offDiff) && d < (0.42 + offDiff) && !GroundUtils.heightExists(d)) {
-            double original = jumping[1];
+        if (d > (jumping[0] - offDiff)
+                && d < (0.42 + offDiff)
+                && !GroundUtils.heightExists(d)) {
+            Iterator<Double> iterator = jumps.iterator();
+            double value = iterator.next();
 
-            for (double value : jumps) {
-                if (Math.abs(value - d) < (value == original ? (diff / 2.0) : diff)) {
+            if (Math.abs(value - d) < (diff / 2.0)) { // More strict with the first motion
+                return true;
+            }
+            while (iterator.hasNext()) {
+                value = iterator.next();
+
+                if (Math.abs(value - d) < diff) {
                     return true;
                 }
             }
@@ -585,14 +582,9 @@ public class PlayerData {
     // Ground
 
     public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double x, double y, double z) {
-        return x == 0.0 && y == 0.0 && z == 0.0 ?
-                (p.isOnGroundCustom() || isOnGround(p, loc.clone().add(x, y, z), y))
-                : isOnGround(p, loc.clone().add(x, y, z), y);
+        return x == 0.0 && y == 0.0 && z == 0.0 && loc.player != null
+                ? loc.player.isOnGroundCustom()
+                : GroundUtils.isOnGround(p, loc.clone().add(x, y, z), y, true, true);
     }
-
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y) {
-        return GroundUtils.isOnGround(p, loc, y, true, true);
-    }
-
 
 }

@@ -73,7 +73,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
 
                             if (!canBounce && !heightExistsHalf && jumping
                                     && (canBounceLive || BouncingBlocks.isLiveBelow(player, to))
-                                    && player.getBlocksOffGround(4, true, true) >= 4) {
+                                    && player.getBlocksOffGround(4) >= 4) {
                                 irregularMovements.cancel(prevention, "jump-" + scenario, 2);
                             }
                         }

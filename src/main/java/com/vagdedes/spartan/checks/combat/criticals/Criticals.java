@@ -189,7 +189,7 @@ public class Criticals extends CheckExecutor {
                 && !player.wasFlying()
                 && !player.wasInLiquids()
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS)
-                && player.getBlocksOffGround(3, true, true) <= 2
+                && player.getBlocksOffGround(3) <= 2
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !BouncingBlocks.isBelow(player)) {
             SpartanLocation location = player.getLocation();

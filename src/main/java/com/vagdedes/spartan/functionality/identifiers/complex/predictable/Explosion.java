@@ -68,16 +68,15 @@ public class Explosion {
     }
 
     public static void runVelocity(SpartanPlayer player) {
-        if (memory.size() > 0) {
+        if (!memory.isEmpty()) {
             clear();
             SpartanLocation to = player.getLocation();
-            World world = to.getWorld();
 
             for (Location explosion : memory.keySet()) {
                 World explosionWorld = explosion.getWorld();
 
                 if (explosionWorld != null
-                        && explosionWorld.equals(world)
+                        && explosionWorld.equals(to.world)
                         && to.distance(explosion) <= CombatUtils.maxHitDistance) {
                     run(player);
                     break;

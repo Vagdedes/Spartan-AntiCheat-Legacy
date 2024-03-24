@@ -15,7 +15,7 @@ public class FloorProtection {
 
     public static void runDamage(SpartanPlayer p, EntityDamageEvent.DamageCause dmg) {
         if (!p.getHandlers().isDisabled(Handlers.HandlerType.Floor)) {
-            boolean ground = p.isOnGroundCustom() || p.getBlocksOffGround(blocksOffGround + 1, true, true) <= blocksOffGround,
+            boolean ground = p.isOnGroundCustom() || p.getBlocksOffGround(blocksOffGround + 1) <= blocksOffGround,
                     fall = dmg == EntityDamageEvent.DamageCause.FALL;
 
             if ((dmg == EntityDamageEvent.DamageCause.FIRE_TICK || fall) && ground && !p.isDetected(true)
@@ -49,7 +49,7 @@ public class FloorProtection {
         Handlers handlers = p.getHandlers();
         return (handlers.has(Handlers.HandlerType.Floor)
                 && (!fall || !handlers.has(Handlers.HandlerType.Floor, "fall")))
-                && (fall || p.getBlocksOffGround(blocksOffGround + 1, true, true) <= blocksOffGround);
+                && (fall || p.getBlocksOffGround(blocksOffGround + 1) <= blocksOffGround);
     }
 
     public static boolean hasCooldown(SpartanPlayer p) {

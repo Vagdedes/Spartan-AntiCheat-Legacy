@@ -1027,26 +1027,26 @@ public class SpartanPlayer {
     }
 
     public boolean refreshOnGroundCustom(SpartanLocation from) {
-        if (PlayerData.isOnGround(this, this.getLocation(), 0.0)) {
+        if (GroundUtils.isOnGround(this, this.getLocation(), 0.0, true, true)) {
             this.onGroundCustom = true; // Server Current Location
-        } else if (from != null && PlayerData.isOnGround(this, from, 0.0)) {
+        } else if (from != null && GroundUtils.isOnGround(this, from, 0.0, true, true)) {
             this.onGroundCustom = true; // Server Previous Location
         } else {
             SpartanLocation eventFrom = getEventFromLocation();
 
             Runnable runnable = () -> {
-                if (PlayerData.isOnGround(this, eventFrom, 0.0)) {
+                if (GroundUtils.isOnGround(this, eventFrom, 0.0, true, true)) {
                     this.onGroundCustom = true; // Event Previous Location
                 } else {
                     SpartanLocation eventLocation = getEventToLocation();
                     this.onGroundCustom = eventLocation != null
-                            && PlayerData.isOnGround(this, eventLocation, 0.0); // Event Current Location
+                            && GroundUtils.isOnGround(this, eventLocation, 0.0, true, true); // Event Current Location
                 }
             };
 
             if (MultiVersion.folia) {
                 SpartanBukkit.runTask(
-                        eventFrom.getWorld(),
+                        eventFrom.world,
                         eventFrom.getBlockX() >> 4,
                         eventFrom.getBlockZ() >> 4,
                         runnable
@@ -1172,7 +1172,7 @@ public class SpartanPlayer {
     }
 
     public World getWorld() {
-        return getLocation().getWorld();
+        return getLocation().world;
     }
 
     public SpartanBlock getTargetBlock(double distance) {
@@ -1534,7 +1534,7 @@ public class SpartanPlayer {
                         List<Entity> entities;
 
                         synchronized (worldEntities) {
-                            entities = worldEntities.get(loc.getWorld());
+                            entities = worldEntities.get(loc.world);
                         }
                         if (entities != null && !entities.isEmpty()) {
                             entities = new ArrayList<>(entities);
@@ -1635,7 +1635,7 @@ public class SpartanPlayer {
 
     public boolean safeTeleport(SpartanLocation loc) {
         if (!isSleeping()) {
-            if (getWorld() == loc.getWorld()) {
+            if (getWorld() == loc.world) {
                 SpartanLocation to = getLocation();
                 to.setX(loc.getX());
                 to.setY(loc.getY());
@@ -1726,11 +1726,11 @@ public class SpartanPlayer {
 
     // Ground
 
-    public int getBlocksOffGround(int limit, boolean liquid, boolean climbable) {
+    public int getBlocksOffGround(int limit) {
         SpartanLocation ploc = getLocation();
         Decimals decimals = getDecimals();
         Cooldowns cooldowns = getCooldowns();
-        String key = "blocks-off-ground=" + Objects.hash(ploc.getBlockY(), limit, liquid, climbable);
+        String key = "blocks-off-ground=" + Objects.hash(ploc.getBlockY(), limit);
 
         if (!cooldowns.canDo(key)) {
             return (int) decimals.get(key, 0.0);
@@ -1738,7 +1738,7 @@ public class SpartanPlayer {
         int blocksOffGround = 0;
 
         for (double i = 0.0; i <= ploc.getY(); i++) {
-            if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, liquid, climbable)) {
+            if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, true, true)) {
                 blocksOffGround++;
 
                 if (blocksOffGround == limit) {

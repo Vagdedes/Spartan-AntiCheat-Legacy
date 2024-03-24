@@ -145,7 +145,7 @@ public class DetectionNotifications {
 
             if (ore != null) {
                 SpartanLocation location = player.getLocation();
-                World.Environment environment = location.getWorld().getEnvironment();
+                World.Environment environment = location.world.getEnvironment();
                 int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ(), amount = 1;
                 String key = ore.toString(),
                         log = player.name + " found " + amount + " " + key

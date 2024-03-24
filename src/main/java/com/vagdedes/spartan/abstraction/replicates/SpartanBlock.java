@@ -84,6 +84,6 @@ public class SpartanBlock {
 
     public Block getBlock() {
         SpartanLocation loc = getLocation();
-        return loc.getWorld().getBlockAt(loc.getLimitedBukkitLocation());
+        return loc.world.getBlockAt(loc.getLimitedBukkitLocation());
     }
 }

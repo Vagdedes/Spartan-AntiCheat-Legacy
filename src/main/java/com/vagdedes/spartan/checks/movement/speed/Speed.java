@@ -370,7 +370,7 @@ public class Speed extends CheckExecutor {
         if (dm != blocks && dm != blocks_slime && (reason.length() != 6 || !reason.equals("blocks"))
                 && !incompatibilities && !bedrockPlayer && !vehicle && !damage && !extremelyPushed
                 && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
-                && !PlayerData.hasSpeedEffect(player, to) && !PlayerData.hasJumpEffect(player)
+                && !PlayerData.hasSpeedEffect(player, to, true) && !PlayerData.hasJumpEffect(player)
                 && !PlayerData.hasLevitationEffect(player) && !FloorProtection.hasCooldown(player)
                 && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
             boolean aboveBlocksCopy = aboveBlocks;
@@ -386,35 +386,18 @@ public class Speed extends CheckExecutor {
                 }
 
                 //Separator
-                if (ver > 0.0 && air <= 12 && !explosion
+                if (ver > 0.0 && air <= 12
+                        && !explosion
+                        && !jumping
                         && (dmCopy == Speed.air || dmCopy == ground || dmCopy == ground_jump_speed || dmCopy == ground_block_speed
                         || dmCopy == ground_block_speed_extended || dmCopy == sneaking || dmCopy == walking)
                         && (!groundVanilla || !groundCustom)
                         && !BouncingBlocks.isBelow(player)
                         && !BlockUtils.isSlime(player, to, 2)
                         && !PatternUtils.isBlockPattern(hopIllegalSingle, to, true, BlockUtils.solid, BlockUtils.semi_solid)
-                        && !PatternUtils.isBlockPattern(hopIllegal, to, true, BlockUtils.semi_solid)) {
-                    if (!jumping) {
-                        if (!BlockUtils.isSlime(player, to, 3) && buffer.start("hop=illegal", 10) >= 4) {
-                            cancel("type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
-                        }
-                    } else if (cooldowns.canDo("above-block")) {
-                        boolean cancel = false;
-
-                        if (Math.abs(PlayerData.jumping[0] - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.35) {
-                            cancel = true;
-                        } else if (Math.abs((PlayerData.jumping[0] * 2) - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.355) {
-                            cancel = true;
-                        } else if (Math.abs((PlayerData.jumping[0] * 3) - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.36) {
-                            cancel = true;
-                        } else if (Math.abs((PlayerData.jumping[0] * 4) - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.365) {
-                            cancel = true;
-                        }
-
-                        if (cancel) {
-                            cancel("type: hop(acceleration), vertical: " + ver + ", horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
-                        }
-                    }
+                        && !PatternUtils.isBlockPattern(hopIllegal, to, true, BlockUtils.semi_solid)
+                        && !BlockUtils.isSlime(player, to, 3) && buffer.start("hop=illegal", 10) >= 4) {
+                    cancel("type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
                 }
 
                 //Separator

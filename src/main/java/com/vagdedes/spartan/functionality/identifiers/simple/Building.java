@@ -78,6 +78,6 @@ public class Building {
     }
 
     private static void teleport(SpartanPlayer p, SpartanLocation loc) {
-        p.teleport(new SpartanLocation(p, loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), 0.0f, loc));
+        p.teleport(new SpartanLocation(p, loc.world, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), 0.0f, loc));
     }
 }

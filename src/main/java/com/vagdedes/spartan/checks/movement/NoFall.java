@@ -118,7 +118,7 @@ public class NoFall extends CheckExecutor { // todo maintain
 
     private void checkLanding(SpartanLocation to, SpartanLocation loc, double vertical, float fall) {
         if (hackType.getCheck().getBooleanOption("check_landing", true)
-                && !PlayerData.hasSpeedEffect(player, to) && !PlayerData.hasJumpEffect(player)) {
+                && !PlayerData.hasSpeedEffect(player, to, true) && !PlayerData.hasJumpEffect(player)) {
             String key = "land";
 
             if (vertical < 0.0) {
@@ -147,7 +147,9 @@ public class NoFall extends CheckExecutor { // todo maintain
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                 && hackType.getCheck().getBooleanOption("check_spoof", true)
                 && (airTicks >= 20 || airTicks >= 12 && player.isFalling(vertical))
-                && player.isOnGround() && !player.isOnGroundCustom() && player.isGroundSpoofing()
+                && player.isOnGround()
+                && !player.isOnGroundCustom()
+                && player.isGroundSpoofing()
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraWear)
                 && !PatternUtils.isBlockPattern(spoof, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
             cancel("type: spoof, air: " + airTicks + ", vertical: " + vertical, from, 10, true, 0.0);
@@ -280,7 +282,7 @@ public class NoFall extends CheckExecutor { // todo maintain
             if (canDo()) {
                 runAsync(() -> {
                     boolean requiresSuspicion = player.getProfile().isSuspectedOrHacker(hackType),
-                            offGround = player.getBlocksOffGround(4, true, true) >= 3;
+                            offGround = player.getBlocksOffGround(4) >= 3;
                     boolean bouncingBlocks = BouncingBlocks.isBelow(player);
 
                     if (!bouncingBlocks) {
