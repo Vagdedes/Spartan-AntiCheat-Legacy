@@ -4,10 +4,9 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
+import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import com.vagdedes.spartan.compatibility.manual.essential.Essentials;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
@@ -54,15 +53,8 @@ public class EventsHandler6 implements Listener {
         if (ChatProtection.runCommand(p, msg, false)) {
             e.setCancelled(true);
         } else {
-            boolean cancelled = e.isCancelled();
-
-            if (!cancelled) {
-                // Compatibility
-                Essentials.run(p, msg);
-            }
-
             // Detections
-            p.getExecutor(Enums.HackType.ItemDrops).handle(cancelled, msg);
+            p.getExecutor(Enums.HackType.ItemDrops).handle(e.isCancelled(), msg);
         }
     }
 
@@ -91,7 +83,7 @@ public class EventsHandler6 implements Listener {
                                      boolean cancelled) {
         if (dmg != EntityDamageEvent.DamageCause.ENTITY_ATTACK
                 || !(defaultEntity instanceof LivingEntity)
-                || mcMMO.hasAbility(player)
+                || mcMMO.hasGeneralAbility(player)
                 || MythicMobs.is(defaultEntity)
                 || ItemsAdder.is(defaultEntity)) {
             return;

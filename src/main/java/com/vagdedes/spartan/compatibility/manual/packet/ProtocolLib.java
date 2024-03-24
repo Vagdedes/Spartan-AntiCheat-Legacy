@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.compatibility.manual.essential.protocollib;
+package com.vagdedes.spartan.compatibility.manual.packet;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.utils.server.ReflectionUtils;
@@ -10,20 +10,11 @@ public class ProtocolLib {
 
     public static boolean isTemporaryPLayer(Player p) {
         return Compatibility.CompatibilityType.ProtocolLib.isFunctional()
-                && canHaveTemporaryPlayers()
+                && temporaryPlayer != null
                 && p.getClass().isInstance(temporaryPlayer);
     }
 
     public static void reload() {
         temporaryPlayer = ReflectionUtils.getClass("com.comphenix.protocol.injector.server.TemporaryPlayer");
-
-        try {
-            BackgroundProtocolLib.initiate();
-        } catch (Exception ignored) {
-        }
-    }
-
-    public static boolean canHaveTemporaryPlayers() {
-        return temporaryPlayer != null;
     }
 }

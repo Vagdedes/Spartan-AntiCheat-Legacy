@@ -4,7 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
+import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.Piracy;
 import com.vagdedes.spartan.functionality.management.Config;

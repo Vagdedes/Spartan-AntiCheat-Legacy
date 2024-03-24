@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.compatibility.necessary.bedrock.plugins;
+package com.vagdedes.spartan.compatibility.necessary.bedrock;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import org.bukkit.entity.Player;
@@ -7,7 +7,7 @@ import protocolsupport.api.ProtocolSupportAPI;
 
 public class ProtocolSupport {
 
-    public static boolean isBedrockPlayer(Player p) {
+    static boolean isBedrockPlayer(Player p) {
         if (Compatibility.CompatibilityType.ProtocolSupport.isFunctional()) {
             try {
                 Connection c = ProtocolSupportAPI.getConnection(p);

@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
+import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
@@ -217,7 +217,7 @@ public class FastBreak extends CheckExecutor {
                     && !Vehicles.has(player, "drill")
                     && !SuperPickaxe.canCancel(player)
                     && !AureliumSkills.canCancel(player)
-                    && !mcMMO.hasAbility(player)
+                    && !mcMMO.hasGeneralAbility(player)
                     && !Compatibility.CompatibilityType.CraftBook.isFunctional();
         } else {
             return false;

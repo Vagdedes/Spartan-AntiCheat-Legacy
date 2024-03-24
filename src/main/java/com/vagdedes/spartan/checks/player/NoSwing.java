@@ -10,11 +10,10 @@ import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
+import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
-import com.vagdedes.spartan.compatibility.necessary.QuickShop;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
@@ -60,8 +59,7 @@ public class NoSwing extends CheckExecutor {
                 player.getTimer(hackType).set("animation");
             }
         } else if (object instanceof BlockBreakEvent) {
-            if (QuickShop.isEnabled()
-                    || !canDo()
+            if (!canDo()
                     || !hackType.getCheck().getBooleanOption("check_breaking", true)
                     || player.hasPotionEffect(PotionEffectType.FAST_DIGGING)
                     || MineBomb.canUse(player) || AureliumSkills.canCancel(player)) {
@@ -155,6 +153,6 @@ public class NoSwing extends CheckExecutor {
     public boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !Vehicles.has(player, "drill")
-                && !mcMMO.hasAbility(player);
+                && !mcMMO.hasGeneralAbility(player);
     }
 }

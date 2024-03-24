@@ -12,11 +12,10 @@ import com.vagdedes.spartan.compatibility.manual.damage.RealDualWield;
 import com.vagdedes.spartan.compatibility.manual.damage.SmashHit;
 import com.vagdedes.spartan.compatibility.manual.entity.CraftBook;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
-import com.vagdedes.spartan.compatibility.manual.essential.Essentials;
-import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
+import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
 import com.vagdedes.spartan.compatibility.manual.vanilla.DragonPhases;
 import com.vagdedes.spartan.compatibility.manual.world.AcidRain;
-import com.vagdedes.spartan.compatibility.necessary.bedrock.plugins.Floodgate;
+import com.vagdedes.spartan.compatibility.necessary.bedrock.Floodgate;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -40,12 +39,12 @@ public class Compatibility {
     private static final Map<String, Boolean> bool = new LinkedHashMap<>();
 
     public enum CompatibilityType {
-        AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, Essentials, MagicSpells, ProtocolLib, mcMMO, NoHitDelay,
+        AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, MagicSpells, ProtocolLib, mcMMO, NoHitDelay,
         TreeFeller, VeinMiner, GrapplingHook, ViaRewind, RecentPvPMechanics, MineBomb, SmashHit, SuperPickaxe,
         RealDualWield, MythicMobs, ViaVersion, ItemAttributes, PrinterMode, Vehicles, MineTinker,
         WildTools, DragonPhases, AureliumSkills, KnockbackMaster, MyPet, CustomEnchantsPlus,
         EcoEnchants, ItemsAdder, RampenDrills, OldCombatMechanics, CustomKnockback, ProjectKorra, AcidRain,
-        MajorIncompatibility, FileGUI, WorldGuard, Floodgate, QuickShop, AntiAltAccount, ProtocolSupport, Authentication;
+        MajorIncompatibility, FileGUI, WorldGuard, Floodgate, AntiAltAccount, ProtocolSupport, Authentication;
 
         private boolean enabled, forced, functional;
 
@@ -59,7 +58,6 @@ public class Compatibility {
             boolean hardcoded;
 
             switch (this) {
-                case QuickShop: // Specific
                 case ProtocolSupport:
                 case WorldGuard:
                 case Floodgate:
@@ -359,7 +357,6 @@ public class Compatibility {
                 () -> Register.enable(new SmashHit(), SmashHit.class)
         );
         CompatibilityType.ItemsAdder.setFunctional();
-        CompatibilityType.Essentials.setFunctional(Essentials::reload);
         CompatibilityType.NoHitDelay.setFunctional(
                 new String[]{""}
         );

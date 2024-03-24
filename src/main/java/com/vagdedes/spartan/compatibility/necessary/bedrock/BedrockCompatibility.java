@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.compatibility.necessary.bedrock;
 
-import com.vagdedes.spartan.compatibility.necessary.bedrock.plugins.Floodgate;
-import com.vagdedes.spartan.compatibility.necessary.bedrock.plugins.ProtocolSupport;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;

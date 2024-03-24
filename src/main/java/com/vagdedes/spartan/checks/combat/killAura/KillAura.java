@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
+import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -232,7 +232,7 @@ public class KillAura extends CheckExecutor {
         return player.canRunCheck(hackType, true)
                 && !player.wasFlying()
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !mcMMO.hasAbility(player)
+                && !mcMMO.hasGeneralAbility(player)
                 && !Attributes.has(player, Attributes.GENERIC_ARMOR);
     }
 }

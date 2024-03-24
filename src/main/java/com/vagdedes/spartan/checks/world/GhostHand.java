@@ -3,7 +3,7 @@ package com.vagdedes.spartan.checks.world;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcmmo.mcMMO;
+import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -83,7 +83,7 @@ public class GhostHand extends CheckExecutor {
                 && !player.wasFlying()
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.canCancel(player)
-                && !mcMMO.hasAbility(player)) {
+                && !mcMMO.hasGeneralAbility(player)) {
             GameMode gameMode = player.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;

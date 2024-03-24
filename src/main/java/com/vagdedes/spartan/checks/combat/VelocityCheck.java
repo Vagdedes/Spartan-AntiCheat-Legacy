@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import com.vagdedes.spartan.compatibility.manual.essential.Essentials;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -52,7 +51,6 @@ public class VelocityCheck extends CheckExecutor {
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && player.getEnemiesNumber(CombatUtils.maxHitDistance, false) <= 5
                 && !NoHitDelay.hasCooldown(player)
-                && !Essentials.isAFK(player)
                 && !Attributes.has(player, Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
             SpartanLocation loc = player.getLocation();
 

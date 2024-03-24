@@ -1,11 +1,10 @@
-package com.vagdedes.spartan.compatibility.necessary.bedrock.plugins;
+package com.vagdedes.spartan.compatibility.necessary.bedrock;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.PluginUtils;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -39,33 +38,14 @@ public class Floodgate {
         }
     }
 
-    public static boolean isUsingBedrockDetections(boolean checkPlayers) {
-        if (Compatibility.CompatibilityType.Floodgate.isFunctional()) {
-            if (checkPlayers) {
-                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-                if (players.size() > 0) {
-                    for (SpartanPlayer p : players) {
-                        if (p.bedrockPlayer) {
-                            return true;
-                        }
-                    }
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isBedrockPlayer(UUID uuid, String name) {
+    static boolean isBedrockPlayer(UUID uuid, String name) {
         return Compatibility.CompatibilityType.Floodgate.isFunctional()
                 && FloodgateApi.getInstance().isFloodgatePlayer(uuid)
 
                 || name != null && isBedrockPlayer(name);
     }
 
-    public static boolean isBedrockPlayer(String name) {
+    static boolean isBedrockPlayer(String name) {
         String prefix = Config.settings.getString("Important.bedrock_player_prefix");
         return !prefix.isEmpty() && name.startsWith(prefix);
     }
