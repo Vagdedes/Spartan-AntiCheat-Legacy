@@ -3,13 +3,15 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 
 public class PatternProfile {
 
     private static final int
-            dataWeight = 20,
+            dataWeight = AlgebraUtils.integerRound(TPS.maximum),
             PROBABILITY_POSITION = 0,
             SIGNIFICANCE_POSITION = 1;
 
@@ -217,4 +219,5 @@ public class PatternProfile {
             }
         }
     }
+
 }

@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
@@ -33,7 +32,6 @@ public class Check {
             maxViolationsPerCycle = 100,
             standardIgnoredViolations = 3;
     public static final long violationCycleMilliseconds = violationCycleSeconds * 1_000L;
-
 
     // Object
 
@@ -638,9 +636,6 @@ public class Check {
     }
 
     public Object getOption(String option, Object def, boolean cache) {
-        if (TestServer.isIdentified()) {
-            return def;
-        }
         if (cache) {
             synchronized (options) {
                 Object cached = options.get(option);
