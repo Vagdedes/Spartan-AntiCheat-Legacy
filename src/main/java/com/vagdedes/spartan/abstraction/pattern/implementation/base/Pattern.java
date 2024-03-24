@@ -250,9 +250,11 @@ public class Pattern {
             this.profiles.clear();
             this.profiles.putAll(correlations);
         }
-        synchronized (this.generalizations) {
-            this.generalizations.clear();
-            this.generalizations.putAll(generalizations);
+        if (!generalizations.isEmpty()) {
+            synchronized (this.generalizations) {
+                this.generalizations.clear();
+                this.generalizations.putAll(generalizations);
+            }
         }
         this.load = false;
     }

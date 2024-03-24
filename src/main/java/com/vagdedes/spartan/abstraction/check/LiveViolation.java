@@ -141,7 +141,7 @@ public class LiveViolation {
                         && (silentCause == null
                         || !silentCause.pointerMatches(hp.information))
                         && (suspectedOrHacker
-                        || hasMaxIgnoredLevel(playerViolation.similarityIdentity)
+                        || this.hasMaxIgnoredLevel(playerViolation.similarityIdentity)
                         || violations >= check.getAverageIgnoredViolations(player.dataType));
                 canIgnore = false;
                 violations += 1;

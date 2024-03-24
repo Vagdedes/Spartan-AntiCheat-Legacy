@@ -33,7 +33,7 @@ public class Settings extends ConfigurationBuilder {
             maxSupportedLatencyOption = "Protections.max_supported_player_latency",
             cloudServerNameOption = "Cloud.server_name",
             cloudSynchroniseFilesOption = "Cloud.synchronise_files",
-    falsePositiveDetection = "Performance.enable_false_positive_detection";
+            falsePositiveDetection = "Performance.enable_false_positive_detection";
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
     private Collection<String> punishments = null;
 

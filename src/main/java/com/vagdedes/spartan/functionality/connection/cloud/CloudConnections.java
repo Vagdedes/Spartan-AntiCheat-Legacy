@@ -201,7 +201,8 @@ public class CloudConnections {
 
     static void punishPlayers() {
         // Doesn't need ID validation due to its validated method call
-        if (Config.settings.getBoolean(Settings.falsePositiveDetection)) {
+        if (Config.settings.getBoolean(Settings.falsePositiveDetection)
+                && !TestServer.isIdentified()) {
             StringBuilder value = new StringBuilder();
 
             for (PlayerProfile playerProfile : ResearchEngine.getHackers()) {

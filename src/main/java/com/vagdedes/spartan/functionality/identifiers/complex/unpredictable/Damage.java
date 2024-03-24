@@ -16,7 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
-public class Damage {
+public class Damage { // todo maintain
 
     public static final String
             selfHitKey = "self-hit",
@@ -34,7 +34,7 @@ public class Damage {
 
     public static void extremeDamageHandling(SpartanPlayer p) {
         int time = !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60;
-        Velocity.addCooldown(p, -time);
+        p.getHandlers().add(Handlers.HandlerType.Velocity, time);
         addCooldown(p, time);
     }
 
@@ -100,7 +100,7 @@ public class Damage {
 
                     if (level > 2) {
                         int ticks = Math.min(level * 20, 100);
-                        Velocity.addCooldown(p, -ticks);
+                        p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
                         addCooldown(p, knockbackKey, ticks);
                     } else if (level > 0) {
                         addCooldown(p, knockbackKey, 60);
@@ -165,7 +165,7 @@ public class Damage {
                         addCooldown(p, knockbackKey, ticks);
 
                         if (enchantment > 2) {
-                            Velocity.addCooldown(p, -ticks);
+                            p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
                         }
                     }
                 } else if (!t.equals(p)) {
@@ -179,7 +179,7 @@ public class Damage {
             } else if (projectile.getShooter() != null) {
                 if (projectile.getShooter() instanceof EnderDragon) {
                     int ticks = 60;
-                    Velocity.addCooldown(p, -ticks);
+                    p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
                     addCooldown(p, ticks);
                 } else {
                     addCooldown(p, 30);

@@ -1,9 +1,7 @@
 package com.vagdedes.spartan.functionality.identifiers.complex.unpredictable;
 
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
@@ -22,11 +20,5 @@ public class Velocity {
             return offGroundBlocks <= blocksOffGround || offGroundBlocks == blockY;
         }
         return false;
-    }
-
-    public static void addCooldown(SpartanPlayer p, int ticks) {
-        if (ticks <= 0 || TestServer.isIdentified() || !Compatibility.CompatibilityType.CustomKnockback.isFunctional()) {
-            p.getHandlers().add(Handlers.HandlerType.Velocity, Math.abs(ticks));
-        }
     }
 }
