@@ -2,9 +2,7 @@ package com.vagdedes.spartan.functionality.command;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -19,7 +17,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.NetworkUtils;
-import io.signality.utils.system.Events;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -218,38 +215,6 @@ public class CommandExecution implements CommandExecutor {
                         return true;
                     }
                     DetectionNotifications.toggle(player, 0);
-
-                } else if (Compatibility.CompatibilityType.MinigameMaker.isFunctional() && args[0].equalsIgnoreCase("Add-Incompatible-Item")) {
-                    if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
-                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                        return true;
-                    }
-                    int counter = 0;
-                    StringBuilder events = new StringBuilder();
-
-                    for (Events.EventType eventType : Events.EventType.values()) {
-                        counter++;
-                        String event = eventType.toString().toLowerCase().replace("_", "-");
-
-                        if (counter % 2 == 0) {
-                            events.append(ChatColor.YELLOW).append(event).append(ChatColor.DARK_GRAY).append(", ");
-                        } else {
-                            events.append(ChatColor.GRAY).append(event).append(ChatColor.DARK_GRAY).append(", ");
-                        }
-                    }
-                    events = new StringBuilder(events.substring(0, events.length() - 2));
-                    sender.sendMessage("");
-                    sender.sendMessage(ChatColor.GOLD + "Events: " + events);
-                    sender.sendMessage(ChatColor.LIGHT_PURPLE + "Hint: use %spc% for space characters.");
-                    sender.sendMessage(ChatColor.RED + "Usage: /spartan add-incompatible-item <event> <material> [name] <check(s)> <bypass-seconds>");
-                    sender.sendMessage(ChatColor.RED + "Usage: /spartan add-incompatible-item <event> <material> [name] <check(s)> <bypass-seconds>");
-                    sender.sendMessage(ChatColor.GREEN + "Example #1: /spartan add-incompatible-item block-break diamond-pickaxe FastPlace|FastBreak|BlockReach 3");
-                    sender.sendMessage(ChatColor.GREEN + "Example #2: /spartan add-incompatible-item player-hand-damage-player iron-sword arthur's%spc%excalibur KillAura 1");
-                    sender.sendMessage("");
-
-                    if (isPlayer) {
-                        InteractiveInventory.supportIncompatibleItems.open(player);
-                    }
 
                 } else {
                     completeMessage(sender, "default");
@@ -571,42 +536,6 @@ public class CommandExecution implements CommandExecutor {
                                     AwarenessNotifications.forcefullySend(sender, CloudConnections.sendCustomerSupport(discordTag, check, argumentsToStringThreaded));
                                 });
 
-                            } else if (Compatibility.CompatibilityType.MinigameMaker.isFunctional() && args[0].equalsIgnoreCase("Add-Incompatible-Item")) {
-                                if (args.length == 6) {
-                                    if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
-                                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                                        return true;
-                                    }
-                                    String seconds = args[5];
-
-                                    if (AlgebraUtils.validInteger(seconds) && MinigameMaker.addItem(args[1], args[2], args[4], args[3], Math.max(Integer.parseInt(seconds), 1))) {
-                                        if (isPlayer) {
-                                            InteractiveInventory.supportIncompatibleItems.open(player);
-                                        } else {
-                                            sender.sendMessage(ChatColor.GREEN + "Incompatible item successfully added.");
-                                        }
-                                    } else {
-                                        Bukkit.dispatchCommand(sender, "spartan add-incompatible-item");
-                                    }
-                                } else if (args.length == 5) {
-                                    if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
-                                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
-                                        return true;
-                                    }
-                                    String seconds = args[4];
-
-                                    if (AlgebraUtils.validInteger(seconds) && MinigameMaker.addItem(args[1], args[2], args[3], "%spc%", Math.max(Integer.parseInt(seconds), 1))) {
-                                        if (isPlayer) {
-                                            InteractiveInventory.supportIncompatibleItems.open(player);
-                                        } else {
-                                            sender.sendMessage(ChatColor.GREEN + "Incompatible item successfully added.");
-                                        }
-                                    } else {
-                                        Bukkit.dispatchCommand(sender, "spartan add-incompatible-item");
-                                    }
-                                } else {
-                                    Bukkit.dispatchCommand(sender, "spartan add-incompatible-item");
-                                }
                             } else if (args.length >= 7) {
                                 if (isPlayer && !Permissions.has((Player) sender, Permission.CONDITION)) {
                                     sender.sendMessage(Config.messages.getColorfulString("no_permission"));

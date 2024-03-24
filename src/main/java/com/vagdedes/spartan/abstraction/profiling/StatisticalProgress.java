@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.functionality;
+package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 

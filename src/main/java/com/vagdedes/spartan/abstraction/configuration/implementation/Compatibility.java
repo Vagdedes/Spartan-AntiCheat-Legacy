@@ -13,7 +13,6 @@ import com.vagdedes.spartan.compatibility.manual.damage.SmashHit;
 import com.vagdedes.spartan.compatibility.manual.entity.CraftBook;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.compatibility.manual.essential.Essentials;
-import com.vagdedes.spartan.compatibility.manual.essential.MinigameMaker;
 import com.vagdedes.spartan.compatibility.manual.essential.protocollib.ProtocolLib;
 import com.vagdedes.spartan.compatibility.manual.vanilla.DragonPhases;
 import com.vagdedes.spartan.compatibility.manual.world.AcidRain;
@@ -43,8 +42,8 @@ public class Compatibility {
     public enum CompatibilityType {
         AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, Essentials, MagicSpells, ProtocolLib, mcMMO, NoHitDelay,
         TreeFeller, VeinMiner, GrapplingHook, ViaRewind, RecentPvPMechanics, MineBomb, SmashHit, SuperPickaxe,
-        RealDualWield, UltimateStatistics, MythicMobs, ViaVersion, ItemAttributes, PrinterMode, Vehicles, MineTinker,
-        MinigameMaker, WildTools, DragonPhases, AureliumSkills, KnockbackMaster, MyPet, CustomEnchantsPlus,
+        RealDualWield, MythicMobs, ViaVersion, ItemAttributes, PrinterMode, Vehicles, MineTinker,
+        WildTools, DragonPhases, AureliumSkills, KnockbackMaster, MyPet, CustomEnchantsPlus,
         EcoEnchants, ItemsAdder, RampenDrills, OldCombatMechanics, CustomKnockback, ProjectKorra, AcidRain,
         MajorIncompatibility, FileGUI, WorldGuard, Floodgate, QuickShop, AntiAltAccount, ProtocolSupport, Authentication;
 
@@ -299,8 +298,6 @@ public class Compatibility {
         CompatibilityType.GrapplingHook.setFunctional(
                 () -> Register.enable(new GrapplingHook(), GrapplingHook.class)
         );
-        CompatibilityType.UltimateStatistics.setFunctional();
-        CompatibilityType.MinigameMaker.setFunctional(MinigameMaker::reload);
         CompatibilityType.MythicMobs.setFunctional(MythicMobs::reload);
         CompatibilityType.CustomEnchantsPlus.setFunctional();
         CompatibilityType.EcoEnchants.setFunctional(ReflectionUtils.classExists("com.willfp.ecoenchants.enchants.EcoEnchant"));

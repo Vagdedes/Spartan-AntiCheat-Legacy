@@ -3,7 +3,6 @@ package com.vagdedes.spartan.functionality.performance;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
-import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.*;

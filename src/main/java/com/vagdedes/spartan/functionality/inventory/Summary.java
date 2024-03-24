@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.inventory;
 
-import com.vagdedes.spartan.abstraction.functionality.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.profiling.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
