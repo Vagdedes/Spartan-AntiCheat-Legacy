@@ -68,7 +68,7 @@ public class PatternProfile {
         } else {
             Collection<Long> data = this.contribution.get(patternGeneralization.generalization);
 
-            if (data.size() >= ResearchEngine.consistentDataRequirement) {
+            if (data.size() >= dataWeight) {
                 Iterator<Long> iterator = data.iterator();
                 int size = data.size(),
                         delete = size - dataWeight;
@@ -84,7 +84,7 @@ public class PatternProfile {
                         }
                     }
                 }
-                if (size >= ResearchEngine.consistentDataRequirement) {
+                if (size >= dataWeight) {
                     long total = 0L, previous = iterator.next();
 
                     while (iterator.hasNext()) {
@@ -97,7 +97,7 @@ public class PatternProfile {
                             previous = current;
                         }
                     }
-                    return size >= (ResearchEngine.consistentDataRequirement + 1)
+                    return size >= (dataWeight + 1)
                             ? total / (double) (size - 1)
                             : -1.0;
                 } else {
@@ -197,7 +197,7 @@ public class PatternProfile {
                                 ? data.probability
                                 : data.significance;
 
-                if (collection.size() < ResearchEngine.consistentDataRequirement) {
+                if (collection.size() < dataWeight) {
                     return -1.0;
                 } else {
                     int delete = collection.size() - dataWeight;
