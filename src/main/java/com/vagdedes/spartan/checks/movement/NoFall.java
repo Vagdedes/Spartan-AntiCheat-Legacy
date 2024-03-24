@@ -23,7 +23,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class NoFall extends CheckExecutor { // todo maintain
+public class NoFall extends CheckExecutor {
 
     public static final HackType check = HackType.NoFall;
     private static final String ratioKey = "ratio=";

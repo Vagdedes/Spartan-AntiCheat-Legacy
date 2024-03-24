@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class BlockUtils {
 
-    private static final Material
+    public static final Material
             water = MaterialUtils.get("water"),
             lava = MaterialUtils.get("lava"),
             head = MaterialUtils.get("head"),

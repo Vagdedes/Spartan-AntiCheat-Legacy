@@ -7,17 +7,16 @@ import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class ItemDrops extends CheckExecutor { // todo maintain
+public class ItemDrops extends CheckExecutor {
 
     private static final Enums.HackType check = Enums.HackType.ItemDrops;
-    private static final String checkID = Integer.toString(check.ordinal());
-    private static final Material water = MaterialUtils.get("water");
 
     public ItemDrops(SpartanPlayer player) {
         super(check, player);
@@ -27,17 +26,21 @@ public class ItemDrops extends CheckExecutor { // todo maintain
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
             Timer timer = player.getTimer(check);
-            long time = timer.get(checkID);
+            long time = timer.get("");
 
             if (time <= 50L) {
                 Buffer buffer = player.getBuffer(check);
 
-                if (buffer.start(checkID, 10) >= 8) {
-                    buffer.remove(checkID);
-                    cancel("type: default, ms: " + time, null, 10);
+                if (buffer.start("", 10) == 7) {
+                    buffer.remove("");
+                    cancel("type: fast, ms: " + time, null, 10);
+                }
+                if (buffer.start("", 20) == 13) {
+                    buffer.remove("");
+                    cancel("type: slow, ms: " + time, null, 10);
                 }
             }
-            timer.set(checkID);
+            timer.set("");
         }
         return false;
     }
@@ -68,7 +71,7 @@ public class ItemDrops extends CheckExecutor { // todo maintain
 
             if (e.getAction() == Action.RIGHT_CLICK_BLOCK
                     && canDo()
-                    && e.getClickedBlock().getType() == water
+                    && e.getClickedBlock().getType() == BlockUtils.water
                     && player.getItemInHand().getType() == Material.GLASS_BOTTLE) {
                 player.getViolations(hackType).addDisableCause(check.toString(), null, 10);
             }

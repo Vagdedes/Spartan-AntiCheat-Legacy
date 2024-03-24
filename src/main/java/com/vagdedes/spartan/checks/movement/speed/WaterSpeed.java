@@ -27,9 +27,6 @@ public class WaterSpeed extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    private static final Material
-            water = MaterialUtils.get("water"),
-            lava = MaterialUtils.get("lava");
     private static final String horizontalBufferKey = "buffer=horizontal";
 
     private static final int initialWaterLimit = 10;
@@ -111,9 +108,9 @@ public class WaterSpeed extends DetectionExecutor {
             int limitType = Integer.MIN_VALUE;
             boolean canCheckWater = false;
 
-            if (canCheck(water, box, to, loc1, locM1, locM2, buffer) ? (canCheckWater = true) :
-                    canCheck(lava, box, to, loc1, locM1, locM2, buffer)) {
-                Material material = canCheckWater ? water : lava;
+            if (canCheck(BlockUtils.water, box, to, loc1, locM1, locM2, buffer) ? (canCheckWater = true) :
+                    canCheck(BlockUtils.lava, box, to, loc1, locM1, locM2, buffer)) {
+                Material material = canCheckWater ? BlockUtils.water : BlockUtils.lava;
                 boolean wallsBelow;
                 limitType = canCheckWater ? initialWaterLimit : 0;
 
