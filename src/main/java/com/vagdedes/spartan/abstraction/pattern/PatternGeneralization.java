@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternComparison;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 public abstract class PatternGeneralization {
 
@@ -38,6 +39,7 @@ public abstract class PatternGeneralization {
 
     protected final String key;
     public final int generalization;
+    public final ProbabilityPie significancePie;
     public final PatternComparison
             probabilityRank,
             significanceRank,
@@ -48,6 +50,7 @@ public abstract class PatternGeneralization {
     protected PatternGeneralization(String key, int generalization) {
         this.key = key;
         this.generalization = generalization;
+        this.significancePie = new ProbabilityPie();
         this.probabilityRank = new PatternComparison("probability");
         this.significanceRank = new PatternComparison("significance");
         this.contributionRank = new PatternComparison("contribution");

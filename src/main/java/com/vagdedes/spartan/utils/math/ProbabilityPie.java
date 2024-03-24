@@ -71,6 +71,13 @@ public class ProbabilityPie {
         return this;
     }
 
+    public ProbabilityPie add(Collection<Number> collection) {
+        for (Number number : collection) {
+            this.add(number);
+        }
+        return this;
+    }
+
     // Separator
 
     public ProbabilityPie delete(Number number) {
@@ -93,18 +100,27 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie removeOld(int amount) {
+    public ProbabilityPie remove(Collection<Number> collection) {
+        for (Number number : collection) {
+            this.remove(number);
+        }
+        return this;
+    }
+
+
+    public Collection<Number> removeOld(int amount) {
+        Collection<Number> collection = new ArrayList<>(amount);
         Iterator<Number> iterator = this.map.keySet().iterator();
 
         while (iterator.hasNext()) {
-            iterator.next();
+            collection.add(iterator.next());
             iterator.remove();
 
             if (--amount == 0) {
                 break;
             }
         }
-        return this;
+        return collection;
     }
 
     public ProbabilityPie decrease(Number number, int amount) {

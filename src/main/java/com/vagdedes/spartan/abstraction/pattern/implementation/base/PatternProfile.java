@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -9,14 +8,19 @@ import java.util.*;
 
 public class PatternProfile {
 
+    private static final int
+            dataWeight = 20,
+            PROBABILITY_POSITION = 0,
+            SIGNIFICANCE_POSITION = 1;
+
     static final class MutualData {
 
         private final Collection<Double> probability, significance;
         private final double[] total;
 
         private MutualData() {
-            this.probability = new ArrayList<>();
-            this.significance = new ArrayList<>();
+            this.probability = new LinkedList<>();
+            this.significance = new LinkedList<>();
 
             this.total = new double[2];
             this.total[PROBABILITY_POSITION] = 0.0;
@@ -31,10 +35,6 @@ public class PatternProfile {
         }
     }
 
-    private static final int
-            PROBABILITY_POSITION = 0,
-            SIGNIFICANCE_POSITION = 1;
-
     // Separator
 
     final Map<Integer, MutualData> mutual;
@@ -43,7 +43,6 @@ public class PatternProfile {
     final Map<Integer, Map<Long, List<PatternValue>>> correlations;
     final Map<Long, PatternRepetition> repetitions;
     final PlayerProfile profile;
-    private final PatternCache probabilityCache, significanceCache, contributionCache;
     final Pattern parent;
     final PatternProfileStorage storage;
 
@@ -52,15 +51,11 @@ public class PatternProfile {
         this.profile = profile;
         this.storage = new PatternProfileStorage(this);
 
-        this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.mutual = Collections.synchronizedMap(new LinkedHashMap<>());
         this.correlations = new LinkedHashMap<>();
-
         this.repetitions = new LinkedHashMap<>();
 
-        this.probabilityCache = new PatternCache();
-        this.significanceCache = new PatternCache();
-        this.contributionCache = new PatternCache();
+        this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.mutual = Collections.synchronizedMap(new LinkedHashMap<>());
     }
 
     // Public
@@ -73,25 +68,20 @@ public class PatternProfile {
 
             if (data.size() >= ResearchEngine.consistentDataRequirement) {
                 Iterator<Long> iterator = data.iterator();
+                int size = data.size(),
+                        delete = size - dataWeight;
 
-                if (contributionCache.isExpired()) {
-                    contributionCache.refresh();
-                    int delete = data.size() - Check.violationCycleTicks;
+                if (delete > 0) {
+                    while (iterator.hasNext()) {
+                        iterator.next();
+                        iterator.remove();
+                        size--;
 
-                    if (delete > 0) {
-                        while (iterator.hasNext()) {
-                            iterator.next();
-                            iterator.remove();
-                            delete--;
-
-                            if (delete == 0) {
-                                break;
-                            }
+                        if (--delete == 0) {
+                            break;
                         }
                     }
                 }
-                int size = data.size();
-
                 if (size >= ResearchEngine.consistentDataRequirement) {
                     long total = 0L, previous = iterator.next();
 
@@ -126,7 +116,6 @@ public class PatternProfile {
     double probabilityRaw(PatternGeneralization patternGeneralization) {
         return this.average(
                 this.mutual,
-                probabilityCache,
                 PROBABILITY_POSITION,
                 patternGeneralization
         );
@@ -141,7 +130,6 @@ public class PatternProfile {
     double significanceRaw(PatternGeneralization patternGeneralization) {
         return this.average(
                 this.mutual,
-                significanceCache,
                 SIGNIFICANCE_POSITION,
                 patternGeneralization
         );
@@ -185,14 +173,13 @@ public class PatternProfile {
     Collection<Long> contributionData(PatternGeneralization patternGeneralization) {
         return this.contribution.computeIfAbsent(
                 patternGeneralization.generalization,
-                k -> new ArrayList<>()
+                k -> new LinkedList<>()
         );
     }
 
     // Private
 
     private double average(Map<Integer, MutualData> parent,
-                           PatternCache cache,
                            int index,
                            PatternGeneralization patternGeneralization) {
         if (parent.isEmpty()) {
@@ -211,20 +198,17 @@ public class PatternProfile {
                 if (collection.size() < ResearchEngine.consistentDataRequirement) {
                     return -1.0;
                 } else {
-                    if (cache.isExpired()) {
-                        cache.refresh();
-                        int delete = collection.size() - Check.violationCycleTicks;
+                    int delete = collection.size() - dataWeight;
 
-                        if (delete > 0) {
-                            Iterator<Double> iterator = collection.iterator();
+                    if (delete > 0) {
+                        Iterator<Double> iterator = collection.iterator();
 
-                            while (iterator.hasNext()) {
-                                data.total[index] -= iterator.next();
-                                iterator.remove();
+                        while (iterator.hasNext()) {
+                            data.total[index] -= iterator.next();
+                            iterator.remove();
 
-                                if (--delete == 0) {
-                                    break;
-                                }
+                            if (--delete == 0) {
+                                break;
                             }
                         }
                     }
