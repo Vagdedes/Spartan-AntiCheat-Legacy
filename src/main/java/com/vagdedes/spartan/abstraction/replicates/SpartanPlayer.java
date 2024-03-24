@@ -32,7 +32,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.compatibility.necessary.bedrock.BedrockCompatibility;
+import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.Piracy;
@@ -51,7 +51,10 @@ import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.listeners.EventsHandler7;
-import com.vagdedes.spartan.utils.gameplay.*;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.CombatUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.PluginUtils;
@@ -949,9 +952,11 @@ public class SpartanPlayer {
     }
 
     public boolean hasShield() {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && !Compatibility.CompatibilityType.OldCombatMechanics.isFunctional()
-                && (PlayerData.hasItemInHands(this, Material.SHIELD)
-                || isUsingItem());
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                && !Compatibility.CompatibilityType.OldCombatMechanics.isFunctional()
+                && (isUsingItem()
+                || getItemInHand().getType() == Material.SHIELD
+                || inventory.itemInOffHand.getType() == Material.SHIELD);
     }
 
     public boolean isDead() {
@@ -1664,8 +1669,7 @@ public class SpartanPlayer {
         float countedDamage = 0.0f;
         double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY()),
                 box = startY - Math.floor(startY);
-        int iterations = 0,
-                maxIterations = MoveUtils.chunkInt;
+        int iterations = 0;
 
         if (!GroundUtils.heightExists(box)) {
             box = 0.0;
@@ -1675,7 +1679,7 @@ public class SpartanPlayer {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
             Material material = loopLocation.getBlock().material;
 
-            if (iterations != maxIterations
+            if (iterations != PlayerData.chunkInt
                     && (BlockUtils.canClimb(material)
                     || BlockUtils.areWalls(material)
                     || !BlockUtils.isSolid(material))) {
@@ -1756,8 +1760,8 @@ public class SpartanPlayer {
     // Jumping
 
     public boolean isJumping(double d) {
-        double precision = MoveUtils.getJumpingPrecision(this);
-        return MoveUtils.isJumping(
+        double precision = PlayerData.getJumpingPrecision(this);
+        return PlayerData.isJumping(
                 d - getExtraMovementFromJumpEffect(),
                 precision,
                 bedrockPlayer ? precision : 0.0
@@ -1779,15 +1783,15 @@ public class SpartanPlayer {
     }
 
     public boolean isFalling(double dy) {
-        return MoveUtils.getFallingTick(dy) != -1;
+        return PlayerData.getFallingTick(dy) != -1;
     }
 
     public boolean isClimbing(double d) {
         double v5 = AlgebraUtils.cut(d, 5);
 
-        if (v5 != MoveUtils.gravityAcceleration && v5 != 0.07544) {
-            for (double value : MoveUtils.climbing) {
-                if (Math.abs(value - Math.abs(d)) < MoveUtils.lowPrecision) {
+        if (v5 != PlayerData.gravityAcceleration && v5 != 0.07544) {
+            for (double value : PlayerData.climbing) {
+                if (Math.abs(value - Math.abs(d)) < PlayerData.lowPrecision) {
                     return true;
                 }
             }
@@ -1830,8 +1834,8 @@ public class SpartanPlayer {
 
     public double getCalculatedFallingRatio(double vertical) {
         if (vertical < 0.0) {
-            vertical -= MoveUtils.gravityAcceleration;
-            double calculated = MoveUtils.gravityAcceleration * (getTicksOnAir() + 1);
+            vertical -= PlayerData.gravityAcceleration;
+            double calculated = PlayerData.gravityAcceleration * (getTicksOnAir() + 1);
             return Math.abs(calculated - Math.abs(vertical));
         }
         return 0.0;

@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.TestServer;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
@@ -30,7 +30,7 @@ public class NotifyViolation {
 
                 if (staff.uuid.equals(detectedPlayer.uuid)
                         || staff.getWorld().equals(detectedPlayer.getWorld())
-                        && AlgebraUtils.getHorizontalDistance(staff.getLocation(), detectedPlayer.getLocation()) <= MoveUtils.chunk) {
+                        && AlgebraUtils.getHorizontalDistance(staff.getLocation(), detectedPlayer.getLocation()) <= PlayerData.chunk) {
                     return 1;
                 } else {
                     return defaultDivisor;

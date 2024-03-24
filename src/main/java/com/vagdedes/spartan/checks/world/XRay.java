@@ -63,8 +63,9 @@ public class XRay extends CheckExecutor {
                 } else {
                     globalAverage = globalAverage * 1.5;
                 }
-                if (average > globalAverage) {
-                    double points = AlgebraUtils.cut(average - globalAverage, 2);
+                double points = AlgebraUtils.cut(average - globalAverage, 2);
+
+                if (points > 0.0) {
                     cancel(
                             "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points"));
                 }

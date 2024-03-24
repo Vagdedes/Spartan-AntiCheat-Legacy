@@ -7,7 +7,7 @@ import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -46,7 +46,7 @@ public class EventsHandler2 implements Listener {
         }
 
         // System
-        boolean distance = to.distance(e.getFrom()) >= MoveUtils.chunk && !p.wasDetected(true);
+        boolean distance = to.distance(e.getFrom()) >= PlayerData.chunk && !p.wasDetected(true);
         Cache.clear(p, n,
                 false,
                 distance,

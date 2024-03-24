@@ -51,7 +51,7 @@ public class FastBreak extends CheckExecutor {
                         limit -= 250L; // Subtract ms for software/connection inconsistencies
 
                         if (player.bedrockPlayer) {
-                            limit *= AlgebraUtils.twoThirds;
+                            limit = AlgebraUtils.integerRound(limit * 0.8);
                         }
 
                         if (limit > 100L && time < limit) { // Do not check blocks that take equal or less than 1/10th of a second to break

@@ -3,27 +3,24 @@ package com.vagdedes.spartan.functionality.tracking;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 
 public class MovementProcessing {
 
     public static void run(SpartanPlayer p,
                            double dis, double hor, double ver, double box,
-                           float fall,
-                           boolean crawling) {
+                           float fall) {
         // Damage
         Damage.runMove(p);
 
         // NMS Distance Caching
         p.setNmsDistance(dis, hor, ver, box, fall);
 
-        if (!crawling) {
-            // Jump/Fall Identifier
-            if (Math.abs(MoveUtils.jumping[1] - ver) < MoveUtils.getJumpingPrecision(p)) { // Last Jump
-                p.setLastJump();
-            } else if (p.isFalling(ver)) { // Last Fall
-                p.setLastFall();
-            }
+        // Jump/Fall Identifier
+        if (Math.abs(PlayerData.jumping[1] - ver) < PlayerData.getJumpingPrecision(p)) { // Last Jump
+            p.setLastJump();
+        } else if (p.isFalling(ver)) { // Last Fall
+            p.setLastFall();
         }
 
         // Extra Packets

@@ -106,7 +106,7 @@ public class ImpossibleActions extends CheckExecutor {
                     cases = 1;
                 } else if (player.isDead()) {
                     cases = 2;
-                } else if (PlayerData.isUsingTheCursor(player)) {
+                } else if (player.getOpenInventory().isUsingTheCursor()) {
                     cases = 3;
                 } else {
                     cases = 0;

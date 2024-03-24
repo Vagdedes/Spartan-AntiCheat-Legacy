@@ -16,7 +16,10 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorP
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.gameplay.*;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PatternUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
@@ -122,7 +125,7 @@ public class Speed extends CheckExecutor {
     };
 
     static {
-        float f = (float) MoveUtils.gravityAcceleration;
+        float f = (float) PlayerData.gravityAcceleration;
         fallingDistance.add(0.0f);
         fallingDistance.add(f);
         fallingDistance.add(f * 3);
@@ -223,14 +226,14 @@ public class Speed extends CheckExecutor {
             if (PatternUtils.isBlockPattern(new double[][]{
                     {BlockUtils.hitbox, 0, BlockUtils.hitbox},
                     {BlockUtils.hitbox, 1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, player.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerData.lowPrecision, BlockUtils.hitbox},
             }, to, true, BlockUtils.web)) {
                 reason = "cobweb";
                 dm = cacheLimit(decimals, dm, cobweb, 5);
             } else if (PatternUtils.isBlockPattern(new double[][]{
                     {BlockUtils.hitbox, 0, BlockUtils.hitbox},
                     {BlockUtils.hitbox, 1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, player.getEyeHeight() + MoveUtils.lowPrecision, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerData.lowPrecision, BlockUtils.hitbox},
             }, to, true, BlockUtils.interactive_bushes)) {
                 reason = "interactive-bush";
                 dm = cacheLimit(decimals, dm, interactiveBush, 5);
@@ -264,8 +267,8 @@ public class Speed extends CheckExecutor {
                     dm = cacheLimit(decimals, dm, dm, 10);
                 }
             }
-        } else if (Math.abs(MoveUtils.jumping[1] - ver) < MoveUtils.getJumpingPrecision(player)
-                || Math.abs(MoveUtils.jumping[1] - box) < MoveUtils.getJumpingPrecision(player)) {
+        } else if (Math.abs(PlayerData.jumping[1] - ver) < PlayerData.getJumpingPrecision(player)
+                || Math.abs(PlayerData.jumping[1] - box) < PlayerData.getJumpingPrecision(player)) {
             reason = "ypos";
             if (!cooldowns.canDo("ice=reminder")) {
                 dm = cacheLimit(decimals, dm, ypos_advanced, 0);
@@ -398,13 +401,13 @@ public class Speed extends CheckExecutor {
                     } else if (cooldowns.canDo("above-block")) {
                         boolean cancel = false;
 
-                        if (Math.abs(MoveUtils.jumping[0] - ver) < MoveUtils.getJumpingPrecision(player) && hor >= 0.35) {
+                        if (Math.abs(PlayerData.jumping[0] - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.35) {
                             cancel = true;
-                        } else if (Math.abs((MoveUtils.jumping[0] * 2) - ver) < MoveUtils.getJumpingPrecision(player) && hor >= 0.355) {
+                        } else if (Math.abs((PlayerData.jumping[0] * 2) - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.355) {
                             cancel = true;
-                        } else if (Math.abs((MoveUtils.jumping[0] * 3) - ver) < MoveUtils.getJumpingPrecision(player) && hor >= 0.36) {
+                        } else if (Math.abs((PlayerData.jumping[0] * 3) - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.36) {
                             cancel = true;
-                        } else if (Math.abs((MoveUtils.jumping[0] * 4) - ver) < MoveUtils.getJumpingPrecision(player) && hor >= 0.365) {
+                        } else if (Math.abs((PlayerData.jumping[0] * 4) - ver) < PlayerData.getJumpingPrecision(player) && hor >= 0.365) {
                             cancel = true;
                         }
 
@@ -450,7 +453,7 @@ public class Speed extends CheckExecutor {
                     if (hor >= 0.5 && buffer.start("ice_speed=counter", 20) >= 7) {
                         cancel("type: ice-speed(counter), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
                     }
-                    if (groundCustom && hor >= (dmCopy * (AlgebraUtils.oneThird * 2.0))
+                    if (groundCustom && hor >= (dmCopy * (2.0 / 3.0))
                             && buffer.canDo(reasonCopy)
                             && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.semi_solid)
                             && PatternUtils.isBlockPattern(minusOne, to, true, BlockUtils.ice)
@@ -774,7 +777,7 @@ public class Speed extends CheckExecutor {
         } else if (bowProt) {
             dm_speed = Math.max(bow, dm_speed);
         } else {
-            dm_speed = MoveUtils.calculateLimit(player, to, dm_speed, 4.0, PotionEffectType.SPEED);
+            dm_speed = PlayerData.calculateLimit(player, to, dm_speed, 4.0, PotionEffectType.SPEED);
         }
         if (vehicle) {
             Entity entity = player.getVehicle();
@@ -855,7 +858,7 @@ public class Speed extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !MoveUtils.isInWaterTunnel(player, player.getEventToLocation());
+                && !PlayerData.isInWaterTunnel(player, player.getEventToLocation());
     }
 
     private double cacheLimit(Decimals decimals, double existingLimit, double newLimit, int ticks) {

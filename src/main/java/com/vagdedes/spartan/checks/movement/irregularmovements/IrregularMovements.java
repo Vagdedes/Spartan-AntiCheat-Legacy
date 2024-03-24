@@ -16,7 +16,10 @@ import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Dama
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.*;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PatternUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
 
@@ -197,7 +200,7 @@ public class IrregularMovements extends CheckExecutor {
                     velocityScenario = true;
                     scenario = waterElevatorKey;
                     canJump = false;
-                    minimumDown = -(MoveUtils.gravityAcceleration * 7);
+                    minimumDown = -(PlayerData.gravityAcceleration * 7);
                 } else {
                     scenario = liquidsKey;
                     canJump = true;
@@ -330,9 +333,9 @@ public class IrregularMovements extends CheckExecutor {
 
             // Variable Modification
             if (waterElevator) { // Allow the player to go a bit down when in a water soul-sand elevator
-                allowedDown = MoveUtils.gravityAcceleration * 6;
+                allowedDown = PlayerData.gravityAcceleration * 6;
             } else if (forcefulUp) { // Allow the player to go a bit down when in an upwards-only motion
-                allowedDown = MoveUtils.gravityAcceleration * 4;
+                allowedDown = PlayerData.gravityAcceleration * 4;
             }
             if (airTicksOffGround && velocityScenario) { // Attention to bedrockPlayer for the tick amount
                 airTicksOffGround = fullAirTicksOffGround;

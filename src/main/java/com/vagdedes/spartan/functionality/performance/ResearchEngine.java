@@ -28,7 +28,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -484,8 +483,8 @@ public class ResearchEngine {
                     if (rs != null) {
                         while (rs.next()) {
                             String data = rs.getString("information");
-                            Timestamp t = rs.getTimestamp("creation_date");
-                            String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1) + ")[" + TimeUtils.getYearMonthDay(t) + " " + TimeUtils.getTime(t) + "]";
+                            String[] all = TimeUtils.getAll(rs.getTimestamp("creation_date"));
+                            String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1) + ")[" + all[0] + " " + all[1] + "]";
                             cache.put(date, data);
                             byteSize += date.length() + data.length();
 

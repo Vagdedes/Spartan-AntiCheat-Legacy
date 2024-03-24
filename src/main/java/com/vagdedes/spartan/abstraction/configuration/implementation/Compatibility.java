@@ -15,7 +15,7 @@ import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
 import com.vagdedes.spartan.compatibility.manual.vanilla.DragonPhases;
 import com.vagdedes.spartan.compatibility.manual.world.AcidRain;
-import com.vagdedes.spartan.compatibility.necessary.bedrock.Floodgate;
+import com.vagdedes.spartan.compatibility.necessary.Floodgate;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -44,7 +44,7 @@ public class Compatibility {
         RealDualWield, MythicMobs, ViaVersion, ItemAttributes, PrinterMode, Vehicles, MineTinker,
         WildTools, DragonPhases, AureliumSkills, KnockbackMaster, MyPet, CustomEnchantsPlus,
         EcoEnchants, ItemsAdder, RampenDrills, OldCombatMechanics, CustomKnockback, ProjectKorra, AcidRain,
-        MajorIncompatibility, FileGUI, WorldGuard, Floodgate, AntiAltAccount, ProtocolSupport, Authentication;
+        MajorIncompatibility, FileGUI, Floodgate, ProtocolSupport, Authentication;
 
         private boolean enabled, forced, functional;
 
@@ -55,26 +55,33 @@ public class Compatibility {
         }
 
         public void refresh(boolean create) {
-            boolean hardcoded;
+            boolean hardcoded, contains;
+            String name;
 
             switch (this) {
-                case ProtocolSupport:
-                case WorldGuard:
-                case Floodgate:
+                case ProtocolSupport: // Necessary
+                case Floodgate: // Necessary
                 case FileGUI: // Local
-                case AntiAltAccount:
+                    hardcoded = true;
+                    contains = false;
+                    name = this.name().toLowerCase();
+                    break;
                 case Authentication: // General
                     hardcoded = true;
+                    contains = true;
+                    name = "auth";
                     break;
                 default:
                     hardcoded = false;
+                    contains = false;
+                    name = null;
                     break;
             }
 
             if (hardcoded) {
                 this.enabled = true;
                 this.forced = false;
-                this.functional = PluginUtils.exists(this.name().toLowerCase());
+                this.functional = contains ? PluginUtils.contains(name) : PluginUtils.exists(name);
             } else {
                 file = new File(staticDirectory);
                 String compatibility = this.toString();

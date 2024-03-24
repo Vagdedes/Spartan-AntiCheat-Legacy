@@ -315,23 +315,8 @@ public class CloudConnections {
     private static String sendCustomerSupport(String contactPlatform, String contactInformation,
                                               String columnType, String columnInformation,
                                               String userInformation) {
-        String name = null;
-
         if (contactInformation == null) {
             contactInformation = "None";
-        } else if (contactPlatform.equals("discord")) {
-            String[] discordTag;
-
-            if (contactInformation.contains("#")) {
-                discordTag = StringUtils.getDiscordTag(contactInformation);
-
-                if (discordTag == null) {
-                    return "The Discord tag you provided is incorrect.";
-                }
-            } else {
-                discordTag = new String[]{contactInformation};
-            }
-            name = discordTag[0];
         }
 
         for (Enums.HackType hackType : Enums.HackType.values()) {
@@ -500,7 +485,7 @@ public class CloudConnections {
                         if (data.equals("false")) {
                             return "Failed to complete request, reach support if this continues.";
                         } else if (data.equals("true")) {
-                            return "Thanks for reporting" + (name != null ? " " + name : "") + ", we will get back to you if needed. You can join our Discord server at: §n" + DiscordMemberCount.discordURL;
+                            return "Thanks for reporting" + " " + contactInformation + ", we will get back to you if needed. You can join our Discord server at: §n" + DiscordMemberCount.discordURL;
                         }
                     }
                     return "No results were returned from the server, try updating and reach support if this continues.";

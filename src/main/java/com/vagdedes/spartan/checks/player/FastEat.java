@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Difficulty;
@@ -120,7 +119,7 @@ public class FastEat extends CheckExecutor {
                     }
                     break;
                 case RIGHT_CLICK_AIR:
-                    if (PlayerData.holdsFood(player)) {
+                    if (player.getItemInHand().getType().isEdible()) {
                         goldenAppleEffects(player);
                         player.getTimer(hackType).set("food");
                     }

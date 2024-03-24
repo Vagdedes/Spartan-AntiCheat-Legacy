@@ -10,8 +10,8 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -440,7 +440,7 @@ public class SpartanLocation {
 
             if (v_1_17 ?
                     blockY >= serverWorld.getMinHeight() && blockY <= serverWorld.getMaxHeight() :
-                    blockY >= 0 && blockY <= MoveUtils.height) {
+                    blockY >= 0 && blockY <= PlayerData.height) {
                 if (MultiVersion.folia
                         || SpartanBukkit.isSynchronised()
                         || Chunks.isLoaded(serverWorld, getBlockX() >> 4, getBlockZ() >> 4)) {

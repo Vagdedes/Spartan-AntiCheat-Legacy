@@ -34,7 +34,8 @@ public class NoSlowdown extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        if (hackType.getCheck().getBooleanOption("check_item_usage", true)
+        if (!player.isCrawling()
+                && hackType.getCheck().getBooleanOption("check_item_usage", true)
                 && !player.getProfile().playerCombat.isActivelyFighting(null, true, true, false)) {
             return runUse("item-use", player.isUsingItem(), 6);
         } else {
@@ -119,7 +120,7 @@ public class NoSlowdown extends CheckExecutor {
                 || horizontal >= oldHorizontal
                 || player.isOnGroundCustom()
                 || !player.hasShield()
-                && !PlayerData.holdsFood(player)
+                && !player.getItemInHand().getType().isEdible()
                 && player.getItemInHand().getType() != Material.POTION)) {
             int cases = getMovementCase(player);
 

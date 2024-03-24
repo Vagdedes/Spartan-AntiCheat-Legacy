@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.data;
 
-import com.vagdedes.spartan.utils.java.MemoryUtils;
-
 import java.util.*;
 
 public class Decimals {
@@ -85,7 +83,7 @@ public class Decimals {
                     if (newestToOldestIndex >= size) {
                         return def;
                     } else {
-                        return list.get(MemoryUtils.getNewestToOldestPosition(size, newestToOldestIndex));
+                        return list.get(newestToOldestPosition(size, newestToOldestIndex));
                     }
             }
         }
@@ -208,5 +206,9 @@ public class Decimals {
             list = storage.get(name);
         }
         return list == null ? new ArrayList<>(0) : list;
+    }
+
+    private int newestToOldestPosition(int size, int index) {
+        return size - index - 1;
     }
 }

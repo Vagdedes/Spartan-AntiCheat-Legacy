@@ -14,7 +14,6 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorP
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -24,7 +23,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class NoFall extends CheckExecutor {
+public class NoFall extends CheckExecutor { // todo maintain
 
     public static final HackType check = HackType.NoFall;
     private static final String ratioKey = "ratio=";
@@ -178,12 +177,12 @@ public class NoFall extends CheckExecutor {
                     }
                     buffer.set(ratioKey + "block-y", toY);
 
-                    if (vertical < -(MoveUtils.gravityAcceleration * 8) && airTicks > 8) {
+                    if (vertical < -(PlayerData.gravityAcceleration * 8) && airTicks > 8) {
                         buffer.set(ratioKey + "validated", 1);
                     }
                 } else if (buffer.get(ratioKey + "validated") == 1
                         && Math.abs(toY - fromY) <= 3.0
-                        && to.distance(from) <= MoveUtils.chunk) {
+                        && to.distance(from) <= PlayerData.chunk) {
                     if (!player.isJumping(vertical)) {
                         int cases, bufferTicks = 5, bufferRequirement = 2;
 
@@ -207,8 +206,8 @@ public class NoFall extends CheckExecutor {
                                         int blocks = buffer.get(ratioKey + "blocks");
 
                                         // bigger or "equal" to 3 due to abstract counting of blocks
-                                        if (blocks >= MoveUtils.fallDamageBlocks && !decimals.has(decimals.get(ratioKey + "damage"))) {
-                                            boolean safe = blocks >= (MoveUtils.fallDamageBlocks + 1);
+                                        if (blocks >= PlayerData.fallDamageBlocks && !decimals.has(decimals.get(ratioKey + "damage"))) {
+                                            boolean safe = blocks >= (PlayerData.fallDamageBlocks + 1);
                                             cancel("type: ratio, blocks: " + blocks + ", case: " + cases, to, safe ? 10 : 0, true, safe ? blocks : 0.0);
                                         }
                                     }
@@ -319,7 +318,8 @@ public class NoFall extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        if (player.canRunCheck(hackType, true)) {
+        if (player.canRunCheck(hackType, true)
+                && !player.isCrawling()) {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {

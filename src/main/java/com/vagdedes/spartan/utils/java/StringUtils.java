@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.utils.java;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.ChatColor;
 
 import java.nio.charset.Charset;
@@ -72,15 +71,15 @@ public class StringUtils {
             array = new ArrayList<>(idealDescriptionLimit);
         }
 
-        if (string.length() > 0) {
+        if (!string.isEmpty()) {
             String color = string.startsWith("§") ? string.substring(0, 2) : "";
-            boolean hasColor = color.length() > 0;
+            boolean hasColor = !color.isEmpty();
 
             if (hasColor) {
                 string = string.substring(2);
             }
 
-            if (string.length() > 0) {
+            if (!string.isEmpty()) {
                 if (space) {
                     array.add("");
                 }
@@ -202,21 +201,16 @@ public class StringUtils {
 
     // Separator
 
-    public static String[] getDiscordTag(String string) {
-        int length = string.length();
-
-        if (length >= 5) { // a#0000
-            int hashTag = string.indexOf("#");
-
-            if (hashTag > 0 && hashTag < (length - 1)) { // Hashtag cannot be in the start or end
-                String number = string.substring(hashTag + 1);
-
-                if (number.length() == 4 // Tag number is 4 digits
-                        && AlgebraUtils.validInteger(number)) { // Tag number cannot contain non-numerical characters
-                    return new String[]{string.substring(0, hashTag), number}; // Return name & number of discord tag
-                }
-            }
-        }
-        return null;
+    public static boolean isNumeric(char c) {
+        return c == '0'
+                || c == '1'
+                || c == '2'
+                || c == '3'
+                || c == '4'
+                || c == '5'
+                || c == '6'
+                || c == '7'
+                || c == '8'
+                || c == '9';
     }
 }

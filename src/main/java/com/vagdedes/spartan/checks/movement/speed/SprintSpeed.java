@@ -61,6 +61,7 @@ public class SprintSpeed extends DetectionExecutor {
     void run() {
         if (!player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !player.wasInLiquids()
+                && !player.isCrawling()
                 && PlayerData.getWalkSpeedDifference(player) != 0.0f) {
             Double nmsHorizontalDistance = player.getNmsHorizontalDistance();
 

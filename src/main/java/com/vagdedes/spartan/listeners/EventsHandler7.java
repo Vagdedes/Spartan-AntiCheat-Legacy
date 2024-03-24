@@ -129,7 +129,6 @@ public class EventsHandler7 implements Listener {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
         float fall = p.getFallDistance();
-        boolean crawling = p.isCrawling();
 
         // Detections (Always previous so it counts the previous tick and makes the current tick's prediction)
         long situation = HashHelper.hashPlayer(p);
@@ -169,15 +168,13 @@ public class EventsHandler7 implements Listener {
         SpartanBukkit.movementPatterns.store();
 
         // Handlers
-        MovementProcessing.run(p, dis, hor, ver, box, fall, crawling);
+        MovementProcessing.run(p, dis, hor, ver, box, fall);
         CombatProcessing.runMove(p, to);
 
         // Detections
-        if (!crawling) {
-            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD); // Optimised
-            p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled); // Optimised
-            p.getExecutor(Enums.HackType.KillAura).run(cancelled); // Optimised
-        }
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD);
+        p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
+        p.getExecutor(Enums.HackType.KillAura).run(cancelled);
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, dis);
 
         if (dis == 0.0) {
@@ -185,15 +182,11 @@ public class EventsHandler7 implements Listener {
         }
 
         // Detections
-        if (!crawling) {
-            ServerFlying.run(p);
-            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.CHUNK);
-            p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.SPRINT);
-        }
-        if (!crawling) {
-            p.getExecutor(Enums.HackType.NoFall).run(cancelled);
-            p.getExecutor(Enums.HackType.NoSlowdown).run(cancelled);
-        }
+        ServerFlying.run(p);
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.CHUNK);
+        p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.SPRINT);
+        p.getExecutor(Enums.HackType.NoFall).run(cancelled);
+        p.getExecutor(Enums.HackType.NoSlowdown).run(cancelled);
         p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
         p.getExecutor(Enums.HackType.Speed).run(cancelled);
         p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.WATER);

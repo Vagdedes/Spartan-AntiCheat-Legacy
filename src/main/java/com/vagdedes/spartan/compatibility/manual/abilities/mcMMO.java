@@ -4,7 +4,6 @@ import com.gmail.nossr50.api.AbilityAPI;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
@@ -37,7 +36,7 @@ public class mcMMO {
     }
 
     private static boolean hasTamingAbility(SpartanPlayer p) {
-        for (Entity entity : p.getNearbyEntities(MoveUtils.chunk, MoveUtils.chunk, MoveUtils.chunk)) {
+        for (Entity entity : p.getNearbyEntities(PlayerData.chunk, PlayerData.chunk, PlayerData.chunk)) {
             if (entity instanceof Wolf) {
                 AnimalTamer owner = ((Wolf) entity).getOwner();
 

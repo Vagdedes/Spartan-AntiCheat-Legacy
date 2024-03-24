@@ -9,8 +9,6 @@ import java.util.Random;
 
 public class AlgebraUtils {
 
-    public static final double oneThird = 1.0 / 3.0;
-    public static final double twoThirds = 2.0 / 3.0;
 
     public static int integerFloor(double d) {
         return NumberConversions.floor(d);

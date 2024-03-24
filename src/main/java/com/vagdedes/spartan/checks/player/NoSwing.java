@@ -31,7 +31,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
-public class NoSwing extends CheckExecutor {
+public class NoSwing extends CheckExecutor { // todo maintain
 
     private static final int refreshTime = 30 * 20;
     private static final Enums.HackType check = Enums.HackType.NoSwing;

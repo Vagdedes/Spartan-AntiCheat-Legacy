@@ -17,7 +17,7 @@ public class Irregular extends DetectionExecutor {
             cancel("type: irregular(death)");
         } else if (player.isSleeping()) {
             cancel("type: irregular(sleeping)");
-        } else if (PlayerData.isUsingTheCursor(player)) {
+        } else if (player.getOpenInventory().isUsingTheCursor()) {
             cancel("type: irregular(cursor)");
         } else if (PlayerData.isUsingAnInventory(player, 8)) {
             cancel("type: irregular(inventory)");

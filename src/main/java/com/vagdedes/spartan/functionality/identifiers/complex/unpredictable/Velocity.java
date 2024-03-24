@@ -4,12 +4,12 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TestServer;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class Velocity {
 
-    static final int blocksOffGround = AlgebraUtils.integerRound(MoveUtils.height / 4.0);
+    static final int blocksOffGround = AlgebraUtils.integerRound(PlayerData.height / 4.0);
 
     public static boolean hasCooldown(SpartanPlayer p) {
         if (p.getHandlers().has(Handlers.HandlerType.Velocity)) {

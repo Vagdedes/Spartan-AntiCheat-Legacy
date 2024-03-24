@@ -7,7 +7,10 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.utils.gameplay.*;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PatternUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 
@@ -22,15 +25,15 @@ public class IrregularMovementsMotion extends DetectionExecutor {
 
     private static final double
             criticalDecelerationLimit = -0.1,
-            criticalUpwardsLimit = Math.sqrt(MoveUtils.chunk), // 4.0
-            postJumpPreFallPrecision = MoveUtils.jumping[2] * 7, // 0.0007
+            criticalUpwardsLimit = Math.sqrt(PlayerData.chunk), // 4.0
+            postJumpPreFallPrecision = PlayerData.jumping[2] * 7, // 0.0007
             criticalStepLimit = GroundUtils.maxPlayerStep * 2.0, // 1.325
             vehicleStep = 2.0;
     private static final int
-            criticalHoppingBuffer = AlgebraUtils.integerRound(MoveUtils.jumpingMotions / 2.0), // 3.0
+            criticalHoppingBuffer = AlgebraUtils.integerRound(PlayerData.jumpingMotions / 2.0), // 3.0
             extendedDefaultBufferTime = AlgebraUtils.pow2(IrregularMovements.defaultBufferTime), // 400
             decreasedDefaultBufferTime = AlgebraUtils.integerRound(IrregularMovements.defaultBufferTime / 2.0), // 10
-            criticalTickDifference = MoveUtils.jumpingMotions * 4; // 20
+            criticalTickDifference = PlayerData.jumpingMotions * 4; // 20
 
     private static final String
             motionJumpKey = "motion-jump-effect",
@@ -145,7 +148,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     if (checkUpASYNC
                             && !knownBoxesNew
                             && !player.isJumping(vertical)
-                            && Math.abs(vertical - MoveUtils.postJumpPreFall) >= postJumpPreFallPrecision) {
+                            && Math.abs(vertical - PlayerData.postJumpPreFall) >= postJumpPreFallPrecision) {
                         boolean abstractScenario = groundInteractionScenario || velocityScenarioASYNC;
 
                         if (stepLimit > 0.0) {
@@ -202,7 +205,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                 decimals.remove(downwardsDifferenceKey);
                             }
                         }
-                        int expectedTick = MoveUtils.getFallingTick(vertical);
+                        int expectedTick = PlayerData.getFallingTick(vertical);
 
                         if (expectedTick != -1) {
                             int predictedExpectedTick = AlgebraUtils.integerRound(
@@ -222,7 +225,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             }
                             decimals.set(
                                     downwardsPredictionKey,
-                                    MoveUtils.getFallingTick((vertical * MoveUtils.dragComplement) - MoveUtils.gravityAcceleration)
+                                    PlayerData.getFallingTick((vertical * PlayerData.dragComplement) - PlayerData.gravityAcceleration)
                             );
                         } else {
                             decimals.remove(downwardsPredictionKey);
@@ -244,7 +247,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     && !jumpEffectASYNC
                     && player.isJumping(vertical)) {
                 if (player.isSprinting()) {
-                    if (Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)) {
+                    if (Math.abs(vertical - PlayerData.jumping[1]) < PlayerData.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(
                                     prevention, "hopping-sprinting-deceleration", null,
@@ -256,7 +259,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                 criticalHoppingBuffer, decreasedDefaultBufferTime);
                     }
                 } else {
-                    if (Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)) {
+                    if (Math.abs(vertical - PlayerData.jumping[1]) < PlayerData.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(
                                     prevention, "hopping-casual-deceleration", null,
@@ -284,7 +287,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                     velocityScenarioASYNC ? -IrregularMovements.defaultBufferTime : IrregularMovements.defaultBufferTime);
                         }
                     } else if (vertical < 0.0) {
-                        double limit = hasVehicle ? vehicleStep : MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision;
+                        double limit = hasVehicle ? vehicleStep : PlayerData.maxJumpingMotionDifference + PlayerData.highPrecision;
 
                         if (boxDifference >= limit) { // Anything below this threshold is likely instant, where otherwise you fall for a bit
                             irregularMovements.cancel(prevention, "step-down-predictable",
@@ -313,11 +316,11 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                         if (player.isJumping(oldVertical)) {
                             double difference = Math.abs(verticalDifference);
 
-                            if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
+                            if (difference >= (PlayerData.maxJumpingMotionDifference + PlayerData.highPrecision)) { // Jumping motions must not skip each other
                                 irregularMovements.cancel(prevention, "jump-up-skip", 1);
-                            } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
+                            } else if (difference < PlayerData.highPrecision) { // Jumping motions must not be the same
                                 irregularMovements.cancel(prevention, "jump-up-equilibrium",
-                                        groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerData.jumpingMotions : 1);
                             }
                         }
                     } else if (!jumpEffect
@@ -326,9 +329,9 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             && player.isJumping(oldVertical)
                             && !player.getHandlers().has(Handlers.HandlerType.ElytraWear)
                             && (vertical != 0.0 || !PlayerData.isUsable(player.getItemInHand().getType()))) {
-                        double jumpingPrecision = MoveUtils.getJumpingPrecision(player);
+                        double jumpingPrecision = PlayerData.getJumpingPrecision(player);
 
-                        if (Math.abs(oldVertical - MoveUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
+                        if (Math.abs(oldVertical - PlayerData.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
                                 && !PatternUtils.isBlockPattern(new double[][]{
                                 {1, 3, 1},
                                 {1, 2, 1},
@@ -337,7 +340,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                 {1, 1, 1},
                         }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                             irregularMovements.cancel(prevention, "jump-end",
-                                    groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
+                                    groundInteractionScenario || velocityScenarioASYNC ? PlayerData.jumpingMotions : 1);
                         }
                     }
                 }
@@ -347,15 +350,15 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                         if (player.isJumping(oldVertical)) {
                             double difference = Math.abs(verticalDifference);
 
-                            if (difference >= (MoveUtils.maxJumpingMotionDifference + MoveUtils.highPrecision)) { // Jumping motions must not skip each other
+                            if (difference >= (PlayerData.maxJumpingMotionDifference + PlayerData.highPrecision)) { // Jumping motions must not skip each other
                                 irregularMovements.cancel(prevention, "jump-down-skip",
-                                        groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
-                            } else if (difference < MoveUtils.highPrecision) { // Jumping motions must not be the same
+                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerData.jumpingMotions : 1);
+                            } else if (difference < PlayerData.highPrecision) { // Jumping motions must not be the same
                                 irregularMovements.cancel(prevention, "jump-down-equilibrium",
-                                        groundInteractionScenario || velocityScenarioASYNC ? MoveUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerData.jumpingMotions : 1);
                             }
                         } else if (!onGroundCustom
-                                && Math.abs(vertical - MoveUtils.jumping[1]) < MoveUtils.getJumpingPrecision(player)
+                                && Math.abs(vertical - PlayerData.jumping[1]) < PlayerData.getJumpingPrecision(player)
                                 && (!GroundUtils.heightExists(Math.abs(box - vertical)) || !offGround
                                 && to.areBlocks(Material.AIR, 1, false)
                                 && to.clone().add(0, -1, 0).areBlocks(Material.AIR, 1, true)
@@ -376,10 +379,10 @@ public class IrregularMovementsMotion extends DetectionExecutor {
 
                 if (velocityScenarioASYNC) {
                     irregularMovements.cancel(prevention, "equilibrium-velocity", null,
-                            MoveUtils.jumpingMotions, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
+                            PlayerData.jumpingMotions, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
                 } else if (levitationEffect) {
                     irregularMovements.cancel(prevention, "equilibrium-levitation", null,
-                            MoveUtils.jumpingMotions, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
+                            PlayerData.jumpingMotions, IrregularMovements.defaultBufferTime, horizontalDifference >= 0.01);
                 } else {
                     Handlers handlers = player.getHandlers();
 

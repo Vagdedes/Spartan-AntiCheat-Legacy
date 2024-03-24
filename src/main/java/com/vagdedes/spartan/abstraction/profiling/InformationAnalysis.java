@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.CharUtils;
+import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
@@ -52,7 +52,7 @@ public class InformationAnalysis {
         for (int position = 0; position < detection.length(); position++) {
             char character = detection.charAt(position);
 
-            if (CharUtils.isNumeric(character)) {
+            if (StringUtils.isNumeric(character)) {
                 foundNumberPreviously = true;
             } else {
                 if (foundNumberPreviously && character == '.') { // Do not add character as it is part of a decimal

@@ -8,7 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -70,6 +70,11 @@ public class HashHelper {
 
     // Separator
 
+    public static <E> int fastAbstractCollection(Collection<E> collection) {
+        int size = collection.size();
+        return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
+    }
+
     public static long fastCollection(Collection<PatternValue> collection) {
         Iterator<PatternValue> iterator = collection.iterator();
         long hash = (iterator.next().pattern.hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
@@ -83,6 +88,8 @@ public class HashHelper {
         }
         return hash;
     }
+
+    // Separator
 
     public static long collection(Collection<PatternValue> collection) {
         long hash = 1L;
@@ -243,7 +250,7 @@ public class HashHelper {
                 hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
             }
         }
-        hash = extendLong(hash, player.getBlocksOffGround(MoveUtils.chunkInt, true, true));
+        hash = extendLong(hash, player.getBlocksOffGround(PlayerData.chunkInt, true, true));
         return hash;
     }
 }

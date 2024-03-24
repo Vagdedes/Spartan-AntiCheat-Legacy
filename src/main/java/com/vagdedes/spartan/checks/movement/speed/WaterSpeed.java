@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Dama
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -345,7 +344,7 @@ public class WaterSpeed extends DetectionExecutor {
         }
 
         // Separator
-        modifiedLimit = MoveUtils.calculateLimit(player, loc, modifiedLimit, 8.0, PotionEffectType.SPEED);
+        modifiedLimit = PlayerData.calculateLimit(player, loc, modifiedLimit, 8.0, PotionEffectType.SPEED);
         double minimumLimit = hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0);
 
         if (minimumLimit < 0.5 && vehicle != null) {

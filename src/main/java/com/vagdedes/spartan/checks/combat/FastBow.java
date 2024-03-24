@@ -10,7 +10,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class FastBow extends CheckExecutor {
+public class FastBow extends CheckExecutor { // todo maintain
 
     public FastBow(SpartanPlayer player) {
         super(HackType.FastBow, player);

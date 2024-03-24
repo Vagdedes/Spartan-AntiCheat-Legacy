@@ -4,7 +4,6 @@ import com.vagdedes.filegui.api.FileGUIAPI;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.FileGUI;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -178,7 +177,7 @@ public class MainMenu extends InventoryMenu {
                 if (Compatibility.CompatibilityType.FileGUI.isFunctional()) {
                     Player n = player.getPlayer();
 
-                    if (n != null && n.isOnline() && n.hasPermission(FileGUI.permission)) {
+                    if (n != null && n.isOnline() && n.hasPermission("filegui.modify")) {
                         FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
                     } else {
                         player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));

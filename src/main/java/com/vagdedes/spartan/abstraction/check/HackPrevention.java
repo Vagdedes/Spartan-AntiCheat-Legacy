@@ -7,8 +7,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import me.vagdedes.spartan.system.Enums;
 
 public class HackPrevention {
@@ -66,18 +65,16 @@ public class HackPrevention {
             String key = player.uuid + "velocity";
 
             if (cooldowns.canDo(key)
+                    && player.getNmsHorizontalDistance() <= 0.75
                     && (hackType == Enums.HackType.IrregularMovements
                     || hackType == Enums.HackType.Speed && this.information.contains(Speed.strongPrevention))) {
-                SpartanLocation to = player.getLocation(),
-                        from = player.getEventFromLocation();
+                if (player.getNmsHorizontalDistance() <= 0.75) {
+                    double vertical = player.getNmsVerticalDistance();
 
-                if (AlgebraUtils.getHorizontalDistance(to, from) <= 0.75) {
-                    double vertical = Math.abs(to.getY() - from.getY());
-
-                    if (vertical == 0.0 || vertical >= MoveUtils.nearMaxFallingMotion) {
+                    if (vertical == 0.0 || vertical >= PlayerData.actualTerminalVelocity) {
                         cooldowns.add(key, 5);
                         player.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                        player.setVelocity(to.getDirection().setY(MoveUtils.gravityAcceleration));
+                        player.setVelocity(player.getLocation().getDirection().setY(PlayerData.gravityAcceleration));
                     }
                 }
             }

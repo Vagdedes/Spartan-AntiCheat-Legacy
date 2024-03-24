@@ -6,8 +6,8 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerData;
 
 public class IrregularMovementsClimb extends DetectionExecutor {
 
@@ -40,14 +40,14 @@ public class IrregularMovementsClimb extends DetectionExecutor {
                     if (canJump && !knownBoxes && player.isClimbing(oldVertical)
 
                             // Attention, added recently
-                            && (Math.abs(vertical - MoveUtils.jumping[1]) >= MoveUtils.getJumpingPrecision(player) // Not first jump motion
-                            || Math.abs(vertical - box) >= MoveUtils.highPrecision)) { // Vertical & box are not correlated
+                            && (Math.abs(vertical - PlayerData.jumping[1]) >= PlayerData.getJumpingPrecision(player) // Not first jump motion
+                            || Math.abs(vertical - box) >= PlayerData.highPrecision)) { // Vertical & box are not correlated
                         irregularMovements.cancel(prevention, "jump-" + scenario, 1);
                     }
                 } else if (!player.isClimbing(vertical)) {
                     boolean scaffolding = PatternUtils.collides(to, true, true, 0.0, BlockUtils.scaffolding);
                     double jumpEffectExtra = player.getExtraMovementFromJumpEffect(),
-                            max = (scaffolding ? MoveUtils.climbingScaffoldingMax : MoveUtils.getClimbingMotionEdges()[1]) + (jumpEffectExtra > 0 ? jumpEffectExtra + 0.1 : MoveUtils.lowPrecision);
+                            max = (scaffolding ? PlayerData.climbingScaffoldingMax : PlayerData.climbingMinMax[1]) + (jumpEffectExtra > 0 ? jumpEffectExtra + 0.1 : PlayerData.lowPrecision);
 
                     if (canGoUp && vertical >= max) {
                         irregularMovements.cancel(prevention, "up-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, bouncingBlocks || knownBoxes ? 8 : 3, IrregularMovements.defaultBufferTime);

@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClicks extends CheckExecutor {
+public class InventoryClicks extends CheckExecutor { // todo maintain
 
     private static final Enums.HackType check = Enums.HackType.InventoryClicks;
 
@@ -47,7 +47,7 @@ public class InventoryClicks extends CheckExecutor {
 
                 if (shift
                         && !quick
-                        && !PlayerData.isUsingTheCursor(player)
+                        && !player.getOpenInventory().isUsingTheCursor()
                         && player.getViolations(check).hasLevel()
                         && buffer.start(key + "shift", 5) > 10) { // Inventory
                     buffer.remove(key + "shift");

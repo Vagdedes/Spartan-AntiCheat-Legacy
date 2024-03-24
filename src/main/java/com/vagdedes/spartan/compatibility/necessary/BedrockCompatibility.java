@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.compatibility.necessary.bedrock;
+package com.vagdedes.spartan.compatibility.necessary;
 
 import org.bukkit.entity.Player;
 

@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.MoveUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -26,7 +25,7 @@ public class ImpossibleInventory extends CheckExecutor {
             totem_of_undying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) ? Material.getMaterial("TOTEM_OF_UNDYING") : null; // Do not change, material changes mid-version
     private static final int
             jumping = 8,
-            requiredJumpingMotions = AlgebraUtils.integerRound(MoveUtils.jumpingMotions / 2.0);
+            requiredJumpingMotions = AlgebraUtils.integerRound(PlayerData.jumpingMotions / 2.0);
     public static final byte DEATH = 0;
 
     private static final double[] belowBlocks = new double[]{
@@ -62,7 +61,7 @@ public class ImpossibleInventory extends CheckExecutor {
         if (canDo()
                 && !player.isSwimming()
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && PlayerData.isUsingTheCursor(player)) {
+                && player.getOpenInventory().isUsingTheCursor()) {
             int cases = getActionCase();
 
             if (cases != 0
@@ -76,7 +75,8 @@ public class ImpossibleInventory extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(check, true);
+        return player.canRunCheck(check, true)
+                && !player.isCrawling();
     }
 
     private void trackAutoTotem(SpartanPlayer p, ItemStack itemStack) {

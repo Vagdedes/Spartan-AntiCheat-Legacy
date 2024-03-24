@@ -128,10 +128,6 @@ public class Enums {
 
     }
 
-    public enum ArmorState {
-        Full, Semi, Empty
-    }
-
     public enum DataType {
         Java, Bedrock, Universal;
 
