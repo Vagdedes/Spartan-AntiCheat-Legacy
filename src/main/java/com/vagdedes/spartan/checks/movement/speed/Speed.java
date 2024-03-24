@@ -19,7 +19,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
@@ -125,7 +125,7 @@ public class Speed extends CheckExecutor {
     };
 
     static {
-        float f = (float) PlayerData.gravityAcceleration;
+        float f = (float) PlayerUtils.gravityAcceleration;
         fallingDistance.add(0.0f);
         fallingDistance.add(f);
         fallingDistance.add(f * 3);
@@ -197,7 +197,7 @@ public class Speed extends CheckExecutor {
                 groundCustom = player.isOnGroundCustom(),
                 jumping = player.isJumping(ver),
                 extremelyPushed = player.getHandlers().has(Handlers.HandlerType.ExtremeCollision),
-                fairlyPushed = extremelyPushed || PlayerData.hasNearbyCollisions(player),
+                fairlyPushed = extremelyPushed || PlayerUtils.hasNearbyCollisions(player),
                 piston = player.getHandlers().has(Handlers.HandlerType.Piston),
                 honey = !PatternUtils.isBlockPattern(Speed.honey, to, true, BlockUtils.honey_block);
         SpartanLocation loc1 = to.clone().add(0, 1, 0),
@@ -205,8 +205,8 @@ public class Speed extends CheckExecutor {
 
         if (player.isCrawling()
                 || isSolid(box)
-                && (PlayerData.isOnGround(player, to, 0, -box, 0)
-                || PlayerData.isOnGround(player, to, 0, -(box * 2), 0))) {
+                && (PlayerUtils.isOnGround(player, to, 0, -box, 0)
+                || PlayerUtils.isOnGround(player, to, 0, -(box * 2), 0))) {
             reason = "blocks";
             aboveBlocks = true;
 
@@ -226,14 +226,14 @@ public class Speed extends CheckExecutor {
             if (PatternUtils.isBlockPattern(new double[][]{
                     {BlockUtils.hitbox, 0, BlockUtils.hitbox},
                     {BlockUtils.hitbox, 1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerData.lowPrecision, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.hitbox},
             }, to, true, BlockUtils.web)) {
                 reason = "cobweb";
                 dm = cacheLimit(decimals, dm, cobweb, 5);
             } else if (PatternUtils.isBlockPattern(new double[][]{
                     {BlockUtils.hitbox, 0, BlockUtils.hitbox},
                     {BlockUtils.hitbox, 1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerData.lowPrecision, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.hitbox},
             }, to, true, BlockUtils.interactive_bushes)) {
                 reason = "interactive-bush";
                 dm = cacheLimit(decimals, dm, interactiveBush, 5);
@@ -243,7 +243,7 @@ public class Speed extends CheckExecutor {
             } else if ((material = to.getBlock().material) == Material.SOUL_SAND || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && material == Material.SOUL_SOIL) {
                 reason = "soul-sand";
 
-                if (PlayerData.hasSoulSpeedEnchantment(player, to)) {
+                if (PlayerUtils.hasSoulSpeedEnchantment(player, to)) {
                     dm = cacheLimit(decimals, dm, ground, 5);
                 } else {
                     dm = cacheLimit(decimals, dm, soul_sand_ground, 5);
@@ -267,8 +267,8 @@ public class Speed extends CheckExecutor {
                     dm = cacheLimit(decimals, dm, dm, 10);
                 }
             }
-        } else if (Math.abs(PlayerData.jumping[1] - ver) < PlayerData.getJumpingPrecision(player)
-                || Math.abs(PlayerData.jumping[1] - box) < PlayerData.getJumpingPrecision(player)) {
+        } else if (Math.abs(PlayerUtils.jumping[1] - ver) < PlayerUtils.getJumpingPrecision(player)
+                || Math.abs(PlayerUtils.jumping[1] - box) < PlayerUtils.getJumpingPrecision(player)) {
             reason = "ypos";
             if (!cooldowns.canDo("ice=reminder")) {
                 dm = cacheLimit(decimals, dm, ypos_advanced, 0);
@@ -304,7 +304,7 @@ public class Speed extends CheckExecutor {
                     dm = cacheLimit(decimals, dm, air_non_solid_max, 8);
                 }
             } else {
-                if (!jumping && hor >= 0.33 && box > 0.0 && box < 0.1 && PlayerData.isOnGround(player, to, 0, -1, 0)) {
+                if (!jumping && hor >= 0.33 && box > 0.0 && box < 0.1 && PlayerUtils.isOnGround(player, to, 0, -1, 0)) {
                     cooldowns.add("skip-ground-jump-limit", 10);
                 }
                 if (FloorProtection.hasCooldown(player)) {
@@ -349,7 +349,7 @@ public class Speed extends CheckExecutor {
                 knockback = Damage.hasCooldown(player, Damage.knockbackKey),
                 hitDelay = damage && NoHitDelay.hasCooldown(player),
                 incompatibilities = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
-        float difference = PlayerData.getWalkSpeedDifference(player);
+        float difference = PlayerUtils.getWalkSpeedDifference(player);
         double minimumLimit = Math.max(
                 bedrockPlayer || incompatibilities ? incompatibility :
                         player.getHandlers().has(Handlers.HandlerType.ElytraWear)
@@ -370,8 +370,8 @@ public class Speed extends CheckExecutor {
         if (dm != blocks && dm != blocks_slime && (reason.length() != 6 || !reason.equals("blocks"))
                 && !incompatibilities && !bedrockPlayer && !vehicle && !damage && !extremelyPushed
                 && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
-                && !PlayerData.hasSpeedEffect(player, to, true) && !PlayerData.hasJumpEffect(player)
-                && !PlayerData.hasLevitationEffect(player) && !FloorProtection.hasCooldown(player)
+                && !PlayerUtils.hasSpeedEffect(player, to, true) && !PlayerUtils.hasJumpEffect(player)
+                && !PlayerUtils.hasLevitationEffect(player) && !FloorProtection.hasCooldown(player)
                 && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
             boolean aboveBlocksCopy = aboveBlocks;
 
@@ -500,7 +500,7 @@ public class Speed extends CheckExecutor {
                     boolean allow = false;
                     double v = AlgebraUtils.cut(hor, 8);
 
-                    if (dmCopy == Speed.air && (!groundVanilla || !groundCustom) && PlayerData.isOnGround(player, to, 0, -0.25, 0)) {
+                    if (dmCopy == Speed.air && (!groundVanilla || !groundCustom) && PlayerUtils.isOnGround(player, to, 0, -0.25, 0)) {
                         allow = true;
                     } else if (dmCopy == ground || dmCopy == walking || dmCopy == sneaking) {
                         allow = true;
@@ -535,7 +535,7 @@ public class Speed extends CheckExecutor {
                 boolean allow = true;
 
                 // Separator
-                if (groundCustom || PlayerData.isOnGround(player, to, 0, -1, 0)) {
+                if (groundCustom || PlayerUtils.isOnGround(player, to, 0, -1, 0)) {
                     if (modifiedLimit == ground && hor < 0.36
                             || (modifiedLimit == Speed.air || modifiedLimit == ground_block_speed || modifiedLimit == ground_block_speed_extended) && hor < 0.63
                             || modifiedLimit == sneaking && hor < 0.2) {
@@ -560,7 +560,7 @@ public class Speed extends CheckExecutor {
                             || damage && (Damage.getLastReceived(player) <= 500L || Damage.hasCooldown(player, Damage.knockbackKey))) {
                         time = 10;
                         attempts = 6;
-                    } else if (PlayerData.hasHighJumpEffect(player)) {
+                    } else if (PlayerUtils.hasHighJumpEffect(player)) {
                         time = 5;
                         attempts = 3;
                     } else {
@@ -616,8 +616,8 @@ public class Speed extends CheckExecutor {
                 && (jumping || ver == 0.375 || ver >= 0.5 && ver < 0.6 || Math.abs(box - oBox) == 0.5)
 
                 && (groundCustom
-                || PlayerData.isOnGround(player, to, 0, -1, 0)
-                || PlayerData.isOnGround(player, to, 0, -1.5, 0))) {
+                || PlayerUtils.isOnGround(player, to, 0, -1, 0)
+                || PlayerUtils.isOnGround(player, to, 0, -1.5, 0))) {
             // Combined Step Blocks (Not using hitbox_max due to ascension imperfections)
             if ((dm == air || dm == air_non_solid_min || dm == air_non_solid_max) && airTicks == 0 && (ver > 0.5 || jumping)
                     && PatternUtils.isBlockPattern(belowBlocks, to, true, BlockUtils.semi_solid)) {
@@ -730,13 +730,13 @@ public class Speed extends CheckExecutor {
                                double minimumLimit) {
         double dm_speed = dm + (difference * 1.48);
 
-        if (PlayerData.hasLowJumpEffect(player)) {
+        if (PlayerUtils.hasLowJumpEffect(player)) {
             if (reason.equals("air")) {
                 dm_speed += 0.26;
             } else {
                 dm_speed += 0.5;
             }
-        } else if (PlayerData.hasHighJumpEffect(player) && dm_speed != sneaking && dm_speed != walking) {
+        } else if (PlayerUtils.hasHighJumpEffect(player) && dm_speed != sneaking && dm_speed != walking) {
             double value = dm_speed == ice || dm_speed == blocks_ice ? 0.4 : 0.275;
             dm_speed += value;
         }
@@ -760,7 +760,7 @@ public class Speed extends CheckExecutor {
         } else if (bowProt) {
             dm_speed = Math.max(bow, dm_speed);
         } else {
-            dm_speed = PlayerData.calculateLimit(player, to, dm_speed, 4.0, PotionEffectType.SPEED);
+            dm_speed = PlayerUtils.calculateLimit(player, to, dm_speed, 4.0, PotionEffectType.SPEED);
         }
         if (vehicle) {
             Entity entity = player.getVehicle();
@@ -841,7 +841,7 @@ public class Speed extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !PlayerData.isInWaterTunnel(player, player.getEventToLocation());
+                && !PlayerUtils.isInWaterTunnel(player, player.getEventToLocation());
     }
 
     private double cacheLimit(Decimals decimals, double existingLimit, double newLimit, int ticks) {

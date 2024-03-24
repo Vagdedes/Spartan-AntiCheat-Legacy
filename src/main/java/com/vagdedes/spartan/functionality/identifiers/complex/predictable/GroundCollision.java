@@ -2,7 +2,7 @@ package com.vagdedes.spartan.functionality.identifiers.complex.predictable;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
 public class GroundCollision {
 
@@ -18,8 +18,8 @@ public class GroundCollision {
                 Double nmsHorizontalDistance = player.getNmsHorizontalDistance();
                 Handlers handlers = player.getHandlers();
 
-                if (nmsHorizontalDistance != null && nmsHorizontalDistance <= PlayerData.highPrecision
-                        && player.getCustomDistance() <= PlayerData.lowPrecision) {
+                if (nmsHorizontalDistance != null && nmsHorizontalDistance <= PlayerUtils.highPrecision
+                        && player.getCustomDistance() <= PlayerUtils.lowPrecision) {
                     handlers.removeMany(Handlers.HandlerFamily.Motion);
                     handlers.removeMany(Handlers.HandlerFamily.Velocity);
                 } else {

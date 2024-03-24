@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.HashHelper;
+import com.vagdedes.spartan.utils.java.HashUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 
@@ -99,7 +99,7 @@ public class PatternUtils {
             childMap = memory.get(locationIdentifier);
         }
         for (Set<Material> set : sets) {
-            searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + HashHelper.fastAbstractCollection(set);
+            searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + HashUtils.fastAbstractCollection(set);
         }
         if (childMap != null) {
             for (int position = 0; position < positions.length; position++) {
@@ -198,7 +198,7 @@ public class PatternUtils {
 
             // Calculate hashes and check them if cache is available
             for (Set<Material> set : sets) {
-                searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + HashHelper.fastAbstractCollection(set);
+                searchHash = (searchHash * SpartanBukkit.hashCodeMultiplier) + HashUtils.fastAbstractCollection(set);
             }
             double x = coordinates[0], y = coordinates[1], z = coordinates[2];
             int positionIdentifier = (Chunks.positionIdentifier(x, y, z) * SpartanBukkit.hashCodeMultiplier) + searchHash;

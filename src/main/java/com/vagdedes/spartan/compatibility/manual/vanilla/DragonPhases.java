@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class DragonPhases implements Listener {
             if (phase == EnderDragon.Phase.BREATH_ATTACK || phase == EnderDragon.Phase.ROAR_BEFORE_ATTACK || phase == EnderDragon.Phase.CHARGE_PLAYER
                     || phase == EnderDragon.Phase.FLY_TO_PORTAL || phase == EnderDragon.Phase.LAND_ON_PORTAL || phase == EnderDragon.Phase.LEAVE_PORTAL
                     || phase == EnderDragon.Phase.HOVER) {
-                double distance = PlayerData.chunk / 2;
+                double distance = PlayerUtils.chunk / 2;
 
                 for (Entity entity : e.getEntity().getNearbyEntities(distance, distance, distance)) {
                     if (entity instanceof Player) {

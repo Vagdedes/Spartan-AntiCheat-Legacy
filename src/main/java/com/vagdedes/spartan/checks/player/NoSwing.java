@@ -16,7 +16,7 @@ import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -75,9 +75,9 @@ public class NoSwing extends CheckExecutor { // todo maintain
                 if (itemStack.getEnchantmentLevel(Enchantment.DIG_SPEED) < 4) {
                     Material material = itemStack.getType();
 
-                    if (!PlayerData.isAxeItem(material)
-                            && !PlayerData.isPickaxeItem(material)
-                            && !PlayerData.isSpadeItem(material)
+                    if (!PlayerUtils.isAxeItem(material)
+                            && !PlayerUtils.isPickaxeItem(material)
+                            && !PlayerUtils.isSpadeItem(material)
                             && !BlockUtils.isSensitive(player, material)) {
                         Timer timer = player.getTimer(hackType);
 

@@ -15,7 +15,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
@@ -65,7 +65,7 @@ public class NoFall extends CheckExecutor { // todo maintain
             String cooldownKey = "air=cooldown";
             int cooldownTicks = 10;
 
-            if (airTicks > 0 && vertical > -3.5 && !player.getHandlers().has(Handlers.HandlerType.ElytraWear) && !PlayerData.hasJumpEffect(player)) {
+            if (airTicks > 0 && vertical > -3.5 && !player.getHandlers().has(Handlers.HandlerType.ElytraWear) && !PlayerUtils.hasJumpEffect(player)) {
                 if (PatternUtils.isBlockPattern(air, to, true, BlockUtils.semi_solid)) {
                     player.getCooldowns(hackType).add(cooldownKey, cooldownTicks);
                     return;
@@ -94,8 +94,8 @@ public class NoFall extends CheckExecutor { // todo maintain
                               int airTicks) {
         if (hackType.getCheck().getBooleanOption("check_pattern", true)
                 && !player.isOnGroundCustom()
-                && !PlayerData.isOnGround(player, to, 0, -1, 0)
-                && !PlayerData.hasJumpEffect(player)) {
+                && !PlayerUtils.isOnGround(player, to, 0, -1, 0)
+                && !PlayerUtils.hasJumpEffect(player)) {
             String key = "pattern";
 
             if (fallDistanceDifference > 0.0f) {
@@ -118,7 +118,7 @@ public class NoFall extends CheckExecutor { // todo maintain
 
     private void checkLanding(SpartanLocation to, SpartanLocation loc, double vertical, float fall) {
         if (hackType.getCheck().getBooleanOption("check_landing", true)
-                && !PlayerData.hasSpeedEffect(player, to, true) && !PlayerData.hasJumpEffect(player)) {
+                && !PlayerUtils.hasSpeedEffect(player, to, true) && !PlayerUtils.hasJumpEffect(player)) {
             String key = "land";
 
             if (vertical < 0.0) {
@@ -165,7 +165,7 @@ public class NoFall extends CheckExecutor { // todo maintain
                              Buffer buffer, Decimals decimals) {
         if (!player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
             if (hackType.getCheck().getBooleanOption("check_ratio", true)
-                    && !PlayerData.hasJumpEffect(player)
+                    && !PlayerUtils.hasJumpEffect(player)
                     && !BouncingBlocks.isBelow(player)
                     && buffer.get(ratioKey + "cancelled") != 1
                     && player.getCooldowns(check).canDo("ratio")) {
@@ -179,12 +179,12 @@ public class NoFall extends CheckExecutor { // todo maintain
                     }
                     buffer.set(ratioKey + "block-y", toY);
 
-                    if (vertical < -(PlayerData.gravityAcceleration * 8) && airTicks > 8) {
+                    if (vertical < -(PlayerUtils.gravityAcceleration * 8) && airTicks > 8) {
                         buffer.set(ratioKey + "validated", 1);
                     }
                 } else if (buffer.get(ratioKey + "validated") == 1
                         && Math.abs(toY - fromY) <= 3.0
-                        && to.distance(from) <= PlayerData.chunk) {
+                        && to.distance(from) <= PlayerUtils.chunk) {
                     if (!player.isJumping(vertical)) {
                         int cases, bufferTicks = 5, bufferRequirement = 2;
 
@@ -208,8 +208,8 @@ public class NoFall extends CheckExecutor { // todo maintain
                                         int blocks = buffer.get(ratioKey + "blocks");
 
                                         // bigger or "equal" to 3 due to abstract counting of blocks
-                                        if (blocks >= PlayerData.fallDamageBlocks && !decimals.has(decimals.get(ratioKey + "damage"))) {
-                                            boolean safe = blocks >= (PlayerData.fallDamageBlocks + 1);
+                                        if (blocks >= PlayerUtils.fallDamageBlocks && !decimals.has(decimals.get(ratioKey + "damage"))) {
+                                            boolean safe = blocks >= (PlayerUtils.fallDamageBlocks + 1);
                                             cancel("type: ratio, blocks: " + blocks + ", case: " + cases, to, safe ? 10 : 0, true, safe ? blocks : 0.0);
                                         }
                                     }
@@ -231,7 +231,7 @@ public class NoFall extends CheckExecutor { // todo maintain
                             double dmg, boolean cancelled) {
         String s = "ratio=";
 
-        if (!hackType.getCheck().getBooleanOption("check_ratio", true) || PlayerData.hasJumpEffect(player) || cause != EntityDamageEvent.DamageCause.FALL) {
+        if (!hackType.getCheck().getBooleanOption("check_ratio", true) || PlayerUtils.hasJumpEffect(player) || cause != EntityDamageEvent.DamageCause.FALL) {
             clearRatio(player.getBuffer(hackType), player.getDecimals(hackType));
         } else if (cancelled) {
             Buffer buffer = player.getBuffer(hackType);
@@ -340,8 +340,8 @@ public class NoFall extends CheckExecutor { // todo maintain
                         && !player.getHandlers().has(Handlers.HandlerType.Explosion)
                         && !player.getHandlers().has(Handlers.HandlerType.TowerBuilding)
                         && !NoHitDelay.hasCooldown(player)
-                        && !PlayerData.hasLevitationEffect(player)
-                        && !PlayerData.hasSlowFallingEffect(player)
+                        && !PlayerUtils.hasLevitationEffect(player)
+                        && !PlayerUtils.hasSlowFallingEffect(player)
                         && !FloorProtection.hasCooldown(player, true)
                         && !BlockUtils.canClimb(loc)
                         && !player.stepsOnBoats()

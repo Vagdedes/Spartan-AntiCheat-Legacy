@@ -8,7 +8,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -25,7 +25,7 @@ public class ImpossibleInventory extends CheckExecutor {
             totem_of_undying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) ? Material.getMaterial("TOTEM_OF_UNDYING") : null; // Do not change, material changes mid-version
     private static final int
             jumping = 8,
-            requiredJumpingMotions = AlgebraUtils.integerRound(PlayerData.jumpingMotions / 2.0);
+            requiredJumpingMotions = AlgebraUtils.integerRound(PlayerUtils.jumpingMotions / 2.0);
     public static final byte DEATH = 0;
 
     private static final double[] belowBlocks = new double[]{
@@ -89,7 +89,7 @@ public class ImpossibleInventory extends CheckExecutor {
         int cases = getActionCase();
 
         if (cases != 0 && !click.isCreativeAction() && !click.isKeyboardClick() && !player.isSwimming()
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle) && PlayerData.isUsingAnInventory(player, 0)
+                && !player.getHandlers().has(Handlers.HandlerType.Vehicle) && PlayerUtils.isUsingAnInventory(player, 0)
                 && !PatternUtils.isBlockPattern(belowBlocks, player.getLocation(), true, BlockUtils.ice)
                 && (cases != jumping || player.getBuffer(check).start("closed-inventory", 20) >= requiredJumpingMotions)) {
             cancel("type: closed-inventory, case: " + cases);

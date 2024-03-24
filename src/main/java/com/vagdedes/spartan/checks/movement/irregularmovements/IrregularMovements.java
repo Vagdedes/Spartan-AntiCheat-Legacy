@@ -19,7 +19,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
 
@@ -153,7 +153,7 @@ public class IrregularMovements extends CheckExecutor {
 
             // Final Variables
             Buffer buffers = player.getBuffer(hackType);
-            boolean levitationEffect = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && PlayerData.hasLevitationEffect(player),
+            boolean levitationEffect = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && PlayerUtils.hasLevitationEffect(player),
                     incompatibility = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || Compatibility.CompatibilityType.ItemAttributes.isFunctional(),
                     fullAirTicksOffGround = airTicks >= fullOffGroundTicks,
                     airTicksOffGround = fullAirTicksOffGround || airTicks >= (bedrockPlayer || incompatibility ? fullOffGroundTicks : offGroundTicks),
@@ -185,7 +185,7 @@ public class IrregularMovements extends CheckExecutor {
 
             // Scenario Identification
             if (threwTrident
-                    || PlayerData.hasNearbyCollisions(player)
+                    || PlayerUtils.hasNearbyCollisions(player)
                     || NoHitDelay.hasCooldown(player)
                     || player.getHandlers().has(Handlers.HandlerType.Piston)) { // Extreme circumstances
                 velocityScenario = true;
@@ -200,7 +200,7 @@ public class IrregularMovements extends CheckExecutor {
                     velocityScenario = true;
                     scenario = waterElevatorKey;
                     canJump = false;
-                    minimumDown = -(PlayerData.gravityAcceleration * 7);
+                    minimumDown = -(PlayerUtils.gravityAcceleration * 7);
                 } else {
                     scenario = liquidsKey;
                     canJump = true;
@@ -279,7 +279,7 @@ public class IrregularMovements extends CheckExecutor {
             } else if (player.isOnFire()
                     || player.isFrozen()
                     || FloorProtection.hasCooldown(player, true)
-                    || PlayerData.hasBadPotionEffects(player)
+                    || PlayerUtils.hasBadPotionEffects(player)
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;
 
@@ -288,7 +288,7 @@ public class IrregularMovements extends CheckExecutor {
                 canGoDown = !forcefulUp;
                 canJump = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (PlayerData.hasSlowFallingEffect(player)) { // Slow Falling
+            } else if (PlayerUtils.hasSlowFallingEffect(player)) { // Slow Falling
                 slowFallingScenario = true;
 
                 scenario = "slow-falling";
@@ -333,9 +333,9 @@ public class IrregularMovements extends CheckExecutor {
 
             // Variable Modification
             if (waterElevator) { // Allow the player to go a bit down when in a water soul-sand elevator
-                allowedDown = PlayerData.gravityAcceleration * 6;
+                allowedDown = PlayerUtils.gravityAcceleration * 6;
             } else if (forcefulUp) { // Allow the player to go a bit down when in an upwards-only motion
-                allowedDown = PlayerData.gravityAcceleration * 4;
+                allowedDown = PlayerUtils.gravityAcceleration * 4;
             }
             if (airTicksOffGround && velocityScenario) { // Attention to bedrockPlayer for the tick amount
                 airTicksOffGround = fullAirTicksOffGround;

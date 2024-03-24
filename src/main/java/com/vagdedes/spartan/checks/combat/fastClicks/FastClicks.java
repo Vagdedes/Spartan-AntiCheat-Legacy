@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -57,7 +57,7 @@ public class FastClicks extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true) && player.getVehicle() == null
                 && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
-                && !PlayerData.isPickaxeItem(player.getItemInHand().getType())
+                && !PlayerUtils.isPickaxeItem(player.getItemInHand().getType())
                 && !PrinterMode.canCancel(player);
     }
 

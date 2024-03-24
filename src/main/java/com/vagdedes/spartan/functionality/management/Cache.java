@@ -11,7 +11,7 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
@@ -53,7 +53,7 @@ public class Cache {
                              SpartanLocation newLocation) {
         // Utils
         if (!leave) {
-            PlayerData.run(p, n, n.getActivePotionEffects());
+            PlayerUtils.run(p, n, n.getActivePotionEffects());
         }
 
         // Handlers

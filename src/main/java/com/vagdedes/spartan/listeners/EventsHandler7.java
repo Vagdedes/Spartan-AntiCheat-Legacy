@@ -11,13 +11,13 @@ import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovement
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.management.Cache;
-import com.vagdedes.spartan.functionality.protections.CheckDelay;
-import com.vagdedes.spartan.functionality.protections.ServerFlying;
+import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
+import com.vagdedes.spartan.functionality.tracking.ServerFlying;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
-import com.vagdedes.spartan.utils.java.HashHelper;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.java.HashUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -89,7 +89,7 @@ public class EventsHandler7 implements Listener {
         if (p == null) {
             return;
         }
-        PlayerData.update(p, n, false);
+        PlayerUtils.update(p, n, false);
         boolean cancelled = e.isCancelled();
 
         if (!p.canDo(false)) {
@@ -131,8 +131,8 @@ public class EventsHandler7 implements Listener {
         float fall = p.getFallDistance();
 
         // Detections (Always previous so it counts the previous tick and makes the current tick's prediction)
-        long situation = HashHelper.hashPlayer(p);
-        situation = HashHelper.extendLong(situation, HashHelper.hashEnvironment(p, to));
+        long situation = HashUtils.hashPlayer(p);
+        situation = HashUtils.extendLong(situation, HashUtils.hashEnvironment(p, to));
 
         if (SpartanBukkit.debug) {
             p.getExecutor(Enums.HackType.IrregularMovements).handle(false, new Object[]{

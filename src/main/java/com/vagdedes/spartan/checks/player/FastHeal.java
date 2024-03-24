@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
@@ -30,7 +30,7 @@ public class FastHeal extends CheckExecutor {
         long i = 0L;
 
         if (regeneration && !player.isOnFire()) {
-            int level = PlayerData.getPotionLevel(player, PotionEffectType.REGENERATION);
+            int level = PlayerUtils.getPotionLevel(player, PotionEffectType.REGENERATION);
 
             if (level <= 10) {
                 i = level == 0 ? 300L : 45L;

@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.java.HashHelper;
+import com.vagdedes.spartan.utils.java.HashUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
@@ -170,7 +170,7 @@ public class GroundUtils {
 
             for (double d : entry.getValue()) {
                 maxHeightLengthLocal = Math.max(maxHeightLengthLocal, Double.toString(d).length() - 2); // 0.XXXXX
-                hash = HashHelper.extendInt(hash, Double.hashCode(d));
+                hash = HashUtils.extendInt(hash, Double.hashCode(d));
             }
             specificHeightsHashes.put(entry.getKey(), hash);
         }

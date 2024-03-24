@@ -54,7 +54,7 @@ import com.vagdedes.spartan.listeners.EventsHandler7;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.PluginUtils;
@@ -266,7 +266,7 @@ public class SpartanPlayer {
                         if (n != null) {
                             Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
                             p.setActivePotionEffects(potionEffects); // Bad
-                            PlayerData.run(p, n, potionEffects);
+                            PlayerUtils.run(p, n, potionEffects);
                         }
 
                         // Buffer Cache
@@ -334,7 +334,7 @@ public class SpartanPlayer {
                             // External
                             p.playerProfile.playerCombat.track();
                             if (MultiVersion.folia || !SpartanBukkit.isSynchronised()) {
-                                PlayerData.update(p, n, true);
+                                PlayerUtils.update(p, n, true);
                             }
                             DetectionLocation.run(p);
                         } else {
@@ -1679,7 +1679,7 @@ public class SpartanPlayer {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
             Material material = loopLocation.getBlock().material;
 
-            if (iterations != PlayerData.chunkInt
+            if (iterations != PlayerUtils.chunkInt
                     && (BlockUtils.canClimb(material)
                     || BlockUtils.areWalls(material)
                     || !BlockUtils.isSolid(material))) {
@@ -1760,8 +1760,8 @@ public class SpartanPlayer {
     // Jumping
 
     public boolean isJumping(double d) {
-        double precision = PlayerData.getJumpingPrecision(this);
-        return PlayerData.isJumping(
+        double precision = PlayerUtils.getJumpingPrecision(this);
+        return PlayerUtils.isJumping(
                 d - getExtraMovementFromJumpEffect(),
                 precision,
                 bedrockPlayer ? precision : 0.0
@@ -1783,15 +1783,15 @@ public class SpartanPlayer {
     }
 
     public boolean isFalling(double dy) {
-        return PlayerData.getFallingTick(dy) != -1;
+        return PlayerUtils.getFallingTick(dy) != -1;
     }
 
     public boolean isClimbing(double d) {
         double v5 = AlgebraUtils.cut(d, 5);
 
-        if (v5 != PlayerData.gravityAcceleration && v5 != 0.07544) {
-            for (double value : PlayerData.climbing) {
-                if (Math.abs(value - Math.abs(d)) < PlayerData.lowPrecision) {
+        if (v5 != PlayerUtils.gravityAcceleration && v5 != 0.07544) {
+            for (double value : PlayerUtils.climbing) {
+                if (Math.abs(value - Math.abs(d)) < PlayerUtils.lowPrecision) {
                     return true;
                 }
             }
@@ -1800,7 +1800,7 @@ public class SpartanPlayer {
     }
 
     public double getExtraMovementFromJumpEffect() {
-        return PlayerData.getPotionLevel(this, PotionEffectType.JUMP) * 0.1;
+        return PlayerUtils.getPotionLevel(this, PotionEffectType.JUMP) * 0.1;
     }
 
     // Allowance
@@ -1834,8 +1834,8 @@ public class SpartanPlayer {
 
     public double getCalculatedFallingRatio(double vertical) {
         if (vertical < 0.0) {
-            vertical -= PlayerData.gravityAcceleration;
-            double calculated = PlayerData.gravityAcceleration * (getTicksOnAir() + 1);
+            vertical -= PlayerUtils.gravityAcceleration;
+            double calculated = PlayerUtils.gravityAcceleration * (getTicksOnAir() + 1);
             return Math.abs(calculated - Math.abs(vertical));
         }
         return 0.0;

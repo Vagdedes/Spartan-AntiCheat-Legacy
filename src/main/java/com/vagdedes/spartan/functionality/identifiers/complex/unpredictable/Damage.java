@@ -9,7 +9,7 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -53,7 +53,7 @@ public class Damage {
                 SpartanLocation to = p.getLocation();
 
                 if (p.wasInLiquids()
-                        || !p.isOnGroundCustom() && !PlayerData.isOnGround(p, to, 0, -1, 0)) {
+                        || !p.isOnGroundCustom() && !PlayerUtils.isOnGround(p, to, 0, -1, 0)) {
                     result = true;
                 } else {
                     result = false;
@@ -148,7 +148,7 @@ public class Damage {
                         Handlers handlers = p.getHandlers();
                         SpartanLocation to = p.getLocation();
 
-                        if (p.isOnGroundCustom() || PlayerData.isOnGround(p, to, 0, -1, 0) || PlayerData.isOnGround(p, to, 0, -2, 0)) {
+                        if (p.isOnGroundCustom() || PlayerUtils.isOnGround(p, to, 0, -1, 0) || PlayerUtils.isOnGround(p, to, 0, -2, 0)) {
                             buffer.remove(projectileSpamKey);
                             can = true;
                         } else {
@@ -216,7 +216,7 @@ public class Damage {
 
         if (notNull ? p.getHandlers().has(Handlers.HandlerType.Damage, key) : p.getHandlers().has(Handlers.HandlerType.Damage)) {
             if (notNull && key.equals(selfHitKey)
-                    || PlayerData.hasLevitationEffect(p)) {
+                    || PlayerUtils.hasLevitationEffect(p)) {
                 return true;
             }
             Double vertical = p.getNmsVerticalDistance();

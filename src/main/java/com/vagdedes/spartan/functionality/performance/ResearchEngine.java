@@ -9,7 +9,7 @@ import com.vagdedes.spartan.abstraction.profiling.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.checks.combat.criticals.Criticals;
 import com.vagdedes.spartan.checks.combat.criticals.CriticalsUtils;
-import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;

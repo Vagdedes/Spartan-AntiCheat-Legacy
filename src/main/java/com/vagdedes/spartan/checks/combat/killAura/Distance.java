@@ -12,7 +12,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -48,7 +48,7 @@ public class Distance extends DetectionExecutor {
                         long timePassed = opponents[0].getLastHit(false);
 
                         if (timePassed <= 755L) { // 15 Ticks (Make sure the previous hit is recent or non-existent)
-                            double limit = PlayerData.calculateLimit(player, location,
+                            double limit = PlayerUtils.calculateLimit(player, location,
                                     Math.max(CombatUtils.getWidthAndHeight(entity)[0], 2.5),
                                     4.0, PotionEffectType.SPEED);
 

@@ -8,7 +8,7 @@ import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.block.Block;
@@ -118,7 +118,7 @@ public class MorePackets extends CheckExecutor {
                         // Second stage
                         if (cases != 0) {
                             double overallDistance = to.distance(player.getFromLocation()),
-                                    overallLimit = 1.5 + (decreasedRequirement ? 0.0 : PlayerData.chunk / 3.0);
+                                    overallLimit = 1.5 + (decreasedRequirement ? 0.0 : PlayerUtils.chunk / 3.0);
                             boolean passedLimit;
 
                             if (overallDistance >= overallLimit) {

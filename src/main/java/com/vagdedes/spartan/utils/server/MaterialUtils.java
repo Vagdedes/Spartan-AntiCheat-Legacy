@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanInventory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -234,14 +234,14 @@ public class MaterialUtils {
             }
 
             // Separator
-            int hasteEffect = PlayerData.getPotionLevel(player, PotionEffectType.FAST_DIGGING);
+            int hasteEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.FAST_DIGGING);
 
             if (hasteEffect > 0) {
                 multiplier *= (0.2 * hasteEffect) + 1.0;
             }
 
             // Separator
-            int miningFatigueEffect = PlayerData.getPotionLevel(player, PotionEffectType.SLOW_DIGGING);
+            int miningFatigueEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.SLOW_DIGGING);
 
             if (miningFatigueEffect > 0) {
                 multiplier *= Math.pow(miningFatigueEffect, 0.3);

@@ -16,7 +16,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -148,7 +148,7 @@ public class EventsHandler6 implements Listener {
                 if (p == null) {
                     return;
                 }
-                double distance = PlayerData.chunk / 2;
+                double distance = PlayerUtils.chunk / 2;
                 Double nmsDistance = p.getNmsDistance();
 
                 if (nmsDistance != null && nmsDistance <= distance

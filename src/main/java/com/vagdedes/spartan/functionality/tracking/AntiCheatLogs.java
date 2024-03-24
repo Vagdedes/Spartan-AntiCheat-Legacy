@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.configuration;
+package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;

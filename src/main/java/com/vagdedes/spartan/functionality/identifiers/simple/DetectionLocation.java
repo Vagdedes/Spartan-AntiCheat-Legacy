@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,7 +24,7 @@ public class DetectionLocation {
                 SpartanLocation location = player.getLocation();
                 double distance = location.distance(old);
 
-                if (distance > (PlayerData.chunk * 2)
+                if (distance > (PlayerUtils.chunk * 2)
                         && !player.getProfile().isHacker()) {
                     loc.put(player.uuid, location);
                 } else if (distance >= 1.0 && !player.isDetected(true)) {

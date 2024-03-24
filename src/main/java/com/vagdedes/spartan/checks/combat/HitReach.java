@@ -10,7 +10,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
@@ -33,7 +33,7 @@ public class HitReach extends CheckExecutor {
                 && CombatUtils.getWidthAndHeight(entity)[1] > 2.0) {
             preferred = 5.0;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7)
-                || PlayerData.getPotionLevel(player, PotionEffectType.SPEED) > 0
+                || PlayerUtils.getPotionLevel(player, PotionEffectType.SPEED) > 0
                 && player.getValueOrDefault(player.getNmsHorizontalDistance(), 0.0) >= Speed.ground) {
             preferred = 4.25;
         } else {

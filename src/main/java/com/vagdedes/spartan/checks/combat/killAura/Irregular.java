@@ -4,7 +4,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
 public class Irregular extends DetectionExecutor {
 
@@ -19,7 +19,7 @@ public class Irregular extends DetectionExecutor {
             cancel("type: irregular(sleeping)");
         } else if (player.getOpenInventory().isUsingTheCursor()) {
             cancel("type: irregular(cursor)");
-        } else if (PlayerData.isUsingAnInventory(player, 8)) {
+        } else if (PlayerUtils.isUsingAnInventory(player, 8)) {
             cancel("type: irregular(inventory)");
         }
     }

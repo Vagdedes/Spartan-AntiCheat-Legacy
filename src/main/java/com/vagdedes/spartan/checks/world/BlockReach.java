@@ -11,7 +11,7 @@ import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.entity.Strider;
@@ -42,7 +42,7 @@ public class BlockReach extends CheckExecutor {
     private double getLimit() {
         return Math.max(
                 hackType.getCheck().getDecimalOption("overall_distance", 7.5),
-                player.wasFlying() ? PlayerData.chunk : minimumLimit
+                player.wasFlying() ? PlayerUtils.chunk : minimumLimit
         );
     }
 
@@ -63,7 +63,7 @@ public class BlockReach extends CheckExecutor {
                                 limit = getLimit(),
                                 multiplier = getMultiplier();
 
-                        if (distance <= PlayerData.chunk && distance >= (limit * multiplier)) {
+                        if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
                             cancel("type: break, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
                         }
                     }
@@ -82,7 +82,7 @@ public class BlockReach extends CheckExecutor {
                                 limit = getLimit(),
                                 multiplier = getMultiplier();
 
-                        if (distance <= PlayerData.chunk && distance >= (limit * multiplier)) {
+                        if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
                             cancel("type: interact, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
                         }
                     }
@@ -108,13 +108,13 @@ public class BlockReach extends CheckExecutor {
                             && player.getVehicle() == null
                             && !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                             && ypos <= 0.5
-                            && distance >= 1.4 && distance > ab_distance && distance <= PlayerData.chunk) {
+                            && distance >= 1.4 && distance > ab_distance && distance <= PlayerUtils.chunk) {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos + ", block: " + BlockUtils.blockToString(block));
                     } else {
                         double limit = getLimit(),
                                 multiplier = getMultiplier();
 
-                        if (distance <= PlayerData.chunk && distance >= (limit * multiplier)) {
+                        if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
                             cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
                         }
                     }

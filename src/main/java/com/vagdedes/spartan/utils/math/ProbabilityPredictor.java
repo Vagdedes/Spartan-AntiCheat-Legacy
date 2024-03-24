@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.utils.java.HashHelper;
+import com.vagdedes.spartan.utils.java.HashUtils;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,7 +34,7 @@ public class ProbabilityPredictor {
 
         if (!totalPatterns.isEmpty() // No general data to compare
                 && currentPatternSize > 0) { // No individual data to compare
-            long currentPatternHash = HashHelper.collection(currentPattern);
+            long currentPatternHash = HashUtils.collection(currentPattern);
 
             for (Collection<PatternValue> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
@@ -57,7 +57,7 @@ public class ProbabilityPredictor {
                             next = false;
                             this.pie.add(pattern.pattern);
                         }
-                        if (currentPatternHash == HashHelper.collection(list)) {
+                        if (currentPatternHash == HashUtils.collection(list)) {
                             next = true;
                         }
                     }

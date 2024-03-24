@@ -9,7 +9,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -192,9 +192,9 @@ public class ImpossibleActions extends CheckExecutor {
                 if (!player.wasInLiquids()  // Ensure the player is not inside liquid blocks
                         && (player.isOnGround()
                         || player.isOnGroundCustom()
-                        || PlayerData.isOnGround(player, to, 0, -box, 0)
-                        || PlayerData.isOnGround(player, to, 0, -1, 0)
-                        || PlayerData.isOnGround(player, to, 0, -(1 + box), 0)
+                        || PlayerUtils.isOnGround(player, to, 0, -box, 0)
+                        || PlayerUtils.isOnGround(player, to, 0, -1, 0)
+                        || PlayerUtils.isOnGround(player, to, 0, -(1 + box), 0)
                         || player.getTicksOnAir() <= 11)) { // Ensure the player is on ground or close to it
                     SpartanLocation blockLocation = block.getLocation();
                     double verticalDistance = blockY - blockLocation.getBlockY();

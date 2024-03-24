@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Piston;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
-import com.vagdedes.spartan.functionality.protections.CheckDelay;
+import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;

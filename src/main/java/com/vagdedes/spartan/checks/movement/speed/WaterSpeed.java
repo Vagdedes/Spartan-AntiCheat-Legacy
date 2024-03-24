@@ -14,7 +14,7 @@ import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
@@ -124,7 +124,7 @@ public class WaterSpeed extends DetectionExecutor {
                     wallsBelow = !cooldowns.canDo("walls-below");
                 }
 
-                if (PlayerData.getWalkSpeedDifference(player) != 0.0) {
+                if (PlayerUtils.getWalkSpeedDifference(player) != 0.0) {
                     limit = premature;
                 } else if (BouncingBlocks.isBelow(player)) {
                     limit = bouncing;
@@ -133,7 +133,7 @@ public class WaterSpeed extends DetectionExecutor {
                     limit = walls;
                     limitType += 2;
                 } else {
-                    int bootsLevel = PlayerData.getDepthStriderLevel(player);
+                    int bootsLevel = PlayerUtils.getDepthStriderLevel(player);
 
                     if (vertical == 0.0 && horizontalBufferCopy >= 10) {
                         limit = (player.isSprinting() ? stable_extra : stable);
@@ -230,7 +230,7 @@ public class WaterSpeed extends DetectionExecutor {
     // Cache
 
     private int freezeBuffers(Buffer buffer, int divisor) {
-        int finalBuffer = -(PlayerData.getWalkSpeedDifference(player) > 0.0f ? 40 : (20 / divisor));
+        int finalBuffer = -(PlayerUtils.getWalkSpeedDifference(player) > 0.0f ? 40 : (20 / divisor));
         buffer.set(horizontalBufferKey, finalBuffer);
         return finalBuffer;
     }
@@ -305,12 +305,12 @@ public class WaterSpeed extends DetectionExecutor {
 
         // Separator
         if (player.getHandlers().has(Handlers.HandlerType.Trident)) {
-            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), 4.5));
+            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), 4.5));
         } else if (player.getHandlers().has(Handlers.HandlerType.Piston)) {
-            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), Speed.piston));
+            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), Speed.piston));
         } else if (boatStepping || selfHit || horizontalBuffer < 0 || vehicle instanceof Horse
                 || !cooldowns.canDo("ice") || player.getHandlers().has(Handlers.HandlerType.Explosion)) {
-            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerData.getWalkSpeedDifference(player), premature));
+            modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), premature));
         } else if (player.bedrockPlayer
                 || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                 || player.getHandlers().has(Handlers.HandlerType.TowerBuilding)) {
@@ -319,10 +319,10 @@ public class WaterSpeed extends DetectionExecutor {
 
         // Separator
         if (limit != out_lava && limit != in_lava && limit != lava_fire_ticks) {
-            if (PlayerData.hasDolphinsGraceEffect(player)) {
-                double depthStrider = PlayerData.getDepthStriderLevel(player);
+            if (PlayerUtils.hasDolphinsGraceEffect(player)) {
+                double depthStrider = PlayerUtils.getDepthStriderLevel(player);
 
-                if (PlayerData.hasSoulSpeedEnchantment(player, loc)) {
+                if (PlayerUtils.hasSoulSpeedEnchantment(player, loc)) {
                     modifiedLimit += (depthStrider + 1) * 2.0;
                 } else {
                     modifiedLimit += Math.max(depthStrider, 0.5);
@@ -344,7 +344,7 @@ public class WaterSpeed extends DetectionExecutor {
         }
 
         // Separator
-        modifiedLimit = PlayerData.calculateLimit(player, loc, modifiedLimit, 8.0, PotionEffectType.SPEED);
+        modifiedLimit = PlayerUtils.calculateLimit(player, loc, modifiedLimit, 8.0, PotionEffectType.SPEED);
         double minimumLimit = hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0);
 
         if (minimumLimit < 0.5 && vehicle != null) {
@@ -355,8 +355,8 @@ public class WaterSpeed extends DetectionExecutor {
 
     private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
         if (player.canRunCheck(hackType, true) && hackType.getCheck().getBooleanOption("check_water_speed", true)
-                && (selfHit || !Damage.hasCooldown(player)) && !PlayerData.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !PlayerData.hasLevitationEffect(player) && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
+                && (selfHit || !Damage.hasCooldown(player)) && !PlayerUtils.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !PlayerUtils.hasLevitationEffect(player) && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                 Entity vehicle = player.getVehicle();
 

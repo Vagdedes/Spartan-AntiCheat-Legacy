@@ -8,7 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 
-public class HashHelper {
+public class HashUtils {
 
     public static final long
             trueHash = Boolean.hashCode(true),
@@ -250,7 +250,7 @@ public class HashHelper {
                 hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
             }
         }
-        hash = extendLong(hash, player.getBlocksOffGround(PlayerData.chunkInt));
+        hash = extendLong(hash, player.getBlocksOffGround(PlayerUtils.chunkInt));
         return hash;
     }
 }

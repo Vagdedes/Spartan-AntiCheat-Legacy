@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 
 public class HackPrevention {
@@ -71,10 +71,10 @@ public class HackPrevention {
                 if (player.getNmsHorizontalDistance() <= 0.75) {
                     double vertical = player.getNmsVerticalDistance();
 
-                    if (vertical == 0.0 || vertical >= PlayerData.actualTerminalVelocity) {
+                    if (vertical == 0.0 || vertical >= PlayerUtils.actualTerminalVelocity) {
                         cooldowns.add(key, 5);
                         player.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                        player.setVelocity(player.getLocation().getDirection().setY(PlayerData.gravityAcceleration));
+                        player.setVelocity(player.getLocation().getDirection().setY(PlayerUtils.gravityAcceleration));
                     }
                 }
             }

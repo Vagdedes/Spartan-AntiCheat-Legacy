@@ -30,7 +30,7 @@ import java.util.*;
 
 import static org.bukkit.potion.PotionEffectType.*;
 
-public class PlayerData {
+public class PlayerUtils {
 
     private static final Material
             gold_axe = MaterialUtils.get("gold_axe"),

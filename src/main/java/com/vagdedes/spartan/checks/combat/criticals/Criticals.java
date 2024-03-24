@@ -5,13 +5,13 @@ import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.configuration.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -137,8 +137,8 @@ public class Criticals extends CheckExecutor {
             if (fallDistance > 0.0f && fallDistance <= 0.07f) {
                 SpartanLocation location = player.getLocation();
 
-                if (PlayerData.isOnGround(player, location, 0, -fallDistance, 0)
-                        || PlayerData.isOnGround(player, location, 0, -(fallDistance + 0.1), 0)) {
+                if (PlayerUtils.isOnGround(player, location, 0, -fallDistance, 0)
+                        || PlayerUtils.isOnGround(player, location, 0, -(fallDistance + 0.1), 0)) {
                     cancel("type: mini-jump, fall-distance: " + fallDistance);
                 }
             }
@@ -147,7 +147,7 @@ public class Criticals extends CheckExecutor {
 
     private void checkPosition() {
         if (hackType.getCheck().getBooleanOption("check_position", true)
-                && PlayerData.getPotionLevel(player, PotionEffectType.JUMP) < 250 // Error Jump Effect
+                && PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) < 250 // Error Jump Effect
                 && isBlockFree(BlockUtils.hitbox_max)
                 && !player.isOnGround()
                 && !player.isOnGroundCustom()) {

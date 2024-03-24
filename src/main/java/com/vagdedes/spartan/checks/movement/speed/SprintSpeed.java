@@ -10,7 +10,7 @@ import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class SprintSpeed extends DetectionExecutor {
         if (!player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !player.wasInLiquids()
                 && !player.isCrawling()
-                && PlayerData.getWalkSpeedDifference(player) != 0.0f) {
+                && PlayerUtils.getWalkSpeedDifference(player) != 0.0f) {
             Double nmsHorizontalDistance = player.getNmsHorizontalDistance();
 
             if (nmsHorizontalDistance != null && nmsHorizontalDistance >= 0.25) {

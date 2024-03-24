@@ -8,7 +8,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.potion.PotionEffectType;
 
@@ -54,7 +54,7 @@ public class IrregularMovementsLevitation extends DetectionExecutor {
                                     || modifiedOldBox == 0.2,
                             "modified-height-exists", 10);
 
-                    if (canGoUp && vertical >= (0.1 * PlayerData.getPotionLevel(player, PotionEffectType.LEVITATION))) {
+                    if (canGoUp && vertical >= (0.1 * PlayerUtils.getPotionLevel(player, PotionEffectType.LEVITATION))) {
                         irregularMovements.cancel(prevention, "up-" + scenario, 3);
                     } else if (vertical == 0.0
                             && (!modifiedHeightExists

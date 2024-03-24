@@ -12,7 +12,7 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explos
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
-import com.vagdedes.spartan.functionality.protections.CheckDelay;
+import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;

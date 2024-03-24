@@ -13,7 +13,7 @@ import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformatio
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.functionality.protections.CheckDelay;
+import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
 import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.PluginUtils;

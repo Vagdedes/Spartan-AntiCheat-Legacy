@@ -8,7 +8,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Difficulty;
@@ -58,9 +58,9 @@ public class NoSlowdown extends CheckExecutor {
             Check check = hackType.getCheck();
 
             if (check.getBooleanOption("check_bow_shots", true)
-                    && !PlayerData.hasJumpEffect(player)
+                    && !PlayerUtils.hasJumpEffect(player)
                     && getMovementCase(player) != 0) {
-                return canDo() && !PlayerData.hasSpeedEffect(player, player.getLocation(), true);
+                return canDo() && !PlayerUtils.hasSpeedEffect(player, player.getLocation(), true);
             }
         } else if (object instanceof FoodLevelChangeEvent) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)

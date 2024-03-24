@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerData;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
@@ -56,7 +56,7 @@ public class Liquid {
                 || PatternUtils.isLiquidPattern(new double[][]{
                 {hitbox, 0, hitbox},
                 {hitbox, 1, hitbox},
-                {hitbox, player.getEyeHeight() + PlayerData.lowPrecision, hitbox}
+                {hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, hitbox}
         }, location, true);
     }
 }
