@@ -174,6 +174,13 @@ public abstract class DetectionExecutor {
                     count++;
                 }
             }
+            patternStorage.compare(
+                    player,
+                    patternGeneralization,
+                    1.0 / (probabilityPredictor.pie.getTotal() + 1),
+                    significance,
+                    time
+            );
         } else {
             patternStorage.compare(
                     player,
@@ -182,13 +189,6 @@ public abstract class DetectionExecutor {
                     time
             );
         }
-        patternStorage.compare(
-                player,
-                patternGeneralization,
-                0.0,
-                significance,
-                time
-        );
         return sb.toString();
     }
 
