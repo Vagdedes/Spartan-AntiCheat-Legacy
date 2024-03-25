@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.TPS;
 
 public class PatternRepetition {
 
@@ -19,7 +20,7 @@ public class PatternRepetition {
             return true;
         } else {
             this.count++;
-            return this.count <= ResearchEngine.consistentDataRequirement;
+            return this.count <= TPS.maximum;
         }
     }
 }

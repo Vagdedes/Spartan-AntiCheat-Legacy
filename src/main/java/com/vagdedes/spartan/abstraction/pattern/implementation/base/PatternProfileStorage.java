@@ -111,7 +111,7 @@ public class PatternProfileStorage {
                 if (files != null) {
                     Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
 
-                    for (int i = 0; i < Math.min(files.length, ResearchEngine.consistentDataRequirement); i++) {
+                    for (int i = 0; i < Math.min(files.length, 7); i++) { // 7 is less than 1% chance
                         File subFile = files[i];
 
                         if (subFile.isFile() && subFile.getName().endsWith(".yml")) {

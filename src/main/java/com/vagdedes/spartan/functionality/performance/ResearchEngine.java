@@ -18,6 +18,7 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -36,7 +37,6 @@ import java.util.*;
 public class ResearchEngine {
 
     public static final int
-            consistentDataRequirement = 10,
             maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
             maxRows = maxBytes / 1024;
 
@@ -116,7 +116,7 @@ public class ResearchEngine {
     public static boolean enoughData() {
         if (enoughData) {
             return true;
-        } else if (playerProfiles.size() >= consistentDataRequirement) {
+        } else if (playerProfiles.size() >= TPS.maximum) {
             int profiles = 0;
 
             synchronized (playerProfiles) {
@@ -124,7 +124,7 @@ public class ResearchEngine {
                     if (playerProfile.isLegitimate()) {
                         profiles++;
 
-                        if (profiles >= consistentDataRequirement) {
+                        if (profiles >= TPS.maximum) {
                             return enoughData = true;
                         }
                     }
@@ -456,7 +456,7 @@ public class ResearchEngine {
             if (CrossServerInformation.isOptionValid(crossServerInformationOption)) {
                 String[] incomingInformation = CloudConnections.getCrossServerInformation("log", crossServerInformationOption);
 
-                if (incomingInformation != null && incomingInformation.length > 0) {
+                if (incomingInformation.length > 0) {
                     String key = AntiCheatLogs.syntaxDate(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now()), AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1));
 
                     for (String information : incomingInformation) {

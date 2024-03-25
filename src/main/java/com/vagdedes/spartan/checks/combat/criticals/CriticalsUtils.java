@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -92,7 +93,7 @@ public class CriticalsUtils {
                 }
             }
 
-            if (providers.size() >= ResearchEngine.consistentDataRequirement) {
+            if (providers.size() >= TPS.maximum) {
                 return Math.round(collection / ((double) total));
             }
         }

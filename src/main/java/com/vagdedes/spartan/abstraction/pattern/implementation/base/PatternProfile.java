@@ -8,7 +8,10 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 
-public class PatternProfile {
+public class PatternProfile { // todo limit storage to the weight in one file named by the user
+
+    // todo store more weight in the file and use it when the player is offline but not when the player is online
+    // todo connect object to generalization instead of the pattern and use it to set the weight for each generalization
 
     private static final int
             dataWeight = AlgebraUtils.integerRound(TPS.maximum),

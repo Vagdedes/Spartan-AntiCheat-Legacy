@@ -3,13 +3,14 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PatternComparison {
+public class PatternComparison { // todo remove least significant slice of the data when it surpasses a threshold instead of removeOld
 
     private static Number generalizeNumber(Number number) {
         return PatternGeneralization.generalize(number.doubleValue(), 2);
@@ -98,10 +99,10 @@ public class PatternComparison {
     }
 
     public double getPosition(Number number, double def) {
-        if (!SpartanBukkit.debug && memory.size() < ResearchEngine.consistentDataRequirement) {
+        if (!SpartanBukkit.debug && memory.size() < TPS.maximum) {
             return def;
         } else {
-            return !SpartanBukkit.debug && this.rank.getTotal() < ResearchEngine.consistentDataRequirement
+            return !SpartanBukkit.debug && this.rank.getTotal() < TPS.maximum
                     ? def
                     : this.rank.getProbability(number, def);
         }

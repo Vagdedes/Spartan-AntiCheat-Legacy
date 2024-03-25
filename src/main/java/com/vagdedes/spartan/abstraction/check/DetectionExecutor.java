@@ -177,7 +177,7 @@ public abstract class DetectionExecutor {
             patternStorage.compare(
                     player,
                     patternGeneralization,
-                    1.0 / (probabilityPredictor.pie.getTotal() + 1),
+                    1.0 / (probabilityPredictor.pie.getTotal() + 1.0),
                     significance,
                     time
             );

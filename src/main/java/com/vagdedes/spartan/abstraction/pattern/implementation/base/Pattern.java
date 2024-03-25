@@ -8,13 +8,14 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
 
-public class Pattern {
+public class Pattern { // todo limit memory usage by the research engine 5% constant
 
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
     private static final Map<Long, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -407,7 +408,7 @@ public class Pattern {
 
     private Collection<Collection<PatternValue>> getAllRaw(long situation,
                                                            PatternGeneralization patternGeneralization) {
-        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.consistentDataRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() < TPS.maximum) {
             return new ArrayList<>(0);
         } else {
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.profiles.size());
@@ -426,7 +427,7 @@ public class Pattern {
                     }
                 }
             }
-            return !SpartanBukkit.debug && profiles < ResearchEngine.consistentDataRequirement
+            return !SpartanBukkit.debug && profiles < TPS.maximum
                     ? new ArrayList<>(0)
                     : collections;
         }
@@ -507,7 +508,7 @@ public class Pattern {
     }
 
     public ProbabilityRank getRankedRaw(long situation, PatternGeneralization patternGeneralization) {
-        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.consistentDataRequirement) {
+        if (!SpartanBukkit.debug && this.profiles.size() < TPS.maximum) {
             return new ProbabilityRank(0);
         } else {
             ProbabilityRank rank = new ProbabilityRank(this.profiles.size());
@@ -526,7 +527,7 @@ public class Pattern {
                     }
                 }
             }
-            return !SpartanBukkit.debug && profiles < ResearchEngine.consistentDataRequirement
+            return !SpartanBukkit.debug && profiles < TPS.maximum
                     ? new ProbabilityRank(0)
                     : rank;
         }
