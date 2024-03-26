@@ -61,7 +61,7 @@ public class Pattern { // todo limit memory usage by the research engine 5% cons
 
     public final String key, learningFolder;
     private final Map<Integer, PatternGeneralization> generalizations;
-    final Set<PatternProfileStorage.GeneralizationFile> profileFiles;
+    final Set<PatternGeneralizationFile> profileFiles;
     private boolean load;
 
     public Pattern(String key, int[] generalizations) {
@@ -97,7 +97,7 @@ public class Pattern { // todo limit memory usage by the research engine 5% cons
 
         if (!this.profileFiles.isEmpty()) {
             synchronized (this.profileFiles) {
-                Iterator<PatternProfileStorage.GeneralizationFile> iterator = this.profileFiles.iterator();
+                Iterator<PatternGeneralizationFile> iterator = this.profileFiles.iterator();
 
                 while (iterator.hasNext()) {
                     iterator.next().store();

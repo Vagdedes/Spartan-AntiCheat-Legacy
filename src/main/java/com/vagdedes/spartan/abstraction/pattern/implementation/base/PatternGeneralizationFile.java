@@ -5,9 +5,12 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Set;
 
-public class PatternProfileStorage {
+public class PatternGeneralizationFile {
 
     private static String headPath(PatternProfile patternProfile) {
         return Register.plugin.getDataFolder()
@@ -16,84 +19,73 @@ public class PatternProfileStorage {
                 + patternProfile.researchProfile.getName();
     }
 
-    static final class GeneralizationFile {
+    private final PatternProfile profile;
+    private File file;
+    private YamlConfiguration configuration;
+    private byte store;
+    private short count;
 
-        private final PatternProfileStorage parent;
-        private File file;
-        private YamlConfiguration configuration;
-        private byte store;
-        private short count;
+    PatternGeneralizationFile(PatternProfile patternProfile) {
+        this.profile = patternProfile;
+        this.count = 0;
+        this.store = 0;
+        this.reload();
+    }
 
-        private GeneralizationFile(PatternProfileStorage patternProfileStorage) {
-            this.parent = patternProfileStorage;
-            this.count = 0;
-            this.store = 0;
+    void set(long time, String key, Object value) {
+        SpartanBukkit.dataThread.execute(() -> {
+            this.count++;
+            this.configuration.set(time + "." + key, value);
+
+            if (this.store == 0) {
+                this.store = 1;
+
+                synchronized (this.profile.patternGeneralization.parent.profileFiles) {
+                    this.profile.patternGeneralization.parent.profileFiles.add(this);
+                }
+            }
+        });
+    }
+
+    private void reload() {
+        int hash = Objects.hash(
+                this.profile.patternGeneralization.parent.key,
+                this.profile.patternGeneralization.generalization,
+                System.currentTimeMillis()
+        );
+        this.file = new File(
+                headPath(this.profile) + "/"
+                        + this.profile.patternGeneralization.generalization + "/"
+                        + hash + ".yml"
+        );
+
+        if (this.file.exists()) {
             this.reload();
+        } else {
+            this.configuration = YamlConfiguration.loadConfiguration(this.file);
         }
+    }
 
-        private void set(long time, String key, Object value) {
+    void store() {
+        if (this.store == 1) {
+            this.store = 2;
+
             SpartanBukkit.dataThread.execute(() -> {
-                this.count++;
-                this.configuration.set(time + "." + key, value);
+                try {
+                    this.configuration.save(this.file);
+                    this.store = 0;
 
-                if (this.store == 0) {
-                    this.store = 1;
-
-                    synchronized (this.parent.profile.patternGeneralization.parent.profileFiles) {
-                        this.parent.profile.patternGeneralization.parent.profileFiles.add(this);
+                    if (this.count < 0) { // Short has overflowed (32767)
+                        this.count = 0;
+                        this.reload();
                     }
+                } catch (Exception ignored) {
                 }
             });
         }
-
-        private void reload() {
-            int hash = Objects.hash(
-                    this.parent.profile.patternGeneralization.parent.key,
-                    this.parent.profile.patternGeneralization.generalization,
-                    System.currentTimeMillis()
-            );
-            this.file = new File(
-                    headPath(this.parent.profile) + "/"
-                            + this.parent.profile.patternGeneralization.generalization + "/"
-                            + hash + ".yml"
-            );
-
-            if (this.file.exists()) {
-                this.reload();
-            } else {
-                this.configuration = YamlConfiguration.loadConfiguration(this.file);
-            }
-        }
-
-        void store() {
-            if (this.store == 1) {
-                this.store = 2;
-
-                SpartanBukkit.dataThread.execute(() -> {
-                    try {
-                        this.configuration.save(this.file);
-                        this.store = 0;
-
-                        if (this.count < 0) { // Short has overflowed (32767)
-                            this.count = 0;
-                            this.reload();
-                        }
-                    } catch (Exception ignored) {
-                    }
-                });
-            }
-        }
     }
 
-    private final PatternProfile profile;
-    private final GeneralizationFile fileManager;
-
-    PatternProfileStorage(PatternProfile patternProfile) {
-        this.profile = patternProfile;
-        this.fileManager = new GeneralizationFile(this);
-    }
-
-    void load() {
+    void load() { // todo
         SpartanBukkit.dataThread.execute(() -> {
             File file = new File(
                     headPath(this.profile)
@@ -139,12 +131,8 @@ public class PatternProfileStorage {
         });
     }
 
-    void set(long time, String key, Object value) {
-        fileManager.set(time, key, value);
-    }
-
     void delete() {
-        fileManager.file.delete();
+        this.file.delete();
         File directory = new File(this.profile.patternGeneralization.parent.learningFolder);
 
         if (directory.isDirectory()) {

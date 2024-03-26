@@ -47,12 +47,12 @@ public class PatternProfile { // todo limit storage to the weight in one file na
     final PatternRepetition patternRepetition;
     final PlayerProfile researchProfile;
     final PatternGeneralization patternGeneralization;
-    final PatternProfileStorage storage;
+    final PatternGeneralizationFile storage;
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.patternGeneralization = patternGeneralization;
         this.researchProfile = profile;
-        this.storage = new PatternProfileStorage(this);
+        this.storage = new PatternGeneralizationFile(this);
 
         this.correlations = new LinkedHashMap<>();
         this.contribution = new LinkedList<>();
