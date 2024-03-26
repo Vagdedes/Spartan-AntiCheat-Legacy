@@ -88,6 +88,7 @@ public abstract class DetectionExecutor {
                 player,
                 situation,
                 patternGeneralization,
+                patternProfile,
                 count
         );
         if (client instanceof Double) {

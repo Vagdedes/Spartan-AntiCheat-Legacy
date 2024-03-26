@@ -9,7 +9,6 @@ import java.util.*;
 public class PatternProfile {
 
     private static final int
-            dataWeight = AlgebraUtils.integerRound(TPS.maximum),
             PROBABILITY_POSITION = 0,
             SIGNIFICANCE_POSITION = 1;
 
@@ -37,7 +36,7 @@ public class PatternProfile {
 
     // Separator
 
-    final MutualData mutual;
+    final MutualData mutualData;
     final Collection<Long> contribution;
     final Map<Long, List<PatternValue>> correlations;
     final PatternRepetition patternRepetition;
@@ -50,20 +49,18 @@ public class PatternProfile {
         this.researchProfile = profile;
         this.storage = new PatternProfileStorage(this);
 
-        this.correlations = new LinkedHashMap<>();
-        this.contribution = new LinkedList<>();
+        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.contribution = Collections.synchronizedList(new LinkedList<>());
 
         this.patternRepetition = new PatternRepetition();
-        this.mutual = new MutualData();
+        this.mutualData = new MutualData();
     }
-
-    // Public
 
     double contribution() {
         if (this.contribution.isEmpty()) {
             return -1.0;
         } else {
-            if (this.contribution.size() >= dataWeight) {
+            if (this.contribution.size() >= this.patternGeneralization.initiator.onlineWeight) {
                 Iterator<Long> iterator = this.contribution.iterator();
                 int size = this.contribution.size(),
                         delete = size - dataWeight;
@@ -79,7 +76,7 @@ public class PatternProfile {
                         }
                     }
                 }
-                if (size >= dataWeight) {
+                if (size >= this.patternGeneralization.initiator.onlineWeight) {
                     long total = 0L, previous = iterator.next();
 
                     while (iterator.hasNext()) {
@@ -92,7 +89,7 @@ public class PatternProfile {
                             previous = current;
                         }
                     }
-                    return size >= (dataWeight + 1)
+                    return size >= (this.patternGeneralization.initiator.onlineWeight + 1)
                             ? total / (double) (size - 1)
                             : -1.0;
                 } else {
@@ -117,10 +114,10 @@ public class PatternProfile {
     private double average(int index) {
         Collection<Double> collection =
                 index == PROBABILITY_POSITION
-                        ? mutual.probability
-                        : mutual.significance;
+                        ? mutualData.probability
+                        : mutualData.significance;
 
-        if (collection.size() < dataWeight) {
+        if (collection.size() < this.patternGeneralization.initiator.onlineWeight) {
             return -1.0;
         } else {
             int delete = collection.size() - dataWeight;
@@ -129,7 +126,7 @@ public class PatternProfile {
                 Iterator<Double> iterator = collection.iterator();
 
                 while (iterator.hasNext()) {
-                    mutual.total[index] -= iterator.next();
+                    mutualData.total[index] -= iterator.next();
                     iterator.remove();
 
                     if (--delete == 0) {
@@ -137,7 +134,7 @@ public class PatternProfile {
                     }
                 }
             }
-            return mutual.total[index] / (double) collection.size();
+            return mutualData.total[index] / (double) collection.size();
         }
     }
 

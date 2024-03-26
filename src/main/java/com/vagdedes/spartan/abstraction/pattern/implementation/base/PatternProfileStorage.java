@@ -5,76 +5,38 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
-public class PatternProfileStorage { // todo limit results to weight and extend weight when offline
+public class PatternProfileStorage {
 
     private final PatternProfile profile;
-    private File file;
-    private YamlConfiguration configuration;
+    private final File file;
+    private final YamlConfiguration configuration;
     private byte store;
-    private Collection<Long> keys;
+    private final List<Long> keys;
 
     PatternProfileStorage(PatternProfile patternProfile) {
         this.profile = patternProfile;
-        this.keys = new LinkedList<>();
+        this.keys = Collections.synchronizedList(new LinkedList<>());
         this.store = 0;
-        this.reload();
-    }
-
-    void set(long time, String key, Object value) {
-        SpartanBukkit.dataThread.execute(() -> {
-            this.keys.add(time);
-            this.configuration.set(time + "." + key, value);
-
-            if (this.store == 0) {
-                this.store = 1;
-                this.profile.patternGeneralization.parent.queueFile(this);
-            }
-        });
-    }
-
-    private void reload() {
         this.file = new File(
                 Register.plugin.getDataFolder()
                         + "/comparison/"
                         + this.profile.patternGeneralization.parent.key + "/"
+                        + this.profile.patternGeneralization.initiator.generalization + "/"
+                        + this.profile.patternGeneralization.initiator.onlineWeight + "/"
                         + this.profile.researchProfile.getName() + ".yml"
         );
+        this.configuration = YamlConfiguration.loadConfiguration(this.file);
 
         if (this.file.exists()) {
-            this.reload();
-        } else {
-            this.configuration = YamlConfiguration.loadConfiguration(this.file);
-        }
-    }
-
-    void store() {
-        if (this.store == 1) {
-            this.store = 2;
-
-            SpartanBukkit.dataThread.execute(() -> {
-                try {
-                    this.configuration.save(this.file);
-                    this.store = 0;
-
-                    if (this.count < 0) { // Short has overflowed (32767)
-                        this.count = 0;
-                        this.reload();
-                    }
-                } catch (Exception ignored) {
-                }
-            });
-        }
-    }
-
-    void load() {
-        SpartanBukkit.dataThread.execute(() -> {
-            if (this.file.exists()
-                    && this.file.isFile()
-                    && this.file.getName().endsWith(".yml")) {
+            if (!this.file.isFile()) {
+                this.file.delete();
+            }
+            SpartanBukkit.dataThread.execute(() -> { // todo add keys to memory
                 Set<String> keys = this.configuration.getKeys(false);
 
                 if (!keys.isEmpty()) {
@@ -96,12 +58,55 @@ public class PatternProfileStorage { // todo limit results to weight and extend 
                         }
                     }
                 }
+            });
+        }
+    }
+
+    void set(PatternComparison comparison, long time, Object value) {
+        SpartanBukkit.dataThread.execute(() -> {
+            synchronized (this.keys) {
+                this.keys.add(time);
+            }
+            this.configuration.set(time + "." + comparison.key, value);
+
+            if (this.store == 0) {
+                this.store = 1;
+                this.profile.patternGeneralization.parent.queueFile(this);
             }
         });
     }
 
+    void store() {
+        if (this.store == 1) {
+            this.store = 2;
+
+            SpartanBukkit.dataThread.execute(() -> {
+                try {
+                    if (this.keys.size() > this.profile.patternGeneralization.initiator.offlineWeight) {
+                        String removed;
+
+                        synchronized (this.keys) {
+                            removed = String.valueOf(this.keys.remove(0));
+                        }
+                        for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
+                            this.configuration.set(removed + "." + patternComparison.key, null);
+                        }
+                        this.configuration.set(removed, null);
+                    }
+                    this.configuration.save(this.file);
+                    this.store = 0;
+                } catch (Exception ignored) {
+                }
+            });
+        }
+    }
+
     void delete() {
         this.file.delete();
+
+        synchronized (this.keys) {
+            this.keys.clear();
+        }
         File directory = new File(this.profile.patternGeneralization.parent.learningFolder);
 
         if (directory.isDirectory()) {

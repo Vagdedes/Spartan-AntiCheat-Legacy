@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -21,12 +20,13 @@ public class Pattern {
             for (Pattern instance : instances) {
                 synchronized (instance.generalizations) {
                     for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
-                        synchronized (patternGeneralization.profiles) {
-                            PatternProfile patternProfile = patternGeneralization.profiles.remove(profile);
+                        PatternProfile patternProfile;
 
-                            if (patternProfile != null) {
-                                patternProfile.storage.delete();
-                            }
+                        synchronized (patternGeneralization.profiles) {
+                            patternProfile = patternGeneralization.profiles.remove(profile);
+                        }
+                        if (patternProfile != null) {
+                            patternProfile.storage.delete();
                         }
                     }
                 }
@@ -58,11 +58,11 @@ public class Pattern {
 
     public final String key;
     final String learningFolder;
-    private final Map<Integer, PatternGeneralization> generalizations;
+    final Map<Integer, PatternGeneralization> generalizations;
     private final Set<PatternProfileStorage> profileFiles;
     private boolean load;
 
-    public Pattern(String key, int[] generalizations) {
+    public Pattern(String key, double mainWeight, PatternGeneralizationInitiator[] generalizations) {
         this.key = key;
         this.learningFolder = Register.plugin.getDataFolder()
                 + "/learning/"
@@ -73,11 +73,17 @@ public class Pattern {
         this.generalizations = Collections.synchronizedMap(
                 new LinkedHashMap<>(generalizations.length + 1)
         );
-        this.generalizations.put(0, new PatternGeneralizationStorage(this));
+        this.generalizations.put(
+                0,
+                new PatternGeneralizationStorage(this, new PatternGeneralizationInitiator(0, mainWeight))
+        );
 
         if (generalizations.length > 0) {
-            for (int generalization : generalizations) {
-                this.generalizations.put(generalization, new PatternGeneralizationMemory(this, generalization));
+            for (PatternGeneralizationInitiator initiator : generalizations) {
+                this.generalizations.put(
+                        initiator.generalization,
+                        new PatternGeneralizationMemory(this, initiator)
+                );
             }
         }
 
@@ -137,8 +143,8 @@ public class Pattern {
                     generalizations.put(
                             entry.getKey(),
                             entry.getValue() instanceof PatternGeneralizationStorage
-                                    ? new PatternGeneralizationStorage(this)
-                                    : new PatternGeneralizationMemory(this, entry.getKey())
+                                    ? new PatternGeneralizationStorage(this, entry.getValue().initiator)
+                                    : new PatternGeneralizationMemory(this, entry.getValue().initiator)
                     );
                 }
                 for (File file : files) {
@@ -162,20 +168,18 @@ public class Pattern {
                                                     && !profileName.isEmpty()) {
                                                 PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
-                                                synchronized (this.generalizations) {
-                                                    for (PatternGeneralization generalization : generalizations.values()) {
-                                                        generalization.rawCache(
-                                                                profile,
-                                                                new PatternValue(
-                                                                        situation,
-                                                                        (Number) pattern,
-                                                                        generalization,
-                                                                        time
-                                                                ),
-                                                                true,
-                                                                false
-                                                        );
-                                                    }
+                                                for (PatternGeneralization generalization : generalizations.values()) {
+                                                    generalization.rawCache(
+                                                            profile,
+                                                            new PatternValue(
+                                                                    situation,
+                                                                    (Number) pattern,
+                                                                    generalization,
+                                                                    time
+                                                            ),
+                                                            true,
+                                                            false
+                                                    );
                                                 }
                                             }
                                         }
@@ -191,13 +195,6 @@ public class Pattern {
                     directory.delete();
                     directory.mkdirs();
                 });
-            }
-        }
-
-        // Separator
-        if (!generalizations.isEmpty()) {
-            for (PatternGeneralization patternGeneralization : generalizations.values()) {
-                // todo
             }
         }
 

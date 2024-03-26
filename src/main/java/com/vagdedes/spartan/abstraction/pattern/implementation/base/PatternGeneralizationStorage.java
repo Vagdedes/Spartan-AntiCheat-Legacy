@@ -13,15 +13,15 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     private YamlConfiguration configuration;
     private byte store;
 
-    PatternGeneralizationStorage(Pattern pattern) {
-        super(pattern, 0);
+    PatternGeneralizationStorage(Pattern pattern, PatternGeneralizationInitiator initiator) {
+        super(pattern, initiator);
         this.count = 0;
         this.store = 0;
         this.reload();
     }
 
     private void reload() {
-        int hash = Objects.hash(this.parent.key, this.generalization, System.currentTimeMillis());
+        int hash = Objects.hash(this.parent.key, this.initiator.generalization, System.currentTimeMillis());
         this.file = new File(this.parent.learningFolder + "/" + hash + ".yml");
 
         if (this.file.exists()) {

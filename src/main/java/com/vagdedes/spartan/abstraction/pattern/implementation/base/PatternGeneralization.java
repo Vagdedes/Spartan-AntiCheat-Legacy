@@ -3,11 +3,11 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
@@ -27,7 +27,7 @@ public abstract class PatternGeneralization {
     // Separator
 
     final Pattern parent;
-    final int generalization;
+    final PatternGeneralizationInitiator initiator;
     final ProbabilityPie significancePie;
     final PatternComparison
             probabilityComparison,
@@ -37,9 +37,9 @@ public abstract class PatternGeneralization {
     final Map<PlayerProfile, PatternProfile> profiles;
     private final PatternCache patternSizeCache;
 
-    protected PatternGeneralization(Pattern pattern, int generalization) { // todo add weight
+    protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         this.parent = pattern;
-        this.generalization = generalization;
+        this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
         this.probabilityComparison = new PatternComparison(this, "probability");
         this.significanceComparison = new PatternComparison(this, "significance");
@@ -56,7 +56,7 @@ public abstract class PatternGeneralization {
     public double[] probabilityRankAndProbability(PatternProfile patternProfile) {
         double value;
 
-        synchronized (patternProfile.mutual) {
+        synchronized (patternProfile.mutualData) {
             value = patternProfile.probability();
         }
         synchronized (this.probabilityComparison) {
@@ -67,7 +67,7 @@ public abstract class PatternGeneralization {
     public double[] significanceRankAndProbability(PatternProfile patternProfile) {
         double value;
 
-        synchronized (patternProfile.mutual) {
+        synchronized (patternProfile.mutualData) {
             value = patternProfile.significance();
         }
         synchronized (this.significanceComparison) {
@@ -109,8 +109,8 @@ public abstract class PatternGeneralization {
                 patternSizeCache.refresh();
                 int dataLimit = Math.min(
                         SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000,
-                        0
-                ), // todo add minimum
+                        Cache.maxBytes / this.parent.generalizations.size() / patternProfile.contribution.size() / PatternValue.objectSize
+                ),
                         delete = list.size() - dataLimit;
 
                 if (delete > 0) {
@@ -161,27 +161,21 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    public List<PatternValue> getSpecific(PlayerProfile profile,
+    public List<PatternValue> getSpecific(PatternProfile patternProfile,
                                           long situation,
                                           int count) {
-        synchronized (this.profiles) {
-            PatternProfile patternProfile = this.profiles.get(profile);
+        synchronized (patternProfile.correlations) {
+            List<PatternValue> specific = patternProfile.correlations.get(situation);
 
-            if (patternProfile == null) {
+            if (specific == null) {
                 return new ArrayList<>(0);
             } else {
-                List<PatternValue> specific = patternProfile.correlations.get(situation);
+                int size = specific.size();
 
-                if (specific == null) {
+                if (size < count) {
                     return new ArrayList<>(0);
                 } else {
-                    int size = specific.size();
-
-                    if (size < count) {
-                        return new ArrayList<>(0);
-                    } else {
-                        return new ArrayList<>(specific).subList(size - count, size);
-                    }
+                    return new ArrayList<>(specific).subList(size - count, size);
                 }
             }
         }
@@ -192,7 +186,7 @@ public abstract class PatternGeneralization {
     public Collection<Collection<PatternValue>> getAll(SpartanPlayer player,
                                                        long situation) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
-                + this.generalization;
+                + this.initiator.generalization;
 
         if (DetectionNotifications.isEnabled(player)) {
             Collection<Collection<PatternValue>> result = this.getAllRaw(situation);
@@ -259,7 +253,7 @@ public abstract class PatternGeneralization {
     public ProbabilityRank getRanked(SpartanPlayer player,
                                      long situation) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
-                + this.generalization;
+                + this.initiator.generalization;
 
         if (DetectionNotifications.isEnabled(player)) {
             ProbabilityRank result = this.getRankedRaw(situation);
@@ -347,8 +341,8 @@ public abstract class PatternGeneralization {
                         Number number,
                         double probability,
                         long time) {
-        synchronized (patternProfile.mutual) {
-            patternProfile.mutual.add(probability, this.significancePie.getProbability(number));
+        synchronized (patternProfile.mutualData) {
+            patternProfile.mutualData.add(probability, this.significancePie.getProbability(number));
 
             synchronized (this.probabilityComparison) {
                 this.probabilityComparison.put(

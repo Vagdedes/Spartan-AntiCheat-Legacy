@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.utils.math;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralization;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.java.HashUtils;
@@ -14,10 +15,11 @@ public class ProbabilityPredictor {
     public static ProbabilityPredictor build(SpartanPlayer player,
                                              long situation,
                                              PatternGeneralization patternGeneralization,
+                                             PatternProfile patternProfile,
                                              int count) {
         return new ProbabilityPredictor(
                 patternGeneralization.getAll(player, situation),
-                patternGeneralization.getSpecific(player.getProfile(), situation, count)
+                patternGeneralization.getSpecific(patternProfile, situation, count)
         );
     }
 

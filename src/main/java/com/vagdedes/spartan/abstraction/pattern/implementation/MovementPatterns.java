@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation;
 
 import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralizationInitiator;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 
 public class MovementPatterns extends PatternFamily {
@@ -14,19 +15,31 @@ public class MovementPatterns extends PatternFamily {
                 new Pattern[]{
                         this.horizontal = new Pattern(
                                 "movement/distance/horizontal",
-                                new int[]{GroundUtils.maxHeightLength}
+                                0.05,
+                                new PatternGeneralizationInitiator[]{
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                }
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
-                                new int[]{GroundUtils.maxHeightLength}
+                                0.05,
+                                new PatternGeneralizationInitiator[]{
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                }
                         ),
                         this.all = new Pattern(
                                 "movement/distance/all",
-                                new int[]{GroundUtils.maxHeightLength}
+                                0.05,
+                                new PatternGeneralizationInitiator[]{
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                }
                         ),
                         this.fall = new Pattern(
                                 "movement/distance/fall",
-                                new int[]{}
+                                0.05,
+                                new PatternGeneralizationInitiator[]{
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                }
                         )
                 }
         );

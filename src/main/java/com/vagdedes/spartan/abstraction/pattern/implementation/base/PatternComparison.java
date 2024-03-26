@@ -76,8 +76,8 @@ public class PatternComparison {
 
             if (storage) {
                 patternProfile.storage.set(
+                        this,
                         time,
-                        this.key,
                         number
                 );
             }
