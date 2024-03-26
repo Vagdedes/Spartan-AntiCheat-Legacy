@@ -15,27 +15,6 @@ import java.util.*;
 
 public abstract class PatternGeneralization {
 
-    static boolean include(SpartanPlayer player) {
-        Integer divisor = DetectionNotifications.getDivisor(player, false);
-        return divisor == null || divisor != 69;
-    }
-
-    static Number generalize(Number number, int generalization) {
-        if (generalization == 0) {
-            return number;
-        } else if (number instanceof Double) {
-            return AlgebraUtils.cut(number.doubleValue(), generalization);
-        } else if (number instanceof Float) {
-            return AlgebraUtils.cut(number.floatValue(), generalization);
-        } else if (number instanceof Long) {
-            return AlgebraUtils.roundToNearest(number.longValue(), generalization);
-        } else if (number instanceof Integer) {
-            return AlgebraUtils.roundToNearest(number.intValue(), generalization);
-        } else {
-            return AlgebraUtils.roundToNearest(number.shortValue(), generalization);
-        }
-    }
-
     static final String
             profileOption = ".profile",
             patternOption = ".pattern",
@@ -51,58 +30,59 @@ public abstract class PatternGeneralization {
     final int generalization;
     final ProbabilityPie significancePie;
     final PatternComparison
-            probabilityRank,
-            significanceRank,
-            contributionRank;
+            probabilityComparison,
+            significanceComparison,
+            contributionComparison;
     final PatternComparison[] patternComparisons;
     final Map<PlayerProfile, PatternProfile> profiles;
     private final PatternCache patternSizeCache;
 
-    protected PatternGeneralization(Pattern pattern, int generalization) {
+    protected PatternGeneralization(Pattern pattern, int generalization) { // todo add weight
         this.parent = pattern;
         this.generalization = generalization;
         this.significancePie = new ProbabilityPie();
-        this.probabilityRank = new PatternComparison(this, "probability");
-        this.significanceRank = new PatternComparison(this, "significance");
-        this.contributionRank = new PatternComparison(this, "contribution");
+        this.probabilityComparison = new PatternComparison(this, "probability");
+        this.significanceComparison = new PatternComparison(this, "significance");
+        this.contributionComparison = new PatternComparison(this, "contribution");
         this.patternComparisons = new PatternComparison[]{
-                this.probabilityRank,
-                this.significanceRank,
-                this.contributionRank
+                this.probabilityComparison,
+                this.significanceComparison,
+                this.contributionComparison
         };
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.patternSizeCache = new PatternCache();
     }
 
-    public double[] probabilityRankAndProbability(PlayerProfile profile) {
-        synchronized (this.probabilityRank) {
-            return this.rankAndProbability(this.probabilityRank, this.getProfile(profile).probability());
+    public double[] probabilityRankAndProbability(PatternProfile patternProfile) {
+        double value;
+
+        synchronized (patternProfile.mutual) {
+            value = patternProfile.probability();
+        }
+        synchronized (this.probabilityComparison) {
+            return this.probabilityComparison.rankAndProbability(value);
         }
     }
 
-    public double[] significanceRankAndProbability(PlayerProfile profile) {
-        synchronized (this.significanceRank) {
-            return this.rankAndProbability(this.significanceRank, this.getProfile(profile).significance());
+    public double[] significanceRankAndProbability(PatternProfile patternProfile) {
+        double value;
+
+        synchronized (patternProfile.mutual) {
+            value = patternProfile.significance();
+        }
+        synchronized (this.significanceComparison) {
+            return this.significanceComparison.rankAndProbability(value);
         }
     }
 
-    public double[] contributionRankAndProbability(PlayerProfile profile) {
-        synchronized (this.contributionRank) {
-            return this.rankAndProbability(this.contributionRank, this.getProfile(profile).contribution());
+    public double[] contributionRankAndProbability(PatternProfile patternProfile) {
+        double value;
+
+        synchronized (patternProfile.contribution) {
+            value = patternProfile.contribution();
         }
-    }
-
-    private double[] rankAndProbability(PatternComparison object, double value) {
-        if (value == -1.0) {
-            return null;
-        } else {
-            double rank = object.getPosition(value);
-
-            if (rank != -1.0) {
-                return new double[]{rank, object.getProbability(value)};
-            } else {
-                return null;
-            }
+        synchronized (this.contributionComparison) {
+            return this.contributionComparison.rankAndProbability(value);
         }
     }
 
@@ -127,7 +107,10 @@ public abstract class PatternGeneralization {
 
             if (patternSizeCache.isExpired()) {
                 patternSizeCache.refresh();
-                int dataLimit = SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000,
+                int dataLimit = Math.min(
+                        SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000,
+                        0
+                ), // todo add minimum
                         delete = list.size() - dataLimit;
 
                 if (delete > 0) {
@@ -142,10 +125,10 @@ public abstract class PatternGeneralization {
                         }
                     }
                 }
-                delete = this.significancePie.getTotal() - dataLimit;
+                delete = this.significancePie.getSlices() - dataLimit;
 
                 if (delete > 0) {
-                    this.significancePie.removeOld(delete);
+                    this.significancePie.removeLeastSignificant(delete);
                 }
             }
 
@@ -153,12 +136,6 @@ public abstract class PatternGeneralization {
                 ((PatternGeneralizationStorage) this).set(patternProfile, value);
             }
         }
-    }
-
-    // Separator
-
-    public double getSignificance(Number number) {
-        return this.significancePie.getProbability(number);
     }
 
     // Separator
@@ -321,7 +298,7 @@ public abstract class PatternGeneralization {
         }
     }
 
-    public ProbabilityRank getRankedRaw(long situation) {
+    private ProbabilityRank getRankedRaw(long situation) {
         if (!SpartanBukkit.debug && this.profiles.size() < TPS.maximum) {
             return new ProbabilityRank(0);
         } else {
@@ -349,67 +326,52 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    public void compare(SpartanPlayer player,
+    public void compare(PatternProfile patternProfile,
                         long contribution,
                         long time) {
-        boolean include = include(player);
+        synchronized (patternProfile.contribution) {
+            patternProfile.contribution.add(contribution);
 
-        synchronized (this.profiles) {
-            PatternProfile patternProfile = getProfile(player.getProfile());
-
-            synchronized (patternProfile.contribution) {
-                patternProfile.contribution.add(contribution);
-
-                if (include) {
-                    synchronized (this.contributionRank) {
-                        this.contributionRank.put(
-                                patternProfile,
-                                patternProfile.contributionRaw(),
-                                time,
-                                true
-                        );
-                    }
-                }
+            synchronized (this.contributionComparison) {
+                this.contributionComparison.put(
+                        patternProfile,
+                        patternProfile.contribution(),
+                        time,
+                        true
+                );
             }
         }
     }
 
-    public void compare(SpartanPlayer player,
-                        double probability, double significance,
+    public void compare(PatternProfile patternProfile,
+                        Number number,
+                        double probability,
                         long time) {
-        boolean include = include(player);
+        synchronized (patternProfile.mutual) {
+            patternProfile.mutual.add(probability, this.significancePie.getProbability(number));
 
-        synchronized (this.profiles) {
-            PatternProfile patternProfile = getProfile(player.getProfile());
-
-            synchronized (patternProfile.mutual) {
-                patternProfile.mutual.add(probability, significance);
-
-                if (include) {
-                    synchronized (this.probabilityRank) {
-                        this.probabilityRank.put(
-                                patternProfile,
-                                patternProfile.probabilityRaw(),
-                                time,
-                                true
-                        );
-                    }
-                    synchronized (this.significanceRank) {
-                        this.significanceRank.put(
-                                patternProfile,
-                                patternProfile.significanceRaw(),
-                                time,
-                                true
-                        );
-                    }
-                }
+            synchronized (this.probabilityComparison) {
+                this.probabilityComparison.put(
+                        patternProfile,
+                        patternProfile.probability(),
+                        time,
+                        true
+                );
+            }
+            synchronized (this.significanceComparison) {
+                this.significanceComparison.put(
+                        patternProfile,
+                        patternProfile.significance(),
+                        time,
+                        true
+                );
             }
         }
     }
 
     // Separator
 
-    private PatternProfile getProfile(PlayerProfile profile) {
+    public PatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profiles) {
             return this.profiles.computeIfAbsent(
                     profile,
@@ -417,4 +379,5 @@ public abstract class PatternGeneralization {
             );
         }
     }
+
 }

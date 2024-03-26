@@ -5,58 +5,43 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Set;
 
-public class PatternGeneralizationFile {
-
-    private static String headPath(PatternProfile patternProfile) {
-        return Register.plugin.getDataFolder()
-                + "/comparison/"
-                + patternProfile.patternGeneralization.parent.key + "/"
-                + patternProfile.researchProfile.getName();
-    }
+public class PatternProfileStorage { // todo limit results to weight and extend weight when offline
 
     private final PatternProfile profile;
     private File file;
     private YamlConfiguration configuration;
     private byte store;
-    private short count;
+    private Collection<Long> keys;
 
-    PatternGeneralizationFile(PatternProfile patternProfile) {
+    PatternProfileStorage(PatternProfile patternProfile) {
         this.profile = patternProfile;
-        this.count = 0;
+        this.keys = new LinkedList<>();
         this.store = 0;
         this.reload();
     }
 
     void set(long time, String key, Object value) {
         SpartanBukkit.dataThread.execute(() -> {
-            this.count++;
+            this.keys.add(time);
             this.configuration.set(time + "." + key, value);
 
             if (this.store == 0) {
                 this.store = 1;
-
-                synchronized (this.profile.patternGeneralization.parent.profileFiles) {
-                    this.profile.patternGeneralization.parent.profileFiles.add(this);
-                }
+                this.profile.patternGeneralization.parent.queueFile(this);
             }
         });
     }
 
     private void reload() {
-        int hash = Objects.hash(
-                this.profile.patternGeneralization.parent.key,
-                this.profile.patternGeneralization.generalization,
-                System.currentTimeMillis()
-        );
         this.file = new File(
-                headPath(this.profile) + "/"
-                        + this.profile.patternGeneralization.generalization + "/"
-                        + hash + ".yml"
+                Register.plugin.getDataFolder()
+                        + "/comparison/"
+                        + this.profile.patternGeneralization.parent.key + "/"
+                        + this.profile.researchProfile.getName() + ".yml"
         );
 
         if (this.file.exists()) {
@@ -85,45 +70,29 @@ public class PatternGeneralizationFile {
         }
     }
 
-    void load() { // todo make one file
+    void load() {
         SpartanBukkit.dataThread.execute(() -> {
-            File file = new File(
-                    headPath(this.profile)
-                            + "/" + this.profile.patternGeneralization.generalization
-            );
+            if (this.file.exists()
+                    && this.file.isFile()
+                    && this.file.getName().endsWith(".yml")) {
+                Set<String> keys = this.configuration.getKeys(false);
 
-            if (file.exists() && file.isDirectory()) {
-                File[] files = file.listFiles();
+                if (!keys.isEmpty()) {
+                    for (String key : keys) {
+                        try {
+                            for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
+                                double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
 
-                if (files != null) {
-                    Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
-
-                    for (int i = 0; i < Math.min(files.length, 7); i++) { // 7 is less than 1% chance
-                        File subFile = files[i];
-
-                        if (subFile.isFile() && subFile.getName().endsWith(".yml")) {
-                            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(subFile);
-                            Set<String> keys = configuration.getKeys(false);
-
-                            if (!keys.isEmpty()) {
-                                for (String key : keys) {
-                                    try {
-                                        for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
-                                            double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
-
-                                            if (value != -1.0) {
-                                                patternComparison.put(
-                                                        this.profile,
-                                                        value,
-                                                        Long.parseLong(key),
-                                                        false
-                                                );
-                                            }
-                                        }
-                                    } catch (Exception ignored) {
-                                    }
+                                if (value != -1.0) {
+                                    patternComparison.put(
+                                            this.profile,
+                                            value,
+                                            Long.parseLong(key),
+                                            false
+                                    );
                                 }
                             }
+                        } catch (Exception ignored) {
                         }
                     }
                 }
@@ -176,4 +145,5 @@ public class PatternGeneralizationFile {
             }
         }
     }
+
 }

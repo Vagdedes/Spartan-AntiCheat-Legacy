@@ -83,6 +83,7 @@ public abstract class DetectionExecutor {
                                                        Number client) {
         long time = System.currentTimeMillis();
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
+        PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
                 player,
                 situation,
@@ -92,10 +93,9 @@ public abstract class DetectionExecutor {
         if (client instanceof Double) {
             client = AlgebraUtils.cut(client.doubleValue(), generalization);
         }
-        double significance = patternGeneralization.getSignificance(client);
-        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(player.getProfile()),
-                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(player.getProfile()),
-                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(player.getProfile());
+        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile),
+                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile),
+                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
         StringBuilder sb = new StringBuilder()
                 .append("data: ")
                 .append(patternStorage.key)
@@ -148,7 +148,7 @@ public abstract class DetectionExecutor {
 
         if (probabilityPredictor.pie.hasData()) {
             patternGeneralization.compare(
-                    player,
+                    patternProfile,
                     -1L,
                     time
             );
@@ -160,9 +160,9 @@ public abstract class DetectionExecutor {
 
                 if (entry.getKey().doubleValue() == client.doubleValue()) {
                     patternGeneralization.compare(
-                            player,
+                            patternProfile,
+                            client,
                             probability,
-                            significance,
                             time
                     );
                     return sb.toString();
@@ -171,14 +171,14 @@ public abstract class DetectionExecutor {
                 }
             }
             patternGeneralization.compare(
-                    player,
+                    patternProfile,
+                    client,
                     1.0 / (probabilityPredictor.pie.getTotal() + 1.0),
-                    significance,
                     time
             );
         } else {
             patternGeneralization.compare(
-                    player,
+                    patternProfile,
                     time,
                     time
             );

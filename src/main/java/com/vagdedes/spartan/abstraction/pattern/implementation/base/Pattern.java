@@ -4,6 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,7 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public class Pattern { // todo limit memory usage by the research engine 5% constant
+public class Pattern {
 
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
@@ -53,15 +54,12 @@ public class Pattern { // todo limit memory usage by the research engine 5% cons
         }
     }
 
-    private static int dataLimit() {
-        return SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000;
-    }
-
     // Separator
 
-    public final String key, learningFolder;
+    public final String key;
+    final String learningFolder;
     private final Map<Integer, PatternGeneralization> generalizations;
-    final Set<PatternGeneralizationFile> profileFiles;
+    private final Set<PatternProfileStorage> profileFiles;
     private boolean load;
 
     public Pattern(String key, int[] generalizations) {
@@ -97,13 +95,19 @@ public class Pattern { // todo limit memory usage by the research engine 5% cons
 
         if (!this.profileFiles.isEmpty()) {
             synchronized (this.profileFiles) {
-                Iterator<PatternGeneralizationFile> iterator = this.profileFiles.iterator();
+                Iterator<PatternProfileStorage> iterator = this.profileFiles.iterator();
 
                 while (iterator.hasNext()) {
                     iterator.next().store();
                     iterator.remove();
                 }
             }
+        }
+    }
+
+    void queueFile(PatternProfileStorage file) {
+        synchronized (this.profileFiles) {
+            this.profileFiles.add(file);
         }
     }
 
@@ -211,7 +215,8 @@ public class Pattern { // todo limit memory usage by the research engine 5% cons
     public void learn(SpartanPlayer player, long situation, Number number, boolean collect) {
         if (collect) {
             long time = System.currentTimeMillis();
-            boolean include = PatternGeneralization.include(player);
+            Integer divisor = DetectionNotifications.getDivisor(player, false);
+            boolean include = divisor == null || divisor != 69;
 
             synchronized (this.generalizations) {
                 for (PatternGeneralization generalization : this.generalizations.values()) {

@@ -6,10 +6,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 
-public class PatternProfile { // todo limit storage to the weight in one file named by the user
-
-    // todo store more weight in the file and use it when the player is offline but not when the player is online
-    // todo connect object to generalization instead of the pattern and use it to set the weight for each generalization
+public class PatternProfile {
 
     private static final int
             dataWeight = AlgebraUtils.integerRound(TPS.maximum),
@@ -46,12 +43,12 @@ public class PatternProfile { // todo limit storage to the weight in one file na
     final PatternRepetition patternRepetition;
     final PlayerProfile researchProfile;
     final PatternGeneralization patternGeneralization;
-    final PatternGeneralizationFile storage;
+    final PatternProfileStorage storage;
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.patternGeneralization = patternGeneralization;
         this.researchProfile = profile;
-        this.storage = new PatternGeneralizationFile(this);
+        this.storage = new PatternProfileStorage(this);
 
         this.correlations = new LinkedHashMap<>();
         this.contribution = new LinkedList<>();
@@ -62,7 +59,7 @@ public class PatternProfile { // todo limit storage to the weight in one file na
 
     // Public
 
-    double contributionRaw() {
+    double contribution() {
         if (this.contribution.isEmpty()) {
             return -1.0;
         } else {
@@ -107,34 +104,12 @@ public class PatternProfile { // todo limit storage to the weight in one file na
         }
     }
 
-    double contribution() {
-        synchronized (this.contribution) {
-            return this.contributionRaw();
-        }
-    }
-
-    // Separator
-
-    double probabilityRaw() {
+    double probability() {
         return this.average(PROBABILITY_POSITION);
     }
 
-    double probability() {
-        synchronized (this.mutual) {
-            return this.probabilityRaw();
-        }
-    }
-
-    // Separator
-
-    double significanceRaw() {
-        return this.average(SIGNIFICANCE_POSITION);
-    }
-
     double significance() {
-        synchronized (this.mutual) {
-            return this.significanceRaw();
-        }
+        return this.average(SIGNIFICANCE_POSITION);
     }
 
     // Separator

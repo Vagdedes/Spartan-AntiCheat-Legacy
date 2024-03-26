@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
+
 public class PatternValue {
 
     public final Number pattern;
@@ -8,7 +10,7 @@ public class PatternValue {
 
     PatternValue(long situation, Number number, PatternGeneralization patternGeneralization, long time) {
         this.time = time;
-        this.pattern = PatternGeneralization.generalize(number, patternGeneralization.generalization);
+        this.pattern = AlgebraUtils.generalize(number, patternGeneralization.generalization);
         this.situation = situation;
     }
 }

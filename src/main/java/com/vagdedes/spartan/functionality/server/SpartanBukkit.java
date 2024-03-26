@@ -30,7 +30,7 @@ public class SpartanBukkit {
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
 
     public static final MovementPatterns
-            movementPatterns = new MovementPatterns(1_000L);
+            movementPatterns = new MovementPatterns();
 
     public static final int hashCodeMultiplier = 31;
     public static final long hashCodeMultiplierLong = 31L;

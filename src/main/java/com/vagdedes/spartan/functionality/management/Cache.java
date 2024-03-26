@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
@@ -19,6 +20,9 @@ import java.util.*;
 
 public class Cache {
 
+    public static final int
+            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
+            maxRows = maxBytes / 1024;
     private static final List<Object> memory = Collections.synchronizedList(new ArrayList<>());
 
     public static void clearCheckCache(SpartanPlayer p) {

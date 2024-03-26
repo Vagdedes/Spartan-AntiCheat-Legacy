@@ -8,8 +8,8 @@ public class MovementPatterns extends PatternFamily {
 
     public Pattern horizontal, vertical, all, fall;
 
-    public MovementPatterns(long storeFrequency) {
-        super(storeFrequency, 4);
+    public MovementPatterns() {
+        super(1_000L, 4);
         this.addPatterns(
                 new Pattern[]{
                         this.horizontal = new Pattern(

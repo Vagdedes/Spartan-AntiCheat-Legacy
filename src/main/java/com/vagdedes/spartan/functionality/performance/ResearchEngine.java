@@ -14,6 +14,7 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
+import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -35,10 +36,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ResearchEngine {
-
-    public static final int
-            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
-            maxRows = maxBytes / 1024;
 
     private static final double minimumAverageMining = 16.0;
 
@@ -464,7 +461,7 @@ public class ResearchEngine {
                         cache.put(key, information);
                         byteSize += key.length() + information.length();
 
-                        if (byteSize >= maxBytes) {
+                        if (byteSize >= Cache.maxBytes) {
                             isFull = true;
                             break;
                         }
@@ -478,7 +475,7 @@ public class ResearchEngine {
         if (Config.sql.isEnabled()) {
             if (!isFull) {
                 try {
-                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + maxRows + ";");
+                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + Cache.maxRows + ";");
 
                     if (rs != null) {
                         while (rs.next()) {
@@ -488,7 +485,7 @@ public class ResearchEngine {
                             cache.put(date, data);
                             byteSize += date.length() + data.length();
 
-                            if (byteSize >= maxBytes) {
+                            if (byteSize >= Cache.maxBytes) {
                                 isFull = true;
                                 break;
                             }
@@ -527,7 +524,7 @@ public class ResearchEngine {
                             cache.put(key, data);
                             byteSize += key.length() + data.length();
 
-                            if (byteSize >= maxBytes) {
+                            if (byteSize >= Cache.maxBytes) {
                                 isFull = true;
                                 break;
                             }

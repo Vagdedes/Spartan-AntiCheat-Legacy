@@ -2,16 +2,17 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PatternComparison { // todo remove least significant slice of the data when it surpasses a threshold instead of removeOld
+public class PatternComparison {
 
     private static Number generalizeNumber(Number number) {
-        return PatternGeneralization.generalize(number.doubleValue(), 2);
+        return AlgebraUtils.generalize(number.doubleValue(), 2);
     }
 
     private static final class NumberMemory {
@@ -32,8 +33,8 @@ public class PatternComparison { // todo remove least significant slice of the d
             this.pie.add(generalized);
             this.parent.pie.add(generalized);
 
-            if (this.pie.getTotal() > 1_000) {
-                this.parent.pie.remove(this.pie.removeOld(1));
+            if (this.pie.getSlices() > 1_000) {
+                this.parent.pie.removeByEntry(this.pie.removeLeastSignificant(1));
             }
         }
     }
@@ -96,17 +97,23 @@ public class PatternComparison { // todo remove least significant slice of the d
         }
     }
 
-    double getPosition(Number number) {
-        if (!SpartanBukkit.debug && memory.size() < TPS.maximum) {
-            return -1.0;
+    double[] rankAndProbability(double value) {
+        if (value == -1.0
+                || !SpartanBukkit.debug
+                && (memory.size() < TPS.maximum
+                || this.rank.getTotal() < TPS.maximum)) {
+            return null;
         } else {
-            return !SpartanBukkit.debug && this.rank.getTotal() < TPS.maximum
-                    ? -1.0
-                    : this.rank.getProbability(number, -1.0);
-        }
-    }
+            double rank = this.rank.getProbability(value, -1.0);
 
-    double getProbability(Number number) {
-        return this.pie.getProbability(generalizeNumber(number));
+            if (rank != -1.0) {
+                return new double[]{
+                        rank,
+                        this.pie.getProbability(generalizeNumber(value))
+                };
+            } else {
+                return null;
+            }
+        }
     }
 }

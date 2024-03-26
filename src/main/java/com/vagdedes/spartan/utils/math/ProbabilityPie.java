@@ -100,17 +100,40 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie remove(Collection<Number> collection) {
+    public ProbabilityPie removeByCollection(Collection<Number> collection) {
         for (Number number : collection) {
             this.remove(number);
         }
         return this;
     }
 
+    public ProbabilityPie removeByEntry(Collection<Map.Entry<Number, Integer>> collection) {
+        for (Map.Entry<Number, Integer> number : collection) {
+            this.map.remove(number.getKey());
+        }
+        return this;
+    }
 
     public Collection<Number> removeOld(int amount) {
         Collection<Number> collection = new ArrayList<>(amount);
         Iterator<Number> iterator = this.map.keySet().iterator();
+
+        while (iterator.hasNext()) {
+            collection.add(iterator.next());
+            iterator.remove();
+
+            if (--amount == 0) {
+                break;
+            }
+        }
+        return collection;
+    }
+
+    public Collection<Map.Entry<Number, Integer>> removeLeastSignificant(int amount) {
+        Collection<Map.Entry<Number, Integer>> collection = new ArrayList<>(amount);
+        Iterator<Map.Entry<Number, Integer>> iterator = this.map.entrySet().stream().sorted(
+                Map.Entry.comparingByValue()
+        ).iterator();
 
         while (iterator.hasNext()) {
             collection.add(iterator.next());
