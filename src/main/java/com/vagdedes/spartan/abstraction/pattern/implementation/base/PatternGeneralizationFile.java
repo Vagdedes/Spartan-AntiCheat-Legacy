@@ -85,7 +85,7 @@ public class PatternGeneralizationFile {
         }
     }
 
-    void load() { // todo
+    void load() { // todo make one file
         SpartanBukkit.dataThread.execute(() -> {
             File file = new File(
                     headPath(this.profile)

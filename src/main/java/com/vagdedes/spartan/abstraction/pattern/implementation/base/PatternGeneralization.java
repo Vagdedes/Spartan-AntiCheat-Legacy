@@ -74,21 +74,21 @@ public abstract class PatternGeneralization {
         this.patternSizeCache = new PatternCache();
     }
 
-    public double[] probabilityRankAndProbability(double value) {
+    public double[] probabilityRankAndProbability(PlayerProfile profile) {
         synchronized (this.probabilityRank) {
-            return this.rankAndProbability(this.probabilityRank, value);
+            return this.rankAndProbability(this.probabilityRank, this.getProfile(profile).probability());
         }
     }
 
-    public double[] significanceRankAndProbability(double value) {
+    public double[] significanceRankAndProbability(PlayerProfile profile) {
         synchronized (this.significanceRank) {
-            return this.rankAndProbability(this.significanceRank, value);
+            return this.rankAndProbability(this.significanceRank, this.getProfile(profile).significance());
         }
     }
 
-    public double[] contributionRankAndProbability(double value) {
+    public double[] contributionRankAndProbability(PlayerProfile profile) {
         synchronized (this.contributionRank) {
-            return this.rankAndProbability(this.contributionRank, value);
+            return this.rankAndProbability(this.contributionRank, this.getProfile(profile).contribution());
         }
     }
 
@@ -409,7 +409,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    public PatternProfile getProfile(PlayerProfile profile) {
+    private PatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profiles) {
             return this.profiles.computeIfAbsent(
                     profile,

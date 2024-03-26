@@ -42,7 +42,6 @@ public class PatternProfile { // todo limit storage to the weight in one file na
 
     final MutualData mutual;
     final Collection<Long> contribution;
-    // Generalization -> Situation -> Patterns
     final Map<Long, List<PatternValue>> correlations;
     final PatternRepetition patternRepetition;
     final PlayerProfile researchProfile;
@@ -108,33 +107,37 @@ public class PatternProfile { // todo limit storage to the weight in one file na
         }
     }
 
-    public double contribution() {
+    double contribution() {
         synchronized (this.contribution) {
             return this.contributionRaw();
         }
     }
 
+    // Separator
+
     double probabilityRaw() {
         return this.average(PROBABILITY_POSITION);
     }
 
-    public double probability() {
+    double probability() {
         synchronized (this.mutual) {
             return this.probabilityRaw();
         }
     }
 
+    // Separator
+
     double significanceRaw() {
         return this.average(SIGNIFICANCE_POSITION);
     }
 
-    public double significance() {
+    double significance() {
         synchronized (this.mutual) {
             return this.significanceRaw();
         }
     }
 
-    // Private
+    // Separator
 
     private double average(int index) {
         Collection<Double> collection =

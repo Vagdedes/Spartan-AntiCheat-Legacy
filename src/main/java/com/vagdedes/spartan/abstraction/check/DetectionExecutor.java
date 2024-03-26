@@ -92,11 +92,10 @@ public abstract class DetectionExecutor {
         if (client instanceof Double) {
             client = AlgebraUtils.cut(client.doubleValue(), generalization);
         }
-        PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         double significance = patternGeneralization.getSignificance(client);
-        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability()),
-                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance()),
-                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution());
+        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(player.getProfile()),
+                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(player.getProfile()),
+                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(player.getProfile());
         StringBuilder sb = new StringBuilder()
                 .append("data: ")
                 .append(patternStorage.key)
