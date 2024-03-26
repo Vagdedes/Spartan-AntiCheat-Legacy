@@ -10,7 +10,7 @@ public class PatternGeneralizationInitiator {
     public PatternGeneralizationInitiator(int generalization, double weight) {
         this.generalization = generalization;
         this.onlineWeight = AlgebraUtils.integerRound(1.0 / weight);
-        this.offlineWeight = this.onlineWeight * Check.violationCycleTicks;
+        this.offlineWeight = Check.violationCycleTicks;
     }
 
 }

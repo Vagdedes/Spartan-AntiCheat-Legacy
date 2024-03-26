@@ -6,7 +6,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 
-public class PatternProfile {
+public class PatternProfile { // todo compare with little, store with a lot
 
     private static final int
             PROBABILITY_POSITION = 0,
@@ -63,7 +63,7 @@ public class PatternProfile {
             if (this.contribution.size() >= this.patternGeneralization.initiator.onlineWeight) {
                 Iterator<Long> iterator = this.contribution.iterator();
                 int size = this.contribution.size(),
-                        delete = size - dataWeight;
+                        delete = size - this.patternGeneralization.initiator.offlineWeight;
 
                 if (delete > 0) {
                     while (iterator.hasNext()) {
@@ -120,7 +120,7 @@ public class PatternProfile {
         if (collection.size() < this.patternGeneralization.initiator.onlineWeight) {
             return -1.0;
         } else {
-            int delete = collection.size() - dataWeight;
+            int delete = collection.size() - this.patternGeneralization.initiator.offlineWeight;
 
             if (delete > 0) {
                 Iterator<Double> iterator = collection.iterator();
