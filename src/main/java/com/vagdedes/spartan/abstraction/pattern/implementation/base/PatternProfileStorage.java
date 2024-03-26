@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -11,26 +9,23 @@ import java.util.*;
 
 public class PatternProfileStorage {
 
-    private static String headPath(Pattern patternStorage, PatternProfile patternProfile) {
+    private static String headPath(PatternProfile patternProfile) {
         return Register.plugin.getDataFolder()
                 + "/comparison/"
-                + patternStorage.key + "/"
-                + patternProfile.profile.getName();
+                + patternProfile.patternGeneralization.parent.key + "/"
+                + patternProfile.researchProfile.getName();
     }
 
     static final class GeneralizationFile {
 
         private final PatternProfileStorage parent;
-        private final int generalization;
         private File file;
         private YamlConfiguration configuration;
         private byte store;
         private short count;
 
-        private GeneralizationFile(PatternProfileStorage patternProfileStorage,
-                                   PatternGeneralization patternGeneralization) {
+        private GeneralizationFile(PatternProfileStorage patternProfileStorage) {
             this.parent = patternProfileStorage;
-            this.generalization = patternGeneralization.generalization;
             this.count = 0;
             this.store = 0;
             this.reload();
@@ -44,8 +39,8 @@ public class PatternProfileStorage {
                 if (this.store == 0) {
                     this.store = 1;
 
-                    synchronized (this.parent.profile.parent.profileFiles) {
-                        this.parent.profile.parent.profileFiles.add(this);
+                    synchronized (this.parent.profile.patternGeneralization.parent.profileFiles) {
+                        this.parent.profile.patternGeneralization.parent.profileFiles.add(this);
                     }
                 }
             });
@@ -53,13 +48,13 @@ public class PatternProfileStorage {
 
         private void reload() {
             int hash = Objects.hash(
-                    this.parent.profile.parent.key,
-                    this.generalization,
+                    this.parent.profile.patternGeneralization.parent.key,
+                    this.parent.profile.patternGeneralization.generalization,
                     System.currentTimeMillis()
             );
             this.file = new File(
-                    headPath(this.parent.profile.parent, this.parent.profile) + "/"
-                            + this.generalization + "/"
+                    headPath(this.parent.profile) + "/"
+                            + this.parent.profile.patternGeneralization.generalization + "/"
                             + hash + ".yml"
             );
 
@@ -91,18 +86,18 @@ public class PatternProfileStorage {
     }
 
     private final PatternProfile profile;
-    private final Map<Integer, GeneralizationFile> files;
+    private final GeneralizationFile fileManager;
 
     PatternProfileStorage(PatternProfile patternProfile) {
         this.profile = patternProfile;
-        this.files = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.fileManager = new GeneralizationFile(this);
     }
 
-    void load(PatternGeneralization patternGeneralization) {
+    void load() {
         SpartanBukkit.dataThread.execute(() -> {
             File file = new File(
-                    headPath(this.profile.parent, this.profile)
-                            + "/" + patternGeneralization.generalization
+                    headPath(this.profile)
+                            + "/" + this.profile.patternGeneralization.generalization
             );
 
             if (file.exists() && file.isDirectory()) {
@@ -121,13 +116,12 @@ public class PatternProfileStorage {
                             if (!keys.isEmpty()) {
                                 for (String key : keys) {
                                     try {
-                                        for (PatternComparison patternComparison : patternGeneralization.patternComparisons) {
+                                        for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
                                             double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
 
                                             if (value != -1.0) {
                                                 patternComparison.put(
                                                         this.profile,
-                                                        patternGeneralization,
                                                         value,
                                                         Long.parseLong(key),
                                                         false
@@ -145,45 +139,53 @@ public class PatternProfileStorage {
         });
     }
 
-    void set(PatternGeneralization patternGeneralization, long time, String key, Object value) {
-        synchronized (this.files) {
-            this.files.computeIfAbsent(
-                    patternGeneralization.generalization,
-                    integer -> new GeneralizationFile(this, patternGeneralization)
-            ).set(time, key, value);
-        }
+    void set(long time, String key, Object value) {
+        fileManager.set(time, key, value);
     }
 
     void delete() {
-        synchronized (this.files) {
-            synchronized (this.profile.parent.profileFiles) {
-                Iterator<PatternProfileStorage.GeneralizationFile> iterator = this.profile.parent.profileFiles.iterator();
+        fileManager.file.delete();
+        File directory = new File(this.profile.patternGeneralization.parent.learningFolder);
 
-                while (iterator.hasNext()) {
-                    PatternProfileStorage.GeneralizationFile generalizationFile = iterator.next();
-                    this.profile.parent.profileFiles.remove(generalizationFile);
-                    iterator.remove();
-                    SpartanBukkit.dataThread.execute(() -> generalizationFile.file.delete());
-                }
-            }
-            File file = new File(headPath(this.profile.parent, this.profile));
-
-            if (file.exists() && file.isDirectory()) {
-                this.deleteFiles(file);
-            }
-        }
-    }
-
-    private void deleteFiles(File file) {
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
 
             if (files != null) {
-                for (File subFile : files) {
-                    this.deleteFiles(subFile);
+                for (File file : files) {
+                    if (file.isFile()
+                            && file.getName().endsWith(".yml")) {
+                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                        Set<String> keys = configuration.getKeys(false);
+
+                        if (!keys.isEmpty()) {
+                            boolean found = false;
+
+                            for (String key : keys) {
+                                try {
+                                    String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
+
+                                    if (profileName != null
+                                            && profileName.equals(this.profile.researchProfile.getName())) {
+                                        for (String option : PatternGeneralization.options) {
+                                            configuration.set(key + option, null);
+                                        }
+                                        configuration.set(key, null);
+                                        found = true;
+                                    }
+                                } catch (Exception ignored) {
+                                }
+                            }
+
+                            if (found) {
+                                try {
+                                    configuration.save(file);
+                                } catch (Exception ignored) {
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        SpartanBukkit.dataThread.execute(() -> file.delete());
     }
 }

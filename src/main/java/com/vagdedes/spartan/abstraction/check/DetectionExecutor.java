@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -85,7 +85,6 @@ public abstract class DetectionExecutor {
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
                 player,
-                patternStorage,
                 situation,
                 patternGeneralization,
                 count
@@ -93,11 +92,11 @@ public abstract class DetectionExecutor {
         if (client instanceof Double) {
             client = AlgebraUtils.cut(client.doubleValue(), generalization);
         }
-        PatternProfile patternProfile = patternStorage.getProfile(player.getProfile());
-        double significance = patternStorage.getSignificance(client, patternGeneralization);
-        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability(patternGeneralization)),
-                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance(patternGeneralization)),
-                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution(patternGeneralization));
+        PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
+        double significance = patternGeneralization.getSignificance(client);
+        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile.probability()),
+                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile.significance()),
+                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile.contribution());
         StringBuilder sb = new StringBuilder()
                 .append("data: ")
                 .append(patternStorage.key)
@@ -149,9 +148,8 @@ public abstract class DetectionExecutor {
         }
 
         if (probabilityPredictor.pie.hasData()) {
-            patternStorage.compare(
+            patternGeneralization.compare(
                     player,
-                    patternGeneralization,
                     -1L,
                     time
             );
@@ -162,9 +160,8 @@ public abstract class DetectionExecutor {
                 double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
 
                 if (entry.getKey().doubleValue() == client.doubleValue()) {
-                    patternStorage.compare(
+                    patternGeneralization.compare(
                             player,
-                            patternGeneralization,
                             probability,
                             significance,
                             time
@@ -174,17 +171,15 @@ public abstract class DetectionExecutor {
                     count++;
                 }
             }
-            patternStorage.compare(
+            patternGeneralization.compare(
                     player,
-                    patternGeneralization,
                     1.0 / (probabilityPredictor.pie.getTotal() + 1.0),
                     significance,
                     time
             );
         } else {
-            patternStorage.compare(
+            patternGeneralization.compare(
                     player,
-                    patternGeneralization,
                     time,
                     time
             );

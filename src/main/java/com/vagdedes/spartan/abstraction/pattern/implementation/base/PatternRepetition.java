@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.TPS;
 
 public class PatternRepetition {
@@ -8,9 +7,9 @@ public class PatternRepetition {
     private Number number;
     private int count;
 
-    PatternRepetition(Number number) {
-        this.number = number;
-        this.count = 1;
+    PatternRepetition() {
+        this.number = Double.MIN_VALUE;
+        this.count = 0;
     }
 
     boolean canUse(Number number) {

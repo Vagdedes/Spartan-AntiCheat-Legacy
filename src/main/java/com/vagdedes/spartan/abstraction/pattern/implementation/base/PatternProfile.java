@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
@@ -42,38 +40,36 @@ public class PatternProfile { // todo limit storage to the weight in one file na
 
     // Separator
 
-    final Map<Integer, MutualData> mutual;
-    final Map<Integer, Collection<Long>> contribution;
+    final MutualData mutual;
+    final Collection<Long> contribution;
     // Generalization -> Situation -> Patterns
-    final Map<Integer, Map<Long, List<PatternValue>>> correlations;
-    final Map<Long, PatternRepetition> repetitions;
-    final PlayerProfile profile;
-    final Pattern parent;
+    final Map<Long, List<PatternValue>> correlations;
+    final PatternRepetition patternRepetition;
+    final PlayerProfile researchProfile;
+    final PatternGeneralization patternGeneralization;
     final PatternProfileStorage storage;
 
-    PatternProfile(Pattern patternStorage, PlayerProfile profile) {
-        this.parent = patternStorage;
-        this.profile = profile;
+    PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
+        this.patternGeneralization = patternGeneralization;
+        this.researchProfile = profile;
         this.storage = new PatternProfileStorage(this);
 
         this.correlations = new LinkedHashMap<>();
-        this.repetitions = new LinkedHashMap<>();
+        this.contribution = new LinkedList<>();
 
-        this.contribution = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.mutual = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.patternRepetition = new PatternRepetition();
+        this.mutual = new MutualData();
     }
 
     // Public
 
-    double contributionRaw(PatternGeneralization patternGeneralization) {
+    double contributionRaw() {
         if (this.contribution.isEmpty()) {
             return -1.0;
         } else {
-            Collection<Long> data = this.contribution.get(patternGeneralization.generalization);
-
-            if (data.size() >= dataWeight) {
-                Iterator<Long> iterator = data.iterator();
-                int size = data.size(),
+            if (this.contribution.size() >= dataWeight) {
+                Iterator<Long> iterator = this.contribution.iterator();
+                int size = this.contribution.size(),
                         delete = size - dataWeight;
 
                 if (delete > 0) {
@@ -112,114 +108,58 @@ public class PatternProfile { // todo limit storage to the weight in one file na
         }
     }
 
-    public double contribution(PatternGeneralization patternGeneralization) {
+    public double contribution() {
         synchronized (this.contribution) {
-            return this.contributionRaw(patternGeneralization);
+            return this.contributionRaw();
         }
     }
 
-    double probabilityRaw(PatternGeneralization patternGeneralization) {
-        return this.average(
-                this.mutual,
-                PROBABILITY_POSITION,
-                patternGeneralization
-        );
+    double probabilityRaw() {
+        return this.average(PROBABILITY_POSITION);
     }
 
-    public double probability(PatternGeneralization patternGeneralization) {
+    public double probability() {
         synchronized (this.mutual) {
-            return this.probabilityRaw(patternGeneralization);
+            return this.probabilityRaw();
         }
     }
 
-    double significanceRaw(PatternGeneralization patternGeneralization) {
-        return this.average(
-                this.mutual,
-                SIGNIFICANCE_POSITION,
-                patternGeneralization
-        );
+    double significanceRaw() {
+        return this.average(SIGNIFICANCE_POSITION);
     }
 
-    public double significance(PatternGeneralization patternGeneralization) {
+    public double significance() {
         synchronized (this.mutual) {
-            return this.significanceRaw(patternGeneralization);
+            return this.significanceRaw();
         }
-    }
-
-    // Local
-
-    boolean canUsePattern(long situation, Number number) {
-        PatternRepetition repetition = this.repetitions.get(situation);
-
-        if (repetition == null) {
-            this.repetitions.put(situation, new PatternRepetition(number));
-            return true;
-        } else {
-            return repetition.canUse(number);
-        }
-    }
-
-    // Separator
-
-    Map<Long, List<PatternValue>> correlationsData(PatternGeneralization patternGeneralization) {
-        return this.correlations.computeIfAbsent(
-                patternGeneralization.generalization,
-                k -> new LinkedHashMap<>()
-        );
-    }
-
-    MutualData mutualData(PatternGeneralization patternGeneralization) {
-        return this.mutual.computeIfAbsent(
-                patternGeneralization.generalization,
-                k -> new MutualData()
-        );
-    }
-
-    Collection<Long> contributionData(PatternGeneralization patternGeneralization) {
-        return this.contribution.computeIfAbsent(
-                patternGeneralization.generalization,
-                k -> new LinkedList<>()
-        );
     }
 
     // Private
 
-    private double average(Map<Integer, MutualData> parent,
-                           int index,
-                           PatternGeneralization patternGeneralization) {
-        if (parent.isEmpty()) {
+    private double average(int index) {
+        Collection<Double> collection =
+                index == PROBABILITY_POSITION
+                        ? mutual.probability
+                        : mutual.significance;
+
+        if (collection.size() < dataWeight) {
             return -1.0;
         } else {
-            MutualData data = parent.get(patternGeneralization.generalization);
+            int delete = collection.size() - dataWeight;
 
-            if (data == null) {
-                return -1.0;
-            } else {
-                Collection<Double> collection =
-                        index == PROBABILITY_POSITION
-                                ? data.probability
-                                : data.significance;
+            if (delete > 0) {
+                Iterator<Double> iterator = collection.iterator();
 
-                if (collection.size() < dataWeight) {
-                    return -1.0;
-                } else {
-                    int delete = collection.size() - dataWeight;
+                while (iterator.hasNext()) {
+                    mutual.total[index] -= iterator.next();
+                    iterator.remove();
 
-                    if (delete > 0) {
-                        Iterator<Double> iterator = collection.iterator();
-
-                        while (iterator.hasNext()) {
-                            data.total[index] -= iterator.next();
-                            iterator.remove();
-
-                            if (--delete == 0) {
-                                break;
-                            }
-                        }
+                    if (--delete == 0) {
+                        break;
                     }
-                    return data.total[index] / (double) collection.size();
                 }
             }
+            return mutual.total[index] / (double) collection.size();
         }
     }
 

@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
-
 public class PatternValue {
 
     public final Number pattern;

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -14,16 +13,16 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     private YamlConfiguration configuration;
     private byte store;
 
-    PatternGeneralizationStorage(String key) {
-        super(key, 0);
+    PatternGeneralizationStorage(Pattern pattern) {
+        super(pattern, 0);
         this.count = 0;
         this.store = 0;
         this.reload();
     }
 
     private void reload() {
-        int hash = Objects.hash(this.key, this.generalization, System.currentTimeMillis());
-        this.file = new File(path(key) + "/" + hash + ".yml");
+        int hash = Objects.hash(this.parent.key, this.generalization, System.currentTimeMillis());
+        this.file = new File(this.parent.learningFolder + "/" + hash + ".yml");
 
         if (this.file.exists()) {
             this.reload();
@@ -35,7 +34,7 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     void set(PatternProfile patternProfile, PatternValue value) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
-            this.configuration.set(value.time + profileOption, patternProfile.profile.getName());
+            this.configuration.set(value.time + profileOption, patternProfile.researchProfile.getName());
             this.configuration.set(value.time + situationOption, value.situation);
             this.configuration.set(value.time + patternOption, value.pattern);
 

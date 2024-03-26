@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
@@ -40,12 +38,14 @@ public class PatternComparison { // todo remove least significant slice of the d
         }
     }
 
+    final PatternGeneralization patternGeneralization;
     final String key;
     private final ProbabilityRank rank;
     private final ProbabilityPie pie;
     private final Map<PatternProfile, NumberMemory> memory;
 
-    public PatternComparison(String key) {
+    PatternComparison(PatternGeneralization patternGeneralization, String key) {
+        this.patternGeneralization = patternGeneralization;
         this.key = key;
         this.rank = new ProbabilityRank();
         this.pie = new ProbabilityPie();
@@ -53,14 +53,13 @@ public class PatternComparison { // todo remove least significant slice of the d
     }
 
     void put(PatternProfile patternProfile,
-             PatternGeneralization patternGeneralization,
              double number,
              long time,
              boolean storage) {
         if (number == -1.0) {
-            this.remove(patternProfile, !patternProfile.profile.isLegitimate());
+            this.remove(patternProfile, !patternProfile.researchProfile.isLegitimate());
         } else {
-            if (patternProfile.profile.isLegitimate()) {
+            if (patternProfile.researchProfile.isLegitimate()) {
                 NumberMemory data = memory.get(patternProfile);
 
                 if (data == null) {
@@ -76,7 +75,6 @@ public class PatternComparison { // todo remove least significant slice of the d
 
             if (storage) {
                 patternProfile.storage.set(
-                        patternGeneralization,
                         time,
                         this.key,
                         number
@@ -98,17 +96,17 @@ public class PatternComparison { // todo remove least significant slice of the d
         }
     }
 
-    public double getPosition(Number number, double def) {
+    double getPosition(Number number) {
         if (!SpartanBukkit.debug && memory.size() < TPS.maximum) {
-            return def;
+            return -1.0;
         } else {
             return !SpartanBukkit.debug && this.rank.getTotal() < TPS.maximum
-                    ? def
-                    : this.rank.getProbability(number, def);
+                    ? -1.0
+                    : this.rank.getProbability(number, -1.0);
         }
     }
 
-    public double getProbability(Number number) {
+    double getProbability(Number number) {
         return this.pie.getProbability(generalizeNumber(number));
     }
 }
