@@ -27,7 +27,7 @@ public class PatternProfileStorage {
                         + "/comparison/"
                         + this.profile.patternGeneralization.parent.key + "/"
                         + this.profile.patternGeneralization.initiator.generalization + "/"
-                        + this.profile.patternGeneralization.initiator.onlineWeight + "/"
+                        + this.profile.patternGeneralization.initiator.specificWeight + "/"
                         + this.profile.researchProfile.getName() + ".yml"
         );
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
@@ -36,25 +36,32 @@ public class PatternProfileStorage {
             if (!this.file.isFile()) {
                 this.file.delete();
             }
-            SpartanBukkit.dataThread.execute(() -> { // todo add keys to memory
+            SpartanBukkit.dataThread.execute(() -> {
                 Set<String> keys = this.configuration.getKeys(false);
 
                 if (!keys.isEmpty()) {
-                    for (String key : keys) {
-                        try {
-                            for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
-                                double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
+                    this.store(true);
 
-                                if (value != -1.0) {
-                                    patternComparison.put(
-                                            this.profile,
-                                            value,
-                                            Long.parseLong(key),
-                                            false
-                                    );
+                    synchronized (this.keys) {
+                        for (String key : keys) {
+                            long time = Long.parseLong(key);
+                            this.keys.add(time);
+
+                            try {
+                                for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
+                                    double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
+
+                                    if (value != -1.0) {
+                                        patternComparison.put(
+                                                this.profile,
+                                                value,
+                                                time,
+                                                false
+                                        );
+                                    }
                                 }
+                            } catch (Exception ignored) {
                             }
-                        } catch (Exception ignored) {
                         }
                     }
                 }
@@ -76,13 +83,12 @@ public class PatternProfileStorage {
         });
     }
 
-    void store() {
+    void store(boolean thisThread) {
         if (this.store == 1) {
             this.store = 2;
-
-            SpartanBukkit.dataThread.execute(() -> {
+            Runnable runnable = () -> {
                 try {
-                    if (this.keys.size() > this.profile.patternGeneralization.initiator.offlineWeight) {
+                    if (this.keys.size() > this.profile.patternGeneralization.initiator.generalWeight) {
                         String removed;
 
                         synchronized (this.keys) {
@@ -97,7 +103,14 @@ public class PatternProfileStorage {
                     this.store = 0;
                 } catch (Exception ignored) {
                 }
-            });
+            };
+
+            if (thisThread) {
+                runnable.run();
+                this.profile.patternGeneralization.parent.dequeueFile(this);
+            } else {
+                SpartanBukkit.dataThread.execute(runnable);
+            }
         }
     }
 

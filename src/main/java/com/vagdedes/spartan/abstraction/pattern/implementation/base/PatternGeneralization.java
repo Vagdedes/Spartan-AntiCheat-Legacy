@@ -30,8 +30,7 @@ public abstract class PatternGeneralization {
     final PatternGeneralizationInitiator initiator;
     final ProbabilityPie significancePie;
     final PatternComparison
-            probabilityComparison,
-            significanceComparison,
+            trustFactorComparison,
             contributionComparison;
     final PatternComparison[] patternComparisons;
     final Map<PlayerProfile, PatternProfile> profiles;
@@ -41,37 +40,24 @@ public abstract class PatternGeneralization {
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
-        this.probabilityComparison = new PatternComparison(this, "probability");
-        this.significanceComparison = new PatternComparison(this, "significance");
+        this.trustFactorComparison = new PatternComparison(this, "trust");
         this.contributionComparison = new PatternComparison(this, "contribution");
         this.patternComparisons = new PatternComparison[]{
-                this.probabilityComparison,
-                this.significanceComparison,
+                this.trustFactorComparison,
                 this.contributionComparison
         };
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.patternSizeCache = new PatternCache();
     }
 
-    public double[] probabilityRankAndProbability(PatternProfile patternProfile) {
+    public double[] trustFactorRankAndProbability(PatternProfile patternProfile) {
         double value;
 
-        synchronized (patternProfile.mutualData) {
-            value = patternProfile.probability();
+        synchronized (patternProfile.trustFactorMemory) {
+            value = patternProfile.trustFactor();
         }
-        synchronized (this.probabilityComparison) {
-            return this.probabilityComparison.rankAndProbability(value);
-        }
-    }
-
-    public double[] significanceRankAndProbability(PatternProfile patternProfile) {
-        double value;
-
-        synchronized (patternProfile.mutualData) {
-            value = patternProfile.significance();
-        }
-        synchronized (this.significanceComparison) {
-            return this.significanceComparison.rankAndProbability(value);
+        synchronized (this.trustFactorComparison) {
+            return this.trustFactorComparison.rankAndProbability(value);
         }
     }
 
@@ -341,21 +327,13 @@ public abstract class PatternGeneralization {
                         Number number,
                         double probability,
                         long time) {
-        synchronized (patternProfile.mutualData) {
-            patternProfile.mutualData.add(probability, this.significancePie.getProbability(number));
+        synchronized (patternProfile.trustFactorMemory) {
+            patternProfile.addTrustFactor(probability * this.significancePie.getProbability(number));
 
-            synchronized (this.probabilityComparison) {
-                this.probabilityComparison.put(
+            synchronized (this.trustFactorComparison) {
+                this.trustFactorComparison.put(
                         patternProfile,
-                        patternProfile.probability(),
-                        time,
-                        true
-                );
-            }
-            synchronized (this.significanceComparison) {
-                this.significanceComparison.put(
-                        patternProfile,
-                        patternProfile.significance(),
+                        patternProfile.trustFactor(),
                         time,
                         true
                 );

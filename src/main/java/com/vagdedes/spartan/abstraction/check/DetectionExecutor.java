@@ -94,8 +94,7 @@ public abstract class DetectionExecutor {
         if (client instanceof Double) {
             client = AlgebraUtils.cut(client.doubleValue(), generalization);
         }
-        double[] probabilityRankAndProbability = patternGeneralization.probabilityRankAndProbability(patternProfile),
-                significanceRankAndProbability = patternGeneralization.significanceRankAndProbability(patternProfile),
+        double[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
                 contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
         StringBuilder sb = new StringBuilder()
                 .append("data: ")
@@ -107,28 +106,15 @@ public abstract class DetectionExecutor {
                 .append("), client: ")
                 .append(client);
 
-        if (probabilityRankAndProbability != null) {
+        if (trustFactorRankAndProbability != null) {
             sb.append(", probability: ")
                     .append(AlgebraUtils.cut(
-                            probabilityRankAndProbability[0] * 100.0,
+                            trustFactorRankAndProbability[0] * 100.0,
                             2
                     ))
                     .append("(")
                     .append(AlgebraUtils.cut(
-                            probabilityRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append(")");
-        }
-        if (significanceRankAndProbability != null) {
-            sb.append(", significance: ")
-                    .append(AlgebraUtils.cut(
-                            significanceRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            significanceRankAndProbability[1] * 100.0,
+                            trustFactorRankAndProbability[1] * 100.0,
                             2
                     ))
                     .append(")");

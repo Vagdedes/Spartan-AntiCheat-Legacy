@@ -104,7 +104,7 @@ public class Pattern {
                 Iterator<PatternProfileStorage> iterator = this.profileFiles.iterator();
 
                 while (iterator.hasNext()) {
-                    iterator.next().store();
+                    iterator.next().store(false);
                     iterator.remove();
                 }
             }
@@ -114,6 +114,12 @@ public class Pattern {
     void queueFile(PatternProfileStorage file) {
         synchronized (this.profileFiles) {
             this.profileFiles.add(file);
+        }
+    }
+
+    void dequeueFile(PatternProfileStorage file) {
+        synchronized (this.profileFiles) {
+            this.profileFiles.remove(file);
         }
     }
 
