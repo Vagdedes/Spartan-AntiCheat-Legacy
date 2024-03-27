@@ -49,6 +49,10 @@ public abstract class PatternGeneralization {
         this.patternSizeCache = new PatternCache();
     }
 
+    int dataLimit() {
+        return SpartanEdition.is2ndGeneration() ? 10_000 : 1_000;
+    }
+
     void clear() {
         synchronized (this.profiles) {
             synchronized (this.trustFactorComparison) {
@@ -108,7 +112,7 @@ public abstract class PatternGeneralization {
 
                 if (patternSizeCache.isExpired()) {
                     patternSizeCache.refresh();
-                    dataLimit = SpartanEdition.is2ndGeneration() ? 100_000 : 10_000;
+                    dataLimit = this.dataLimit();
                     int delete = list.size() - dataLimit;
 
                     if (delete > 0) {

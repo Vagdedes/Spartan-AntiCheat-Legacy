@@ -28,7 +28,6 @@ public class PatternComparison {
         }
 
         private void add(double number) {
-            this.parent.rank.remove(this.last);
             this.last = number;
             this.parent.rank.add(number);
 
@@ -36,7 +35,7 @@ public class PatternComparison {
             this.pie.add(generalized);
             this.parent.pie.add(generalized);
 
-            if (this.pie.getSlices() > 1_000) {
+            if (this.pie.getSlices() > this.parent.patternGeneralization.dataLimit()) {
                 this.parent.pie.removeByEntry(this.pie.removeLeastSignificant(1));
             }
         }
@@ -75,6 +74,7 @@ public class PatternComparison {
                 if (data == null) {
                     this.profiles.put(patternProfile, new NumberMemory(this, number));
                 } else {
+                    this.rank.remove(data.last);
                     data.add(number);
                 }
             } else {
