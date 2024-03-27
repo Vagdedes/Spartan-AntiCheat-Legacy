@@ -121,25 +121,30 @@ public class PatternProfileStorage {
 
             SpartanBukkit.dataThread.execute(() -> {
                 try {
-                    int delete = this.keys.size() - this.profile.patternGeneralization.initiator.generalWeight;
+                    Collection<String> keys = new ArrayList<>();
 
-                    if (delete > 0) {
-                        synchronized (this.keys) {
+                    synchronized (this.keys) {
+                        int delete = this.keys.size() - this.profile.patternGeneralization.initiator.generalWeight;
+
+                        if (delete > 0) {
                             Iterator<Long> iterator = this.keys.iterator();
 
                             while (iterator.hasNext()) {
-                                String removed = Long.toString(iterator.next());
+                                keys.add(Long.toString(iterator.next()));
                                 iterator.remove();
-
-                                for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
-                                    this.configuration.set(removed + "." + patternComparison.key, null);
-                                }
-                                this.configuration.set(removed, null);
 
                                 if (--delete == 0) {
                                     break;
                                 }
                             }
+                        }
+                    }
+                    if (!keys.isEmpty()) {
+                        for (String key : keys) {
+                            for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
+                                this.configuration.set(key + "." + patternComparison.key, null);
+                            }
+                            this.configuration.set(key, null);
                         }
                     }
                     this.configuration.save(this.file);
@@ -151,6 +156,7 @@ public class PatternProfileStorage {
     }
 
     void delete() {
+        if (loaded) {
         this.profile.patternGeneralization.parent.dequeueFile(this);
         this.file.delete();
 
@@ -198,6 +204,7 @@ public class PatternProfileStorage {
                     }
                 }
             }
+        }
         }
     }
 
