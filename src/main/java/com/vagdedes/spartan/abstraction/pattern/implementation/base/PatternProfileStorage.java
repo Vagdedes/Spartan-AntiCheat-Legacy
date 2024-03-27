@@ -14,6 +14,7 @@ public class PatternProfileStorage {
     private final YamlConfiguration configuration;
     private byte store;
     private final List<Long> keys;
+    private boolean loaded;
 
     PatternProfileStorage(PatternProfile patternProfile) {
         this.profile = patternProfile;
@@ -30,79 +31,88 @@ public class PatternProfileStorage {
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
 
         if (this.file.exists()) {
-            if (!this.file.isFile()) {
-                this.file.delete();
-            }
-            SpartanBukkit.dataThread.execute(() -> {
-                Set<String> keys = this.configuration.getKeys(false);
+            if (this.file.isFile()) {
+                this.loaded = false;
 
-                if (!keys.isEmpty()) {
-                    Set<Long> set = new LinkedHashSet<>(this.profile.patternGeneralization.initiator.generalWeight);
-                    boolean changed = false;
+                SpartanBukkit.dataThread.execute(() -> {
+                    Set<String> keys = this.configuration.getKeys(false);
 
-                    for (String key : keys) {
-                        try {
-                            boolean removed = false;
+                    if (!keys.isEmpty()) {
+                        Set<Long> set = new LinkedHashSet<>(this.profile.patternGeneralization.initiator.generalWeight);
+                        boolean changed = false;
 
-                            for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
-                                String path = key + "." + patternComparison.key;
-                                double value = this.configuration.getDouble(path, -1.0);
+                        for (String key : keys) {
+                            try {
+                                boolean removed = false;
 
-                                if (value != -1.0) {
-                                    long time = Long.parseLong(key);
+                                for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
+                                    String path = key + "." + patternComparison.key;
+                                    double value = this.configuration.getDouble(path, -1.0);
 
-                                    if (set.size() == this.profile.patternGeneralization.initiator.generalWeight) {
-                                        this.configuration.set(path, null);
-                                        removed = true;
-                                        changed = true;
-                                    } else {
-                                        set.add(time);
-                                        patternComparison.put(
-                                                this.profile,
-                                                value,
-                                                time,
-                                                false
-                                        );
+                                    if (value != -1.0) {
+                                        long time = Long.parseLong(key);
+
+                                        if (set.size() == this.profile.patternGeneralization.initiator.generalWeight) {
+                                            this.configuration.set(path, null);
+                                            removed = true;
+                                            changed = true;
+                                        } else {
+                                            set.add(time);
+                                            patternComparison.put(
+                                                    this.profile,
+                                                    value,
+                                                    time,
+                                                    false
+                                            );
+                                        }
                                     }
                                 }
-                            }
 
-                            if (removed) {
-                                this.configuration.set(key, null);
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    }
-
-                    if (!set.isEmpty()) {
-                        if (changed) {
-                            try {
-                                this.configuration.save(this.file);
+                                if (removed) {
+                                    this.configuration.set(key, null);
+                                }
                             } catch (Exception ignored) {
                             }
                         }
-                        synchronized (this.keys) {
-                            this.keys.clear();
-                            this.keys.addAll(set);
+
+                        if (!set.isEmpty()) {
+                            if (changed) {
+                                try {
+                                    this.configuration.save(this.file);
+                                } catch (Exception ignored) {
+                                }
+                            }
+                            synchronized (this.keys) {
+                                this.keys.clear();
+                                this.keys.addAll(set);
+                            }
                         }
                     }
-                }
-            });
+                    this.loaded = true;
+                });
+            } else {
+                this.file.delete();
+                this.loaded = true;
+            }
+        } else {
+            this.loaded = true;
         }
     }
 
     void set(PatternComparison comparison, long time, Object value) {
-        SpartanBukkit.dataThread.execute(() -> {
-            synchronized (this.keys) {
-                this.keys.add(time);
-            }
-            this.configuration.set(time + "." + comparison.key, value);
+        if (this.loaded) {
+            SpartanBukkit.dataThread.execute(() -> {
+                synchronized (this.keys) {
+                    this.keys.add(time);
+                }
+                this.configuration.set(time + "." + comparison.key, value);
 
-            if (this.store == 0) {
-                this.store = 1;
-                this.profile.patternGeneralization.parent.queueFile(this);
-            }
-        });
+                if (this.store == 0) {
+                    this.store = 1;
+                    this.profile.patternGeneralization.parent.queueFile(this);
+                }
+            });
+        }
     }
 
     void store() {
@@ -111,16 +121,26 @@ public class PatternProfileStorage {
 
             SpartanBukkit.dataThread.execute(() -> {
                 try {
-                    if (this.keys.size() > this.profile.patternGeneralization.initiator.generalWeight) {
-                        String removed;
+                    int delete = this.keys.size() - this.profile.patternGeneralization.initiator.generalWeight;
 
+                    if (delete > 0) {
                         synchronized (this.keys) {
-                            removed = String.valueOf(this.keys.remove(0));
+                            Iterator<Long> iterator = this.keys.iterator();
+
+                            while (iterator.hasNext()) {
+                                String removed = Long.toString(iterator.next());
+                                iterator.remove();
+
+                                for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
+                                    this.configuration.set(removed + "." + patternComparison.key, null);
+                                }
+                                this.configuration.set(removed, null);
+
+                                if (--delete == 0) {
+                                    break;
+                                }
+                            }
                         }
-                        for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
-                            this.configuration.set(removed + "." + patternComparison.key, null);
-                        }
-                        this.configuration.set(removed, null);
                     }
                     this.configuration.save(this.file);
                     this.store = 0;
