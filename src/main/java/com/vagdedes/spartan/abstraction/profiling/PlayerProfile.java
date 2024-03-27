@@ -173,6 +173,10 @@ public class PlayerProfile {
                 : SpartanBukkit.getPlayer(name);
     }
 
+    public boolean isOnline() {
+        return getSpartanPlayer() != null;
+    }
+
     // Separator
 
     public ViolationHistory[] getViolationHistory() {

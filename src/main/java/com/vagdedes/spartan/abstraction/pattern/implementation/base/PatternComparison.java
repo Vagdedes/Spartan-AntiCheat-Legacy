@@ -28,8 +28,11 @@ public class PatternComparison {
         }
 
         private void add(double number) {
-            Number generalized = generalizeNumber(number);
+            this.parent.rank.remove(this.last);
             this.last = number;
+            this.parent.rank.add(number);
+
+            Number generalized = generalizeNumber(number);
             this.pie.add(generalized);
             this.parent.pie.add(generalized);
 
@@ -43,14 +46,20 @@ public class PatternComparison {
     final String key;
     private final ProbabilityRank rank;
     private final ProbabilityPie pie;
-    private final Map<PatternProfile, NumberMemory> memory;
+    private final Map<PatternProfile, NumberMemory> profiles;
 
     PatternComparison(PatternGeneralization patternGeneralization, String key) {
         this.patternGeneralization = patternGeneralization;
         this.key = key;
         this.rank = new ProbabilityRank();
         this.pie = new ProbabilityPie();
-        this.memory = new LinkedHashMap<>();
+        this.profiles = new LinkedHashMap<>();
+    }
+
+    void clear() {
+        this.rank.clear();
+        this.pie.clear();
+        this.profiles.clear();
     }
 
     void put(PatternProfile patternProfile,
@@ -61,15 +70,13 @@ public class PatternComparison {
             this.remove(patternProfile, !patternProfile.researchProfile.isLegitimate());
         } else {
             if (patternProfile.researchProfile.isLegitimate()) {
-                NumberMemory data = memory.get(patternProfile);
+                NumberMemory data = profiles.get(patternProfile);
 
                 if (data == null) {
-                    this.memory.put(patternProfile, new NumberMemory(this, number));
+                    this.profiles.put(patternProfile, new NumberMemory(this, number));
                 } else {
-                    this.rank.remove(data.last);
                     data.add(number);
                 }
-                this.rank.add(number);
             } else {
                 this.remove(patternProfile, true);
             }
@@ -85,7 +92,7 @@ public class PatternComparison {
     }
 
     private void remove(PatternProfile patternProfile, boolean pie) {
-        NumberMemory data = memory.remove(patternProfile);
+        NumberMemory data = profiles.remove(patternProfile);
 
         if (data != null) {
             this.rank.remove(data.last);
@@ -100,7 +107,7 @@ public class PatternComparison {
     double[] rankAndProbability(double value) {
         if (value == -1.0
                 || !SpartanBukkit.debug
-                && (memory.size() < TPS.maximum
+                && (profiles.size() < TPS.maximum
                 || this.rank.getTotal() < TPS.maximum)) {
             return null;
         } else {

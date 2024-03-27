@@ -46,6 +46,17 @@ public class Pattern {
         synchronized (instances) {
             synchronized (PatternGeneralization.allCache) {
                 synchronized (PatternGeneralization.rankedCache) {
+                    for (Pattern pattern : instances) {
+                        synchronized (pattern.generalizations) {
+                            for (PatternGeneralization generalization : pattern.generalizations.values()) {
+                                generalization.clear();
+                            }
+                            pattern.generalizations.clear();
+                        }
+                        synchronized (pattern.profileFiles) {
+                            pattern.profileFiles.clear();
+                        }
+                    }
                     instances.clear();
                     PatternGeneralization.allCache.clear();
                     PatternGeneralization.rankedCache.clear();
@@ -183,7 +194,6 @@ public class Pattern {
                                                                     generalization,
                                                                     time
                                                             ),
-                                                            true,
                                                             false
                                                     );
                                                 }
@@ -231,7 +241,6 @@ public class Pattern {
                                     generalization,
                                     time
                             ),
-                            include,
                             include && generalization instanceof PatternGeneralizationStorage
                     );
                 }

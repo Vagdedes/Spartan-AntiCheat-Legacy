@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
 import java.util.*;
 
-public class PatternProfile { // todo compare with little, store with a lot
+public class PatternProfile {
 
     private double trustFactorTotal;
     final Collection<Double> trustFactorMemory;
@@ -28,14 +28,15 @@ public class PatternProfile { // todo compare with little, store with a lot
         this.trustFactorTotal = 0.0;
     }
 
-    double contribution() {
+    double contribution(boolean compare) {
         if (this.contribution.isEmpty()) {
             return -1.0;
         } else {
             if (this.contribution.size() >= this.patternGeneralization.initiator.specificWeight) {
                 Iterator<Long> iterator = this.contribution.iterator();
                 int size = this.contribution.size(),
-                        delete = size - this.patternGeneralization.initiator.generalWeight;
+                        delete = size - this.patternGeneralization.initiator.generalWeight,
+                        required = this.patternGeneralization.initiator.specificWeight + 1;
 
                 if (delete > 0) {
                     while (iterator.hasNext()) {
@@ -48,21 +49,36 @@ public class PatternProfile { // todo compare with little, store with a lot
                         }
                     }
                 }
-                if (size >= this.patternGeneralization.initiator.specificWeight) {
-                    long total = 0L, previous = iterator.next();
+                if (size >= required) {
+                    long total = 0L, previous = -1L;
 
+                    if (compare) {
+                        int dismiss = size - required;
+
+                        if (dismiss > 0) {
+                            while (iterator.hasNext()) {
+                                iterator.next();
+                                dismiss--;
+                                size--;
+                            }
+                        }
+                    }
                     while (iterator.hasNext()) {
                         long current = iterator.next();
 
                         if (current == -1L) {
                             size--;
                         } else {
-                            total += current - previous;
+                            if (previous == -1L) {
+                                size--;
+                            } else {
+                                total += current - previous;
+                            }
                             previous = current;
                         }
                     }
-                    return size >= (this.patternGeneralization.initiator.specificWeight + 1)
-                            ? total / (double) (size - 1)
+                    return size >= required
+                            ? total / (double) size
                             : -1.0;
                 } else {
                     return -1.0;
@@ -73,7 +89,7 @@ public class PatternProfile { // todo compare with little, store with a lot
         }
     }
 
-    double trustFactor() {
+    double trustFactor(boolean compare) {
         if (this.trustFactorMemory.size() < this.patternGeneralization.initiator.specificWeight) {
             return -1.0;
         } else {
@@ -93,7 +109,24 @@ public class PatternProfile { // todo compare with little, store with a lot
                     }
                 }
             }
-            return this.trustFactorTotal / (double) size;
+            if (compare) {
+                return this.trustFactorTotal / (double) size;
+            } else {
+                double total = 0.0;
+                int count = this.patternGeneralization.initiator.specificWeight;
+                Iterator<Double> iterator = this.trustFactorMemory.stream().sorted(
+                        Comparator.reverseOrder()
+                ).iterator();
+
+                while (iterator.hasNext()) {
+                    total += iterator.next();
+
+                    if (--count == 0) {
+                        break;
+                    }
+                }
+                return total / (double) this.patternGeneralization.initiator.specificWeight;
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -50,11 +49,26 @@ public abstract class PatternGeneralization {
         this.patternSizeCache = new PatternCache();
     }
 
+    void clear() {
+        synchronized (this.profiles) {
+            synchronized (this.trustFactorComparison) {
+                synchronized (this.contributionComparison) {
+                    synchronized (this.significancePie) {
+                        this.profiles.clear();
+                        this.trustFactorComparison.clear();
+                        this.contributionComparison.clear();
+                        this.significancePie.clear();
+                    }
+                }
+            }
+        }
+    }
+
     public double[] trustFactorRankAndProbability(PatternProfile patternProfile) {
         double value;
 
         synchronized (patternProfile.trustFactorMemory) {
-            value = patternProfile.trustFactor();
+            value = patternProfile.trustFactor(true);
         }
         synchronized (this.trustFactorComparison) {
             return this.trustFactorComparison.rankAndProbability(value);
@@ -65,7 +79,7 @@ public abstract class PatternGeneralization {
         double value;
 
         synchronized (patternProfile.contribution) {
-            value = patternProfile.contribution();
+            value = patternProfile.contribution(true);
         }
         synchronized (this.contributionComparison) {
             return this.contributionComparison.rankAndProbability(value);
@@ -76,45 +90,50 @@ public abstract class PatternGeneralization {
 
     void rawCache(PlayerProfile profile,
                   PatternValue value,
-                  boolean significant,
                   boolean store) {
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(value.pattern)) {
-            List<PatternValue> list = patternProfile.correlations.computeIfAbsent(
-                    value.situation,
-                    k -> new ArrayList<>(100)
-            );
-            list.add(value);
+            int dataLimit;
 
-            if (significant) {
+            synchronized (this.significancePie) {
                 this.significancePie.add(value.pattern);
             }
+            synchronized (patternProfile.correlations) {
+                List<PatternValue> list = patternProfile.correlations.computeIfAbsent(
+                        value.situation,
+                        k -> new ArrayList<>()
+                );
+                list.add(value);
 
-            if (patternSizeCache.isExpired()) {
-                patternSizeCache.refresh();
-                int dataLimit = Math.min(
-                        SpartanEdition.is2ndGeneration() ? 1_000_000 : 100_000,
-                        Cache.maxBytes / this.parent.generalizations.size() / patternProfile.contribution.size() / PatternValue.objectSize
-                ),
-                        delete = list.size() - dataLimit;
+                if (patternSizeCache.isExpired()) {
+                    patternSizeCache.refresh();
+                    dataLimit = SpartanEdition.is2ndGeneration() ? 100_000 : 10_000;
+                    int delete = list.size() - dataLimit;
 
-                if (delete > 0) {
-                    Iterator<PatternValue> iterator = list.iterator();
+                    if (delete > 0) {
+                        Iterator<PatternValue> iterator = list.iterator();
 
-                    while (iterator.hasNext()) {
-                        iterator.next();
-                        iterator.remove();
+                        while (iterator.hasNext()) {
+                            iterator.next();
+                            iterator.remove();
 
-                        if (--delete == 0) {
-                            break;
+                            if (--delete == 0) {
+                                break;
+                            }
                         }
                     }
+                } else {
+                    dataLimit = 0;
                 }
-                delete = this.significancePie.getSlices() - dataLimit;
+            }
+            if (dataLimit != 0) {
+                int delete = this.significancePie.getSlices() - dataLimit;
 
                 if (delete > 0) {
-                    this.significancePie.removeLeastSignificant(delete);
+                    synchronized (this.significancePie) {
+                        this.significancePie.removeLeastSignificant(delete);
+                    }
                 }
             }
 
@@ -290,7 +309,11 @@ public abstract class PatternGeneralization {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
 
-                        Collection<PatternValue> data = entry.getValue().correlations.get(situation);
+                        Collection<PatternValue> data;
+
+                        synchronized (entry.getValue().correlations) {
+                            data = entry.getValue().correlations.get(situation);
+                        }
 
                         if (data != null) {
                             rank.addMultiplePatterns(data);
@@ -315,7 +338,7 @@ public abstract class PatternGeneralization {
             synchronized (this.contributionComparison) {
                 this.contributionComparison.put(
                         patternProfile,
-                        patternProfile.contribution(),
+                        patternProfile.contribution(false),
                         time,
                         true
                 );
@@ -328,12 +351,13 @@ public abstract class PatternGeneralization {
                         double probability,
                         long time) {
         synchronized (patternProfile.trustFactorMemory) {
-            patternProfile.addTrustFactor(probability * this.significancePie.getProbability(number));
-
+            synchronized (this.significancePie) {
+                patternProfile.addTrustFactor(probability * this.significancePie.getProbability(number));
+            }
             synchronized (this.trustFactorComparison) {
                 this.trustFactorComparison.put(
                         patternProfile,
-                        patternProfile.trustFactor(),
+                        patternProfile.trustFactor(false),
                         time,
                         true
                 );
