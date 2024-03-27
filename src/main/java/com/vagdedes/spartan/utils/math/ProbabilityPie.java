@@ -136,8 +136,9 @@ public class ProbabilityPie {
         ).iterator();
 
         while (iterator.hasNext()) {
-            collection.add(iterator.next());
-            iterator.remove();
+            Map.Entry<Number, Integer> next = iterator.next();
+            collection.add(next);
+            this.map.remove(next.getKey());
 
             if (--amount == 0) {
                 break;
