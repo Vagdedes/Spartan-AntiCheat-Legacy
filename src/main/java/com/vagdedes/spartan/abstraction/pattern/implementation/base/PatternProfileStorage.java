@@ -38,6 +38,7 @@ public class PatternProfileStorage {
 
                 if (!keys.isEmpty()) {
                     Set<Long> set = new LinkedHashSet<>(this.profile.patternGeneralization.initiator.generalWeight);
+                    boolean changed = false;
 
                     for (String key : keys) {
                         try {
@@ -49,12 +50,13 @@ public class PatternProfileStorage {
 
                                 if (value != -1.0) {
                                     long time = Long.parseLong(key);
-                                    set.add(time);
 
                                     if (set.size() == this.profile.patternGeneralization.initiator.generalWeight) {
                                         this.configuration.set(path, null);
                                         removed = true;
+                                        changed = true;
                                     } else {
+                                        set.add(time);
                                         patternComparison.put(
                                                 this.profile,
                                                 value,
@@ -73,8 +75,12 @@ public class PatternProfileStorage {
                     }
 
                     if (!set.isEmpty()) {
-                        this.store(true);
-
+                        if (changed) {
+                            try {
+                                this.configuration.save(this.file);
+                            } catch (Exception ignored) {
+                            }
+                        }
                         synchronized (this.keys) {
                             this.keys.clear();
                             this.keys.addAll(set);
@@ -99,11 +105,11 @@ public class PatternProfileStorage {
         });
     }
 
-    void store(boolean thisThread) {
+    void store() {
         if (this.store == 1) {
             this.store = 2;
 
-            Runnable runnable = () -> {
+            SpartanBukkit.dataThread.execute(() -> {
                 try {
                     if (this.keys.size() > this.profile.patternGeneralization.initiator.generalWeight) {
                         String removed;
@@ -120,14 +126,7 @@ public class PatternProfileStorage {
                     this.store = 0;
                 } catch (Exception ignored) {
                 }
-            };
-
-            if (thisThread) {
-                runnable.run();
-                this.profile.patternGeneralization.parent.dequeueFile(this);
-            } else {
-                SpartanBukkit.dataThread.execute(runnable);
-            }
+            });
         }
     }
 

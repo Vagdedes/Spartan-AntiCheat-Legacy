@@ -114,7 +114,7 @@ public class Pattern {
                 Iterator<PatternProfileStorage> iterator = this.profileFiles.iterator();
 
                 while (iterator.hasNext()) {
-                    iterator.next().store(false);
+                    iterator.next().store();
                     iterator.remove();
                 }
             }
