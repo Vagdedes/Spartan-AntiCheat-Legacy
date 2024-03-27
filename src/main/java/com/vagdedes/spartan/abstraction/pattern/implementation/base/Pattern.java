@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -143,9 +142,7 @@ public class Pattern {
         Map<Integer, PatternGeneralization> generalizations = new LinkedHashMap<>();
         File directory = new File(this.learningFolder);
 
-        if (!directory.exists()) {
-            SpartanBukkit.dataThread.execute(() -> directory.mkdirs());
-        } else if (directory.isDirectory()) {
+        if (directory.exists() && directory.isDirectory()) {
             File[] files = directory.listFiles();
 
             if (files != null) {
@@ -207,11 +204,6 @@ public class Pattern {
                     }
                 }
             }
-        } else {
-            SpartanBukkit.dataThread.execute(() -> {
-                directory.delete();
-                directory.mkdirs();
-            });
         }
 
         if (!generalizations.isEmpty()) {
