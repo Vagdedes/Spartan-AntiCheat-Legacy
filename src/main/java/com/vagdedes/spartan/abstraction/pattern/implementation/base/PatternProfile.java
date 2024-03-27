@@ -39,14 +39,10 @@ public class PatternProfile {
                         required = this.patternGeneralization.initiator.specificWeight + 1;
 
                 if (delete > 0) {
-                    while (iterator.hasNext()) {
+                    while (iterator.hasNext() && delete-- > 0) {
                         iterator.next();
                         iterator.remove();
                         size--;
-
-                        if (--delete == 0) {
-                            break;
-                        }
                     }
                 }
                 if (size >= required) {
@@ -99,14 +95,10 @@ public class PatternProfile {
             if (delete > 0) {
                 Iterator<Double> iterator = this.trustFactorMemory.iterator();
 
-                while (iterator.hasNext()) {
+                while (iterator.hasNext() && delete-- > 0) {
                     this.trustFactorTotal -= iterator.next();
                     iterator.remove();
                     size--;
-
-                    if (--delete == 0) {
-                        break;
-                    }
                 }
             }
             if (compare) {
@@ -118,12 +110,8 @@ public class PatternProfile {
                         Comparator.reverseOrder()
                 ).iterator();
 
-                while (iterator.hasNext()) {
+                while (iterator.hasNext() && count-- > 0) {
                     total += iterator.next();
-
-                    if (--count == 0) {
-                        break;
-                    }
                 }
                 return total / (double) this.patternGeneralization.initiator.specificWeight;
             }

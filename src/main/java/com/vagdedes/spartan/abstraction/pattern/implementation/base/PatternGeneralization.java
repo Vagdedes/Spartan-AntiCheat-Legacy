@@ -118,13 +118,9 @@ public abstract class PatternGeneralization {
                     if (delete > 0) {
                         Iterator<PatternValue> iterator = list.iterator();
 
-                        while (iterator.hasNext()) {
+                        while (iterator.hasNext() && delete-- > 0) {
                             iterator.next();
                             iterator.remove();
-
-                            if (--delete == 0) {
-                                break;
-                            }
                         }
                     }
                 } else {

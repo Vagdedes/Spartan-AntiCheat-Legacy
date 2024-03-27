@@ -129,13 +129,9 @@ public class PatternProfileStorage {
                         if (delete > 0) {
                             Iterator<Long> iterator = this.keys.iterator();
 
-                            while (iterator.hasNext()) {
+                            while (iterator.hasNext() && delete-- > 0) {
                                 keys.add(Long.toString(iterator.next()));
                                 iterator.remove();
-
-                                if (--delete == 0) {
-                                    break;
-                                }
                             }
                         }
                     }
