@@ -5,10 +5,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PatternProfileStorage {
 
@@ -40,28 +37,38 @@ public class PatternProfileStorage {
                 Set<String> keys = this.configuration.getKeys(false);
 
                 if (!keys.isEmpty()) {
-                    this.store(true);
+                    Set<Long> set = new LinkedHashSet<>(this.profile.patternGeneralization.initiator.generalWeight);
 
-                    synchronized (this.keys) {
-                        for (String key : keys) {
-                            long time = Long.parseLong(key);
-                            this.keys.add(time);
+                    for (String key : keys) {
+                        try {
+                            for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
+                                double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
 
-                            try {
-                                for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
-                                    double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
-
-                                    if (value != -1.0) {
-                                        patternComparison.put(
-                                                this.profile,
-                                                value,
-                                                time,
-                                                false
-                                        );
-                                    }
+                                if (value != -1.0) {
+                                    long time = Long.parseLong(key);
+                                    set.add(time);
+                                    patternComparison.put(
+                                            this.profile,
+                                            value,
+                                            time,
+                                            false
+                                    );
                                 }
-                            } catch (Exception ignored) {
                             }
+
+                            if (set.size() == this.profile.patternGeneralization.initiator.generalWeight) {
+                                break;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+
+                    if (!set.isEmpty()) {
+                        this.store(true);
+
+                        synchronized (this.keys) {
+                            this.keys.clear();
+                            this.keys.addAll(set);
                         }
                     }
                 }
@@ -86,6 +93,7 @@ public class PatternProfileStorage {
     void store(boolean thisThread) {
         if (this.store == 1) {
             this.store = 2;
+
             Runnable runnable = () -> {
                 try {
                     if (this.keys.size() > this.profile.patternGeneralization.initiator.generalWeight) {
