@@ -37,6 +37,7 @@ import java.util.*;
 
 public class ResearchEngine {
 
+    public static final double requiredProfiles = 10;
     private static final double minimumAverageMining = 16.0;
 
     private static final int cacheRefreshTicks = 1200;
@@ -113,7 +114,7 @@ public class ResearchEngine {
     public static boolean enoughData() {
         if (enoughData) {
             return true;
-        } else if (playerProfiles.size() >= TPS.maximum) {
+        } else if (playerProfiles.size() >= requiredProfiles) {
             int profiles = 0;
 
             synchronized (playerProfiles) {
@@ -121,7 +122,7 @@ public class ResearchEngine {
                     if (playerProfile.isLegitimate()) {
                         profiles++;
 
-                        if (profiles >= TPS.maximum) {
+                        if (profiles >= requiredProfiles) {
                             return enoughData = true;
                         }
                     }

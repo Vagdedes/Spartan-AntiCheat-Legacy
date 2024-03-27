@@ -6,8 +6,8 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
@@ -209,7 +209,7 @@ public abstract class PatternGeneralization {
     }
 
     private Collection<Collection<PatternValue>> getAllRaw(long situation) {
-        if (!SpartanBukkit.debug && this.profiles.size() < TPS.maximum) {
+        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
             return new ArrayList<>(0);
         } else {
             Collection<Collection<PatternValue>> collections = new ArrayList<>(this.profiles.size());
@@ -228,7 +228,7 @@ public abstract class PatternGeneralization {
                     }
                 }
             }
-            return !SpartanBukkit.debug && profiles < TPS.maximum
+            return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
                     ? new ArrayList<>(0)
                     : collections;
         }
@@ -279,7 +279,7 @@ public abstract class PatternGeneralization {
     }
 
     private ProbabilityRank getRankedRaw(long situation) {
-        if (!SpartanBukkit.debug && this.profiles.size() < TPS.maximum) {
+        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
             return new ProbabilityRank(0);
         } else {
             ProbabilityRank rank = new ProbabilityRank(this.profiles.size());
@@ -298,7 +298,7 @@ public abstract class PatternGeneralization {
                     }
                 }
             }
-            return !SpartanBukkit.debug && profiles < TPS.maximum
+            return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
                     ? new ProbabilityRank(0)
                     : rank;
         }

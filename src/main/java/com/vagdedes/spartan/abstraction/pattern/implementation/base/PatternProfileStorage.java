@@ -123,6 +123,7 @@ public class PatternProfileStorage {
     }
 
     void delete() {
+        this.profile.patternGeneralization.parent.dequeueFile(this);
         this.file.delete();
 
         synchronized (this.keys) {
