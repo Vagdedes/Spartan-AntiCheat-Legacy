@@ -206,12 +206,12 @@ public class Pattern {
                         }
                     }
                 }
-            } else {
-                SpartanBukkit.dataThread.execute(() -> {
-                    directory.delete();
-                    directory.mkdirs();
-                });
             }
+        } else {
+            SpartanBukkit.dataThread.execute(() -> {
+                directory.delete();
+                directory.mkdirs();
+            });
         }
 
         if (!generalizations.isEmpty()) {

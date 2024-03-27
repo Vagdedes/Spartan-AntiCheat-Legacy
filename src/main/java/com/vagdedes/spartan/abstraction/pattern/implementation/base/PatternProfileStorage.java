@@ -41,23 +41,32 @@ public class PatternProfileStorage {
 
                     for (String key : keys) {
                         try {
+                            boolean removed = false;
+
                             for (PatternComparison patternComparison : this.profile.patternGeneralization.patternComparisons) {
-                                double value = configuration.getDouble(key + "." + patternComparison.key, -1.0);
+                                String path = key + "." + patternComparison.key;
+                                double value = this.configuration.getDouble(path, -1.0);
 
                                 if (value != -1.0) {
                                     long time = Long.parseLong(key);
                                     set.add(time);
-                                    patternComparison.put(
-                                            this.profile,
-                                            value,
-                                            time,
-                                            false
-                                    );
+
+                                    if (set.size() == this.profile.patternGeneralization.initiator.generalWeight) {
+                                        this.configuration.set(path, null);
+                                        removed = true;
+                                    } else {
+                                        patternComparison.put(
+                                                this.profile,
+                                                value,
+                                                time,
+                                                false
+                                        );
+                                    }
                                 }
                             }
 
-                            if (set.size() == this.profile.patternGeneralization.initiator.generalWeight) {
-                                break;
+                            if (removed) {
+                                this.configuration.set(key, null);
                             }
                         } catch (Exception ignored) {
                         }
