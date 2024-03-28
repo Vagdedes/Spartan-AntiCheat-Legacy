@@ -26,8 +26,8 @@ public class PlayerViolation {
 
         InformationAnalysis informationAnalysis = new InformationAnalysis(hackType, information);
         this.detection = informationAnalysis.detection;
-        this.numbers = informationAnalysis.getNumbers();
-        this.isOption = informationAnalysis.isOption(hackType);
+        this.numbers = informationAnalysis.numbers;
+        this.isOption = informationAnalysis.isOption;
         int hash = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
 
         if (!this.numbers.isEmpty()) {
