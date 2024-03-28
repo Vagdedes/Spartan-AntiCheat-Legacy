@@ -46,6 +46,7 @@ public class PatternComparison {
                 }
             }
         }
+
     }
 
     final PatternGeneralization patternGeneralization;
