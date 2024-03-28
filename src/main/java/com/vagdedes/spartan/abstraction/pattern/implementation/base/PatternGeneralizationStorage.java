@@ -31,12 +31,12 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
         }
     }
 
-    void set(PatternProfile patternProfile, PatternValue value) {
+    void set(PatternProfile patternProfile, long time, long situation, Number pattern) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
-            this.configuration.set(value.time + profileOption, patternProfile.researchProfile.getName());
-            this.configuration.set(value.time + situationOption, value.situation);
-            this.configuration.set(value.time + patternOption, value.pattern);
+            this.configuration.set(time + profileOption, patternProfile.researchProfile.getName());
+            this.configuration.set(time + situationOption, situation);
+            this.configuration.set(time + patternOption, pattern);
 
             if (this.store == 0) {
                 this.store = 1;

@@ -185,12 +185,9 @@ public class Pattern {
                                                 for (PatternGeneralization generalization : generalizations.values()) {
                                                     generalization.rawCache(
                                                             profile,
-                                                            new PatternValue(
-                                                                    situation,
-                                                                    (Number) pattern,
-                                                                    generalization,
-                                                                    time
-                                                            ),
+                                                            time,
+                                                            situation,
+                                                            (Number) pattern,
                                                             false
                                                     );
                                                 }
@@ -227,12 +224,9 @@ public class Pattern {
                 for (PatternGeneralization generalization : this.generalizations.values()) {
                     generalization.rawCache(
                             player.getProfile(),
-                            new PatternValue(
-                                    situation,
-                                    number,
-                                    generalization,
-                                    time
-                            ),
+                            time,
+                            situation,
+                            number,
                             include && generalization instanceof PatternGeneralizationStorage
                     );
                 }

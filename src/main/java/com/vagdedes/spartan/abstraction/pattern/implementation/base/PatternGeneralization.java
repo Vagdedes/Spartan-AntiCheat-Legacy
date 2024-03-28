@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
@@ -93,22 +94,25 @@ public abstract class PatternGeneralization {
     // Separator
 
     void rawCache(PlayerProfile profile,
-                  PatternValue value,
+                  long time,
+                  long situation,
+                  Number pattern,
                   boolean store) {
+        pattern = AlgebraUtils.generalize(pattern, this.initiator.generalization);
         PatternProfile patternProfile = this.getProfile(profile);
 
-        if (patternProfile.patternRepetition.canUse(value.pattern)) {
+        if (patternProfile.patternRepetition.canUse(pattern)) {
             int dataLimit;
 
             synchronized (this.significancePie) {
-                this.significancePie.add(value.pattern);
+                this.significancePie.add(pattern);
             }
             synchronized (patternProfile.correlations) {
                 List<Number> list = patternProfile.correlations.computeIfAbsent(
-                        value.situation,
+                        situation,
                         k -> new ArrayList<>()
                 );
-                list.add(value.pattern);
+                list.add(pattern);
 
                 if (patternSizeCache.isExpired()) {
                     patternSizeCache.refresh();
@@ -138,7 +142,7 @@ public abstract class PatternGeneralization {
             }
 
             if (store) {
-                ((PatternGeneralizationStorage) this).set(patternProfile, value);
+                ((PatternGeneralizationStorage) this).set(patternProfile, time, situation, pattern);
             }
         }
     }
@@ -167,8 +171,8 @@ public abstract class PatternGeneralization {
     // Separator
 
     public List<Number> getSpecific(PatternProfile patternProfile,
-                                          long situation,
-                                          int count) {
+                                    long situation,
+                                    int count) {
         synchronized (patternProfile.correlations) {
             List<Number> specific = patternProfile.correlations.get(situation);
 
@@ -189,7 +193,7 @@ public abstract class PatternGeneralization {
     // Separator
 
     public Collection<Collection<Number>> getAll(SpartanPlayer player,
-                                                       long situation) {
+                                                 long situation) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.generalization;
 
