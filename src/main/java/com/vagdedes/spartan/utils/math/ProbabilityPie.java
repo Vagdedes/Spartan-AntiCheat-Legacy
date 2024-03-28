@@ -80,7 +80,7 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie remove(Number number) {
+    public boolean remove(Number number) {
         return this.decrease(number, 1);
     }
 
@@ -138,19 +138,22 @@ public class ProbabilityPie {
         return collection;
     }
 
-    public ProbabilityPie decrease(Number number, int amount) {
+    public boolean decrease(Number number, int amount) {
         Integer count = this.map.get(number);
 
         if (count != null) {
             if (amount >= count) {
                 this.map.remove(number);
                 this.total -= count;
+                return true;
             } else {
                 this.map.put(number, count - amount);
                 this.total -= amount;
+                return false;
             }
+        } else {
+            return false;
         }
-        return this;
     }
 
     // Separator
