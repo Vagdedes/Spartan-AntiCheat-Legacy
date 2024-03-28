@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.java;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import org.bukkit.ChatColor;
 
 import java.nio.charset.Charset;
@@ -124,27 +123,6 @@ public class StringUtils {
 
         for (Object o : a) {
             b.append(o);
-
-            if (i == iMax) {
-                break;
-            }
-            b.append(separator);
-            i++;
-        }
-        return b.toString();
-    }
-
-    public static String patternToString(Collection<PatternValue> a, String separator) {
-        int iMax = a.size() - 1;
-
-        if (iMax == -1) {
-            return "";
-        }
-        StringBuilder b = new StringBuilder();
-        int i = 0;
-
-        for (PatternValue o : a) {
-            b.append(o.pattern);
 
             if (i == iMax) {
                 break;

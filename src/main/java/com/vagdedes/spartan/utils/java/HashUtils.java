@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.java;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -75,13 +74,13 @@ public class HashUtils {
         return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
     }
 
-    public static long fastCollection(Collection<PatternValue> collection) {
-        Iterator<PatternValue> iterator = collection.iterator();
-        long hash = (iterator.next().pattern.hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
+    public static long fastCollection(Collection<Number> collection) {
+        Iterator<Number> iterator = collection.iterator();
+        long hash = (iterator.next().hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
         Number value = null;
 
         while (iterator.hasNext()) {
-            value = iterator.next().pattern;
+            value = iterator.next();
         }
         if (value != null) {
             hash = extendLong(hash, value.hashCode());
@@ -91,17 +90,17 @@ public class HashUtils {
 
     // Separator
 
-    public static long collection(Collection<PatternValue> collection) {
+    public static long collection(Collection<Number> collection) {
         long hash = 1L;
 
-        for (PatternValue value : collection) {
-            hash = extendLong(hash, value.pattern.hashCode());
+        for (Number value : collection) {
+            hash = extendLong(hash, value.hashCode());
         }
         return hash;
     }
 
-    public static long collection(Collection<PatternValue> collection, int fromIndex, int toIndex) {
-        Iterator<PatternValue> iterator = collection.iterator();
+    public static long collection(Collection<Number> collection, int fromIndex, int toIndex) {
+        Iterator<Number> iterator = collection.iterator();
 
         if (fromIndex > 0) {
             for (int i = 0; i < fromIndex; i++) {
@@ -117,7 +116,7 @@ public class HashUtils {
         int pos = fromIndex;
 
         while (iterator.hasNext()) {
-            hash = extendLong(hash, iterator.next().pattern.hashCode());
+            hash = extendLong(hash, iterator.next().hashCode());
 
             if (pos == toIndex) {
                 return hash;

@@ -104,11 +104,11 @@ public abstract class PatternGeneralization {
                 this.significancePie.add(value.pattern);
             }
             synchronized (patternProfile.correlations) {
-                List<PatternValue> list = patternProfile.correlations.computeIfAbsent(
+                List<Number> list = patternProfile.correlations.computeIfAbsent(
                         value.situation,
                         k -> new ArrayList<>()
                 );
-                list.add(value);
+                list.add(value.pattern);
 
                 if (patternSizeCache.isExpired()) {
                     patternSizeCache.refresh();
@@ -116,7 +116,7 @@ public abstract class PatternGeneralization {
                     int delete = list.size() - dataLimit;
 
                     if (delete > 0) {
-                        Iterator<PatternValue> iterator = list.iterator();
+                        Iterator<Number> iterator = list.iterator();
 
                         while (iterator.hasNext() && delete-- > 0) {
                             iterator.next();
@@ -166,11 +166,11 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    public List<PatternValue> getSpecific(PatternProfile patternProfile,
+    public List<Number> getSpecific(PatternProfile patternProfile,
                                           long situation,
                                           int count) {
         synchronized (patternProfile.correlations) {
-            List<PatternValue> specific = patternProfile.correlations.get(situation);
+            List<Number> specific = patternProfile.correlations.get(situation);
 
             if (specific == null) {
                 return new ArrayList<>(0);
@@ -188,13 +188,13 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    public Collection<Collection<PatternValue>> getAll(SpartanPlayer player,
+    public Collection<Collection<Number>> getAll(SpartanPlayer player,
                                                        long situation) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.generalization;
 
         if (DetectionNotifications.isEnabled(player)) {
-            Collection<Collection<PatternValue>> result = this.getAllRaw(situation);
+            Collection<Collection<Number>> result = this.getAllRaw(situation);
 
             synchronized (allCache) {
                 PatternAllCache cache = allCache.get(hash);
@@ -215,7 +215,7 @@ public abstract class PatternGeneralization {
                 PatternAllCache cache = allCache.get(hash);
 
                 if (cache == null) {
-                    Collection<Collection<PatternValue>> result = this.getAllRaw(situation);
+                    Collection<Collection<Number>> result = this.getAllRaw(situation);
                     allCache.put(hash, new PatternAllCache(result));
                     return result;
                 } else if (cache.isExpired()) {
@@ -227,11 +227,11 @@ public abstract class PatternGeneralization {
         }
     }
 
-    private Collection<Collection<PatternValue>> getAllRaw(long situation) {
+    private Collection<Collection<Number>> getAllRaw(long situation) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
             return new ArrayList<>(0);
         } else {
-            Collection<Collection<PatternValue>> collections = new ArrayList<>(this.profiles.size());
+            Collection<Collection<Number>> collections = new ArrayList<>(this.profiles.size());
             int profiles = 0;
 
             synchronized (this.profiles) {
@@ -239,7 +239,7 @@ public abstract class PatternGeneralization {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
 
-                        Collection<PatternValue> data = entry.getValue().correlations.get(situation);
+                        Collection<Number> data = entry.getValue().correlations.get(situation);
 
                         if (data != null) {
                             collections.add(data);
@@ -309,14 +309,14 @@ public abstract class PatternGeneralization {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
 
-                        Collection<PatternValue> data;
+                        Collection<Number> data;
 
                         synchronized (entry.getValue().correlations) {
                             data = entry.getValue().correlations.get(situation);
                         }
 
                         if (data != null) {
-                            rank.addMultiplePatterns(data);
+                            rank.addMultiple(data);
                         }
                     }
                 }

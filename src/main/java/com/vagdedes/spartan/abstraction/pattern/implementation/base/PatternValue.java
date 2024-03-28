@@ -3,9 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class PatternValue {
-
-    static final int objectSize = 8 * 3;
-
+    
     public final Number pattern;
     final long situation;
     final long time;

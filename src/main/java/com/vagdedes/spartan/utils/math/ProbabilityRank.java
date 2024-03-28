@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.utils.math;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
-
 import java.util.*;
 
 public class ProbabilityRank {
@@ -37,14 +35,6 @@ public class ProbabilityRank {
             for (int i = 0; i < entry.getValue(); i++) {
                 this.numbers.add(entry.getKey().doubleValue());
             }
-        }
-        this.sorted = false;
-        return this;
-    }
-
-    public ProbabilityRank addMultiplePatterns(Collection<PatternValue> values) {
-        for (PatternValue value : values) {
-            this.numbers.add(value.pattern.doubleValue());
         }
         this.sorted = false;
         return this;

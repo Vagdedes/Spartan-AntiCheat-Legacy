@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.utils.math;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
-
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -30,13 +28,6 @@ public class ProbabilityPie {
     public ProbabilityPie addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.add(number);
-        }
-        return this;
-    }
-
-    public ProbabilityPie addMultiplePatterns(Collection<PatternValue> values) {
-        for (PatternValue value : values) {
-            this.add(value.pattern);
         }
         return this;
     }

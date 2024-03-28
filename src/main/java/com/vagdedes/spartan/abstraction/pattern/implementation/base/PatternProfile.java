@@ -9,7 +9,7 @@ public class PatternProfile {
     private double trustFactorTotal;
     final Collection<Double> trustFactorMemory;
     final Collection<Long> contribution;
-    final Map<Long, List<PatternValue>> correlations;
+    final Map<Long, List<Number>> correlations;
     final PatternRepetition patternRepetition;
     final PlayerProfile researchProfile;
     final PatternGeneralization patternGeneralization;

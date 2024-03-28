@@ -2,7 +2,6 @@ package com.vagdedes.spartan.utils.math;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternValue;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.java.HashUtils;
 
@@ -27,8 +26,8 @@ public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
 
-    public ProbabilityPredictor(Collection<Collection<PatternValue>> totalPatterns,
-                                Collection<PatternValue> currentPattern) {
+    public ProbabilityPredictor(Collection<Collection<Number>> totalPatterns,
+                                Collection<Number> currentPattern) {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
 
@@ -36,26 +35,26 @@ public class ProbabilityPredictor {
                 && currentPatternSize > 0) { // No individual data to compare
             long currentPatternHash = HashUtils.collection(currentPattern);
 
-            for (Collection<PatternValue> allPatterns : totalPatterns) {
+            for (Collection<Number> allPatterns : totalPatterns) {
                 int allPatternsSize = allPatterns.size();
 
                 if (currentPatternSize <= allPatternsSize) { // No enough general data to compare
                     boolean next = false;
-                    Iterator<PatternValue> iterator = allPatterns.iterator();
-                    LinkedList<PatternValue> list = new LinkedList<>();
+                    Iterator<Number> iterator = allPatterns.iterator();
+                    LinkedList<Number> list = new LinkedList<>();
 
                     for (int i = 0; i < currentPatternSize; i++) {
                         list.add(iterator.next());
                     }
 
                     while (iterator.hasNext()) {
-                        PatternValue pattern = iterator.next();
+                        Number pattern = iterator.next();
                         list.add(pattern);
                         list.removeFirst();
 
                         if (next) {
                             next = false;
-                            this.pie.add(pattern.pattern);
+                            this.pie.add(pattern);
                         }
                         if (currentPatternHash == HashUtils.collection(list)) {
                             next = true;
