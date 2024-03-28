@@ -36,7 +36,8 @@ public class PatternComparison {
             this.parent.pie.add(generalized);
 
             if (this.pie.getSlices() > this.parent.patternGeneralization.dataLimit()) {
-                this.parent.pie.removeByEntry(this.pie.removeLeastSignificant(1));
+                this.pie.removeLeastSignificant(1);
+                this.parent.pie.removeLeastSignificant(1);
             }
         }
     }
