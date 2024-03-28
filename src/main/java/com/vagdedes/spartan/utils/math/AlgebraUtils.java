@@ -64,9 +64,7 @@ public class AlgebraUtils {
     // Separator
 
     public static Number generalize(Number number, int generalization) {
-        if (generalization == 0) {
-            return number;
-        } else if (number instanceof Double) {
+        if (number instanceof Double) {
             return AlgebraUtils.cut(number.doubleValue(), generalization);
         } else if (number instanceof Float) {
             return AlgebraUtils.cut(number.floatValue(), generalization);

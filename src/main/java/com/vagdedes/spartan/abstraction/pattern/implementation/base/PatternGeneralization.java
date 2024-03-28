@@ -98,7 +98,9 @@ public abstract class PatternGeneralization {
                   long situation,
                   Number pattern,
                   boolean store) {
-        pattern = AlgebraUtils.generalize(pattern, this.initiator.generalization);
+        if (this.initiator.generalization != 0) {
+            pattern = AlgebraUtils.generalize(pattern, this.initiator.generalization);
+        }
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
