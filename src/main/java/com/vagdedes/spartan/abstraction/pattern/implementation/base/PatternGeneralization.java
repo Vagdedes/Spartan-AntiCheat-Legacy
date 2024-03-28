@@ -134,6 +134,7 @@ public abstract class PatternGeneralization {
                 }
             }
             if (dataLimit != 0) {
+                dataLimit *= 10;
                 int delete = this.significancePie.getSlices() - dataLimit;
 
                 if (delete > 0) {

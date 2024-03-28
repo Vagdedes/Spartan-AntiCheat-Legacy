@@ -143,24 +143,18 @@ public class InformationAnalysis {
         int index = string.indexOf(find);
 
         if (index > -1) {
-            int findLength = find.length(),
-                    stringLength = string.length();
+            if (index == 0) { // Start
+                index += find.length();
+                return index < string.length() && string.charAt(index) == '_';
+            } else {
+                int stringLength = string.length();
 
-            // Start
-            if (index == 0) {
-                index += findLength;
-                return index < stringLength && string.charAt(index) == '_';
-            }
-
-            // End
-            if (index == (stringLength - 1)) {
-                return string.charAt(index - 1) == '_';
-            }
-
-            // Between
-            if (string.charAt(index - 1) == '_') {
-                index += findLength;
-                return index >= stringLength || string.charAt(index) == '_';
+                if (index == (stringLength - 1)) { // End
+                    return string.charAt(index - 1) == '_';
+                } else if (string.charAt(index - 1) == '_') { // Between
+                    index += find.length();
+                    return index >= stringLength || string.charAt(index) == '_';
+                }
             }
         }
         return false;
