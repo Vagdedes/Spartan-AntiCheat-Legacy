@@ -29,6 +29,7 @@ public class InformationAnalysis {
 
     // Orientation
 
+    final int hash;
     final String detection;
     final boolean isOption;
     final Collection<Number> numbers;
@@ -38,7 +39,7 @@ public class InformationAnalysis {
 
         String detection = array[1];
         this.detection = detection.substring(0, detection.length() - 1); // Remove comma
-        int key = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
+        this.hash = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
 
         // Separator
 
@@ -47,7 +48,7 @@ public class InformationAnalysis {
         StoredInformation data;
 
         synchronized (map) {
-            data = map.get(key);
+            data = map.get(this.hash);
 
             if (data == null) {
                 List<String> foundDetections = new ArrayList<>(configKeyCount);
@@ -64,15 +65,15 @@ public class InformationAnalysis {
                 Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
                 data.positions.put(array.length, positionsAndNumbers.keySet());
                 this.numbers = positionsAndNumbers.values();
-                map.put(key, data);
 
-                if (map.size() > max) {
+                if (map.size() == max) {
                     Iterator<Integer> iterator = map.keySet().iterator();
 
                     if (iterator.hasNext()) {
                         iterator.remove();
                     }
                 }
+                map.put(this.hash, data);
             } else {
                 Set<Integer> positions = data.positions.get(array.length);
 
@@ -87,6 +88,8 @@ public class InformationAnalysis {
         }
         this.isOption = data.isOption;
     }
+
+    // Separator
 
     private Map<Integer, Number> identifyAndShowNumbers(String[] array, int size) {
         Map<Integer, Number> map = new LinkedHashMap<>(size);
@@ -183,4 +186,5 @@ public class InformationAnalysis {
         }
         return reconstruct.toString();
     }
+
 }

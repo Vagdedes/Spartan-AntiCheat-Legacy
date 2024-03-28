@@ -22,7 +22,7 @@ public class PlayerViolation {
         InformationAnalysis informationAnalysis = new InformationAnalysis(hackType, information);
         this.detection = informationAnalysis.detection;
         this.isOption = informationAnalysis.isOption;
-        int hash = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
+        int hash = informationAnalysis.hash;
 
         if (!informationAnalysis.numbers.isEmpty()) {
             for (Number number : informationAnalysis.numbers) {
