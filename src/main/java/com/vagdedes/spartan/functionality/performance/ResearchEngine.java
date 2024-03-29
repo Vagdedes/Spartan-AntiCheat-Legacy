@@ -234,11 +234,13 @@ public class ResearchEngine {
     }
 
     public static PlayerProfile getPlayerProfile(SpartanPlayer player) {
+        PlayerProfile playerProfile;
+
         synchronized (playerProfiles) {
-            PlayerProfile playerProfile = new PlayerProfile(player);
+            playerProfile = new PlayerProfile(player);
             playerProfiles.put(player.name, playerProfile);
-            return playerProfile;
         }
+        return playerProfile;
     }
 
     public static PlayerProfile getPlayerProfileAdvanced(String name, boolean deep) {
