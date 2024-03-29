@@ -149,7 +149,7 @@ public class LiveViolation {
             this.lastTick = hp.tick;
             this.player.setLastViolation(this);
 
-            if (canIgnore) {
+            if (canIgnore) { // todo replace with normal violations without prevention (adjust live violation algorithm)
                 synchronized (maxLevel) {
                     String cached = maxLevel.get(this);
 
