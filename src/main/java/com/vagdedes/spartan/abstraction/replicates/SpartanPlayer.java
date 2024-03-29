@@ -1188,7 +1188,9 @@ public class SpartanPlayer {
                 || inventory.itemInOffHand.getType() == Material.SHIELD);
     }
 
-    // Separator
+    // Separator todo make list so you can store multiple damage causes and use it in the hashing algorithm
+    // todo also store location so you can compare distance in the hashing
+    // todo store EntityDamageByEntityEvent as priority and then check for EntityDamageEvent if tick is free of data
 
     public long getDamageTick() {
         return damageTick;

@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ImpossibleInventory extends CheckExecutor {
+public class ImpossibleInventory extends CheckExecutor { // todo maintain
 
     public static final Enums.HackType check = Enums.HackType.ImpossibleInventory;
     private static final Material

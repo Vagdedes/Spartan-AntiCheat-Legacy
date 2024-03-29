@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class Aim extends DetectionExecutor { // todo maintain
+public class Aim extends DetectionExecutor {
 
     private final KillAura killAura;
 

@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Buffer {
+public class Buffer { // todo idea with speed and reach of part of the time with minimum count required
 
     private final Map<String, BufferChild> storage;
     private final SpartanPlayer player;

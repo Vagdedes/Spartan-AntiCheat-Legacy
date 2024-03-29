@@ -144,8 +144,13 @@ public class HashUtils {
         } else {
             EntityDamageEvent damage = player.getLastDamageCause();
 
-            if (damage != null && TPS.getTick(player) == player.getDamageTick()) {
-                hash = extendLong(hash, damage.getCause().ordinal());
+            if (damage != null) { // todo use list idea
+                long ticksPassed = TPS.getTick(player) - player.getDamageTick();
+
+                if (ticksPassed <= TPS.tickTime) {
+                    hash = extendLong(hash, damage.getCause().ordinal());
+                    hash = extendLong(hash, Long.hashCode(ticksPassed));
+                }
             }
             hash = extendLong(hash, player.getGameMode().toString().hashCode());
             hash = extendLong(hash, Double.hashCode(player.getEyeHeight()));

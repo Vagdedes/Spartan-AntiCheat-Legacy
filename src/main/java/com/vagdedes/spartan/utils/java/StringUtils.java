@@ -102,7 +102,10 @@ public class StringUtils {
         }
         StringBuilder b = new StringBuilder();
 
-        for (int i = 0; ; i++) {
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] == null) {
+                continue;
+            }
             b.append(a[i]);
 
             if (i == iMax) {
@@ -110,6 +113,7 @@ public class StringUtils {
             }
             b.append(separator);
         }
+        return b.toString();
     }
 
     public static <E> String toString(Collection<E> a, String separator) {
@@ -122,6 +126,9 @@ public class StringUtils {
         int i = 0;
 
         for (Object o : a) {
+            if (o == null) {
+                continue;
+            }
             b.append(o);
 
             if (i == iMax) {

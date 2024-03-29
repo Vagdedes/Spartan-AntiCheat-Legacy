@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClicks extends CheckExecutor { // todo maintain
+public class InventoryClicks extends CheckExecutor { // todo apply buffer idea
 
     private static final Enums.HackType check = Enums.HackType.InventoryClicks;
 

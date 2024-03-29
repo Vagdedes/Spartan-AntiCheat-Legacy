@@ -4,13 +4,14 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanInventory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class FastBow extends CheckExecutor { // todo maintain
+public class FastBow extends CheckExecutor { // todo apply buffer idea
 
     public FastBow(SpartanPlayer player) {
         super(HackType.FastBow, player);
@@ -25,7 +26,7 @@ public class FastBow extends CheckExecutor { // todo maintain
                 checkBowForce(((EntityShootBowEvent) object).getForce());
             }
         } else if (canDo()
-                && ((PlayerInteractEvent)object).getAction() == Action.RIGHT_CLICK_AIR) {
+                && ((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
             SpartanInventory inventory = player.getInventory();
 
             if (inventory.itemInHand.getType() == Material.BOW
@@ -53,32 +54,29 @@ public class FastBow extends CheckExecutor { // todo maintain
 
     private void checkBowShots() {
         if (hackType.getCheck().getBooleanOption("check_bow_shots", true)) {
-            String cancel = null;
-            Buffer buffer = player.getBuffer(hackType);
             String key = "bow-shots=";
-            int[] details = new int[]{10, 6};
+            Buffer buffer = player.getBuffer(hackType);
+            String[] array = new String[3];
+            boolean run = false;
 
-            if (buffer.start(key + "fast", details[0]) == details[1]) { // Combat
+            if (buffer.start(key + "fast", 10) == 7) {
                 buffer.remove(key + "fast");
-                cancel = "fast";
-            } else {
-                details = new int[]{20, 7};
-
-                if (buffer.start(key + "medium", details[0]) == details[1]) { // Combat
-                    buffer.remove(key + "medium");
-                    cancel = "medium";
-                } else {
-                    details = new int[]{30, 9};
-
-                    if (buffer.start(key + "slow", details[0]) == details[1]) { // Combat
-                        buffer.remove(key + "slow");
-                        cancel = "slow";
-                    }
-                }
+                array[0] = "fast";
+                run = true;
+            }
+            if (buffer.start(key + "medium", 20) == 13) {
+                buffer.remove(key + "medium");
+                array[1] = "medium";
+                run = true;
+            }
+            if (buffer.start(key + "slow", 30) == 20) {
+                buffer.remove(key + "slow");
+                array[2] = "slow";
+                run = true;
             }
 
-            if (cancel != null) {
-                cancel("type: bow-shots(" + cancel + ")");
+            if (run) {
+                cancel("type: bow-shots, level/s: " + StringUtils.toString(array, ", "));
             }
         }
     }
