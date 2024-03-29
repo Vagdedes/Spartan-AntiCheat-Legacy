@@ -74,11 +74,13 @@ public class NoFall extends CheckExecutor {
                     return;
                 }
 
-                if (fallDistanceDifference <= 0.0f && fallDistanceRemaining == 0.0 && (requiresSuspicion || airTicks >= 8 || vertical <= -0.5)) {
-                    double ratio = player.getCalculatedFallingRatio(vertical);
+                if (fallDistanceDifference <= 0.0f
+                        && fallDistanceRemaining == 0.0
+                        && (requiresSuspicion || airTicks >= 8 || vertical <= -0.5)) {
+                    int differenceInFall = Math.abs(PlayerUtils.getFallingTick(vertical) - player.movement.getTicksOnAir());
 
-                    if (ratio <= 0.5) {
-                        cancel("type: air, fall-distance: " + fallDistanceDifference + ", air: " + airTicks + ", distance: " + vertical + ", ratio: " + ratio, from, 5, true, 2.0);
+                    if (differenceInFall <= 7) {
+                        cancel("type: air, fall-distance: " + fallDistanceDifference + ", air: " + airTicks + ", distance: " + vertical + ", difference: " + differenceInFall, from, 5, true, 2.0);
                     }
                 }
             } else {

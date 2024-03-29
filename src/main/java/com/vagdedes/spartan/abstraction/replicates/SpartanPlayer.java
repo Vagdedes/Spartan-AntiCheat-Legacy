@@ -999,10 +999,6 @@ public class SpartanPlayer {
 
     // Separator
 
-    public World getWorld() {
-        return movement.getLocation().world;
-    }
-
     public SpartanBlock getTargetBlock(double distance) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             try {
@@ -1194,14 +1190,6 @@ public class SpartanPlayer {
 
     // Separator
 
-    public int getPing() {
-        if (ping == -1) {
-            Player p = this.getPlayer();
-            return p != null ? (ping = Latency.ping(p)) : 0;
-        }
-        return ping;
-    }
-
     public long getDamageTick() {
         return damageTick;
     }
@@ -1314,17 +1302,6 @@ public class SpartanPlayer {
             }
         }
         return false;
-    }
-
-    public boolean canSee(Player target) {
-        if (SpartanBukkit.supportedFork) {
-            Player player = getPlayer();
-
-            if (player != null) {
-                return player.canSee(target);
-            }
-        }
-        return true;
     }
 
     // Separator
@@ -1621,18 +1598,11 @@ public class SpartanPlayer {
                                 EcoEnchants.has(this) ? Compatibility.CompatibilityType.EcoEnchants.toString() : null;
     }
 
-    // Falling
+    // Separator
 
-    public double getCalculatedFallingRatio(double vertical) {
-        if (vertical < 0.0) {
-            vertical -= PlayerUtils.gravityAcceleration;
-            double calculated = PlayerUtils.gravityAcceleration * (this.movement.getTicksOnAir() + 1);
-            return Math.abs(calculated - Math.abs(vertical));
-        }
-        return 0.0;
+    public World getWorld() {
+        return movement.getLocation().world;
     }
-
-    // Border
 
     public boolean isOutsideOfTheBorder(double deviation) {
         SpartanLocation loc = movement.getLocation();
@@ -1641,5 +1611,26 @@ public class SpartanPlayer {
         Location center = border.getCenter();
         return Math.abs(loc.getX() - center.getX()) > size
                 || Math.abs(loc.getZ() - center.getZ()) > size;
+    }
+
+    // Separator
+
+    public boolean canSee(Player target) {
+        if (SpartanBukkit.supportedFork) {
+            Player player = getPlayer();
+
+            if (player != null) {
+                return player.canSee(target);
+            }
+        }
+        return true;
+    }
+
+    public int getPing() {
+        if (ping == -1) {
+            Player p = this.getPlayer();
+            return p != null ? (ping = Latency.ping(p)) : 0;
+        }
+        return ping;
     }
 }
