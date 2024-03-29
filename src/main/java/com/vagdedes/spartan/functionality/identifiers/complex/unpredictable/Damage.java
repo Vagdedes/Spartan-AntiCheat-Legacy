@@ -16,7 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
-public class Damage { // todo maintain
+public class Damage { // todo replace
 
     public static final String
             selfHitKey = "self-hit",

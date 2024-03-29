@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class Clicks {
+public class Clicks { // todo change from ms to ticks, maintain and maybe expand time
 
     // Static
 

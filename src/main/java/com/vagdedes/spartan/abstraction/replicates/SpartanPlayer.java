@@ -1191,6 +1191,7 @@ public class SpartanPlayer {
     // Separator todo make list so you can store multiple damage causes and use it in the hashing algorithm
     // todo also store location so you can compare distance in the hashing
     // todo store EntityDamageByEntityEvent as priority and then check for EntityDamageEvent if tick is free of data
+    // todo remove damage handler and start using the damage one
 
     public long getDamageTick() {
         return damageTick;
@@ -1308,7 +1309,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    public List<Entity> getNearbyEntities(double x, double y, double z) {
+    public List<Entity> getNearbyEntities(double x, double y, double z) { // todo compare with chunks before pythagorean distance
         double max = Math.max(Math.max(x, y), z);
 
         synchronized (nearbyEntities) {
