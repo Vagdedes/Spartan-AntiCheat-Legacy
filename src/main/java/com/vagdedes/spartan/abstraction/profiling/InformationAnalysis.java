@@ -65,12 +65,18 @@ public class InformationAnalysis {
                 Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
                 data.positions.put(array.length, positionsAndNumbers.keySet());
                 this.numbers = positionsAndNumbers.values();
+                int delete = map.size() - max;
 
-                if (map.size() == max) {
+                if (delete > 0) {
                     Iterator<Integer> iterator = map.keySet().iterator();
 
-                    if (iterator.hasNext()) {
+                    while (iterator.hasNext()) {
+                        iterator.next();
                         iterator.remove();
+
+                        if (--delete == 0) {
+                            break;
+                        }
                     }
                 }
                 map.put(this.hash, data);
