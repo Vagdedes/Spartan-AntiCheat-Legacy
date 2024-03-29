@@ -18,9 +18,9 @@ public class BouncingBlocks {
 
     public static void runMove(SpartanPlayer p) {
         if (v1_8) {
-            Double vertical = p.getNmsVerticalDistance();
+            Double vertical = p.movement.getNmsVerticalDistance();
 
-            if (vertical != null && vertical != 0.0 && !p.isJumping(vertical)
+            if (vertical != null && vertical != 0.0 && !p.movement.isJumping(vertical)
                     || p.getBlocksOffGround(3) <= 2) {
                 SpartanLocation location = p.getLocation();
 

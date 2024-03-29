@@ -57,8 +57,8 @@ public class MorePackets extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
-            Double horizontal = player.getNmsHorizontalDistance(),
-                    vertical = player.getNmsVerticalDistance();
+            Double horizontal = player.movement.getNmsHorizontalDistance(),
+                    vertical = player.movement.getNmsVerticalDistance();
 
             if (horizontal == null
                     || vertical == null) {
@@ -87,8 +87,8 @@ public class MorePackets extends CheckExecutor {
 
             // Detections
             if (timer.has(lastTick)) { // Do not start detection if not all cache is available
-                double horizontalMotionDifference = player.getCustomHorizontalDistance() - horizontal,
-                        verticalMotionDifference = player.getCustomVerticalDistance() - vertical;
+                double horizontalMotionDifference = player.movement.getCustomHorizontalDistance() - horizontal,
+                        verticalMotionDifference = player.movement.getCustomVerticalDistance() - vertical;
                 int tickCounter = buffer.increase(dataKey, 1);
 
                 // Instant
@@ -147,7 +147,7 @@ public class MorePackets extends CheckExecutor {
                 if (cooldowns.canDo(dataKey)) { // Add to the values as the moment of check they are not positively modified
                     int cycleTicks = tickCycles * maxTicks,
                             extraTicks = (tickCounter + 1) - cycleTicks,
-                            extraPackets = player.getExtraPackets();
+                            extraPackets = player.movement.getExtraPackets();
                     double totalHorizontalMotion = decimals.get(horizontalKey, 0.0) + horizontalMotionDifference,
                             totalVerticalMotion = decimals.get(verticalKey, 0.0) + verticalMotionDifference,
                             tickAverage = (decimals.get(lastTickKey, 0.0) + lastTick) / ((double) cycleTicks);
@@ -208,7 +208,7 @@ public class MorePackets extends CheckExecutor {
                     decimals.set(horizontalKey, decimals.get(horizontalKey, 0.0) + horizontalMotionDifference);
                     decimals.set(lastTickKey, decimals.get(lastTickKey, 0.0) + lastTick);
 
-                    if (!player.isFalling(vertical)) { // Do not collect data when falling, it can introduce instabilities and is handled by other checks
+                    if (!player.movement.isFalling(vertical)) { // Do not collect data when falling, it can introduce instabilities and is handled by other checks
                         decimals.set(verticalKey, decimals.get(verticalKey, 0.0) + verticalMotionDifference);
                     }
                 }

@@ -45,14 +45,14 @@ public class Damage { // todo maintain
             result = true;
         } else if (p.getVehicle() == null && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)) {
             if (Damage.hasCooldown(p)
-                    || Math.max(p.getCustomDistance(), p.getValueOrDefault(p.getNmsDistance(), 0.0)) >= 0.18
+                    || Math.max(p.movement.getCustomDistance(), p.movement.getValueOrDefault(p.movement.getNmsDistance(), 0.0)) >= 0.18
                     || !p.getHandlers().has(Handlers.HandlerType.Damage, selfHitKey + "=" + e.getUniqueId())
                     || p.getItemInHand().containsEnchantment(Enchantment.ARROW_KNOCKBACK)) {
                 result = true;
             } else {
                 SpartanLocation to = p.getLocation();
 
-                if (p.wasInLiquids()
+                if (p.movement.wasInLiquids()
                         || !p.isOnGroundCustom() && !PlayerUtils.isOnGround(p, to, 0, -1, 0)) {
                     result = true;
                 } else {
@@ -185,7 +185,7 @@ public class Damage { // todo maintain
                     addCooldown(p, 30);
                 }
             } else {
-                p.setAirTicks(0);
+                p.movement.setAirTicks(0);
                 selfHitHandling(p, null);
             }
         }
@@ -219,9 +219,9 @@ public class Damage { // todo maintain
                     || PlayerUtils.hasLevitationEffect(p)) {
                 return true;
             }
-            Double vertical = p.getNmsVerticalDistance();
+            Double vertical = p.movement.getNmsVerticalDistance();
 
-            if (vertical != null && (p.isFalling(vertical) || p.isJumping(vertical))) {
+            if (vertical != null && (p.movement.isFalling(vertical) || p.movement.isJumping(vertical))) {
                 return true;
             }
             int limit = NoHitDelay.hasCooldown(p) ? (blocksOffGround * 2) : blocksOffGround;

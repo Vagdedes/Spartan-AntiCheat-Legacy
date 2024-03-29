@@ -24,9 +24,9 @@ public class IrregularMovementsClimb extends DetectionExecutor {
              String prevention, String scenario) {
         if (hackType.getCheck().getBooleanOption("check_climbing", true)
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
-            Double vertical = player.getNmsVerticalDistance(),
-                    oldVertical = player.getPreviousNmsVerticalDistance(),
-                    box = player.getNmsBox();
+            Double vertical = player.movement.getNmsVerticalDistance(),
+                    oldVertical = player.movement.getPreviousNmsVerticalDistance(),
+                    box = player.movement.getNmsBox();
 
             if (vertical == null
                     || oldVertical == null
@@ -37,22 +37,22 @@ public class IrregularMovementsClimb extends DetectionExecutor {
 
             runAsync(() -> {
                 if (jumping) {
-                    if (canJump && !knownBoxes && player.isClimbing(oldVertical)
+                    if (canJump && !knownBoxes && player.movement.isClimbing(oldVertical)
 
                             // Attention, added recently
                             && (Math.abs(vertical - PlayerUtils.jumping[1]) >= PlayerUtils.getJumpingPrecision(player) // Not first jump motion
                             || Math.abs(vertical - box) >= PlayerUtils.highPrecision)) { // Vertical & box are not correlated
                         irregularMovements.cancel(prevention, "jump-" + scenario, 1);
                     }
-                } else if (!player.isClimbing(vertical)) {
+                } else if (!player.movement.isClimbing(vertical)) {
                     boolean scaffolding = PatternUtils.collides(to, true, true, 0.0, BlockUtils.scaffolding);
-                    double jumpEffectExtra = player.getExtraMovementFromJumpEffect(),
+                    double jumpEffectExtra = player.movement.getExtraMovementFromJumpEffect(),
                             max = (scaffolding ? PlayerUtils.climbingScaffoldingMax : PlayerUtils.climbingMinMax[1]) + (jumpEffectExtra > 0 ? jumpEffectExtra + 0.1 : PlayerUtils.lowPrecision);
 
                     if (canGoUp && vertical >= max) {
                         irregularMovements.cancel(prevention, "up-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, bouncingBlocks || knownBoxes ? 8 : 3, IrregularMovements.defaultBufferTime);
                     } else if (canGoDown && vertical <= -max
-                            && !player.isFalling(vertical) && player.getLastFall() >= 1_000L) {
+                            && !player.movement.isFalling(vertical) && player.movement.getLastFall() >= 1_000L) {
                         boolean nonClimbable = irregularMovements.cacheBoolean(cooldowns,
                                 !BlockUtils.canClimb(to)
                                         || !BlockUtils.canClimb(to.clone().add(0, 1, 0))

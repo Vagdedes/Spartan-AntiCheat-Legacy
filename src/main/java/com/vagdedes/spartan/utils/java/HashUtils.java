@@ -149,12 +149,12 @@ public class HashUtils {
             }
             hash = extendLong(hash, player.getGameMode().toString().hashCode());
             hash = extendLong(hash, Double.hashCode(player.getEyeHeight()));
-            hash = extendLong(hash, Boolean.hashCode(player.isGliding()));
-            hash = extendLong(hash, Boolean.hashCode(player.isSwimming()));
-            hash = extendLong(hash, Boolean.hashCode(player.isCrawling()));
+            hash = extendLong(hash, Boolean.hashCode(player.movement.isGliding()));
+            hash = extendLong(hash, Boolean.hashCode(player.movement.isSwimming()));
+            hash = extendLong(hash, Boolean.hashCode(player.movement.isCrawling()));
             hash = extendLong(hash, Boolean.hashCode(player.isFrozen()));
-            hash = extendLong(hash, Boolean.hashCode(player.isSneaking()));
-            hash = extendLong(hash, Boolean.hashCode(player.isFlying()));
+            hash = extendLong(hash, Boolean.hashCode(player.movement.isSneaking()));
+            hash = extendLong(hash, Boolean.hashCode(player.movement.isFlying()));
             hash = extendLong(hash, Boolean.hashCode(player.isOnGround()));
             hash = extendLong(hash, Math.min(AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal), 1000));
             potionEffects = player.getActivePotionEffects();

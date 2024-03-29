@@ -25,7 +25,7 @@ public class Liquid {
     }
 
     public static boolean runMove(SpartanPlayer p) {
-        if (p.isSwimming() || isLocation(p, p.getLocation())) {
+        if (p.movement.isSwimming() || isLocation(p, p.getLocation())) {
             add(p);
             return true;
         }
@@ -33,17 +33,17 @@ public class Liquid {
     }
 
     public static void remove(SpartanPlayer p) {
-        p.removeLastLiquidTime();
+        p.movement.removeLastLiquidTime();
         WaterElevator.remove(p);
     }
 
     private static void add(SpartanPlayer p) {
-        p.setLastLiquidTime();
+        p.movement.setLastLiquidTime();
 
         if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 && Compatibility.CompatibilityType.ViaVersion.isFunctional()
                 && Math.round(p.getEyeHeight() * 10.0) == 4.0) {
-            p.setSwimming(false, 10);
+            p.movement.setSwimming(false, 10);
         }
         WaterElevator.runMove(p);
     }

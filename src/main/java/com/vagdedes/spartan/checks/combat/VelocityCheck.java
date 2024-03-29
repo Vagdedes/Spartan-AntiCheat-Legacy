@@ -44,9 +44,9 @@ public class VelocityCheck extends CheckExecutor {
                 && !player.isUsingItem()
                 && !player.isDead()
                 && !player.isOutsideOfTheBorder(-1.0)
-                && !player.wasFlying()
+                && !player.movement.wasFlying()
                 && !player.hasShield()
-                && !player.wasInLiquids()
+                && !player.movement.wasInLiquids()
                 && player.getBlocksOffGround(3) <= 2
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && player.getEnemiesNumber(CombatUtils.maxHitDistance, false) <= 5

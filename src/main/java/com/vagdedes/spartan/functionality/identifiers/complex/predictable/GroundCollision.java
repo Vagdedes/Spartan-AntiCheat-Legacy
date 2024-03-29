@@ -9,17 +9,17 @@ public class GroundCollision {
     public static boolean run(SpartanPlayer player) {
         if (player.isOnGroundCustom()
                 && player.isOnGround()
-                && player.getTicksOnAir() == 0
-                && player.getTicksOnGround() > 0
+                && player.movement.getTicksOnAir() == 0
+                && player.movement.getTicksOnGround() > 0
                 && player.getVehicle() == null) {
-            Double nmsVerticalDistance = player.getNmsVerticalDistance();
+            Double nmsVerticalDistance = player.movement.getNmsVerticalDistance();
 
             if (nmsVerticalDistance != null && nmsVerticalDistance == 0.0) {
-                Double nmsHorizontalDistance = player.getNmsHorizontalDistance();
+                Double nmsHorizontalDistance = player.movement.getNmsHorizontalDistance();
                 Handlers handlers = player.getHandlers();
 
                 if (nmsHorizontalDistance != null && nmsHorizontalDistance <= PlayerUtils.highPrecision
-                        && player.getCustomDistance() <= PlayerUtils.lowPrecision) {
+                        && player.movement.getCustomDistance() <= PlayerUtils.lowPrecision) {
                     handlers.removeMany(Handlers.HandlerFamily.Motion);
                     handlers.removeMany(Handlers.HandlerFamily.Velocity);
                 } else {
@@ -28,7 +28,7 @@ public class GroundCollision {
                 }
 
                 if (!Liquid.isLocation(player, player.getLocation())) {
-                    player.removeLastLiquidTime();
+                    player.movement.removeLastLiquidTime();
                 }
                 return true;
             }

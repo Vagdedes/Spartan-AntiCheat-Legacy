@@ -188,25 +188,25 @@ public class GroundUtils {
         }
         if (!cooldowns.canDo(setOnGroundKey)) {
             if (original) {
-                p.setAirTicks(0);
+                p.movement.setAirTicks(0);
             }
             return true;
         }
         if (original) {
-            Double vertical = p.getNmsVerticalDistance(),
-                    oldVertical = p.getPreviousNmsVerticalDistance();
+            Double vertical = p.movement.getNmsVerticalDistance(),
+                    oldVertical = p.movement.getPreviousNmsVerticalDistance();
 
             if (vertical == null
                     || oldVertical == null
                     || (vertical - oldVertical) < 0.0
-                    && p.isFalling(vertical)
-                    && p.isFalling(oldVertical)) {
+                    && p.movement.isFalling(vertical)
+                    && p.movement.isFalling(oldVertical)) {
                 return false;
             }
             if (p.getHandlers().has(Handlers.HandlerType.Piston)
                     || stepsOnBoats(p)
                     || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
-                p.setAirTicks(0);
+                p.movement.setAirTicks(0);
                 return true;
             }
         }
@@ -215,7 +215,7 @@ public class GroundUtils {
         if (liquid && block.isLiquid()
                 || climbable && BlockUtils.canClimb(block.material)) {
             if (original) {
-                p.setAirTicks(0);
+                p.movement.setAirTicks(0);
             }
             return true;
         }
@@ -233,19 +233,19 @@ public class GroundUtils {
                         if (heights != null) {
                             if (heights.length == 1) {
                                 if (heights[0] == -1.0 || heights[0] == box) {
-                                    p.setAirTicks(0);
+                                    p.movement.setAirTicks(0);
                                     return true;
                                 }
                             } else {
                                 for (double height : heights) {
                                     if (height == box) {
-                                        p.setAirTicks(0);
+                                        p.movement.setAirTicks(0);
                                         return true;
                                     }
                                 }
                             }
                         } else if (box == 0.0) {
-                            p.setAirTicks(0);
+                            p.movement.setAirTicks(0);
                             return true;
                         }
                     } else {
@@ -261,7 +261,7 @@ public class GroundUtils {
 
     public static void setOnGround(SpartanPlayer p, int ticks) {
         p.getCooldowns().add(setOnGroundKey, ticks);
-        p.setAirTicks(0);
+        p.movement.setAirTicks(0);
     }
 
     public static void setOffGround(SpartanPlayer p, int ticks) {
@@ -327,7 +327,7 @@ public class GroundUtils {
         if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Boat) {
-                    p.setAirTicks(0);
+                    p.movement.setAirTicks(0);
                     return true;
                 }
             }
@@ -341,7 +341,7 @@ public class GroundUtils {
         if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Shulker) {
-                    p.setAirTicks(0);
+                    p.movement.setAirTicks(0);
                     return true;
                 }
             }
@@ -355,7 +355,7 @@ public class GroundUtils {
         if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Sniffer && ((Sniffer) entity).getState() == Sniffer.State.IDLING) {
-                    p.setAirTicks(0);
+                    p.movement.setAirTicks(0);
                     return true;
                 }
             }

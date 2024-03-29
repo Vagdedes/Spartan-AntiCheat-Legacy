@@ -54,7 +54,7 @@ public class EventsHandler7 implements Listener {
         }
 
         // Objects
-        p.setFlying(e.isCancelled() ? n.isFlying() : e.isFlying() || n.isFlying());
+        p.movement.setFlying(e.isCancelled() ? n.isFlying() : e.isFlying() || n.isFlying());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

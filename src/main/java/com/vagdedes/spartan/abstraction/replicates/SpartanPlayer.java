@@ -38,8 +38,6 @@ import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.Piracy;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.ElytraUse;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Velocity;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
@@ -84,13 +82,12 @@ public class SpartanPlayer {
             = Collections.synchronizedMap(new LinkedHashMap<>(Math.max(Bukkit.getWorlds().size(), 1)));
 
     private float walkSpeed, flySpeed, fallDistance;
-    private boolean gliding, swimming, sprinting, sneaking, frozen, onGroundCustom,
-            dead, sleeping, flying, usingItem, invulnerable;
+    private boolean frozen, onGroundCustom, dead, sleeping, usingItem, invulnerable;
     private int ping, maximumNoDamageTicks, foodLevel, fireTicks;
     private double eyeHeight, health;
     private GameMode gameMode;
     public final boolean bedrockPlayer;
-    private long damageTick, lastHeadMovement;
+    private long damageTick;
     public final long creationTime, lastPlayed;
     public final String name;
     public final UUID uuid;
@@ -100,6 +97,7 @@ public class SpartanPlayer {
     private EntityDamageEvent lastDamageCause;
     private SpartanInventory inventory;
     private SpartanOpenInventory openInventory;
+    public final SpartanPlayerMovement movement;
 
     // Data
 
@@ -110,7 +108,7 @@ public class SpartanPlayer {
     private final Cooldowns[] cooldowns;
     private final CheckExecutor[] executors;
     private final LiveViolation[] violations;
-    private final Handlers handlers;
+    final Handlers handlers;
     private LiveViolation lastViolation;
 
     // Cache
@@ -128,27 +126,6 @@ public class SpartanPlayer {
     private final boolean[] runChecks;
     private final Map<Enums.HackType, Boolean> runCheck;
     private final Map<Enums.HackType, Boolean> runCheckAccountLag;
-
-    // Custom
-
-    private final List<Double>
-            nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
-            nmsBox;
-    private final List<Float> nmsFall;
-    private double
-            customDistance, customHorizontalDistance, customVerticalDistance;
-    private long
-            lastOffSprint,
-            lastFall,
-            lastJump,
-            swimmingTime,
-            flyingTime,
-            lastLiquidTime;
-    private int
-            airTicks, oldAirTicks,
-            fallingTicks,
-            groundTicks,
-            extraPackets;
 
     static {
         if (Register.isPluginLoaded()) {
@@ -307,10 +284,10 @@ public class SpartanPlayer {
                                 ElytraUse.judge(p, n.isGliding(), false);
                             }
                             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                                p.setSwimming(n.isSwimming(), -1);
+                                p.movement.setSwimming(n.isSwimming(), -1);
                             }
                             p.setGameMode(n.getGameMode());
-                            p.setFlying(n.isFlying());
+                            p.movement.setFlying(n.isFlying());
                             p.setFoodLevel(n.getFoodLevel(), false);
                             p.setDead(n.isDead());
                             EntityDamageEvent lastDamageCause = n.getLastDamageCause();
@@ -377,12 +354,9 @@ public class SpartanPlayer {
 
         this.ipAddress = PlayerLimitPerIP.get(p);
         this.name = p.getName();
-        this.flying = p.isFlying();
         this.dead = p.isDead();
         this.sleeping = p.isSleeping();
         this.walkSpeed = p.getWalkSpeed();
-        this.sprinting = p.isSprinting();
-        this.sneaking = p.isSneaking();
         this.eyeHeight = p.getEyeHeight();
         this.flySpeed = p.getFlySpeed();
         this.gameMode = p.getGameMode();
@@ -399,45 +373,17 @@ public class SpartanPlayer {
         this.ping = Latency.ping(p);
         this.frozen = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && p.isFrozen();
         this.lastPlayed = p.getLastPlayed();
-        this.customDistance = 0.0;
-        this.customHorizontalDistance = 0.0;
-        this.customVerticalDistance = 0.0;
-        this.nmsDistance = Collections.synchronizedList(new LinkedList<>());
-        this.nmsHorizontalDistance = Collections.synchronizedList(new LinkedList<>());
-        this.nmsVerticalDistance = Collections.synchronizedList(new LinkedList<>());
-        this.nmsBox = Collections.synchronizedList(new LinkedList<>());
-        this.nmsFall = Collections.synchronizedList(new LinkedList<>());
-        this.lastFall = 0L;
-        this.lastOffSprint = 0L;
-        this.lastJump = 0L;
-        this.airTicks = 0;
-        this.oldAirTicks = 0;
-        this.fallingTicks = 0;
-        this.groundTicks = 0;
-        this.extraPackets = 0;
-        this.swimmingTime = 0L;
-        this.flyingTime = 0L;
-        this.lastLiquidTime = 0L;
-        this.lastHeadMovement = System.currentTimeMillis();
         this.playerProfile = ResearchEngine.getPlayerProfile(this);
         this.clicks = new Clicks();
         this.vehicle = p.getVehicle();
+        this.movement = new SpartanPlayerMovement(this, p);
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            this.gliding = p.isGliding();
             this.invulnerable = p.isInvulnerable();
             this.inventory = new SpartanInventory(inv.getContents(), new ItemStack[]{inv.getHelmet(), inv.getChestplate(), inv.getLeggings(), inv.getBoots()}, itemInHand, inv.getItemInOffHand());
-
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                this.swimming = p.isSwimming();
-            } else {
-                this.swimming = false;
-            }
         } else {
-            this.gliding = false;
             this.invulnerable = false;
             this.inventory = new SpartanInventory(inv.getContents(), new ItemStack[]{inv.getHelmet(), inv.getChestplate(), inv.getLeggings(), inv.getBoots()}, itemInHand, null);
-            this.swimming = false;
         }
         this.creationTime = System.currentTimeMillis();
 
@@ -919,38 +865,6 @@ public class SpartanPlayer {
                                 EcoEnchants.has(this) ? Compatibility.CompatibilityType.EcoEnchants.toString() : null;
     }
 
-    public boolean isFlying() {
-        Entity vehicle = getVehicle();
-        return vehicle != null ? vehicle instanceof Player && ((Player) vehicle).isFlying() : flying;
-    }
-
-    public boolean wasFlying() {
-        return isFlying() || flyingTime >= System.currentTimeMillis();
-    }
-
-    public boolean wasInLiquids() {
-        return System.currentTimeMillis() - lastLiquidTime <= 755L;
-    }
-
-    public synchronized void setLastLiquidTime() {
-        lastLiquidTime = System.currentTimeMillis();
-    }
-
-    public synchronized void removeLastLiquidTime() {
-        lastLiquidTime = 0L;
-    }
-
-    public synchronized void setFlying(boolean flying) {
-        if (!flying) {
-            flying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && gameMode == GameMode.SPECTATOR;
-        }
-        this.flying = flying;
-
-        if (flying) {
-            this.flyingTime = System.currentTimeMillis() + 3_000L;
-        }
-    }
-
     public boolean hasShield() {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                 && !Compatibility.CompatibilityType.OldCombatMechanics.isFunctional()
@@ -973,42 +887,6 @@ public class SpartanPlayer {
 
     public synchronized void setSleeping(boolean sleeping) {
         this.sleeping = sleeping;
-    }
-
-    public synchronized void setLastHeadMovement() {
-        this.lastHeadMovement = System.currentTimeMillis();
-    }
-
-    public long getLastHeadMovement() {
-        return System.currentTimeMillis() - lastHeadMovement;
-    }
-
-    public boolean isMoving(boolean head) {
-        if (!head || getLastHeadMovement() <= 2_500L) {
-            Double nmsDistance = getNmsDistance();
-            return nmsDistance != null && nmsDistance >= 0.1
-                    || getCustomDistance() >= 0.1
-                    || isSprinting() || isSprintJumping() || isWalkJumping()
-                    || Damage.getLastReceived(this) <= 100L;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean isSprinting() {
-        return sprinting;
-    }
-
-    public synchronized void setSprinting(boolean sprinting) {
-        this.sprinting = sprinting;
-    }
-
-    public boolean isSneaking() {
-        return sneaking;
-    }
-
-    public synchronized void setSneaking(boolean sneaking) {
-        this.sneaking = sneaking;
     }
 
     public boolean isOnGroundCustom() {
@@ -1283,40 +1161,12 @@ public class SpartanPlayer {
         this.eyeHeight = eyeHeight;
     }
 
-    public boolean isGliding() {
-        return gliding;
-    }
-
     public boolean isFrozen() {
         return frozen;
     }
 
     public synchronized void setFrozen(boolean frozen) {
         this.frozen = frozen;
-    }
-
-    public synchronized void setGliding(boolean gliding, boolean modify) {
-        this.gliding = gliding;
-
-        if (modify && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            Player p = getPlayer();
-
-            if (p != null) {
-                p.setGliding(gliding);
-            }
-        }
-    }
-
-    public boolean isSwimming() {
-        return swimming || swimmingTime >= System.currentTimeMillis();
-    }
-
-    public synchronized void setSwimming(boolean swimming, int ticks) {
-        this.swimming = swimming;
-
-        if (ticks != -1L) {
-            this.swimmingTime = (ticks > 0 ? System.currentTimeMillis() + (ticks * 50L) : 0L);
-        }
     }
 
     public ItemStack getItemInHand() {
@@ -1328,11 +1178,11 @@ public class SpartanPlayer {
     }
 
     private void prepareForAbstractMovement() {
-        setSprinting(false);
-        setSneaking(false);
-        setSwimming(false, 0);
-        setGliding(false, false);
-        removeLastLiquidTime();
+        this.movement.setSprinting(false);
+        this.movement.setSneaking(false);
+        this.movement.setSwimming(false, 0);
+        this.movement.setGliding(false, false);
+        this.movement.removeLastLiquidTime();
     }
 
     public boolean teleport(SpartanLocation location) {
@@ -1757,57 +1607,11 @@ public class SpartanPlayer {
         return isOnGroundCustom() != isOnGround();
     }
 
-    // Jumping
-
-    public boolean isJumping(double d) {
-        double precision = PlayerUtils.getJumpingPrecision(this);
-        return PlayerUtils.isJumping(
-                d - getExtraMovementFromJumpEffect(),
-                precision,
-                bedrockPlayer ? precision : 0.0
-        );
-    }
-
-    public long getLastJump() {
-        return System.currentTimeMillis() - lastJump;
-    }
-
-    public synchronized void setLastJump() {
-        this.lastJump = System.currentTimeMillis();
-        removeLastLiquidTime();
-        handlers.removeMany(Handlers.HandlerFamily.Velocity);
-
-        if (!Liquid.isLocation(this, this.getLocation())) {
-            this.removeLastLiquidTime();
-        }
-    }
-
-    public boolean isFalling(double dy) {
-        return PlayerUtils.getFallingTick(dy) != -1;
-    }
-
-    public boolean isClimbing(double d) {
-        double v5 = AlgebraUtils.cut(d, 5);
-
-        if (v5 != PlayerUtils.gravityAcceleration && v5 != 0.07544) {
-            for (double value : PlayerUtils.climbing) {
-                if (Math.abs(value - Math.abs(d)) < PlayerUtils.lowPrecision) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public double getExtraMovementFromJumpEffect() {
-        return PlayerUtils.getPotionLevel(this, PotionEffectType.JUMP) * 0.1;
-    }
-
     // Allowance
 
     public boolean canDo(boolean bypassItemAttributes) {
         if ((bypassItemAttributes || !Attributes.has(this, Attributes.GENERIC_MOVEMENT_SPEED))
-                && !isDead() && !isSleeping() && canRunChecks(true) && !wasFlying() && !Velocity.hasCooldown(this)) {
+                && !isDead() && !isSleeping() && canRunChecks(true) && !this.movement.wasFlying() && !Velocity.hasCooldown(this)) {
             if (Compatibility.CompatibilityType.MythicMobs.isFunctional() || Compatibility.CompatibilityType.ItemsAdder.isFunctional()) {
                 List<Entity> entities = getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
@@ -1835,18 +1639,10 @@ public class SpartanPlayer {
     public double getCalculatedFallingRatio(double vertical) {
         if (vertical < 0.0) {
             vertical -= PlayerUtils.gravityAcceleration;
-            double calculated = PlayerUtils.gravityAcceleration * (getTicksOnAir() + 1);
+            double calculated = PlayerUtils.gravityAcceleration * (this.movement.getTicksOnAir() + 1);
             return Math.abs(calculated - Math.abs(vertical));
         }
         return 0.0;
-    }
-
-    public long getLastFall() {
-        return System.currentTimeMillis() - lastFall;
-    }
-
-    public synchronized void setLastFall() {
-        this.lastFall = System.currentTimeMillis();
     }
 
     // Base
@@ -1854,140 +1650,6 @@ public class SpartanPlayer {
     public void resetHandlers() {
         for (Handlers.HandlerType handlerType : Handlers.HandlerType.values()) {
             handlers.remove(handlerType);
-        }
-    }
-
-    // Speed
-
-    public long getLastOffSprint() {
-        return System.currentTimeMillis() - lastOffSprint;
-    }
-
-    public synchronized void setLastOffSprint() {
-        this.lastOffSprint = System.currentTimeMillis();
-    }
-
-    // Distance
-
-    public double getCustomDistance() {
-        return customDistance;
-    }
-
-    public synchronized void setCustomDistance(double distance,
-                                               double horizontal,
-                                               double vertical) {
-        this.customDistance = distance;
-        this.customHorizontalDistance = horizontal;
-        this.customVerticalDistance = vertical;
-    }
-
-    public double getCustomHorizontalDistance() {
-        return customHorizontalDistance;
-    }
-
-    public double getCustomVerticalDistance() {
-        return customVerticalDistance;
-    }
-
-    public synchronized void setNmsDistance(double distance,
-                                            double horizontal,
-                                            double vertical,
-                                            double box,
-                                            float fall) {
-        this.nmsDistance.add(distance);
-        this.nmsHorizontalDistance.add(horizontal);
-        this.nmsVerticalDistance.add(vertical);
-        this.nmsBox.add(box);
-        this.nmsFall.add(fall);
-
-        for (List list : new List[]{
-                nmsDistance,
-                nmsHorizontalDistance,
-                nmsVerticalDistance,
-                nmsBox,
-                nmsFall
-        }) {
-            if (list.size() > 2) {
-                list.remove(0);
-            }
-        }
-    }
-
-    public double getValueOrDefault(Double value, double def) {
-        return value == null ? def : value;
-    }
-
-    public float getValueOrDefault(Float value, float def) {
-        return value == null ? def : value;
-    }
-
-    public Double getNmsDistance() {
-        synchronized (nmsDistance) {
-            int size = nmsDistance.size();
-            return size > 0 ? nmsDistance.get(size - 1) : null;
-        }
-    }
-
-    public Double getPreviousNmsDistance() {
-        synchronized (nmsDistance) {
-            int size = nmsDistance.size();
-            return size > 1 ? nmsDistance.get(size - 2) : null;
-        }
-    }
-
-    public Double getNmsHorizontalDistance() {
-        synchronized (nmsHorizontalDistance) {
-            int size = nmsHorizontalDistance.size();
-            return size > 0 ? nmsHorizontalDistance.get(size - 1) : null;
-        }
-    }
-
-    public Double getPreviousNmsHorizontalDistance() {
-        synchronized (nmsHorizontalDistance) {
-            int size = nmsHorizontalDistance.size();
-            return size > 1 ? nmsHorizontalDistance.get(size - 2) : null;
-        }
-    }
-
-    public Double getNmsVerticalDistance() {
-        synchronized (nmsVerticalDistance) {
-            int size = nmsVerticalDistance.size();
-            return size > 0 ? nmsVerticalDistance.get(size - 1) : null;
-        }
-    }
-
-    public Double getPreviousNmsVerticalDistance() {
-        synchronized (nmsVerticalDistance) {
-            int size = nmsVerticalDistance.size();
-            return size > 1 ? nmsVerticalDistance.get(size - 2) : null;
-        }
-    }
-
-    public Double getNmsBox() {
-        synchronized (nmsBox) {
-            int size = nmsBox.size();
-            return size > 0 ? nmsBox.get(size - 1) : null;
-        }
-    }
-
-    public Double getPreviousNmsBox() {
-        synchronized (nmsBox) {
-            int size = nmsBox.size();
-            return size > 1 ? nmsBox.get(size - 2) : null;
-        }
-    }
-
-    public Float getNmsFall() {
-        synchronized (nmsFall) {
-            int size = nmsFall.size();
-            return size > 0 ? nmsFall.get(size - 1) : null;
-        }
-    }
-
-    public Float getPreviousNmsFall() {
-        synchronized (nmsFall) {
-            int size = nmsFall.size();
-            return size > 1 ? nmsFall.get(size - 2) : null;
         }
     }
 
@@ -2037,72 +1699,5 @@ public class SpartanPlayer {
         Location center = border.getCenter();
         return Math.abs(loc.getX() - center.getX()) > size
                 || Math.abs(loc.getZ() - center.getZ()) > size;
-    }
-
-    // Counters
-
-    public int getExtraPackets() {
-        return isUsingItem() ? 0 : extraPackets;
-    }
-
-    public synchronized void setExtraPackets(int number) {
-        this.extraPackets = number;
-    }
-
-    public int getTicksOnAir() {
-        return airTicks;
-    }
-
-    public synchronized void setAirTicks(int number) {
-        if (airTicks > 0) {
-            setOldAirTicks(airTicks);
-        }
-        this.airTicks = number;
-
-        if (number == 0) {
-            this.fallingTicks = 0;
-        }
-    }
-
-    public int getOldTicksOnAir() {
-        return oldAirTicks;
-    }
-
-    public synchronized void setOldAirTicks(int number) {
-        this.oldAirTicks = number;
-    }
-
-    public int getFallingTicks() {
-        return fallingTicks;
-    }
-
-    public synchronized void setFallingTicks(int number) {
-        this.fallingTicks = number;
-    }
-
-    public int getTicksOnGround() {
-        return groundTicks;
-    }
-
-    public synchronized void setGroundTicks(int number) {
-        this.groundTicks = number;
-
-        if (number > 0) {
-            this.fallingTicks = 0;
-        }
-    }
-
-    // Movement
-
-    public boolean isWalkJumping() {
-        return !sprinting && getLastJump() <= (TPS.tickTime * 2L);
-    }
-
-    public boolean isSprintJumping() {
-        return sprinting && getLastJump() <= (TPS.tickTime * 2L);
-    }
-
-    public boolean isCrawling() {
-        return getEyeHeight() <= 1.2 && !isGliding() && !isSwimming();
     }
 }

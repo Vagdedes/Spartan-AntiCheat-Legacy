@@ -30,8 +30,8 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
              String detection, String prevention) {
         if (hackType.getCheck().getBooleanOption("check_liquids", true)
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
-            Double vertical = player.getNmsVerticalDistance(),
-                    horizontal = player.getNmsHorizontalDistance();
+            Double vertical = player.movement.getNmsVerticalDistance(),
+                    horizontal = player.movement.getNmsHorizontalDistance();
 
             if (vertical == null
                     || horizontal == null) {
@@ -64,7 +64,7 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
                             if (Math.abs(vertical) < 0.01 && horizontal >= requiredHorizontal) {
                                 irregularMovements.cancel(prevention, "horizontal-" + detection, 3);
                             } else {
-                                double limit = player.wasInLiquids() ? 0.4 : 0.2;
+                                double limit = player.movement.wasInLiquids() ? 0.4 : 0.2;
 
                                 if (vertical >= limit) {
                                     irregularMovements.cancel(prevention, "abstract-up-" + detection, "limit: " + limit, 3, -IrregularMovements.defaultBufferTime);
@@ -77,7 +77,7 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
                 } else {
                     double defaultThreshold = 0.4;
 
-                    if (player.isSwimming()) {
+                    if (player.movement.isSwimming()) {
                         double threshold = knownBoxes ? defaultThreshold * 2.0 : defaultThreshold;
 
                         if (vertical >= threshold) {

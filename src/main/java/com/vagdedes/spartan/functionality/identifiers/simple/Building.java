@@ -18,7 +18,7 @@ public class Building {
     private static final String key = Building.class.getName();
 
     public static void runPlace(SpartanPlayer p, SpartanBlock b, BlockFace blockFace, boolean cancelled) {
-        if (p.isFlying() || Permissions.isBypassing(p, null)) {
+        if (p.movement.isFlying() || Permissions.isBypassing(p, null)) {
             return;
         }
         Handlers handlers = p.getHandlers();
@@ -49,7 +49,7 @@ public class Building {
         if (Math.abs(loc.getBlockX() - bloc.getBlockX()) <= 1
                 && bloc.getBlockY() <= loc.getBlockY()
                 && Math.abs(loc.getBlockZ() - bloc.getBlockZ()) <= 1) {
-            boolean offGround = !p.isOnGround() || !p.isOnGroundCustom() || p.getTicksOnAir() > 0;
+            boolean offGround = !p.isOnGround() || !p.isOnGroundCustom() || p.movement.getTicksOnAir() > 0;
 
             if (cancelled) {
                 if (TestServer.isIdentified()

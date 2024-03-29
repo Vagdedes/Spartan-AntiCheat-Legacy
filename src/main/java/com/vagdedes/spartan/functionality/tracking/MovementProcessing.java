@@ -14,13 +14,13 @@ public class MovementProcessing {
         Damage.runMove(p);
 
         // NMS Distance Caching
-        p.setNmsDistance(dis, hor, ver, box, fall);
+        p.movement.setNmsDistance(dis, hor, ver, box, fall);
 
         // Jump/Fall Identifier
         if (Math.abs(PlayerUtils.jumping[1] - ver) < PlayerUtils.getJumpingPrecision(p)) { // Last Jump
-            p.setLastJump();
-        } else if (p.isFalling(ver)) { // Last Fall
-            p.setLastFall();
+            p.movement.setLastJump();
+        } else if (p.movement.isFalling(ver)) { // Last Fall
+            p.movement.setLastFall();
         }
 
         // Extra Packets
@@ -28,16 +28,16 @@ public class MovementProcessing {
 
         if (!p.isDetected(true)) {
             int maxTicks = 20;
-            double difference = p.getCustomDistance() - dis;
+            double difference = p.movement.getCustomDistance() - dis;
             p.getDecimals().add(key, difference, maxTicks);
 
             if (p.getBuffer().increase(key, 1) >= maxTicks) {
                 p.getBuffer().remove(key);
 
                 if (p.getDecimals().get(key, Decimals.CALCULATE_AVERAGE) >= 0.01) {
-                    p.setExtraPackets(p.getExtraPackets() + 1);
+                    p.movement.setExtraPackets(p.movement.getExtraPackets() + 1);
                 } else {
-                    p.setExtraPackets(0);
+                    p.movement.setExtraPackets(0);
                 }
             }
         } else { // Reset so it can again start from zero

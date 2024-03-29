@@ -235,14 +235,8 @@ public class ResearchEngine {
 
     public static PlayerProfile getPlayerProfile(SpartanPlayer player) {
         synchronized (playerProfiles) {
-            String name = player.name;
-            PlayerProfile playerProfile = playerProfiles.get(name);
-
-            if (playerProfile != null) {
-                return playerProfile;
-            }
-            playerProfile = new PlayerProfile(player);
-            playerProfiles.put(name, playerProfile);
+            PlayerProfile playerProfile = new PlayerProfile(player);
+            playerProfiles.put(player.name, playerProfile);
             return playerProfile;
         }
     }

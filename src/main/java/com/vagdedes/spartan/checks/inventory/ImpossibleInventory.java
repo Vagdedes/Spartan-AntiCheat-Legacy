@@ -59,7 +59,7 @@ public class ImpossibleInventory extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()
-                && !player.isSwimming()
+                && !player.movement.isSwimming()
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && player.getOpenInventory().isUsingTheCursor()) {
             int cases = getActionCase();
@@ -76,7 +76,7 @@ public class ImpossibleInventory extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(check, true)
-                && !player.isCrawling();
+                && !player.movement.isCrawling();
     }
 
     private void trackAutoTotem(SpartanPlayer p, ItemStack itemStack) {
@@ -88,7 +88,7 @@ public class ImpossibleInventory extends CheckExecutor {
     private void runClosedInventory(ClickType click) {
         int cases = getActionCase();
 
-        if (cases != 0 && !click.isCreativeAction() && !click.isKeyboardClick() && !player.isSwimming()
+        if (cases != 0 && !click.isCreativeAction() && !click.isKeyboardClick() && !player.movement.isSwimming()
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle) && PlayerUtils.isUsingAnInventory(player, 0)
                 && !PatternUtils.isBlockPattern(belowBlocks, player.getLocation(), true, BlockUtils.ice)
                 && (cases != jumping || player.getBuffer(check).start("closed-inventory", 20) >= requiredJumpingMotions)) {
@@ -108,16 +108,16 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     private int getActionCase() {
-        if (player.wasFlying()) {
+        if (player.movement.wasFlying()) {
             return 0;
         }
         Check check = ImpossibleInventory.check.getCheck();
-        return !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && check.getBooleanOption("check_sneaking", true) && player.isSneaking() ? 1 :
-                !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && check.getBooleanOption("check_sprinting", true) && player.isSprinting() ? 2 :
+        return !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && check.getBooleanOption("check_sneaking", true) && player.movement.isSneaking() ? 1 :
+                !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && check.getBooleanOption("check_sprinting", true) && player.movement.isSprinting() ? 2 :
                         check.getBooleanOption("check_sleeping", true) && player.isSleeping() ? 3 :
                                 check.getBooleanOption("check_dead", true) && player.isDead() ? 5 :
-                                        check.getBooleanOption("check_sprint_jumping", true) && player.isSprintJumping() ? 6 :
-                                                check.getBooleanOption("check_walk_jumping", true) && player.isWalkJumping() ? 7 :
-                                                        check.getBooleanOption("check_jumping", true) && player.isJumping(player.getValueOrDefault(player.getNmsVerticalDistance(), 0.0)) ? jumping : 0;
+                                        check.getBooleanOption("check_sprint_jumping", true) && player.movement.isSprintJumping() ? 6 :
+                                                check.getBooleanOption("check_walk_jumping", true) && player.movement.isWalkJumping() ? 7 :
+                                                        check.getBooleanOption("check_jumping", true) && player.movement.isJumping(player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0)) ? jumping : 0;
     }
 }

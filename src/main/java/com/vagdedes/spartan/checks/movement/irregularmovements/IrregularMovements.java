@@ -74,12 +74,12 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        Double vertical = player.getNmsVerticalDistance(),
-                oldVertical = player.getPreviousNmsVerticalDistance(),
-                horizontal = player.getNmsHorizontalDistance(),
-                oldHorizontal = player.getPreviousNmsHorizontalDistance(),
-                box = player.getNmsBox(),
-                oldBox = player.getPreviousNmsBox();
+        Double vertical = player.movement.getNmsVerticalDistance(),
+                oldVertical = player.movement.getPreviousNmsVerticalDistance(),
+                horizontal = player.movement.getNmsHorizontalDistance(),
+                oldHorizontal = player.movement.getPreviousNmsHorizontalDistance(),
+                box = player.movement.getNmsBox(),
+                oldBox = player.movement.getPreviousNmsBox();
 
         if (vertical == null
                 || oldVertical == null
@@ -91,7 +91,7 @@ public class IrregularMovements extends CheckExecutor {
         }
         SpartanLocation to = player.getEventToLocation(),
                 from = player.getEventFromLocation();
-        int airTicks = player.getTicksOnAir();
+        int airTicks = player.movement.getTicksOnAir();
         boolean bedrockPlayer = player.bedrockPlayer;
 
         if (canDo()) {
@@ -166,11 +166,11 @@ public class IrregularMovements extends CheckExecutor {
                     jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP),
                     threwTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                     explosion = player.getHandlers().has(Handlers.HandlerType.Explosion),
-                    falling = player.isFalling(vertical),
-                    oldFalling = player.isFalling(oldVertical),
-                    jumping = player.isJumping(vertical),
-                    oldJumping = player.isJumping(oldVertical),
-                    wasInLiquids = player.wasInLiquids();
+                    falling = player.movement.isFalling(vertical),
+                    oldFalling = player.movement.isFalling(oldVertical),
+                    jumping = player.movement.isJumping(vertical),
+                    oldJumping = player.movement.isJumping(oldVertical),
+                    wasInLiquids = player.movement.wasInLiquids();
 
             // Cache Variables
             Cooldowns cooldowns = player.getCooldowns(hackType);
@@ -217,7 +217,7 @@ public class IrregularMovements extends CheckExecutor {
                 canGoDown = !forcefulUp;
                 canJump = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (!player.isCrawling()
+            } else if (!player.movement.isCrawling()
 
                     && (BlockUtils.isFullSolid(to)
                     && (!BlockUtils.isSolid(to.clone().add(0, 1, 0))

@@ -25,10 +25,10 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
 
     void run(boolean canGoDown, String prevention, String scenario) {
         if (hackType.getCheck().getBooleanOption("check_cobweb", true)) {
-            Double vertical = player.getNmsVerticalDistance(),
-                    horizontal = player.getNmsHorizontalDistance(),
-                    box = player.getNmsBox(),
-                    oldBox = player.getPreviousNmsBox();
+            Double vertical = player.movement.getNmsVerticalDistance(),
+                    horizontal = player.movement.getNmsHorizontalDistance(),
+                    box = player.movement.getNmsBox(),
+                    oldBox = player.movement.getPreviousNmsBox();
 
             if (vertical == null
                     || horizontal == null
@@ -49,7 +49,7 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
                                 6, IrregularMovements.defaultBufferTime);
                     }
                 } else if (!vehicle && canGoDown) {
-                    long lastFall = player.getLastFall();
+                    long lastFall = player.movement.getLastFall();
 
                     if (vertical <= -(lastFall <= 105L ? 4.0 : lastFall <= 205L ? 0.2 : 0.1)) { // Last fall is checked to modify the limit and prevent fast falling false positives
                         irregularMovements.cancel(prevention, "down-" + scenario, 2);

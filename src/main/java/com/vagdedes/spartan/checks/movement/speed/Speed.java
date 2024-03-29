@@ -167,16 +167,16 @@ public class Speed extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        Double hor = this.player.getNmsHorizontalDistance();
+        Double hor = this.player.movement.getNmsHorizontalDistance();
 
-        if (hor == null || hor < sneaking || player.wasInLiquids() || !canDo()) {
+        if (hor == null || hor < sneaking || player.movement.wasInLiquids() || !canDo()) {
             return false;
         }
-        Double ver = this.player.getNmsHorizontalDistance(),
-                oldVer = this.player.getPreviousNmsVerticalDistance(),
-                oldHor = this.player.getPreviousNmsHorizontalDistance(),
-                box = this.player.getNmsBox(),
-                oldBox = this.player.getPreviousNmsBox();
+        Double ver = this.player.movement.getNmsHorizontalDistance(),
+                oldVer = this.player.movement.getPreviousNmsVerticalDistance(),
+                oldHor = this.player.movement.getPreviousNmsHorizontalDistance(),
+                box = this.player.movement.getNmsBox(),
+                oldBox = this.player.movement.getPreviousNmsBox();
 
         if (ver == null
                 || oldVer == null
@@ -185,9 +185,8 @@ public class Speed extends CheckExecutor {
                 || oldBox == null) {
             return false;
         }
-        int air = this.player.getTicksOnAir();
-        SpartanLocation to = player.getEventToLocation(),
-                from = player.getEventFromLocation();
+        int air = this.player.movement.getTicksOnAir();
+        SpartanLocation to = player.getEventToLocation();
         Cooldowns cooldowns = player.getCooldowns(hackType);
         Decimals decimals = player.getDecimals(hackType);
         double dm = getGreaterRepetitiveLimit(decimals);
@@ -195,7 +194,7 @@ public class Speed extends CheckExecutor {
         boolean aboveBlocks = false,
                 groundVanilla = player.isOnGround(),
                 groundCustom = player.isOnGroundCustom(),
-                jumping = player.isJumping(ver),
+                jumping = player.movement.isJumping(ver),
                 extremelyPushed = player.getHandlers().has(Handlers.HandlerType.ExtremeCollision),
                 fairlyPushed = extremelyPushed || PlayerUtils.hasNearbyCollisions(player),
                 piston = player.getHandlers().has(Handlers.HandlerType.Piston),
@@ -203,7 +202,7 @@ public class Speed extends CheckExecutor {
         SpartanLocation loc1 = to.clone().add(0, 1, 0),
                 locM1 = to.clone().add(0, -1, 0);
 
-        if (player.isCrawling()
+        if (player.movement.isCrawling()
                 || isSolid(box)
                 && (PlayerUtils.isOnGround(player, to, 0, -box, 0)
                 || PlayerUtils.isOnGround(player, to, 0, -(box * 2), 0))) {
@@ -237,7 +236,7 @@ public class Speed extends CheckExecutor {
             }, to, true, BlockUtils.interactive_bushes)) {
                 reason = "interactive-bush";
                 dm = cacheLimit(decimals, dm, interactiveBush, 5);
-            } else if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && player.isSneaking()) {
+            } else if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && player.movement.isSneaking()) {
                 reason = "sneaking";
                 dm = cacheLimit(decimals, dm, sneaking, 0);
             } else if ((material = to.getBlock().material) == Material.SOUL_SAND || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && material == Material.SOUL_SOIL) {
@@ -253,7 +252,7 @@ public class Speed extends CheckExecutor {
 
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && material == Material.SLIME_BLOCK || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) && material == Material.HONEY_BLOCK) {
                     dm = cacheLimit(decimals, dm, ground_slime, 0);
-                } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) || player.isSprinting()) {
+                } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) || player.movement.isSprinting()) {
                     dm = cacheLimit(decimals, dm, ground, 0);
                 } else {
                     dm = cacheLimit(decimals, dm, walking, 0);
@@ -361,7 +360,7 @@ public class Speed extends CheckExecutor {
                 dmCopy = dm;
         sprintDetection.setLimit(modifiedLimit);
 
-        if (player.isSprinting() && (modifiedLimit == ground || modifiedLimit == Speed.air)) {
+        if (player.movement.isSprinting() && (modifiedLimit == ground || modifiedLimit == Speed.air)) {
             decimals.set("average=sprinting=speed", hor);
         } else {
             decimals.remove("average=sprinting=speed");
@@ -612,7 +611,7 @@ public class Speed extends CheckExecutor {
         }
 
         // Limit
-        if ((player.isSprinting() || player.isSprintJumping())
+        if ((player.movement.isSprinting() || player.movement.isSprintJumping())
                 && (jumping || ver == 0.375 || ver >= 0.5 && ver < 0.6 || Math.abs(box - oBox) == 0.5)
 
                 && (groundCustom
@@ -679,7 +678,7 @@ public class Speed extends CheckExecutor {
 
         // Limit
         if (dm != upwards && (dm == air || dm == ground_block_speed)
-                && box == 0.0 && ver == 0.0 && player.isSprinting()
+                && box == 0.0 && ver == 0.0 && player.movement.isSprinting()
                 && cooldowns.canDo("skip-ground-jump-limit")) {
             reason = "ground";
             dm = cacheLimit(decimals, dm, ground_jump_speed, 10);

@@ -60,10 +60,10 @@ public class SprintSpeed extends DetectionExecutor {
 
     void run() {
         if (!player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && !player.wasInLiquids()
-                && !player.isCrawling()
+                && !player.movement.wasInLiquids()
+                && !player.movement.isCrawling()
                 && PlayerUtils.getWalkSpeedDifference(player) != 0.0f) {
-            Double nmsHorizontalDistance = player.getNmsHorizontalDistance();
+            Double nmsHorizontalDistance = player.movement.getNmsHorizontalDistance();
 
             if (nmsHorizontalDistance != null && nmsHorizontalDistance >= 0.25) {
                 SpartanLocation from = player.getEventFromLocation();
@@ -82,8 +82,8 @@ public class SprintSpeed extends DetectionExecutor {
         }
         runAsync(() -> {
             if (player.getFoodLevel() <= 6) {
-                int cases = player.isSprinting() ? 1 :
-                        player.isSprintJumping() ? 3
+                int cases = player.movement.isSprinting() ? 1 :
+                        player.movement.isSprintJumping() ? 3
                                 : 0;
 
                 if (cases != 0 && buffer.start("food=level", 15) >= 10) {
@@ -110,7 +110,7 @@ public class SprintSpeed extends DetectionExecutor {
             double limit = player.getDecimals(hackType).get(key + "limit", sprintingMaxSpeed);
             float yaw = to.getYaw();
             boolean violated = false,
-                    jumping = player.getLastJump() <= 1_000L;
+                    jumping = player.movement.getLastJump() <= 1_000L;
 
             for (Direction direction : directions) {
                 int hash = direction.hashCode();

@@ -13,7 +13,7 @@ public class Velocity {
         if (p.getHandlers().has(Handlers.HandlerType.Velocity)) {
             int blockY = p.getLocation().getBlockY();
 
-            if (blockY <= 0 || p.getTicksOnAir() <= 20) {
+            if (blockY <= 0 || p.movement.getTicksOnAir() <= 20) {
                 return true;
             }
             int offGroundBlocks = p.getBlocksOffGround(blocksOffGround + 1); // Do not use limit because of the 'blockY' comparison

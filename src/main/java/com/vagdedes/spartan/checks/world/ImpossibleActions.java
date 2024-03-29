@@ -175,7 +175,7 @@ public class ImpossibleActions extends CheckExecutor {
                 && bloc.areBlocks(Material.AIR, 1, false)) {
             cancel("type: air-placement, block: " + BlockUtils.materialToString(blockType)
                     + ", block-against: " + BlockUtils.materialToString(blockAgainstType));
-        } else if (blockType != Material.FIRE && blockType.isBlock() && !player.wasFlying() && !blockType.equals(soil)) {
+        } else if (blockType != Material.FIRE && blockType.isBlock() && !player.movement.wasFlying() && !blockType.equals(soil)) {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE) {
@@ -189,13 +189,13 @@ public class ImpossibleActions extends CheckExecutor {
                 int blockY = to.getBlockY();
                 double box = to.getY() - blockY;
 
-                if (!player.wasInLiquids()  // Ensure the player is not inside liquid blocks
+                if (!player.movement.wasInLiquids()  // Ensure the player is not inside liquid blocks
                         && (player.isOnGround()
                         || player.isOnGroundCustom()
                         || PlayerUtils.isOnGround(player, to, 0, -box, 0)
                         || PlayerUtils.isOnGround(player, to, 0, -1, 0)
                         || PlayerUtils.isOnGround(player, to, 0, -(1 + box), 0)
-                        || player.getTicksOnAir() <= 11)) { // Ensure the player is on ground or close to it
+                        || player.movement.getTicksOnAir() <= 11)) { // Ensure the player is on ground or close to it
                     SpartanLocation blockLocation = block.getLocation();
                     double verticalDistance = blockY - blockLocation.getBlockY();
 

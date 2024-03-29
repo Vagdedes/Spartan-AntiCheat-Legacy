@@ -250,7 +250,7 @@ public class MaterialUtils {
             // Separator
             boolean water;
 
-            if (player.isSwimming()) {
+            if (player.movement.isSwimming()) {
                 water = true;
             } else {
                 SpartanBlock block = player.getLocation().clone().add(0, player.getEyeHeight(), 0).getBlock();

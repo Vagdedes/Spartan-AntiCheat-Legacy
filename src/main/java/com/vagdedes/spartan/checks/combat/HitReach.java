@@ -34,11 +34,11 @@ public class HitReach extends CheckExecutor {
             preferred = 5.0;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7)
                 || PlayerUtils.getPotionLevel(player, PotionEffectType.SPEED) > 0
-                && player.getValueOrDefault(player.getNmsHorizontalDistance(), 0.0) >= Speed.ground) {
+                && player.movement.getValueOrDefault(player.movement.getNmsHorizontalDistance(), 0.0) >= Speed.ground) {
             preferred = 4.25;
         } else {
-            Double y = player.getNmsVerticalDistance();
-            preferred = y != null && (player.isJumping(y) || player.isFalling(y)) ? 4.25 : defaultHorizontalReach;
+            Double y = player.movement.getNmsVerticalDistance();
+            preferred = y != null && (player.movement.isJumping(y) || player.movement.isFalling(y)) ? 4.25 : defaultHorizontalReach;
         }
         return preferred;
     }
@@ -76,7 +76,7 @@ public class HitReach extends CheckExecutor {
                         limit = filter(hackType.getCheck().getDecimalOption("horizontal_distance", 3.1), defaultHorizontalReach, 0.5);
 
                         if (distance >= limit) {
-                            Double nmsDistance = player.getNmsDistance();
+                            Double nmsDistance = player.movement.getNmsDistance();
                             double preferredLimit = getPreferredLimit(entity);
                             boolean minimumNotReached = distance < preferredLimit;
                             int ticks = 10 * 11,
@@ -110,7 +110,7 @@ public class HitReach extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.wasFlying()
+                && !player.movement.wasFlying()
                 && !NoHitDelay.hasCooldown(player);
     }
 }

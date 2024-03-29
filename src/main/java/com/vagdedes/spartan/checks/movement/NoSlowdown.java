@@ -34,7 +34,7 @@ public class NoSlowdown extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        if (!player.isCrawling()
+        if (!player.movement.isCrawling()
                 && hackType.getCheck().getBooleanOption("check_item_usage", true)
                 && !player.getProfile().playerCombat.isActivelyFighting(null, true, true, false)) {
             return runUse("item-use", player.isUsingItem(), 6);
@@ -100,9 +100,9 @@ public class NoSlowdown extends CheckExecutor {
     }
 
     private boolean runUse(String reason, boolean itemUsage, int limit) {
-        Double horizontal = player.getNmsHorizontalDistance(),
-                oldHorizontal = player.getPreviousNmsHorizontalDistance(),
-                vertical = player.getNmsVerticalDistance();
+        Double horizontal = player.movement.getNmsHorizontalDistance(),
+                oldHorizontal = player.movement.getPreviousNmsHorizontalDistance(),
+                vertical = player.movement.getNmsVerticalDistance();
 
         if (horizontal == null
                 || oldHorizontal == null
@@ -152,7 +152,7 @@ public class NoSlowdown extends CheckExecutor {
                         String verbose = "type: " + reason
                                 + ", holding: " + items
                                 + ", case: " + cases
-                                + ", last-sprint: " + player.getLastOffSprint()
+                                + ", last-sprint: " + player.movement.getLastOffSprint()
                                 + ", horizontal: " + horizontal
                                 + ", vertical: " + vertical;
                         cancel(verbose, DetectionLocation.get(player, true), 10, true);
@@ -166,14 +166,14 @@ public class NoSlowdown extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true) && !player.isSwimming() && !player.wasInLiquids()
+        return player.canRunCheck(hackType, true) && !player.movement.isSwimming() && !player.movement.wasInLiquids()
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle) && !player.getHandlers().has(Handlers.HandlerType.Explosion)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse);
     }
 
     private int getMovementCase(SpartanPlayer p) {
-        return p.isSprinting() ? 1 :
-                p.isSprintJumping() ? 3 :
-                        p.isWalkJumping() ? 4 : 0;
+        return p.movement.isSprinting() ? 1 :
+                p.movement.isSprintJumping() ? 3 :
+                        p.movement.isWalkJumping() ? 4 : 0;
     }
 }

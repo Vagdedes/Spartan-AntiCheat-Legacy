@@ -153,7 +153,7 @@ public class PlayerUtils {
 
             // Separator
             if (from != null) {
-                p.setCustomDistance(
+                p.movement.setCustomDistance(
                         to.distance(from),
                         AlgebraUtils.getHorizontalDistance(to, from),
                         to.getY() - from.getY()
@@ -165,20 +165,20 @@ public class PlayerUtils {
             boolean ground = p.refreshOnGroundCustom(from);
 
             if (ground) {
-                p.setAirTicks(0);
-                p.setGroundTicks(p.getTicksOnGround() + 1);
+                p.movement.setAirTicks(0);
+                p.movement.setGroundTicks(p.movement.getTicksOnGround() + 1);
             } else {
-                p.setGroundTicks(0);
-                p.setAirTicks(p.getTicksOnAir() + 1);
-                Double nmsVerticalDistance = p.getNmsVerticalDistance(),
-                        old_NmsVerticalDistance = p.getPreviousNmsVerticalDistance();
+                p.movement.setGroundTicks(0);
+                p.movement.setAirTicks(p.movement.getTicksOnAir() + 1);
+                Double nmsVerticalDistance = p.movement.getNmsVerticalDistance(),
+                        old_NmsVerticalDistance = p.movement.getPreviousNmsVerticalDistance();
 
                 if (nmsVerticalDistance != null
                         && old_NmsVerticalDistance != null
                         && nmsVerticalDistance < old_NmsVerticalDistance) {
-                    p.setFallingTicks(p.getFallingTicks() + 1);
+                    p.movement.setFallingTicks(p.movement.getFallingTicks() + 1);
                 } else {
-                    p.setFallingTicks(0);
+                    p.movement.setFallingTicks(0);
                 }
             }
 
@@ -215,11 +215,11 @@ public class PlayerUtils {
             }
         } else {
             if (n.isSprinting()) {
-                p.setSprinting(true);
-                p.setSneaking(false);
+                p.movement.setSprinting(true);
+                p.movement.setSneaking(false);
             } else {
-                p.setSprinting(false);
-                p.setSneaking(n.isSneaking());
+                p.movement.setSprinting(false);
+                p.movement.setSneaking(n.isSneaking());
             }
             p.setFallDistance(n.getFallDistance(), false);
             p.setWalkSpeed(n.getWalkSpeed());
@@ -384,7 +384,7 @@ public class PlayerUtils {
     // Handled Effects
 
     public static boolean isInWaterTunnel(SpartanPlayer p, SpartanLocation location) {
-        return p.wasInLiquids()
+        return p.movement.wasInLiquids()
                 && hasDolphinsGraceEffect(p)
                 && hasSoulSpeedEnchantment(p, location);
     }
@@ -463,7 +463,10 @@ public class PlayerUtils {
         if (potionEffectType == PotionEffectType.SPEED) {
             level = getPotionLevel(entity, potionEffectType);
 
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && !entity.isGliding() && !entity.isSwimming() && !entity.isCrawling()) {
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
+                    && !entity.movement.isGliding()
+                    && !entity.movement.isSwimming()
+                    && !entity.movement.isCrawling()) {
                 ItemStack boots = entity.getInventory().getBoots();
                 Enchantment enchantment;
 
@@ -497,7 +500,7 @@ public class PlayerUtils {
 
     public static float getWalkSpeedDifference(SpartanPlayer p) {
         String key = "player-data=walk-difference";
-        float difference = Math.max(p.getWalkSpeed() - 0.2f, !p.isFlying() ? 0.0f : (p.getFlySpeed() - 0.1f));
+        float difference = Math.max(p.getWalkSpeed() - 0.2f, !p.movement.isFlying() ? 0.0f : (p.getFlySpeed() - 0.1f));
 
         if (difference > 0.0f) {
             p.getCooldowns().add(key, 2 * 20);

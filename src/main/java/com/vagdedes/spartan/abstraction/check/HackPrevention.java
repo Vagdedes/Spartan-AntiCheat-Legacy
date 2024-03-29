@@ -65,11 +65,11 @@ public class HackPrevention {
             String key = player.uuid + "velocity";
 
             if (cooldowns.canDo(key)
-                    && player.getNmsHorizontalDistance() <= 0.75
+                    && player.movement.getNmsHorizontalDistance() <= 0.75
                     && (hackType == Enums.HackType.IrregularMovements
                     || hackType == Enums.HackType.Speed && this.information.contains(Speed.strongPrevention))) {
-                if (player.getNmsHorizontalDistance() <= 0.75) {
-                    double vertical = player.getNmsVerticalDistance();
+                if (player.movement.getNmsHorizontalDistance() <= 0.75) {
+                    double vertical = player.movement.getNmsVerticalDistance();
 
                     if (vertical == 0.0 || vertical >= PlayerUtils.actualTerminalVelocity) {
                         cooldowns.add(key, 5);

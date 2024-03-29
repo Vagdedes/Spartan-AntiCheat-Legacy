@@ -149,10 +149,10 @@ public class EventsHandler6 implements Listener {
                     return;
                 }
                 double distance = PlayerUtils.chunk / 2;
-                Double nmsDistance = p.getNmsDistance();
+                Double nmsDistance = p.movement.getNmsDistance();
 
                 if (nmsDistance != null && nmsDistance <= distance
-                        || p.getCustomDistance() <= distance) {
+                        || p.movement.getCustomDistance() <= distance) {
                     // Detections
                     runDealDamage(e, p, e.getEntity(), e.getDamage(), e.getCause(), e.isCancelled());
                 }

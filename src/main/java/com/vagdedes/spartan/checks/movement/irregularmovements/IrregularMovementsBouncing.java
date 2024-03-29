@@ -27,9 +27,9 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
              boolean levitationEffect,
              String prevention, String scenario) {
         if (hackType.getCheck().getBooleanOption("check_bouncing_blocks", true)) {
-            Double vertical = player.getNmsVerticalDistance(),
-                    oldVertical = player.getPreviousNmsVerticalDistance(),
-                    box = player.getNmsBox();
+            Double vertical = player.movement.getNmsVerticalDistance(),
+                    oldVertical = player.movement.getPreviousNmsVerticalDistance(),
+                    box = player.movement.getNmsBox();
 
             if (vertical == null
                     || oldVertical == null
@@ -37,7 +37,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
                 return;
             }
             SpartanLocation to = player.getEventToLocation();
-            int airTicks = player.getTicksOnAir();
+            int airTicks = player.movement.getTicksOnAir();
 
             runAsync(() -> {
                 if (!PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {

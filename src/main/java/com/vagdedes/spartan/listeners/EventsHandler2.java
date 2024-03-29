@@ -161,6 +161,6 @@ public class EventsHandler2 implements Listener {
         }
 
         // Objects
-        p.setFlying(n.isFlying());
+        p.movement.setFlying(n.isFlying());
     }
 }

@@ -232,7 +232,7 @@ public class Aim extends DetectionExecutor { // todo maintain
     }
 
     void runMove(SpartanLocation to, SpartanLocation from, Buffer buffer, Pattern pattern) {
-        if (player.isMoving(true)
+        if (player.movement.isMoving(true)
                 && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
             List<Entity> entities = player.getNearbyEntities(maxObservableDistance, maxObservableDistance, maxObservableDistance);
 
@@ -264,7 +264,7 @@ public class Aim extends DetectionExecutor { // todo maintain
                                 if (entity instanceof Player) {
                                     SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
 
-                                    if (target != null && !target.isMoving(true)) {
+                                    if (target != null && !target.movement.isMoving(true)) {
                                         continue;
                                     }
                                 }

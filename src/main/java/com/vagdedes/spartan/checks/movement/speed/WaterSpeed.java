@@ -50,10 +50,10 @@ public class WaterSpeed extends DetectionExecutor {
     };
 
     void run() {
-        Double horizontal = player.getNmsHorizontalDistance(),
-                vertical = player.getNmsVerticalDistance(),
-                oldVertical = player.getPreviousNmsVerticalDistance(),
-                box = player.getNmsBox();
+        Double horizontal = player.movement.getNmsHorizontalDistance(),
+                vertical = player.movement.getNmsVerticalDistance(),
+                oldVertical = player.movement.getPreviousNmsVerticalDistance(),
+                box = player.movement.getNmsBox();
 
         if (horizontal == null
                 || vertical == null
@@ -64,7 +64,7 @@ public class WaterSpeed extends DetectionExecutor {
         }
         SpartanLocation to = player.getEventToLocation(),
                 from = player.getEventFromLocation();
-        int airTicks = player.getTicksOnAir();
+        int airTicks = player.movement.getTicksOnAir();
         boolean selfHit = Damage.hasCooldown(player, Damage.selfHitKey);
         Buffer buffer = player.getBuffer(hackType);
         Cooldowns cooldowns = player.getCooldowns(hackType);
@@ -94,9 +94,9 @@ public class WaterSpeed extends DetectionExecutor {
                     locM2 = to.clone().add(0, -2, 0);
             boolean suspicion,
                     clearMovement,
-                    isSwimming = !player.getHandlers().has(Handlers.HandlerType.Vehicle, "non-boat") && player.isSwimming();
+                    isSwimming = !player.getHandlers().has(Handlers.HandlerType.Vehicle, "non-boat") && player.movement.isSwimming();
 
-            if (player.isJumping(vertical)) {
+            if (player.movement.isJumping(vertical)) {
                 suspicion = false;
                 clearMovement = true;
             } else {
@@ -132,7 +132,7 @@ public class WaterSpeed extends DetectionExecutor {
                     int bootsLevel = PlayerUtils.getDepthStriderLevel(player);
 
                     if (vertical == 0.0 && horizontalBufferCopy >= 10) {
-                        limit = (player.isSprinting() ? stable_extra : stable);
+                        limit = (player.movement.isSprinting() ? stable_extra : stable);
                         limit *= bootsLevel;
                         limitType += 3;
                     } else if (to.getBlock().material == material) {
@@ -236,7 +236,7 @@ public class WaterSpeed extends DetectionExecutor {
                             Buffer buffer) {
         int increase;
 
-        if (vertical >= -0.07 && !player.isJumping(vertical)
+        if (vertical >= -0.07 && !player.movement.isJumping(vertical)
 
                 && (AlgebraUtils.cut(vertical, 1) != 0.0
 
@@ -266,7 +266,7 @@ public class WaterSpeed extends DetectionExecutor {
                     {1, 2 - remaining, 1}
             }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Blocks above
                 cooldowns.add("ice", 20);
-            } else if (player.wasInLiquids() || !Liquid.isLocation(player, to)) {
+            } else if (player.movement.wasInLiquids() || !Liquid.isLocation(player, to)) {
                 freezeBuffers(buffer, 1);
             }
         }
@@ -334,7 +334,7 @@ public class WaterSpeed extends DetectionExecutor {
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     && limit != in_water && limit != bouncing && limit != walls
                     && (horizontalBuffer <= 5 || vertical != 0.0)
-                    && !player.isJumping(vertical) && !player.isFalling(vertical)) {
+                    && !player.movement.isJumping(vertical) && !player.movement.isFalling(vertical)) {
                 modifiedLimit = Math.max(modifiedLimit, instability);
             }
         }

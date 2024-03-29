@@ -66,7 +66,7 @@ public class Time extends DetectionExecutor {
 
             // Separator
 
-            if (player.isMoving(true)) {
+            if (player.movement.isMoving(true)) {
                 double entityWidth = CombatUtils.getWidthAndHeight(entity)[0];
 
                 if (distance > entityWidth // We want the player in a certain distance, otherwise we risk having easily low width

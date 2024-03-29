@@ -34,7 +34,7 @@ public class Strafe extends DetectionExecutor {
     }
 
     void run(SpartanLocation location, Buffer buffer) {
-        if (player.isMoving(true)
+        if (player.movement.isMoving(true)
                 && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
             List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
@@ -57,7 +57,7 @@ public class Strafe extends DetectionExecutor {
 
                                     if (oldDirection != null) {
                                         Decimals decimals = player.getDecimals(hackType);
-                                        Double nmsDistance = player.getNmsDistance();
+                                        Double nmsDistance = player.movement.getNmsDistance();
                                         double directionalDistance = direction.distance(oldDirection),
                                                 oldDirectionalDistance = decimals.get(key, 0.0),
                                                 oldNmsDistance = decimals.get(nmsKey, 0.0);

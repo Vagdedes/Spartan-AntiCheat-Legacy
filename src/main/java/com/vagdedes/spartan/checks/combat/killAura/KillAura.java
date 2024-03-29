@@ -230,8 +230,8 @@ public class KillAura extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.isCrawling()
-                && !player.wasFlying()
+                && !player.movement.isCrawling()
+                && !player.movement.wasFlying()
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && !mcMMO.hasGeneralAbility(player)
                 && !Attributes.has(player, Attributes.GENERIC_ARMOR);

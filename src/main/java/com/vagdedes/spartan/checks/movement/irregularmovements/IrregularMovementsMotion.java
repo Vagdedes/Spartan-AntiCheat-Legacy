@@ -89,10 +89,10 @@ public class IrregularMovementsMotion extends DetectionExecutor {
              boolean constructDetection, boolean groundInteractionScenario, boolean velocityScenario, boolean changedScenario, boolean climbScenario, boolean slowFallingScenario,
              boolean checkUp, boolean checkDown, boolean checkJump, boolean checkFall, boolean checkHorizontal,
              String prevention) {
-        Double vertical = player.getNmsVerticalDistance(),
-                oldVertical = player.getPreviousNmsVerticalDistance(),
-                box = player.getNmsBox(),
-                oldBox = player.getPreviousNmsBox();
+        Double vertical = player.movement.getNmsVerticalDistance(),
+                oldVertical = player.movement.getPreviousNmsVerticalDistance(),
+                box = player.movement.getNmsBox(),
+                oldBox = player.movement.getPreviousNmsBox();
 
         if (vertical == null
                 || oldVertical == null
@@ -102,7 +102,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
         }
         SpartanLocation to = player.getEventToLocation(),
                 from = player.getEventFromLocation();
-        int airTicks = player.getTicksOnAir();
+        int airTicks = player.movement.getTicksOnAir();
         boolean hasVehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
 
         Check check = hackType.getCheck();
@@ -147,7 +147,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                 if (vertical > 0.0) {
                     if (checkUpASYNC
                             && !knownBoxesNew
-                            && !player.isJumping(vertical)
+                            && !player.movement.isJumping(vertical)
                             && Math.abs(vertical - PlayerUtils.postJumpPreFall) >= postJumpPreFallPrecision) {
                         boolean abstractScenario = groundInteractionScenario || velocityScenarioASYNC;
 
@@ -155,7 +155,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             double upwardsLimit = Math.max(GroundUtils.maxPlayerStep, stepLimit);
 
                             if (jumpEffect) {
-                                upwardsLimit += player.getExtraMovementFromJumpEffect();
+                                upwardsLimit += player.movement.getExtraMovementFromJumpEffect();
                             }
                             if (abstractScenario
                                     || PatternUtils.isBlockPattern(honey, to, true, BlockUtils.honey_block)) {
@@ -192,7 +192,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                         if (constructDetection || velocityScenarioASYNC) {
                             decimals.remove(downwardsDifferenceKey);
                         } else {
-                            int fallingToAirTicksDifference = airTicks - player.getFallingTicks(); // Do not consider when air-ticks are less than falling-ticks
+                            int fallingToAirTicksDifference = airTicks - player.movement.getFallingTicks(); // Do not consider when air-ticks are less than falling-ticks
 
                             if (fallingToAirTicksDifference >= criticalTickDifference) {
                                 if (decimals.get(downwardsDifferenceKey) != fallingToAirTicksDifference) {
@@ -245,8 +245,8 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     && !constructDetection
                     && !velocityScenarioASYNC
                     && !jumpEffectASYNC
-                    && player.isJumping(vertical)) {
-                if (player.isSprinting()) {
+                    && player.movement.isJumping(vertical)) {
+                if (player.movement.isSprinting()) {
                     if (Math.abs(vertical - PlayerUtils.jumping[1]) < PlayerUtils.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(
@@ -312,8 +312,8 @@ public class IrregularMovementsMotion extends DetectionExecutor {
 
             if (vertical < oldVertical) { // Fall
                 if (checkJumpASYNC) {
-                    if (player.isJumping(vertical)) {
-                        if (player.isJumping(oldVertical)) {
+                    if (player.movement.isJumping(vertical)) {
+                        if (player.movement.isJumping(oldVertical)) {
                             double difference = Math.abs(verticalDifference);
 
                             if (difference >= (PlayerUtils.maxJumpingMotionDifference + PlayerUtils.highPrecision)) { // Jumping motions must not skip each other
@@ -326,7 +326,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     } else if (!jumpEffect
                             && !onGround
                             && !climbScenario
-                            && player.isJumping(oldVertical)
+                            && player.movement.isJumping(oldVertical)
                             && !player.getHandlers().has(Handlers.HandlerType.ElytraWear)
                             && (vertical != 0.0 || !PlayerUtils.isUsable(player.getItemInHand().getType()))) {
                         double jumpingPrecision = PlayerUtils.getJumpingPrecision(player);
@@ -345,9 +345,9 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     }
                 }
             } else if (vertical > oldVertical) { // Ascension
-                if (player.isJumping(vertical)) {
+                if (player.movement.isJumping(vertical)) {
                     if (checkJumpASYNC) {
-                        if (player.isJumping(oldVertical)) {
+                        if (player.movement.isJumping(oldVertical)) {
                             double difference = Math.abs(verticalDifference);
 
                             if (difference >= (PlayerUtils.maxJumpingMotionDifference + PlayerUtils.highPrecision)) { // Jumping motions must not skip each other

@@ -146,7 +146,7 @@ public class NoFall extends CheckExecutor {
                             int airTicks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                 && hackType.getCheck().getBooleanOption("check_spoof", true)
-                && (airTicks >= 20 || airTicks >= 12 && player.isFalling(vertical))
+                && (airTicks >= 20 || airTicks >= 12 && player.movement.isFalling(vertical))
                 && player.isOnGround()
                 && !player.isOnGroundCustom()
                 && player.isGroundSpoofing()
@@ -185,7 +185,7 @@ public class NoFall extends CheckExecutor {
                 } else if (buffer.get(ratioKey + "validated") == 1
                         && Math.abs(toY - fromY) <= 3.0
                         && to.distance(from) <= PlayerUtils.chunk) {
-                    if (!player.isJumping(vertical)) {
+                    if (!player.movement.isJumping(vertical)) {
                         int cases, bufferTicks = 5, bufferRequirement = 2;
 
                         if (player.isOnGroundCustom() && (!player.bedrockPlayer || buffer.start(ratioKey + "ground", bufferTicks) >= bufferRequirement)) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
@@ -257,9 +257,9 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        Double vertical = player.getNmsVerticalDistance(),
-                horizontal = player.getNmsHorizontalDistance(),
-                oldVertical = player.getPreviousNmsVerticalDistance();
+        Double vertical = player.movement.getNmsVerticalDistance(),
+                horizontal = player.movement.getNmsHorizontalDistance(),
+                oldVertical = player.movement.getPreviousNmsVerticalDistance();
 
         if (vertical == null
                 || horizontal == null
@@ -267,7 +267,7 @@ public class NoFall extends CheckExecutor {
             return false;
         }
         float fallDistance = player.getFallDistance();
-        int airTicks = player.getTicksOnAir();
+        int airTicks = player.movement.getTicksOnAir();
 
         if (fallDistance > 0.0f
                 || airTicks > 0
@@ -321,7 +321,7 @@ public class NoFall extends CheckExecutor {
     @Override
     protected boolean canDo() {
         if (player.canRunCheck(hackType, true)
-                && !player.isCrawling()) {
+                && !player.movement.isCrawling()) {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
@@ -332,7 +332,7 @@ public class NoFall extends CheckExecutor {
                         || damageCause.getCause() != EntityDamageEvent.DamageCause.FALL
                         || !damageCause.isCancelled())
                         && !player.isInvulnerable()
-                        && !player.wasInLiquids()
+                        && !player.movement.wasInLiquids()
                         && loc.getBlockY() > BlockUtils.getMinHeight(player.getWorld())
                         && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                         && !player.getHandlers().has(Handlers.HandlerType.Vehicle)

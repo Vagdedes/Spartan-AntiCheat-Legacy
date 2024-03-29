@@ -87,7 +87,7 @@ public class Criticals extends CheckExecutor {
                     }
 
                     // Detection
-                    if (expectedDamage > 0.0 && player.getTicksOnAir() == 0) {
+                    if (expectedDamage > 0.0 && player.movement.getTicksOnAir() == 0) {
                         double additional = sharpnessDamage + smiteDamage;
 
                         if (((expectedDamage * 1.5) + additional - damage) == 0.0) {
@@ -107,7 +107,7 @@ public class Criticals extends CheckExecutor {
                             cancel("type: damage, amount: " + damage
                                     + ", expected-amount: " + expectedDamage + ", additional-amount: " + additional
                                     + ", ground: " + (vanillaGround + "/" + customGround) + ", item: " + BlockUtils.materialToString(itemType)
-                                    + ", old-air-ticks: " + player.getOldTicksOnAir() + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]"));
+                                    + ", old-air-ticks: " + player.movement.getOldTicksOnAir() + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]"));
                         }
                     }
                 }
@@ -130,7 +130,7 @@ public class Criticals extends CheckExecutor {
 
     private void checkMiniJump() {
         if (hackType.getCheck().getBooleanOption("check_mini_jump", true)
-                && !player.isSneaking()
+                && !player.movement.isSneaking()
                 && isBlockFree(1.0)) {
             float fallDistance = player.getFallDistance();
 
@@ -155,7 +155,7 @@ public class Criticals extends CheckExecutor {
             SpartanLocation location = player.getLocation();
             double box = location.getY() - location.getBlockY();
 
-            if (player.getTicksOnAir() >= 20 && box >= 0.15 && box <= 0.75) {
+            if (player.movement.getTicksOnAir() >= 20 && box >= 0.15 && box <= 0.75) {
                 double oldBox = decimals.get("position");
 
                 if (decimals.has(oldBox) && oldBox == box) {
@@ -186,8 +186,8 @@ public class Criticals extends CheckExecutor {
     @Override
     protected boolean canDo() {
         if (player.canRunCheck(hackType, true)
-                && !player.wasFlying()
-                && !player.wasInLiquids()
+                && !player.movement.wasFlying()
+                && !player.movement.wasInLiquids()
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS)
                 && player.getBlocksOffGround(3) <= 2
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
@@ -202,7 +202,7 @@ public class Criticals extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (!player.hasAttackCooldown()
-                && !player.isSprinting()) {
+                && !player.movement.isSprinting()) {
             checkPosition(); // Always first
             checkMiniJump();
             checkLocation();

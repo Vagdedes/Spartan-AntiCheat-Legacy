@@ -80,7 +80,7 @@ public class GhostHand extends CheckExecutor {
     @Override
     protected boolean canDo() {
         if (player.canRunCheck(hackType, true)
-                && !player.wasFlying()
+                && !player.movement.wasFlying()
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.canCancel(player)
                 && !mcMMO.hasGeneralAbility(player)) {
