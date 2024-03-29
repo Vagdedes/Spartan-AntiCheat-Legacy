@@ -42,7 +42,7 @@ public class EventsHandler2 implements Listener {
 
         // Object
         if (!cancelled) {
-            p.resetLocationData();
+            p.movement.resetLocationData();
         }
 
         // System

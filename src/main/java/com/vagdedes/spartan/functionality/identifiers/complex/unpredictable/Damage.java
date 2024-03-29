@@ -50,7 +50,7 @@ public class Damage { // todo maintain
                     || p.getItemInHand().containsEnchantment(Enchantment.ARROW_KNOCKBACK)) {
                 result = true;
             } else {
-                SpartanLocation to = p.getLocation();
+                SpartanLocation to = p.movement.getLocation();
 
                 if (p.movement.wasInLiquids()
                         || !p.isOnGroundCustom() && !PlayerUtils.isOnGround(p, to, 0, -1, 0)) {
@@ -146,7 +146,7 @@ public class Damage { // todo maintain
                     if (t.equals(p)) {
                         Buffer buffer = p.getBuffer();
                         Handlers handlers = p.getHandlers();
-                        SpartanLocation to = p.getLocation();
+                        SpartanLocation to = p.movement.getLocation();
 
                         if (p.isOnGroundCustom() || PlayerUtils.isOnGround(p, to, 0, -1, 0) || PlayerUtils.isOnGround(p, to, 0, -2, 0)) {
                             buffer.remove(projectileSpamKey);
@@ -203,7 +203,7 @@ public class Damage { // todo maintain
         if (entity instanceof Player) {
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
 
-            if (p != null && p.getLocation().getPitch() <= -60.0f) {
+            if (p != null && p.movement.getLocation().getPitch() <= -60.0f) {
                 p.getHandlers().add(Handlers.HandlerType.Damage, selfHitKey + "=" + projectile.getUniqueId(), 200);
             }
         }

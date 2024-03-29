@@ -25,7 +25,7 @@ public class Liquid {
     }
 
     public static boolean runMove(SpartanPlayer p) {
-        if (p.movement.isSwimming() || isLocation(p, p.getLocation())) {
+        if (p.movement.isSwimming() || isLocation(p, p.movement.getLocation())) {
             add(p);
             return true;
         }

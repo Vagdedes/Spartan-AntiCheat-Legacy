@@ -4,12 +4,17 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collections;
@@ -39,6 +44,8 @@ public class SpartanPlayerMovement {
             extraPackets;
     private long lastHeadMovement;
     private boolean gliding, swimming, sprinting, sneaking, flying;
+    private SpartanLocation location, fromLocation, eventTo, eventFrom;
+    private long locationTime;
 
     SpartanPlayerMovement(SpartanPlayer parent, Player p) {
         this.parent = parent;
@@ -78,6 +85,12 @@ public class SpartanPlayerMovement {
         this.sprinting = p.isSprinting();
         this.sneaking = p.isSneaking();
         this.flying = p.isFlying();
+
+        this.location = new SpartanLocation(this.parent, p.getLocation());
+        this.fromLocation = this.location;
+        this.eventTo = this.location;
+        this.eventFrom = this.location;
+        this.locationTime = 0L;
     }
 
     public double getCustomDistance() {
@@ -328,7 +341,7 @@ public class SpartanPlayerMovement {
         this.removeLastLiquidTime();
         this.parent.handlers.removeMany(Handlers.HandlerFamily.Velocity);
 
-        if (!Liquid.isLocation(this.parent, this.parent.getLocation())) {
+        if (!Liquid.isLocation(this.parent, this.parent.movement.getLocation())) {
             this.removeLastLiquidTime();
         }
     }
@@ -438,13 +451,7 @@ public class SpartanPlayerMovement {
         this.oldAirTicks = number;
     }
 
-    public int getFallingTicks() {
-        return fallingTicks;
-    }
-
-    public synchronized void setFallingTicks(int number) {
-        this.fallingTicks = number;
-    }
+    // Separator
 
     public int getTicksOnGround() {
         return groundTicks;
@@ -456,5 +463,97 @@ public class SpartanPlayerMovement {
         if (number > 0) {
             this.fallingTicks = 0;
         }
+    }
+
+    // Separator
+
+    public int getFallingTicks() {
+        return fallingTicks;
+    }
+
+    public synchronized void setFallingTicks(int number) {
+        this.fallingTicks = number;
+    }
+
+    // Separator
+
+    public SpartanLocation getLocation() {
+        SpartanLocation vehicle = getVehicleLocation();
+
+        if (vehicle != null) {
+            return vehicle;
+        } else {
+            if (SpartanBukkit.isSynchronised()) {
+                long ms = System.currentTimeMillis();
+
+                if ((ms - this.locationTime) > TPS.tickTime) {
+                    this.locationTime = ms;
+                    Player p = this.parent.getPlayer();
+
+                    if (p != null) {
+                        SpartanLocation from = this.location.clone();
+                        this.location = new SpartanLocation(this.parent, p.getLocation());
+
+                        if (from != null) {
+                            this.location.retrieveDataFrom(from);
+                        }
+                    } else {
+                        this.location = new SpartanLocation();
+                    }
+                }
+            }
+            return location;
+        }
+    }
+
+    public SpartanLocation getFromLocation() {
+        return fromLocation;
+    }
+
+    public SpartanLocation getEventToLocation() {
+        return eventTo;
+    }
+
+    public SpartanLocation getEventFromLocation() {
+        return eventFrom;
+    }
+
+    private SpartanLocation getVehicleLocation() {
+        Entity vehicle = this.parent.getVehicle();
+
+        if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
+            Location vehicleLocation = vehicle.getLocation();
+            SpartanLocation playerLocation = this.location;
+            boolean isNull = playerLocation == null;
+            return new SpartanLocation(this.parent,
+                    vehicleLocation,
+                    isNull ? vehicleLocation.getYaw() : playerLocation.getYaw(),
+                    isNull ? vehicleLocation.getPitch() : playerLocation.getPitch());
+        }
+        return null;
+    }
+
+    public void processLastMoveEvent(SpartanLocation to, SpartanLocation from) {
+        this.eventTo = to;
+        this.eventFrom = from;
+    }
+
+    public SpartanLocation setEventLocation(Location to) {
+        SpartanLocation vehicle = getVehicleLocation();
+        return vehicle != null ? vehicle : new SpartanLocation(this.parent, to);
+    }
+
+    public void setFromLocation(SpartanLocation loc) {
+        this.fromLocation = loc;
+    }
+
+    public void resetLocationData() {
+        this.locationTime = 0L;
+    }
+
+    // Separator
+
+    public boolean stepsOnBoats() {
+        return GroundUtils.stepsOnBoats(this.parent);
     }
 }

@@ -27,7 +27,7 @@ public class GroundCollision {
                     handlers.remove(Handlers.HandlerType.WaterElevator);
                 }
 
-                if (!Liquid.isLocation(player, player.getLocation())) {
+                if (!Liquid.isLocation(player, player.movement.getLocation())) {
                     player.movement.removeLastLiquidTime();
                 }
                 return true;

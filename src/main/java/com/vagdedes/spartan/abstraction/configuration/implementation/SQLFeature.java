@@ -337,7 +337,7 @@ public class SQLFeature extends ConfigurationBuilder {
             boolean hasPlayer = p != null;
             boolean hasCheck = hackType != null;
             UUID uuid = hasPlayer ? p.uuid : null;
-            SpartanLocation location = hasPlayer ? p.getLocation() : null;
+            SpartanLocation location = hasPlayer ? p.movement.getLocation() : null;
 
             synchronized (list) {
                 list.add(

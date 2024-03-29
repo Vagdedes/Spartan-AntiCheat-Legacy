@@ -101,16 +101,16 @@ public class EventsHandler7 implements Listener {
         if (nto == null) {
             return;
         }
-        SpartanLocation to = p.setEventLocation(nto),
+        SpartanLocation to = p.movement.setEventLocation(nto),
                 from = new SpartanLocation(p, e.getFrom());
-        p.processLastMoveEvent(to, from);
+        p.movement.processLastMoveEvent(to, from);
 
         // Objects
-        to.retrieveDataFrom(p.getLocation());
+        to.retrieveDataFrom(p.movement.getLocation());
         from.retrieveDataFrom(to);
 
         if (to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
-            p.setLastHeadMovement();
+            p.movement.setLastHeadMovement();
         }
 
         // Handlers
@@ -200,12 +200,12 @@ public class EventsHandler7 implements Listener {
             return;
         }
         // Object
-        p.resetLocationData();
+        p.movement.resetLocationData();
 
         // Detections
         CheckDelay.cancel(p.uuid, 20);
 
         // System
-        Cache.clear(p, n, false, true, true, false, p.getLocation());
+        Cache.clear(p, n, false, true, true, false, p.movement.getLocation());
     }
 }

@@ -527,7 +527,7 @@ public class LiveViolation {
                 CrossServerInformation.queueNotification(message, true);
             }
             if (log) {
-                SpartanLocation location = player.getLocation();
+                SpartanLocation location = player.movement.getLocation();
                 String averageIgnoredViolationsString = (canPrevent ? "-" : "") + averageIgnoredViolations,
                         information = Config.getConstruct() + player.name + " failed " + hackType + " (VL: " + level
                                 + ") " + "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString()

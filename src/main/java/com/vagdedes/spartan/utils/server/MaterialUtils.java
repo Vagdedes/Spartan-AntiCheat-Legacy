@@ -253,7 +253,7 @@ public class MaterialUtils {
             if (player.movement.isSwimming()) {
                 water = true;
             } else {
-                SpartanBlock block = player.getLocation().clone().add(0, player.getEyeHeight(), 0).getBlock();
+                SpartanBlock block = player.movement.getLocation().clone().add(0, player.getEyeHeight(), 0).getBlock();
                 water = block.waterLogged || block.material == MaterialUtils.get("water");
             }
             if (water) {

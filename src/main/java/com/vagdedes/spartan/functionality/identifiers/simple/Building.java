@@ -36,7 +36,7 @@ public class Building {
 
                 if (TestServer.isIdentified()
                         || Config.settings.getBoolean("Protections.disallowed_building")) {
-                    teleport(p, p.getLocation());
+                    teleport(p, p.movement.getLocation());
                     p.groundTeleport(false);
                 }
                 p.getExecutor(Enums.HackType.Exploits).handle(true, Exploits.BUILDING);
@@ -44,7 +44,7 @@ public class Building {
             }
         }
 
-        SpartanLocation loc = p.getLocation(), bloc = b.getLocation();
+        SpartanLocation loc = p.movement.getLocation(), bloc = b.getLocation();
 
         if (Math.abs(loc.getBlockX() - bloc.getBlockX()) <= 1
                 && bloc.getBlockY() <= loc.getBlockY()

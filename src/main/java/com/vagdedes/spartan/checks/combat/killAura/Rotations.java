@@ -31,7 +31,7 @@ public class Rotations extends DetectionExecutor {
                         widthAccuracy = player.getProfile().isSuspectedOrHacker(hackType) ? -1.0 : CombatUtils.getWidthAccuracyPercentage(width, entityWidth);
 
                 if (widthAccuracy != 0.0) { // Only check when accuracy is within the entity's width (Off-width is checked by 'Direction')
-                    Vector yawDirection = CombatUtils.getDirection(player.getLocation().getYaw(), 0.0f);
+                    Vector yawDirection = CombatUtils.getDirection(player.movement.getLocation().getYaw(), 0.0f);
                     double averageYawDistance = 0.0,
                             maxYawDistance = 0.0;
                     int skip = yawListSize - requiredStoredValues,

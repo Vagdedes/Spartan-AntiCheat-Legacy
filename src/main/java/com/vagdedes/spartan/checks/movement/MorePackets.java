@@ -68,7 +68,7 @@ public class MorePackets extends CheckExecutor {
             Buffer buffer = player.getBuffer(hackType);
             Cooldowns cooldowns = player.getCooldowns(hackType);
             Decimals decimals = player.getDecimals(hackType);
-            SpartanLocation to = player.getEventToLocation();
+            SpartanLocation to = player.movement.getEventToLocation();
 
             // Last tick
             long lastTick = timer.get(dataKey);
@@ -117,7 +117,7 @@ public class MorePackets extends CheckExecutor {
                         }
                         // Second stage
                         if (cases != 0) {
-                            double overallDistance = to.distance(player.getFromLocation()),
+                            double overallDistance = to.distance(player.movement.getFromLocation()),
                                     overallLimit = 1.5 + (decreasedRequirement ? 0.0 : PlayerUtils.chunk / 3.0);
                             boolean passedLimit;
 

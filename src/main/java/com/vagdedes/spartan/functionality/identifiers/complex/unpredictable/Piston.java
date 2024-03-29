@@ -26,7 +26,7 @@ public class Piston {
 
             for (SpartanPlayer p : players) {
                 if (p.getWorld().equals(world)) {
-                    SpartanLocation location = p.getLocation();
+                    SpartanLocation location = p.movement.getLocation();
                     double preX = AlgebraUtils.getPreDistance(location.getX(), block.getX()),
                             diffY = location.getY() - block.getY(),
                             preZ = AlgebraUtils.getPreDistance(location.getZ(), block.getZ());

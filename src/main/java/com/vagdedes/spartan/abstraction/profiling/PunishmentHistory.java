@@ -36,7 +36,7 @@ public class PunishmentHistory {
 
         if (reason != null) {
             AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + kickMessage + reason, true);
-            SpartanLocation location = player.getLocation();
+            SpartanLocation location = player.movement.getLocation();
             CrossServerInformation.queueNotificationWithWebhook(
                     player.uuid,
                     player.name,
@@ -63,7 +63,7 @@ public class PunishmentHistory {
 
         if (reason != null) {
             AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + warningMessage + reason, true);
-            SpartanLocation location = player.getLocation();
+            SpartanLocation location = player.movement.getLocation();
             CrossServerInformation.queueNotificationWithWebhook(
                     player.uuid,
                     player.name,
@@ -82,7 +82,7 @@ public class PunishmentHistory {
 
         if (commands != null) {
             AntiCheatLogs.logInfo(Config.getConstruct() + profile.getName() + punishmentMessage + commands, true);
-            SpartanLocation location = player.getLocation();
+            SpartanLocation location = player.movement.getLocation();
             CrossServerInformation.queueWebhook(
                     player.uuid,
                     player.name,

@@ -30,7 +30,7 @@ public class NotifyViolation {
 
                 if (staff.uuid.equals(detectedPlayer.uuid)
                         || staff.getWorld().equals(detectedPlayer.getWorld())
-                        && AlgebraUtils.getHorizontalDistance(staff.getLocation(), detectedPlayer.getLocation()) <= PlayerUtils.chunk) {
+                        && AlgebraUtils.getHorizontalDistance(staff.movement.getLocation(), detectedPlayer.movement.getLocation()) <= PlayerUtils.chunk) {
                     return 1;
                 } else {
                     return defaultDivisor;

@@ -185,7 +185,7 @@ public class ImpossibleActions extends CheckExecutor {
             if (BlockUtils.isFullSolid(itemStackType) // Placed block must be fully solid
                     && BlockUtils.isSolid(blockAgainstType) // Block against must be solid
                     && blockFace != BlockFace.SELF) { // Block-face handled by the BlockReach check
-                SpartanLocation to = player.getLocation();
+                SpartanLocation to = player.movement.getLocation();
                 int blockY = to.getBlockY();
                 double box = to.getY() - blockY;
 

@@ -72,7 +72,7 @@ public class SuspicionNotifications {
                         evidence.append(hackType.getCheck().getName()).append(comma);
                     }
                     evidence = new StringBuilder(evidence.substring(0, evidence.length() - commaLength));
-                    SpartanLocation location = player.getLocation();
+                    SpartanLocation location = player.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "checks",
                             player.uuid, player.name,

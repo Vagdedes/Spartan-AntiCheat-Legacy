@@ -107,8 +107,8 @@ public class KillAura extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
-            SpartanLocation to = player.getEventToLocation(),
-                    from = player.getEventFromLocation();
+            SpartanLocation to = player.movement.getEventToLocation(),
+                    from = player.movement.getEventFromLocation();
             Buffer buffer = player.getBuffer(hackType);
 
             runDetection(
@@ -166,7 +166,7 @@ public class KillAura extends CheckExecutor {
 
                         if (width != 0.0
                                 && height != 0.0) {
-                            SpartanLocation location = player.getLocation();
+                            SpartanLocation location = player.movement.getLocation();
                             boolean isFightParticipant = player.getProfile().playerCombat.isFighting();
 
                             runDetection(

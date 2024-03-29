@@ -274,8 +274,8 @@ public class NoFall extends CheckExecutor {
                 || horizontal >= 0.1
                 || vertical != 0.0
                 || oldVertical != 0.0) {
-            SpartanLocation to = player.getEventToLocation();
-            SpartanLocation from = player.getEventFromLocation();
+            SpartanLocation to = player.movement.getEventToLocation();
+            SpartanLocation from = player.movement.getEventFromLocation();
             Buffer buffer = player.getBuffer(hackType);
             Decimals decimals = player.getDecimals(hackType);
 
@@ -326,7 +326,7 @@ public class NoFall extends CheckExecutor {
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 EntityDamageEvent damageCause = player.getLastDamageCause();
-                SpartanLocation loc = player.getEventToLocation();
+                SpartanLocation loc = player.movement.getEventToLocation();
 
                 if ((damageCause == null
                         || damageCause.getCause() != EntityDamageEvent.DamageCause.FALL
@@ -344,7 +344,7 @@ public class NoFall extends CheckExecutor {
                         && !PlayerUtils.hasSlowFallingEffect(player)
                         && !FloorProtection.hasCooldown(player, true)
                         && !BlockUtils.canClimb(loc)
-                        && !player.stepsOnBoats()
+                        && !player.movement.stepsOnBoats()
                         && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) || player.getWorld().getGameRuleValue(GameRule.FALL_DAMAGE) == true)) {
                     ItemStack boots = player.getInventory().getBoots();
 

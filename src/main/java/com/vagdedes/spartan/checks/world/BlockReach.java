@@ -57,7 +57,7 @@ public class BlockReach extends CheckExecutor {
 
                     if (item != Material.FLINT_AND_STEEL
                             && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) || item != Material.END_CRYSTAL)) {
-                        SpartanLocation to = player.getLocation();
+                        SpartanLocation to = player.movement.getLocation();
                         SpartanLocation bloc = block.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                                 limit = getLimit(),
@@ -77,7 +77,7 @@ public class BlockReach extends CheckExecutor {
                     SpartanLocation bloc = block.getLocation();
 
                     if (BlockUtils.isChangeable(bloc)) {
-                        SpartanLocation to = player.getLocation();
+                        SpartanLocation to = player.movement.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                                 limit = getLimit(),
                                 multiplier = getMultiplier();
@@ -99,7 +99,7 @@ public class BlockReach extends CheckExecutor {
 
                 if (!BlockUtils.areBeds(block.material)
                         && block.material != Material.BEDROCK) {
-                    SpartanLocation to = player.getLocation(), bloc = block.getLocation();
+                    SpartanLocation to = player.movement.getLocation(), bloc = block.getLocation();
                     double ypos = bloc.getY() - to.getY(),
                             distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                             ab_distance = to.distance(baLoc) + 0.4;

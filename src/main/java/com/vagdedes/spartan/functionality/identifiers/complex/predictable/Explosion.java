@@ -70,7 +70,7 @@ public class Explosion {
     public static void runVelocity(SpartanPlayer player) {
         if (!memory.isEmpty()) {
             clear();
-            SpartanLocation to = player.getLocation();
+            SpartanLocation to = player.movement.getLocation();
 
             for (Location explosion : memory.keySet()) {
                 World explosionWorld = explosion.getWorld();

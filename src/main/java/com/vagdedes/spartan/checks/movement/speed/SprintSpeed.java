@@ -66,10 +66,9 @@ public class SprintSpeed extends DetectionExecutor {
             Double nmsHorizontalDistance = player.movement.getNmsHorizontalDistance();
 
             if (nmsHorizontalDistance != null && nmsHorizontalDistance >= 0.25) {
-                SpartanLocation from = player.getEventFromLocation();
                 Buffer buffer = player.getBuffer(hackType);
                 checkFoodSprint(buffer);
-                checkOmnidirectional(player.getEventToLocation(), buffer);
+                checkOmnidirectional(player.movement.getEventToLocation(), buffer);
             }
         }
     }

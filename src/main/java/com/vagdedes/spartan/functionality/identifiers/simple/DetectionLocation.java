@@ -21,7 +21,7 @@ public class DetectionLocation {
             SpartanLocation old = loc.get(player.uuid);
 
             if (old != null) {
-                SpartanLocation location = player.getLocation();
+                SpartanLocation location = player.movement.getLocation();
                 double distance = location.distance(old);
 
                 if (distance > (PlayerUtils.chunk * 2)
@@ -31,7 +31,7 @@ public class DetectionLocation {
                     loc.put(player.uuid, location);
                 }
             } else {
-                loc.put(player.uuid, player.getLocation());
+                loc.put(player.uuid, player.movement.getLocation());
             }
         }
     }
@@ -47,7 +47,7 @@ public class DetectionLocation {
             SpartanLocation location = loc.get(player.uuid);
             return location != null
                     ? location
-                    : (replaceNull ? player.getEventFromLocation() : null);
+                    : (replaceNull ? player.movement.getEventFromLocation() : null);
         }
     }
 

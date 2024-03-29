@@ -67,7 +67,7 @@ public class ImpossibleInventory extends CheckExecutor {
             if (cases != 0
                     && (cases != jumping
                     || player.getBuffer(check).start("cursor-usage", 20) >= 3)) {
-                cancel("type: cursor-usage, case: " + cases, player.getEventFromLocation(), 0, false);
+                cancel("type: cursor-usage, case: " + cases, player.movement.getEventFromLocation(), 0, false);
             }
         }
         return false;
@@ -90,7 +90,7 @@ public class ImpossibleInventory extends CheckExecutor {
 
         if (cases != 0 && !click.isCreativeAction() && !click.isKeyboardClick() && !player.movement.isSwimming()
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle) && PlayerUtils.isUsingAnInventory(player, 0)
-                && !PatternUtils.isBlockPattern(belowBlocks, player.getLocation(), true, BlockUtils.ice)
+                && !PatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)
                 && (cases != jumping || player.getBuffer(check).start("closed-inventory", 20) >= requiredJumpingMotions)) {
             cancel("type: closed-inventory, case: " + cases);
         }
@@ -98,7 +98,7 @@ public class ImpossibleInventory extends CheckExecutor {
 
     private void runPortalInventory(ItemStack item) {
         if (item.getType() != Material.AIR) {
-            SpartanLocation loc = player.getLocation();
+            SpartanLocation loc = player.movement.getLocation();
 
             if (loc.getBlock().material == nether_portal
                     || loc.clone().add(0, 1, 0).getBlock().material == nether_portal) {

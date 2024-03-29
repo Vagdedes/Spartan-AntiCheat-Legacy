@@ -116,9 +116,6 @@ public class SpartanPlayer {
     private PlayerProfile playerProfile;
     private final Clicks clicks;
 
-    private SpartanLocation location, fromLocation, eventTo, eventFrom;
-    private long locationTime;
-
     private Entity vehicle;
     private final List<Entity> nearbyEntities;
     private double nearbyEntitiesDistance;
@@ -232,7 +229,7 @@ public class SpartanPlayer {
                         Cache.clearCheckCache(p);
                     }
                     p.nearbyEntitiesDistance = 0;
-                    p.locationTime = 0L;
+                    p.movement.resetLocationData();
                     p.runCheck.clear();
                     p.runCheckAccountLag.clear();
 
@@ -324,7 +321,7 @@ public class SpartanPlayer {
         }
     }
 
-    // Separator
+    // Object
 
     public SpartanPlayer(Player p, UUID uuid) {
         PlayerInventory inv = p.getInventory();
@@ -338,11 +335,6 @@ public class SpartanPlayer {
         ItemStack itemInHand = p.getItemInHand();
 
         this.uuid = uuid;
-        this.location = new SpartanLocation(this, p.getLocation());
-        this.fromLocation = this.location;
-        this.eventTo = this.location;
-        this.eventFrom = this.location;
-        this.locationTime = 0L;
         this.nearbyEntities = Collections.synchronizedList(new ArrayList<>());
         this.nearbyEntitiesDistance = 0;
         this.runChecks = new boolean[]{false, false};
@@ -492,272 +484,6 @@ public class SpartanPlayer {
         this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
-    // Separator
-
-    public Buffer getBuffer() {
-        return buffer[Enums.HackType.values().length];
-    }
-
-    public Timer getTimer() {
-        return timer[Enums.HackType.values().length];
-    }
-
-    public Decimals getDecimals() {
-        return decimals[Enums.HackType.values().length];
-    }
-
-    public Tracker getTracker() {
-        return tracker[Enums.HackType.values().length];
-    }
-
-    public Cooldowns getCooldowns() {
-        return cooldowns[Enums.HackType.values().length];
-    }
-
-    public Buffer getBuffer(Enums.HackType hackType) {
-        return buffer[hackType.ordinal()];
-    }
-
-    public Timer getTimer(Enums.HackType hackType) {
-        return timer[hackType.ordinal()];
-    }
-
-    public Decimals getDecimals(Enums.HackType hackType) {
-        return decimals[hackType.ordinal()];
-    }
-
-    public Tracker getTracker(Enums.HackType hackType) {
-        return tracker[hackType.ordinal()];
-    }
-
-    public Cooldowns getCooldowns(Enums.HackType hackType) {
-        return cooldowns[hackType.ordinal()];
-    }
-
-    public CheckExecutor getExecutor(Enums.HackType hackType) {
-        return executors[hackType.ordinal()];
-    }
-
-    public LiveViolation[] getViolations() {
-        return violations;
-    }
-
-    public LiveViolation getViolations(Enums.HackType hackType) {
-        return violations[hackType.ordinal()];
-    }
-
-    public boolean isDetected(boolean prevention) {
-        if (lastViolation.isDetected(prevention)) {
-            return true;
-        } else {
-            for (LiveViolation liveViolation : violations) {
-                if (liveViolation.isDetected(prevention)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public boolean wasDetected(boolean prevention) {
-        if (lastViolation.wasDetected(prevention)) {
-            return true;
-        } else {
-            for (LiveViolation liveViolation : violations) {
-                if (liveViolation.wasDetected(prevention)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public int getViolationCount() {
-        int sum = 0;
-
-        for (LiveViolation liveViolation : violations) {
-            sum += liveViolation.getLevel();
-        }
-        return sum;
-    }
-
-    public LiveViolation getLastViolation() {
-        return lastViolation;
-    }
-
-    public void setLastViolation(LiveViolation liveViolation) {
-        this.lastViolation = liveViolation;
-    }
-
-    public Handlers getHandlers() {
-        return handlers;
-    }
-
-    public Player getPlayer() {
-        return Bukkit.getPlayer(uuid);
-    }
-
-    public int getCPS() {
-        return clicks.getCount();
-    }
-
-    public Clicks getClicks() {
-        return clicks;
-    }
-
-    public void calculateClickData(Action action, boolean runRegardless) {
-        if (!runRegardless) {
-            if (playerProfile.playerCombat.isActivelyFighting(null, true, true, false)) {
-                runRegardless = true;
-            } else {
-                SpartanBlock block = getTargetBlock(CombatUtils.maxHitDistance);
-                runRegardless = block == null || BlockUtils.areAir(block.material);
-            }
-        }
-
-        if (runRegardless) {
-            boolean success;
-
-            if (action == Action.LEFT_CLICK_AIR) {
-                success = true;
-                clicks.calculate();
-            } else if (action == null) {
-                if (clicks.getLastCalculation() > 50L) {
-                    success = true;
-                    clicks.calculate();
-                } else {
-                    success = false;
-                }
-            } else {
-                success = false;
-            }
-
-            if (success && clicks.canDistributeInformation()) {
-                InteractiveInventory.playerInfo.refresh(name);
-            }
-        }
-    }
-
-    private SpartanLocation getVehicleLocation() {
-        Entity vehicle = getVehicle();
-
-        if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            Location vehicleLocation = vehicle.getLocation();
-            SpartanLocation playerLocation = this.location;
-            boolean isNull = playerLocation == null;
-            return new SpartanLocation(this,
-                    vehicleLocation,
-                    isNull ? vehicleLocation.getYaw() : playerLocation.getYaw(),
-                    isNull ? vehicleLocation.getPitch() : playerLocation.getPitch());
-        }
-        return null;
-    }
-
-    public void resetLocationData() {
-        this.locationTime = 0L;
-    }
-
-    public int getMaxChatLength() {
-        return bedrockPlayer ? 512 :
-                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) || PluginUtils.exists("viaversion") || PluginUtils.exists("protocolsupport") ? 256 :
-                        100;
-    }
-
-    public void sendMessage(String message) {
-        Player p = getPlayer();
-
-        if (p != null) {
-            p.sendMessage(message);
-        }
-    }
-
-    public void sendInventoryCloseMessage(String message) {
-        Player p = getPlayer();
-
-        if (p != null) {
-            if (message != null) {
-                p.sendMessage(message);
-            }
-            p.closeInventory();
-        }
-    }
-
-    public void sendImportantMessage(String message) {
-        Player p = getPlayer();
-
-        if (p != null) {
-            p.sendMessage("");
-            p.sendMessage(message);
-            p.sendMessage("");
-            p.closeInventory();
-        }
-    }
-
-    public void openInventory(Inventory inventory) {
-        if (inventory != null) {
-            Player p = getPlayer();
-
-            if (p != null && p.isOnline()) {
-                p.openInventory(inventory);
-            }
-        }
-    }
-
-    public Inventory createInventory(int size, String title) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            return Bukkit.createInventory(p, size, title);
-        }
-        return null;
-    }
-
-    public SpartanLocation getLocation() {
-        SpartanLocation vehicle = getVehicleLocation();
-
-        if (vehicle != null) {
-            return vehicle;
-        } else {
-            if (SpartanBukkit.isSynchronised()) {
-                long ms = System.currentTimeMillis();
-
-                if ((ms - this.locationTime) > TPS.tickTime) {
-                    this.locationTime = ms;
-                    Player p = getPlayer();
-
-                    if (p != null) {
-                        SpartanLocation from = this.location.clone();
-                        this.location = new SpartanLocation(this, p.getLocation());
-
-                        if (from != null) {
-                            this.location.retrieveDataFrom(from);
-                        }
-                    } else {
-                        this.location = new SpartanLocation();
-                    }
-                }
-            }
-            return location;
-        }
-    }
-
-    public SpartanLocation getFromLocation() {
-        return fromLocation;
-    }
-
-    public SpartanLocation getEventToLocation() {
-        return eventTo;
-    }
-
-    public SpartanLocation getEventFromLocation() {
-        return eventFrom;
-    }
-
-    public SpartanLocation setEventLocation(Location to) {
-        SpartanLocation vehicle = getVehicleLocation();
-        return vehicle != null ? vehicle : new SpartanLocation(this, to);
-    }
-
     public boolean debug(boolean broadcast, boolean cutDecimals, Object... message) {
         if (!Piracy.enabled && SpartanBukkit.debug
                 && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
@@ -806,6 +532,250 @@ public class SpartanPlayer {
         return false;
     }
 
+    // Separator
+
+    public Buffer getBuffer() {
+        return buffer[Enums.HackType.values().length];
+    }
+
+    public Timer getTimer() {
+        return timer[Enums.HackType.values().length];
+    }
+
+    public Decimals getDecimals() {
+        return decimals[Enums.HackType.values().length];
+    }
+
+    public Tracker getTracker() {
+        return tracker[Enums.HackType.values().length];
+    }
+
+    public Cooldowns getCooldowns() {
+        return cooldowns[Enums.HackType.values().length];
+    }
+
+    public Buffer getBuffer(Enums.HackType hackType) {
+        return buffer[hackType.ordinal()];
+    }
+
+    public Timer getTimer(Enums.HackType hackType) {
+        return timer[hackType.ordinal()];
+    }
+
+    public Decimals getDecimals(Enums.HackType hackType) {
+        return decimals[hackType.ordinal()];
+    }
+
+    public Tracker getTracker(Enums.HackType hackType) {
+        return tracker[hackType.ordinal()];
+    }
+
+    public Cooldowns getCooldowns(Enums.HackType hackType) {
+        return cooldowns[hackType.ordinal()];
+    }
+
+    public CheckExecutor getExecutor(Enums.HackType hackType) {
+        return executors[hackType.ordinal()];
+    }
+
+    // Separator
+
+    public Handlers getHandlers() {
+        return handlers;
+    }
+
+    public void resetHandlers() {
+        for (Handlers.HandlerType handlerType : Handlers.HandlerType.values()) {
+            handlers.remove(handlerType);
+        }
+    }
+
+    // Separator
+
+    public LiveViolation[] getViolations() {
+        return violations;
+    }
+
+    public LiveViolation getViolations(Enums.HackType hackType) {
+        return violations[hackType.ordinal()];
+    }
+
+    public LiveViolation getLastViolation() {
+        return lastViolation;
+    }
+
+    public int getViolationCount() {
+        int sum = 0;
+
+        for (LiveViolation liveViolation : violations) {
+            sum += liveViolation.getLevel();
+        }
+        return sum;
+    }
+
+    public void setLastViolation(LiveViolation liveViolation) {
+        this.lastViolation = liveViolation;
+    }
+
+    // Separator
+
+    public boolean isDetected(boolean prevention) {
+        if (lastViolation.isDetected(prevention)) {
+            return true;
+        } else {
+            for (LiveViolation liveViolation : violations) {
+                if (liveViolation.isDetected(prevention)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public boolean wasDetected(boolean prevention) {
+        if (lastViolation.wasDetected(prevention)) {
+            return true;
+        } else {
+            for (LiveViolation liveViolation : violations) {
+                if (liveViolation.wasDetected(prevention)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    // Separator
+
+    public Clicks getClicks() {
+        return clicks;
+    }
+
+    public void calculateClickData(Action action, boolean runRegardless) {
+        if (!runRegardless) {
+            if (playerProfile.playerCombat.isActivelyFighting(null, true, true, false)) {
+                runRegardless = true;
+            } else {
+                SpartanBlock block = getTargetBlock(CombatUtils.maxHitDistance);
+                runRegardless = block == null || BlockUtils.areAir(block.material);
+            }
+        }
+
+        if (runRegardless) {
+            boolean success;
+
+            if (action == Action.LEFT_CLICK_AIR) {
+                success = true;
+                clicks.calculate();
+            } else if (action == null) {
+                if (clicks.getLastCalculation() > 50L) {
+                    success = true;
+                    clicks.calculate();
+                } else {
+                    success = false;
+                }
+            } else {
+                success = false;
+            }
+
+            if (success && clicks.canDistributeInformation()) {
+                InteractiveInventory.playerInfo.refresh(name);
+            }
+        }
+    }
+
+    // Separator
+
+    public int getMaxChatLength() {
+        return bedrockPlayer ? 512 :
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) || PluginUtils.exists("viaversion") || PluginUtils.exists("protocolsupport") ? 256 :
+                        100;
+    }
+
+    public void sendMessage(String message) {
+        Player p = getPlayer();
+
+        if (p != null) {
+            p.sendMessage(message);
+        }
+    }
+
+    public void sendInventoryCloseMessage(String message) {
+        Player p = getPlayer();
+
+        if (p != null) {
+            if (message != null) {
+                p.sendMessage(message);
+            }
+            p.closeInventory();
+        }
+    }
+
+    public void sendImportantMessage(String message) {
+        Player p = getPlayer();
+
+        if (p != null) {
+            p.sendMessage("");
+            p.sendMessage(message);
+            p.sendMessage("");
+            p.closeInventory();
+        }
+    }
+
+    // Separator
+
+    public void openInventory(Inventory inventory) {
+        if (inventory != null) {
+            Player p = getPlayer();
+
+            if (p != null && p.isOnline()) {
+                p.openInventory(inventory);
+            }
+        }
+    }
+
+    public Inventory createInventory(int size, String title) {
+        Player p = getPlayer();
+
+        if (p != null && p.isOnline()) {
+            return Bukkit.createInventory(p, size, title);
+        }
+        return null;
+    }
+
+    public SpartanOpenInventory getOpenInventory() {
+        return openInventory;
+    }
+
+    // Separator
+
+    public SpartanInventory getInventory() {
+        return inventory;
+    }
+
+    public ItemStack getItemInHand() {
+        return inventory.itemInHand;
+    }
+
+    public synchronized void setInventory(PlayerInventory inv, InventoryView openInventory) {
+        this.inventory = new SpartanInventory(inv.getContents(),
+                new ItemStack[]{inv.getHelmet(), inv.getChestplate(), inv.getLeggings(), inv.getBoots()},
+                inv.getItemInHand(), MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? inv.getItemInOffHand() : null);
+
+        if (openInventory != null) {
+            this.openInventory = new SpartanOpenInventory(openInventory.getCursor(),
+                    openInventory.countSlots(),
+                    openInventory.getTopInventory().getContents(),
+                    openInventory.getBottomInventory().getContents());
+        } else {
+            this.openInventory = new SpartanOpenInventory();
+        }
+    }
+
+    // Separator
+
+    // Separator
+
     private boolean canRunChecks(boolean accountLag) {
         return runChecks[accountLag ? 0 : 1];
     }
@@ -827,16 +797,23 @@ public class SpartanPlayer {
         return false;
     }
 
+    public boolean isOnFire() {
+        return getFireTicks() != 0
+                && !hasPotionEffect(PotionEffectType.FIRE_RESISTANCE);
+    }
+
     public int getFireTicks() {
         return fireTicks;
     }
 
-    public boolean isOnFire() {
-        return getFireTicks() > -20 && !hasPotionEffect(PotionEffectType.FIRE_RESISTANCE);
-    }
-
     public synchronized void setFireTicks(int fireTicks) {
         this.fireTicks = fireTicks;
+    }
+
+    // Separator
+
+    public Player getPlayer() {
+        return Bukkit.getPlayer(uuid);
     }
 
     public boolean isOp() {
@@ -849,29 +826,7 @@ public class SpartanPlayer {
         return p != null && p.isWhitelisted();
     }
 
-    public void processLastMoveEvent(SpartanLocation to, SpartanLocation from) {
-        this.eventTo = to;
-        this.eventFrom = from;
-    }
-
-    public void setFromLocation(SpartanLocation loc) {
-        this.fromLocation = loc;
-    }
-
-    public String getCancellableCompatibility() {
-        return MythicMobs.is(this) ? Compatibility.CompatibilityType.MythicMobs.toString() :
-                ItemsAdder.is(this) ? Compatibility.CompatibilityType.ItemsAdder.toString() :
-                        CustomEnchantsPlus.has(this) ? Compatibility.CompatibilityType.CustomEnchantsPlus.toString() :
-                                EcoEnchants.has(this) ? Compatibility.CompatibilityType.EcoEnchants.toString() : null;
-    }
-
-    public boolean hasShield() {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                && !Compatibility.CompatibilityType.OldCombatMechanics.isFunctional()
-                && (isUsingItem()
-                || getItemInHand().getType() == Material.SHIELD
-                || inventory.itemInOffHand.getType() == Material.SHIELD);
-    }
+    // Separator
 
     public boolean isDead() {
         return dead;
@@ -881,6 +836,8 @@ public class SpartanPlayer {
         this.dead = dead;
     }
 
+    // Separator
+
     public boolean isSleeping() {
         return sleeping;
     }
@@ -888,6 +845,8 @@ public class SpartanPlayer {
     public synchronized void setSleeping(boolean sleeping) {
         this.sleeping = sleeping;
     }
+
+    // Separator
 
     public boolean isOnGroundCustom() {
         return onGroundCustom;
@@ -904,19 +863,50 @@ public class SpartanPlayer {
         }
     }
 
+    public int getBlocksOffGround(int limit) {
+        SpartanLocation ploc = movement.getLocation();
+        Decimals decimals = getDecimals();
+        Cooldowns cooldowns = getCooldowns();
+        String key = "blocks-off-ground=" + Objects.hash(ploc.getBlockY(), limit);
+
+        if (!cooldowns.canDo(key)) {
+            return (int) decimals.get(key, 0.0);
+        }
+        int blocksOffGround = 0;
+
+        for (double i = 0.0; i <= ploc.getY(); i++) {
+            if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, true, true)) {
+                blocksOffGround++;
+
+                if (blocksOffGround == limit) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        decimals.set(key, blocksOffGround);
+        cooldowns.add(key, 4);
+        return blocksOffGround;
+    }
+
+    public boolean isGroundSpoofing() {
+        return isOnGroundCustom() != isOnGround();
+    }
+
     public boolean refreshOnGroundCustom(SpartanLocation from) {
-        if (GroundUtils.isOnGround(this, this.getLocation(), 0.0, true, true)) {
+        if (GroundUtils.isOnGround(this, this.movement.getLocation(), 0.0, true, true)) {
             this.onGroundCustom = true; // Server Current Location
         } else if (from != null && GroundUtils.isOnGround(this, from, 0.0, true, true)) {
             this.onGroundCustom = true; // Server Previous Location
         } else {
-            SpartanLocation eventFrom = getEventFromLocation();
+            SpartanLocation eventFrom = this.movement.getEventFromLocation();
 
             Runnable runnable = () -> {
                 if (GroundUtils.isOnGround(this, eventFrom, 0.0, true, true)) {
                     this.onGroundCustom = true; // Event Previous Location
                 } else {
-                    SpartanLocation eventLocation = getEventToLocation();
+                    SpartanLocation eventLocation = this.movement.getEventToLocation();
                     this.onGroundCustom = eventLocation != null
                             && GroundUtils.isOnGround(this, eventLocation, 0.0, true, true); // Event Current Location
                 }
@@ -936,38 +926,7 @@ public class SpartanPlayer {
         return this.onGroundCustom;
     }
 
-    public void removePotionEffect(PotionEffectType potionEffectType) {
-        if (hasPotionEffect(potionEffectType)) {
-            Player p = getPlayer();
-
-            if (p != null && p.isOnline()) {
-                p.removePotionEffect(potionEffectType);
-                setActivePotionEffects(p.getActivePotionEffects());
-            }
-        }
-    }
-
-    public void addPotionEffect(PotionEffect potionEffect) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            p.addPotionEffect(potionEffect);
-            setActivePotionEffects(p.getActivePotionEffects());
-        }
-    }
-
-    public boolean canSee(SpartanPlayer target) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            Player t = target.getPlayer();
-
-            if (t != null && t.isOnline()) {
-                return p.canSee(t);
-            }
-        }
-        return true;
-    }
+    // Separator
 
     public void kick(CommandSender punisher, String reason) {
         Player target = getPlayer();
@@ -1030,17 +989,6 @@ public class SpartanPlayer {
         }
     }
 
-    public void damage(double amount, EntityDamageEvent.DamageCause damageCause) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            EntityDamageEvent event = new EntityDamageEvent(p, damageCause, amount);
-            p.damage(amount);
-            p.setLastDamageCause(event);
-            setLastDamageCause(event, p.getMaximumNoDamageTicks());
-        }
-    }
-
     public PlayerProfile getProfile() {
         return playerProfile;
     }
@@ -1049,8 +997,10 @@ public class SpartanPlayer {
         this.playerProfile = playerProfile;
     }
 
+    // Separator
+
     public World getWorld() {
-        return getLocation().world;
+        return movement.getLocation().world;
     }
 
     public SpartanBlock getTargetBlock(double distance) {
@@ -1071,13 +1021,52 @@ public class SpartanPlayer {
         return null;
     }
 
-    public synchronized void setVehicle(Entity vehicle) {
-        this.vehicle = vehicle;
+    public SpartanBlock getIllegalTargetBlock(SpartanBlock clickedBlock) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
+            SpartanLocation clickedBlockLocation = clickedBlock.getLocation();
+            boolean editableClickedBlock = BlockUtils.isChangeable(clickedBlockLocation);
+
+            if (!editableClickedBlock && !BlockUtils.isSolid(clickedBlockLocation)) {
+                return null;
+            }
+            double distance = movement.getLocation().distance(clickedBlockLocation);
+
+            if (distance >= 0.5) {
+                try {
+                    SpartanBlock targetBlock = getTargetBlock(Math.max(Math.floor(distance), 1.0));
+
+                    if (targetBlock != null && BlockUtils.isSolid(targetBlock.material)) {
+                        SpartanLocation targetBlockLocation = targetBlock.getLocation();
+
+                        if (clickedBlockLocation.distance(targetBlockLocation) >= (handlers.has(Handlers.HandlerType.ElytraUse) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
+
+                                && (targetBlock.x != clickedBlock.x
+                                || targetBlock.y != clickedBlock.y
+                                || targetBlock.z != clickedBlock.z)
+
+                                && (editableClickedBlock && !BlockUtils.isLiquid(targetBlockLocation)
+                                || BlockUtils.isFullSolid(targetBlockLocation))) {
+                            return targetBlock;
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return null;
     }
+
+    // Separator
 
     public Entity getVehicle() {
         return vehicle;
     }
+
+    public synchronized void setVehicle(Entity vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    // Separator
 
     public float getWalkSpeed() {
         return walkSpeed;
@@ -1087,6 +1076,8 @@ public class SpartanPlayer {
         this.walkSpeed = walkSpeed;
     }
 
+    // Separator
+
     public float getFlySpeed() {
         return flySpeed;
     }
@@ -1095,6 +1086,8 @@ public class SpartanPlayer {
         this.flySpeed = flySpeed;
     }
 
+    // Separator
+
     public boolean isInvulnerable() {
         return invulnerable;
     }
@@ -1102,6 +1095,8 @@ public class SpartanPlayer {
     public synchronized void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
     }
+
+    // Separator
 
     public int getFoodLevel() {
         return foodLevel;
@@ -1120,6 +1115,8 @@ public class SpartanPlayer {
         }
     }
 
+    // Separator
+
     public double getHealth() {
         return health;
     }
@@ -1127,6 +1124,8 @@ public class SpartanPlayer {
     public synchronized void setHealth(double health) {
         this.health = health;
     }
+
+    // Separator
 
     public float getFallDistance() {
         return fallDistance;
@@ -1145,6 +1144,8 @@ public class SpartanPlayer {
         }
     }
 
+    // Separator
+
     public GameMode getGameMode() {
         return gameMode;
     }
@@ -1152,6 +1153,8 @@ public class SpartanPlayer {
     public synchronized void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
     }
+
+    // Separator
 
     public double getEyeHeight() {
         return eyeHeight;
@@ -1161,6 +1164,8 @@ public class SpartanPlayer {
         this.eyeHeight = eyeHeight;
     }
 
+    // Separator
+
     public boolean isFrozen() {
         return frozen;
     }
@@ -1169,48 +1174,7 @@ public class SpartanPlayer {
         this.frozen = frozen;
     }
 
-    public ItemStack getItemInHand() {
-        return inventory.itemInHand;
-    }
-
-    public SpartanOpenInventory getOpenInventory() {
-        return openInventory;
-    }
-
-    private void prepareForAbstractMovement() {
-        this.movement.setSprinting(false);
-        this.movement.setSneaking(false);
-        this.movement.setSwimming(false, 0);
-        this.movement.setGliding(false, false);
-        this.movement.removeLastLiquidTime();
-    }
-
-    public boolean teleport(SpartanLocation location) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            p.leaveVehicle();
-            prepareForAbstractMovement();
-
-            if (MultiVersion.folia) {
-                p.teleportAsync(location.getBukkitLocation());
-            } else {
-                p.teleport(location.getBukkitLocation());
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public synchronized void setVelocity(Vector vector) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            p.leaveVehicle();
-            prepareForAbstractMovement();
-            p.setVelocity(vector);
-        }
-    }
+    // Separator
 
     public boolean isUsingItem() {
         return usingItem;
@@ -1219,6 +1183,16 @@ public class SpartanPlayer {
     public synchronized void setUsingItem(boolean usingItem) {
         this.usingItem = usingItem;
     }
+
+    public boolean hasShield() {
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                && !Compatibility.CompatibilityType.OldCombatMechanics.isFunctional()
+                && (isUsingItem()
+                || getItemInHand().getType() == Material.SHIELD
+                || inventory.itemInOffHand.getType() == Material.SHIELD);
+    }
+
+    // Separator
 
     public int getPing() {
         if (ping == -1) {
@@ -1246,6 +1220,8 @@ public class SpartanPlayer {
         return maximumNoDamageTicks;
     }
 
+    // Separator
+
     public boolean hasAttackCooldown() {
         return getAttackCooldown() != 1.0f;
     }
@@ -1257,6 +1233,8 @@ public class SpartanPlayer {
         }
         return 1.0f;
     }
+
+    // Separator
 
     private Collection<PotionEffect> getLocalActivePotionEffects() {
         Entity vehicle = getVehicle();
@@ -1277,6 +1255,17 @@ public class SpartanPlayer {
         synchronized (potionEffects) {
             this.potionEffects.clear();
             this.potionEffects.addAll(effects);
+        }
+    }
+
+    public void removePotionEffect(PotionEffectType potionEffectType) {
+        if (hasPotionEffect(potionEffectType)) {
+            Player p = getPlayer();
+
+            if (p != null && p.isOnline()) {
+                p.removePotionEffect(potionEffectType);
+                setActivePotionEffects(p.getActivePotionEffects());
+            }
         }
     }
 
@@ -1327,7 +1316,6 @@ public class SpartanPlayer {
         return false;
     }
 
-
     public boolean canSee(Player target) {
         if (SpartanBukkit.supportedFork) {
             Player player = getPlayer();
@@ -1339,24 +1327,7 @@ public class SpartanPlayer {
         return true;
     }
 
-    public SpartanInventory getInventory() {
-        return inventory;
-    }
-
-    public synchronized void setInventory(PlayerInventory inv, InventoryView openInventory) {
-        this.inventory = new SpartanInventory(inv.getContents(),
-                new ItemStack[]{inv.getHelmet(), inv.getChestplate(), inv.getLeggings(), inv.getBoots()},
-                inv.getItemInHand(), MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? inv.getItemInOffHand() : null);
-
-        if (openInventory != null) {
-            this.openInventory = new SpartanOpenInventory(openInventory.getCursor(),
-                    openInventory.countSlots(),
-                    openInventory.getTopInventory().getContents(),
-                    openInventory.getBottomInventory().getContents());
-        } else {
-            this.openInventory = new SpartanOpenInventory();
-        }
-    }
+    // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
         double max = Math.max(Math.max(x, y), z);
@@ -1380,7 +1351,7 @@ public class SpartanPlayer {
                         nearbyEntities.addAll(entities);
                         return entities;
                     } else {
-                        SpartanLocation loc = this.getLocation();
+                        SpartanLocation loc = this.movement.getLocation();
                         List<Entity> entities;
 
                         synchronized (worldEntities) {
@@ -1417,7 +1388,7 @@ public class SpartanPlayer {
                     return new ArrayList<>(0);
                 }
             } else if (!nearbyEntities.isEmpty()) {
-                SpartanLocation loc = this.getLocation();
+                SpartanLocation loc = this.movement.getLocation();
                 List<Entity> entities = new ArrayList<>(nearbyEntities);
                 Entity vehicle = this.getVehicle();
 
@@ -1486,13 +1457,13 @@ public class SpartanPlayer {
     public boolean safeTeleport(SpartanLocation loc) {
         if (!isSleeping()) {
             if (getWorld() == loc.world) {
-                SpartanLocation to = getLocation();
+                SpartanLocation to = movement.getLocation();
                 to.setX(loc.getX());
                 to.setY(loc.getY());
                 to.setZ(loc.getZ());
                 return teleport(loc);
             }
-            return teleport(getLocation());
+            return teleport(movement.getLocation());
         }
         return false;
     }
@@ -1503,7 +1474,7 @@ public class SpartanPlayer {
         if (!testServer && !Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
             return false;
         }
-        SpartanLocation location = getLocation();
+        SpartanLocation location = movement.getLocation();
 
         if (checkGround
                 && onGroundCustom
@@ -1566,7 +1537,44 @@ public class SpartanPlayer {
         return true;
     }
 
-    // Damage
+    // Separator
+
+    private void prepareForAbstractMovement() {
+        this.movement.setSprinting(false);
+        this.movement.setSneaking(false);
+        this.movement.setSwimming(false, 0);
+        this.movement.setGliding(false, false);
+        this.movement.removeLastLiquidTime();
+    }
+
+    public boolean teleport(SpartanLocation location) {
+        Player p = getPlayer();
+
+        if (p != null && p.isOnline()) {
+            p.leaveVehicle();
+            prepareForAbstractMovement();
+
+            if (MultiVersion.folia) {
+                p.teleportAsync(location.getBukkitLocation());
+            } else {
+                p.teleport(location.getBukkitLocation());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized void setVelocity(Vector vector) {
+        Player p = getPlayer();
+
+        if (p != null && p.isOnline()) {
+            p.leaveVehicle();
+            prepareForAbstractMovement();
+            p.setVelocity(vector);
+        }
+    }
+
+    // Separator
 
     public void applyFallDamage(double d) {
         handlers.disable(Handlers.HandlerType.Floor, 3);
@@ -1574,40 +1582,18 @@ public class SpartanPlayer {
         damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 
-    // Ground
+    public void damage(double amount, EntityDamageEvent.DamageCause damageCause) {
+        Player p = getPlayer();
 
-    public int getBlocksOffGround(int limit) {
-        SpartanLocation ploc = getLocation();
-        Decimals decimals = getDecimals();
-        Cooldowns cooldowns = getCooldowns();
-        String key = "blocks-off-ground=" + Objects.hash(ploc.getBlockY(), limit);
-
-        if (!cooldowns.canDo(key)) {
-            return (int) decimals.get(key, 0.0);
+        if (p != null && p.isOnline()) {
+            EntityDamageEvent event = new EntityDamageEvent(p, damageCause, amount);
+            p.damage(amount);
+            p.setLastDamageCause(event);
+            setLastDamageCause(event, p.getMaximumNoDamageTicks());
         }
-        int blocksOffGround = 0;
-
-        for (double i = 0.0; i <= ploc.getY(); i++) {
-            if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, true, true)) {
-                blocksOffGround++;
-
-                if (blocksOffGround == limit) {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        decimals.set(key, blocksOffGround);
-        cooldowns.add(key, 4);
-        return blocksOffGround;
     }
 
-    public boolean isGroundSpoofing() {
-        return isOnGroundCustom() != isOnGround();
-    }
-
-    // Allowance
+    // Separator
 
     public boolean canDo(boolean bypassItemAttributes) {
         if ((bypassItemAttributes || !Attributes.has(this, Attributes.GENERIC_MOVEMENT_SPEED))
@@ -1628,10 +1614,11 @@ public class SpartanPlayer {
         return false;
     }
 
-    // Environment
-
-    public boolean stepsOnBoats() {
-        return GroundUtils.stepsOnBoats(this);
+    public String getCancellableCompatibility() {
+        return MythicMobs.is(this) ? Compatibility.CompatibilityType.MythicMobs.toString() :
+                ItemsAdder.is(this) ? Compatibility.CompatibilityType.ItemsAdder.toString() :
+                        CustomEnchantsPlus.has(this) ? Compatibility.CompatibilityType.CustomEnchantsPlus.toString() :
+                                EcoEnchants.has(this) ? Compatibility.CompatibilityType.EcoEnchants.toString() : null;
     }
 
     // Falling
@@ -1645,55 +1632,10 @@ public class SpartanPlayer {
         return 0.0;
     }
 
-    // Base
-
-    public void resetHandlers() {
-        for (Handlers.HandlerType handlerType : Handlers.HandlerType.values()) {
-            handlers.remove(handlerType);
-        }
-    }
-
-    // Direction
-
-    public SpartanBlock getIllegalTargetBlock(SpartanBlock clickedBlock) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            SpartanLocation clickedBlockLocation = clickedBlock.getLocation();
-            boolean editableClickedBlock = BlockUtils.isChangeable(clickedBlockLocation);
-
-            if (!editableClickedBlock && !BlockUtils.isSolid(clickedBlockLocation)) {
-                return null;
-            }
-            double distance = getLocation().distance(clickedBlockLocation);
-
-            if (distance >= 0.5) {
-                try {
-                    SpartanBlock targetBlock = getTargetBlock(Math.max(Math.floor(distance), 1.0));
-
-                    if (targetBlock != null && BlockUtils.isSolid(targetBlock.material)) {
-                        SpartanLocation targetBlockLocation = targetBlock.getLocation();
-
-                        if (clickedBlockLocation.distance(targetBlockLocation) >= (handlers.has(Handlers.HandlerType.ElytraUse) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
-
-                                && (targetBlock.x != clickedBlock.x
-                                || targetBlock.y != clickedBlock.y
-                                || targetBlock.z != clickedBlock.z)
-
-                                && (editableClickedBlock && !BlockUtils.isLiquid(targetBlockLocation)
-                                || BlockUtils.isFullSolid(targetBlockLocation))) {
-                            return targetBlock;
-                        }
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        }
-        return null;
-    }
-
     // Border
 
     public boolean isOutsideOfTheBorder(double deviation) {
-        SpartanLocation loc = getLocation();
+        SpartanLocation loc = movement.getLocation();
         WorldBorder border = getWorld().getWorldBorder();
         double size = (border.getSize() / 2.0) + deviation;
         Location center = border.getCenter();

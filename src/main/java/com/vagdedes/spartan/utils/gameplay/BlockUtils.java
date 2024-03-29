@@ -1781,6 +1781,6 @@ public class BlockUtils {
         if (!b.isLiquid()) {
             return true;
         }
-        return b.data == 0 || b.data == 8 || p != null && p.getLocation().getBlock() != b;
+        return b.data == 0 || b.data == 8 || p != null && p.movement.getLocation().getBlock() != b;
     }
 }

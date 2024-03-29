@@ -33,7 +33,7 @@ public class IrregularMovementsClimb extends DetectionExecutor {
                     || box == null) {
                 return;
             }
-            SpartanLocation to = player.getEventToLocation();
+            SpartanLocation to = player.movement.getEventToLocation();
 
             runAsync(() -> {
                 if (jumping) {

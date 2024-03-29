@@ -36,7 +36,7 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
                     || oldBox == null) {
                 return;
             }
-            SpartanLocation to = player.getEventToLocation();
+            SpartanLocation to = player.movement.getEventToLocation();
             boolean vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
 
             runAsync(() -> {

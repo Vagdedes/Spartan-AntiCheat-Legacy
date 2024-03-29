@@ -104,7 +104,7 @@ public class ConfigUtils {
 
     public static String replaceWithSyntax(SpartanPlayer p, String message, HackType hackType) {
         UUID uuid = p.uuid;
-        SpartanLocation loc = p.getLocation();
+        SpartanLocation loc = p.movement.getLocation();
         String worldName = p.getWorld().getName();
         message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(p, false), 2)));
         message = replace(message, "{player}", p.name);
@@ -148,7 +148,7 @@ public class ConfigUtils {
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) off);
 
             if (p != null) {
-                SpartanLocation loc = p.getLocation();
+                SpartanLocation loc = p.movement.getLocation();
                 String worldName = p.getWorld().getName();
                 message = replace(message, "{vls}", String.valueOf(p.getViolationCount()));
                 message = replace(message, "{player:type}", p.dataType.lowerCase);

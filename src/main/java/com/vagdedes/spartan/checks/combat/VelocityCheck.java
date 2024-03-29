@@ -52,7 +52,7 @@ public class VelocityCheck extends CheckExecutor {
                 && player.getEnemiesNumber(CombatUtils.maxHitDistance, false) <= 5
                 && !NoHitDelay.hasCooldown(player)
                 && !Attributes.has(player, Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
-            SpartanLocation loc = player.getLocation();
+            SpartanLocation loc = player.movement.getLocation();
 
             if (!BlockUtils.canClimb(loc)) {
                 return !PatternUtils.isBlockPattern(solid, loc, false, BlockUtils.solid, BlockUtils.semi_solid)

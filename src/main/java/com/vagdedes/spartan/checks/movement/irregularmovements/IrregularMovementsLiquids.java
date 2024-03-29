@@ -37,8 +37,8 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
                     || horizontal == null) {
                 return;
             }
-            SpartanLocation to = player.getEventToLocation(),
-                    from = player.getEventFromLocation();
+            SpartanLocation to = player.movement.getEventToLocation(),
+                    from = player.movement.getEventFromLocation();
 
             runAsync(() -> {
                 if (liquidBelow) {

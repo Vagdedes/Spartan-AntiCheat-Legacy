@@ -148,8 +148,8 @@ public class PlayerUtils {
 
         if (!p.isDead() && !p.isSleeping()) {
             Buffer buffer = p.getBuffer();
-            SpartanLocation to = p.getLocation(),
-                    from = p.getFromLocation();
+            SpartanLocation to = p.movement.getLocation(),
+                    from = p.movement.getFromLocation();
 
             // Separator
             if (from != null) {
@@ -159,7 +159,7 @@ public class PlayerUtils {
                         to.getY() - from.getY()
                 );
             }
-            p.setFromLocation(to);
+            p.movement.setFromLocation(to);
 
             // Separator
             boolean ground = p.refreshOnGroundCustom(from);
@@ -518,7 +518,7 @@ public class PlayerUtils {
         List<Entity> entities = p.getNearbyEntities(1.0, 1.0, 1.0);
 
         if (!entities.isEmpty()) {
-            SpartanLocation location = p.getLocation();
+            SpartanLocation location = p.movement.getLocation();
             int count = 0;
 
             for (Entity entity : entities) {

@@ -144,7 +144,7 @@ public class DetectionNotifications {
             Enums.MiningOre ore = getMiningOre(block.material);
 
             if (ore != null) {
-                SpartanLocation location = player.getLocation();
+                SpartanLocation location = player.movement.getLocation();
                 World.Environment environment = location.world.getEnvironment();
                 int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ(), amount = 1;
                 String key = ore.toString(),

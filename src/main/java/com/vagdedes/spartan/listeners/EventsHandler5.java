@@ -135,7 +135,7 @@ public class EventsHandler5 implements Listener {
 
         // Protections
         Building.runPlace(p, b, blockFace, cancelled);
-        BouncingBlocks.judge(p, p.getLocation());
+        BouncingBlocks.judge(p, p.movement.getLocation());
 
         // Detections
         if (!ItemsAdder.is(nb)) {

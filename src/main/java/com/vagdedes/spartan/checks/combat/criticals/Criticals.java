@@ -118,7 +118,7 @@ public class Criticals extends CheckExecutor {
     private void checkLocation() {
         if (hackType.getCheck().getBooleanOption("check_location", true)
                 && !player.isOnGround()
-                && player.getLocation().getY() % 1.0 == 0.0) {
+                && player.movement.getLocation().getY() % 1.0 == 0.0) {
             float fallDistance = player.getFallDistance();
 
             if (fallDistance > 0.0f
@@ -135,7 +135,7 @@ public class Criticals extends CheckExecutor {
             float fallDistance = player.getFallDistance();
 
             if (fallDistance > 0.0f && fallDistance <= 0.07f) {
-                SpartanLocation location = player.getLocation();
+                SpartanLocation location = player.movement.getLocation();
 
                 if (PlayerUtils.isOnGround(player, location, 0, -fallDistance, 0)
                         || PlayerUtils.isOnGround(player, location, 0, -(fallDistance + 0.1), 0)) {
@@ -152,7 +152,7 @@ public class Criticals extends CheckExecutor {
                 && !player.isOnGround()
                 && !player.isOnGroundCustom()) {
             Decimals decimals = player.getDecimals(hackType);
-            SpartanLocation location = player.getLocation();
+            SpartanLocation location = player.movement.getLocation();
             double box = location.getY() - location.getBlockY();
 
             if (player.movement.getTicksOnAir() >= 20 && box >= 0.15 && box <= 0.75) {
@@ -174,7 +174,7 @@ public class Criticals extends CheckExecutor {
                     {box, 0, box},
                     {box, 1, box},
                     {box, 2, box}
-            }, player.getLocation(), true, BlockUtils.solid, BlockUtils.semi_solid)) {
+            }, player.movement.getLocation(), true, BlockUtils.solid, BlockUtils.semi_solid)) {
                 player.getCooldowns(hackType).add("block-free=" + box, onGroundCustom ? 40 : 60);
                 return false;
             }
@@ -192,7 +192,7 @@ public class Criticals extends CheckExecutor {
                 && player.getBlocksOffGround(3) <= 2
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && !BouncingBlocks.isBelow(player)) {
-            SpartanLocation location = player.getLocation();
+            SpartanLocation location = player.movement.getLocation();
             return !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid, BlockUtils.semi_solid)
                     && !PatternUtils.isBlockPattern(web, location, true, BlockUtils.web);
         }

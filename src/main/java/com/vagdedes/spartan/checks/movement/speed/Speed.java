@@ -186,7 +186,7 @@ public class Speed extends CheckExecutor {
             return false;
         }
         int air = this.player.movement.getTicksOnAir();
-        SpartanLocation to = player.getEventToLocation();
+        SpartanLocation to = player.movement.getEventToLocation();
         Cooldowns cooldowns = player.getCooldowns(hackType);
         Decimals decimals = player.getDecimals(hackType);
         double dm = getGreaterRepetitiveLimit(decimals);
@@ -651,7 +651,7 @@ public class Speed extends CheckExecutor {
         }
 
         // Limit
-        if (player.stepsOnBoats()) {
+        if (player.movement.stepsOnBoats()) {
             if (hor == oHor) {
                 dm = cacheLimit(decimals, dm, ground_block_speed_extended, 5);
             } else {
@@ -782,7 +782,7 @@ public class Speed extends CheckExecutor {
     }
 
     private boolean isSolid(double box) {
-        SpartanLocation to = player.getEventToLocation();
+        SpartanLocation to = player.movement.getEventToLocation();
         Boolean pattern = PatternUtils.getCached(to, hackType, "solid");
 
         if (pattern != null) {
@@ -840,7 +840,7 @@ public class Speed extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                && !PlayerUtils.isInWaterTunnel(player, player.getEventToLocation());
+                && !PlayerUtils.isInWaterTunnel(player, player.movement.getEventToLocation());
     }
 
     private double cacheLimit(Decimals decimals, double existingLimit, double newLimit, int ticks) {

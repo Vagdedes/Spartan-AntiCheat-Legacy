@@ -22,7 +22,7 @@ public class BouncingBlocks {
 
             if (vertical != null && vertical != 0.0 && !p.movement.isJumping(vertical)
                     || p.getBlocksOffGround(3) <= 2) {
-                SpartanLocation location = p.getLocation();
+                SpartanLocation location = p.movement.getLocation();
 
                 if (BlockUtils.isSlime(p, location, slime)) {
                     add(p, "slime");

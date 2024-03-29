@@ -100,8 +100,8 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                 || oldBox == null) {
             return;
         }
-        SpartanLocation to = player.getEventToLocation(),
-                from = player.getEventFromLocation();
+        SpartanLocation to = player.movement.getEventToLocation(),
+                from = player.movement.getEventFromLocation();
         int airTicks = player.movement.getTicksOnAir();
         boolean hasVehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
 

@@ -74,7 +74,7 @@ public class HackPrevention {
                     if (vertical == 0.0 || vertical >= PlayerUtils.actualTerminalVelocity) {
                         cooldowns.add(key, 5);
                         player.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                        player.setVelocity(player.getLocation().getDirection().setY(PlayerUtils.gravityAcceleration));
+                        player.setVelocity(player.movement.getLocation().getDirection().setY(PlayerUtils.gravityAcceleration));
                     }
                 }
             }

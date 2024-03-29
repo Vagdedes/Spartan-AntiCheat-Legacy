@@ -35,7 +35,7 @@ public class StaffChat {
                     }
                 }
 
-                SpartanLocation location = p.getLocation();
+                SpartanLocation location = p.movement.getLocation();
                 CrossServerInformation.queueNotificationWithWebhook(p.uuid, p.name,
                         location.getBlockX(), location.getBlockY(), location.getBlockZ(),
                         "Staff Chat", msg,

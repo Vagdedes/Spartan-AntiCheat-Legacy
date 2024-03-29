@@ -11,7 +11,7 @@ public class Velocity {
 
     public static boolean hasCooldown(SpartanPlayer p) {
         if (p.getHandlers().has(Handlers.HandlerType.Velocity)) {
-            int blockY = p.getLocation().getBlockY();
+            int blockY = p.movement.getLocation().getBlockY();
 
             if (blockY <= 0 || p.movement.getTicksOnAir() <= 20) {
                 return true;

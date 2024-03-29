@@ -62,8 +62,8 @@ public class WaterSpeed extends DetectionExecutor {
                 || horizontal < minDs && Math.abs(vertical) < minDs) {
             return;
         }
-        SpartanLocation to = player.getEventToLocation(),
-                from = player.getEventFromLocation();
+        SpartanLocation to = player.movement.getEventToLocation(),
+                from = player.movement.getEventFromLocation();
         int airTicks = player.movement.getTicksOnAir();
         boolean selfHit = Damage.hasCooldown(player, Damage.selfHitKey);
         Buffer buffer = player.getBuffer(hackType);
@@ -85,7 +85,7 @@ public class WaterSpeed extends DetectionExecutor {
         runAsync(() -> {
             int horizontalBufferCopy = horizontalBuffer;
             runTrackers(to, cooldowns, buffer, airTicks, vertical, box);
-            boolean boatStepping = player.stepsOnBoats();
+            boolean boatStepping = player.movement.stepsOnBoats();
 
             if (boatStepping) {
                 horizontalBufferCopy = freezeBuffers(buffer, 2);
