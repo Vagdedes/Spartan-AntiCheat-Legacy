@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClicks extends CheckExecutor { // todo apply buffer idea
+public class InventoryClicks extends CheckExecutor {
 
     private static final Enums.HackType check = Enums.HackType.InventoryClicks;
 
@@ -58,26 +58,20 @@ public class InventoryClicks extends CheckExecutor { // todo apply buffer idea
 
                     if (timer.has(time)
                             && (!shift && !quick || newHash != oldHash)) {
-                        if (time < 50L) {
-                            key += "fast";
-
-                            if (buffer.start(key, 5) >= (time == 0L ? 4 : 2)) {
-                                buffer.remove(key);
-                                cancel("type: fast, ms: " + time + ", item: " + type);
-                            }
-                        } else if (time < 100L) {
-                            key += "average";
-
-                            if (buffer.start(key, 5) >= 4) {
-                                buffer.remove(key);
-                                cancel("type: average, ms: " + time + ", item: " + type);
-                            }
-                        } else if (time < 150L) {
-                            key += "slow";
-
-                            if (buffer.start(key, 10) >= 8) {
-                                buffer.remove(key);
+                        if (time < 150L) {
+                            if (buffer.start("slow", 10) >= 8) {
+                                buffer.remove("slow");
                                 cancel("type: slow, ms: " + time + ", item: " + type);
+                            }
+                            if (time < 100L) {
+                                if (buffer.start("average", 5) >= 4) {
+                                    buffer.remove("average");
+                                    cancel("type: average, ms: " + time + ", item: " + type);
+                                }
+                                if (time < 50L && buffer.start("fast", 5) >= (time == 0L ? 4 : 2)) {
+                                    buffer.remove("fast");
+                                    cancel("type: fast, ms: " + time + ", item: " + type);
+                                }
                             }
                         }
                     }

@@ -54,17 +54,17 @@ public class FastPlace extends CheckExecutor {
                                     cancel("type: medium, ms: " + time + ", block: " + BlockUtils.materialToString(material),
                                             null, ticks);
                                 }
-                            }
-                            if (time <= 50L) {
-                                String detection = "type: fast";
+                                if (time <= 50L) {
+                                    String detection = "type: fast";
 
-                                if (!CloudBase.isInformationCancelled(hackType, detection)
-                                        && !player.bedrockPlayer
-                                        && hackType.getCheck().getBooleanOption("check_fast", true)
-                                        && !Compatibility.CompatibilityType.VeinMiner.isFunctional()
-                                        && buffer.start("fast", ticks) >= 4) {
-                                    cancel(detection + ", ms: " + time + ", block: " + BlockUtils.materialToString(material),
-                                            null, ticks);
+                                    if (!CloudBase.isInformationCancelled(hackType, detection)
+                                            && !player.bedrockPlayer
+                                            && hackType.getCheck().getBooleanOption("check_fast", true)
+                                            && !Compatibility.CompatibilityType.VeinMiner.isFunctional()
+                                            && buffer.start("fast", ticks) >= 4) {
+                                        cancel(detection + ", ms: " + time + ", block: " + BlockUtils.materialToString(material),
+                                                null, ticks);
+                                    }
                                 }
                             }
                         }
