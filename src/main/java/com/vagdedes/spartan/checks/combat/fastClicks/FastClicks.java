@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.checks.combat.fastClicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
@@ -9,10 +10,21 @@ import me.vagdedes.spartan.system.Enums;
 
 public class FastClicks extends CheckExecutor {
 
-    private static final int defaultClicksPerSecondLimit = 15;
+    static final int defaultClicksPerSecondLimit = 15;
+
+    private final ClickPattern clickPattern;
+    private final ClicksPerSecond clicksPerSecond;
 
     public FastClicks(SpartanPlayer player) {
-        super(Enums.HackType.FastClicks, player);
+        super(Enums.HackType.FastClicks, player, 2);
+        this.clickPattern = new ClickPattern(this);
+        this.clicksPerSecond = new ClicksPerSecond(this);
+        this.addDetections(
+                new DetectionExecutor[]{
+                        this.clickPattern,
+                        this.clicksPerSecond
+                }
+        );
     }
 
     @Override
@@ -38,7 +50,7 @@ public class FastClicks extends CheckExecutor {
                 return true;
             }
         }
-        return false;
+        return canDo() && (this.clicksPerSecond.run() || this.clickPattern.run());
     }
 
     @Override

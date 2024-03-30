@@ -14,24 +14,18 @@ import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 
-public class NoSwing extends CheckExecutor { // todo maintain
+public class NoSwing extends CheckExecutor {
 
     private static final int refreshTime = 30 * 20;
     private static final Enums.HackType check = Enums.HackType.NoSwing;
@@ -49,53 +43,30 @@ public class NoSwing extends CheckExecutor { // todo maintain
                     && player.canRunCheck(hackType, false)) {
                 player.getTimer(hackType).set("break");
             }
-        } else if (object instanceof PlayerItemHeldEvent) {
-            player.getViolations(hackType).addDisableCause(hackType.toString(), null, 10);
         } else if (object instanceof PlayerAnimationEvent) {
-            if (!player.canRunCheck(hackType, true)
-                    || ((PlayerAnimationEvent) object).getAnimationType() != PlayerAnimationType.ARM_SWING) {
-                clearData();
-            } else {
-                player.getTimer(hackType).set("animation");
-            }
+            player.getTimer(hackType).set("animation");
         } else if (object instanceof BlockBreakEvent) {
             if (!canDo()
                     || !hackType.getCheck().getBooleanOption("check_breaking", true)
-                    || player.hasPotionEffect(PotionEffectType.FAST_DIGGING)
-                    || MineBomb.canUse(player) || AureliumSkills.canCancel(player)) {
-                clearData();
+                    || MineBomb.canUse(player)
+                    || AureliumSkills.canCancel(player)) {
                 return false;
             }
             SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
             if (!BlockUtils.isSensitive(player, block.getLocation())
                     && !TreeFeller.canCancel(player, block)) {
-                ItemStack itemStack = player.getItemInHand();
+                Timer timer = player.getTimer(hackType);
 
-                if (itemStack.getEnchantmentLevel(Enchantment.DIG_SPEED) < 4) {
-                    Material material = itemStack.getType();
-
-                    if (!PlayerUtils.isAxeItem(material)
-                            && !PlayerUtils.isPickaxeItem(material)
-                            && !PlayerUtils.isSpadeItem(material)
-                            && !BlockUtils.isSensitive(player, material)) {
-                        Timer timer = player.getTimer(hackType);
-
-                        if (timer.get("break") > 50L) {
-                            if (!timer.has("animation")) {
-                                cancel(
-                                        "type: break"
-                                                + ", block: " + BlockUtils.blockToString(block)
-                                                + ", item: " + BlockUtils.materialToString(material));
-                            } else {
-                                clearData();
-                            }
-                        }
+                if (timer.get("break") > TPS.tickTime) {
+                    if (!timer.has("animation")) {
+                        cancel(
+                                "type: break"
+                                        + ", block: " + BlockUtils.blockToString(block)
+                                        + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
                     } else {
                         clearData();
                     }
-                } else {
-                    clearData();
                 }
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
@@ -112,36 +83,30 @@ public class NoSwing extends CheckExecutor { // todo maintain
     }
 
     private void runDamage(LivingEntity entity) {
-        if (!canDo() || !hackType.getCheck().getBooleanOption("check_damage", true) || player.hasAttackCooldown()
-                || player.getEnemiesNumber(CombatUtils.maxHitDistance, true) > 3
-                || player.getHandlers().has(Handlers.HandlerType.Trident) || CombatUtils.isNewPvPMechanic(player, entity) || CombatUtils.hasBlockBehind(player, entity)) {
-            clearData();
+        if (!canDo()
+                || !hackType.getCheck().getBooleanOption("check_damage", true)
+                || player.hasAttackCooldown()
+                || player.getHandlers().has(Handlers.HandlerType.Trident)
+                || CombatUtils.isNewPvPMechanic(player, entity)) {
             return;
         }
-        String key = "damage";
         Cooldowns cooldowns = player.getCooldowns(hackType);
 
-        if (!cooldowns.canDo(key)) {
-            return;
-        }
-        cooldowns.add(key, 20);
+        if (cooldowns.canDo("damage")) {
+            cooldowns.add("damage", 20);
 
-        if (!player.getTimer(hackType).has("animation")) {
-            Buffer buffer = player.getBuffer(hackType);
+            if (!player.getTimer(hackType).has("animation")) {
+                Buffer buffer = player.getBuffer(hackType);
 
-            if (cooldowns.canDo("first")) {
-                cooldowns.add("first", refreshTime);
-                buffer.remove(key);
-                return;
+                if (buffer.start("damage", refreshTime) >= 3) {
+                    buffer.remove("damage");
+                    cancel("type: damage"
+                            + ", entity: " + CombatUtils.entityToString(entity)
+                            + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
+                }
+            } else {
+                clearData();
             }
-            if (buffer.start(key, refreshTime) >= 2) {
-                buffer.remove(key);
-                cancel("type: damage"
-                        + ", entity: " + CombatUtils.entityToString(entity)
-                        + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
-            }
-        } else {
-            clearData();
         }
     }
 
@@ -155,4 +120,5 @@ public class NoSwing extends CheckExecutor { // todo maintain
                 && !Vehicles.has(player, "drill")
                 && !mcMMO.hasGeneralAbility(player);
     }
+
 }
