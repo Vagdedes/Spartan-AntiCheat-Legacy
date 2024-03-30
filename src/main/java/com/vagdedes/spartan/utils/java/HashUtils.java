@@ -3,6 +3,7 @@ package com.vagdedes.spartan.utils.java;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -142,14 +143,23 @@ public class HashUtils {
                 potionEffects = new ArrayList<>(0);
             }
         } else {
-            EntityDamageEvent damage = player.getLastDamageCause();
+            Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getDamages();
 
-            if (damage != null) { // todo use list idea
-                long ticksPassed = TPS.getTick(player) - player.getDamageTick();
+            if (!damages.isEmpty()) {
+                for (Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage> entry : damages) {
+                    long ticksPassed = entry.getValue().ticksPassed();
 
-                if (ticksPassed <= TPS.tickTime) {
-                    hash = extendLong(hash, damage.getCause().ordinal());
-                    hash = extendLong(hash, Long.hashCode(ticksPassed));
+                    if (ticksPassed <= TPS.maximum) {
+                        hash = extendLong(hash, entry.getKey().toString().hashCode());
+                        hash = extendLong(hash, Long.hashCode(ticksPassed));
+                        hash = extendLong(hash,
+                                Double.hashCode(
+                                        AlgebraUtils.cut(entry.getValue().location.distance(player.movement.getLocation()),
+                                                2
+                                        )
+                                )
+                        );
+                    }
                 }
             }
             hash = extendLong(hash, player.getGameMode().toString().hashCode());

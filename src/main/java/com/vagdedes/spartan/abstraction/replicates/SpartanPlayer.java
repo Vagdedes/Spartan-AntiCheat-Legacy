@@ -87,17 +87,16 @@ public class SpartanPlayer {
     private double eyeHeight, health;
     private GameMode gameMode;
     public final boolean bedrockPlayer;
-    private long damageTick;
     public final long creationTime, lastPlayed;
     public final String name;
     public final UUID uuid;
     public final String ipAddress;
     private final Collection<PotionEffect> potionEffects;
     public final Enums.DataType dataType;
-    private EntityDamageEvent lastDamageCause;
     private SpartanInventory inventory;
     private SpartanOpenInventory openInventory;
     public final SpartanPlayerMovement movement;
+    private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage> damage;
 
     // Data
 
@@ -290,7 +289,7 @@ public class SpartanPlayer {
                             EntityDamageEvent lastDamageCause = n.getLastDamageCause();
 
                             if (lastDamageCause != null) {
-                                p.setLastDamageCause(lastDamageCause, n.getMaximumNoDamageTicks());
+                                p.addDamage(lastDamageCause, n.getMaximumNoDamageTicks());
                             }
 
                             // Check Allowance Cache
@@ -355,8 +354,6 @@ public class SpartanPlayer {
         this.health = p.getHealth();
         this.usingItem = p.isBlocking();
         this.fireTicks = p.getFireTicks();
-        this.damageTick = 0L;
-        this.lastDamageCause = p.getLastDamageCause();
         this.openInventory = spartanOpenInv;
         this.maximumNoDamageTicks = p.getMaximumNoDamageTicks();
         this.fallDistance = p.getFallDistance();
@@ -369,7 +366,17 @@ public class SpartanPlayer {
         this.clicks = new Clicks();
         this.vehicle = p.getVehicle();
         this.movement = new SpartanPlayerMovement(this, p);
+        this.damage = Collections.synchronizedMap(new LinkedHashMap<>());
 
+        // Load them all to keep their order
+        for (EntityDamageEvent.DamageCause damageCause : EntityDamageEvent.DamageCause.values()) {
+            damage.put(damageCause, new SpartanPlayerDamage(
+                    this,
+                    new EntityDamageEvent(p, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.0),
+                    this.movement.getLocation(),
+                    0L
+            ));
+        }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             this.invulnerable = p.isInvulnerable();
             this.inventory = new SpartanInventory(inv.getContents(), new ItemStack[]{inv.getHelmet(), inv.getChestplate(), inv.getLeggings(), inv.getBoots()}, itemInHand, inv.getItemInOffHand());
@@ -1175,22 +1182,45 @@ public class SpartanPlayer {
                 || inventory.itemInOffHand.getType() == Material.SHIELD);
     }
 
-    // Separator todo make list so you can store multiple damage causes and use it in the hashing algorithm
-    // todo also store location so you can compare distance in the hashing
-    // todo store EntityDamageByEntityEvent as priority and then check for EntityDamageEvent if tick is free of data
-    // todo remove damage handler and start using the damage one
+    // Separator
 
-    public long getDamageTick() {
-        return damageTick;
+    public SpartanPlayerDamage getLastDamage() {
+        if (!this.damage.isEmpty()) {
+            synchronized (this.damage) {
+                Iterator<SpartanPlayerDamage> iterator = this.damage.values().iterator();
+                SpartanPlayerDamage last = null;
+
+                while (iterator.hasNext()) {
+                    last = iterator.next();
+                }
+                return last;
+            }
+        } else {
+            return null;
+        }
     }
 
-    public EntityDamageEvent getLastDamageCause() {
-        return lastDamageCause;
+    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getDamages() {
+        synchronized (this.damage) {
+            return new HashSet<>(this.damage.entrySet());
+        }
     }
 
-    public synchronized void setLastDamageCause(EntityDamageEvent lastDamageCause, int maximumNoDamageTicks) {
-        this.damageTick = TPS.getTick(this);
-        this.lastDamageCause = lastDamageCause;
+    public SpartanPlayerDamage getDamage(EntityDamageEvent.DamageCause cause) {
+        synchronized (this.damage) {
+            return this.damage.get(cause);
+        }
+    }
+
+    public void addDamage(EntityDamageEvent event, int maximumNoDamageTicks) {
+        if (!event.isCancelled()) {
+            synchronized (this.damage) {
+                this.damage.put(
+                        event.getCause(),
+                        new SpartanPlayerDamage(this, event, this.movement.getLocation())
+                );
+            }
+        }
         this.maximumNoDamageTicks = maximumNoDamageTicks;
     }
 
@@ -1557,7 +1587,7 @@ public class SpartanPlayer {
             EntityDamageEvent event = new EntityDamageEvent(p, damageCause, amount);
             p.damage(amount);
             p.setLastDamageCause(event);
-            setLastDamageCause(event, p.getMaximumNoDamageTicks());
+            addDamage(event, p.getMaximumNoDamageTicks());
         }
     }
 

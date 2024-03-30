@@ -8,11 +8,13 @@ import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -327,12 +329,12 @@ public class NoFall extends CheckExecutor {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                EntityDamageEvent damageCause = player.getLastDamageCause();
+                SpartanPlayerDamage damage = player.getLastDamage();
                 SpartanLocation loc = player.movement.getEventToLocation();
 
-                if ((damageCause == null
-                        || damageCause.getCause() != EntityDamageEvent.DamageCause.FALL
-                        || !damageCause.isCancelled())
+                if ((damage == null
+                        || damage.ticksPassed() > TPS.maximum
+                        || damage.event.getCause() != EntityDamageEvent.DamageCause.FALL)
                         && !player.isInvulnerable()
                         && !player.movement.wasInLiquids()
                         && loc.getBlockY() > BlockUtils.getMinHeight(player.getWorld())

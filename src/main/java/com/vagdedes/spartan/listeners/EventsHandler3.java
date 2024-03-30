@@ -77,7 +77,7 @@ public class EventsHandler3 implements Listener {
             // Objects
             p.setFallDistance(n.getFallDistance(), false);
             p.setHealth(n.getHealth());
-            p.setLastDamageCause(e, n.getMaximumNoDamageTicks());
+            p.addDamage(e, n.getMaximumNoDamageTicks());
 
             if (cancelled) {
                 // Detections
@@ -112,7 +112,7 @@ public class EventsHandler3 implements Listener {
                             // Objects
                             p.setFallDistance(n.getFallDistance(), false);
                             p.setHealth(n.getHealth());
-                            p.setLastDamageCause(e, n.getMaximumNoDamageTicks());
+                            p.addDamage(e, n.getMaximumNoDamageTicks());
 
                             // Handlers
                             Damage.runReceivedDamage(p, dmg);
