@@ -63,6 +63,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -96,8 +97,8 @@ public class SpartanPlayer {
     private SpartanInventory inventory;
     private SpartanOpenInventory openInventory;
     public final SpartanPlayerMovement movement;
-    private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage> damage;
-    private SpartanPlayerDamage lastDamage;
+    private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage> damageReceived, damageDealt;
+    private SpartanPlayerDamage lastDamageReceived, lastDamageDealt;
 
     // Data
 
@@ -287,11 +288,7 @@ public class SpartanPlayer {
                             p.movement.setFlying(n.isFlying());
                             p.setFoodLevel(n.getFoodLevel(), false);
                             p.setDead(n.isDead());
-                            EntityDamageEvent lastDamageCause = n.getLastDamageCause();
-
-                            if (lastDamageCause != null) {
-                                p.addDamage(lastDamageCause, n.getMaximumNoDamageTicks());
-                            }
+                            p.maximumNoDamageTicks = n.getMaximumNoDamageTicks();
 
                             // Check Allowance Cache
                             if (TPS.getTick(p) <= 100
@@ -367,19 +364,26 @@ public class SpartanPlayer {
         this.clicks = new Clicks();
         this.vehicle = p.getVehicle();
         this.movement = new SpartanPlayerMovement(this, p);
-        this.damage = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.lastDamage = null;
+        this.damageReceived = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.damageDealt = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.lastDamageReceived = new SpartanPlayerDamage(
+                this,
+                new EntityDamageEvent(p, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.0),
+                this.movement.getLocation(),
+                0L
+        );
+        this.lastDamageDealt = this.lastDamageReceived;
 
         // Load them all to keep their order
         for (EntityDamageEvent.DamageCause damageCause : EntityDamageEvent.DamageCause.values()) {
-            damage.put(
+            this.damageReceived.put(
                     damageCause,
-                    new SpartanPlayerDamage(
-                            this,
-                            new EntityDamageEvent(p, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.0),
-                            this.movement.getLocation(),
-                            0L
-                    ));
+                    this.lastDamageReceived
+            );
+            this.damageDealt.put(
+                    damageCause,
+                    this.lastDamageReceived
+            );
         }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             this.invulnerable = p.isInvulnerable();
@@ -1192,34 +1196,62 @@ public class SpartanPlayer {
 
     // Separator
 
-    public SpartanPlayerDamage getLastDamage() {
-        return this.lastDamage;
+    public SpartanPlayerDamage getLastDamageReceived() {
+        return this.lastDamageReceived;
     }
 
-    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getDamages() {
-        synchronized (this.damage) {
-            return new HashSet<>(this.damage.entrySet());
+    public SpartanPlayerDamage getLastDamageDealt() {
+        return this.lastDamageDealt;
+    }
+
+    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getReceivedDamages() {
+        synchronized (this.damageReceived) {
+            return new HashSet<>(this.damageReceived.entrySet());
         }
     }
 
-    public SpartanPlayerDamage getDamage(EntityDamageEvent.DamageCause cause) {
-        synchronized (this.damage) {
-            return this.damage.get(cause);
+    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getDealtDamages() {
+        synchronized (this.damageDealt) {
+            return new HashSet<>(this.damageDealt.entrySet());
         }
     }
 
-    public void addDamage(EntityDamageEvent event, int maximumNoDamageTicks) {
+    public SpartanPlayerDamage getDamageReceived(EntityDamageEvent.DamageCause cause) {
+        synchronized (this.damageReceived) {
+            return this.damageReceived.get(cause);
+        }
+    }
+
+    public SpartanPlayerDamage getDamageDealt(EntityDamageEvent.DamageCause cause) {
+        synchronized (this.damageDealt) {
+            return this.damageDealt.get(cause);
+        }
+    }
+
+    public void addReceivedDamage(EntityDamageEvent event) {
         if (!event.isCancelled()) {
-            this.lastDamage = new SpartanPlayerDamage(this, event, this.movement.getLocation());
+            this.lastDamageReceived = new SpartanPlayerDamage(this, event, this.movement.getLocation());
 
-            synchronized (this.damage) {
-                this.damage.put(
+            synchronized (this.damageReceived) {
+                this.damageReceived.put(
                         event.getCause(),
-                        this.lastDamage
+                        this.lastDamageReceived
                 );
             }
         }
-        this.maximumNoDamageTicks = maximumNoDamageTicks;
+    }
+
+    public void addDealtDamage(EntityDamageByEntityEvent event) {
+        if (!event.isCancelled()) {
+            this.lastDamageDealt = new SpartanPlayerDamage(this, event, this.movement.getLocation());
+
+            synchronized (this.damageDealt) {
+                this.damageDealt.put(
+                        event.getCause(),
+                        this.lastDamageDealt
+                );
+            }
+        }
     }
 
     public int getMaximumNoDamageTicks() {
@@ -1585,7 +1617,7 @@ public class SpartanPlayer {
             EntityDamageEvent event = new EntityDamageEvent(p, damageCause, amount);
             p.damage(amount);
             p.setLastDamageCause(event);
-            this.addDamage(event, p.getMaximumNoDamageTicks());
+            this.addReceivedDamage(event);
         }
     }
 

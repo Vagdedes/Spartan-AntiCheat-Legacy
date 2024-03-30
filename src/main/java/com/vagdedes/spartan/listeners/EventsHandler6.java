@@ -15,7 +15,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -81,43 +80,43 @@ public class EventsHandler6 implements Listener {
         if (dmg != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             return;
         }
-        // Object
         boolean hitCooldown = player.getTimer().get("hit-cooldown") <= 5L;
         player.getTimer().set("hit-cooldown");
 
         if (!hitCooldown) {
             player.calculateClicks(null, true);
         }
-        if (!player.uuid.equals(defaultEntity.getUniqueId())
-                && defaultEntity instanceof LivingEntity
-                && !mcMMO.hasGeneralAbility(player)
-                && !MythicMobs.is(defaultEntity)
-                && !ItemsAdder.is(defaultEntity)) {
+        // Object
+        if (event instanceof EntityDamageByEntityEvent) {
+            player.addDealtDamage((EntityDamageByEntityEvent) event);
+        }
+
+        if (defaultEntity instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) defaultEntity;
-            double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
-            if (utility != null) {
-                if (!cancelled) {
-                    // Compatibility
-                    NoHitDelay.runDealDamage(player, entity);
-
-                    // Handlers
-                    Damage.runDealtDamage(player);
-                }
+            if (!cancelled) {
+                // Compatibility
+                NoHitDelay.runDealDamage(player, entity);
+            }
+            if (!player.uuid.equals(defaultEntity.getUniqueId())
+                    && !mcMMO.hasGeneralAbility(player)
+                    && !MythicMobs.is(defaultEntity)
+                    && !ItemsAdder.is(defaultEntity)) {
+                double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
                 // Detections
                 player.getExecutor(Enums.HackType.Velocity).handle(cancelled, event);
                 player.getExecutor(Enums.HackType.NoSwing).handle(cancelled, event);
                 player.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{damage, entity});
 
-                if (!hitCooldown
-                        || CombatUtils.isNewPvPMechanic(player, entity)) { // Multiple Hit Cooldown
+                if (utility != null
+                        && (!hitCooldown
+                        || CombatUtils.isNewPvPMechanic(player, entity))) {
                     Object[] objects = new Object[]{entity, utility};
                     player.getExecutor(Enums.HackType.KillAura).run(cancelled);
                     player.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
                     player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
                 }
-
                 if (!cancelled) {
                     // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
                     if (entity instanceof Player) {
@@ -143,14 +142,8 @@ public class EventsHandler6 implements Listener {
                 if (p == null) {
                     return;
                 }
-                double distance = PlayerUtils.chunk / 2;
-                Double nmsDistance = p.movement.getNmsDistance();
-
-                if (nmsDistance != null && nmsDistance <= distance
-                        || p.movement.getCustomDistance() <= distance) {
-                    // Detections
-                    runDealDamage(e, p, e.getEntity(), e.getDamage(), e.getCause(), e.isCancelled());
-                }
+                // Detections
+                runDealDamage(e, p, e.getEntity(), e.getDamage(), e.getCause(), e.isCancelled());
 
                 if (p.getViolations(Enums.HackType.KillAura).process()
                         || p.getViolations(Enums.HackType.Criticals).process()
@@ -169,7 +162,7 @@ public class EventsHandler6 implements Listener {
                         return;
                     }
                     // Objects
-                    p.addDamage(e, n.getMaximumNoDamageTicks());
+                    p.addReceivedDamage(e);
                 }
             }
         }

@@ -556,7 +556,7 @@ public class Speed extends CheckExecutor {
 
                     if (hitDelay
                             || explosion
-                            || damage && (player.getLastDamage().ticksPassed() <= 10 || Damage.hasCooldown(player, Damage.knockbackKey))) {
+                            || damage && (player.getLastDamageReceived().ticksPassed() <= 10 || Damage.hasCooldown(player, Damage.knockbackKey))) {
                         time = 10;
                         attempts = 6;
                     } else if (PlayerUtils.hasHighJumpEffect(player)) {
@@ -743,7 +743,7 @@ public class Speed extends CheckExecutor {
         // Separator
         if (hitDelay || explosion) {
             dm_speed = Math.max(dm_speed + 0.5, 1.0);
-        } else if (damage && player.getLastDamage().ticksPassed() <= 20) {
+        } else if (damage && player.getLastDamageReceived().ticksPassed() <= 20) {
             dm_speed += 0.3;
         }
         if (CrackShot.isUsingScope(player) || selfHit && dm > Speed.selfHit) {

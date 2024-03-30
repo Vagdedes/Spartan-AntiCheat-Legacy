@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -77,7 +76,7 @@ public class EventsHandler3 implements Listener {
             // Objects
             p.setFallDistance(n.getFallDistance(), false);
             p.setHealth(n.getHealth());
-            p.addDamage(e, n.getMaximumNoDamageTicks());
+            p.addReceivedDamage(e);
 
             if (cancelled) {
                 // Detections
@@ -111,7 +110,7 @@ public class EventsHandler3 implements Listener {
                             // Objects
                             p.setFallDistance(n.getFallDistance(), false);
                             p.setHealth(n.getHealth());
-                            p.addDamage(e, n.getMaximumNoDamageTicks());
+                            p.addReceivedDamage(e);
 
                             // Handlers
                             Explosion.runDamage(p, null, dmg);

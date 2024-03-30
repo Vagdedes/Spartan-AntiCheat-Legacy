@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.entity.Entity;
@@ -48,7 +47,7 @@ public class Sensitivity extends DetectionExecutor {
             boolean suspectedOrHacker = player.getProfile().isSuspectedOrHacker(hackType);
             Decimals decimals = player.getDecimals(hackType);
 
-            if (Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
+            if (player.getLastDamageDealt().ticksPassed() <= KillAura.pastDamageMilliseconds) {
                 List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
                 if (entities.size() == 1) {

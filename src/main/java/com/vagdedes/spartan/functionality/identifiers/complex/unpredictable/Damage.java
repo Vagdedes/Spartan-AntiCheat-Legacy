@@ -22,12 +22,8 @@ public class Damage { // todo replace
             selfHitKey = "self-hit",
             knockbackKey = "knockback",
             fishingHookKey = "fishing-hook";
-    private static final int
-            blocksOffGround = 4,
-            selfHitTicks = 25;
-    private static final String
-            lastDealtKey = "=last-dealt",
-            projectileSpamKey = "projectile-spam";
+    private static final int blocksOffGround = 4;
+    private static final String projectileSpamKey = "projectile-spam";
 
     // Handlers
 
@@ -37,7 +33,7 @@ public class Damage { // todo replace
         if (e == null) {
             result = true;
         } else if (p.getVehicle() == null && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)) {
-            if (Damage.hasCooldown(p)
+            if (hasCooldown(p)
                     || Math.max(p.movement.getCustomDistance(), p.movement.getValueOrDefault(p.movement.getNmsDistance(), 0.0)) >= 0.18
                     || !p.getHandlers().has(Handlers.HandlerType.Damage, selfHitKey + "=" + e.getUniqueId())
                     || p.getItemInHand().containsEnchantment(Enchantment.ARROW_KNOCKBACK)) {
@@ -52,16 +48,12 @@ public class Damage { // todo replace
         }
 
         if (result) {
-            addCooldown(p, selfHitKey, selfHitTicks);
+            addCooldown(p, selfHitKey, 25);
         }
         return result;
     }
 
     // Runnables
-
-    public static void runDealtDamage(SpartanPlayer p) {
-        p.getTimer().set(lastDealtKey);
-    }
 
     public static void runReceiveDamage(DamageCause cause, SpartanPlayer p, Entity damager) {
         if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
@@ -99,8 +91,11 @@ public class Damage { // todo replace
     }
 
     public static boolean runDealAndReceiveDamage(Entity damager, Entity entity, DamageCause dmg, boolean cancelled) {
-        if (!cancelled && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) && damager instanceof Player
-                && dmg == DamageCause.ENTITY_ATTACK && entity instanceof Guardian) {
+        if (!cancelled
+                && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
+                && damager instanceof Player
+                && dmg == DamageCause.ENTITY_ATTACK
+                && entity instanceof Guardian) {
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) damager);
 
             if (p != null) {
@@ -231,11 +226,5 @@ public class Damage { // todo replace
 
     public static void addCooldown(SpartanPlayer p, int time) {
         addCooldown(p, null, time);
-    }
-
-    // Custom Return Methods
-
-    public static long getLastDealt(SpartanPlayer p) {
-        return p.getTimer().get(lastDealtKey);
     }
 }

@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -35,7 +34,7 @@ public class Strafe extends DetectionExecutor {
 
     void run(SpartanLocation location, Buffer buffer) {
         if (player.movement.isMoving(true)
-                && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
+                && player.getLastDamageDealt().ticksPassed() <= KillAura.pastDamageMilliseconds) {
             List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
             if (!entities.isEmpty()) {

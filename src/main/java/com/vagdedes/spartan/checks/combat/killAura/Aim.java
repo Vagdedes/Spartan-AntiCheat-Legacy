@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -233,7 +232,7 @@ public class Aim extends DetectionExecutor {
 
     void runMove(SpartanLocation to, SpartanLocation from, Buffer buffer, Pattern pattern) {
         if (player.movement.isMoving(true)
-                && Damage.getLastDealt(player) <= KillAura.pastDamageMilliseconds) {
+                && player.getLastDamageDealt().ticksPassed() <= KillAura.pastDamageMilliseconds) {
             List<Entity> entities = player.getNearbyEntities(maxObservableDistance, maxObservableDistance, maxObservableDistance);
 
             if (entities.size() <= maxEntities) {
@@ -242,7 +241,7 @@ public class Aim extends DetectionExecutor {
                 double reality = Math.toRadians(CombatProcessing.getDecimal(player, CombatProcessing.yawDifference, 0.0f));
                 int bufferTime, bufferThreshold;
 
-                if (player.getLastDamage().ticksPassed() >= (timeKept / TPS.tickTime) // The player hasn't been hit for a while
+                if (player.getLastDamageReceived().ticksPassed() >= (timeKept / TPS.tickTime) // The player hasn't been hit for a while
                         || player.getProfile().isSuspectedOrHacker(hackType)) { // There's significant data against the player already
                     bufferTime = 30;
                     bufferThreshold = 10;

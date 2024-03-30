@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -273,7 +272,7 @@ public class SpartanPlayerMovement {
                     || this.isSprinting()
                     || this.isSprintJumping()
                     || this.isWalkJumping()
-                    || this.parent.getLastDamage().ticksPassed() <= 2;
+                    || this.parent.getLastDamageReceived().ticksPassed() <= 2;
         } else {
             return false;
         }

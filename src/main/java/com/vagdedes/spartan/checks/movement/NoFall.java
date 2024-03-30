@@ -329,7 +329,7 @@ public class NoFall extends CheckExecutor {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                SpartanPlayerDamage damage = player.getLastDamage();
+                SpartanPlayerDamage damage = player.getLastDamageReceived();
                 SpartanLocation loc = player.movement.getEventToLocation();
 
                 if ((damage == null

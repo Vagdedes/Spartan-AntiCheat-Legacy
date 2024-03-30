@@ -35,7 +35,7 @@ public class NoHitDelay {
     }
 
     public static boolean hasCooldown(SpartanPlayer p) {
-        return p.getLastDamage().ticksPassed() <= (CombatUtils.combatTimeRequirement / TPS.tickTime)
+        return p.getLastDamageReceived().ticksPassed() <= (CombatUtils.combatTimeRequirement / TPS.tickTime)
                 && (Compatibility.CompatibilityType.NoHitDelay.isFunctional() && !p.getCooldowns().canDo("no-hit-delay=compatibility")
                 || Attributes.has(p, Attributes.GENERIC_ATTACK_SPEED)
                 || KnockbackMaster.isUsing(p));
