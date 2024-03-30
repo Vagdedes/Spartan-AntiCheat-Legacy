@@ -1,61 +1,23 @@
 package com.vagdedes.spartan.checks.combat.fastClicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 public class FastClicks extends CheckExecutor {
 
-    private final ClicksPerSecond clicksPerSecond;
-    private final ClickPattern clickPattern;
-    private final ClickFrequency clickFrequency;
+    private static final int defaultClicksPerSecondLimit = 15;
 
     public FastClicks(SpartanPlayer player) {
-        super(Enums.HackType.FastClicks, player, 3);
-        this.addDetections(new DetectionExecutor[]{
-                new ClicksPerSecond(this),
-                new ClickPattern(this),
-                new ClickFrequency(this)
-        });
-        clicksPerSecond = (ClicksPerSecond) detections[0];
-        clickPattern = (ClickPattern) detections[1];
-        clickFrequency = (ClickFrequency) detections[2];
-    }
-
-    static final int
-            defaultClicksPerSecondLimit = 15,
-            suspiciousClicksPerSecond = 10,
-            suspiciousMillisecondCorrelation = 9;
-
-    private void runDetection(String option, Runnable runnable) {
-        if (hackType.getCheck().getBooleanOption(option, true)) {
-            runnable.run();
-        }
-    }
-
-    void violate(String detection, String information) {
-        cancel(information);
-
-        if (detection != null) {
-            player.getViolations(hackType).process();
-            player.getViolations(hackType).addDisableCause(
-                    hackType.toString(),
-                    detection,
-                    20
-            );
-        }
+        super(Enums.HackType.FastClicks, player);
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true) && player.getVehicle() == null
+        return player.canRunCheck(hackType, true)
                 && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
                 && !PlayerUtils.isPickaxeItem(player.getItemInHand().getType())
                 && !PrinterMode.canCancel(player);
@@ -63,29 +25,24 @@ public class FastClicks extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
+        if (canDo()) {
+            int limit = hackType.getCheck().getNumericalOption("clicks_per_second_limit", defaultClicksPerSecondLimit);
+            int count = player.getClicks().getCount();
+
+            if (count >= limit) {
+                cancel(
+                        "type: clicks-per-second"
+                                + ", count: " + count
+                                + ", limit: " + limit
+                );
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        if (canDo()
-                && ((PlayerInteractEvent) object).getAction() == Action.LEFT_CLICK_AIR) {
-            Clicks clickData = player.getClicks();
-            int limit = hackType.getCheck().getNumericalOption("clicks_per_second_limit", defaultClicksPerSecondLimit),
-                    extraLimit = Math.max(limit - defaultClicksPerSecondLimit, 0);
-
-            if (limit > 0) {
-                clicksPerSecond.run(clickData, limit);
-            }
-            runDetection(
-                    "check_click_frequency",
-                    () -> clickFrequency.run(clickData, extraLimit)
-            );
-            runDetection(
-                    "check_click_pattern",
-                    () -> clickPattern.run(clickData, extraLimit)
-            );
-        }
         return false;
     }
 }

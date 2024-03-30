@@ -241,10 +241,5 @@ public class EventsHandler6 implements Listener {
 
         // Detections
         p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
-
-        // Object
-        if (animationType == PlayerAnimationType.ARM_SWING) {
-            p.calculateClickData(null, false);
-        }
     }
 }

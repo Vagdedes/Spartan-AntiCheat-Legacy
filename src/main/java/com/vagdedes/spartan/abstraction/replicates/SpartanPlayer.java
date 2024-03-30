@@ -652,6 +652,8 @@ public class SpartanPlayer {
     }
 
     public void calculateClickData(Action action, boolean runRegardless) {
+        this.sendMessage(action == null ? "true" : "false");
+
         if (!runRegardless) {
             if (playerProfile.playerCombat.isActivelyFighting(null, true, true, false)) {
                 runRegardless = true;
@@ -668,7 +670,7 @@ public class SpartanPlayer {
                 success = true;
                 clicks.calculate();
             } else if (action == null) {
-                if (clicks.getLastCalculation() > 50L) {
+                if (clicks.getLastCalculation() > 1) {
                     success = true;
                     clicks.calculate();
                 } else {

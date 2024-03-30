@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
-import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.checks.movement.NoFall;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -163,16 +162,13 @@ public class EventsHandler3 implements Listener {
             }
             Block nb = e.getClickedBlock();
             Action action = e.getAction();
-            boolean cancelled = e.isCancelled(),
-                    notNull = nb != null,
+            boolean notNull = nb != null,
                     customBlock = notNull && ItemsAdder.is(nb);
 
             // Object
             p.calculateClickData(action, false);
 
             if (notNull) {
-                SpartanBlock b = new SpartanBlock(p, nb);
-
                 // Detections
                 if (!customBlock) {
                     p.getExecutor(Enums.HackType.BlockReach).handle(false, e);
@@ -183,14 +179,17 @@ public class EventsHandler3 implements Listener {
                 p.getExecutor(Enums.HackType.NoSlowdown).handle(false, e);
                 p.getExecutor(Enums.HackType.ItemDrops).handle(false, e);
 
-                // Detections
                 if (!customBlock) {
                     p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
+
+                    // Handler
                     Liquid.runInteract(p, action);
                 }
             } else {
                 // Detections
-                p.getExecutor(Enums.HackType.FastClicks).handle(false, e);
+                if (action == Action.LEFT_CLICK_AIR) {
+                    p.getExecutor(Enums.HackType.FastClicks).run(false);
+                }
                 p.getExecutor(Enums.HackType.FastEat).handle(false, e);
             }
             // Detections
