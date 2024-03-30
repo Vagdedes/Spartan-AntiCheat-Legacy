@@ -852,8 +852,8 @@ public class Check {
             } else {
                 Integer integer = map.get(hash);
                 return integer == null
-                        ? standardIgnoredViolations
-                        : Math.max(integer, standardIgnoredViolations);
+                        ? this.getAverageIgnoredViolations(dataType)
+                        : Math.max(integer, this.getAverageIgnoredViolations(dataType));
             }
         }
     }

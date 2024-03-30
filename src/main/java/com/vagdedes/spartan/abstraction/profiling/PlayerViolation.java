@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -39,5 +40,9 @@ public class PlayerViolation {
 
     boolean isDetectionEnabled() {
         return !isOption || hackType.getCheck().getBooleanOption(detection, null);
+    }
+
+    public int getMaxIgnoredViolations(SpartanPlayer player) {
+        return hackType.getCheck().getIgnoredViolations(player.dataType, this.similarityIdentity);
     }
 }

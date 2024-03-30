@@ -133,17 +133,17 @@ public class PlayerEvidence {
 
     // Separator
 
-    public Collection<Enums.HackType> calculate(SpartanPlayer player, Enums.HackType hackType) {
+    public Collection<Enums.HackType> calculate(SpartanPlayer player, PlayerViolation playerViolation) {
         synchronized (this.live) {
-            if (this.live.containsKey(hackType)
-                    || this.historical.containsKey(hackType)) {
-                return getRawKnowledgeList();
+            if (this.live.containsKey(playerViolation.hackType)
+                    || this.historical.containsKey(playerViolation.hackType)) {
+                return this.getRawKnowledgeList();
             } else {
-                Check check = hackType.getCheck();
+                Check check = playerViolation.hackType.getCheck();
 
                 if (check.supportsLiveEvidence) {
-                    double averageIgnoredViolations = check.getAverageIgnoredViolations(profile.getDataType()),
-                            violationCount = player.getViolations(hackType).getLevel()
+                    double averageIgnoredViolations = playerViolation.getMaxIgnoredViolations(player),
+                            violationCount = player.getViolations(playerViolation.hackType).getLevel()
                                     - AlgebraUtils.integerCeil(Latency.getDelay(player))
                                     - averageIgnoredViolations;
 
@@ -151,13 +151,13 @@ public class PlayerEvidence {
                         double ratio = violationCount / averageIgnoredViolations;
 
                         if (ratio >= Check.standardIgnoredViolations) {
-                            this.live.put(hackType,
+                            this.live.put(playerViolation.hackType,
                                     "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
                             );
                             this.judgeLocal();
                             InteractiveInventory.playerInfo.refresh(player.name);
                             MainMenu.refresh();
-                            return getRawKnowledgeList();
+                            return this.getRawKnowledgeList();
                         }
                     }
                 }

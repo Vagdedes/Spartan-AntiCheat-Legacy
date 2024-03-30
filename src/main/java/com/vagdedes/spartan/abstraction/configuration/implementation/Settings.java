@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,8 +31,7 @@ public class Settings extends ConfigurationBuilder {
             tpsProtectionOption = "Protections.use_tps_protection",
             maxSupportedLatencyOption = "Protections.max_supported_player_latency",
             cloudServerNameOption = "Cloud.server_name",
-            cloudSynchroniseFilesOption = "Cloud.synchronise_files",
-            falsePositiveDetection = "Performance.enable_false_positive_detection";
+            cloudSynchroniseFilesOption = "Cloud.synchronise_files";
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
     private Collection<String> punishments = null;
 
@@ -65,9 +63,7 @@ public class Settings extends ConfigurationBuilder {
         addOption("Logs.log_file", true);
         addOption("Logs.log_console", true);
 
-        if (TestServer.isIdentified()) {
-            addOption("Notifications.individual_only_notifications", false);
-        }
+        addOption("Notifications.individual_only_notifications", false);
         addOption("Notifications.enable_notifications_on_login", true);
         addOption("Notifications.awareness_notifications", true);
         addOption("Notifications.message_clickable_command", "/teleport {player}");
@@ -101,7 +97,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Detections.fall_damage_on_teleport", false); // test server
         addOption("Detections.update_blocks_upon_violation", false);
 
-        addOption(falsePositiveDetection, true); // test server
         addOption(MaximumCheckedPlayers.option, 100); // test server alternative
 
         addOption(DiscordWebhooks.configurationSection + ".webhook_hex_color", "4caf50");
