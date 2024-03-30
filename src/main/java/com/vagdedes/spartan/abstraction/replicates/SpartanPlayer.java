@@ -1296,7 +1296,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    public List<Entity> getNearbyEntities(double x, double y, double z) { // todo compare with chunks before pythagorean distance
+    public List<Entity> getNearbyEntities(double x, double y, double z) {
         double max = Math.max(Math.max(x, y), z);
 
         synchronized (nearbyEntities) {
@@ -1337,7 +1337,8 @@ public class SpartanPlayer {
                             while (iterator.hasNext()) {
                                 Entity entity = iterator.next();
 
-                                if (entity instanceof LivingEntity ? entity.isDead() : !(entity instanceof Vehicle)
+                                if ((entity instanceof LivingEntity ? entity.isDead() : !(entity instanceof Vehicle))
+                                        || !loc.isNearbyChunk(entity.getLocation())
                                         || loc.distance(entity.getLocation()) > max) {
                                     iterator.remove();
                                 }

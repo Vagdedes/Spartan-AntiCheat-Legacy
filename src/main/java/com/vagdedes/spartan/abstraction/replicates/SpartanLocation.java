@@ -490,13 +490,18 @@ public class SpartanLocation {
         }
     }
 
-    private double rawDistance(SpartanLocation loc) {
-        return AlgebraUtils.getDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
+    public boolean isNearbyChunk(SpartanLocation loc) {
+        return Math.abs(getChunkX() - loc.getChunkX()) <= 1 && Math.abs(getChunkZ() - loc.getChunkZ()) <= 1;
+    }
+
+    public boolean isNearbyChunk(Location loc) {
+        return Math.abs(getChunkX() - (loc.getBlockX() >> 4)) <= 1
+                && Math.abs(getChunkZ() - (loc.getBlockZ() >> 4)) <= 1;
     }
 
     public double distance(SpartanLocation loc) {
         this.retrieveDataFrom(loc);
-        return rawDistance(loc);
+        return AlgebraUtils.getDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
     }
 
     public double distance(Location loc) {
