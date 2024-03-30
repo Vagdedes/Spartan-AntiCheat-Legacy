@@ -38,38 +38,6 @@ public class HashUtils {
 
     // Separator
 
-    public static long hashDouble(double[] array, int generalize) {
-        long result = 1L;
-        boolean generalization = generalize > 0;
-
-        for (double number : array) {
-            result = extendLong(
-                    result,
-                    generalization
-                            ? Double.hashCode(AlgebraUtils.cut(number, generalize))
-                            : Double.hashCode(number)
-            );
-        }
-        return result;
-    }
-
-    public static long hashFloat(float[] array, int generalize) {
-        long result = 1L;
-        boolean generalization = generalize > 0;
-
-        for (float number : array) {
-            result = extendLong(
-                    result,
-                    generalization
-                            ? Double.hashCode(AlgebraUtils.cut(number, generalize))
-                            : Float.hashCode(number)
-            );
-        }
-        return result;
-    }
-
-    // Separator
-
     public static <E> int fastAbstractCollection(Collection<E> collection) {
         int size = collection.size();
         return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
@@ -155,7 +123,7 @@ public class HashUtils {
                         hash = extendLong(hash,
                                 Double.hashCode(
                                         AlgebraUtils.cut(entry.getValue().location.distance(player.movement.getLocation()),
-                                                2
+                                                1
                                         )
                                 )
                         );

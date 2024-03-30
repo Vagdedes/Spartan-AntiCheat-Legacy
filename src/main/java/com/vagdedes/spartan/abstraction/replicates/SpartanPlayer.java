@@ -370,12 +370,14 @@ public class SpartanPlayer {
 
         // Load them all to keep their order
         for (EntityDamageEvent.DamageCause damageCause : EntityDamageEvent.DamageCause.values()) {
-            damage.put(damageCause, new SpartanPlayerDamage(
-                    this,
-                    new EntityDamageEvent(p, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.0),
-                    this.movement.getLocation(),
-                    0L
-            ));
+            damage.put(
+                    damageCause,
+                    new SpartanPlayerDamage(
+                            this,
+                            new EntityDamageEvent(p, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.0),
+                            this.movement.getLocation(),
+                            0L
+                    ));
         }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             this.invulnerable = p.isInvulnerable();
