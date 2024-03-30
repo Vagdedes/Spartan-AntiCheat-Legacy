@@ -13,7 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class ItemDrops extends CheckExecutor { // todo apply buffer idea
+public class ItemDrops extends CheckExecutor {
 
     private static final Enums.HackType check = Enums.HackType.ItemDrops;
 
@@ -29,14 +29,17 @@ public class ItemDrops extends CheckExecutor { // todo apply buffer idea
 
             if (time <= 50L) {
                 Buffer buffer = player.getBuffer(check);
+                int minimum = 10, maximum = 30;
+                double ratio = 0.7;
 
-                if (buffer.start("", 10) == 7) {
+                if (buffer.ratioStart("", minimum, maximum) >= ratio) {
                     buffer.remove("");
-                    cancel("type: fast, ms: " + time, null, 10);
-                }
-                if (buffer.start("", 20) == 13) {
-                    buffer.remove("");
-                    cancel("type: slow, ms: " + time, null, 10);
+                    cancel("type: default"
+                            + ", ms: " + time
+                            + ", minimum-ticks: " + minimum
+                            + ", maximum-ticks: " + maximum
+                            + ", remaining-ticks: " + buffer.getRemainingTicks("bow-shots")
+                            + ", ratio: " + ratio, null, 10);
                 }
             }
             timer.set("");
