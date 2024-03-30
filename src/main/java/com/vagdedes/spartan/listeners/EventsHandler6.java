@@ -158,6 +158,19 @@ public class EventsHandler6 implements Listener {
                         || p.getViolations(Enums.HackType.FastClicks).process()) {
                     e.setCancelled(true);
                 }
+            } else {
+                Entity entity = e.getEntity();
+
+                if (entity instanceof Player) {
+                    Player n = (Player) entity;
+                    SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+                    if (p == null) {
+                        return;
+                    }
+                    // Objects
+                    p.addDamage(e, n.getMaximumNoDamageTicks());
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -118,6 +119,11 @@ public class HashUtils {
                     long ticksPassed = entry.getValue().ticksPassed();
 
                     if (ticksPassed <= TPS.maximum) {
+                        EntityDamageByEntityEvent event = entry.getValue().getEntityDamageByEntityEvent();
+
+                        if (event != null) {
+                            hash = extendLong(hash, event.getDamager().getType().toString().hashCode());
+                        }
                         hash = extendLong(hash, entry.getKey().toString().hashCode());
                         hash = extendLong(hash, Long.hashCode(ticksPassed));
                         hash = extendLong(hash,
@@ -127,6 +133,8 @@ public class HashUtils {
                                         )
                                 )
                         );
+                    } else {
+                        hash = extendLong(hash, falseHash);
                     }
                 }
             }

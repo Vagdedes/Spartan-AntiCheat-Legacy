@@ -494,7 +494,7 @@ public class SpartanPlayer {
     }
 
     public boolean debug(boolean broadcast, boolean cutDecimals, Object... message) {
-        if (!Piracy.enabled && SpartanBukkit.debug
+        if (!Piracy.enabled
                 && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
                 && Bukkit.getMotd().contains(Register.plugin.getName())) {
             Player p = getPlayer();
@@ -1579,7 +1579,7 @@ public class SpartanPlayer {
     public void applyFallDamage(double d) {
         handlers.disable(Handlers.HandlerType.Floor, 3);
         handlers.disable(Handlers.HandlerType.Velocity, 3);
-        damage(d, EntityDamageEvent.DamageCause.FALL);
+        this.damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 
     public void damage(double amount, EntityDamageEvent.DamageCause damageCause) {
@@ -1589,7 +1589,7 @@ public class SpartanPlayer {
             EntityDamageEvent event = new EntityDamageEvent(p, damageCause, amount);
             p.damage(amount);
             p.setLastDamageCause(event);
-            addDamage(event, p.getMaximumNoDamageTicks());
+            this.addDamage(event, p.getMaximumNoDamageTicks());
         }
     }
 
