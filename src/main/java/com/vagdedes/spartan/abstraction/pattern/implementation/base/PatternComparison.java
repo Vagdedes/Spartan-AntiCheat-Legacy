@@ -36,7 +36,7 @@ public class PatternComparison {
             this.pie.add(generalized);
             this.parent.pie.add(generalized);
 
-            if (this.pie.getSlices() > this.parent.patternGeneralization.dataLimit()) {
+            if (this.pie.getSlices() > PatternGeneralization.dataLimit()) {
                 Iterator<Map.Entry<Number, Integer>> iterator = this.pie.removeLeastSignificant(1).iterator();
 
                 // Remove the least significant slice if the other slice was not fully removed
@@ -49,14 +49,12 @@ public class PatternComparison {
 
     }
 
-    final PatternGeneralization patternGeneralization;
     final String key;
     private final ProbabilityRank rank;
     private final ProbabilityPie pie;
     private final Map<PatternProfile, NumberMemory> profiles;
 
-    PatternComparison(PatternGeneralization patternGeneralization, String key) {
-        this.patternGeneralization = patternGeneralization;
+    PatternComparison(String key) {
         this.key = key;
         this.rank = new ProbabilityRank();
         this.pie = new ProbabilityPie();
@@ -64,37 +62,41 @@ public class PatternComparison {
     }
 
     void clear() {
-        this.rank.clear();
-        this.pie.clear();
-        this.profiles.clear();
+        synchronized (this) {
+            this.rank.clear();
+            this.pie.clear();
+            this.profiles.clear();
+        }
     }
 
     void put(PatternProfile patternProfile,
              double number,
              long time,
              boolean storage) {
-        if (number == -1.0) {
-            this.remove(patternProfile, !patternProfile.researchProfile.isLegitimate());
-        } else {
-            if (patternProfile.researchProfile.isLegitimate()) {
-                NumberMemory data = profiles.get(patternProfile);
-
-                if (data == null) {
-                    this.profiles.put(patternProfile, new NumberMemory(this, number));
-                } else {
-                    this.rank.remove(data.last);
-                    data.add(number);
-                }
+        synchronized (this) {
+            if (number == -1.0) {
+                this.remove(patternProfile, !patternProfile.researchProfile.isLegitimate());
             } else {
-                this.remove(patternProfile, true);
-            }
+                if (patternProfile.researchProfile.isLegitimate()) {
+                    NumberMemory data = profiles.get(patternProfile);
 
-            if (storage) {
-                patternProfile.storage.set(
-                        this,
-                        time,
-                        number
-                );
+                    if (data == null) {
+                        this.profiles.put(patternProfile, new NumberMemory(this, number));
+                    } else {
+                        this.rank.remove(data.last);
+                        data.add(number);
+                    }
+                } else {
+                    this.remove(patternProfile, true);
+                }
+
+                if (storage) {
+                    patternProfile.storage.set(
+                            this,
+                            time,
+                            number
+                    );
+                }
             }
         }
     }
@@ -106,8 +108,10 @@ public class PatternComparison {
             this.rank.remove(data.last);
 
             if (pie) {
-                this.pie.remove(data.pie);
-                data.pie.clear();
+                synchronized (this.pie) {
+                    this.pie.remove(data.pie);
+                    data.pie.clear();
+                }
             }
         }
     }
@@ -119,15 +123,17 @@ public class PatternComparison {
                 || this.rank.getTotal() < TPS.maximum)) {
             return null;
         } else {
-            double rank = this.rank.getProbability(value, -1.0);
+            synchronized (this) {
+                double rank = this.rank.getProbability(value, -1.0);
 
-            if (rank != -1.0) {
-                return new double[]{
-                        rank,
-                        this.pie.getProbability(generalizeNumber(value))
-                };
-            } else {
-                return null;
+                if (rank != -1.0) {
+                    return new double[]{
+                            rank,
+                            this.pie.getProbability(generalizeNumber(value))
+                    };
+                } else {
+                    return null;
+                }
             }
         }
     }

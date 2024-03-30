@@ -4,14 +4,13 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanInventory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class FastBow extends CheckExecutor { // todo apply buffer idea
+public class FastBow extends CheckExecutor {
 
     public FastBow(SpartanPlayer player) {
         super(HackType.FastBow, player);
@@ -54,29 +53,16 @@ public class FastBow extends CheckExecutor { // todo apply buffer idea
 
     private void checkBowShots() {
         if (hackType.getCheck().getBooleanOption("check_bow_shots", true)) {
-            String key = "bow-shots=";
             Buffer buffer = player.getBuffer(hackType);
-            String[] array = new String[3];
-            boolean run = false;
+            int minimum = 10, maximum = 30;
+            double ratio = 0.7;
 
-            if (buffer.start(key + "fast", 10) == 7) {
-                buffer.remove(key + "fast");
-                array[0] = "fast";
-                run = true;
-            }
-            if (buffer.start(key + "medium", 20) == 13) {
-                buffer.remove(key + "medium");
-                array[1] = "medium";
-                run = true;
-            }
-            if (buffer.start(key + "slow", 30) == 20) {
-                buffer.remove(key + "slow");
-                array[2] = "slow";
-                run = true;
-            }
-
-            if (run) {
-                cancel("type: bow-shots, level/s: " + StringUtils.toString(array, ", "));
+            if (buffer.ratioStart("bow-shots", minimum, maximum) >= ratio) {
+                buffer.remove("bow-shots");
+                cancel("type: bow-shots, minimum-ticks: " + minimum
+                        + ", maximum-ticks: " + maximum
+                        + ", remaining-ticks: " + buffer.getRemainingTicks("bow-shots")
+                        + ", ratio: " + ratio);
             }
         }
     }

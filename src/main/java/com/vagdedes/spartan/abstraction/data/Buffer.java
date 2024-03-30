@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Buffer { // todo idea with speed and reach of part of the time with minimum count required
+public class Buffer {
 
     private final Map<String, BufferChild> storage;
     private final SpartanPlayer player;
@@ -151,6 +151,29 @@ public class Buffer { // todo idea with speed and reach of part of the time with
         }
         obj.count += 1;
         return obj.count;
+    }
+
+    public double ratioStart(String name, int minimumTicks, int maxTicks) {
+        BufferChild obj;
+
+        synchronized (storage) {
+            obj = storage.computeIfAbsent(name, k -> new BufferChild(0));
+        }
+        int remainingTicks = this.getRemainingTicks(obj);
+
+        if (remainingTicks == 0) {
+            obj.ticks = combat
+                    ? (CombatUtils.newPvPMechanicsEnabled() ? maxTicks * 2L : maxTicks)
+                    : TPS.getTick(player) + maxTicks;
+
+            if (obj.count > 0) {
+                obj.count = 0;
+            }
+        }
+        obj.count += 1;
+        return (maxTicks - remainingTicks) >= minimumTicks
+                ? obj.count / (double) maxTicks
+                : 0.0;
     }
 
     private int getRemainingTicks(BufferChild object) {

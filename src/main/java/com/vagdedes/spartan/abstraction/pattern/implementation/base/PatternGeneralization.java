@@ -24,12 +24,16 @@ public abstract class PatternGeneralization {
     static final Map<Long, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
     static final Map<Long, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
+    static int dataLimit() {
+        return SpartanEdition.is2ndGeneration() ? 10_000 : 1_000;
+    }
+
     // Separator
 
     final Pattern parent;
     final PatternGeneralizationInitiator initiator;
-    final ProbabilityPie significancePie;
-    final PatternComparison
+    private final ProbabilityPie significancePie;
+    private final PatternComparison
             trustFactorComparison,
             contributionComparison;
     final PatternComparison[] patternComparisons;
@@ -40,18 +44,14 @@ public abstract class PatternGeneralization {
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
-        this.trustFactorComparison = new PatternComparison(this, "trust");
-        this.contributionComparison = new PatternComparison(this, "contribution");
+        this.trustFactorComparison = new PatternComparison("trust");
+        this.contributionComparison = new PatternComparison("contribution");
         this.patternComparisons = new PatternComparison[]{
                 this.trustFactorComparison,
                 this.contributionComparison
         };
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.patternSizeCache = new PatternCache();
-    }
-
-    int dataLimit() {
-        return SpartanEdition.is2ndGeneration() ? 10_000 : 1_000;
     }
 
     void clear() {
@@ -75,9 +75,7 @@ public abstract class PatternGeneralization {
         synchronized (patternProfile.trustFactorMemory) {
             value = patternProfile.trustFactor(true);
         }
-        synchronized (this.trustFactorComparison) {
-            return this.trustFactorComparison.rankAndProbability(value);
-        }
+        return this.trustFactorComparison.rankAndProbability(value);
     }
 
     public double[] contributionRankAndProbability(PatternProfile patternProfile) {
@@ -86,9 +84,7 @@ public abstract class PatternGeneralization {
         synchronized (patternProfile.contribution) {
             value = patternProfile.contribution(true);
         }
-        synchronized (this.contributionComparison) {
-            return this.contributionComparison.rankAndProbability(value);
-        }
+        return this.contributionComparison.rankAndProbability(value);
     }
 
     // Separator
@@ -118,7 +114,7 @@ public abstract class PatternGeneralization {
 
                 if (patternSizeCache.isExpired()) {
                     patternSizeCache.refresh();
-                    dataLimit = this.dataLimit();
+                    dataLimit = dataLimit();
                     int delete = list.size() - dataLimit;
 
                     if (delete > 0) {
@@ -341,15 +337,12 @@ public abstract class PatternGeneralization {
                         long time) {
         synchronized (patternProfile.contribution) {
             patternProfile.contribution.add(contribution);
-
-            synchronized (this.contributionComparison) {
-                this.contributionComparison.put(
-                        patternProfile,
-                        patternProfile.contribution(false),
-                        time,
-                        true
-                );
-            }
+            this.contributionComparison.put(
+                    patternProfile,
+                    patternProfile.contribution(false),
+                    time,
+                    true
+            );
         }
     }
 
@@ -361,14 +354,12 @@ public abstract class PatternGeneralization {
             synchronized (this.significancePie) {
                 patternProfile.addTrustFactor(probability * this.significancePie.getProbability(number));
             }
-            synchronized (this.trustFactorComparison) {
-                this.trustFactorComparison.put(
-                        patternProfile,
-                        patternProfile.trustFactor(false),
-                        time,
-                        true
-                );
-            }
+            this.trustFactorComparison.put(
+                    patternProfile,
+                    patternProfile.trustFactor(false),
+                    time,
+                    true
+            );
         }
     }
 
