@@ -493,6 +493,10 @@ public class SpartanPlayer {
         this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
+    public boolean safeDebug(boolean broadcast, boolean cutDecimals, Object... message) {
+        return SpartanBukkit.debug && this.debug(broadcast, cutDecimals, message);
+    }
+
     public boolean debug(boolean broadcast, boolean cutDecimals, Object... message) {
         if (!Piracy.enabled
                 && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
