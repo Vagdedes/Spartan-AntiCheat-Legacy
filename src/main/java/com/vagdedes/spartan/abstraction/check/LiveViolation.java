@@ -483,7 +483,7 @@ public class LiveViolation {
                                      boolean canPrevent) {
         if (playerViolation.level < Check.maxViolationsPerCycle) {
             boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
-            int ignoredViolations = playerViolation.getMaxIgnoredViolations(player);
+            int ignoredViolations = playerViolation.getIgnoredViolations(player);
             String message = ConfigUtils.replaceWithSyntax(
                     player,
                     Config.messages.getColorfulString("detection_notification")

@@ -42,7 +42,7 @@ public class PlayerViolation {
         return !isOption || hackType.getCheck().getBooleanOption(detection, null);
     }
 
-    public int getMaxIgnoredViolations(SpartanPlayer player) {
+    public int getIgnoredViolations(SpartanPlayer player) {
         return hackType.getCheck().getIgnoredViolations(player.dataType, this.similarityIdentity);
     }
 }
