@@ -166,7 +166,7 @@ public class EventsHandler3 implements Listener {
                     customBlock = notNull && ItemsAdder.is(nb);
 
             // Object
-            p.calculateClickData(action, false);
+            p.calculateClicks(action, false);
 
             if (notNull) {
                 // Detections

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
@@ -32,8 +31,6 @@ import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-
-import java.util.UUID;
 
 public class EventsHandler6 implements Listener {
 
@@ -81,60 +78,58 @@ public class EventsHandler6 implements Listener {
                                      double damage,
                                      EntityDamageEvent.DamageCause dmg,
                                      boolean cancelled) {
-        if (dmg != EntityDamageEvent.DamageCause.ENTITY_ATTACK
-                || !(defaultEntity instanceof LivingEntity)
-                || mcMMO.hasGeneralAbility(player)
-                || MythicMobs.is(defaultEntity)
-                || ItemsAdder.is(defaultEntity)) {
+        if (dmg != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             return;
         }
-        UUID playerUUID = player.uuid,
-                entityUUID = defaultEntity.getUniqueId();
+        // Object
+        boolean hitCooldown = player.getTimer().get("hit-cooldown") <= 5L;
+        player.getTimer().set("hit-cooldown");
 
-        if (playerUUID.equals(entityUUID)) {
-            return;
+        if (!hitCooldown) {
+            player.calculateClicks(null, true);
         }
-        LivingEntity entity = (LivingEntity) defaultEntity;
-        Cooldowns cooldowns = player.getCooldowns();
-        double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
+        if (!player.uuid.equals(defaultEntity.getUniqueId())
+                && defaultEntity instanceof LivingEntity
+                && !mcMMO.hasGeneralAbility(player)
+                && !MythicMobs.is(defaultEntity)
+                && !ItemsAdder.is(defaultEntity)) {
+            LivingEntity entity = (LivingEntity) defaultEntity;
+            double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
 
-        if (utility != null) {
-            // Object
-            player.calculateClickData(null, true);
+            if (utility != null) {
+                if (!cancelled) {
+                    // Compatibility
+                    NoHitDelay.runDealDamage(player, entity);
 
-            if (!cancelled) {
-                // Compatibility
-                NoHitDelay.runDealDamage(player, entity);
+                    // Handlers
+                    Damage.runDealtDamage(player);
+                }
 
-                // Handlers
-                Damage.runDealtDamage(player);
-            }
+                // Detections
+                player.getExecutor(Enums.HackType.Velocity).handle(cancelled, event);
+                player.getExecutor(Enums.HackType.NoSwing).handle(cancelled, event);
+                player.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{damage, entity});
 
-            // Detections
-            player.getExecutor(Enums.HackType.Velocity).handle(cancelled, event);
-            player.getExecutor(Enums.HackType.NoSwing).handle(cancelled, event);
-            player.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{damage, entity});
+                if (!hitCooldown
+                        || CombatUtils.isNewPvPMechanic(player, entity)) { // Multiple Hit Cooldown
+                    Object[] objects = new Object[]{entity, utility};
+                    player.getExecutor(Enums.HackType.KillAura).run(cancelled);
+                    player.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
+                    player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
+                }
 
-            if (cooldowns.canDo(cooldownKey)
-                    || CombatUtils.isNewPvPMechanic(player, entity)) { // Multiple Hit Cooldown
-                Object[] objects = new Object[]{entity, utility};
-                player.getExecutor(Enums.HackType.KillAura).run(cancelled);
-                player.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
-                player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
-            }
+                if (!cancelled) {
+                    // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
+                    if (entity instanceof Player) {
+                        SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
 
-            if (!cancelled) {
-                // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
-                if (entity instanceof Player) {
-                    SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
-
-                    if (target != null) {
-                        player.getProfile().playerCombat.getFight(target).update(player);
+                        if (target != null) {
+                            player.getProfile().playerCombat.getFight(target).update(player);
+                        }
                     }
                 }
             }
         }
-        cooldowns.add(cooldownKey, 3);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

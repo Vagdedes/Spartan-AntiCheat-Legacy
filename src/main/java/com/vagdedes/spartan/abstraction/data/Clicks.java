@@ -21,35 +21,35 @@ public class Clicks {
         this.clicks.add(System.currentTimeMillis());
     }
 
-    public long getLastCalculation() {
-        return 0L;
-    }
-
     public int getCount() {
         return this.getRawData().size();
     }
 
     public boolean canDistributeInformation() {
         if (cooldowns.canDo("")) {
-            cooldowns.add("", TPS.tickTimeInteger);
+            cooldowns.add("", (int) TPS.maximum);
             return true;
         } else {
             return false;
         }
     }
 
+    private void remove() {
+        long time = System.currentTimeMillis();
+        Iterator<Long> iterator = this.clicks.iterator();
+
+        while (iterator.hasNext()) {
+            if (time - iterator.next() > 1_000L) {
+                iterator.remove();
+            } else {
+                break;
+            }
+        }
+    }
+
     private Collection<Long> getRawData() {
         if (!this.clicks.isEmpty()) {
-            long time = System.currentTimeMillis();
-            Iterator<Long> iterator = this.clicks.iterator();
-
-            while (iterator.hasNext()) {
-                if (time - iterator.next() > 1_000L) {
-                    iterator.remove();
-                } else {
-                    break;
-                }
-            }
+            this.remove();
             return this.clicks;
         } else {
             return new ArrayList<>(0);
@@ -57,6 +57,12 @@ public class Clicks {
     }
 
     public Collection<Long> getData() {
-        return new ArrayList<>(this.getRawData());
+        if (!this.clicks.isEmpty()) {
+            this.remove();
+            return new ArrayList<>(this.clicks);
+        } else {
+            return new ArrayList<>(0);
+        }
     }
+
 }

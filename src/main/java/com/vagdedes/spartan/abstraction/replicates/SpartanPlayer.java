@@ -651,9 +651,7 @@ public class SpartanPlayer {
         return clicks;
     }
 
-    public void calculateClickData(Action action, boolean runRegardless) {
-        this.sendMessage(action == null ? "true" : "false");
-
+    public void calculateClicks(Action action, boolean runRegardless) {
         if (!runRegardless) {
             if (playerProfile.playerCombat.isActivelyFighting(null, true, true, false)) {
                 runRegardless = true;
@@ -663,24 +661,11 @@ public class SpartanPlayer {
             }
         }
 
-        if (runRegardless) {
-            boolean success;
+        if (runRegardless
+                && (action == null || action == Action.LEFT_CLICK_AIR)) {
+            clicks.calculate();
 
-            if (action == Action.LEFT_CLICK_AIR) {
-                success = true;
-                clicks.calculate();
-            } else if (action == null) {
-                if (clicks.getLastCalculation() > 1) {
-                    success = true;
-                    clicks.calculate();
-                } else {
-                    success = false;
-                }
-            } else {
-                success = false;
-            }
-
-            if (success && clicks.canDistributeInformation()) {
+            if (clicks.canDistributeInformation()) {
                 InteractiveInventory.playerInfo.refresh(name);
             }
         }
