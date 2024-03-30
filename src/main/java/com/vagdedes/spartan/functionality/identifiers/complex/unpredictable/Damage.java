@@ -26,17 +26,10 @@ public class Damage { // todo replace
             blocksOffGround = 4,
             selfHitTicks = 25;
     private static final String
-            lastReceivedKey = "last-received",
             lastDealtKey = "=last-dealt",
             projectileSpamKey = "projectile-spam";
 
     // Handlers
-
-    public static void extremeDamageHandling(SpartanPlayer p) {
-        int time = !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60;
-        p.getHandlers().add(Handlers.HandlerType.Velocity, time);
-        addCooldown(p, time);
-    }
 
     private static boolean selfHitHandling(SpartanPlayer p, Entity e) {
         boolean result;
@@ -51,13 +44,8 @@ public class Damage { // todo replace
                 result = true;
             } else {
                 SpartanLocation to = p.movement.getLocation();
-
-                if (p.movement.wasInLiquids()
-                        || !p.isOnGroundCustom() && !PlayerUtils.isOnGround(p, to, 0, -1, 0)) {
-                    result = true;
-                } else {
-                    result = false;
-                }
+                result = p.movement.wasInLiquids()
+                        || !p.isOnGroundCustom() && !PlayerUtils.isOnGround(p, to, 0, -1, 0);
             }
         } else {
             result = false;
@@ -71,12 +59,6 @@ public class Damage { // todo replace
 
     // Runnables
 
-    public static void runReceivedDamage(SpartanPlayer p, DamageCause dmg) {
-        if (dmg == DamageCause.ENTITY_ATTACK || dmg == DamageCause.PROJECTILE) {
-            p.getTimer().set(lastReceivedKey);
-        }
-    }
-
     public static void runDealtDamage(SpartanPlayer p) {
         p.getTimer().set(lastDealtKey);
     }
@@ -87,7 +69,9 @@ public class Damage { // todo replace
             if (damager instanceof EnderDragon
                     || damager instanceof Fireball
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) && damager instanceof Warden) {
-                extremeDamageHandling(p);
+                int time = !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60;
+                p.getHandlers().add(Handlers.HandlerType.Velocity, time);
+                addCooldown(p, time);
             } else if (damager instanceof Golem) {
                 addCooldown(p, 80);
             } else if (damager instanceof Player) {
@@ -199,13 +183,9 @@ public class Damage { // todo replace
         }
     }
 
-    public static void runBow(Entity entity, Entity projectile) {
-        if (entity instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
-
-            if (p != null && p.movement.getLocation().getPitch() <= -60.0f) {
-                p.getHandlers().add(Handlers.HandlerType.Damage, selfHitKey + "=" + projectile.getUniqueId(), 200);
-            }
+    public static void runBow(SpartanPlayer p, Entity projectile) {
+        if (p.movement.getLocation().getPitch() <= -60.0f) {
+            p.getHandlers().add(Handlers.HandlerType.Damage, selfHitKey + "=" + projectile.getUniqueId(), 200);
         }
     }
 
@@ -214,14 +194,18 @@ public class Damage { // todo replace
     public static boolean hasCooldown(SpartanPlayer p, String key) {
         boolean notNull = key != null;
 
-        if (notNull ? p.getHandlers().has(Handlers.HandlerType.Damage, key) : p.getHandlers().has(Handlers.HandlerType.Damage)) {
+        if (notNull
+                ? p.getHandlers().has(Handlers.HandlerType.Damage, key)
+                : p.getHandlers().has(Handlers.HandlerType.Damage)) {
             if (notNull && key.equals(selfHitKey)
                     || PlayerUtils.hasLevitationEffect(p)) {
                 return true;
             }
             Double vertical = p.movement.getNmsVerticalDistance();
 
-            if (vertical != null && (p.movement.isFalling(vertical) || p.movement.isJumping(vertical))) {
+            if (vertical != null
+                    && (p.movement.isFalling(vertical)
+                    || p.movement.isJumping(vertical))) {
                 return true;
             }
             int limit = NoHitDelay.hasCooldown(p) ? (blocksOffGround * 2) : blocksOffGround;
@@ -250,10 +234,6 @@ public class Damage { // todo replace
     }
 
     // Custom Return Methods
-
-    public static long getLastReceived(SpartanPlayer p) {
-        return p.getTimer().get(lastReceivedKey);
-    }
 
     public static long getLastDealt(SpartanPlayer p) {
         return p.getTimer().get(lastDealtKey);

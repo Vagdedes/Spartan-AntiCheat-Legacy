@@ -267,11 +267,13 @@ public class SpartanPlayerMovement {
 
     public boolean isMoving(boolean head) {
         if (!head || (System.currentTimeMillis() - this.lastHeadMovement) <= 2_500L) {
-            Double nmsDistance = getNmsDistance();
+            Double nmsDistance = this.getNmsDistance();
             return nmsDistance != null && nmsDistance >= 0.1
-                    || getCustomDistance() >= 0.1
-                    || this.isSprinting() || this.isSprintJumping() || this.isWalkJumping()
-                    || Damage.getLastReceived(this.parent) <= 100L;
+                    || this.getCustomDistance() >= 0.1
+                    || this.isSprinting()
+                    || this.isSprintJumping()
+                    || this.isWalkJumping()
+                    || this.parent.getLastDamage().ticksPassed() <= 2;
         } else {
             return false;
         }

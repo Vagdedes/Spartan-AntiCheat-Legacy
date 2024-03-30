@@ -97,6 +97,7 @@ public class SpartanPlayer {
     private SpartanOpenInventory openInventory;
     public final SpartanPlayerMovement movement;
     private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage> damage;
+    private SpartanPlayerDamage lastDamage;
 
     // Data
 
@@ -367,6 +368,7 @@ public class SpartanPlayer {
         this.vehicle = p.getVehicle();
         this.movement = new SpartanPlayerMovement(this, p);
         this.damage = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.lastDamage = null;
 
         // Load them all to keep their order
         for (EntityDamageEvent.DamageCause damageCause : EntityDamageEvent.DamageCause.values()) {
@@ -1191,19 +1193,7 @@ public class SpartanPlayer {
     // Separator
 
     public SpartanPlayerDamage getLastDamage() {
-        if (!this.damage.isEmpty()) {
-            synchronized (this.damage) {
-                Iterator<SpartanPlayerDamage> iterator = this.damage.values().iterator();
-                SpartanPlayerDamage last = null;
-
-                while (iterator.hasNext()) {
-                    last = iterator.next();
-                }
-                return last;
-            }
-        } else {
-            return null;
-        }
+        return this.lastDamage;
     }
 
     public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getDamages() {
@@ -1220,10 +1210,12 @@ public class SpartanPlayer {
 
     public void addDamage(EntityDamageEvent event, int maximumNoDamageTicks) {
         if (!event.isCancelled()) {
+            this.lastDamage = new SpartanPlayerDamage(this, event, this.movement.getLocation());
+
             synchronized (this.damage) {
                 this.damage.put(
                         event.getCause(),
-                        new SpartanPlayerDamage(this, event, this.movement.getLocation())
+                        this.lastDamage
                 );
             }
         }

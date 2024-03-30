@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.compatibility.manual.vanilla;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.entity.EnderDragon;
@@ -29,8 +29,11 @@ public class DragonPhases implements Listener {
                     if (entity instanceof Player) {
                         SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
 
-                        if (p !=null) {
-                            Damage.extremeDamageHandling(p);
+                        if (p != null) {
+                            p.getHandlers().add(
+                                    Handlers.HandlerType.Velocity,
+                                    !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60
+                            );
                         }
                     }
                 }

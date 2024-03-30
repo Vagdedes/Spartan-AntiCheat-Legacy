@@ -90,7 +90,6 @@ public class EventsHandler3 implements Listener {
 
                 // Handlers
                 p.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                Damage.runReceivedDamage(p, dmg);
                 Explosion.runDamage(p, null, dmg);
 
                 // Detections
@@ -115,7 +114,6 @@ public class EventsHandler3 implements Listener {
                             p.addDamage(e, n.getMaximumNoDamageTicks());
 
                             // Handlers
-                            Damage.runReceivedDamage(p, dmg);
                             Explosion.runDamage(p, null, dmg);
                         }
                     }

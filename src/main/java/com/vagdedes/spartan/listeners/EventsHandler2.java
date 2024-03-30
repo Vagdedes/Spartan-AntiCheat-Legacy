@@ -101,7 +101,7 @@ public class EventsHandler2 implements Listener {
 
                 // Protections
                 if (!cancelled) {
-                    Damage.runBow(entity, projectile);
+                    Damage.runBow(p, projectile);
                 }
 
                 if (p.getViolations(Enums.HackType.FastBow).process()) {

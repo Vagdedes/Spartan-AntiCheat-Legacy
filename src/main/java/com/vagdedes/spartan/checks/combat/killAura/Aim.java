@@ -242,7 +242,7 @@ public class Aim extends DetectionExecutor {
                 double reality = Math.toRadians(CombatProcessing.getDecimal(player, CombatProcessing.yawDifference, 0.0f));
                 int bufferTime, bufferThreshold;
 
-                if (Damage.getLastReceived(player) >= timeKept // The player hasn't been hit for a while
+                if (player.getLastDamage().ticksPassed() >= (timeKept / TPS.tickTime) // The player hasn't been hit for a while
                         || player.getProfile().isSuspectedOrHacker(hackType)) { // There's significant data against the player already
                     bufferTime = 30;
                     bufferThreshold = 10;
