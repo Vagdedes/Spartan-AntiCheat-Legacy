@@ -8,15 +8,14 @@ import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,6 +23,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -66,21 +66,24 @@ public class EventsHandler6 implements Listener {
     // Separator
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void DealDamage(EntityDamageByEntityEvent e) {
-        Entity en = e.getDamager();
+    private void Damage(EntityDamageByEntityEvent e) {
+        Entity damager = e.getDamager();
+        Entity defaultEntity = e.getEntity();
+        boolean entityIsPlayer = defaultEntity instanceof Player;
 
-        if (en instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) en);
+        if (damager instanceof Player) {
+            SpartanPlayer p = SpartanBukkit.getPlayer((Player) damager);
 
             if (p == null) {
                 return;
             }
+            EntityDamageEvent.DamageCause cause = e.getCause();
+
             // Object
             p.addDealtDamage(e);
 
             // Detections
-            if (e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                Entity defaultEntity = e.getEntity();
+            if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 boolean hitCooldown = p.getTimer().get("hit-cooldown") <= 5L;
                 p.getTimer().set("hit-cooldown");
 
@@ -105,7 +108,7 @@ public class EventsHandler6 implements Listener {
                         // Detections
                         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
                         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
-                        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{e.getDamage(), entity});
+                        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{cause, entity});
 
                         if (utility != null
                                 && (!hitCooldown
@@ -117,7 +120,7 @@ public class EventsHandler6 implements Listener {
                         }
                         if (!cancelled) {
                             // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
-                            if (entity instanceof Player) {
+                            if (entityIsPlayer) {
                                 SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
 
                                 if (target != null) {
@@ -125,77 +128,47 @@ public class EventsHandler6 implements Listener {
                                 }
                             }
                         }
+
+                        if (p.getViolations(Enums.HackType.KillAura).process()
+                                || p.getViolations(Enums.HackType.Criticals).process()
+                                || p.getViolations(Enums.HackType.NoSwing).process()
+                                || p.getViolations(Enums.HackType.FastClicks).process()) {
+                            e.setCancelled(true);
+                        }
                     }
                 }
             }
-
-            if (p.getViolations(Enums.HackType.KillAura).process()
-                    || p.getViolations(Enums.HackType.Criticals).process()
-                    || p.getViolations(Enums.HackType.NoSwing).process()
-                    || p.getViolations(Enums.HackType.FastClicks).process()) {
-                e.setCancelled(true);
-            }
-        } else {
-            Entity entity = e.getEntity();
-
-            if (entity instanceof Player) {
-                Player n = (Player) entity;
-                SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-                if (p == null) {
-                    return;
-                }
-                // Objects
-                p.addReceivedDamage(e);
-            }
         }
-    }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void ReceiveDamage(EntityDamageByEntityEvent e) {
-        Entity entity = e.getEntity();
-        Entity damager = e.getDamager();
+        if (entityIsPlayer) {
+            SpartanPlayer p = SpartanBukkit.getPlayer((Player) defaultEntity);
 
-        if (damager != null && entity != null) {
-            boolean cancelled = e.isCancelled();
+            if (p == null) {
+                return;
+            }
             EntityDamageEvent.DamageCause cause = e.getCause();
 
-            // Protections
-            if (Damage.runDealAndReceiveDamage(damager, entity, cause, cancelled)) {
-                e.setCancelled(true);
-            } else {
-                if (!damager.equals(entity)) {
-                    if (entity instanceof Player) {
-                        SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
+            // Objects
+            p.addReceivedDamage(e);
 
-                        if (p == null) {
-                            return;
-                        }
-                        GameMode gameMode = p.getGameMode();
+            // Handlers
+            Explosion.runDamage(p, damager, cause);
+            FloorProtection.runReceiveDamage(p, damager, cause);
+        } else {
+            Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    ? defaultEntity.getPassengers().toArray(new Entity[0])
+                    : new Entity[]{defaultEntity.getPassenger()};
 
-                        if (cancelled && (gameMode == GameMode.SURVIVAL
-                                || gameMode == GameMode.ADVENTURE)) {
-                            return;
-                        }
-                        // Handlers
-                        Damage.runReceiveDamage(cause, p, damager);
-                        Explosion.runDamage(p, damager, cause);
-                        FloorProtection.runReceiveDamage(p, damager, cause);
-                    } else {
-                        Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
+            if (passengers.length > 0) {
+                EntityDamageEvent.DamageCause cause = e.getCause();
 
-                        if (passengers.length > 0) {
-                            for (Entity passenger : passengers) {
-                                if (passenger instanceof Player) {
-                                    SpartanPlayer p = SpartanBukkit.getPlayer((Player) passenger);
+                for (Entity passenger : passengers) {
+                    if (passenger instanceof Player) {
+                        SpartanPlayer p = SpartanBukkit.getPlayer((Player) passenger);
 
-                                    if (p != null) {
-                                        // Handlers
-                                        Damage.runReceiveDamage(cause, p, damager);
-                                        Explosion.runDamage(p, damager, cause);
-                                    }
-                                }
-                            }
+                        if (p != null) {
+                            // Handlers
+                            Explosion.runDamage(p, damager, cause);
                         }
                     }
                 }
@@ -214,5 +187,21 @@ public class EventsHandler6 implements Listener {
 
         // Detections
         p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public static void InventoryInteract(InventoryInteractEvent e) {
+        HumanEntity he = e.getWhoClicked();
+
+        if (he instanceof Player) {
+            Player n = (Player) he;
+            SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+            if (p == null) {
+                return;
+            }
+            // Objects
+            p.setInventory(n.getInventory(), n.getOpenInventory());
+        }
     }
 }

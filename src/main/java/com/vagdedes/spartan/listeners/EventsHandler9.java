@@ -8,12 +8,10 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.server.PluginUtils;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -65,22 +63,6 @@ public class EventsHandler9 implements Listener {
             }
             // Protections
             VehicleAccess.runExit(p);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public static void InventoryInteract(InventoryInteractEvent e) {
-        HumanEntity he = e.getWhoClicked();
-
-        if (he instanceof Player) {
-            Player n = (Player) he;
-            SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-            if (p == null) {
-                return;
-            }
-            // Objects
-            p.setInventory(n.getInventory(), n.getOpenInventory());
         }
     }
 }

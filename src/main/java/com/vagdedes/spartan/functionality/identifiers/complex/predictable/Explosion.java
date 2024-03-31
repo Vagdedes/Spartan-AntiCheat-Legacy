@@ -52,6 +52,7 @@ public class Explosion {
 
     public static void runDamage(SpartanPlayer player, Entity damager, EntityDamageEvent.DamageCause dmg) {
         if (dmg == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
+
                 || dmg == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
                 && !(damager instanceof Firework) && !(damager instanceof Creeper)) {
             run(player);
@@ -61,7 +62,7 @@ public class Explosion {
     // Separator
 
     public static void runExplosion(Block block) { // We iterate the clearance here because the velocity event won't always be called
-        if (memory.size() > 0) {
+        if (!memory.isEmpty()) {
             clear();
         }
         memory.put(block.getLocation(), System.currentTimeMillis() + expirationTime);
