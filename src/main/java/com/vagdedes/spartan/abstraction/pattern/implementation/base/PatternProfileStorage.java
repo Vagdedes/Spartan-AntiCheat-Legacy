@@ -159,42 +159,38 @@ public class PatternProfileStorage {
             synchronized (this.keys) {
                 this.keys.clear();
             }
-            File directory = new File(this.profile.patternGeneralization.parent.learningFolder);
+            File[] files = this.profile.patternGeneralization.parent.getLearningFiles();
 
-            if (directory.isDirectory()) {
-                File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()
+                            && file.getName().endsWith(".yml")) {
+                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                        Set<String> keys = configuration.getKeys(false);
 
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.isFile()
-                                && file.getName().endsWith(".yml")) {
-                            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                            Set<String> keys = configuration.getKeys(false);
+                        if (!keys.isEmpty()) {
+                            boolean found = false;
 
-                            if (!keys.isEmpty()) {
-                                boolean found = false;
+                            for (String key : keys) {
+                                try {
+                                    String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
 
-                                for (String key : keys) {
-                                    try {
-                                        String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
-
-                                        if (profileName != null
-                                                && profileName.equals(this.profile.researchProfile.getName())) {
-                                            for (String option : PatternGeneralization.options) {
-                                                configuration.set(key + option, null);
-                                            }
-                                            configuration.set(key, null);
-                                            found = true;
+                                    if (profileName != null
+                                            && profileName.equals(this.profile.researchProfile.getName())) {
+                                        for (String option : PatternGeneralization.options) {
+                                            configuration.set(key + option, null);
                                         }
-                                    } catch (Exception ignored) {
+                                        configuration.set(key, null);
+                                        found = true;
                                     }
+                                } catch (Exception ignored) {
                                 }
+                            }
 
-                                if (found) {
-                                    try {
-                                        configuration.save(file);
-                                    } catch (Exception ignored) {
-                                    }
+                            if (found) {
+                                try {
+                                    configuration.save(file);
+                                } catch (Exception ignored) {
                                 }
                             }
                         }

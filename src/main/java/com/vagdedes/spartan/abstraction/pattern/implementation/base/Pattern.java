@@ -140,62 +140,58 @@ public class Pattern {
         this.load = true;
         store();
         Map<Integer, PatternGeneralization> generalizations = new LinkedHashMap<>();
-        File directory = new File(this.learningFolder);
+        File[] files = this.getLearningFiles();
 
-        if (directory.exists() && directory.isDirectory()) {
-            File[] files = directory.listFiles();
+        if (files != null) {
+            Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+            Set<Map.Entry<Integer, PatternGeneralization>> entries;
 
-            if (files != null) {
-                Arrays.sort(files, Comparator.comparingLong(File::lastModified));
-                Set<Map.Entry<Integer, PatternGeneralization>> entries;
+            synchronized (this.generalizations) {
+                entries = new HashSet<>(this.generalizations.entrySet());
+            }
 
-                synchronized (this.generalizations) {
-                    entries = new HashSet<>(this.generalizations.entrySet());
-                }
+            for (Map.Entry<Integer, PatternGeneralization> entry : entries) {
+                generalizations.put(
+                        entry.getKey(),
+                        entry.getValue() instanceof PatternGeneralizationStorage
+                                ? new PatternGeneralizationStorage(this, entry.getValue().initiator)
+                                : new PatternGeneralizationMemory(this, entry.getValue().initiator)
+                );
+            }
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".yml")) {
+                    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                    Set<String> keys = configuration.getKeys(false);
 
-                for (Map.Entry<Integer, PatternGeneralization> entry : entries) {
-                    generalizations.put(
-                            entry.getKey(),
-                            entry.getValue() instanceof PatternGeneralizationStorage
-                                    ? new PatternGeneralizationStorage(this, entry.getValue().initiator)
-                                    : new PatternGeneralizationMemory(this, entry.getValue().initiator)
-                    );
-                }
-                for (File file : files) {
-                    if (file.isFile() && file.getName().endsWith(".yml")) {
-                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                        Set<String> keys = configuration.getKeys(false);
+                    if (!keys.isEmpty()) {
+                        for (String key : keys) {
+                            try {
+                                long time = Long.parseLong(key);
+                                Object pattern = configuration.get(key + PatternGeneralization.patternOption, null);
 
-                        if (!keys.isEmpty()) {
-                            for (String key : keys) {
-                                try {
-                                    long time = Long.parseLong(key);
-                                    Object pattern = configuration.get(key + PatternGeneralization.patternOption, null);
+                                if (pattern instanceof Number) {
+                                    long situation = configuration.getLong(key + PatternGeneralization.situationOption, Long.MIN_VALUE);
 
-                                    if (pattern instanceof Number) {
-                                        long situation = configuration.getLong(key + PatternGeneralization.situationOption, Long.MIN_VALUE);
+                                    if (situation != Long.MIN_VALUE) {
+                                        String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
 
-                                        if (situation != Long.MIN_VALUE) {
-                                            String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
+                                        if (profileName != null
+                                                && !profileName.isEmpty()) {
+                                            PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
-                                            if (profileName != null
-                                                    && !profileName.isEmpty()) {
-                                                PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
-
-                                                for (PatternGeneralization generalization : generalizations.values()) {
-                                                    generalization.rawCache(
-                                                            profile,
-                                                            time,
-                                                            situation,
-                                                            (Number) pattern,
-                                                            false
-                                                    );
-                                                }
+                                            for (PatternGeneralization generalization : generalizations.values()) {
+                                                generalization.rawCache(
+                                                        profile,
+                                                        time,
+                                                        situation,
+                                                        (Number) pattern,
+                                                        false
+                                                );
                                             }
                                         }
                                     }
-                                } catch (Exception ignored) {
                                 }
+                            } catch (Exception ignored) {
                             }
                         }
                     }
@@ -239,6 +235,23 @@ public class Pattern {
     public PatternGeneralization getGeneralization(int generalization) {
         synchronized (this.generalizations) {
             return this.generalizations.get(generalization);
+        }
+    }
+
+    // Separator
+
+    File[] getLearningFiles() {
+        File directory = new File(this.learningFolder);
+
+        if (directory.exists()) {
+            if (directory.isDirectory()) {
+                return directory.listFiles();
+            } else {
+                directory.delete();
+                return null;
+            }
+        } else {
+            return null;
         }
     }
 }

@@ -4,9 +4,13 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class PatternGeneralizationStorage extends PatternGeneralization {
+
+    private static final int GB = 1024 * 1024 * 1024;
 
     private short count;
     private File file;
@@ -21,6 +25,39 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     }
 
     private void reload() {
+        File[] files = this.parent.getLearningFiles();
+
+        if (files != null) {
+            long length = 0;
+
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+
+                if (file.isFile() && file.getName().endsWith(".yml")) {
+                    length += file.length();
+                } else {
+                    files[i] = null;
+                }
+            }
+
+            if (length >= GB) {
+                Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+
+                for (File file : files) {
+                    if (file != null) {
+                        long fileLength = file.length();
+
+                        if (file.delete()) {
+                            length -= fileLength;
+
+                            if (length < GB) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         int hash = Objects.hash(this.parent.key, this.initiator.generalization, System.currentTimeMillis());
         this.file = new File(this.parent.learningFolder + "/" + hash + ".yml");
 
