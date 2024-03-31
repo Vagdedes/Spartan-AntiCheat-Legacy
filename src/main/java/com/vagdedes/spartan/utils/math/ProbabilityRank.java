@@ -53,7 +53,7 @@ public class ProbabilityRank {
 
     // Separator
 
-    public double getProbability(Number number) {
+    public double getProbability(Number number, double def) {
         if (!this.sorted) {
             Collections.sort(this.numbers);
             this.sorted = true;
@@ -79,8 +79,12 @@ public class ProbabilityRank {
             position++;
         }
         return start == -1
-                ? 1.0
+                ? def
                 : ((start == end ? start : (start + end) / 2.0)) / this.numbers.size();
+    }
+
+    public double getProbability(Number number) {
+        return this.getProbability(number, 1.0);
     }
 
     // Separator
