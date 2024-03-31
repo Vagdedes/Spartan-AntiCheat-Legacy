@@ -302,9 +302,9 @@ public abstract class PatternGeneralization {
 
     private ProbabilityRank getRankedRaw(long situation) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
-            return new ProbabilityRank(0);
+            return new ProbabilityRank();
         } else {
-            ProbabilityRank rank = new ProbabilityRank(this.profiles.size());
+            ProbabilityRank rank = new ProbabilityRank();
             int profiles = 0;
 
             synchronized (this.profiles) {
@@ -324,7 +324,7 @@ public abstract class PatternGeneralization {
                 }
             }
             return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
-                    ? new ProbabilityRank(0)
+                    ? new ProbabilityRank()
                     : rank;
         }
     }

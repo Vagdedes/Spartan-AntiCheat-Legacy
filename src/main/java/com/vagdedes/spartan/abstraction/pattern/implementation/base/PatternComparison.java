@@ -125,7 +125,7 @@ public class PatternComparison {
         } else {
             synchronized (this) {
                 return new double[]{
-                        this.rank.getProbability(value),
+                        this.rank.getPosition(value),
                         this.pie.getProbability(generalizeNumber(value))
                 };
             }

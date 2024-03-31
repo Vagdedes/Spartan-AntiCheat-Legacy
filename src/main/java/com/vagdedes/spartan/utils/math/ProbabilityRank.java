@@ -1,99 +1,123 @@
 package com.vagdedes.spartan.utils.math;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ProbabilityRank {
 
-    private final List<Double> numbers;
-    private boolean sorted;
+    private final Map<Double, Integer> map;
+    private double total;
 
     public ProbabilityRank() {
-        this(-1);
-    }
-
-    public ProbabilityRank(int capacity) {
-        this.numbers = capacity >= 0 ? new ArrayList<>(capacity) : new ArrayList<>();
-        this.sorted = false;
+        this.map = new TreeMap<>();
+        this.total = 0.0;
     }
 
     public ProbabilityRank clear() {
-        this.numbers.clear();
-        this.sorted = false;
+        this.map.clear();
+        this.total = 0.0;
         return this;
     }
 
     public ProbabilityRank addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
-            this.numbers.add(number.doubleValue());
+            this.map.put(
+                    number.doubleValue(),
+                    this.map.getOrDefault(number.doubleValue(), 0) + 1
+            );
+            this.total++;
         }
-        this.sorted = false;
         return this;
     }
 
     public ProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
         for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
-            for (int i = 0; i < entry.getValue(); i++) {
-                this.numbers.add(entry.getKey().doubleValue());
-            }
+            this.map.put(
+                    entry.getKey().doubleValue(),
+                    this.map.getOrDefault(entry.getKey().doubleValue(), 0) + entry.getValue()
+            );
+            this.total += entry.getValue();
         }
-        this.sorted = false;
         return this;
     }
 
     public ProbabilityRank add(Number number) {
-        this.numbers.add(number.doubleValue());
-        this.sorted = false;
+        this.map.put(
+                number.doubleValue(),
+                this.map.getOrDefault(number.doubleValue(), 0) + 1
+        );
+        this.total++;
         return this;
     }
 
     public ProbabilityRank remove(Number number) {
-        this.numbers.remove(number.doubleValue());
+        int count = this.map.getOrDefault(number.doubleValue(), 0);
+
+        if (count == 1) {
+            this.map.remove(number.doubleValue());
+            this.total--;
+        } else if (count > 0) {
+            this.map.put(number.doubleValue(), count - 1);
+            this.total--;
+        }
+        return this;
+    }
+
+    public ProbabilityRank delete(Number number) {
+        int count = this.map.getOrDefault(number.doubleValue(), 0);
+
+        if (count > 0) {
+            this.map.remove(number.doubleValue());
+            this.total -= count;
+        }
         return this;
     }
 
     // Separator
 
-    public double getProbability(Number number, double def) {
-        if (!this.sorted) {
-            Collections.sort(this.numbers);
-            this.sorted = true;
-        }
-        Iterator<Double> iterator = this.numbers.iterator();
-        int start = -1, end = 0, position = 0;
-        double find = number.doubleValue();
+    public double getPosition(Number number, double defaultValue) {
+        Iterator<Map.Entry<Double, Integer>> iterator = this.map.entrySet().iterator();
+        double position = 0.0, find = number.doubleValue();
 
         while (iterator.hasNext()) {
-            double next = iterator.next();
+            Map.Entry<Double, Integer> next = iterator.next();
 
-            if (next == find) {
-                end = position;
-
-                if (start == -1) {
-                    start = position;
+            if (next.getKey() == find) {
+                if (next.getValue() > 1) {
+                    return (position + (next.getValue() / 2.0)) / this.total;
+                } else {
+                    return (position + 1.0) / this.total;
                 }
-            } else if (start != -1) {
-                break;
-            } else if (next > find) {
-                return position / (double) this.numbers.size();
+            } else if (next.getKey() > find) {
+                return position / this.total;
             }
-            position++;
+            position += next.getValue();
         }
-        return start == -1
-                ? def
-                : ((start == end ? start : (start + end) / 2.0)) / this.numbers.size();
+        return defaultValue;
+    }
+
+    public double getPosition(Number number) {
+        return this.getPosition(number, 1.0);
+    }
+
+    public double getProbability(Number number, double defaultValue) {
+        Integer count = this.map.get(number.doubleValue());
+        return count != null ? count / this.total : defaultValue;
     }
 
     public double getProbability(Number number) {
-        return this.getProbability(number, 1.0);
+        return this.getProbability(number, 0.0);
     }
 
     // Separator
 
     public boolean hasData() {
-        return !this.numbers.isEmpty();
+        return this.total > 0;
     }
 
     public int getTotal() {
-        return this.numbers.size();
+        return (int) this.total;
     }
 }

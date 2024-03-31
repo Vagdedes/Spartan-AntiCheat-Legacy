@@ -226,7 +226,7 @@ public abstract class DetectionExecutor {
             patternGeneralization.compare(
                     patternProfile,
                     client,
-                    probabilityRank.getProbability(client),
+                    probabilityRank.getPosition(client) * probabilityRank.getProbability(client),
                     time
             );
         } else {
