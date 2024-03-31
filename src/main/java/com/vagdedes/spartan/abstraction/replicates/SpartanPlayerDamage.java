@@ -182,7 +182,7 @@ public class SpartanPlayerDamage {
                             && !this.parent.isOutsideOfTheBorder(0.0)
 
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                            && cause == EntityDamageEvent.DamageCause.WORLD_BORDER
+                            && cause == this.findDamageCause("WORLD_BORDER")
 
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)
                             && cause == EntityDamageEvent.DamageCause.HOT_FLOOR
@@ -194,5 +194,14 @@ public class SpartanPlayerDamage {
                             && cause == EntityDamageEvent.DamageCause.FREEZE;
             }
         }
+    }
+
+    private EntityDamageEvent.DamageCause findDamageCause(String string) {
+        for (EntityDamageEvent.DamageCause cause : EntityDamageEvent.DamageCause.values()) {
+            if (cause.name().equalsIgnoreCase(string)) {
+                return cause;
+            }
+        }
+        return null;
     }
 }

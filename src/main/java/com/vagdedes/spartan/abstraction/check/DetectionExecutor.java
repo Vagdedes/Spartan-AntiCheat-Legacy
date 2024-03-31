@@ -77,11 +77,12 @@ public abstract class DetectionExecutor {
     // Separator
 
     protected final String linearPredictionToDetection(Pattern patternStorage,
-                                                       long situation,
                                                        int generalization,
                                                        int count,
+                                                       long situation,
                                                        Number client) {
         long time = System.currentTimeMillis();
+        client = AlgebraUtils.generalize(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
@@ -91,9 +92,6 @@ public abstract class DetectionExecutor {
                 patternProfile,
                 count
         );
-        if (client instanceof Double) {
-            client = AlgebraUtils.cut(client.doubleValue(), generalization);
-        }
         double[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
                 contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
         StringBuilder sb = new StringBuilder()
@@ -174,13 +172,50 @@ public abstract class DetectionExecutor {
     }
 
     protected final String rankedPredictionToDetection(Pattern patternStorage,
-                                                       long situation,
                                                        int generalization,
+                                                       long situation,
                                                        Number client) {
         long time = System.currentTimeMillis();
+        client = AlgebraUtils.generalize(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         ProbabilityRank probabilityRank = patternGeneralization.getRanked(player, situation);
+        double[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
+                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
+        StringBuilder sb = new StringBuilder()
+                .append("data: ")
+                .append(patternStorage.key)
+                .append("(")
+                .append(generalization)
+                .append("), client: ")
+                .append(client);
+
+        if (trustFactorRankAndProbability != null) {
+            sb.append(", probability: ")
+                    .append(AlgebraUtils.cut(
+                            trustFactorRankAndProbability[0] * 100.0,
+                            2
+                    ))
+                    .append("(")
+                    .append(AlgebraUtils.cut(
+                            trustFactorRankAndProbability[1] * 100.0,
+                            2
+                    ))
+                    .append(")");
+        }
+        if (contributionRankAndProbability != null) {
+            sb.append(", contribution: ")
+                    .append(AlgebraUtils.cut(
+                            contributionRankAndProbability[0] * 100.0,
+                            2
+                    ))
+                    .append("(")
+                    .append(AlgebraUtils.cut(
+                            contributionRankAndProbability[1] * 100.0,
+                            2
+                    ))
+                    .append(")");
+        }
 
         if (probabilityRank.hasData()) {
             patternGeneralization.compare(
@@ -197,10 +232,8 @@ public abstract class DetectionExecutor {
                         probability,
                         time
                 );
-                return null;
             } else {
                 // todo
-                return null;
             }
         } else {
             patternGeneralization.compare(
@@ -208,7 +241,7 @@ public abstract class DetectionExecutor {
                     time,
                     time
             );
-            return null;
         }
+        return sb.toString();
     }
 }
