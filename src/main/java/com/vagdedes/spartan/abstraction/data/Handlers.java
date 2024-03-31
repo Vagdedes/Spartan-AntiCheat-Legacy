@@ -17,8 +17,8 @@ public class Handlers {
         SensitiveBlockBreak(HandlerFamily.Environment), TowerBuilding(HandlerFamily.Environment),
         BridgeBuilding(HandlerFamily.Environment),
 
-        Velocity(HandlerFamily.Velocity), BouncingBlocks(HandlerFamily.Velocity), Floor(HandlerFamily.Velocity),
-        Piston(HandlerFamily.Velocity), WaterElevator(HandlerFamily.Velocity), Damage(HandlerFamily.Velocity),
+        Velocity(HandlerFamily.Velocity), BouncingBlocks(HandlerFamily.Velocity),
+        Piston(HandlerFamily.Velocity), WaterElevator(HandlerFamily.Velocity),
         Explosion(HandlerFamily.Velocity), ExtremeCollision(HandlerFamily.Velocity),
 
         ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part), GameMode(HandlerFamily.Part),

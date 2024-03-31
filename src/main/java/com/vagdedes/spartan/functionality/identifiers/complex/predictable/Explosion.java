@@ -46,7 +46,8 @@ public class Explosion {
             Config.settings.setOption(Settings.explosionOption, Explosion.defaultTicks / 20);
         }
         p.getHandlers().add(
-                Handlers.HandlerType.Explosion, getTime()
+                Handlers.HandlerType.Explosion,
+                getTime()
         );
     }
 

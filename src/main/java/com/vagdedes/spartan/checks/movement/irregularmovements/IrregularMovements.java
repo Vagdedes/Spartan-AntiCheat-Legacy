@@ -10,7 +10,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -179,7 +178,7 @@ public class IrregularMovements extends CheckExecutor {
                     pastFalling = cacheBoolean(cooldowns, falling || oldFalling, "past-falling", 20);
 
             // Combination Variables
-            boolean forcefulUp = levitationEffect || waterElevator || Explosion.justExploded(player),
+            boolean forcefulUp = levitationEffect || waterElevator,
                     forcefulUpExtended = forcefulUp || threwTrident; // Used to prevent false positives and not heavily modify detections
 
             // Scenario Identification

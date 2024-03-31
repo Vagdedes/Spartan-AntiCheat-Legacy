@@ -1596,7 +1596,6 @@ public class SpartanPlayer {
     // Separator
 
     public void applyFallDamage(double d) {
-        handlers.disable(Handlers.HandlerType.Floor, 3);
         handlers.disable(Handlers.HandlerType.Velocity, 3);
         this.damage(d, EntityDamageEvent.DamageCause.FALL);
     }
