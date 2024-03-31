@@ -311,7 +311,6 @@ public abstract class PatternGeneralization {
                 for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
-
                         Collection<Number> data;
 
                         synchronized (entry.getValue().correlations) {

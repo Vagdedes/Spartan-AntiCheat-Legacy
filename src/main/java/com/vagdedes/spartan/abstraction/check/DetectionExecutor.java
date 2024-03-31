@@ -174,24 +174,33 @@ public abstract class DetectionExecutor {
     }
 
     protected final String rankedPredictionToDetection(Pattern patternStorage,
+                                                       long situation,
                                                        int generalization,
-                                                       Number client,
-                                                       ProbabilityRank probabilityRank,
-                                                       double minProbability) {
+                                                       Number client) {
+        long time = System.currentTimeMillis();
+        PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
+        PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
+        ProbabilityRank probabilityRank = patternGeneralization.getRanked(player, situation);
+
         if (probabilityRank.hasData()) {
+            patternGeneralization.compare(
+                    patternProfile,
+                    -1L,
+                    time
+            );
             double probability = probabilityRank.getProbability(client, -1.0);
 
-            if (probability != -1.0
-                    && probability < minProbability) {
-                return "data: " + patternStorage.key + "(" + generalization + ")"
-                        + ", client: " + client
-                        + ", total: " + probabilityRank.getTotal()
-                        + ", probability: " + probability
-                        + ", min-probability: " + minProbability;
+            if (probability != -1.0) {
+                return null;
             } else {
                 return null;
             }
         } else {
+            patternGeneralization.compare(
+                    patternProfile,
+                    time,
+                    time
+            );
             return null;
         }
     }

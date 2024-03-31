@@ -32,8 +32,14 @@ public class SpartanPlayerDamage {
         if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent actualEvent = (EntityDamageByEntityEvent) this.event;
 
-            if (actualEvent.getDamager() instanceof LivingEntity) {
-                this.activeItem = ((LivingEntity) actualEvent.getDamager()).getActiveItem();
+            if (actualEvent.getDamager() instanceof Player) {
+                this.activeItem = ((Player) actualEvent.getDamager()).getInventory().getItemInHand();
+                this.boss = false;
+                this.explosive = false;
+            } else if (actualEvent.getDamager() instanceof LivingEntity) {
+                this.activeItem = MultiVersion.folia
+                        ? ((LivingEntity) actualEvent.getDamager()).getActiveItem()
+                        : null;
                 this.boss = actualEvent.getDamager() instanceof Boss;
                 this.explosive = false;
             } else if (actualEvent.getDamager() instanceof Projectile) {
@@ -41,7 +47,9 @@ public class SpartanPlayerDamage {
 
                 if (projectile.getShooter() instanceof LivingEntity) {
                     LivingEntity shooter = (LivingEntity) projectile.getShooter();
-                    this.activeItem = shooter.getActiveItem();
+                    this.activeItem = MultiVersion.folia
+                            ? shooter.getActiveItem()
+                            : null;
                     this.boss = shooter instanceof Boss;
                 } else {
                     this.activeItem = null;
