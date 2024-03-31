@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.identifiers.complex.unpredictable;
 
-import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -14,14 +13,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
 
 public class Damage { // todo replace
 
-    public static final String
-            selfHitKey = "self-hit",
-            knockbackKey = "knockback",
-            fishingHookKey = "fishing-hook";
     private static final int blocksOffGround = 4;
     private static final String projectileSpamKey = "projectile-spam";
 
@@ -62,21 +56,7 @@ public class Damage { // todo replace
             } else if (damager instanceof Golem) {
                 addCooldown(p, null, 80);
             } else {
-                SpartanPlayer t = SpartanBukkit.getPlayer((Player) damager);
-
-                if (t == null) {
-                    addCooldown(p, null, 40);
-                } else {
-                    int level = t.getItemInHand().getEnchantmentLevel(Enchantment.KNOCKBACK);
-
-                    if (level > 2) {
-                        p.getHandlers().add(Handlers.HandlerType.Velocity, 100);
-                    } else if (level > 0) {
-                        addCooldown(p, knockbackKey, 60);
-                    } else {
-                        addCooldown(p, null, 40);
-                    }
-                }
+                addCooldown(p, null, 40);
             }
         } else if (MythicMobs.is(damager) || ItemsAdder.is(damager)) {
             addCooldown(p, null, 40);
@@ -93,66 +73,6 @@ public class Damage { // todo replace
 
             if (p != null) {
                 addCooldown(p, null, 40);
-            }
-        } else if (damager instanceof Projectile && entity instanceof Player && dmg == DamageCause.PROJECTILE) {
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
-
-            if (p == null) {
-                return false;
-            }
-            Projectile projectile = (Projectile) damager;
-
-            if (projectile.getShooter() instanceof Player) {
-                Player nt = ((Player) projectile.getShooter());
-                SpartanPlayer t = SpartanBukkit.getPlayer(nt);
-
-                if (t == null) {
-                    return false;
-                }
-                ItemStack item = t.getItemInHand();
-                int enchantment = Math.max(item.getEnchantmentLevel(Enchantment.KNOCKBACK), item.getEnchantmentLevel(Enchantment.ARROW_KNOCKBACK));
-
-                if (enchantment > 0) {
-                    boolean can;
-
-                    if (t.equals(p)) {
-                        Buffer buffer = p.getBuffer();
-                        Handlers handlers = p.getHandlers();
-                        SpartanLocation to = p.movement.getLocation();
-
-                        if (p.isOnGroundCustom() || PlayerUtils.isOnGround(p, to, 0, -1, 0) || PlayerUtils.isOnGround(p, to, 0, -2, 0)) {
-                            buffer.remove(projectileSpamKey);
-                            can = true;
-                        } else {
-                            can = buffer.increase(projectileSpamKey, 1) < 5 // threshold hasn't been met
-                                    || !handlers.has(Handlers.HandlerType.Damage, projectileSpamKey); // time has passed
-                        }
-                        handlers.add(Handlers.HandlerType.Damage, projectileSpamKey, 40);
-                    } else {
-                        can = true;
-                    }
-
-                    if (can) {
-                        int ticks = 80;
-                        addCooldown(p, knockbackKey, ticks);
-
-                        if (enchantment > 2) {
-                            p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
-                        }
-                    }
-                } else if (!t.equals(p)) {
-                    addCooldown(p, null, 40);
-                }
-            } else if (projectile.getShooter() != null) {
-                if (projectile.getShooter() instanceof EnderDragon) {
-                    int ticks = 60;
-                    p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
-                    addCooldown(p, null, ticks);
-                } else {
-                    addCooldown(p, null, 30);
-                }
-            } else {
-                p.movement.setAirTicks(0);
             }
         }
         return false;
@@ -173,10 +93,9 @@ public class Damage { // todo replace
         if (notNull
                 ? p.getHandlers().has(Handlers.HandlerType.Damage, key)
                 : p.getHandlers().has(Handlers.HandlerType.Damage)) {
-            if (notNull && key.equals(selfHitKey)
-                    || PlayerUtils.hasLevitationEffect(p)) {
+            if (PlayerUtils.hasLevitationEffect(p)) {
                 return true;
-            }
+            } else {
             Double vertical = p.movement.getNmsVerticalDistance();
 
             if (vertical != null
@@ -186,13 +105,14 @@ public class Damage { // todo replace
             }
             int limit = NoHitDelay.hasCooldown(p) ? (blocksOffGround * 2) : blocksOffGround;
             return p.getBlocksOffGround(limit + 1) <= limit;
+            }
         }
         return false;
     }
 
     // Modification Methods
 
-    public static void addCooldown(SpartanPlayer p, String reason, int time) {
+    private static void addCooldown(SpartanPlayer p, String reason, int time) {
         Handlers handlers = p.getHandlers();
         handlers.add(Handlers.HandlerType.Damage, time);
 

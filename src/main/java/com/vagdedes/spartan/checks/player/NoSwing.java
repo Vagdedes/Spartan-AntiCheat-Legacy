@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.checks.player;
 
-import com.frash23.smashhit.AsyncPreDamageEvent;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
@@ -71,8 +69,6 @@ public class NoSwing extends CheckExecutor {
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
             runDamage((LivingEntity) ((EntityDamageByEntityEvent) object).getEntity());
-        } else if (Compatibility.CompatibilityType.SmashHit.isFunctional()) {
-            runDamage((LivingEntity) ((AsyncPreDamageEvent) object).getEntity());
         }
         return false;
     }

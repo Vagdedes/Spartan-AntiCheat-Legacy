@@ -345,7 +345,7 @@ public class Speed extends CheckExecutor {
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                 explosion = !hasTrident && player.getHandlers().has(Handlers.HandlerType.Explosion),
                 damage = Damage.hasCooldown(player, null),
-                knockback = Damage.hasCooldown(player, Damage.knockbackKey),
+                knockback = player.getLastDamageReceived().isKnockBack(),
                 hitDelay = damage && NoHitDelay.hasCooldown(player),
                 incompatibilities = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
         float difference = PlayerUtils.getWalkSpeedDifference(player);
@@ -556,7 +556,9 @@ public class Speed extends CheckExecutor {
 
                     if (hitDelay
                             || explosion
-                            || damage && (player.getLastDamageReceived().ticksPassed() <= 10 || Damage.hasCooldown(player, Damage.knockbackKey))) {
+                            || damage
+                            && (player.getLastDamageReceived().ticksPassed() <= 10
+                            || player.getLastDamageReceived().isKnockBack())) {
                         time = 10;
                         attempts = 6;
                     } else if (PlayerUtils.hasHighJumpEffect(player)) {

@@ -123,6 +123,7 @@ public class HashUtils {
 
                         if (event != null) {
                             hash = extendLong(hash, event.getDamager().getType().toString().hashCode());
+                            hash = extendLong(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
                         }
                         hash = extendLong(hash, entry.getKey().toString().hashCode());
                         hash = extendLong(hash, Long.hashCode(ticksPassed));
