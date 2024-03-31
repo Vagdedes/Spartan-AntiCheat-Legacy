@@ -112,7 +112,7 @@ public class HashUtils {
                 potionEffects = new ArrayList<>(0);
             }
         } else {
-            Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getReceivedDamages();
+            Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getRawReceivedDamages();
 
             if (!damages.isEmpty()) {
                 for (Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage> entry : damages) {

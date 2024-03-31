@@ -117,7 +117,7 @@ public class SpartanPlayerDamage {
         if (this.event.isCancelled()) {
             return false;
         } else {
-            int time = (int) TPS.maximum * 2;
+            int time = AlgebraUtils.integerRound(TPS.maximum * 2.0);
             return this.ticksPassed() <= time
                     && this.parent.movement.getTicksOnAir() <= time
                     && (this.boss
@@ -127,14 +127,16 @@ public class SpartanPlayerDamage {
         }
     }
 
-    public boolean isSignificant(long ticksPassed) {
+    public boolean isSignificant() {
         if (this.event.isCancelled()) {
             return false;
+        } else if (this.hasBigKnockBack()) {
+            return true;
         } else {
             switch (this.event.getCause()) {
                 case ENTITY_ATTACK:
                 case PROJECTILE:
-                    return this.ticksPassed() <= ticksPassed;
+                    return this.ticksPassed() <= TPS.tickTime;
                 default:
                     return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                             && event.getCause() == EntityDamageEvent.DamageCause.DRAGON_BREATH;
@@ -142,10 +144,11 @@ public class SpartanPlayerDamage {
         }
     }
 
-    public boolean isSubtle(long ticksPassed) {
+    public boolean isSubtle() {
         if (this.event.isCancelled()) {
             return false;
         } else {
+            int time = AlgebraUtils.integerRound(TPS.maximum / 2.0);
             EntityDamageEvent.DamageCause cause = this.event.getCause();
 
             switch (cause) {
@@ -157,17 +160,21 @@ public class SpartanPlayerDamage {
                 case WITHER:
                 case CONTACT:
                 case FALL:
-                    return this.ticksPassed() <= ticksPassed
+                    return this.ticksPassed() <= time
                             && this.parent.movement.getTicksOnAir() <= TPS.maximum;
                 default:
                     return cause == EntityDamageEvent.DamageCause.SUFFOCATION
                             && !this.parent.isOutsideOfTheBorder(0.0)
+
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                             && cause == EntityDamageEvent.DamageCause.WORLD_BORDER
+
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)
                             && cause == EntityDamageEvent.DamageCause.HOT_FLOOR
+
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
                             && cause == EntityDamageEvent.DamageCause.MAGIC
+                            
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                             && cause == EntityDamageEvent.DamageCause.FREEZE;
             }

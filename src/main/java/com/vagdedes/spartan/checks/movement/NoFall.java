@@ -346,7 +346,7 @@ public class NoFall extends CheckExecutor {
                         && !NoHitDelay.hasCooldown(player)
                         && !PlayerUtils.hasLevitationEffect(player)
                         && !PlayerUtils.hasSlowFallingEffect(player)
-                        && !player.getLastDamageReceived().isSubtle(10)
+                        && !player.getLastDamageReceived().isSubtle()
                         && !BlockUtils.canClimb(loc)
                         && !player.movement.stepsOnBoats()
                         && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) || player.getWorld().getGameRuleValue(GameRule.FALL_DAMAGE) == true)) {

@@ -14,7 +14,6 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -209,7 +208,7 @@ public class IrregularMovements extends CheckExecutor {
                 canGoDown = !forcefulUp;
                 canFall = !forcefulUp;
             } else if (explosion
-                    || player.getLastDamageReceived().isSignificant(TPS.tickTime)) { // Damage Or Combat
+                    || Damage.isSignificant(player)) { // Damage Or Combat
                 velocityScenario = true;
 
                 scenario = "damage/explosion";
@@ -278,7 +277,7 @@ public class IrregularMovements extends CheckExecutor {
                 checkFall = true;
             } else if (player.isOnFire()
                     || player.isFrozen()
-                    || player.getLastDamageReceived().isSubtle(10)
+                    || player.getLastDamageReceived().isSubtle()
                     || PlayerUtils.hasBadPotionEffects(player)
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;

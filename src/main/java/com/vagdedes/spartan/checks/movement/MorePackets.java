@@ -104,7 +104,7 @@ public class MorePackets extends CheckExecutor {
                             decreasedRequirement = false;
                         } else if (!player.bedrockPlayer
                                 && !player.isUsingItem()
-                                && !player.getLastDamageReceived().isSignificant(TPS.tickTime)
+                                && !Damage.isSignificant(player)
                                 && !Damage.hasExplosion(player)
                                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                                 && !player.getHandlers().has(Handlers.HandlerType.Trident)

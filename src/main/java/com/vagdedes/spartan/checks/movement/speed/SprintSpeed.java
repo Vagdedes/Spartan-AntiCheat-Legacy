@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
@@ -98,7 +97,7 @@ public class SprintSpeed extends DetectionExecutor {
 
     private void checkOmnidirectional(SpartanLocation to, Buffer buffer) {
         if (!hackType.getCheck().getBooleanOption("check_omnidirectional_sprinting", true)
-                || player.getLastDamageReceived().isSignificant(TPS.tickTime)
+                || Damage.isSignificant(player)
                 || Damage.hasExplosion(player)
                 || player.getHandlers().has(Handlers.HandlerType.Piston)
                 || CrackShot.isUsingScope(player)

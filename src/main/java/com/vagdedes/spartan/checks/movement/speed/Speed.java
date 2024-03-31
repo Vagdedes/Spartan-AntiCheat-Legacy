@@ -15,7 +15,6 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Bounci
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -309,7 +308,7 @@ public class Speed extends CheckExecutor {
                     cooldowns.add("skip-ground-jump-limit", 10);
                 }
                 if (player.getLastDamageReceived().event.getCause() != EntityDamageEvent.DamageCause.FALL
-                        && player.getLastDamageReceived().isSubtle(10)) {
+                        && player.getLastDamageReceived().isSubtle()) {
                     dm = cacheLimit(decimals, dm, air_non_solid_min, 8);
                 } else {
                     dm = cacheLimit(decimals, dm, Speed.air, 8);
@@ -347,8 +346,8 @@ public class Speed extends CheckExecutor {
                 vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                 explosion = !hasTrident && Damage.hasExplosion(player),
-                damage = player.getLastDamageReceived().isSignificant(TPS.tickTime),
-                knockback = player.getLastDamageReceived().hasBigKnockBack(),
+                damage = Damage.isSignificant(player),
+                knockback = Damage.hasBigKnockBack(player),
                 hitDelay = damage && NoHitDelay.hasCooldown(player),
                 incompatibilities = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
         float difference = PlayerUtils.getWalkSpeedDifference(player);
@@ -373,7 +372,7 @@ public class Speed extends CheckExecutor {
                 && !incompatibilities && !bedrockPlayer && !vehicle && !damage && !extremelyPushed
                 && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
                 && !PlayerUtils.hasSpeedEffect(player, to, true) && !PlayerUtils.hasJumpEffect(player)
-                && !PlayerUtils.hasLevitationEffect(player) && !player.getLastDamageReceived().isSubtle(10)
+                && !PlayerUtils.hasLevitationEffect(player) && !player.getLastDamageReceived().isSubtle()
                 && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
             boolean aboveBlocksCopy = aboveBlocks;
 
@@ -559,9 +558,7 @@ public class Speed extends CheckExecutor {
 
                     if (hitDelay
                             || explosion
-                            || damage
-                            && (player.getLastDamageReceived().ticksPassed() <= 10
-                            || player.getLastDamageReceived().hasBigKnockBack())) {
+                            || damage) {
                         time = 10;
                         attempts = 6;
                     } else if (PlayerUtils.hasHighJumpEffect(player)) {

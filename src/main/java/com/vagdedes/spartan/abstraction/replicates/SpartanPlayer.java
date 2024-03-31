@@ -1195,15 +1195,27 @@ public class SpartanPlayer {
         return this.lastDamageDealt;
     }
 
-    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getReceivedDamages() {
+    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getRawReceivedDamages() {
         synchronized (this.damageReceived) {
             return new HashSet<>(this.damageReceived.entrySet());
         }
     }
 
-    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getDealtDamages() {
+    public Collection<SpartanPlayerDamage> getReceivedDamages() {
+        synchronized (this.damageReceived) {
+            return new ArrayList<>(this.damageReceived.values());
+        }
+    }
+
+    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getRawDealtDamages() {
         synchronized (this.damageDealt) {
             return new HashSet<>(this.damageDealt.entrySet());
+        }
+    }
+
+    public Collection<SpartanPlayerDamage> getDealtDamages() {
+        synchronized (this.damageDealt) {
+            return new ArrayList<>(this.damageDealt.values());
         }
     }
 

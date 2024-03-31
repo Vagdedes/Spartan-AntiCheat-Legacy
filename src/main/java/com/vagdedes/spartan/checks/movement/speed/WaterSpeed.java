@@ -12,7 +12,6 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -357,7 +356,7 @@ public class WaterSpeed extends DetectionExecutor {
     private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
         if (player.canRunCheck(hackType, true)
                 && hackType.getCheck().getBooleanOption("check_water_speed", true)
-                && (selfHit || !player.getLastDamageReceived().isSignificant(TPS.tickTime))
+                && (selfHit || !Damage.isSignificant(player))
                 && !PlayerUtils.hasNearbyCollisions(player)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && !PlayerUtils.hasLevitationEffect(player)
