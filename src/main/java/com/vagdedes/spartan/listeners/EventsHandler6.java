@@ -31,7 +31,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 
 public class EventsHandler6 implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void Command(PlayerCommandPreprocessEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
@@ -91,7 +91,7 @@ public class EventsHandler6 implements Listener {
                     p.calculateClicks(null, true);
                 }
 
-                if (defaultEntity instanceof LivingEntity) {
+                if (entityIsPlayer || defaultEntity instanceof LivingEntity) {
                     boolean cancelled = e.isCancelled();
                     LivingEntity entity = (LivingEntity) defaultEntity;
 

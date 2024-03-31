@@ -315,7 +315,7 @@ public class Speed extends CheckExecutor {
         }
 
         // Limit
-        boolean selfHit = Damage.hasCooldown(player, Damage.selfHitKey);
+        boolean selfHit = player.getLastDamageReceived().isPropellingProjectile();
         Buffer buffer = player.getBuffer(hackType);
         Object[] dynamicLimit = getDynamicLimit(to, loc1, buffer, decimals, cooldowns,
                 hor, oldHor, ver, box, oldBox, air,

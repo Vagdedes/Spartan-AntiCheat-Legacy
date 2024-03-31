@@ -7,9 +7,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.enchantments.Enchantment;
@@ -29,7 +27,7 @@ public class Damage { // todo replace
 
     // Handlers
 
-    private static boolean selfHitHandling(SpartanPlayer p, Entity e) {
+    private static boolean selfHitHandling(SpartanPlayer p, Entity e) { // todo replicate and remove
         boolean result;
 
         if (e == null) {
@@ -37,7 +35,6 @@ public class Damage { // todo replace
         } else if (p.getVehicle() == null && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)) {
             if (hasCooldown(p, null)
                     || Math.max(p.movement.getCustomDistance(), p.movement.getValueOrDefault(p.movement.getNmsDistance(), 0.0)) >= 0.18
-                    || !p.getHandlers().has(Handlers.HandlerType.Damage, selfHitKey + "=" + e.getUniqueId())
                     || p.getItemInHand().containsEnchantment(Enchantment.ARROW_KNOCKBACK)) {
                 result = true;
             } else {
@@ -47,10 +44,6 @@ public class Damage { // todo replace
             }
         } else {
             result = false;
-        }
-
-        if (result) {
-            addCooldown(p, selfHitKey, 25);
         }
         return result;
     }
@@ -150,11 +143,6 @@ public class Damage { // todo replace
                 } else if (!t.equals(p)) {
                     addCooldown(p, null, 40);
                 }
-
-                // Do not connect with else statement
-                if (!selfHitHandling(p, damager)) {
-                    return Config.settings.getBoolean("Protections.avoid_self_bow_damage") && !Permissions.isBypassing(p, null);
-                }
             } else if (projectile.getShooter() != null) {
                 if (projectile.getShooter() instanceof EnderDragon) {
                     int ticks = 60;
@@ -165,7 +153,6 @@ public class Damage { // todo replace
                 }
             } else {
                 p.movement.setAirTicks(0);
-                selfHitHandling(p, null);
             }
         }
         return false;
@@ -175,12 +162,6 @@ public class Damage { // todo replace
         if (p.getHandlers().has(Handlers.HandlerType.Damage, projectileSpamKey)
                 && p.getBlocksOffGround(3) <= 2) {
             p.getBuffer().remove(projectileSpamKey);
-        }
-    }
-
-    public static void runBow(SpartanPlayer p, Entity projectile) {
-        if (p.movement.getLocation().getPitch() <= -60.0f) {
-            p.getHandlers().add(Handlers.HandlerType.Damage, selfHitKey + "=" + projectile.getUniqueId(), 200);
         }
     }
 

@@ -65,7 +65,7 @@ public class WaterSpeed extends DetectionExecutor {
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
         int airTicks = player.movement.getTicksOnAir();
-        boolean selfHit = Damage.hasCooldown(player, Damage.selfHitKey);
+        boolean selfHit = player.getLastDamageReceived().isPropellingProjectile();
         Buffer buffer = player.getBuffer(hackType);
         Cooldowns cooldowns = player.getCooldowns(hackType);
         int horizontalBuffer = buffer.get(horizontalBufferKey);

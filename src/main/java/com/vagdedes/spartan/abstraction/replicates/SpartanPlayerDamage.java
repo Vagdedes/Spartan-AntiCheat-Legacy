@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.functionality.server.TPS;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -28,10 +29,26 @@ public class SpartanPlayerDamage {
     }
 
     public EntityDamageByEntityEvent getEntityDamageByEntityEvent() {
-        return event instanceof EntityDamageByEntityEvent ? (EntityDamageByEntityEvent) event : null;
+        return event instanceof EntityDamageByEntityEvent
+                ? (EntityDamageByEntityEvent) this.event
+                : null;
     }
 
     public long ticksPassed() {
         return TPS.getTick(this.parent) - tick;
+    }
+
+    public boolean isPropellingProjectile() { // todo cover fishing rods
+        if (this.ticksPassed() <= TPS.maximum
+                && this.location.getPitch() <= -60.0f
+                && this.event instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) this.event;
+
+            if (event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
+                Player p = this.parent.getPlayer();
+                return p != null && event.getDamager().equals(p);
+            }
+        }
+        return false;
     }
 }
