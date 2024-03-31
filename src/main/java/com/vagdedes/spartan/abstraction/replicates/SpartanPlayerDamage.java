@@ -40,7 +40,8 @@ public class SpartanPlayerDamage {
                 this.activeItem = MultiVersion.folia
                         ? ((LivingEntity) actualEvent.getDamager()).getActiveItem()
                         : null;
-                this.boss = actualEvent.getDamager() instanceof Boss;
+                this.boss = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
+                        && actualEvent.getDamager() instanceof Boss;
                 this.explosive = false;
             } else if (actualEvent.getDamager() instanceof Projectile) {
                 Projectile projectile = (Projectile) actualEvent.getDamager();
@@ -50,7 +51,8 @@ public class SpartanPlayerDamage {
                     this.activeItem = MultiVersion.folia
                             ? shooter.getActiveItem()
                             : null;
-                    this.boss = shooter instanceof Boss;
+                    this.boss = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
+                            && shooter instanceof Boss;
                 } else {
                     this.activeItem = null;
                     this.boss = false;
