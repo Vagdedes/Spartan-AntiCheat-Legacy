@@ -80,10 +80,23 @@ public class LiveViolation {
 
     // Separator
 
-    void queue(HackPrevention hackPrevention) {
-        if (queue.size() < Check.standardIgnoredViolations) {
-            synchronized (queue) {
-                queue.putIfAbsent(hackPrevention.information.hashCode(), hackPrevention);
+    void queue(HackPrevention newPrevention) {
+        if (this.queue.size() < Check.standardIgnoredViolations) {
+            synchronized (this.queue) {
+                this.queue.putIfAbsent(newPrevention.information.hashCode(), newPrevention);
+            }
+        } else {
+            synchronized (this.queue) {
+                Iterator<HackPrevention> iterator = this.queue.values().iterator();
+
+                if (iterator.hasNext()) {
+                    HackPrevention prevention = iterator.next();
+
+                    if (prevention.processed && prevention.stay <= newPrevention.stay) {
+                        iterator.remove();
+                        this.queue.putIfAbsent(newPrevention.information.hashCode(), newPrevention);
+                    }
+                }
             }
         }
     }
@@ -92,8 +105,8 @@ public class LiveViolation {
         HackPrevention hp;
         boolean processed;
 
-        synchronized (queue) {
-            Iterator<HackPrevention> iterator = queue.values().iterator();
+        synchronized (this.queue) {
+            Iterator<HackPrevention> iterator = this.queue.values().iterator();
 
             if (iterator.hasNext()) {
                 hp = iterator.next();

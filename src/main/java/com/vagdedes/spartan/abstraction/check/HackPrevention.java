@@ -18,7 +18,7 @@ public class HackPrevention {
     final boolean groundTeleport;
     boolean processed;
     final double damage;
-    final long time, tick, expiration;
+    final long time, tick, stay, expiration;
 
     private static final Cooldowns cooldowns = new Cooldowns(null);
 
@@ -30,7 +30,8 @@ public class HackPrevention {
         // Object Data
         this.time = System.currentTimeMillis();
         this.tick = TPS.getTick(player);
-        this.expiration = cancelTicks == 0 ? 0L : this.tick + cancelTicks;
+        this.stay = cancelTicks;
+        this.expiration = cancelTicks == 0 ? 0L : this.tick + this.stay;
         this.information = verbose;
         this.location = location;
         this.groundTeleport = groundTeleport;
