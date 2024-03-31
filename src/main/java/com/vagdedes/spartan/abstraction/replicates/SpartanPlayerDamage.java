@@ -13,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class SpartanPlayerDamage {
 
+    private static final EntityDamageEvent.DamageCause WORLD_BORDER = findDamageCause("WORLD_BORDER");
+
     private final SpartanPlayer parent;
     public final long tick;
     public final EntityDamageEvent event;
@@ -182,7 +184,7 @@ public class SpartanPlayerDamage {
                             && !this.parent.isOutsideOfTheBorder(0.0)
 
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                            && cause == this.findDamageCause("WORLD_BORDER")
+                            && cause == WORLD_BORDER
 
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)
                             && cause == EntityDamageEvent.DamageCause.HOT_FLOOR
