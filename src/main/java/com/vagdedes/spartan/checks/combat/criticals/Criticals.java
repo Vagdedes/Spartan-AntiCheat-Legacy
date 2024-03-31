@@ -52,8 +52,7 @@ public class Criticals extends CheckExecutor {
     private void checkDamage(double damage, LivingEntity entity) {
         if (hackType.getCheck().getBooleanOption("check_damage", true)
                 && !player.bedrockPlayer
-                && !player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)
-                && !CombatUtils.isNewPvPMechanic(player, entity)) {
+                && !player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
             double[] widthAndHeight = CombatUtils.getWidthAndHeight(entity);
 
             if (!CombatUtils.isEntityTall(widthAndHeight[1]) && !CombatUtils.isEntityWide(widthAndHeight[0])) { // Non-player like entities seem to be problematic

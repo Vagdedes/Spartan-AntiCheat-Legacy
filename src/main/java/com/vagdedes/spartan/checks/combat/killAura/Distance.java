@@ -30,7 +30,6 @@ public class Distance extends DetectionExecutor {
         if (!NoHitDelay.hasCooldown(player)
                 && (!isFightParticipant || player.getProfile().playerCombat.isActivelyFighting(null, false, true, false)) // We want the player in active combat or just starting combat
                 && CombatUtils.areFacingEachOther(player, entity)
-                && !CombatUtils.isNewPvPMechanic(player, entity)
                 && player.getBlocksOffGround(groundBlockRequirement + 1) <= groundBlockRequirement // We need the player close to the ground
                 && entity instanceof Player) {
             SpartanPlayer targetPlayer = SpartanBukkit.getPlayer((Player) entity);

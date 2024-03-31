@@ -82,8 +82,7 @@ public class NoSwing extends CheckExecutor {
         if (!canDo()
                 || !hackType.getCheck().getBooleanOption("check_damage", true)
                 || player.hasAttackCooldown()
-                || player.getHandlers().has(Handlers.HandlerType.Trident)
-                || CombatUtils.isNewPvPMechanic(player, entity)) {
+                || player.getHandlers().has(Handlers.HandlerType.Trident)) {
             return;
         }
         Cooldowns cooldowns = player.getCooldowns(hackType);

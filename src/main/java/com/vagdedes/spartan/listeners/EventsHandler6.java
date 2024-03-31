@@ -82,12 +82,7 @@ public class EventsHandler6 implements Listener {
 
             // Detections
             if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                boolean hitCooldown = p.getTimer().get("hit-cooldown") <= 5L;
-                p.getTimer().set("hit-cooldown");
-
-                if (!hitCooldown) {
                     p.calculateClicks(null, true);
-                }
 
                 if (entityIsPlayer || defaultEntity instanceof LivingEntity) {
                     boolean cancelled = e.isCancelled();
@@ -108,9 +103,7 @@ public class EventsHandler6 implements Listener {
                         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
                         p.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{cause, entity});
 
-                        if (utility != null
-                                && (!hitCooldown
-                                || CombatUtils.isNewPvPMechanic(p, entity))) {
+                        if (utility != null) {
                             Object[] objects = new Object[]{entity, utility};
                             p.getExecutor(Enums.HackType.KillAura).run(cancelled);
                             p.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);

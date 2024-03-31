@@ -139,7 +139,11 @@ public class SpartanPlayerDamage {
                     return this.ticksPassed() <= TPS.tickTime;
                 default:
                     return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                            && event.getCause() == EntityDamageEvent.DamageCause.DRAGON_BREATH;
+                            && (event.getCause() == EntityDamageEvent.DamageCause.DRAGON_BREATH
+                            || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)
+
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)
+                            && event.getCause() == EntityDamageEvent.DamageCause.SONIC_BOOM;
             }
         }
     }
@@ -152,6 +156,7 @@ public class SpartanPlayerDamage {
 
             switch (cause) {
                 case STARVATION:
+                case DROWNING:
                 case LIGHTNING:
                 case THORNS:
                 case VOID:
@@ -159,6 +164,7 @@ public class SpartanPlayerDamage {
                 case WITHER:
                 case CONTACT:
                 case FALL:
+                case LAVA:
                     return this.ticksPassed() <= AlgebraUtils.integerRound(TPS.maximum / 2.0)
                             && this.parent.movement.getTicksOnAir() <= TPS.maximum;
                 default:

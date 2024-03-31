@@ -35,69 +35,67 @@ public class Time extends DetectionExecutor {
     private static long dynamicMinimumTime = CombatUtils.defaultFightTicks * 50L;
 
     void run(LivingEntity entity, double width, double distance) {
-        if (!CombatUtils.isNewPvPMechanic(player, entity)) {
-            boolean first = false;
+        boolean first = false;
 
-            for (int[] ints : criteria) {
-                if (!first) {
-                    first = true;
+        for (int[] ints : criteria) {
+            if (!first) {
+                first = true;
 
-                    if (NoHitDelay.hasCooldown(player)) {
+                if (NoHitDelay.hasCooldown(player)) {
+                    continue;
+                } else if (entity instanceof Player) {
+                    SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
+
+                    if (target != null && NoHitDelay.hasCooldown(target)) {
                         continue;
-                    } else if (entity instanceof Player) {
-                        SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
-
-                        if (target != null && NoHitDelay.hasCooldown(target)) {
-                            continue;
-                        }
                     }
-                }
-                int ticks = ints[0], entities = ints[1];
-                String key = flag(entity, ticks, entities);
-
-                if (key != null) {
-                    if (!key.isEmpty()) { // If the length is zero, it means the required amount of nearby entities was not met, thus it's pointless to continue the loop
-                        player.getBuffer(hackType).clear(key); // Clear whatever data is potentially remaining with this semi-heavy method
-                        cancel("type: time(speed), ticks: " + ticks + ", entities: " + entities);
-                    }
-                    break;
                 }
             }
+            int ticks = ints[0], entities = ints[1];
+            String key = flag(entity, ticks, entities);
 
-            // Separator
+            if (key != null) {
+                if (!key.isEmpty()) { // If the length is zero, it means the required amount of nearby entities was not met, thus it's pointless to continue the loop
+                    player.getBuffer(hackType).clear(key); // Clear whatever data is potentially remaining with this semi-heavy method
+                    cancel("type: time(speed), ticks: " + ticks + ", entities: " + entities);
+                }
+                break;
+            }
+        }
 
-            if (player.movement.isMoving(true)) {
-                double entityWidth = CombatUtils.getWidthAndHeight(entity)[0];
+        // Separator
 
-                if (distance > entityWidth // We want the player in a certain distance, otherwise we risk having easily low width
-                        && Math.abs(width) <= entityWidth) {
-                    int cps = player.getClicks().getCount();
+        if (player.movement.isMoving(true)) {
+            double entityWidth = CombatUtils.getWidthAndHeight(entity)[0];
 
-                    if (cps >= 8) {
-                        double yawRate = CombatProcessing.getDecimal(player, CombatProcessing.yawDifference, 0.0),
-                                pitchRate = CombatProcessing.getDecimal(player, CombatProcessing.pitchDifference, 0.0);
+            if (distance > entityWidth // We want the player in a certain distance, otherwise we risk having easily low width
+                    && Math.abs(width) <= entityWidth) {
+                int cps = player.getClicks().getCount();
 
-                        if (yawRate > 0.0 && pitchRate > 0.0) {
-                            Timer timer = player.getTimer();
-                            String subKey = key + "=" + entity.getEntityId();
-                            long time = timer.get(subKey);
-                            timer.set(subKey);
+                if (cps >= 8) {
+                    double yawRate = CombatProcessing.getDecimal(player, CombatProcessing.yawDifference, 0.0),
+                            pitchRate = CombatProcessing.getDecimal(player, CombatProcessing.pitchDifference, 0.0);
 
-                            if (time <= dynamicMinimumTime) {
-                                dynamicMinimumTime = Math.max(time, 50L);
-                                Buffer buffer = player.getBuffer(hackType);
+                    if (yawRate > 0.0 && pitchRate > 0.0) {
+                        Timer timer = player.getTimer();
+                        String subKey = key + "=" + entity.getEntityId();
+                        long time = timer.get(subKey);
+                        timer.set(subKey);
 
-                                if (buffer.start(subKey, 10 * ((int) dynamicMinimumTime)) == 8) {
-                                    buffer.remove(subKey);
-                                    cancel("type: time(consistency)"
-                                            + ", width: " + width
-                                            + ", entity-width: " + entityWidth
-                                            + ", yaw-rate: " + yawRate
-                                            + ", pitch-rate: " + pitchRate
-                                            + ", time: " + time
-                                            + ", time-requirement: " + dynamicMinimumTime
-                                            + ", clicks-per-second" + cps);
-                                }
+                        if (time <= dynamicMinimumTime) {
+                            dynamicMinimumTime = Math.max(time, 50L);
+                            Buffer buffer = player.getBuffer(hackType);
+
+                            if (buffer.start(subKey, 10 * ((int) dynamicMinimumTime)) == 8) {
+                                buffer.remove(subKey);
+                                cancel("type: time(consistency)"
+                                        + ", width: " + width
+                                        + ", entity-width: " + entityWidth
+                                        + ", yaw-rate: " + yawRate
+                                        + ", pitch-rate: " + pitchRate
+                                        + ", time: " + time
+                                        + ", time-requirement: " + dynamicMinimumTime
+                                        + ", clicks-per-second" + cps);
                             }
                         }
                     }
