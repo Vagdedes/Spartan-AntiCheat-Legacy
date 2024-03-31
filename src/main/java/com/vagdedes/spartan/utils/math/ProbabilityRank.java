@@ -53,19 +53,19 @@ public class ProbabilityRank {
 
     // Separator
 
-    public double getProbability(Number number, double def) {
+    public double getProbability(Number number) {
         if (!this.sorted) {
             Collections.sort(this.numbers);
             this.sorted = true;
         }
         Iterator<Double> iterator = this.numbers.iterator();
         int start = -1, end = 0, position = 0;
-        double dbl = number.doubleValue();
+        double find = number.doubleValue();
 
         while (iterator.hasNext()) {
-            position++;
+            double next = iterator.next();
 
-            if (iterator.next() == dbl) {
+            if (next == find) {
                 end = position;
 
                 if (start == -1) {
@@ -73,11 +73,14 @@ public class ProbabilityRank {
                 }
             } else if (start != -1) {
                 break;
+            } else if (next > find) {
+                return position / (double) this.numbers.size();
             }
+            position++;
         }
         return start == -1
-                ? def
-                : ((start + end) / 2.0) / this.numbers.size();
+                ? 1.0
+                : ((start == end ? start : (start + end) / 2.0)) / this.numbers.size();
     }
 
     // Separator

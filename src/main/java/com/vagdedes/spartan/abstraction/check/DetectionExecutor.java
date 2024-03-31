@@ -223,18 +223,12 @@ public abstract class DetectionExecutor {
                     -1L,
                     time
             );
-            double probability = probabilityRank.getProbability(client, -1.0);
-
-            if (probability != -1.0) {
-                patternGeneralization.compare(
-                        patternProfile,
-                        client,
-                        probability,
-                        time
-                );
-            } else {
-                // todo
-            }
+            patternGeneralization.compare(
+                    patternProfile,
+                    client,
+                    probabilityRank.getProbability(client),
+                    time
+            );
         } else {
             patternGeneralization.compare(
                     patternProfile,

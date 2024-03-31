@@ -124,16 +124,10 @@ public class PatternComparison {
             return null;
         } else {
             synchronized (this) {
-                double rank = this.rank.getProbability(value, -1.0);
-
-                if (rank != -1.0) {
-                    return new double[]{
-                            rank,
-                            this.pie.getProbability(generalizeNumber(value))
-                    };
-                } else {
-                    return null;
-                }
+                return new double[]{
+                        this.rank.getProbability(value),
+                        this.pie.getProbability(generalizeNumber(value))
+                };
             }
         }
     }
