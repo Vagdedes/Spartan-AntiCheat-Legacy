@@ -13,7 +13,18 @@ import org.bukkit.inventory.ItemStack;
 
 public class SpartanPlayerDamage {
 
+    private static EntityDamageEvent.DamageCause findDamageCause(String string) {
+        for (EntityDamageEvent.DamageCause cause : EntityDamageEvent.DamageCause.values()) {
+            if (cause.name().equalsIgnoreCase(string)) {
+                return cause;
+            }
+        }
+        return null;
+    }
+
     private static final EntityDamageEvent.DamageCause WORLD_BORDER = findDamageCause("WORLD_BORDER");
+
+    // Separator
 
     private final SpartanPlayer parent;
     public final long tick;
@@ -196,14 +207,5 @@ public class SpartanPlayerDamage {
                             && cause == EntityDamageEvent.DamageCause.FREEZE;
             }
         }
-    }
-
-    private EntityDamageEvent.DamageCause findDamageCause(String string) {
-        for (EntityDamageEvent.DamageCause cause : EntityDamageEvent.DamageCause.values()) {
-            if (cause.name().equalsIgnoreCase(string)) {
-                return cause;
-            }
-        }
-        return null;
     }
 }
