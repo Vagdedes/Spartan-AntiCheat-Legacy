@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -30,11 +31,12 @@ public class InformationAnalysis {
     // Orientation
 
     final int hash;
+    public final int identity;
     final String detection;
     final boolean isOption;
     final Collection<Number> numbers;
 
-    InformationAnalysis(Enums.HackType hackType, String information) {
+    public InformationAnalysis(Enums.HackType hackType, String information) {
         String[] array = information.split(" ");
 
         String detection = array[1];
@@ -93,6 +95,22 @@ public class InformationAnalysis {
             }
         }
         this.isOption = data.isOption;
+
+        // Separator
+
+        int identity = this.hash;
+
+        if (!this.numbers.isEmpty()) {
+            for (Number number : this.numbers) {
+                if (number instanceof Double) {
+                    identity = (identity * SpartanBukkit.hashCodeMultiplier)
+                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), GroundUtils.maxHeightLength));
+                } else {
+                    identity = (identity * SpartanBukkit.hashCodeMultiplier) + number.intValue();
+                }
+            }
+        }
+        this.identity = identity;
     }
 
     // Separator

@@ -25,13 +25,14 @@ public class Check {
     // Static
 
     public static final int
-            violationCycleSeconds = 60,
-            violationCycleTicks = TPS.tickTimeInteger * violationCycleSeconds,
             maxCommands = 10,
-            maxMath = 10,
             maxViolationsPerCycle = 100,
             standardIgnoredViolations = 3;
-    public static final long violationCycleMilliseconds = violationCycleSeconds * 1_000L;
+    public static final long
+            violationCycleMilliseconds = 60_000L,
+            violationTimeWorth = violationCycleMilliseconds / maxViolationsPerCycle;
+    public static final int violationCycleTicks = (int) (violationCycleMilliseconds / TPS.tickTime);
+    private static final int maxMath = 10;
 
     // Object
 

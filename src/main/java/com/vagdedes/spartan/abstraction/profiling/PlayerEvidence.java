@@ -142,13 +142,13 @@ public class PlayerEvidence {
                 Check check = playerViolation.hackType.getCheck();
 
                 if (check.supportsLiveEvidence) {
-                    double averageIgnoredViolations = playerViolation.getIgnoredViolations(player),
-                            violationCount = player.getViolations(playerViolation.hackType).getLevel()
+                    double ignoredViolations = playerViolation.getIgnoredViolations(player),
+                            violationCount = player.getViolations(playerViolation.hackType).getLevel(playerViolation.identity)
                                     - AlgebraUtils.integerCeil(Latency.getDelay(player))
-                                    - averageIgnoredViolations;
+                                    - ignoredViolations;
 
                     if (violationCount > 0.0) {
-                        double ratio = violationCount / averageIgnoredViolations;
+                        double ratio = violationCount / ignoredViolations;
 
                         if (ratio >= Check.standardIgnoredViolations) {
                             this.live.put(playerViolation.hackType,

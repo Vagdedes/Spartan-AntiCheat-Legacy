@@ -48,7 +48,6 @@ public class InventoryClicks extends CheckExecutor {
                 if (shift
                         && !quick
                         && !player.getOpenInventory().isUsingTheCursor()
-                        && player.getViolations(check).hasLevel()
                         && buffer.start(key + "shift", 5) > 10) { // Inventory
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);

@@ -33,8 +33,8 @@ public class ViolationAnalysis {
         public void add(PlayerProfile profile, PlayerViolation playerViolation) {
             players.add(profile.hashCode());
             violations.put(
-                    playerViolation.similarityIdentity,
-                    violations.getOrDefault(playerViolation.similarityIdentity, 0) + 1
+                    playerViolation.identity,
+                    violations.getOrDefault(playerViolation.identity, 0) + 1
             );
         }
 
@@ -60,7 +60,7 @@ public class ViolationAnalysis {
     private static int hash(PlayerViolation playerViolation) {
         return Objects.hash(
                 playerViolation.level,
-                playerViolation.similarityIdentity
+                playerViolation.identity
         );
     }
 

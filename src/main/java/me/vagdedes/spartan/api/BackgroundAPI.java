@@ -116,7 +116,7 @@ public class BackgroundAPI {
         SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
         if (player != null) {
-            return player.getViolations(hackType).getLevel();
+            return player.getViolations(hackType).getTotalLevel();
         } else {
             return 0;
         }
@@ -132,7 +132,12 @@ public class BackgroundAPI {
         SpartanPlayer player = SpartanBukkit.getPlayer(p);
 
         if (player != null) {
-            return player.getViolationCount();
+            int total = 0;
+
+            for (HackType hackType : Enums.HackType.values()) {
+                total += player.getViolations(hackType).getTotalLevel();
+            }
+            return total;
         } else {
             return 0;
         }
@@ -148,8 +153,10 @@ public class BackgroundAPI {
         return getCancelViolation(hackType);
     }
 
+    @Deprecated
     static int getCancelViolation(HackType hackType) {
-        return hackType.getCheck().getAverageIgnoredViolations(Enums.DataType.Universal);
+        AwarenessNotifications.forcefullySend("The API method 'getCancelViolation' has been removed.");
+        return 0;
     }
 
     @Deprecated

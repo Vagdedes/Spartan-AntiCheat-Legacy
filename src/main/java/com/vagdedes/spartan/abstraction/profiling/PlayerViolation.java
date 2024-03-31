@@ -1,9 +1,6 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 public class PlayerViolation {
@@ -11,31 +8,35 @@ public class PlayerViolation {
     public final Enums.HackType hackType;
     public final long time;
     public final String information, detection;
-    public final int level, similarityIdentity;
+    public final int level, identity;
     public final boolean isOption;
 
-    public PlayerViolation(Enums.HackType hackType, long time, String information, int level) {
+    public PlayerViolation(long time,
+                           Enums.HackType hackType,
+                           String information,
+                           int level,
+                           InformationAnalysis analysis) {
         this.hackType = hackType;
         this.time = time;
         this.information = information;
         this.level = level;
 
-        InformationAnalysis informationAnalysis = new InformationAnalysis(hackType, information);
-        this.detection = informationAnalysis.detection;
-        this.isOption = informationAnalysis.isOption;
-        int hash = informationAnalysis.hash;
+        this.detection = analysis.detection;
+        this.isOption = analysis.isOption;
+        this.identity = analysis.identity;
+    }
 
-        if (!informationAnalysis.numbers.isEmpty()) {
-            for (Number number : informationAnalysis.numbers) {
-                if (number instanceof Double) {
-                    hash = (hash * SpartanBukkit.hashCodeMultiplier)
-                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), GroundUtils.maxHeightLength));
-                } else {
-                    hash = (hash * SpartanBukkit.hashCodeMultiplier) + number.intValue();
-                }
-            }
-        }
-        this.similarityIdentity = hash;
+    public PlayerViolation(long time,
+                           Enums.HackType hackType,
+                           String information,
+                           int level) {
+        this(
+                time,
+                hackType,
+                information,
+                level,
+                new InformationAnalysis(hackType, information)
+        );
     }
 
     boolean isDetectionEnabled() {
@@ -43,6 +44,6 @@ public class PlayerViolation {
     }
 
     public int getIgnoredViolations(SpartanPlayer player) {
-        return hackType.getCheck().getIgnoredViolations(player.dataType, this.similarityIdentity);
+        return hackType.getCheck().getIgnoredViolations(player.dataType, this.identity);
     }
 }

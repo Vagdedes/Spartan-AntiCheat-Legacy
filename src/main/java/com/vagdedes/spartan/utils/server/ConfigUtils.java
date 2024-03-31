@@ -111,7 +111,6 @@ public class ConfigUtils {
         message = replace(message, "{player:type}", p.dataType.lowerCase);
         message = replace(message, "{uuid}", uuid.toString());
         message = replace(message, "{ping}", String.valueOf(p.getPing()));
-        message = replace(message, "{vls}", String.valueOf(p.getViolationCount()));
         message = replace(message, "{world}", worldName);
         message = replace(message, "{health}", String.valueOf(p.getHealth()));
         message = replace(message, "{gamemode}", p.getGameMode().toString().toLowerCase());
@@ -129,7 +128,7 @@ public class ConfigUtils {
 
         if (hackType != null) {
             message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
-            message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getLevel()));
+            message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getTotalLevel()));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }
@@ -150,7 +149,6 @@ public class ConfigUtils {
             if (p != null) {
                 SpartanLocation loc = p.movement.getLocation();
                 String worldName = p.getWorld().getName();
-                message = replace(message, "{vls}", String.valueOf(p.getViolationCount()));
                 message = replace(message, "{player:type}", p.dataType.lowerCase);
                 message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(p, false), 2)));
                 message = replace(message, "{ping}", String.valueOf(p.getPing()));
@@ -172,7 +170,7 @@ public class ConfigUtils {
 
                 if (hasHackType) {
                     message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
-                    message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getLevel()));
+                    message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getTotalLevel()));
                 }
             } else if (hasHackType) {
                 PlayerProfile profile = ResearchEngine.getPlayerProfileAdvanced(name, false);

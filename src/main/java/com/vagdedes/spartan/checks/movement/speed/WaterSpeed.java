@@ -204,7 +204,6 @@ public class WaterSpeed extends DetectionExecutor {
                         cancel = (horizontal - limit) >= 0.35 || buffer.start("water=safety=max", 20) >= 5;
                     } else {
                         cancel = limit != modifiedLimit
-                                || player.getViolations(hackType).hasLevel()
                                 || buffer.start("water=safety=min", 12) >= 4;
                     }
 

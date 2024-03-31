@@ -621,15 +621,6 @@ public class SpartanPlayer {
         return lastViolation;
     }
 
-    public int getViolationCount() {
-        int sum = 0;
-
-        for (LiveViolation liveViolation : violations) {
-            sum += liveViolation.getLevel();
-        }
-        return sum;
-    }
-
     public void setLastViolation(LiveViolation liveViolation) {
         this.lastViolation = liveViolation;
     }

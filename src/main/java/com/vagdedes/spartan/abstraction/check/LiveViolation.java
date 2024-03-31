@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.profiling.InformationAnalysis;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -35,7 +36,7 @@ import java.util.*;
 
 public class LiveViolation {
 
-    private static final Map<LiveViolation, String> maxLevel
+    private static final Map<LiveViolation, PlayerViolation> maxLevel
             = Cache.store(Collections.synchronizedMap(new LinkedHashMap<>()));
 
     static {
@@ -43,14 +44,14 @@ public class LiveViolation {
             SpartanBukkit.runRepeatingTask(() -> {
                 if (!maxLevel.isEmpty()) {
                     synchronized (maxLevel) {
-                        Iterator<Map.Entry<LiveViolation, String>> iterator = maxLevel.entrySet().iterator();
+                        Iterator<Map.Entry<LiveViolation, PlayerViolation>> iterator = maxLevel.entrySet().iterator();
 
                         while (iterator.hasNext()) {
-                            Map.Entry<LiveViolation, String> entry = iterator.next();
+                            Map.Entry<LiveViolation, PlayerViolation> entry = iterator.next();
                             LiveViolation violations = entry.getKey();
 
-                            if (violations.getLevel() < Check.maxViolationsPerCycle) {
-                                new HackPrevention(violations.player, violations.hackType, entry.getValue(),
+                            if (violations.getLevel(entry.getValue().identity) < Check.maxViolationsPerCycle) {
+                                new HackPrevention(violations.player, violations.hackType, entry.getValue().information,
                                         null, 0, false, 0.0, 1);
                             } else {
                                 iterator.remove();
@@ -64,20 +65,17 @@ public class LiveViolation {
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
-    private long cycleExpiration, lastTick;
-    private final Map<Integer, Long> ignoredLevel;
-    private int level;
+    private long lastTick;
+    private final Map<Integer, Long> level;
     private CancelCause disableCause, silentCause;
     private final Map<Integer, HackPrevention> queue;
 
     public LiveViolation(SpartanPlayer player, Enums.HackType hackType) {
         this.player = player;
         this.hackType = hackType;
-        this.level = 0;
-        this.ignoredLevel = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.level = Collections.synchronizedMap(new LinkedHashMap<>());
         this.lastTick = 0L;
         this.queue = Collections.synchronizedMap(new LinkedHashMap<>());
-        reset(); // Do not make it local as it takes part in object initiation and is not important
     }
 
     // Separator
@@ -118,19 +116,21 @@ public class LiveViolation {
                 && (disableCause == null
                 || !disableCause.pointerMatches(hp.information))) {
             Check check = hackType.getCheck();
-            int violations = this.getLevel() + 1;
+            InformationAnalysis analysis = new InformationAnalysis(hackType, hp.information);
+            int violations = this.getLevel(analysis.identity) + 1;
             PlayerViolation playerViolation = new PlayerViolation(
-                    hackType,
                     hp.time,
+                    hackType,
                     hp.information,
-                    violations
+                    violations,
+                    analysis
             );
             boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api"),
                     canPrevent = !check.isSilent(player.getWorld().getName())
                             && (silentCause == null
                             || !silentCause.pointerMatches(hp.information))
                             && (player.getProfile().isSuspectedOrHacker(hackType)
-                            || this.hasMaxIgnoredLevel(playerViolation.similarityIdentity));
+                            || violations >= playerViolation.getIgnoredViolations(player));
 
             this.lastTick = hp.tick;
             this.player.setLastViolation(this);
@@ -142,7 +142,7 @@ public class LiveViolation {
                     case 2:
                         // Algorithm will redirect this to case '1'.
                         synchronized (maxLevel) {
-                            maxLevel.put(this, hp.information);
+                            maxLevel.put(this, playerViolation);
                         }
                         break;
                     case 1:
@@ -155,7 +155,7 @@ public class LiveViolation {
                             }
                         }
                         player.getProfile().getViolationHistory(hackType).store(playerViolation);
-                        this.setLevel(playerViolation.similarityIdentity, violations);
+                        this.increaseLevel(playerViolation.identity);
                         performNotification(hp.information, playerViolation, true, canPrevent);
 
                         if (canPrevent) {
@@ -197,76 +197,73 @@ public class LiveViolation {
 
     // Separator
 
-    public int getLevel() {
-        timeReset();
-        return level;
+    public int getLevel(int hash) {
+        Long time;
+
+        synchronized (this.level) {
+            time = this.level.get(hash);
+        }
+        return this.getLevel(time);
+    }
+
+    private int getLevel(Long time) {
+        if (time != null) {
+            time -= System.currentTimeMillis();
+            return time > 0L ? AlgebraUtils.integerRound(time / 1000.0) : 0;
+        } else {
+            return 0;
+        }
+    }
+
+    public int getTotalLevel() {
+        if (!this.level.isEmpty()) {
+            int total = 0;
+
+            for (Long level : this.level.values()) {
+                total += this.getLevel(level);
+            }
+            return total;
+        } else {
+            return 0;
+        }
     }
 
     public boolean hasLevel() {
-        return getLevel() > 0;
+        if (!this.level.isEmpty()) {
+            for (Long level : this.level.values()) {
+                if (this.getLevel(level) > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    private boolean hasMaxIgnoredLevel(int hash) {
-        Long time;
-
-        synchronized (ignoredLevel) {
-            time = ignoredLevel.get(hash);
-        }
-        if (time != null) {
-            time -= System.currentTimeMillis();
-            return time > 0L
-                    && (time / 1000.0) >= (hackType.getCheck().getIgnoredViolations(player.dataType, hash) - 1); // -1 so we don't ceil the number
-        } else {
-            return false;
-        }
-    }
-
-    private void setLevel(int hash, int amount) {
-        timeReset();
-        int previousLevel = level;
-
-        // Violations
-        if (amount < Check.maxViolationsPerCycle) {
-            this.level = amount;
-            increaseIgnoredLevel(hash); // Increase it in case a player has reached the max level and is still cheating
-        }
-        timeReset(); // Always after changing the level
-
-        // Always last
-        if (previousLevel != level) {
-            InteractiveInventory.playerInfo.refresh(player.name);
-        }
-    }
-
-    private void increaseIgnoredLevel(int hash) {
+    private void increaseLevel(int hash) {
         double multiplier = 1.0 + player.getProfile().evidence.getKnowledgeList().size();
 
-        synchronized (ignoredLevel) {
-            Long time = ignoredLevel.get(hash);
+        synchronized (this.level) {
+            Long time = this.level.get(hash);
 
             if (time == null) {
-                ignoredLevel.put(hash, System.currentTimeMillis() + AlgebraUtils.integerRound(1_000 * multiplier));
+                this.level.put(hash, System.currentTimeMillis() + AlgebraUtils.integerRound(1_000 * multiplier));
             } else {
                 long current = System.currentTimeMillis();
 
                 if (time < current) {
-                    this.ignoredLevel.put(hash, current + AlgebraUtils.integerRound(1_000 * multiplier));
+                    this.level.put(hash, current + AlgebraUtils.integerRound(1_000 * multiplier));
                 } else {
                     time += AlgebraUtils.integerRound(1_000 * multiplier);
-                    this.ignoredLevel.put(hash, time);
+                    this.level.put(hash, time);
                 }
             }
         }
+        InteractiveInventory.playerInfo.refresh(player.name);
     }
 
     // Separator
 
     public void reset() {
-        reset(false);
-    }
-
-    private void reset(boolean local) {
-        long tick = TPS.getTick(player);
         ViolationResetEvent event;
 
         if (SpartanBukkit.isSynchronised()) {
@@ -286,28 +283,18 @@ public class LiveViolation {
             event = null;
         }
 
-        if (event == null
-                || !event.isCancelled()
-                || this.cycleExpiration <= tick) {
+        if (event == null || !event.isCancelled()) {
             synchronized (maxLevel) {
                 maxLevel.remove(this);
             }
-            this.level = 0;
+            synchronized (this.level) {
+                this.level.clear();
+            }
         }
-        this.cycleExpiration = tick + Check.violationCycleTicks;
 
         // Always last
         player.getProfile().evidence.remove(hackType, true, false, true);
-
-        if (local) {
-            InteractiveInventory.playerInfo.refresh(player.name);
-        }
-    }
-
-    private void timeReset() {
-        if (this.cycleExpiration <= TPS.getTick(player)) {
-            reset(true);
-        }
+        InteractiveInventory.playerInfo.refresh(player.name);
     }
 
     // Separator

@@ -169,7 +169,7 @@ public class DetectionNotifications {
                             block.material,
                             XRay.check,
                             true,
-                            player.getViolations(XRay.check).getLevel()
+                            -1
                     );
                     MiningHistory miningHistory = player.getProfile().getMiningHistory(ore);
 

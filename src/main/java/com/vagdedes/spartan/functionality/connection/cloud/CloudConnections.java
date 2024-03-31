@@ -449,7 +449,7 @@ public class CloudConnections {
                         String information = "x" + playerViolation.level
                                 + " (" + playerViolation.information + ")";
 
-                        if (uniqueInformation.add(playerViolation.similarityIdentity)) {
+                        if (uniqueInformation.add(playerViolation.identity)) {
                             softwareInformation.append(information).append(newLine);
                             validViolations++;
 

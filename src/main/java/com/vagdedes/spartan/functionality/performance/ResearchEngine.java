@@ -631,7 +631,7 @@ public class ResearchEngine {
                                                                     AntiCheatLogs.usualDateFormat
                                                     );
                                                     playerProfile.getViolationHistory(hackType).store(
-                                                            new PlayerViolation(hackType, sdf.parse(fullDate).getTime(), detection, violation)
+                                                            new PlayerViolation(sdf.parse(fullDate).getTime(), hackType, detection, violation)
                                                     );
                                                 }
                                             }
