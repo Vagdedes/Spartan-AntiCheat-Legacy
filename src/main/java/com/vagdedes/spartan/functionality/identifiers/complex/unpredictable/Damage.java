@@ -4,6 +4,8 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
+import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -33,7 +35,7 @@ public class Damage { // todo replace
         if (e == null) {
             result = true;
         } else if (p.getVehicle() == null && !p.getHandlers().has(Handlers.HandlerType.ElytraUse)) {
-            if (hasCooldown(p)
+            if (hasCooldown(p, null)
                     || Math.max(p.movement.getCustomDistance(), p.movement.getValueOrDefault(p.movement.getNmsDistance(), 0.0)) >= 0.18
                     || !p.getHandlers().has(Handlers.HandlerType.Damage, selfHitKey + "=" + e.getUniqueId())
                     || p.getItemInHand().containsEnchantment(Enchantment.ARROW_KNOCKBACK)) {
@@ -63,30 +65,28 @@ public class Damage { // todo replace
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) && damager instanceof Warden) {
                 int time = !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60;
                 p.getHandlers().add(Handlers.HandlerType.Velocity, time);
-                addCooldown(p, time);
+                addCooldown(p, null, time);
             } else if (damager instanceof Golem) {
-                addCooldown(p, 80);
-            } else if (damager instanceof Player) {
+                addCooldown(p, null, 80);
+            } else {
                 SpartanPlayer t = SpartanBukkit.getPlayer((Player) damager);
 
                 if (t == null) {
-                    addCooldown(p, 40);
+                    addCooldown(p, null, 40);
                 } else {
                     int level = t.getItemInHand().getEnchantmentLevel(Enchantment.KNOCKBACK);
 
                     if (level > 2) {
-                        int ticks = Math.min(level * 20, 100);
-                        p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
-                        addCooldown(p, knockbackKey, ticks);
+                        p.getHandlers().add(Handlers.HandlerType.Velocity, 100);
                     } else if (level > 0) {
                         addCooldown(p, knockbackKey, 60);
                     } else {
-                        addCooldown(p, 40);
+                        addCooldown(p, null, 40);
                     }
                 }
-            } else {
-                addCooldown(p, 30);
             }
+        } else if (MythicMobs.is(damager) || ItemsAdder.is(damager)) {
+            addCooldown(p, null, 40);
         }
     }
 
@@ -99,7 +99,7 @@ public class Damage { // todo replace
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) damager);
 
             if (p != null) {
-                addCooldown(p, 40);
+                addCooldown(p, null, 40);
             }
         } else if (damager instanceof Projectile && entity instanceof Player && dmg == DamageCause.PROJECTILE) {
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
@@ -148,7 +148,7 @@ public class Damage { // todo replace
                         }
                     }
                 } else if (!t.equals(p)) {
-                    addCooldown(p, 40);
+                    addCooldown(p, null, 40);
                 }
 
                 // Do not connect with else statement
@@ -159,9 +159,9 @@ public class Damage { // todo replace
                 if (projectile.getShooter() instanceof EnderDragon) {
                     int ticks = 60;
                     p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
-                    addCooldown(p, ticks);
+                    addCooldown(p, null, ticks);
                 } else {
-                    addCooldown(p, 30);
+                    addCooldown(p, null, 30);
                 }
             } else {
                 p.movement.setAirTicks(0);
@@ -209,10 +209,6 @@ public class Damage { // todo replace
         return false;
     }
 
-    public static boolean hasCooldown(SpartanPlayer p) {
-        return hasCooldown(p, null);
-    }
-
     // Modification Methods
 
     public static void addCooldown(SpartanPlayer p, String reason, int time) {
@@ -222,9 +218,5 @@ public class Damage { // todo replace
         if (reason != null) {
             handlers.add(Handlers.HandlerType.Damage, reason, time);
         }
-    }
-
-    public static void addCooldown(SpartanPlayer p, int time) {
-        addCooldown(p, null, time);
     }
 }

@@ -344,7 +344,7 @@ public class Speed extends CheckExecutor {
                 vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                 explosion = !hasTrident && player.getHandlers().has(Handlers.HandlerType.Explosion),
-                damage = Damage.hasCooldown(player),
+                damage = Damage.hasCooldown(player, null),
                 knockback = Damage.hasCooldown(player, Damage.knockbackKey),
                 hitDelay = damage && NoHitDelay.hasCooldown(player),
                 incompatibilities = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();

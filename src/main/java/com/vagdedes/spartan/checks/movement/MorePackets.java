@@ -104,7 +104,7 @@ public class MorePackets extends CheckExecutor {
                             decreasedRequirement = false;
                         } else if (!player.bedrockPlayer
                                 && !player.isUsingItem()
-                                && !Damage.hasCooldown(player)
+                                && !Damage.hasCooldown(player, null)
                                 && !player.getHandlers().has(Handlers.HandlerType.Explosion)
                                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                                 && !player.getHandlers().has(Handlers.HandlerType.Trident)

@@ -97,7 +97,7 @@ public class SprintSpeed extends DetectionExecutor {
 
     private void checkOmnidirectional(SpartanLocation to, Buffer buffer) {
         if (!hackType.getCheck().getBooleanOption("check_omnidirectional_sprinting", true)
-                || Damage.hasCooldown(player)
+                || Damage.hasCooldown(player, null)
                 || player.getHandlers().has(Handlers.HandlerType.Explosion)
                 || player.getHandlers().has(Handlers.HandlerType.Piston)
                 || CrackShot.isUsingScope(player)

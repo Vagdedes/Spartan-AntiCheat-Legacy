@@ -351,7 +351,7 @@ public class WaterSpeed extends DetectionExecutor {
 
     private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
         if (player.canRunCheck(hackType, true) && hackType.getCheck().getBooleanOption("check_water_speed", true)
-                && (selfHit || !Damage.hasCooldown(player)) && !PlayerUtils.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && (selfHit || !Damage.hasCooldown(player, null)) && !PlayerUtils.hasNearbyCollisions(player) && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && !PlayerUtils.hasLevitationEffect(player) && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                 Entity vehicle = player.getVehicle();

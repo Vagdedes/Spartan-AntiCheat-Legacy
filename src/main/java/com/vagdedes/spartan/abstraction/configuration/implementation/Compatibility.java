@@ -9,7 +9,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShotPlus;
 import com.vagdedes.spartan.compatibility.manual.building.*;
 import com.vagdedes.spartan.compatibility.manual.damage.RealDualWield;
-import com.vagdedes.spartan.compatibility.manual.damage.SmashHit;
 import com.vagdedes.spartan.compatibility.manual.entity.CraftBook;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
@@ -40,7 +39,7 @@ public class Compatibility {
 
     public enum CompatibilityType {
         AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, MagicSpells, ProtocolLib, mcMMO, NoHitDelay,
-        TreeFeller, VeinMiner, GrapplingHook, ViaRewind, RecentPvPMechanics, MineBomb, SmashHit, SuperPickaxe,
+        TreeFeller, VeinMiner, GrapplingHook, ViaRewind, RecentPvPMechanics, MineBomb, SuperPickaxe,
         RealDualWield, MythicMobs, ViaVersion, ItemAttributes, PrinterMode, Vehicles, MineTinker,
         WildTools, DragonPhases, AureliumSkills, KnockbackMaster, MyPet, CustomEnchantsPlus,
         EcoEnchants, ItemsAdder, RampenDrills, OldCombatMechanics, CustomKnockback, ProjectKorra, AcidRain,
@@ -359,9 +358,6 @@ public class Compatibility {
         CompatibilityType.ViaRewind.setFunctional(Speed::updateLimits);
         CompatibilityType.AureliumSkills.setFunctional(
                 () -> Register.enable(new AureliumSkills(), AureliumSkills.class)
-        );
-        CompatibilityType.SmashHit.setFunctional(
-                () -> Register.enable(new SmashHit(), SmashHit.class)
         );
         CompatibilityType.ItemsAdder.setFunctional();
         CompatibilityType.NoHitDelay.setFunctional(

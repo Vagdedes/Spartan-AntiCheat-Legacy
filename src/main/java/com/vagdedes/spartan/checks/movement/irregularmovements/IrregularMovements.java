@@ -209,7 +209,7 @@ public class IrregularMovements extends CheckExecutor {
                 canGoUp = true;
                 canGoDown = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (explosion || Damage.hasCooldown(player)) { // Damage Or Combat
+            } else if (explosion || Damage.hasCooldown(player, null)) { // Damage Or Combat
                 velocityScenario = true;
 
                 scenario = "damage/explosion";

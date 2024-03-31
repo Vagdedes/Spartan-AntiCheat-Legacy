@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.listeners;
 
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
@@ -20,7 +19,6 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,10 +30,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 
 public class EventsHandler6 implements Listener {
-
-    private static final String cooldownKey = "combat=multiple-hits";
-
-    // Separator
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Command(PlayerCommandPreprocessEvent e) {
@@ -71,161 +65,139 @@ public class EventsHandler6 implements Listener {
 
     // Separator
 
-    public static void runDealDamage(Event event,
-                                     SpartanPlayer player,
-                                     Entity defaultEntity,
-                                     double damage,
-                                     EntityDamageEvent.DamageCause dmg,
-                                     boolean cancelled) {
-        if (dmg != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            return;
-        }
-        boolean hitCooldown = player.getTimer().get("hit-cooldown") <= 5L;
-        player.getTimer().set("hit-cooldown");
-
-        if (!hitCooldown) {
-            player.calculateClicks(null, true);
-        }
-        // Object
-        if (event instanceof EntityDamageByEntityEvent) {
-            player.addDealtDamage((EntityDamageByEntityEvent) event);
-        }
-
-        if (defaultEntity instanceof LivingEntity) {
-            LivingEntity entity = (LivingEntity) defaultEntity;
-
-            if (!cancelled) {
-                // Compatibility
-                NoHitDelay.runDealDamage(player, entity);
-            }
-            if (!player.uuid.equals(defaultEntity.getUniqueId())
-                    && !mcMMO.hasGeneralAbility(player)
-                    && !MythicMobs.is(defaultEntity)
-                    && !ItemsAdder.is(defaultEntity)) {
-                double[] utility = CombatUtils.get_X_Y_Distance(player, entity);
-
-                // Detections
-                player.getExecutor(Enums.HackType.Velocity).handle(cancelled, event);
-                player.getExecutor(Enums.HackType.NoSwing).handle(cancelled, event);
-                player.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{damage, entity});
-
-                if (utility != null
-                        && (!hitCooldown
-                        || CombatUtils.isNewPvPMechanic(player, entity))) {
-                    Object[] objects = new Object[]{entity, utility};
-                    player.getExecutor(Enums.HackType.KillAura).run(cancelled);
-                    player.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
-                    player.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
-                }
-                if (!cancelled) {
-                    // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
-                    if (entity instanceof Player) {
-                        SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
-
-                        if (target != null) {
-                            player.getProfile().playerCombat.getFight(target).update(player);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     private void DealDamage(EntityDamageByEntityEvent e) {
-        if (!Compatibility.CompatibilityType.SmashHit.isFunctional()) {
-            Entity en = e.getDamager();
+        Entity en = e.getDamager();
 
-            if (en instanceof Player) {
-                SpartanPlayer p = SpartanBukkit.getPlayer((Player) en);
+        if (en instanceof Player) {
+            SpartanPlayer p = SpartanBukkit.getPlayer((Player) en);
 
-                if (p == null) {
-                    return;
-                }
-                // Detections
-                runDealDamage(e, p, e.getEntity(), e.getDamage(), e.getCause(), e.isCancelled());
-
-                if (p.getViolations(Enums.HackType.KillAura).process()
-                        || p.getViolations(Enums.HackType.Criticals).process()
-                        || p.getViolations(Enums.HackType.NoSwing).process()
-                        || p.getViolations(Enums.HackType.FastClicks).process()) {
-                    e.setCancelled(true);
-                }
-            } else {
-                Entity entity = e.getEntity();
-
-                if (entity instanceof Player) {
-                    Player n = (Player) entity;
-                    SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-                    if (p == null) {
-                        return;
-                    }
-                    // Objects
-                    p.addReceivedDamage(e);
-                }
+            if (p == null) {
+                return;
             }
-        }
-    }
+            // Object
+            p.addDealtDamage(e);
 
-    // Separator
+            // Detections
+            if (e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                Entity defaultEntity = e.getEntity();
+                boolean hitCooldown = p.getTimer().get("hit-cooldown") <= 5L;
+                p.getTimer().set("hit-cooldown");
 
-    public static void runReceiveDamage(Entity damager, Entity entity, EntityDamageEvent.DamageCause dmg, boolean cancelled) {
-        if (!damager.equals(entity)) {
-            if (entity instanceof Player) {
-                SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
-
-                if (p == null) {
-                    return;
+                if (!hitCooldown) {
+                    p.calculateClicks(null, true);
                 }
-                GameMode gameMode = p.getGameMode();
 
-                if (cancelled && (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)) {
-                    return;
-                }
-                // Handlers
-                Damage.runReceiveDamage(dmg, p, damager);
-                Explosion.runDamage(p, damager, dmg);
-                FloorProtection.runReceiveDamage(p, damager, dmg);
+                if (defaultEntity instanceof LivingEntity) {
+                    boolean cancelled = e.isCancelled();
+                    LivingEntity entity = (LivingEntity) defaultEntity;
 
-                if (MythicMobs.is(damager) || ItemsAdder.is(damager)) {
-                    Damage.addCooldown(p, 40);
-                }
-            } else {
-                Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
+                    if (!cancelled) {
+                        // Compatibility
+                        NoHitDelay.runDealDamage(p, entity);
+                    }
+                    if (!p.uuid.equals(defaultEntity.getUniqueId())
+                            && !mcMMO.hasGeneralAbility(p)
+                            && !MythicMobs.is(defaultEntity)
+                            && !ItemsAdder.is(defaultEntity)) {
+                        double[] utility = CombatUtils.get_X_Y_Distance(p, entity);
 
-                if (passengers.length > 0) {
-                    for (Entity passenger : passengers) {
-                        if (passenger instanceof Player) {
-                            SpartanPlayer p = SpartanBukkit.getPlayer((Player) passenger);
+                        // Detections
+                        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
+                        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
+                        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{e.getDamage(), entity});
 
-                            if (p != null) {
-                                // Handlers
-                                Damage.runReceiveDamage(dmg, p, damager);
-                                Explosion.runDamage(p, damager, dmg);
+                        if (utility != null
+                                && (!hitCooldown
+                                || CombatUtils.isNewPvPMechanic(p, entity))) {
+                            Object[] objects = new Object[]{entity, utility};
+                            p.getExecutor(Enums.HackType.KillAura).run(cancelled);
+                            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
+                            p.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
+                        }
+                        if (!cancelled) {
+                            // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
+                            if (entity instanceof Player) {
+                                SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
+
+                                if (target != null) {
+                                    p.getProfile().playerCombat.getFight(target).update(p);
+                                }
                             }
                         }
                     }
                 }
+            }
+
+            if (p.getViolations(Enums.HackType.KillAura).process()
+                    || p.getViolations(Enums.HackType.Criticals).process()
+                    || p.getViolations(Enums.HackType.NoSwing).process()
+                    || p.getViolations(Enums.HackType.FastClicks).process()) {
+                e.setCancelled(true);
+            }
+        } else {
+            Entity entity = e.getEntity();
+
+            if (entity instanceof Player) {
+                Player n = (Player) entity;
+                SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+                if (p == null) {
+                    return;
+                }
+                // Objects
+                p.addReceivedDamage(e);
             }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ReceiveDamage(EntityDamageByEntityEvent e) {
-        if (!Compatibility.CompatibilityType.SmashHit.isFunctional()) {
-            Entity entity = e.getEntity();
-            Entity damager = e.getDamager();
+        Entity entity = e.getEntity();
+        Entity damager = e.getDamager();
 
-            if (damager != null && entity != null) {
-                boolean cancelled = e.isCancelled();
-                EntityDamageEvent.DamageCause cause = e.getCause();
+        if (damager != null && entity != null) {
+            boolean cancelled = e.isCancelled();
+            EntityDamageEvent.DamageCause cause = e.getCause();
 
-                // Protections
-                if (Damage.runDealAndReceiveDamage(damager, entity, cause, cancelled)) {
-                    e.setCancelled(true);
-                } else {
-                    runReceiveDamage(damager, entity, cause, cancelled);
+            // Protections
+            if (Damage.runDealAndReceiveDamage(damager, entity, cause, cancelled)) {
+                e.setCancelled(true);
+            } else {
+                if (!damager.equals(entity)) {
+                    if (entity instanceof Player) {
+                        SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
+
+                        if (p == null) {
+                            return;
+                        }
+                        GameMode gameMode = p.getGameMode();
+
+                        if (cancelled && (gameMode == GameMode.SURVIVAL
+                                || gameMode == GameMode.ADVENTURE)) {
+                            return;
+                        }
+                        // Handlers
+                        Damage.runReceiveDamage(cause, p, damager);
+                        Explosion.runDamage(p, damager, cause);
+                        FloorProtection.runReceiveDamage(p, damager, cause);
+                    } else {
+                        Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
+
+                        if (passengers.length > 0) {
+                            for (Entity passenger : passengers) {
+                                if (passenger instanceof Player) {
+                                    SpartanPlayer p = SpartanBukkit.getPlayer((Player) passenger);
+
+                                    if (p != null) {
+                                        // Handlers
+                                        Damage.runReceiveDamage(cause, p, damager);
+                                        Explosion.runDamage(p, damager, cause);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
