@@ -26,7 +26,7 @@ public class Settings extends ConfigurationBuilder {
         super("settings");
     }
 
-    public static final String explosionOption = "Protections.explosion_detection_cooldown",
+    public static final String
             showEcosystemOption = "Important.show_ecosystem",
             tpsProtectionOption = "Protections.use_tps_protection",
             maxSupportedLatencyOption = "Protections.max_supported_player_latency",

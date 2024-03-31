@@ -3,8 +3,9 @@ package com.vagdedes.spartan.listeners;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
+import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.identifiers.simple.Building;
 import com.vagdedes.spartan.functionality.identifiers.simple.SensitiveBlockBreak;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
@@ -18,10 +19,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+
+import java.net.InetAddress;
 
 public class EventsHandler5 implements Listener {
 
@@ -151,8 +154,13 @@ public class EventsHandler5 implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public static void BlockExplode(BlockExplodeEvent e) {
-        Explosion.runExplosion(e.getBlock());
+    @EventHandler
+    private void PreLoginEvent(AsyncPlayerPreLoginEvent e) {
+        // Features
+        if (e.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            InetAddress address = e.getAddress();
+            String ipAddress = address != null ? PlayerLimitPerIP.get(address) : null;
+            CloudConnections.updatePunishedPlayer(e.getUniqueId(), ipAddress);
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.data.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
+import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -104,7 +105,7 @@ public class MorePackets extends CheckExecutor {
                         } else if (!player.bedrockPlayer
                                 && !player.isUsingItem()
                                 && !player.getLastDamageReceived().isSignificant(TPS.tickTime)
-                                && !player.getHandlers().has(Handlers.HandlerType.Explosion)
+                                && !Damage.hasExplosion(player)
                                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                                 && !player.getHandlers().has(Handlers.HandlerType.Trident)
                                 && zeroTickBuffer > (tickBuffer / 2)) {

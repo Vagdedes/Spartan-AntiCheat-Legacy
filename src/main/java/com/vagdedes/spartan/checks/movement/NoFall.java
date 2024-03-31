@@ -11,6 +11,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
+import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -340,7 +341,7 @@ public class NoFall extends CheckExecutor {
                         && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                         && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                         && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)
-                        && !player.getHandlers().has(Handlers.HandlerType.Explosion)
+                        && !Damage.hasExplosion(player)
                         && !player.getHandlers().has(Handlers.HandlerType.TowerBuilding)
                         && !NoHitDelay.hasCooldown(player)
                         && !PlayerUtils.hasLevitationEffect(player)

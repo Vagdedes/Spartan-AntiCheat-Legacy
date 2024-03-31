@@ -98,7 +98,8 @@ public class SpartanPlayerDamage {
     }
 
     public boolean isPropellingProjectile() { // todo cover fishing rods
-        if (this.ticksPassed() <= TPS.maximum
+        if (!this.event.isCancelled()
+                && this.ticksPassed() <= TPS.maximum
                 && this.parent.movement.getTicksOnAir() <= TPS.maximum
                 && this.location.getPitch() <= -60.0f
                 && this.event instanceof EntityDamageByEntityEvent) {
@@ -113,61 +114,63 @@ public class SpartanPlayerDamage {
     }
 
     public boolean hasBigKnockBack() {
-        int time = (int) TPS.maximum * 2;
-        return this.ticksPassed() <= time
-                && this.parent.movement.getTicksOnAir() <= time
-                && (this.boss
-                || this.explosive
-                || this.activeItem != null
-                && this.activeItem.containsEnchantment(Enchantment.KNOCKBACK));
+        if (this.event.isCancelled()) {
+            return false;
+        } else {
+            int time = (int) TPS.maximum * 2;
+            return this.ticksPassed() <= time
+                    && this.parent.movement.getTicksOnAir() <= time
+                    && (this.boss
+                    || this.explosive
+                    || this.activeItem != null
+                    && this.activeItem.containsEnchantment(Enchantment.KNOCKBACK));
+        }
     }
 
     public boolean isSignificant(long ticksPassed) {
-        switch (this.event.getCause()) {
-            case ENTITY_ATTACK:
-            case PROJECTILE:
-                return this.ticksPassed() <= ticksPassed;
-            default:
-                return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                        && event.getCause() == EntityDamageEvent.DamageCause.DRAGON_BREATH;
+        if (this.event.isCancelled()) {
+            return false;
+        } else {
+            switch (this.event.getCause()) {
+                case ENTITY_ATTACK:
+                case PROJECTILE:
+                    return this.ticksPassed() <= ticksPassed;
+                default:
+                    return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                            && event.getCause() == EntityDamageEvent.DamageCause.DRAGON_BREATH;
+            }
         }
     }
 
     public boolean isSubtle(long ticksPassed) {
-        EntityDamageEvent.DamageCause cause = this.event.getCause();
+        if (this.event.isCancelled()) {
+            return false;
+        } else {
+            EntityDamageEvent.DamageCause cause = this.event.getCause();
 
-        switch (cause) {
-            case STARVATION:
-            case LIGHTNING:
-            case THORNS:
-            case VOID:
-            case POISON:
-            case WITHER:
-            case CONTACT:
-            case FALL:
-                return this.ticksPassed() <= ticksPassed
-                        && this.parent.movement.getTicksOnAir() <= TPS.maximum;
-            default:
-                return cause == EntityDamageEvent.DamageCause.SUFFOCATION
-                        && !this.parent.isOutsideOfTheBorder(0.0)
-                        || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                        && cause == EntityDamageEvent.DamageCause.WORLD_BORDER
-                        || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)
-                        && cause == EntityDamageEvent.DamageCause.HOT_FLOOR
-                        || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
-                        && cause == EntityDamageEvent.DamageCause.MAGIC
-                        || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                        && cause == EntityDamageEvent.DamageCause.FREEZE;
-        }
-    }
-
-    public boolean isExplosion(long ticksPassed) {
-        switch (this.event.getCause()) {
-            case ENTITY_EXPLOSION:
-            case BLOCK_EXPLOSION:
-                return this.ticksPassed() <= ticksPassed;
-            default:
-                return false;
+            switch (cause) {
+                case STARVATION:
+                case LIGHTNING:
+                case THORNS:
+                case VOID:
+                case POISON:
+                case WITHER:
+                case CONTACT:
+                case FALL:
+                    return this.ticksPassed() <= ticksPassed
+                            && this.parent.movement.getTicksOnAir() <= TPS.maximum;
+                default:
+                    return cause == EntityDamageEvent.DamageCause.SUFFOCATION
+                            && !this.parent.isOutsideOfTheBorder(0.0)
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                            && cause == EntityDamageEvent.DamageCause.WORLD_BORDER
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)
+                            && cause == EntityDamageEvent.DamageCause.HOT_FLOOR
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
+                            && cause == EntityDamageEvent.DamageCause.MAGIC
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                            && cause == EntityDamageEvent.DamageCause.FREEZE;
+            }
         }
     }
 }

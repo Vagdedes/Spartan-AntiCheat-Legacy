@@ -6,7 +6,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -145,28 +144,21 @@ public class EventsHandler6 implements Listener {
             if (p == null) {
                 return;
             }
-            EntityDamageEvent.DamageCause cause = e.getCause();
-
             // Objects
             p.addReceivedDamage(e);
-
-            // Handlers
-            Explosion.runDamage(p, damager, cause);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? defaultEntity.getPassengers().toArray(new Entity[0])
                     : new Entity[]{defaultEntity.getPassenger()};
 
             if (passengers.length > 0) {
-                EntityDamageEvent.DamageCause cause = e.getCause();
-
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
                         SpartanPlayer p = SpartanBukkit.getPlayer((Player) passenger);
 
                         if (p != null) {
-                            // Handlers
-                            Explosion.runDamage(p, damager, cause);
+                            // Objects
+                            p.addReceivedDamage(e);
                         }
                     }
                 }

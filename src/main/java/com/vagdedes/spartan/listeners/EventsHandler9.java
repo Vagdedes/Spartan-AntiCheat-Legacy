@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -13,27 +11,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 
-import java.net.InetAddress;
 import java.util.Collection;
 import java.util.List;
 
 public class EventsHandler9 implements Listener {
 
     private static long InventoryMoveItemEventCooldown = 0L;
-
-    @EventHandler
-    private void PreLoginEvent(AsyncPlayerPreLoginEvent e) {
-        // Features
-        if (e.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            InetAddress address = e.getAddress();
-            String ipAddress = address != null ? PlayerLimitPerIP.get(address) : null;
-            CloudConnections.updatePunishedPlayer(e.getUniqueId(), ipAddress);
-        }
-    }
 
     @EventHandler
     private void PluginEnable(PluginEnableEvent e) {

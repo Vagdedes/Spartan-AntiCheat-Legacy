@@ -1220,28 +1220,24 @@ public class SpartanPlayer {
     }
 
     public void addReceivedDamage(EntityDamageEvent event) {
-        if (!event.isCancelled()) {
-            this.lastDamageReceived = new SpartanPlayerDamage(this, event, this.movement.getLocation());
+        this.lastDamageReceived = new SpartanPlayerDamage(this, event, this.movement.getLocation());
 
-            synchronized (this.damageReceived) {
-                this.damageReceived.put(
-                        event.getCause(),
-                        this.lastDamageReceived
-                );
-            }
+        synchronized (this.damageReceived) {
+            this.damageReceived.put(
+                    event.getCause(),
+                    this.lastDamageReceived
+            );
         }
     }
 
     public void addDealtDamage(EntityDamageByEntityEvent event) {
-        if (!event.isCancelled()) {
-            this.lastDamageDealt = new SpartanPlayerDamage(this, event, this.movement.getLocation());
+        this.lastDamageDealt = new SpartanPlayerDamage(this, event, this.movement.getLocation());
 
-            synchronized (this.damageDealt) {
-                this.damageDealt.put(
-                        event.getCause(),
-                        this.lastDamageDealt
-                );
-            }
+        synchronized (this.damageDealt) {
+            this.damageDealt.put(
+                    event.getCause(),
+                    this.lastDamageDealt
+            );
         }
     }
 

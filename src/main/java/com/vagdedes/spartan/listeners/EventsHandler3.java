@@ -7,7 +7,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -88,7 +87,6 @@ public class EventsHandler3 implements Listener {
 
                 // Handlers
                 p.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                Explosion.runDamage(p, null, dmg);
 
                 // Detections
                 ((NoFall) p.getExecutor(Enums.HackType.NoFall)).manageRatio(dmg, e.getDamage(), false);
@@ -107,9 +105,6 @@ public class EventsHandler3 implements Listener {
                             p.setFallDistance(n.getFallDistance(), false);
                             p.setHealth(n.getHealth());
                             p.addReceivedDamage(e);
-
-                            // Handlers
-                            Explosion.runDamage(p, null, dmg);
                         }
                     }
                 }

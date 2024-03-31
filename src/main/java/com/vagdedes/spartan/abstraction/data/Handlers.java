@@ -19,7 +19,7 @@ public class Handlers {
 
         Velocity(HandlerFamily.Velocity), BouncingBlocks(HandlerFamily.Velocity),
         Piston(HandlerFamily.Velocity), WaterElevator(HandlerFamily.Velocity),
-        Explosion(HandlerFamily.Velocity), ExtremeCollision(HandlerFamily.Velocity),
+        ExtremeCollision(HandlerFamily.Velocity),
 
         ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part), GameMode(HandlerFamily.Part),
 

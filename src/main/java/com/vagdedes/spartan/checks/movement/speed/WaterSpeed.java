@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
+import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -304,8 +305,12 @@ public class WaterSpeed extends DetectionExecutor {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), 4.5));
         } else if (player.getHandlers().has(Handlers.HandlerType.Piston)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), Speed.piston));
-        } else if (boatStepping || selfHit || horizontalBuffer < 0 || vehicle instanceof Horse
-                || !cooldowns.canDo("ice") || player.getHandlers().has(Handlers.HandlerType.Explosion)) {
+        } else if (boatStepping
+                || selfHit
+                || horizontalBuffer < 0
+                || vehicle instanceof Horse
+                || !cooldowns.canDo("ice")
+                || Damage.hasExplosion(player)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), premature));
         } else if (player.bedrockPlayer
                 || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()

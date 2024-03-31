@@ -10,6 +10,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
+import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -163,7 +164,7 @@ public class IrregularMovements extends CheckExecutor {
                     bouncingBlocks = BouncingBlocks.isBelow(player),
                     jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP),
                     threwTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
-                    explosion = player.getHandlers().has(Handlers.HandlerType.Explosion),
+                    explosion = Damage.hasExplosion(player),
                     falling = player.movement.isFalling(vertical),
                     oldFalling = player.movement.isFalling(oldVertical),
                     jumping = player.movement.isJumping(vertical),
@@ -208,7 +209,7 @@ public class IrregularMovements extends CheckExecutor {
                 canGoDown = !forcefulUp;
                 canFall = !forcefulUp;
             } else if (explosion
-                    || player.getLastDamageReceived().ticksPassed() <= TPS.tickTime) { // Damage Or Combat
+                    || player.getLastDamageReceived().isSignificant(TPS.tickTime)) { // Damage Or Combat
                 velocityScenario = true;
 
                 scenario = "damage/explosion";

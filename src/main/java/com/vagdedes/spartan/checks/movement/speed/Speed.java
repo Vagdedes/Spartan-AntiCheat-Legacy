@@ -12,6 +12,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
+import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -345,7 +346,7 @@ public class Speed extends CheckExecutor {
         boolean bedrockPlayer = player.bedrockPlayer,
                 vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
-                explosion = !hasTrident && player.getHandlers().has(Handlers.HandlerType.Explosion),
+                explosion = !hasTrident && Damage.hasExplosion(player),
                 damage = player.getLastDamageReceived().isSignificant(TPS.tickTime),
                 knockback = player.getLastDamageReceived().hasBigKnockBack(),
                 hitDelay = damage && NoHitDelay.hasCooldown(player),

@@ -9,7 +9,6 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -155,7 +154,6 @@ public class EventsHandler1 implements Listener {
         // Handlers
         if (!e.isCancelled()) {
             p.getHandlers().add(Handlers.HandlerType.Velocity, 80);
-            Explosion.runVelocity(p);
         }
 
         // Detections
