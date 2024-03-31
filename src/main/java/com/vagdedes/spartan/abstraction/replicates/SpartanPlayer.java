@@ -84,7 +84,7 @@ public class SpartanPlayer {
 
     private float walkSpeed, flySpeed, fallDistance;
     private boolean frozen, onGroundCustom, dead, sleeping, usingItem, invulnerable;
-    private int ping, maximumNoDamageTicks, foodLevel, fireTicks;
+    private int ping, maximumNoDamageTicks, foodLevel;
     private double eyeHeight, health;
     private GameMode gameMode;
     public final boolean bedrockPlayer;
@@ -268,7 +268,6 @@ public class SpartanPlayer {
 
                         if (n != null) {
                             // Only
-                            p.setFireTicks(n.getFireTicks());
                             p.setFrozen(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && n.isFrozen());
                             p.setInvulnerable(p.isFrozen() || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && n.isInvulnerable());
 
@@ -351,7 +350,6 @@ public class SpartanPlayer {
         this.gameMode = p.getGameMode();
         this.health = p.getHealth();
         this.usingItem = p.isBlocking();
-        this.fireTicks = p.getFireTicks();
         this.openInventory = spartanOpenInv;
         this.maximumNoDamageTicks = p.getMaximumNoDamageTicks();
         this.fallDistance = p.getFallDistance();
@@ -804,16 +802,9 @@ public class SpartanPlayer {
     }
 
     public boolean isOnFire() {
-        return getFireTicks() != 0
-                && !hasPotionEffect(PotionEffectType.FIRE_RESISTANCE);
-    }
-
-    public int getFireTicks() {
-        return fireTicks;
-    }
-
-    public synchronized void setFireTicks(int fireTicks) {
-        this.fireTicks = fireTicks;
+        return !this.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)
+                && (this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE).ticksPassed() <= 5
+                || this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE_TICK).ticksPassed() <= 5);
     }
 
     // Separator

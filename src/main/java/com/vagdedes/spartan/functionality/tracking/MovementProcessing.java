@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
 public class MovementProcessing {

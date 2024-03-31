@@ -7,7 +7,6 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -153,7 +152,6 @@ public class EventsHandler6 implements Listener {
 
             // Handlers
             Explosion.runDamage(p, damager, cause);
-            FloorProtection.runReceiveDamage(p, damager, cause);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? defaultEntity.getPassengers().toArray(new Entity[0])

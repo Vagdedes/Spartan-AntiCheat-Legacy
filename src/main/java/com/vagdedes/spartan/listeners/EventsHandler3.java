@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
 import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -93,9 +92,6 @@ public class EventsHandler3 implements Listener {
 
                 // Detections
                 ((NoFall) p.getExecutor(Enums.HackType.NoFall)).manageRatio(dmg, e.getDamage(), false);
-
-                // Protections
-                FloorProtection.runDamage(p, dmg);
             }
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};

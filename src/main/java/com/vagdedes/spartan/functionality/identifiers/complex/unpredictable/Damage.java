@@ -1,24 +1,15 @@
 package com.vagdedes.spartan.functionality.identifiers.complex.unpredictable;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
-import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class Damage { // todo replace
-
-    private static final int blocksOffGround = 4;
-
-    // Runnables
 
     public static void runReceiveDamage(DamageCause cause, SpartanPlayer p, Entity damager) {
         if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK

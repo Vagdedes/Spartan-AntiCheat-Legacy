@@ -12,8 +12,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -25,6 +23,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
@@ -304,10 +303,12 @@ public class Speed extends CheckExecutor {
                     dm = cacheLimit(decimals, dm, air_non_solid_max, 8);
                 }
             } else {
-                if (!jumping && hor >= 0.33 && box > 0.0 && box < 0.1 && PlayerUtils.isOnGround(player, to, 0, -1, 0)) {
+                if (!jumping && hor >= 0.33 && box > 0.0 && box < 0.1
+                        && PlayerUtils.isOnGround(player, to, 0, -1, 0)) {
                     cooldowns.add("skip-ground-jump-limit", 10);
                 }
-                if (FloorProtection.hasCooldown(player)) {
+                if (player.getLastDamageReceived().event.getCause() != EntityDamageEvent.DamageCause.FALL
+                        && player.getLastDamageReceived().isSubtle(10)) {
                     dm = cacheLimit(decimals, dm, air_non_solid_min, 8);
                 } else {
                     dm = cacheLimit(decimals, dm, Speed.air, 8);
@@ -346,7 +347,7 @@ public class Speed extends CheckExecutor {
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                 explosion = !hasTrident && player.getHandlers().has(Handlers.HandlerType.Explosion),
                 damage = player.getLastDamageReceived().isSignificant(TPS.tickTime),
-                knockback = player.getLastDamageReceived().isKnockBack(),
+                knockback = player.getLastDamageReceived().hasBigKnockBack(),
                 hitDelay = damage && NoHitDelay.hasCooldown(player),
                 incompatibilities = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
         float difference = PlayerUtils.getWalkSpeedDifference(player);
@@ -371,7 +372,7 @@ public class Speed extends CheckExecutor {
                 && !incompatibilities && !bedrockPlayer && !vehicle && !damage && !extremelyPushed
                 && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
                 && !PlayerUtils.hasSpeedEffect(player, to, true) && !PlayerUtils.hasJumpEffect(player)
-                && !PlayerUtils.hasLevitationEffect(player) && !FloorProtection.hasCooldown(player)
+                && !PlayerUtils.hasLevitationEffect(player) && !player.getLastDamageReceived().isSubtle(10)
                 && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
             boolean aboveBlocksCopy = aboveBlocks;
 
@@ -559,7 +560,7 @@ public class Speed extends CheckExecutor {
                             || explosion
                             || damage
                             && (player.getLastDamageReceived().ticksPassed() <= 10
-                            || player.getLastDamageReceived().isKnockBack())) {
+                            || player.getLastDamageReceived().hasBigKnockBack())) {
                         time = 10;
                         attempts = 6;
                     } else if (PlayerUtils.hasHighJumpEffect(player)) {

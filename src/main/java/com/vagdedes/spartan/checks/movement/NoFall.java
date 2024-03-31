@@ -11,7 +11,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -346,7 +345,7 @@ public class NoFall extends CheckExecutor {
                         && !NoHitDelay.hasCooldown(player)
                         && !PlayerUtils.hasLevitationEffect(player)
                         && !PlayerUtils.hasSlowFallingEffect(player)
-                        && !FloorProtection.hasCooldown(player, true)
+                        && !player.getLastDamageReceived().isSubtle(10)
                         && !BlockUtils.canClimb(loc)
                         && !player.movement.stepsOnBoats()
                         && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15) || player.getWorld().getGameRuleValue(GameRule.FALL_DAMAGE) == true)) {

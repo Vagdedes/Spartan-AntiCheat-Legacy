@@ -11,8 +11,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Explosion;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorProtection;
-import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -280,7 +278,7 @@ public class IrregularMovements extends CheckExecutor {
                 checkFall = true;
             } else if (player.isOnFire()
                     || player.isFrozen()
-                    || FloorProtection.hasCooldown(player, true)
+                    || player.getLastDamageReceived().isSubtle(10)
                     || PlayerUtils.hasBadPotionEffects(player)
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;

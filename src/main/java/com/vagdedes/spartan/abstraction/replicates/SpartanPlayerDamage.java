@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
@@ -106,7 +107,7 @@ public class SpartanPlayerDamage {
         return false;
     }
 
-    public boolean isKnockBack() {
+    public boolean hasBigKnockBack() {
         int time = (int) TPS.maximum * 2;
         return this.ticksPassed() <= time
                 && this.parent.movement.getTicksOnAir() <= time
@@ -116,6 +117,52 @@ public class SpartanPlayerDamage {
     }
 
     public boolean isSignificant(long ticksPassed) {
-        return this.ticksPassed() <= ticksPassed;
+        switch (this.event.getCause()) {
+            case ENTITY_ATTACK:
+            case PROJECTILE:
+                return this.ticksPassed() <= ticksPassed;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isSubtle(long ticksPassed) {
+        if (this.parent.getHandlers().has(Handlers.HandlerType.Floor)) {
+            return true;
+        } else {
+            EntityDamageEvent.DamageCause cause = this.event.getCause();
+
+            switch (cause) {
+                case STARVATION:
+                case LIGHTNING:
+                case THORNS:
+                case VOID:
+                case POISON:
+                case WITHER:
+                case CONTACT:
+                case FALL:
+                    return this.ticksPassed() <= ticksPassed
+                            && this.parent.movement.getTicksOnAir() <= TPS.maximum;
+                default:
+                    return cause == EntityDamageEvent.DamageCause.SUFFOCATION
+                            && !this.parent.isOutsideOfTheBorder(0.0)
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                            && cause == EntityDamageEvent.DamageCause.WORLD_BORDER
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)
+                            && cause == EntityDamageEvent.DamageCause.HOT_FLOOR
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
+                            && cause == EntityDamageEvent.DamageCause.MAGIC;
+            }
+        }
+    }
+
+    public boolean isExplosion(long ticksPassed) {
+        switch (this.event.getCause()) {
+            case ENTITY_EXPLOSION:
+            case BLOCK_EXPLOSION:
+                return this.ticksPassed() <= ticksPassed;
+            default:
+                return false;
+        }
     }
 }
