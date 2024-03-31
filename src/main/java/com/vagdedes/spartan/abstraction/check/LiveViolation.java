@@ -203,13 +203,13 @@ public class LiveViolation {
         synchronized (this.level) {
             time = this.level.get(hash);
         }
-        return this.getLevel(time);
+        return this.calculateLevel(time);
     }
 
-    private int getLevel(Long time) {
+    private int calculateLevel(Long time) {
         if (time != null) {
             time -= System.currentTimeMillis();
-            return time > 0L ? AlgebraUtils.integerRound(time / 1000.0) : 0;
+            return time > 0L ? (int) (time / Check.violationTimeWorth) : 0;
         } else {
             return 0;
         }
@@ -220,7 +220,7 @@ public class LiveViolation {
             int total = 0;
 
             for (Long level : this.level.values()) {
-                total += this.getLevel(level);
+                total += this.calculateLevel(level);
             }
             return total;
         } else {
@@ -231,7 +231,7 @@ public class LiveViolation {
     public boolean hasLevel() {
         if (!this.level.isEmpty()) {
             for (Long level : this.level.values()) {
-                if (this.getLevel(level) > 0) {
+                if (this.calculateLevel(level) > 0) {
                     return true;
                 }
             }
@@ -240,20 +240,20 @@ public class LiveViolation {
     }
 
     private void increaseLevel(int hash) {
-        double multiplier = 1.0 + player.getProfile().evidence.getKnowledgeList().size();
+        int multiplier = 1 + player.getProfile().evidence.getKnowledgeList().size();
 
         synchronized (this.level) {
             Long time = this.level.get(hash);
 
             if (time == null) {
-                this.level.put(hash, System.currentTimeMillis() + AlgebraUtils.integerRound(1_000 * multiplier));
+                this.level.put(hash, System.currentTimeMillis() + (Check.violationTimeWorth * multiplier));
             } else {
                 long current = System.currentTimeMillis();
 
                 if (time < current) {
-                    this.level.put(hash, current + AlgebraUtils.integerRound(1_000 * multiplier));
+                    this.level.put(hash, current + (Check.violationTimeWorth * multiplier));
                 } else {
-                    time += AlgebraUtils.integerRound(1_000 * multiplier);
+                    time += Check.violationTimeWorth * multiplier;
                     this.level.put(hash, time);
                 }
             }
