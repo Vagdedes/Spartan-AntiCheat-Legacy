@@ -93,6 +93,7 @@ public class SpartanPlayerDamage {
 
     public boolean isPropellingProjectile() { // todo cover fishing rods
         if (this.ticksPassed() <= TPS.maximum
+                && this.parent.movement.getTicksOnAir() <= TPS.maximum
                 && this.location.getPitch() <= -60.0f
                 && this.event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) this.event;
@@ -106,9 +107,15 @@ public class SpartanPlayerDamage {
     }
 
     public boolean isKnockBack() {
-        return this.ticksPassed() <= (TPS.maximum * 2)
+        int time = (int) TPS.maximum * 2;
+        return this.ticksPassed() <= time
+                && this.parent.movement.getTicksOnAir() <= time
                 && (this.boss
                 || this.activeItem != null
                 && this.activeItem.containsEnchantment(Enchantment.KNOCKBACK));
+    }
+
+    public boolean isSignificant(long ticksPassed) {
+        return this.ticksPassed() <= ticksPassed;
     }
 }

@@ -10,9 +10,6 @@ public class MovementProcessing {
     public static void run(SpartanPlayer p,
                            double dis, double hor, double ver, double box,
                            float fall) {
-        // Damage
-        Damage.runMove(p);
-
         // NMS Distance Caching
         p.movement.setNmsDistance(dis, hor, ver, box, fall);
 

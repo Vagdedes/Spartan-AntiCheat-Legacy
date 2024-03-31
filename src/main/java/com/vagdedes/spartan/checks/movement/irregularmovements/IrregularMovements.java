@@ -16,6 +16,7 @@ import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Dama
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -209,7 +210,8 @@ public class IrregularMovements extends CheckExecutor {
                 canGoUp = true;
                 canGoDown = !forcefulUp;
                 canFall = !forcefulUp;
-            } else if (explosion || Damage.hasCooldown(player, null)) { // Damage Or Combat
+            } else if (explosion
+                    || player.getLastDamageReceived().ticksPassed() <= TPS.tickTime) { // Damage Or Combat
                 velocityScenario = true;
 
                 scenario = "damage/explosion";

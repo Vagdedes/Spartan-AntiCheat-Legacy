@@ -16,6 +16,7 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.FloorP
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Damage;
 import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -344,7 +345,7 @@ public class Speed extends CheckExecutor {
                 vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                 explosion = !hasTrident && player.getHandlers().has(Handlers.HandlerType.Explosion),
-                damage = Damage.hasCooldown(player, null),
+                damage = player.getLastDamageReceived().isSignificant(TPS.tickTime),
                 knockback = player.getLastDamageReceived().isKnockBack(),
                 hitDelay = damage && NoHitDelay.hasCooldown(player),
                 incompatibilities = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
