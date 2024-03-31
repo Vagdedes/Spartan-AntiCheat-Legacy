@@ -69,7 +69,7 @@ public class SpartanPlayerDamage {
             if (level > 2) {
                 this.parent.getHandlers().add(
                         Handlers.HandlerType.Velocity,
-                        AlgebraUtils.integerRound(Math.log(level))
+                        AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
                 );
             }
         }
@@ -148,7 +148,6 @@ public class SpartanPlayerDamage {
         if (this.event.isCancelled()) {
             return false;
         } else {
-            int time = AlgebraUtils.integerRound(TPS.maximum / 2.0);
             EntityDamageEvent.DamageCause cause = this.event.getCause();
 
             switch (cause) {
@@ -160,7 +159,7 @@ public class SpartanPlayerDamage {
                 case WITHER:
                 case CONTACT:
                 case FALL:
-                    return this.ticksPassed() <= time
+                    return this.ticksPassed() <= AlgebraUtils.integerRound(TPS.maximum / 2.0)
                             && this.parent.movement.getTicksOnAir() <= TPS.maximum;
                 default:
                     return cause == EntityDamageEvent.DamageCause.SUFFOCATION
@@ -174,7 +173,7 @@ public class SpartanPlayerDamage {
 
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
                             && cause == EntityDamageEvent.DamageCause.MAGIC
-                            
+
                             || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                             && cause == EntityDamageEvent.DamageCause.FREEZE;
             }
