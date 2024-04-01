@@ -36,7 +36,7 @@ public class PatternComparison {
             this.pie.add(generalized);
             this.parent.pie.add(generalized);
 
-            if (this.pie.getSlices() > PatternGeneralization.dataLimit()) {
+            if (this.pie.getSlices() > this.parent.patternGeneralization.initiator.individualIterations) {
                 Iterator<Map.Entry<Number, Integer>> iterator = this.pie.removeLeastSignificant(1).iterator();
 
                 // Remove the least significant slice if the other slice was not fully removed
@@ -50,12 +50,14 @@ public class PatternComparison {
     }
 
     final String key;
+    final PatternGeneralization patternGeneralization;
     private final ProbabilityRank rank;
     private final ProbabilityPie pie;
     private final Map<PatternProfile, NumberMemory> profiles;
 
-    PatternComparison(String key) {
+    PatternComparison(PatternGeneralization patternGeneralization, String key) {
         this.key = key;
+        this.patternGeneralization = patternGeneralization;
         this.rank = new ProbabilityRank();
         this.pie = new ProbabilityPie();
         this.profiles = new LinkedHashMap<>();
@@ -91,7 +93,7 @@ public class PatternComparison {
                 }
 
                 if (storage) {
-                    patternProfile.storage.set(
+                    patternProfile.set(
                             this,
                             time,
                             number

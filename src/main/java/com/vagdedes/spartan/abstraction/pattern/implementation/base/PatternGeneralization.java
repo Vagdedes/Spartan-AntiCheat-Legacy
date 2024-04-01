@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -20,13 +19,8 @@ public abstract class PatternGeneralization {
             patternOption = ".pattern",
             situationOption = ".situation";
     static final String[] options = {profileOption, patternOption, situationOption};
-
     static final Map<Long, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
     static final Map<Long, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
-
-    static int dataLimit() {
-        return SpartanEdition.is2ndGeneration() ? 10_000 : 1_000;
-    }
 
     // Separator
 
@@ -38,20 +32,22 @@ public abstract class PatternGeneralization {
             contributionComparison;
     final PatternComparison[] patternComparisons;
     final Map<PlayerProfile, PatternProfile> profiles;
-    private final PatternCache patternSizeCache;
+    private final Collection<Collection<Number>> allData;
+    private final Collection<Number> specific;
 
     protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
-        this.trustFactorComparison = new PatternComparison("trust");
-        this.contributionComparison = new PatternComparison("contribution");
+        this.trustFactorComparison = new PatternComparison(this, "trust");
+        this.contributionComparison = new PatternComparison(this, "contribution");
         this.patternComparisons = new PatternComparison[]{
                 this.trustFactorComparison,
                 this.contributionComparison
         };
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.patternSizeCache = new PatternCache();
+        this.allData = new ArrayList<>(0);
+        this.specific = new ArrayList<>(0);
     }
 
     void clear() {
@@ -72,7 +68,7 @@ public abstract class PatternGeneralization {
     public double[] trustFactorRankAndProbability(PatternProfile patternProfile) {
         double value;
 
-        synchronized (patternProfile.trustFactorMemory) {
+        synchronized (patternProfile.comparisons) {
             value = patternProfile.trustFactor(true);
         }
         return this.trustFactorComparison.rankAndProbability(value);
@@ -81,7 +77,7 @@ public abstract class PatternGeneralization {
     public double[] contributionRankAndProbability(PatternProfile patternProfile) {
         double value;
 
-        synchronized (patternProfile.contribution) {
+        synchronized (patternProfile.comparisons) {
             value = patternProfile.contribution(true);
         }
         return this.contributionComparison.rankAndProbability(value);
@@ -100,43 +96,26 @@ public abstract class PatternGeneralization {
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
-            int dataLimit;
+            boolean clear;
 
             synchronized (this.significancePie) {
                 this.significancePie.add(pattern);
             }
             synchronized (patternProfile.correlations) {
-                List<Number> list = patternProfile.correlations.computeIfAbsent(
+                LinkedList<Number> list = patternProfile.correlations.computeIfAbsent(
                         situation,
-                        k -> new ArrayList<>()
+                        k -> new LinkedList<>()
                 );
-                list.add(pattern);
-
-                if (patternSizeCache.isExpired()) {
-                    patternSizeCache.refresh();
-                    dataLimit = dataLimit();
-                    int delete = list.size() - dataLimit;
-
-                    if (delete > 0) {
-                        Iterator<Number> iterator = list.iterator();
-
-                        while (iterator.hasNext() && delete-- > 0) {
-                            iterator.next();
-                            iterator.remove();
-                        }
-                    }
-                } else {
-                    dataLimit = 0;
+                if (list.size() == this.initiator.individualIterations) {
+                    list.removeFirst();
                 }
+                list.add(pattern);
             }
-            if (dataLimit != 0) {
-                dataLimit *= 10;
-                int delete = this.significancePie.getSlices() - dataLimit;
+            int delete = this.significancePie.getSlices() - this.initiator.generalIterations; // todo optimize
 
-                if (delete > 0) {
-                    synchronized (this.significancePie) {
-                        this.significancePie.removeLeastSignificant(delete);
-                    }
+            if (delete > 0) {
+                synchronized (this.significancePie) {
+                    this.significancePie.removeLeastSignificant(delete);
                 }
             }
 
@@ -169,19 +148,19 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    public List<Number> getSpecific(PatternProfile patternProfile,
-                                    long situation,
-                                    int count) {
+    public Collection<Number> getSpecific(PatternProfile patternProfile,
+                                          long situation,
+                                          int count) {
         synchronized (patternProfile.correlations) {
             List<Number> specific = patternProfile.correlations.get(situation);
 
             if (specific == null) {
-                return new ArrayList<>(0);
+                return this.specific;
             } else {
                 int size = specific.size();
 
                 if (size < count) {
-                    return new ArrayList<>(0);
+                    return this.specific;
                 } else {
                     return new ArrayList<>(specific).subList(size - count, size);
                 }
@@ -232,7 +211,7 @@ public abstract class PatternGeneralization {
 
     private Collection<Collection<Number>> getAllRaw(long situation) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
-            return new ArrayList<>(0);
+            return this.allData;
         } else {
             Collection<Collection<Number>> collections = new ArrayList<>(this.profiles.size());
             int profiles = 0;
@@ -251,7 +230,7 @@ public abstract class PatternGeneralization {
                 }
             }
             return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
-                    ? new ArrayList<>(0)
+                    ? this.allData
                     : collections;
         }
     }
@@ -332,30 +311,27 @@ public abstract class PatternGeneralization {
     // Separator
 
     public void compare(PatternProfile patternProfile,
-                        long contribution,
-                        long time) {
-        synchronized (patternProfile.contribution) {
-            patternProfile.contribution.add(contribution);
-            this.contributionComparison.put(
-                    patternProfile,
-                    patternProfile.contribution(false),
-                    time,
-                    true
-            );
-        }
-    }
-
-    public void compare(PatternProfile patternProfile,
                         Number number,
                         double probability,
+                        long contribution,
                         long time) {
-        synchronized (patternProfile.trustFactorMemory) {
+        synchronized (patternProfile.comparisons) {
             synchronized (this.significancePie) {
-                patternProfile.addTrustFactor(probability * this.significancePie.getProbability(number));
+                patternProfile.addData(
+                        time,
+                        probability * this.significancePie.getProbability(number),
+                        contribution
+                );
             }
             this.trustFactorComparison.put(
                     patternProfile,
                     patternProfile.trustFactor(false),
+                    time,
+                    true
+            );
+            this.contributionComparison.put(
+                    patternProfile,
+                    patternProfile.contribution(false),
                     time,
                     true
             );

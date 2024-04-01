@@ -26,7 +26,7 @@ public class Pattern {
                             patternProfile = patternGeneralization.profiles.remove(profile);
                         }
                         if (patternProfile != null) {
-                            patternProfile.storage.delete();
+                            patternProfile.delete();
                         }
                     }
                 }
@@ -53,8 +53,8 @@ public class Pattern {
                             }
                             pattern.generalizations.clear();
                         }
-                        synchronized (pattern.profileFiles) {
-                            pattern.profileFiles.clear();
+                        synchronized (pattern.profilesToStore) {
+                            pattern.profilesToStore.clear();
                         }
                     }
                     instances.clear();
@@ -70,30 +70,30 @@ public class Pattern {
     public final String key;
     final String learningFolder;
     final Map<Integer, PatternGeneralization> generalizations;
-    private final Set<PatternProfileStorage> profileFiles;
+    final Set<PatternProfile> profilesToStore;
     private boolean load;
 
-    public Pattern(String key, double mainWeight, PatternGeneralizationInitiator[] generalizations) {
+    public Pattern(String key, PatternGeneralizationInitiator initiator, PatternGeneralizationInitiator[] generalizations) {
         this.key = key;
         this.learningFolder = Register.plugin.getDataFolder()
                 + "/learning/"
                 + key;
         this.load = false;
-        this.profileFiles = Collections.synchronizedSet(new HashSet<>());
+        this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
 
         this.generalizations = Collections.synchronizedMap(
                 new LinkedHashMap<>(generalizations.length + 1)
         );
         this.generalizations.put(
                 0,
-                new PatternGeneralizationStorage(this, new PatternGeneralizationInitiator(0, mainWeight))
+                new PatternGeneralizationStorage(this, initiator)
         );
 
         if (generalizations.length > 0) {
-            for (PatternGeneralizationInitiator initiator : generalizations) {
+            for (PatternGeneralizationInitiator loopInitiator : generalizations) {
                 this.generalizations.put(
-                        initiator.generalization,
-                        new PatternGeneralizationMemory(this, initiator)
+                        loopInitiator.generalization,
+                        new PatternGeneralizationMemory(this, loopInitiator)
                 );
             }
         }
@@ -110,27 +110,15 @@ public class Pattern {
             ((PatternGeneralizationStorage) this.generalizations.get(0)).store();
         }
 
-        if (!this.profileFiles.isEmpty()) {
-            synchronized (this.profileFiles) {
-                Iterator<PatternProfileStorage> iterator = this.profileFiles.iterator();
+        if (!this.profilesToStore.isEmpty()) {
+            synchronized (this.profilesToStore) {
+                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
 
                 while (iterator.hasNext()) {
                     iterator.next().store();
                     iterator.remove();
                 }
             }
-        }
-    }
-
-    void queueFile(PatternProfileStorage file) {
-        synchronized (this.profileFiles) {
-            this.profileFiles.add(file);
-        }
-    }
-
-    void dequeueFile(PatternProfileStorage file) {
-        synchronized (this.profileFiles) {
-            this.profileFiles.remove(file);
         }
     }
 

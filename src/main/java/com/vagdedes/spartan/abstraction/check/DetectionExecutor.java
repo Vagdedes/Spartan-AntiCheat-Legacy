@@ -132,11 +132,6 @@ public abstract class DetectionExecutor {
         }
 
         if (probabilityPredictor.pie.hasData()) {
-            patternGeneralization.compare(
-                    patternProfile,
-                    -1L,
-                    time
-            );
             Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
 
             while (entries.hasNext()) {
@@ -148,6 +143,7 @@ public abstract class DetectionExecutor {
                             patternProfile,
                             client,
                             probability,
+                            -1L,
                             time
                     );
                     return sb.toString();
@@ -159,11 +155,14 @@ public abstract class DetectionExecutor {
                     patternProfile,
                     client,
                     1.0 / (probabilityPredictor.pie.getTotal() + 1.0),
+                    -1L,
                     time
             );
         } else {
             patternGeneralization.compare(
                     patternProfile,
+                    client,
+                    1.0,
                     time,
                     time
             );
@@ -220,18 +219,16 @@ public abstract class DetectionExecutor {
         if (probabilityRank.hasData()) {
             patternGeneralization.compare(
                     patternProfile,
-                    -1L,
-                    time
-            );
-            patternGeneralization.compare(
-                    patternProfile,
                     client,
                     probabilityRank.getPosition(client) * probabilityRank.getProbability(client),
+                    -1L,
                     time
             );
         } else {
             patternGeneralization.compare(
                     patternProfile,
+                    client,
+                    1.0,
                     time,
                     time
             );

@@ -11,37 +11,39 @@ public class MovementPatterns extends PatternFamily {
 
     public MovementPatterns() {
         super(1_000L, 4);
+        PatternGeneralizationInitiator initiator = new PatternGeneralizationInitiator(0.05, 1_000);
         this.addPatterns(
                 new Pattern[]{
                         this.horizontal = new Pattern(
                                 "movement/distance/horizontal",
-                                0.05,
+                                initiator,
                                 new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05, initiator.individualIterations)
                                 }
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
-                                0.05,
+                                initiator,
                                 new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05, initiator.individualIterations)
                                 }
                         ),
                         this.all = new Pattern(
                                 "movement/distance/all",
-                                0.05,
+                                initiator,
                                 new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05, initiator.individualIterations)
                                 }
                         ),
                         this.fall = new Pattern(
                                 "movement/distance/fall",
-                                0.05,
+                                initiator,
                                 new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05)
+                                        new PatternGeneralizationInitiator(GroundUtils.maxHeightLength, 0.05, initiator.individualIterations)
                                 }
                         )
                 }
         );
     }
+
 }
