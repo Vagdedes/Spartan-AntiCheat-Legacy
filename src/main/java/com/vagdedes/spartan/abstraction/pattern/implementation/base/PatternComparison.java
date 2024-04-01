@@ -28,19 +28,15 @@ public class PatternComparison {
         }
 
         private void add(double number) {
+            Number generalized = generalizeNumber(number);
             this.last = number;
             this.parent.rank.add(number);
 
-            Number generalized = generalizeNumber(number);
+            if (this.pie.getSlices() == this.parent.patternGeneralization.initiator.individualGeneralWeight) {
+                this.parent.pie.remove(this.pie.removeLeastSignificant());
+            }
             this.pie.add(generalized);
             this.parent.pie.add(generalized);
-
-            if (this.pie.getSlices() == this.parent.patternGeneralization.initiator.individualGeneralWeight) {
-                // Remove the least significant slice if the other slice was not fully removed
-                if (!this.parent.pie.remove(this.pie.removeLeastSignificant())) {
-                    this.parent.pie.removeLeastSignificant();
-                }
-            }
         }
 
     }

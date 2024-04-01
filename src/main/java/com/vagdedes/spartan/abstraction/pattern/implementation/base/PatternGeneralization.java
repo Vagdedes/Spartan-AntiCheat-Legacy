@@ -96,8 +96,15 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
-            synchronized (this.significancePie) {
-                this.significancePie.add(pattern);
+            if (this.significancePie.getSlices() == this.initiator.generalWeight) {
+                synchronized (this.significancePie) {
+                    this.significancePie.removeLeastSignificant();
+                    this.significancePie.add(pattern);
+                }
+            } else {
+                synchronized (this.significancePie) {
+                    this.significancePie.add(pattern);
+                }
             }
             synchronized (patternProfile.correlations) {
                 LinkedList<Number> list = patternProfile.correlations.computeIfAbsent(
@@ -108,11 +115,6 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                     list.removeFirst();
                 }
                 list.add(pattern);
-            }
-            if (this.significancePie.getSlices() == this.initiator.generalWeight) {
-                synchronized (this.significancePie) {
-                    this.significancePie.removeLeastSignificant();
-                }
             }
 
             if (store) {
