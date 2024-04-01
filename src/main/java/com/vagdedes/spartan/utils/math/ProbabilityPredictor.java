@@ -17,7 +17,7 @@ public class ProbabilityPredictor {
                                              PatternProfile patternProfile,
                                              int count) {
         return new ProbabilityPredictor(
-                patternGeneralization.getAll(player, situation),
+                patternGeneralization.getAll(player, situation, count),
                 patternGeneralization.getSpecific(patternProfile, situation, count)
         );
     }
@@ -27,7 +27,7 @@ public class ProbabilityPredictor {
     public final ProbabilityPie pie;
 
     private ProbabilityPredictor(Collection<Collection<Number>> totalPatterns,
-                                Collection<Number> currentPattern) {
+                                 Collection<Number> currentPattern) {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
 
@@ -36,29 +36,25 @@ public class ProbabilityPredictor {
             long currentPatternHash = HashUtils.collection(currentPattern);
 
             for (Collection<Number> allPatterns : totalPatterns) {
-                int allPatternsSize = allPatterns.size();
+                boolean next = false;
+                Iterator<Number> iterator = allPatterns.iterator();
+                LinkedList<Number> list = new LinkedList<>();
 
-                if (currentPatternSize <= allPatternsSize) { // No enough general data to compare
-                    boolean next = false;
-                    Iterator<Number> iterator = allPatterns.iterator();
-                    LinkedList<Number> list = new LinkedList<>();
+                for (int i = 0; i < currentPatternSize; i++) {
+                    list.add(iterator.next());
+                }
 
-                    for (int i = 0; i < currentPatternSize; i++) {
-                        list.add(iterator.next());
+                while (iterator.hasNext()) {
+                    Number pattern = iterator.next();
+                    list.add(pattern);
+                    list.removeFirst();
+
+                    if (next) {
+                        next = false;
+                        this.pie.add(pattern);
                     }
-
-                    while (iterator.hasNext()) {
-                        Number pattern = iterator.next();
-                        list.add(pattern);
-                        list.removeFirst();
-
-                        if (next) {
-                            next = false;
-                            this.pie.add(pattern);
-                        }
-                        if (currentPatternHash == HashUtils.collection(list)) {
-                            next = true;
-                        }
+                    if (currentPatternHash == HashUtils.collection(list)) {
+                        next = true;
                     }
                 }
             }
