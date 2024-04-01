@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -68,10 +69,10 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
         }
     }
 
-    void set(PatternProfile patternProfile, long time, long situation, Number pattern) {
+    void set(PlayerProfile profile, long time, long situation, Number pattern) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
-            this.configuration.set(time + profileOption, patternProfile.researchProfile.getName());
+            this.configuration.set(time + profileOption, profile.getName());
             this.configuration.set(time + situationOption, situation);
             this.configuration.set(time + patternOption, pattern);
 

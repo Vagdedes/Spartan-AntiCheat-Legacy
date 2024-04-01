@@ -96,7 +96,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
-            if (this.significancePie.getSlices() == this.initiator.generalWeight) {
+            if (this.significancePie.getSlices() == this.initiator.cube) {
                 synchronized (this.significancePie) {
                     this.significancePie.removeLeastSignificant();
                     this.significancePie.add(pattern);
@@ -111,14 +111,14 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                         situation,
                         k -> new LinkedList<>()
                 );
-                if (list.size() == this.initiator.individualGeneralWeight) {
+                if (list.size() == this.initiator.square) {
                     list.removeFirst();
                 }
                 list.add(pattern);
             }
 
             if (store) {
-                ((PatternGeneralizationStorage) this).set(patternProfile, time, situation, pattern);
+                ((PatternGeneralizationStorage) this).set(profile, time, situation, pattern);
             }
         }
     }

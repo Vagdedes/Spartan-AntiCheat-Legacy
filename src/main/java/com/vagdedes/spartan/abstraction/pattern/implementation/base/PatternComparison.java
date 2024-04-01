@@ -32,7 +32,7 @@ public class PatternComparison {
             this.last = number;
             this.parent.rank.add(number);
 
-            if (this.pie.getSlices() == this.parent.patternGeneralization.initiator.individualGeneralWeight) {
+            if (this.pie.getSlices() == this.parent.patternGeneralization.initiator.square) {
                 this.parent.pie.remove(this.pie.removeLeastSignificant());
             }
             this.pie.add(generalized);

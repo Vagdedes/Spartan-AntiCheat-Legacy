@@ -8,7 +8,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public class PatternProfile {
+public class PatternProfile { // todo fix
+
+    // todo synchronize removal of memory and storage
 
     private static final class Comparison {
 
@@ -44,7 +46,7 @@ public class PatternProfile {
                         + "/comparison/"
                         + this.patternGeneralization.parent.key + "/"
                         + this.patternGeneralization.initiator.generalization + "/"
-                        + this.patternGeneralization.initiator.individualRecentWeight + "/"
+                        + this.patternGeneralization.initiator.line + "/"
                         + profile.getName() + ".yml"
         );
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
@@ -57,7 +59,7 @@ public class PatternProfile {
                     Set<String> keys = this.configuration.getKeys(false);
 
                     if (!keys.isEmpty()) {
-                        Set<Long> set = new LinkedHashSet<>(this.patternGeneralization.initiator.individualGeneralWeight);
+                        Set<Long> set = new LinkedHashSet<>(this.patternGeneralization.initiator.square);
                         boolean changed = false;
 
                         for (String key : keys) {
@@ -71,7 +73,7 @@ public class PatternProfile {
                                     if (value != -1.0) {
                                         long time = Long.parseLong(key);
 
-                                        if (set.size() == this.patternGeneralization.initiator.individualGeneralWeight) {
+                                        if (set.size() == this.patternGeneralization.initiator.square) {
                                             this.configuration.set(path, null);
                                             removed = true;
                                             changed = true;
@@ -119,7 +121,7 @@ public class PatternProfile {
     }
 
     double contribution(boolean compare) {
-        int required = this.patternGeneralization.initiator.individualRecentWeight + 1;
+        int required = this.patternGeneralization.initiator.line + 1;
 
         if (this.comparisons.size() < required) {
             return -1.0;
@@ -159,7 +161,7 @@ public class PatternProfile {
     }
 
     double trustFactor(boolean compare) {
-        if (this.comparisons.size() < this.patternGeneralization.initiator.individualRecentWeight) {
+        if (this.comparisons.size() < this.patternGeneralization.initiator.line) {
             return -1.0;
         } else if (compare) {
             return this.trustFactorTotal / (double) this.comparisons.size();
@@ -167,25 +169,34 @@ public class PatternProfile {
             double total = 0.0;
             Iterator<Comparison> iterator = this.comparisons.values().iterator();
 
-            if (this.comparisons.size() > this.patternGeneralization.initiator.individualRecentWeight) {
-                for (int i = 0; i < this.comparisons.size() - this.patternGeneralization.initiator.individualRecentWeight; i++) {
+            if (this.comparisons.size() > this.patternGeneralization.initiator.line) {
+                for (int i = 0; i < this.comparisons.size() - this.patternGeneralization.initiator.line; i++) {
                     iterator.next();
                 }
             }
             while (iterator.hasNext()) {
                 total += iterator.next().trustFactor;
             }
-            return total / (double) this.patternGeneralization.initiator.individualRecentWeight;
+            return total / (double) this.patternGeneralization.initiator.line;
         }
     }
 
     void refreshComparisons(long time, double trustFactor, long contribution) {
         this.trustFactorTotal += trustFactor;
 
-        if (this.comparisons.size() == this.patternGeneralization.initiator.individualGeneralWeight) {
-            Iterator<Long> iterator = this.comparisons.keySet().iterator();
-            this.trustFactorTotal -= iterator.next();
+        if (this.comparisons.size() == this.patternGeneralization.initiator.square) {
+            Iterator<Map.Entry<Long, Comparison>> iterator = this.comparisons.entrySet().iterator();
+            Map.Entry<Long, Comparison> entry = iterator.next();
             iterator.remove();
+            this.trustFactorTotal -= entry.getValue().trustFactor;
+
+            SpartanBukkit.dataThread.execute(() -> {
+                for (PatternComparison patternComparison : this.patternGeneralization.patternComparisons) {
+                    this.configuration.set(entry.getKey() + "." + patternComparison.key, null);
+                }
+                this.configuration.set(Long.toString(entry.getKey()), null);
+                this.queue();
+            }
         }
         this.comparisons.put(time, new Comparison(trustFactor, contribution));
     }
@@ -196,15 +207,18 @@ public class PatternProfile {
         if (this.store != -1) {
             SpartanBukkit.dataThread.execute(() -> {
                 this.configuration.set(time + "." + comparison.key, value);
-
-                if (this.store == 0) {
-                    this.store = 1;
-
-                    synchronized (this.patternGeneralization.parent.profilesToStore) {
-                        this.patternGeneralization.parent.profilesToStore.add(this);
-                    }
-                }
+                this.queue();
             });
+        }
+    }
+
+    private void queue() {
+        if (this.store == 0) {
+            this.store = 1;
+
+            synchronized (this.patternGeneralization.parent.profilesToStore) {
+                this.patternGeneralization.parent.profilesToStore.add(this);
+            }
         }
     }
 
@@ -214,28 +228,6 @@ public class PatternProfile {
 
             SpartanBukkit.dataThread.execute(() -> {
                 try {
-                    Collection<String> keys = new ArrayList<>();
-
-                    synchronized (this.comparisons) {
-                        int delete = this.comparisons.size() - this.patternGeneralization.initiator.individualGeneralWeight;
-
-                        if (delete > 0) {
-                            Iterator<Long> iterator = this.comparisons.keySet().iterator();
-
-                            while (iterator.hasNext() && delete-- > 0) {
-                                keys.add(Long.toString(iterator.next()));
-                                iterator.remove();
-                            }
-                        }
-                    }
-                    if (!keys.isEmpty()) {
-                        for (String key : keys) {
-                            for (PatternComparison patternComparison : this.patternGeneralization.patternComparisons) {
-                                this.configuration.set(key + "." + patternComparison.key, null);
-                            }
-                            this.configuration.set(key, null);
-                        }
-                    }
                     this.configuration.save(this.file);
                     this.store = 0;
                 } catch (Exception ignored) {

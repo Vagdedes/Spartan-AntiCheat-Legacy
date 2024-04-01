@@ -8,15 +8,15 @@ public class PatternGeneralizationInitiator {
     // General individual weight is for consideration of multiple scenarios when a player is offline
     // General weight is for long-term comparison for all players
     public final int generalization,
-            individualRecentWeight,
-            individualGeneralWeight,
-            generalWeight;
+            line,
+            square,
+            cube;
 
     public PatternGeneralizationInitiator(int generalization, double weight) {
         this.generalization = generalization;
-        this.individualRecentWeight = AlgebraUtils.integerRound(1.0 / weight);
-        this.individualGeneralWeight = this.individualRecentWeight * this.individualRecentWeight;
-        this.generalWeight = this.individualGeneralWeight * this.individualRecentWeight;
+        this.line = AlgebraUtils.integerRound(1.0 / weight);
+        this.square = this.line * this.line;
+        this.cube = this.square * this.line;
     }
 
 }
