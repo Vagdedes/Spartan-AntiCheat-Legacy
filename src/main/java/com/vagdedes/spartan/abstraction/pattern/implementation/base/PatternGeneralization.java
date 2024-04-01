@@ -96,8 +96,6 @@ public abstract class PatternGeneralization {
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
-            boolean clear;
-
             synchronized (this.significancePie) {
                 this.significancePie.add(pattern);
             }
@@ -106,16 +104,14 @@ public abstract class PatternGeneralization {
                         situation,
                         k -> new LinkedList<>()
                 );
-                if (list.size() == this.initiator.individualIterations) {
+                if (list.size() == this.initiator.individualGeneralWeight) {
                     list.removeFirst();
                 }
                 list.add(pattern);
             }
-            int delete = this.significancePie.getSlices() - this.initiator.generalIterations; // todo optimize
-
-            if (delete > 0) {
+            if (this.significancePie.getSlices() == this.initiator.generalWeight) {
                 synchronized (this.significancePie) {
-                    this.significancePie.removeLeastSignificant(delete);
+                    this.significancePie.removeLeastSignificant();
                 }
             }
 

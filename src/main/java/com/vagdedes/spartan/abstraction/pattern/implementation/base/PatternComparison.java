@@ -6,7 +6,6 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,13 +35,10 @@ public class PatternComparison {
             this.pie.add(generalized);
             this.parent.pie.add(generalized);
 
-            if (this.pie.getSlices() > this.parent.patternGeneralization.initiator.individualIterations) {
-                Iterator<Map.Entry<Number, Integer>> iterator = this.pie.removeLeastSignificant(1).iterator();
-
+            if (this.pie.getSlices() == this.parent.patternGeneralization.initiator.individualGeneralWeight) {
                 // Remove the least significant slice if the other slice was not fully removed
-                if (iterator.hasNext()
-                        && !this.parent.pie.remove(iterator.next().getKey())) {
-                    this.parent.pie.removeLeastSignificant(1);
+                if (!this.parent.pie.remove(this.pie.removeLeastSignificant())) {
+                    this.parent.pie.removeLeastSignificant();
                 }
             }
         }
@@ -133,4 +129,5 @@ public class PatternComparison {
             }
         }
     }
+
 }

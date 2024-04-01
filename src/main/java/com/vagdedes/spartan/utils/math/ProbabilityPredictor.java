@@ -26,7 +26,7 @@ public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
 
-    public ProbabilityPredictor(Collection<Collection<Number>> totalPatterns,
+    private ProbabilityPredictor(Collection<Collection<Number>> totalPatterns,
                                 Collection<Number> currentPattern) {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
@@ -64,4 +64,5 @@ public class ProbabilityPredictor {
             }
         }
     }
+
 }

@@ -48,7 +48,7 @@ public class PatternProfile {
                         + "/comparison/"
                         + this.patternGeneralization.parent.key + "/"
                         + this.patternGeneralization.initiator.generalization + "/"
-                        + this.patternGeneralization.initiator.specificWeight + "/"
+                        + this.patternGeneralization.initiator.individualRecentWeight + "/"
                         + this.researchProfile.getName() + ".yml"
         );
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
@@ -61,7 +61,7 @@ public class PatternProfile {
                     Set<String> keys = this.configuration.getKeys(false);
 
                     if (!keys.isEmpty()) {
-                        Set<Long> set = new LinkedHashSet<>(this.patternGeneralization.initiator.generalWeight);
+                        Set<Long> set = new LinkedHashSet<>(this.patternGeneralization.initiator.individualGeneralWeight);
                         boolean changed = false;
 
                         for (String key : keys) {
@@ -75,7 +75,7 @@ public class PatternProfile {
                                     if (value != -1.0) {
                                         long time = Long.parseLong(key);
 
-                                        if (set.size() == this.patternGeneralization.initiator.generalWeight) {
+                                        if (set.size() == this.patternGeneralization.initiator.individualGeneralWeight) {
                                             this.configuration.set(path, null);
                                             removed = true;
                                             changed = true;
@@ -123,97 +123,74 @@ public class PatternProfile {
     }
 
     double contribution(boolean compare) {
-        if (this.comparisons.isEmpty()) {
+        int required = this.patternGeneralization.initiator.individualRecentWeight + 1;
+
+        if (this.comparisons.size() < required) {
             return -1.0;
         } else {
-            if (this.comparisons.size() >= this.patternGeneralization.initiator.specificWeight) {
-                Iterator<Long> iterator = this.comparisons.keySet().iterator();
-                int size = this.comparisons.size(),
-                        delete = size - this.patternGeneralization.initiator.generalWeight,
-                        required = this.patternGeneralization.initiator.specificWeight + 1;
+            Iterator<Comparison> iterator = this.comparisons.values().iterator();
+            int size = this.comparisons.size();
+            long total = 0L, previous = -1L;
 
-                if (delete > 0) {
-                    while (iterator.hasNext() && delete-- > 0) {
+            if (compare) {
+                int dismiss = size - required;
+
+                if (dismiss > 0) {
+                    for (int i = 0; i < dismiss; i++) {
                         iterator.next();
-                        iterator.remove();
                         size--;
                     }
                 }
-                if (size >= required) {
-                    long total = 0L, previous = -1L;
-
-                    if (compare) {
-                        int dismiss = size - required;
-
-                        if (dismiss > 0) {
-                            while (iterator.hasNext()) {
-                                iterator.next();
-                                dismiss--;
-                                size--;
-                            }
-                        }
-                    }
-                    while (iterator.hasNext()) {
-                        long current = iterator.next();
-
-                        if (current == -1L) {
-                            size--;
-                        } else {
-                            if (previous == -1L) {
-                                size--;
-                            } else {
-                                total += current - previous;
-                            }
-                            previous = current;
-                        }
-                    }
-                    return size >= required
-                            ? total / (double) size
-                            : -1.0;
-                } else {
-                    return -1.0;
-                }
-            } else {
-                return -1.0;
             }
+            while (iterator.hasNext()) {
+                long current = iterator.next().contribution;
+
+                if (current == -1L) {
+                    size--;
+                } else {
+                    if (previous == -1L) {
+                        size--;
+                    } else {
+                        total += current - previous;
+                    }
+                    previous = current;
+                }
+            }
+            return size >= required
+                    ? total / (double) size
+                    : -1.0;
         }
     }
 
     double trustFactor(boolean compare) {
-        if (this.comparisons.size() < this.patternGeneralization.initiator.specificWeight) {
+        if (this.comparisons.size() < this.patternGeneralization.initiator.individualRecentWeight) {
             return -1.0;
+        } else if (compare) {
+            return this.trustFactorTotal / (double) this.comparisons.size();
         } else {
-            int size = this.comparisons.size(),
-                    delete = size - this.patternGeneralization.initiator.generalWeight;
+            double total = 0.0;
+            Iterator<Comparison> iterator = this.comparisons.values().iterator();
 
-            if (delete > 0) {
-                Iterator<Long> iterator = this.comparisons.keySet().iterator();
-
-                while (iterator.hasNext() && delete-- > 0) {
-                    this.trustFactorTotal -= iterator.next();
-                    iterator.remove();
-                    size--;
+            if (this.comparisons.size() > this.patternGeneralization.initiator.individualRecentWeight) {
+                for (int i = 0; i < this.comparisons.size() - this.patternGeneralization.initiator.individualRecentWeight; i++) {
+                    iterator.next();
                 }
             }
-            if (compare) {
-                return this.trustFactorTotal / (double) size;
-            } else {
-                double total = 0.0;
-                int count = this.patternGeneralization.initiator.specificWeight;
-                Iterator<Comparison> iterator = this.comparisons.stream().sorted(
-                        Comparator.reverseOrder()
-                ).iterator();
-
-                while (iterator.hasNext() && count-- > 0) {
-                    total += iterator.next();
-                }
-                return total / (double) this.patternGeneralization.initiator.specificWeight;
+            while (iterator.hasNext()) {
+                total += iterator.next().trustFactor;
             }
+            return total / (double) this.patternGeneralization.initiator.individualRecentWeight;
         }
     }
 
     void addData(long time, double trustFactor, long contribution) {
         this.trustFactorTotal += trustFactor;
+
+        if (this.comparisons.size() == this.patternGeneralization.initiator.individualGeneralWeight) {
+            Iterator<Long> iterator = this.comparisons.keySet().iterator();
+            this.trustFactorTotal -= iterator.next();
+            iterator.remove();
+        }
         this.comparisons.put(time, new Comparison(trustFactor, contribution));
     }
 
@@ -222,9 +199,6 @@ public class PatternProfile {
     void set(PatternComparison comparison, long time, Object value) {
         if (this.loaded) {
             SpartanBukkit.dataThread.execute(() -> {
-                synchronized (this.comparisons) {
-                    this.keys.add(time);
-                }
                 this.configuration.set(time + "." + comparison.key, value);
 
                 if (this.store == 0) {
@@ -247,7 +221,7 @@ public class PatternProfile {
                     Collection<String> keys = new ArrayList<>();
 
                     synchronized (this.comparisons) {
-                        int delete = this.comparisons.size() - this.patternGeneralization.initiator.generalWeight;
+                        int delete = this.comparisons.size() - this.patternGeneralization.initiator.individualGeneralWeight;
 
                         if (delete > 0) {
                             Iterator<Long> iterator = this.comparisons.keySet().iterator();

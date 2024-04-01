@@ -120,22 +120,22 @@ public class ProbabilityPie {
         return collection;
     }
 
-    public Collection<Map.Entry<Number, Integer>> removeLeastSignificant(int amount) {
-        Collection<Map.Entry<Number, Integer>> collection = new ArrayList<>(amount);
-        Iterator<Map.Entry<Number, Integer>> iterator = this.map.entrySet().stream().sorted(
-                Map.Entry.comparingByValue()
-        ).iterator();
+    public Number removeLeastSignificant() {
+        double min = Integer.MAX_VALUE;
+        Number key = null;
 
-        while (iterator.hasNext()) {
-            Map.Entry<Number, Integer> next = iterator.next();
-            collection.add(next);
-            this.map.remove(next.getKey());
+        for (Map.Entry<Number, Integer> entry : this.map.entrySet()) {
+            if (entry.getValue() < min) {
+                min = entry.getValue();
+                key = entry.getKey();
 
-            if (--amount == 0) {
-                break;
+                if (min == 1) {
+                    break;
+                }
             }
         }
-        return collection;
+        this.map.remove(key);
+        return key;
     }
 
     public boolean decrease(Number number, int amount) {
