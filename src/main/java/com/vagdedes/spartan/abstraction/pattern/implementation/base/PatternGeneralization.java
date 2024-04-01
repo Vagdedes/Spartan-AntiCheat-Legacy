@@ -173,6 +173,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                                                  int count) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.generalization;
+        hash = (hash * SpartanBukkit.hashCodeMultiplierLong) + count;
 
         if (DetectionNotifications.isEnabled(player)) {
             Collection<Collection<Number>> result = this.getAllRaw(situation, count);
@@ -237,8 +238,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     // Separator
 
     public ProbabilityRank getRanked(SpartanPlayer player,
-                                     long situation,
-                                     int count) {
+                                     long situation) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.generalization;
 
