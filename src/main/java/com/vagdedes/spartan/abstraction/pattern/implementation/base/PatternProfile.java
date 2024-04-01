@@ -26,15 +26,12 @@ public class PatternProfile {
     final Map<Long, Comparison> comparisons;
     final Map<Long, LinkedList<Number>> correlations;
     final PatternRepetition patternRepetition;
-    final PlayerProfile researchProfile;
-    private boolean loaded;
     private byte store;
     private final File file;
     private final YamlConfiguration configuration;
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.patternGeneralization = patternGeneralization;
-        this.researchProfile = profile;
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -42,20 +39,19 @@ public class PatternProfile {
         this.patternRepetition = new PatternRepetition();
         this.trustFactorTotal = 0.0;
 
-        this.store = 0;
         this.file = new File(
                 Register.plugin.getDataFolder()
                         + "/comparison/"
                         + this.patternGeneralization.parent.key + "/"
                         + this.patternGeneralization.initiator.generalization + "/"
                         + this.patternGeneralization.initiator.individualRecentWeight + "/"
-                        + this.researchProfile.getName() + ".yml"
+                        + profile.getName() + ".yml"
         );
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
 
         if (this.file.exists()) {
             if (this.file.isFile()) {
-                this.loaded = false;
+                this.store = -1;
 
                 SpartanBukkit.dataThread.execute(() -> {
                     Set<String> keys = this.configuration.getKeys(false);
@@ -111,14 +107,14 @@ public class PatternProfile {
                             }
                         }
                     }
-                    this.loaded = true;
+                    this.store = 0;
                 });
             } else {
                 this.file.delete();
-                this.loaded = true;
+                this.store = 0;
             }
         } else {
-            this.loaded = true;
+            this.store = 0;
         }
     }
 
@@ -197,7 +193,7 @@ public class PatternProfile {
     // Separator
 
     void set(PatternComparison comparison, long time, Object value) {
-        if (this.loaded) {
+        if (this.store != -1) {
             SpartanBukkit.dataThread.execute(() -> {
                 this.configuration.set(time + "." + comparison.key, value);
 
@@ -248,8 +244,8 @@ public class PatternProfile {
         }
     }
 
-    void delete() {
-        if (loaded) {
+    void delete(PlayerProfile profile) {
+        if (this.store != -1) {
             synchronized (this.patternGeneralization.parent.profilesToStore) {
                 this.patternGeneralization.parent.profilesToStore.remove(this);
             }
@@ -275,7 +271,7 @@ public class PatternProfile {
                                     String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
 
                                     if (profileName != null
-                                            && profileName.equals(this.researchProfile.getName())) {
+                                            && profileName.equals(profile.getName())) {
                                         for (String option : PatternGeneralization.options) {
                                             configuration.set(key + option, null);
                                         }

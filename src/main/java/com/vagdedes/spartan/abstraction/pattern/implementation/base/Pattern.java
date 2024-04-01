@@ -26,7 +26,7 @@ public class Pattern {
                             patternProfile = patternGeneralization.profiles.remove(profile);
                         }
                         if (patternProfile != null) {
-                            patternProfile.delete();
+                            patternProfile.delete(profile);
                         }
                     }
                 }
