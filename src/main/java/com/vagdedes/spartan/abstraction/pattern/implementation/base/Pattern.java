@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -213,8 +214,14 @@ public class Pattern {
     public void learn(SpartanPlayer player, long situation, Number number, boolean collect) {
         if (collect) {
             long time = System.currentTimeMillis();
-            Integer divisor = DetectionNotifications.getDivisor(player, false);
-            boolean include = divisor == null || divisor != 69;
+            boolean include;
+
+            if (SpartanBukkit.debug) {
+                include = player.isWhitelisted();
+            } else {
+                Integer divisor = DetectionNotifications.getDivisor(player, false);
+                include = divisor == null || divisor != 69;
+            }
 
             synchronized (this.generalizations) {
                 for (PatternGeneralization generalization : this.generalizations.values()) {
