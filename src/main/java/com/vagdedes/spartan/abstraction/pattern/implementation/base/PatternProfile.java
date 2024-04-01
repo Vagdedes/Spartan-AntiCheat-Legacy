@@ -21,7 +21,7 @@ public class PatternProfile {
         }
     }
 
-    final PatternGeneralization patternGeneralization;
+    private final PatternGeneralization patternGeneralization;
     private double trustFactorTotal;
     final Map<Long, Comparison> comparisons;
     final Map<Long, LinkedList<Number>> correlations;
@@ -183,7 +183,7 @@ public class PatternProfile {
         }
     }
 
-    void addData(long time, double trustFactor, long contribution) {
+    void refreshComparisons(long time, double trustFactor, long contribution) {
         this.trustFactorTotal += trustFactor;
 
         if (this.comparisons.size() == this.patternGeneralization.initiator.individualGeneralWeight) {

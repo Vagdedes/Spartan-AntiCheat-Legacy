@@ -12,7 +12,7 @@ import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.*;
 
-public abstract class PatternGeneralization {
+public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     static final String
             profileOption = ".profile",
@@ -313,7 +313,7 @@ public abstract class PatternGeneralization {
                         long time) {
         synchronized (patternProfile.comparisons) {
             synchronized (this.significancePie) {
-                patternProfile.addData(
+                patternProfile.refreshComparisons(
                         time,
                         probability * this.significancePie.getProbability(number),
                         contribution

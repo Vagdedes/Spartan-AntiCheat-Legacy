@@ -71,21 +71,23 @@ public class PatternComparison {
              double number,
              long time,
              boolean storage) {
-        synchronized (this) {
-            if (number == -1.0) {
-                this.remove(patternProfile, !patternProfile.researchProfile.isLegitimate());
-            } else {
-                if (patternProfile.researchProfile.isLegitimate()) {
-                    NumberMemory data = profiles.get(patternProfile);
+        if (number == -1.0) {
+            synchronized (this) {
+                NumberMemory data = profiles.remove(patternProfile);
 
-                    if (data == null) {
-                        this.profiles.put(patternProfile, new NumberMemory(this, number));
-                    } else {
-                        this.rank.remove(data.last);
-                        data.add(number);
-                    }
+                if (data != null) {
+                    this.rank.remove(data.last);
+                }
+            }
+        } else {
+            synchronized (this) {
+                NumberMemory data = this.profiles.get(patternProfile);
+
+                if (data == null) {
+                    this.profiles.put(patternProfile, new NumberMemory(this, number));
                 } else {
-                    this.remove(patternProfile, true);
+                    this.rank.remove(data.last);
+                    data.add(number);
                 }
 
                 if (storage) {
@@ -94,21 +96,6 @@ public class PatternComparison {
                             time,
                             number
                     );
-                }
-            }
-        }
-    }
-
-    private void remove(PatternProfile patternProfile, boolean pie) {
-        NumberMemory data = profiles.remove(patternProfile);
-
-        if (data != null) {
-            this.rank.remove(data.last);
-
-            if (pie) {
-                synchronized (this.pie) {
-                    this.pie.remove(data.pie);
-                    data.pie.clear();
                 }
             }
         }
