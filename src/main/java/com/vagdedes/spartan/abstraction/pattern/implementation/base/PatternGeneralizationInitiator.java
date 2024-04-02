@@ -7,13 +7,16 @@ public class PatternGeneralizationInitiator {
     // Recent individual weight is for short-term comparison when a player is online
     // General individual weight is for consideration of multiple scenarios when a player is offline
     // General weight is for long-term comparison for all players
-    public final short generalization,
+    final short
+            generalization,
             line,
             square,
             cube;
+    final short[] counts;
 
-    public PatternGeneralizationInitiator(Integer generalization, double weight) {
+    public PatternGeneralizationInitiator(Integer generalization, double weight, short[] counts) {
         this.generalization = generalization.shortValue();
+        this.counts = counts;
 
         if (weight == 0.0) {
             this.line = 0;

@@ -131,21 +131,21 @@ public abstract class DetectionExecutor {
         if (probabilityPredictor.pie.hasData()) {
             float probability = probabilityPredictor.pie.getProbability(
                     client,
-                    1.0f / (probabilityPredictor.pie.getRawTotal() + 1.0f)
+                    patternProfile.contributedRecently()
+                            ? 1.0f / (probabilityPredictor.pie.getRawTotal() + 1.0f)
+                            : 0.0f
             );
-            patternGeneralization.compare(
-                    patternProfile,
+            patternProfile.updateComparison(
+                    time,
                     client,
                     probability,
-                    -1L,
-                    time
+                    -1L
             );
         } else {
-            patternGeneralization.compare(
-                    patternProfile,
+            patternProfile.updateComparison(
+                    time,
                     client,
                     1.0f,
-                    time,
                     time
             );
         }
@@ -199,19 +199,17 @@ public abstract class DetectionExecutor {
         }
 
         if (probabilityRank.hasData()) {
-            patternGeneralization.compare(
-                    patternProfile,
+            patternProfile.updateComparison(
+                    time,
                     client,
                     probabilityRank.getPosition(client) * probabilityRank.getProbability(client),
-                    -1L,
-                    time
+                    -1L
             );
         } else {
-            patternGeneralization.compare(
-                    patternProfile,
-                    client,
-                    1.0f,
+            patternProfile.updateComparison(
                     time,
+                    client,
+                    patternProfile.contributedRecently() ? 1.0f : 0.0f,
                     time
             );
         }

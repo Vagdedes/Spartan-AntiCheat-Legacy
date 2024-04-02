@@ -16,12 +16,10 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     private short count;
     private File file;
     private YamlConfiguration configuration;
-    private byte store;
 
     PatternGeneralizationStorage(Pattern pattern, PatternGeneralizationInitiator initiator) {
         super(pattern, initiator);
         this.count = 0;
-        this.store = 0;
         this.reload();
     }
 
@@ -75,29 +73,20 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
             this.configuration.set(time + profileOption, profile.getName());
             this.configuration.set(time + situationOption, situation);
             this.configuration.set(time + patternOption, pattern);
-
-            if (this.store == 0) {
-                this.store = 1;
-            }
         });
     }
 
     void store() {
-        if (this.store == 1) {
-            this.store = 2;
+        SpartanBukkit.dataThread.execute(() -> {
+            try {
+                this.configuration.save(this.file);
 
-            SpartanBukkit.dataThread.execute(() -> {
-                try {
-                    this.configuration.save(this.file);
-                    this.store = 0;
-
-                    if (this.count < 0) { // Short has overflowed (32767)
-                        this.count = 0;
-                        this.reload();
-                    }
-                } catch (Exception ignored) {
+                if (this.count < 0) { // Short has overflowed (32767)
+                    this.count = 0;
+                    this.reload();
                 }
-            });
-        }
+            } catch (Exception ignored) {
+            }
+        });
     }
 }

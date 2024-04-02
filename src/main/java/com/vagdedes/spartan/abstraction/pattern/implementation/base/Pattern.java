@@ -13,8 +13,6 @@ import java.util.*;
 
 public class Pattern { // todo switch from numbers to floats to save memory
 
-    // todo move storage set to generalizations
-
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
     public static void delete(PlayerProfile profile) {
@@ -55,9 +53,6 @@ public class Pattern { // todo switch from numbers to floats to save memory
                             }
                             pattern.generalizations.clear();
                         }
-                        synchronized (pattern.profilesToStore) {
-                            pattern.profilesToStore.clear();
-                        }
                     }
                     instances.clear();
                     PatternGeneralization.allCache.clear();
@@ -72,7 +67,6 @@ public class Pattern { // todo switch from numbers to floats to save memory
     public final String key;
     final String learningFolder;
     final Map<Short, PatternGeneralization> generalizations;
-    final Set<PatternProfile> profilesToStore;
     private boolean load;
 
     public Pattern(String key, PatternGeneralizationInitiator initiator, PatternGeneralizationInitiator[] generalizations) {
@@ -81,7 +75,6 @@ public class Pattern { // todo switch from numbers to floats to save memory
                 + "/learning/"
                 + key;
         this.load = false;
-        this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
 
         this.generalizations = Collections.synchronizedMap(
                 new LinkedHashMap<>(generalizations.length + 1)
@@ -109,18 +102,10 @@ public class Pattern { // todo switch from numbers to floats to save memory
 
     public void store() {
         synchronized (this.generalizations) {
-            ((PatternGeneralizationStorage) this.generalizations.get(0)).store();
+            ((PatternGeneralizationStorage) this.generalizations.get((short) 0)).store();
         }
-
-        if (!this.profilesToStore.isEmpty()) {
-            synchronized (this.profilesToStore) {
-                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
-
-                while (iterator.hasNext()) {
-                    iterator.next().store();
-                    iterator.remove();
-                }
-            }
+        for (PatternGeneralization generalization : this.generalizations.values()) {
+            generalization.storeProfiles();
         }
     }
 
@@ -224,6 +209,7 @@ public class Pattern { // todo switch from numbers to floats to save memory
                     );
                 }
             }
+
         }
     }
 

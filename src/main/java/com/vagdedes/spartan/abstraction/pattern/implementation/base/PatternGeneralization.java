@@ -26,7 +26,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     final Pattern parent;
     final PatternGeneralizationInitiator initiator;
-    private final ProbabilityPie significancePie;
+    final ProbabilityPie significancePie;
     private final PatternComparison
             trustFactorComparison,
             contributionComparison;
@@ -34,6 +34,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     final Map<PlayerProfile, PatternProfile> profiles;
     private final Collection<Collection<Float>> allData;
     private final Collection<Float> specific;
+    final Set<PatternProfile> profilesToStore;
 
     protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         this.parent = pattern;
@@ -48,6 +49,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.allData = new ArrayList<>(0);
         this.specific = new ArrayList<>(0);
+        this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
     }
 
     void clear() {
@@ -55,32 +57,30 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             synchronized (this.trustFactorComparison) {
                 synchronized (this.contributionComparison) {
                     synchronized (this.significancePie) {
-                        this.profiles.clear();
-                        this.trustFactorComparison.clear();
-                        this.contributionComparison.clear();
-                        this.significancePie.clear();
+                        synchronized (this.profilesToStore) {
+                            this.profiles.clear();
+                            this.trustFactorComparison.clear();
+                            this.contributionComparison.clear();
+                            this.significancePie.clear();
+                            this.profilesToStore.clear();
+                        }
                     }
                 }
             }
         }
     }
 
-    public float[] trustFactorRankAndProbability(PatternProfile patternProfile) {
-        float value;
+    void storeProfiles() {
+        if (!this.profilesToStore.isEmpty()) {
+            synchronized (this.profilesToStore) {
+                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
 
-        synchronized (patternProfile.comparisons) {
-            value = patternProfile.trustFactor(true);
+                while (iterator.hasNext()) {
+                    iterator.next().store();
+                    iterator.remove();
+                }
+            }
         }
-        return this.trustFactorComparison.rankAndProbability(value);
-    }
-
-    public float[] contributionRankAndProbability(PatternProfile patternProfile) {
-        float value;
-
-        synchronized (patternProfile.comparisons) {
-            value = patternProfile.contribution(true);
-        }
-        return this.contributionComparison.rankAndProbability(value);
     }
 
     // Separator
@@ -96,6 +96,8 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
+            patternProfile.lastContribution = time;
+
             if (this.initiator.isEnabled()) {
                 if (this.significancePie.getSlices() == this.initiator.cube) {
                     synchronized (this.significancePie) {
@@ -307,36 +309,6 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
                     ? new ProbabilityRank()
                     : rank;
-        }
-    }
-
-    // Separator
-
-    public void compare(PatternProfile patternProfile,
-                        float number,
-                        float probability,
-                        long contribution,
-                        long time) {
-        synchronized (patternProfile.comparisons) {
-            synchronized (this.significancePie) {
-                patternProfile.refreshComparisons(
-                        time,
-                        (float) (probability * this.significancePie.getProbability(number)),
-                        contribution
-                );
-            }
-            this.trustFactorComparison.put(
-                    patternProfile,
-                    patternProfile.trustFactor(false),
-                    time,
-                    true
-            );
-            this.contributionComparison.put(
-                    patternProfile,
-                    patternProfile.contribution(false),
-                    time,
-                    true
-            );
         }
     }
 
