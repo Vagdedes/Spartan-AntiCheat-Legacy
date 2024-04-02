@@ -79,8 +79,8 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                   long situation,
                   float pattern,
                   boolean store) {
-        if (this.initiator.generalization != 0) {
-            pattern = AlgebraUtils.generalize(pattern, this.initiator.generalization);
+        if (this.initiator.scissors != 0) {
+            pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
         }
         PatternProfile patternProfile = this.getProfile(profile);
 
@@ -165,7 +165,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                                                 long situation,
                                                 short count) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
-                + this.initiator.generalization;
+                + this.initiator.scissors;
         hash = (hash * SpartanBukkit.hashCodeMultiplierLong) + count;
 
         if (DetectionNotifications.isEnabled(player)) {
@@ -233,7 +233,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     public ProbabilityRank getRanked(SpartanPlayer player,
                                      long situation) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
-                + this.initiator.generalization;
+                + this.initiator.scissors;
 
         if (DetectionNotifications.isEnabled(player)) {
             ProbabilityRank result = this.getRankedRaw(situation);

@@ -57,7 +57,7 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
                 }
             }
         }
-        int hash = Objects.hash(this.parent.key, this.initiator.generalization, System.currentTimeMillis());
+        int hash = Objects.hash(this.parent.key, this.initiator.scissors, System.currentTimeMillis());
         this.file = new File(this.parent.learningFolder + "/" + hash + ".yml");
 
         if (this.file.exists()) {

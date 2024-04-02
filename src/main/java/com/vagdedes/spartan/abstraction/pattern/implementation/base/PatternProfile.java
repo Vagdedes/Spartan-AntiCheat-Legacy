@@ -13,7 +13,7 @@ import java.util.*;
 
 public class PatternProfile {
 
-    private final PatternGeneralization patternGeneralization;
+    private final PatternGeneralization generalization;
     final Map<Long, Float> comparisons;
     final Map<Long, LinkedList<Float>> correlations;
     final PatternRepetition patternRepetition;
@@ -23,7 +23,7 @@ public class PatternProfile {
     long lastContribution;
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
-        this.patternGeneralization = patternGeneralization;
+        this.generalization = patternGeneralization;
         this.lastContribution = 0L;
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -34,9 +34,9 @@ public class PatternProfile {
         this.file = new File(
                 Register.plugin.getDataFolder()
                         + "/comparison/"
-                        + this.patternGeneralization.parent.key + "/"
-                        + this.patternGeneralization.initiator.generalization + "/"
-                        + this.patternGeneralization.initiator.line + "/"
+                        + this.generalization.parent.key + "/"
+                        + this.generalization.initiator.scissors + "/"
+                        + this.generalization.initiator.line + "/"
                         + profile.getName() + ".yml"
         );
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
@@ -58,7 +58,7 @@ public class PatternProfile {
                                 Object value = this.configuration.get(key, -1.0f);
 
                                 if (value instanceof Number) {
-                                    if (count == this.patternGeneralization.initiator.square) {
+                                    if (count == this.generalization.initiator.square) {
                                         this.configuration.set(key, null);
                                         changed = true;
                                     } else {
@@ -94,7 +94,7 @@ public class PatternProfile {
 
     private void updateComparison(long time, float trustFactor, boolean storage) {
         if (this.loaded) {
-            if (this.comparisons.size() == this.patternGeneralization.initiator.square) {
+            if (this.comparisons.size() == this.generalization.initiator.square) {
                 Iterator<Long> iterator = this.comparisons.keySet().iterator();
                 long oldTime = iterator.next();
                 iterator.remove();
@@ -111,8 +111,8 @@ public class PatternProfile {
                 SpartanBukkit.dataThread.execute(() -> {
                     this.configuration.set(Long.toString(time), trustFactor);
 
-                    synchronized (this.patternGeneralization.profilesToStore) {
-                        this.patternGeneralization.profilesToStore.add(this);
+                    synchronized (this.generalization.profilesToStore) {
+                        this.generalization.profilesToStore.add(this);
                     }
                 });
             }
@@ -122,8 +122,8 @@ public class PatternProfile {
     public void updateComparison(long time, float client, ProbabilityPie pie) {
         float significance;
 
-        synchronized (this.patternGeneralization.significancePie) {
-            significance = this.patternGeneralization.significancePie.getProbability(client);
+        synchronized (this.generalization.significancePie) {
+            significance = this.generalization.significancePie.getProbability(client);
         }
         float probability = pie.getProbability(client, 1.0f),
                 existingContribution = 1.0f - (1.0f / pie.getRawTotal() + 1.0f);
@@ -137,8 +137,8 @@ public class PatternProfile {
     public void updateComparison(long time, float client, ProbabilityRank rank) {
         float significance;
 
-        synchronized (this.patternGeneralization.significancePie) {
-            significance = this.patternGeneralization.significancePie.getProbability(client);
+        synchronized (this.generalization.significancePie) {
+            significance = this.generalization.significancePie.getProbability(client);
         }
         float probability = rank.getPosition(client, 1.0f),
                 existingContribution = 1.0f - (1.0f / rank.getRawTotal() + 1.0f);
@@ -151,7 +151,7 @@ public class PatternProfile {
 
     // Separator
 
-    private boolean contributedRecently() {
+    private boolean contributedRecently() { // todo
         return System.currentTimeMillis() - this.lastContribution <= TPS.tickTime;
     }
 
@@ -168,15 +168,15 @@ public class PatternProfile {
 
     void delete(PlayerProfile profile) {
         if (this.loaded) {
-            synchronized (this.patternGeneralization.profilesToStore) {
-                this.patternGeneralization.profilesToStore.remove(this);
+            synchronized (this.generalization.profilesToStore) {
+                this.generalization.profilesToStore.remove(this);
             }
             this.file.delete();
 
             synchronized (this.comparisons) {
                 this.comparisons.clear();
             }
-            File[] files = this.patternGeneralization.parent.getLearningFiles();
+            File[] files = this.generalization.parent.getLearningFiles();
 
             if (files != null) {
                 for (File file : files) {

@@ -87,7 +87,7 @@ public class Pattern { // todo switch from numbers to floats to save memory
         if (generalizations.length > 0) {
             for (PatternGeneralizationInitiator loopInitiator : generalizations) {
                 this.generalizations.put(
-                        loopInitiator.generalization,
+                        loopInitiator.scissors,
                         new PatternGeneralizationMemory(this, loopInitiator)
                 );
             }
