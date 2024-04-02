@@ -75,7 +75,7 @@ public abstract class DetectionExecutor {
 
     protected final String linearPredictionToDetection(Pattern patternStorage,
                                                        int generalization,
-                                                       int count,
+                                                       short count,
                                                        long situation,
                                                        float client) {
         long time = System.currentTimeMillis();

@@ -121,7 +121,7 @@ public class PatternProfile { // todo fix
     }
 
     float contribution(boolean compare) {
-        int required = this.patternGeneralization.initiator.line + 1;
+        short required = (short) (this.patternGeneralization.initiator.line + 1);
 
         if (this.comparisons.size() < required) {
             return -1.0f;
@@ -131,7 +131,7 @@ public class PatternProfile { // todo fix
             long total = 0L, previous = -1L;
 
             if (compare) {
-                int dismiss = size - required;
+                short dismiss = (short) (size - required);
 
                 if (dismiss > 0) {
                     for (int i = 0; i < dismiss; i++) {

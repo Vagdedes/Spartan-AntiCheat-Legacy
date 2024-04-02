@@ -96,25 +96,27 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
-            if (this.significancePie.getSlices() == this.initiator.cube) {
-                synchronized (this.significancePie) {
-                    this.significancePie.removeLeastSignificant();
-                    this.significancePie.add(pattern);
+            if (this.initiator.isEnabled()) {
+                if (this.significancePie.getSlices() == this.initiator.cube) {
+                    synchronized (this.significancePie) {
+                        this.significancePie.removeLeastSignificant();
+                        this.significancePie.add(pattern);
+                    }
+                } else {
+                    synchronized (this.significancePie) {
+                        this.significancePie.add(pattern);
+                    }
                 }
-            } else {
-                synchronized (this.significancePie) {
-                    this.significancePie.add(pattern);
+                synchronized (patternProfile.correlations) {
+                    LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
+                            situation,
+                            k -> new LinkedList<>()
+                    );
+                    if (list.size() == this.initiator.square) {
+                        list.removeFirst();
+                    }
+                    list.add(pattern);
                 }
-            }
-            synchronized (patternProfile.correlations) {
-                LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
-                        situation,
-                        k -> new LinkedList<>()
-                );
-                if (list.size() == this.initiator.square) {
-                    list.removeFirst();
-                }
-                list.add(pattern);
             }
 
             if (store) {
@@ -148,7 +150,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     public Collection<Float> getSpecific(PatternProfile patternProfile,
                                          long situation,
-                                         int count) {
+                                         short count) {
         synchronized (patternProfile.correlations) {
             List<Float> specific = patternProfile.correlations.get(situation);
 
@@ -170,7 +172,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     public Collection<Collection<Float>> getAll(SpartanPlayer player,
                                                 long situation,
-                                                int count) {
+                                                short count) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.generalization;
         hash = (hash * SpartanBukkit.hashCodeMultiplierLong) + count;
@@ -209,7 +211,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         }
     }
 
-    private Collection<Collection<Float>> getAllRaw(long situation, int count) {
+    private Collection<Collection<Float>> getAllRaw(long situation, short count) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
             return this.allData;
         } else {

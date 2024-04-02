@@ -71,7 +71,7 @@ public class Pattern { // todo switch from numbers to floats to save memory
 
     public final String key;
     final String learningFolder;
-    final Map<Integer, PatternGeneralization> generalizations;
+    final Map<Short, PatternGeneralization> generalizations;
     final Set<PatternProfile> profilesToStore;
     private boolean load;
 
@@ -87,7 +87,7 @@ public class Pattern { // todo switch from numbers to floats to save memory
                 new LinkedHashMap<>(generalizations.length + 1)
         );
         this.generalizations.put(
-                0,
+                (short) 0,
                 new PatternGeneralizationStorage(this, initiator)
         );
 
@@ -130,18 +130,18 @@ public class Pattern { // todo switch from numbers to floats to save memory
         }
         this.load = true;
         store();
-        Map<Integer, PatternGeneralization> generalizations = new LinkedHashMap<>();
+        Map<Short, PatternGeneralization> generalizations = new LinkedHashMap<>();
         File[] files = this.getLearningFiles();
 
         if (files != null) {
             Arrays.sort(files, Comparator.comparingLong(File::lastModified));
-            Set<Map.Entry<Integer, PatternGeneralization>> entries;
+            Set<Map.Entry<Short, PatternGeneralization>> entries;
 
             synchronized (this.generalizations) {
                 entries = new HashSet<>(this.generalizations.entrySet());
             }
 
-            for (Map.Entry<Integer, PatternGeneralization> entry : entries) {
+            for (Map.Entry<Short, PatternGeneralization> entry : entries) {
                 generalizations.put(
                         entry.getKey(),
                         entry.getValue() instanceof PatternGeneralizationStorage
@@ -229,9 +229,9 @@ public class Pattern { // todo switch from numbers to floats to save memory
 
     // Separator
 
-    public PatternGeneralization getGeneralization(int generalization) {
+    public PatternGeneralization getGeneralization(Integer generalization) {
         synchronized (this.generalizations) {
-            return this.generalizations.get(generalization);
+            return this.generalizations.get(generalization.shortValue());
         }
     }
 

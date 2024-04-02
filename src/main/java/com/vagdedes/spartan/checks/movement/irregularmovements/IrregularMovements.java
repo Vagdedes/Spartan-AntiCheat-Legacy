@@ -534,7 +534,7 @@ public class IrregularMovements extends CheckExecutor {
             String detection = linearPredictionToDetection(
                     SpartanBukkit.movementPatterns.vertical,
                     GroundUtils.maxHeightLength,
-                    1,
+                    (short) 1,
                     (long) objects[0],
                     (float) objects[1]
             );

@@ -5,7 +5,7 @@ import com.vagdedes.spartan.functionality.server.TPS;
 public class PatternRepetition {
 
     private float number;
-    private int count;
+    private short count;
 
     PatternRepetition() {
         this.number = Float.MIN_VALUE;

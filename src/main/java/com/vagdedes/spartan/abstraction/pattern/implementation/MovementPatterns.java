@@ -11,7 +11,7 @@ public class MovementPatterns extends PatternFamily {
 
     public MovementPatterns() {
         super(1_000L, 4);
-        PatternGeneralizationInitiator initiator = new PatternGeneralizationInitiator(0,0.05);
+        PatternGeneralizationInitiator initiator = new PatternGeneralizationInitiator(0,0.0);
         this.addPatterns(
                 new Pattern[]{
                         this.horizontal = new Pattern(

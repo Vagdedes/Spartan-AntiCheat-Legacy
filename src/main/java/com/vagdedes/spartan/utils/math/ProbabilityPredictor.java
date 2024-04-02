@@ -15,7 +15,7 @@ public class ProbabilityPredictor {
                                              long situation,
                                              PatternGeneralization patternGeneralization,
                                              PatternProfile patternProfile,
-                                             int count) {
+                                             short count) {
         return new ProbabilityPredictor(
                 patternGeneralization.getAll(player, situation, count),
                 patternGeneralization.getSpecific(patternProfile, situation, count)
