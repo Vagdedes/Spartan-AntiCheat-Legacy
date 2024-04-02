@@ -531,23 +531,12 @@ public class IrregularMovements extends CheckExecutor {
     public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof Object[]) {
             Object[] objects = (Object[]) object;
-            String detection = linearPredictionToDetection(
+            this.linearPredictionToDetection(
                     SpartanBukkit.movementPatterns.vertical,
                     GroundUtils.maxHeightLength,
-                    (short) 1,
                     (long) objects[0],
                     (float) objects[1]
             );
-
-            if (detection != null) {
-                /*player.debug(false, false,
-                        SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).probability(GroundUtils.maxHeightLength),
-                        SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).significance(GroundUtils.maxHeightLength),
-                        SpartanBukkit.movementPatterns.vertical.getProfile(player.getProfile()).contribution(GroundUtils.maxHeightLength));
-                */
-                player.safeDebug(false, false, detection);
-                return true;
-            }
         } else {
             if (object == null) {
                 oldFrom = null;

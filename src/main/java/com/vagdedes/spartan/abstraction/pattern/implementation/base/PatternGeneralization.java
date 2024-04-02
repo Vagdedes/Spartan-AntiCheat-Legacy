@@ -27,10 +27,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     final Pattern parent;
     final PatternGeneralizationInitiator initiator;
     final ProbabilityPie significancePie;
-    private final PatternComparison
-            trustFactorComparison,
-            contributionComparison;
-    final PatternComparison[] patternComparisons;
+    private final Collection<ProbabilityRank> comparisons;
     final Map<PlayerProfile, PatternProfile> profiles;
     private final Collection<Collection<Float>> allData;
     private final Collection<Float> specific;
@@ -40,12 +37,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
-        this.trustFactorComparison = new PatternComparison(this, "trust");
-        this.contributionComparison = new PatternComparison(this, "contribution");
-        this.patternComparisons = new PatternComparison[]{
-                this.trustFactorComparison,
-                this.contributionComparison
-        };
+        this.comparisons = new LinkedList<>(); // todo
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.allData = new ArrayList<>(0);
         this.specific = new ArrayList<>(0);
@@ -54,16 +46,13 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     void clear() {
         synchronized (this.profiles) {
-            synchronized (this.trustFactorComparison) {
-                synchronized (this.contributionComparison) {
-                    synchronized (this.significancePie) {
-                        synchronized (this.profilesToStore) {
-                            this.profiles.clear();
-                            this.trustFactorComparison.clear();
-                            this.contributionComparison.clear();
-                            this.significancePie.clear();
-                            this.profilesToStore.clear();
-                        }
+            synchronized (this.comparisons) { // todo
+                synchronized (this.significancePie) {
+                    synchronized (this.profilesToStore) {
+                        this.profiles.clear();
+                        this.comparisons.clear();
+                        this.significancePie.clear();
+                        this.profilesToStore.clear();
                     }
                 }
             }

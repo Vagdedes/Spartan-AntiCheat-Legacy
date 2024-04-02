@@ -4,28 +4,17 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.ProbabilityPie;
+import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
 
-public class PatternProfile { // todo fix
-
-    // todo synchronize removal of memory and storage
-
-    private static final class Comparison {
-
-        private final float trustFactor;
-        private final long contribution;
-
-        Comparison(float trustFactor, long contribution) {
-            this.trustFactor = trustFactor;
-            this.contribution = contribution;
-        }
-    }
+public class PatternProfile {
 
     private final PatternGeneralization patternGeneralization;
-    final Map<Long, Comparison> comparisons;
+    final Map<Long, Float> comparisons;
     final Map<Long, LinkedList<Float>> correlations;
     final PatternRepetition patternRepetition;
     private boolean loaded;
@@ -60,48 +49,33 @@ public class PatternProfile { // todo fix
                     Set<String> keys = this.configuration.getKeys(false);
 
                     if (!keys.isEmpty()) {
-                        Set<Long> set = new LinkedHashSet<>(this.patternGeneralization.initiator.square);
+                        int count = 0;
                         boolean changed = false;
 
                         for (String key : keys) {
                             try {
-                                boolean removed = false;
+                                long time = Long.parseLong(key);
+                                Object value = this.configuration.get(key, -1.0f);
 
-                                for (PatternComparison patternComparison : this.patternGeneralization.patternComparisons) {
-                                    String path = key + "." + patternComparison.key;
-                                    Object value = this.configuration.get(path, -1.0f);
-
-                                    if (value instanceof Number) {
-                                        long time = Long.parseLong(key);
-
-                                        if (set.size() == this.patternGeneralization.initiator.square) {
-                                            this.configuration.set(path, null);
-                                            removed = true;
-                                            changed = true;
-                                        } else {
-                                            set.add(time);
-                                            // todo add
-                                        }
+                                if (value instanceof Number) {
+                                    if (count == this.patternGeneralization.initiator.square) {
+                                        this.configuration.set(key, null);
+                                        changed = true;
+                                    } else {
+                                        this.updateComparison(time, ((Number) value).floatValue(), false);
                                     }
-                                }
-
-                                if (removed) {
+                                } else {
                                     this.configuration.set(key, null);
+                                    changed = true;
                                 }
                             } catch (Exception ignored) {
                             }
                         }
 
-                        if (!set.isEmpty()) {
-                            if (changed) {
-                                try {
-                                    this.configuration.save(this.file);
-                                } catch (Exception ignored) {
-                                }
-                            }
-                            synchronized (this.keys) { // todo fix
-                                this.keys.clear();
-                                this.keys.addAll(set);
+                        if (changed) {
+                            try {
+                                this.configuration.save(this.file);
+                            } catch (Exception ignored) {
                             }
                         }
                     }
@@ -116,43 +90,26 @@ public class PatternProfile { // todo fix
         }
     }
 
-    Comparison lastComparison() {
-        if (!this.comparisons.isEmpty()) {
-            for (Comparison comparison : this.comparisons.values()) {
-                return comparison;
-            }
-        }
-        return null;
-    }
-
     // Save
 
-    void updateComparison(long time, float client, float probability, long contribution, boolean storage) {
+    private void updateComparison(long time, float trustFactor, boolean storage) {
         if (this.loaded) {
             if (this.comparisons.size() == this.patternGeneralization.initiator.square) {
-                Iterator<Map.Entry<Long, Comparison>> iterator = this.comparisons.entrySet().iterator();
-                Map.Entry<Long, Comparison> entry = iterator.next();
+                Iterator<Long> iterator = this.comparisons.keySet().iterator();
+                long oldTime = iterator.next();
                 iterator.remove();
 
                 if (storage) {
-                    SpartanBukkit.dataThread.execute(() -> {
-                        for (PatternComparison patternComparison : this.patternGeneralization.patternComparisons) {
-                            this.configuration.set(entry.getKey() + "." + patternComparison.key, null);
-                        }
-                        this.configuration.set(Long.toString(entry.getKey()), null);
-                    });
+                    SpartanBukkit.dataThread.execute(
+                            () -> this.configuration.set(Long.toString(oldTime), null)
+                    );
                 }
             }
-            synchronized (this.patternGeneralization.significancePie) {
-                this.comparisons.put(time, new Comparison(
-                        probability * this.patternGeneralization.significancePie.getProbability(client),
-                        contribution
-                ));
-            }
+            this.comparisons.put(time, trustFactor);
 
             if (storage) {
                 SpartanBukkit.dataThread.execute(() -> {
-                    this.configuration.set(time + "." + comparison.key, value);
+                    this.configuration.set(Long.toString(time), trustFactor);
 
                     synchronized (this.patternGeneralization.profilesToStore) {
                         this.patternGeneralization.profilesToStore.add(this);
@@ -162,13 +119,39 @@ public class PatternProfile { // todo fix
         }
     }
 
-    public void updateComparison(long time, float client, float probability, long contribution) {
-        this.updateComparison(time, client, probability, contribution, true);
+    public void updateComparison(long time, float client, ProbabilityPie pie) {
+        float significance;
+
+        synchronized (this.patternGeneralization.significancePie) {
+            significance = this.patternGeneralization.significancePie.getProbability(client);
+        }
+        float probability = pie.getProbability(client, 1.0f),
+                existingContribution = 1.0f - (1.0f / pie.getRawTotal() + 1.0f);
+        this.updateComparison(
+                time,
+                significance * probability * existingContribution,
+                true
+        );
+    }
+
+    public void updateComparison(long time, float client, ProbabilityRank rank) {
+        float significance;
+
+        synchronized (this.patternGeneralization.significancePie) {
+            significance = this.patternGeneralization.significancePie.getProbability(client);
+        }
+        float probability = rank.getPosition(client, 1.0f),
+                existingContribution = 1.0f - (1.0f / rank.getRawTotal() + 1.0f);
+        this.updateComparison(
+                time,
+                significance * probability * existingContribution,
+                true
+        );
     }
 
     // Separator
 
-    public boolean contributedRecently() {
+    private boolean contributedRecently() {
         return System.currentTimeMillis() - this.lastContribution <= TPS.tickTime;
     }
 

@@ -209,7 +209,6 @@ public class Pattern { // todo switch from numbers to floats to save memory
                     );
                 }
             }
-
         }
     }
 

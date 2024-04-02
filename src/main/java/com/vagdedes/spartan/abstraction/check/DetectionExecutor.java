@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
 public abstract class DetectionExecutor {
@@ -73,13 +72,12 @@ public abstract class DetectionExecutor {
 
     // Separator
 
-    protected final String linearPredictionToDetection(Pattern patternStorage,
+    protected final void linearPredictionToDetection(Pattern patternStorage,
                                                        int generalization,
-                                                       short count,
                                                        long situation,
                                                        float client) {
         long time = System.currentTimeMillis();
-        client = AlgebraUtils.generalize(client, generalization);
+        client = AlgebraUtils.cut(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
@@ -89,130 +87,24 @@ public abstract class DetectionExecutor {
                 patternProfile,
                 count
         );
-        float[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
-                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
-        StringBuilder sb = new StringBuilder()
-                .append("data: ")
-                .append(patternStorage.key)
-                .append("(")
-                .append(generalization)
-                .append("x")
-                .append(count)
-                .append("), client: ")
-                .append(client);
-
-        if (trustFactorRankAndProbability != null) {
-            sb.append(", probability: ")
-                    .append(AlgebraUtils.cut(
-                            trustFactorRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            trustFactorRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append(")");
-        }
-        if (contributionRankAndProbability != null) {
-            sb.append(", contribution: ")
-                    .append(AlgebraUtils.cut(
-                            contributionRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            contributionRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append(")");
-        }
-
-        if (probabilityPredictor.pie.hasData()) {
-            float probability = probabilityPredictor.pie.getProbability(
-                    client,
-                    patternProfile.contributedRecently()
-                            ? 1.0f / (probabilityPredictor.pie.getRawTotal() + 1.0f)
-                            : 0.0f
-            );
-            patternProfile.updateComparison(
-                    time,
-                    client,
-                    probability,
-                    -1L
-            );
-        } else {
-            patternProfile.updateComparison(
-                    time,
-                    client,
-                    1.0f,
-                    time
-            );
-        }
-        return sb.toString();
+        patternProfile.updateComparison(
+                time,
+                client,
+                probabilityPredictor.pie
+        );
     }
 
-    protected final String rankedPredictionToDetection(Pattern patternStorage,
+    protected final void rankedPredictionToDetection(Pattern patternStorage,
                                                        int generalization,
                                                        long situation,
                                                        float client) {
         long time = System.currentTimeMillis();
         client = AlgebraUtils.generalize(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
-        PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
-        ProbabilityRank probabilityRank = patternGeneralization.getRanked(player, situation);
-        float[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
-                contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
-        StringBuilder sb = new StringBuilder()
-                .append("data: ")
-                .append(patternStorage.key)
-                .append("(")
-                .append(generalization)
-                .append("), client: ")
-                .append(client);
-
-        if (trustFactorRankAndProbability != null) {
-            sb.append(", probability: ")
-                    .append(AlgebraUtils.cut(
-                            trustFactorRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            trustFactorRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append(")");
-        }
-        if (contributionRankAndProbability != null) {
-            sb.append(", contribution: ")
-                    .append(AlgebraUtils.cut(
-                            contributionRankAndProbability[0] * 100.0,
-                            2
-                    ))
-                    .append("(")
-                    .append(AlgebraUtils.cut(
-                            contributionRankAndProbability[1] * 100.0,
-                            2
-                    ))
-                    .append(")");
-        }
-
-        if (probabilityRank.hasData()) {
-            patternProfile.updateComparison(
-                    time,
-                    client,
-                    probabilityRank.getPosition(client) * probabilityRank.getProbability(client),
-                    -1L
-            );
-        } else {
-            patternProfile.updateComparison(
-                    time,
-                    client,
-                    patternProfile.contributedRecently() ? 1.0f : 0.0f,
-                    time
-            );
-        }
-        return sb.toString();
+        patternGeneralization.getProfile(player.getProfile()).updateComparison(
+                time,
+                client,
+                patternGeneralization.getRanked(player, situation)
+        );
     }
 }
