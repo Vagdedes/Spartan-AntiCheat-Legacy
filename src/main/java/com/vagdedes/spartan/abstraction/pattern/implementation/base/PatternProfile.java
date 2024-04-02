@@ -14,10 +14,10 @@ public class PatternProfile { // todo fix
 
     private static final class Comparison {
 
-        private final double trustFactor;
+        private final float trustFactor;
         private final long contribution;
 
-        Comparison(double trustFactor, long contribution) {
+        Comparison(float trustFactor, long contribution) {
             this.trustFactor = trustFactor;
             this.contribution = contribution;
         }
@@ -26,7 +26,7 @@ public class PatternProfile { // todo fix
     private final PatternGeneralization patternGeneralization;
     private double trustFactorTotal;
     final Map<Long, Comparison> comparisons;
-    final Map<Long, LinkedList<Number>> correlations;
+    final Map<Long, LinkedList<Float>> correlations;
     final PatternRepetition patternRepetition;
     private byte store;
     private final File file;
@@ -68,9 +68,9 @@ public class PatternProfile { // todo fix
 
                                 for (PatternComparison patternComparison : this.patternGeneralization.patternComparisons) {
                                     String path = key + "." + patternComparison.key;
-                                    double value = this.configuration.getDouble(path, -1.0);
+                                    Object value = this.configuration.get(path, -1.0f);
 
-                                    if (value != -1.0) {
+                                    if (value instanceof Number) {
                                         long time = Long.parseLong(key);
 
                                         if (set.size() == this.patternGeneralization.initiator.square) {
@@ -81,7 +81,7 @@ public class PatternProfile { // todo fix
                                             set.add(time);
                                             patternComparison.put(
                                                     this,
-                                                    value,
+                                                    ((Number) value).floatValue(),
                                                     time,
                                                     false
                                             );
@@ -120,11 +120,11 @@ public class PatternProfile { // todo fix
         }
     }
 
-    double contribution(boolean compare) {
+    float contribution(boolean compare) {
         int required = this.patternGeneralization.initiator.line + 1;
 
         if (this.comparisons.size() < required) {
-            return -1.0;
+            return -1.0f;
         } else {
             Iterator<Comparison> iterator = this.comparisons.values().iterator();
             int size = this.comparisons.size();
@@ -155,14 +155,14 @@ public class PatternProfile { // todo fix
                 }
             }
             return size >= required
-                    ? total / (double) size
-                    : -1.0;
+                    ? (float) (total / (double) size)
+                    : -1.0f;
         }
     }
 
-    double trustFactor(boolean compare) {
+    float trustFactor(boolean compare) {
         if (this.comparisons.size() < this.patternGeneralization.initiator.line) {
-            return -1.0;
+            return -1.0f;
         } else if (compare) {
             return this.trustFactorTotal / (double) this.comparisons.size();
         } else {
@@ -177,11 +177,11 @@ public class PatternProfile { // todo fix
             while (iterator.hasNext()) {
                 total += iterator.next().trustFactor;
             }
-            return total / (double) this.patternGeneralization.initiator.line;
+            return (float) (total / (double) this.patternGeneralization.initiator.line);
         }
     }
 
-    void refreshComparisons(long time, double trustFactor, long contribution) {
+    void refreshComparisons(long time, float trustFactor, long contribution) {
         this.trustFactorTotal += trustFactor;
 
         if (this.comparisons.size() == this.patternGeneralization.initiator.square) {
@@ -196,7 +196,7 @@ public class PatternProfile { // todo fix
                 }
                 this.configuration.set(Long.toString(entry.getKey()), null);
                 this.queue();
-            }
+            });
         }
         this.comparisons.put(time, new Comparison(trustFactor, contribution));
     }

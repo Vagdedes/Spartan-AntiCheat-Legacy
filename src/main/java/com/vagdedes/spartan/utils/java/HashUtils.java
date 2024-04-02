@@ -60,11 +60,11 @@ public class HashUtils {
 
     // Separator
 
-    public static long collection(Collection<Number> collection) {
+    public static long collection(Collection<Float> collection) {
         long hash = 1L;
 
-        for (Number value : collection) {
-            hash = extendLong(hash, value.hashCode());
+        for (float value : collection) {
+            hash = extendLong(hash, Float.hashCode(value));
         }
         return hash;
     }

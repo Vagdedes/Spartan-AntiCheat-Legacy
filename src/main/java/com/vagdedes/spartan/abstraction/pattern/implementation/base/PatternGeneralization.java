@@ -32,8 +32,8 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             contributionComparison;
     final PatternComparison[] patternComparisons;
     final Map<PlayerProfile, PatternProfile> profiles;
-    private final Collection<Collection<Number>> allData;
-    private final Collection<Number> specific;
+    private final Collection<Collection<Float>> allData;
+    private final Collection<Float> specific;
 
     protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         this.parent = pattern;
@@ -65,8 +65,8 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         }
     }
 
-    public double[] trustFactorRankAndProbability(PatternProfile patternProfile) {
-        double value;
+    public float[] trustFactorRankAndProbability(PatternProfile patternProfile) {
+        float value;
 
         synchronized (patternProfile.comparisons) {
             value = patternProfile.trustFactor(true);
@@ -74,8 +74,8 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         return this.trustFactorComparison.rankAndProbability(value);
     }
 
-    public double[] contributionRankAndProbability(PatternProfile patternProfile) {
-        double value;
+    public float[] contributionRankAndProbability(PatternProfile patternProfile) {
+        float value;
 
         synchronized (patternProfile.comparisons) {
             value = patternProfile.contribution(true);
@@ -88,7 +88,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     void rawCache(PlayerProfile profile,
                   long time,
                   long situation,
-                  Number pattern,
+                  float pattern,
                   boolean store) {
         if (this.initiator.generalization != 0) {
             pattern = AlgebraUtils.generalize(pattern, this.initiator.generalization);
@@ -107,7 +107,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 }
             }
             synchronized (patternProfile.correlations) {
-                LinkedList<Number> list = patternProfile.correlations.computeIfAbsent(
+                LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
                         situation,
                         k -> new LinkedList<>()
                 );
@@ -146,11 +146,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     // Separator
 
-    public Collection<Number> getSpecific(PatternProfile patternProfile,
-                                          long situation,
-                                          int count) {
+    public Collection<Float> getSpecific(PatternProfile patternProfile,
+                                         long situation,
+                                         int count) {
         synchronized (patternProfile.correlations) {
-            List<Number> specific = patternProfile.correlations.get(situation);
+            List<Float> specific = patternProfile.correlations.get(situation);
 
             if (specific == null) {
                 return this.specific;
@@ -168,15 +168,15 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     // Separator
 
-    public Collection<Collection<Number>> getAll(SpartanPlayer player,
-                                                 long situation,
-                                                 int count) {
+    public Collection<Collection<Float>> getAll(SpartanPlayer player,
+                                                long situation,
+                                                int count) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.generalization;
         hash = (hash * SpartanBukkit.hashCodeMultiplierLong) + count;
 
         if (DetectionNotifications.isEnabled(player)) {
-            Collection<Collection<Number>> result = this.getAllRaw(situation, count);
+            Collection<Collection<Float>> result = this.getAllRaw(situation, count);
 
             synchronized (allCache) {
                 PatternAllCache cache = allCache.get(hash);
@@ -197,7 +197,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 PatternAllCache cache = allCache.get(hash);
 
                 if (cache == null) {
-                    Collection<Collection<Number>> result = this.getAllRaw(situation, count);
+                    Collection<Collection<Float>> result = this.getAllRaw(situation, count);
                     allCache.put(hash, new PatternAllCache(result));
                     return result;
                 } else if (cache.isExpired()) {
@@ -209,11 +209,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         }
     }
 
-    private Collection<Collection<Number>> getAllRaw(long situation, int count) {
+    private Collection<Collection<Float>> getAllRaw(long situation, int count) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
             return this.allData;
         } else {
-            Collection<Collection<Number>> collections = new ArrayList<>(this.profiles.size());
+            Collection<Collection<Float>> collections = new ArrayList<>(this.profiles.size());
             int profiles = 0;
 
             synchronized (this.profiles) {
@@ -221,7 +221,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
 
-                        Collection<Number> data = entry.getValue().correlations.get(situation);
+                        Collection<Float> data = entry.getValue().correlations.get(situation);
 
                         if (data != null && data.size() >= count) {
                             collections.add(data);
@@ -290,7 +290,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
-                        Collection<Number> data;
+                        Collection<Float> data;
 
                         synchronized (entry.getValue().correlations) {
                             data = entry.getValue().correlations.get(situation);
@@ -311,15 +311,15 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     // Separator
 
     public void compare(PatternProfile patternProfile,
-                        Number number,
-                        double probability,
+                        float number,
+                        float probability,
                         long contribution,
                         long time) {
         synchronized (patternProfile.comparisons) {
             synchronized (this.significancePie) {
                 patternProfile.refreshComparisons(
                         time,
-                        probability * this.significancePie.getProbability(number),
+                        (float) (probability * this.significancePie.getProbability(number)),
                         contribution
                 );
             }

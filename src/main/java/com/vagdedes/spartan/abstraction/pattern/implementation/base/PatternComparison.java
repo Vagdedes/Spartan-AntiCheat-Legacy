@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class PatternComparison {
 
-    private static Number generalizeNumber(Number number) {
-        return AlgebraUtils.generalize(number.doubleValue(), 2);
+    private static float generalizeNumber(float number) {
+        return AlgebraUtils.cut(number, 2);
     }
 
     private static final class NumberMemory {
@@ -21,14 +21,14 @@ public class PatternComparison {
         private Number last;
         private final ProbabilityPie pie;
 
-        private NumberMemory(PatternComparison patternComparison, double number) {
+        private NumberMemory(PatternComparison patternComparison, float number) {
             this.parent = patternComparison;
             this.pie = new ProbabilityPie();
             this.add(number);
         }
 
-        private void add(double number) {
-            Number generalized = generalizeNumber(number);
+        private void add(float number) {
+            float generalized = generalizeNumber(number);
             this.last = number;
             this.parent.rank.add(number);
 
@@ -64,10 +64,10 @@ public class PatternComparison {
     }
 
     void put(PatternProfile patternProfile,
-             double number,
+             float number,
              long time,
              boolean storage) {
-        if (number == -1.0) {
+        if (number == -1.0f) {
             synchronized (this) {
                 NumberMemory data = profiles.remove(patternProfile);
 
@@ -97,15 +97,15 @@ public class PatternComparison {
         }
     }
 
-    double[] rankAndProbability(double value) {
-        if (value == -1.0
+    float[] rankAndProbability(float value) {
+        if (value == -1.0f
                 || !SpartanBukkit.debug
                 && (profiles.size() < TPS.maximum
                 || this.rank.getTotal() < TPS.maximum)) {
             return null;
         } else {
             synchronized (this) {
-                return new double[]{
+                return new float[]{
                         this.rank.getPosition(value),
                         this.pie.getProbability(generalizeNumber(value))
                 };

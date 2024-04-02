@@ -69,7 +69,7 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
         }
     }
 
-    void set(PlayerProfile profile, long time, long situation, Number pattern) {
+    void set(PlayerProfile profile, long time, long situation, float pattern) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
             this.configuration.set(time + profileOption, profile.getName());

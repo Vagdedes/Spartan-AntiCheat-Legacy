@@ -33,6 +33,11 @@ public class AlgebraUtils {
         return Math.floor(value * cut) / (double) cut;
     }
 
+    public static float cut(float value, int cut) {
+        cut = (int) Math.pow(10, cut);
+        return (float) (Math.floor(value * cut) / (double) cut);
+    }
+
     // Separator
 
     public static double roundToHalf(double dbl) {

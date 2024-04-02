@@ -26,8 +26,8 @@ public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
 
-    private ProbabilityPredictor(Collection<Collection<Number>> totalPatterns,
-                                 Collection<Number> currentPattern) {
+    private ProbabilityPredictor(Collection<Collection<Float>> totalPatterns,
+                                 Collection<Float> currentPattern) {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
 
@@ -35,17 +35,17 @@ public class ProbabilityPredictor {
                 && currentPatternSize > 0) { // No individual data to compare
             long currentPatternHash = HashUtils.collection(currentPattern);
 
-            for (Collection<Number> allPatterns : totalPatterns) {
+            for (Collection<Float> allPatterns : totalPatterns) {
                 boolean next = false;
-                Iterator<Number> iterator = allPatterns.iterator();
-                LinkedList<Number> list = new LinkedList<>();
+                Iterator<Float> iterator = allPatterns.iterator();
+                LinkedList<Float> list = new LinkedList<>();
 
                 for (int i = 0; i < currentPatternSize; i++) {
                     list.add(iterator.next());
                 }
 
                 while (iterator.hasNext()) {
-                    Number pattern = iterator.next();
+                    float pattern = iterator.next();
                     list.add(pattern);
                     list.removeFirst();
 

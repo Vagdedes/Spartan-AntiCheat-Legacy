@@ -4,16 +4,16 @@ import com.vagdedes.spartan.functionality.server.TPS;
 
 public class PatternRepetition {
 
-    private Number number;
+    private float number;
     private int count;
 
     PatternRepetition() {
-        this.number = Double.MIN_VALUE;
+        this.number = Float.MIN_VALUE;
         this.count = 0;
     }
 
-    boolean canUse(Number number) {
-        if (this.number.doubleValue() != number.doubleValue()) {
+    boolean canUse(float number) {
+        if (this.number != number) {
             this.count = 1;
             this.number = number;
             return true;

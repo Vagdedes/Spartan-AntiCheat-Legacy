@@ -536,7 +536,7 @@ public class IrregularMovements extends CheckExecutor {
                     GroundUtils.maxHeightLength,
                     1,
                     (long) objects[0],
-                    (Number) objects[1]
+                    (float) objects[1]
             );
 
             if (detection != null) {

@@ -175,7 +175,7 @@ public class Pattern { // todo switch from numbers to floats to save memory
                                                         profile,
                                                         time,
                                                         situation,
-                                                        (Number) pattern,
+                                                        ((Number) pattern).floatValue(),
                                                         false
                                                 );
                                             }
@@ -219,7 +219,7 @@ public class Pattern { // todo switch from numbers to floats to save memory
                             player.getProfile(),
                             time,
                             situation,
-                            number,
+                            number.floatValue(),
                             include && generalization instanceof PatternGeneralizationStorage
                     );
                 }

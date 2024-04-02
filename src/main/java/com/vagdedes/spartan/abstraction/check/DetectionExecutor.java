@@ -13,9 +13,6 @@ import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.Iterator;
-import java.util.Map;
-
 public abstract class DetectionExecutor {
 
     public final CheckExecutor executor;
@@ -80,7 +77,7 @@ public abstract class DetectionExecutor {
                                                        int generalization,
                                                        int count,
                                                        long situation,
-                                                       Number client) {
+                                                       float client) {
         long time = System.currentTimeMillis();
         client = AlgebraUtils.generalize(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
@@ -92,7 +89,7 @@ public abstract class DetectionExecutor {
                 patternProfile,
                 count
         );
-        double[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
+        float[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
                 contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
         StringBuilder sb = new StringBuilder()
                 .append("data: ")
@@ -132,29 +129,14 @@ public abstract class DetectionExecutor {
         }
 
         if (probabilityPredictor.pie.hasData()) {
-            Iterator<Map.Entry<Number, Integer>> entries = probabilityPredictor.pie.getProbabilitiesRanked().iterator();
-
-            while (entries.hasNext()) {
-                Map.Entry<Number, Integer> entry = entries.next();
-                double probability = probabilityPredictor.pie.getProbabilityWithCount(entry.getValue());
-
-                if (entry.getKey().doubleValue() == client.doubleValue()) {
-                    patternGeneralization.compare(
-                            patternProfile,
-                            client,
-                            probability,
-                            -1L,
-                            time
-                    );
-                    return sb.toString();
-                } else {
-                    count++;
-                }
-            }
+            double probability = probabilityPredictor.pie.getProbability(
+                    client,
+                    1.0 / (probabilityPredictor.pie.getTotal() + 1.0)
+            );
             patternGeneralization.compare(
                     patternProfile,
                     client,
-                    1.0 / (probabilityPredictor.pie.getTotal() + 1.0),
+                    (float) probability,
                     -1L,
                     time
             );
@@ -162,7 +144,7 @@ public abstract class DetectionExecutor {
             patternGeneralization.compare(
                     patternProfile,
                     client,
-                    1.0,
+                    1.0f,
                     time,
                     time
             );
@@ -173,13 +155,13 @@ public abstract class DetectionExecutor {
     protected final String rankedPredictionToDetection(Pattern patternStorage,
                                                        int generalization,
                                                        long situation,
-                                                       Number client) {
+                                                       float client) {
         long time = System.currentTimeMillis();
         client = AlgebraUtils.generalize(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         ProbabilityRank probabilityRank = patternGeneralization.getRanked(player, situation);
-        double[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
+        float[] trustFactorRankAndProbability = patternGeneralization.trustFactorRankAndProbability(patternProfile),
                 contributionRankAndProbability = patternGeneralization.contributionRankAndProbability(patternProfile);
         StringBuilder sb = new StringBuilder()
                 .append("data: ")
@@ -228,7 +210,7 @@ public abstract class DetectionExecutor {
             patternGeneralization.compare(
                     patternProfile,
                     client,
-                    1.0,
+                    1.0f,
                     time,
                     time
             );
