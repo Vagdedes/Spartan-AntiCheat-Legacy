@@ -24,7 +24,7 @@ public class PatternProfile { // todo fix
     }
 
     private final PatternGeneralization patternGeneralization;
-    private double trustFactorTotal;
+    private float trustFactorTotal;
     final Map<Long, Comparison> comparisons;
     final Map<Long, LinkedList<Float>> correlations;
     final PatternRepetition patternRepetition;
@@ -39,7 +39,7 @@ public class PatternProfile { // todo fix
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.patternRepetition = new PatternRepetition();
-        this.trustFactorTotal = 0.0;
+        this.trustFactorTotal = 0.0f;
 
         this.file = new File(
                 Register.plugin.getDataFolder()
@@ -164,9 +164,9 @@ public class PatternProfile { // todo fix
         if (this.comparisons.size() < this.patternGeneralization.initiator.line) {
             return -1.0f;
         } else if (compare) {
-            return this.trustFactorTotal / (double) this.comparisons.size();
+            return this.trustFactorTotal / (float) this.comparisons.size();
         } else {
-            double total = 0.0;
+            float total = 0.0f;
             Iterator<Comparison> iterator = this.comparisons.values().iterator();
 
             if (this.comparisons.size() > this.patternGeneralization.initiator.line) {

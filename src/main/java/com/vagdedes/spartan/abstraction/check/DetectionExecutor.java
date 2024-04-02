@@ -129,14 +129,14 @@ public abstract class DetectionExecutor {
         }
 
         if (probabilityPredictor.pie.hasData()) {
-            double probability = probabilityPredictor.pie.getProbability(
+            float probability = probabilityPredictor.pie.getProbability(
                     client,
-                    1.0 / (probabilityPredictor.pie.getTotal() + 1.0)
+                    1.0f / (probabilityPredictor.pie.getRawTotal() + 1.0f)
             );
             patternGeneralization.compare(
                     patternProfile,
                     client,
-                    (float) probability,
+                    probability,
                     -1L,
                     time
             );

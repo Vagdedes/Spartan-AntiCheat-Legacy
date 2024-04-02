@@ -197,6 +197,10 @@ public class ProbabilityPie {
         return (int) this.total;
     }
 
+    public float getRawTotal() {
+        return this.total;
+    }
+
     public boolean hasData() {
         return this.total > 0;
     }
