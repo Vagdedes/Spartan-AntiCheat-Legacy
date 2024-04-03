@@ -3,9 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -13,8 +11,19 @@ import java.util.*;
 
 public class PatternProfile {
 
+    private static final class Comparison {
+        private long time;
+        private float trustFactor;
+
+        private Comparison(long time, float trustFactor) {
+            this.time = time;
+            this.trustFactor = trustFactor;
+        }
+    }
+
     private final PatternGeneralization generalization;
     final Map<Long, Float> comparisons;
+    final Comparison lastComparison;
     final Map<Long, LinkedList<Float>> correlations;
     final PatternRepetition patternRepetition;
     private boolean loaded;
@@ -23,6 +32,7 @@ public class PatternProfile {
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
+        this.lastComparison = new Comparison(0L, 0.0f);
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -90,35 +100,38 @@ public class PatternProfile {
     }
 
     private void updateComparison(long time, float trustFactor, boolean storage) {
-            if (this.comparisons.size() == this.generalization.initiator.square) {
-                Iterator<Long> iterator = this.comparisons.keySet().iterator();
-                long oldTime = iterator.next();
-                iterator.remove();
-                this.comparisons.put(time, trustFactor);
+        this.lastComparison.time = time;
+        this.lastComparison.trustFactor = trustFactor;
 
-                if (storage) {
-                    SpartanBukkit.dataThread.execute(() -> {
-                        this.configuration.set(Long.toString(oldTime), null);
-                        this.configuration.set(Long.toString(time), trustFactor);
+        if (this.comparisons.size() == this.generalization.initiator.square) {
+            Iterator<Long> iterator = this.comparisons.keySet().iterator();
+            long oldTime = iterator.next();
+            iterator.remove();
+            this.comparisons.put(time, trustFactor);
 
-                        synchronized (this.generalization.profilesToStore) {
-                            this.generalization.profilesToStore.add(this);
-                        }
-                    });
-                }
-            } else {
-                this.comparisons.put(time, trustFactor);
+            if (storage) {
+                SpartanBukkit.dataThread.execute(() -> {
+                    this.configuration.set(Long.toString(oldTime), null);
+                    this.configuration.set(Long.toString(time), trustFactor);
 
-                if (storage) {
-                    SpartanBukkit.dataThread.execute(() -> {
-                        this.configuration.set(Long.toString(time), trustFactor);
-
-                        synchronized (this.generalization.profilesToStore) {
-                            this.generalization.profilesToStore.add(this);
-                        }
-                    });
-                }
+                    synchronized (this.generalization.profilesToStore) {
+                        this.generalization.profilesToStore.add(this);
+                    }
+                });
             }
+        } else {
+            this.comparisons.put(time, trustFactor);
+
+            if (storage) {
+                SpartanBukkit.dataThread.execute(() -> {
+                    this.configuration.set(Long.toString(time), trustFactor);
+
+                    synchronized (this.generalization.profilesToStore) {
+                        this.generalization.profilesToStore.add(this);
+                    }
+                });
+            }
+        }
     }
 
     public void updateComparison(long time, float client, ProbabilityPie pie) {
