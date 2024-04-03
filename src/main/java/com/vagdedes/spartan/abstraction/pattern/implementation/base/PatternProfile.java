@@ -22,8 +22,10 @@ public class PatternProfile {
     }
 
     private final PatternGeneralization generalization;
-    final Map<Long, Float> comparisons;
-    final Comparison lastComparison;
+    private final PlayerProfile researchProfile;
+    private final Map<Long, Float> comparisons;
+    private final Comparison lastComparison;
+    private float trustFactorTotal;
     final Map<Long, LinkedList<Float>> correlations;
     final PatternRepetition patternRepetition;
     private boolean loaded;
@@ -32,12 +34,14 @@ public class PatternProfile {
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
-        this.lastComparison = new Comparison(0L, 0.0f);
+        this.researchProfile = profile;
+        this.trustFactorTotal = 0.0f;
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.patternRepetition = new PatternRepetition();
+        this.lastComparison = new Comparison(0L, -1.0f);
 
         this.file = new File(
                 Register.plugin.getDataFolder()
@@ -104,10 +108,17 @@ public class PatternProfile {
         this.lastComparison.trustFactor = trustFactor;
 
         if (this.comparisons.size() == this.generalization.initiator.square) {
-            Iterator<Long> iterator = this.comparisons.keySet().iterator();
-            long oldTime = iterator.next();
-            iterator.remove();
-            this.comparisons.put(time, trustFactor);
+            long oldTime;
+
+            synchronized (this.comparisons) {
+                Iterator<Map.Entry<Long, Float>> iterator = this.comparisons.entrySet().iterator();
+                Map.Entry<Long, Float> entry = iterator.next();
+                oldTime = entry.getKey();
+                iterator.remove();
+                this.comparisons.put(time, trustFactor);
+                this.trustFactorTotal -= entry.getValue();
+                this.trustFactorTotal += trustFactor;
+            }
 
             if (storage) {
                 SpartanBukkit.dataThread.execute(() -> {
@@ -120,7 +131,10 @@ public class PatternProfile {
                 });
             }
         } else {
-            this.comparisons.put(time, trustFactor);
+            synchronized (this.comparisons) {
+                this.comparisons.put(time, trustFactor);
+                this.trustFactorTotal += trustFactor;
+            }
 
             if (storage) {
                 SpartanBukkit.dataThread.execute(() -> {
@@ -210,6 +224,41 @@ public class PatternProfile {
                     }
                 }
             }
+        }
+    }
+
+    // Separator
+
+    float averageTrustFactor(long timePeriod) {
+        if (this.researchProfile.isOnline()) {
+            if (System.currentTimeMillis() - this.lastComparison.time <= timePeriod) {
+                return this.lastComparison.trustFactor;
+            } else {
+                int dismiss = this.comparisons.size() - this.generalization.initiator.line;
+
+                if (dismiss < 0) {
+                    return -1.0f;
+                } else {
+                    float sum = 0.0f;
+
+                    synchronized (this.comparisons) {
+                        Iterator<Float> iterator = this.comparisons.values().iterator();
+
+                        for (int i = 0; i < dismiss; i++) {
+                            iterator.next();
+                        }
+
+                        while (iterator.hasNext()) {
+                            sum += iterator.next();
+                        }
+                    }
+                    return sum / (float) this.generalization.initiator.line;
+                }
+            }
+        } else if (this.comparisons.size() >= this.generalization.initiator.square - this.generalization.initiator.line) {
+            return this.trustFactorTotal / (float) this.comparisons.size();
+        } else {
+            return -1.0f;
         }
     }
 
