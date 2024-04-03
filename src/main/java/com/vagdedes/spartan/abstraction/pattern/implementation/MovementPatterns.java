@@ -13,8 +13,7 @@ public class MovementPatterns extends PatternFamily {
         super(1_000L, 4);
         PatternGeneralizationInitiator initiator = new PatternGeneralizationInitiator(
                 0,
-                0.0,
-                new short[]{}
+                0.0
         );
         this.addPatterns(
                 new Pattern[]{
@@ -24,8 +23,7 @@ public class MovementPatterns extends PatternFamily {
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,
-                                                0.05,
-                                                new short[]{1}
+                                                0.05
                                         )
                                 }
                         ),
@@ -35,8 +33,7 @@ public class MovementPatterns extends PatternFamily {
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,
-                                                0.05,
-                                                new short[]{1}
+                                                0.05
                                         )
                                 }
                         ),
@@ -46,8 +43,7 @@ public class MovementPatterns extends PatternFamily {
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,
-                                                0.05,
-                                                new short[]{1}
+                                                0.05
                                         )
                                 }
                         ),
@@ -57,8 +53,7 @@ public class MovementPatterns extends PatternFamily {
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,
-                                                0.05,
-                                                new short[]{1}
+                                                0.05
                                         )
                                 }
                         )

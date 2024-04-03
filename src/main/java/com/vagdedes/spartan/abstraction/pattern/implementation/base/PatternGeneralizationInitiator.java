@@ -12,11 +12,9 @@ public class PatternGeneralizationInitiator {
             line,
             square,
             cube;
-    final short[] counts;
 
-    public PatternGeneralizationInitiator(Integer generalization, double weight, short[] counts) {
+    public PatternGeneralizationInitiator(Integer generalization, double weight) {
         this.scissors = generalization.shortValue();
-        this.counts = counts;
 
         if (weight == 0.0) {
             this.line = 0;

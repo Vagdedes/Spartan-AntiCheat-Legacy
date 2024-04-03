@@ -73,9 +73,10 @@ public abstract class DetectionExecutor {
     // Separator
 
     protected final void linearPredictionToDetection(Pattern patternStorage,
-                                                       int generalization,
-                                                       long situation,
-                                                       float client) {
+                                                     int generalization,
+                                                     long situation,
+                                                     float client,
+                                                     short count) {
         long time = System.currentTimeMillis();
         client = AlgebraUtils.cut(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
@@ -95,9 +96,9 @@ public abstract class DetectionExecutor {
     }
 
     protected final void rankedPredictionToDetection(Pattern patternStorage,
-                                                       int generalization,
-                                                       long situation,
-                                                       float client) {
+                                                     int generalization,
+                                                     long situation,
+                                                     float client) {
         long time = System.currentTimeMillis();
         client = AlgebraUtils.generalize(client, generalization);
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);

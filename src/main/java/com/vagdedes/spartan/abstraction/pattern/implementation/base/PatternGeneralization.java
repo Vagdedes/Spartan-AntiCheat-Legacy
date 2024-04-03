@@ -139,9 +139,9 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     // Separator
 
-    public Collection<Float> getSpecific(PatternProfile patternProfile,
-                                         long situation,
-                                         short count) {
+    public Collection<Float> getSpecificLinearData(PatternProfile patternProfile,
+                                                   long situation,
+                                                   short count) {
         synchronized (patternProfile.correlations) {
             LinkedList<Float> specific = patternProfile.correlations.get(situation);
 
@@ -220,7 +220,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
                         Collection<Float> data = entry.getValue().correlations.get(situation);
 
-                        if (data != null && data.size() >= count) {
+                        if (data != null && data.size() > count) {
                             collections.add(data);
                         }
                     }

@@ -18,7 +18,7 @@ public class ProbabilityPredictor {
                                              short count) {
         return new ProbabilityPredictor(
                 patternGeneralization.getLinearData(player, situation, count),
-                patternGeneralization.getSpecific(patternProfile, situation, count)
+                patternGeneralization.getSpecificLinearData(patternProfile, situation, count)
         );
     }
 

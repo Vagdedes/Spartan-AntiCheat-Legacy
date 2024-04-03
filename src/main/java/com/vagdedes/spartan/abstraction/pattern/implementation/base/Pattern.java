@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public class Pattern { // todo switch from numbers to floats to save memory
+public class Pattern {
 
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
