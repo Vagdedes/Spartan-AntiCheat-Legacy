@@ -143,7 +143,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                                          long situation,
                                          short count) {
         synchronized (patternProfile.correlations) {
-            List<Float> specific = patternProfile.correlations.get(situation);
+            LinkedList<Float> specific = patternProfile.correlations.get(situation);
 
             if (specific == null) {
                 return this.specificEmpty;
@@ -152,6 +152,10 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
                 if (size < count) {
                     return this.specificEmpty;
+                } else if (count == 1) {
+                    Collection<Float> collection = new ArrayList<>(1);
+                    collection.add(specific.getLast());
+                    return collection;
                 } else {
                     return new ArrayList<>(specific).subList(size - count, size);
                 }
