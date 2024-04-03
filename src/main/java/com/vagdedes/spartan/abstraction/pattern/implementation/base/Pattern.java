@@ -186,28 +186,26 @@ public class Pattern { // todo switch from numbers to floats to save memory
 
     // Separator
 
-    public void learn(SpartanPlayer player, long situation, Number number, boolean collect) {
-        if (collect) {
-            long time = System.currentTimeMillis();
-            boolean include;
+    public void learn(SpartanPlayer player, long situation, Number number) {
+        long time = System.currentTimeMillis();
+        boolean include;
 
-            if (SpartanBukkit.debug) {
-                include = player.isWhitelisted();
-            } else {
-                Integer divisor = DetectionNotifications.getDivisor(player, false);
-                include = divisor == null || divisor != 69;
-            }
+        if (SpartanBukkit.debug) {
+            include = player.isWhitelisted();
+        } else {
+            Integer divisor = DetectionNotifications.getDivisor(player, false);
+            include = divisor == null || divisor != 69;
+        }
 
-            synchronized (this.generalizations) {
-                for (PatternGeneralization generalization : this.generalizations.values()) {
-                    generalization.rawCache(
-                            player.getProfile(),
-                            time,
-                            situation,
-                            number.floatValue(),
-                            include && generalization instanceof PatternGeneralizationStorage
-                    );
-                }
+        synchronized (this.generalizations) {
+            for (PatternGeneralization generalization : this.generalizations.values()) {
+                generalization.rawCache(
+                        player.getProfile(),
+                        time,
+                        situation,
+                        number.floatValue(),
+                        include && generalization instanceof PatternGeneralizationStorage
+                );
             }
         }
     }

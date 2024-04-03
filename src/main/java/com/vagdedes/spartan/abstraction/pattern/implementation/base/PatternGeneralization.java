@@ -29,8 +29,9 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     final ProbabilityPie significancePie;
     private final Collection<ProbabilityRank> comparisons;
     final Map<PlayerProfile, PatternProfile> profiles;
-    private final Collection<Collection<Float>> allData;
-    private final Collection<Float> specific;
+    private final Collection<Collection<Float>> linearEmpty;
+    private final Collection<Float> specificEmpty;
+    private final ProbabilityPie nonLinearEmpty;
     final Set<PatternProfile> profilesToStore;
 
     protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
@@ -39,8 +40,9 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         this.significancePie = new ProbabilityPie();
         this.comparisons = new LinkedList<>(); // todo
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.allData = new ArrayList<>(0);
-        this.specific = new ArrayList<>(0);
+        this.linearEmpty = new ArrayList<>(0);
+        this.specificEmpty = new ArrayList<>(0);
+        this.nonLinearEmpty = new ProbabilityPie(0);
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
     }
 
@@ -85,8 +87,6 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
-            patternProfile.lastContribution = time;
-
             if (this.initiator.isEnabled()) {
                 if (this.significancePie.getSlices() == this.initiator.cube) {
                     synchronized (this.significancePie) {
@@ -146,12 +146,12 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             List<Float> specific = patternProfile.correlations.get(situation);
 
             if (specific == null) {
-                return this.specific;
+                return this.specificEmpty;
             } else {
                 int size = specific.size();
 
                 if (size < count) {
-                    return this.specific;
+                    return this.specificEmpty;
                 } else {
                     return new ArrayList<>(specific).subList(size - count, size);
                 }
@@ -161,15 +161,15 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     // Separator
 
-    public Collection<Collection<Float>> getAll(SpartanPlayer player,
-                                                long situation,
-                                                short count) {
+    public Collection<Collection<Float>> getLinearData(SpartanPlayer player,
+                                                       long situation,
+                                                       short count) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.scissors;
         hash = (hash * SpartanBukkit.hashCodeMultiplierLong) + count;
 
         if (DetectionNotifications.isEnabled(player)) {
-            Collection<Collection<Float>> result = this.getAllRaw(situation, count);
+            Collection<Collection<Float>> result = this.getLinearDataRaw(situation, count);
 
             synchronized (allCache) {
                 PatternAllCache cache = allCache.get(hash);
@@ -190,11 +190,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 PatternAllCache cache = allCache.get(hash);
 
                 if (cache == null) {
-                    Collection<Collection<Float>> result = this.getAllRaw(situation, count);
+                    Collection<Collection<Float>> result = this.getLinearDataRaw(situation, count);
                     allCache.put(hash, new PatternAllCache(result));
                     return result;
                 } else if (cache.isExpired()) {
-                    return cache.update(this.getAllRaw(situation, count));
+                    return cache.update(this.getLinearDataRaw(situation, count));
                 } else {
                     return cache.data;
                 }
@@ -202,9 +202,9 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         }
     }
 
-    private Collection<Collection<Float>> getAllRaw(long situation, short count) {
+    private Collection<Collection<Float>> getLinearDataRaw(long situation, short count) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
-            return this.allData;
+            return this.linearEmpty;
         } else {
             Collection<Collection<Float>> collections = new ArrayList<>(this.profiles.size());
             int profiles = 0;
@@ -223,20 +223,20 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 }
             }
             return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
-                    ? this.allData
+                    ? this.linearEmpty
                     : collections;
         }
     }
 
     // Separator
 
-    public ProbabilityRank getRanked(SpartanPlayer player,
-                                     long situation) {
+    public ProbabilityPie getNonLinearData(SpartanPlayer player,
+                                           long situation) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.scissors;
 
         if (DetectionNotifications.isEnabled(player)) {
-            ProbabilityRank result = this.getRankedRaw(situation);
+            ProbabilityPie result = this.getNonLinearDataRaw(situation);
 
             synchronized (rankedCache) {
                 PatternRankCache cache = rankedCache.get(hash);
@@ -257,14 +257,14 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 PatternRankCache cache = rankedCache.get(hash);
 
                 if (cache == null) {
-                    cache = new PatternRankCache(this.getRankedRaw(situation));
+                    cache = new PatternRankCache(this.getNonLinearDataRaw(situation));
                     rankedCache.put(
                             hash,
                             cache
                     );
                     return cache.data;
                 } else if (cache.isExpired()) {
-                    return cache.update(this.getRankedRaw(situation));
+                    return cache.update(this.getNonLinearDataRaw(situation));
                 } else {
                     return cache.data;
                 }
@@ -272,11 +272,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         }
     }
 
-    private ProbabilityRank getRankedRaw(long situation) {
+    private ProbabilityPie getNonLinearDataRaw(long situation) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
-            return new ProbabilityRank();
+            return this.nonLinearEmpty;
         } else {
-            ProbabilityRank rank = new ProbabilityRank();
+            ProbabilityPie rank = new ProbabilityPie();
             int profiles = 0;
 
             synchronized (this.profiles) {
@@ -296,7 +296,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 }
             }
             return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
-                    ? new ProbabilityRank()
+                    ? this.nonLinearEmpty
                     : rank;
         }
     }

@@ -104,7 +104,7 @@ public abstract class DetectionExecutor {
         patternGeneralization.getProfile(player.getProfile()).updateComparison(
                 time,
                 client,
-                patternGeneralization.getRanked(player, situation)
+                patternGeneralization.getNonLinearData(player, situation)
         );
     }
 }

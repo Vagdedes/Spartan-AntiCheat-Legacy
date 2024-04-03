@@ -20,11 +20,9 @@ public class PatternProfile {
     private boolean loaded;
     private final File file;
     private final YamlConfiguration configuration;
-    long lastContribution;
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
-        this.lastContribution = 0L;
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -63,6 +61,7 @@ public class PatternProfile {
                                         changed = true;
                                     } else {
                                         this.updateComparison(time, ((Number) value).floatValue(), false);
+                                        count++;
                                     }
                                 } else {
                                     this.configuration.set(key, null);
@@ -90,69 +89,53 @@ public class PatternProfile {
         }
     }
 
-    // Save
-
     private void updateComparison(long time, float trustFactor, boolean storage) {
-        if (this.loaded) {
             if (this.comparisons.size() == this.generalization.initiator.square) {
                 Iterator<Long> iterator = this.comparisons.keySet().iterator();
                 long oldTime = iterator.next();
                 iterator.remove();
+                this.comparisons.put(time, trustFactor);
 
                 if (storage) {
-                    SpartanBukkit.dataThread.execute(
-                            () -> this.configuration.set(Long.toString(oldTime), null)
-                    );
+                    SpartanBukkit.dataThread.execute(() -> {
+                        this.configuration.set(Long.toString(oldTime), null);
+                        this.configuration.set(Long.toString(time), trustFactor);
+
+                        synchronized (this.generalization.profilesToStore) {
+                            this.generalization.profilesToStore.add(this);
+                        }
+                    });
+                }
+            } else {
+                this.comparisons.put(time, trustFactor);
+
+                if (storage) {
+                    SpartanBukkit.dataThread.execute(() -> {
+                        this.configuration.set(Long.toString(time), trustFactor);
+
+                        synchronized (this.generalization.profilesToStore) {
+                            this.generalization.profilesToStore.add(this);
+                        }
+                    });
                 }
             }
-            this.comparisons.put(time, trustFactor);
-
-            if (storage) {
-                SpartanBukkit.dataThread.execute(() -> {
-                    this.configuration.set(Long.toString(time), trustFactor);
-
-                    synchronized (this.generalization.profilesToStore) {
-                        this.generalization.profilesToStore.add(this);
-                    }
-                });
-            }
-        }
     }
 
     public void updateComparison(long time, float client, ProbabilityPie pie) {
-        float significance;
+        if (this.loaded) {
+            float significance;
 
-        synchronized (this.generalization.significancePie) {
-            significance = this.generalization.significancePie.getProbability(client);
+            synchronized (this.generalization.significancePie) {
+                significance = this.generalization.significancePie.getProbability(client);
+            }
+            float probability = pie.getProbability(client, 1.0f),
+                    existingContribution = 1.0f - (1.0f / pie.getRawTotal() + 1.0f);
+            this.updateComparison(
+                    time,
+                    significance * probability * existingContribution,
+                    true
+            );
         }
-        float probability = pie.getProbability(client, 1.0f),
-                existingContribution = 1.0f - (1.0f / pie.getRawTotal() + 1.0f);
-        this.updateComparison(
-                time,
-                significance * probability * existingContribution,
-                true
-        );
-    }
-
-    public void updateComparison(long time, float client, ProbabilityRank rank) {
-        float significance;
-
-        synchronized (this.generalization.significancePie) {
-            significance = this.generalization.significancePie.getProbability(client);
-        }
-        float probability = rank.getPosition(client, 1.0f),
-                existingContribution = 1.0f - (1.0f / rank.getRawTotal() + 1.0f);
-        this.updateComparison(
-                time,
-                significance * probability * existingContribution,
-                true
-        );
-    }
-
-    // Separator
-
-    private boolean contributedRecently() { // todo
-        return System.currentTimeMillis() - this.lastContribution <= TPS.tickTime;
     }
 
     // Separator

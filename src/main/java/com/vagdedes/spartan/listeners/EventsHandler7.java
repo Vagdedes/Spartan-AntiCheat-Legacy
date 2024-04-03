@@ -142,26 +142,22 @@ public class EventsHandler7 implements Listener {
         SpartanBukkit.movementPatterns.all.learn(
                 p,
                 situation,
-                dis,
-                true
+                dis
         );
         SpartanBukkit.movementPatterns.horizontal.learn(
                 p,
                 situation,
-                hor,
-                true
+                hor
         );
         SpartanBukkit.movementPatterns.vertical.learn(
                 p,
                 situation,
-                ver,
-                true
+                ver
         );
         SpartanBukkit.movementPatterns.fall.learn(
                 p,
                 situation,
-                fall,
-                true
+                fall
         );
         SpartanBukkit.movementPatterns.store();
 
