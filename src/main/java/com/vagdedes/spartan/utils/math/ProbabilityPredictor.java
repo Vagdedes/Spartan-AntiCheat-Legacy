@@ -33,27 +33,52 @@ public class ProbabilityPredictor {
 
         if (!totalPatterns.isEmpty() // No general data to compare
                 && currentPatternSize > 0) { // No individual data to compare
-            long currentPatternHash = HashUtils.collection(currentPattern);
+            if (currentPatternSize == 1) {
+                optimized(totalPatterns, currentPattern.iterator().next());
+            } else {
+                long currentPatternHash = HashUtils.collection(currentPattern);
+
+                for (Collection<Float> allPatterns : totalPatterns) {
+                    boolean next = false;
+                    Iterator<Float> iterator = allPatterns.iterator();
+                    LinkedList<Float> list = new LinkedList<>();
+
+                    for (int i = 0; i < currentPatternSize; i++) {
+                        list.add(iterator.next());
+                    }
+
+                    while (iterator.hasNext()) {
+                        float pattern = iterator.next();
+                        list.add(pattern);
+                        list.removeFirst();
+
+                        if (next) {
+                            next = false;
+                            this.pie.add(pattern);
+                        }
+                        if (currentPatternHash == HashUtils.collection(list)) {
+                            next = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void optimized(Collection<Collection<Float>> totalPatterns,
+                           float currentPattern) {
+        if (!totalPatterns.isEmpty()) {// No general data to compare
+            long currentPatternHash = Float.hashCode(currentPattern);
 
             for (Collection<Float> allPatterns : totalPatterns) {
                 boolean next = false;
-                Iterator<Float> iterator = allPatterns.iterator();
-                LinkedList<Float> list = new LinkedList<>();
 
-                for (int i = 0; i < currentPatternSize; i++) {
-                    list.add(iterator.next());
-                }
-
-                while (iterator.hasNext()) {
-                    float pattern = iterator.next();
-                    list.add(pattern);
-                    list.removeFirst();
-
+                for (float pattern : allPatterns) {
                     if (next) {
                         next = false;
                         this.pie.add(pattern);
                     }
-                    if (currentPatternHash == HashUtils.collection(list)) {
+                    if (currentPatternHash == Float.hashCode(pattern)) {
                         next = true;
                     }
                 }
