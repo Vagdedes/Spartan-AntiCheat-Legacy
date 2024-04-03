@@ -38,7 +38,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
-        this.comparisons = new LinkedList<>(); // todo
+        this.comparisons = new LinkedList<>();
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.linearEmpty = new ArrayList<>(0);
         this.specificEmpty = new ArrayList<>(0);
@@ -48,7 +48,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     void clear() {
         synchronized (this.profiles) {
-            synchronized (this.comparisons) { // todo
+            synchronized (this.comparisons) {
                 synchronized (this.significancePie) {
                     synchronized (this.profilesToStore) {
                         this.profiles.clear();
@@ -303,6 +303,29 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                     ? this.nonLinearEmpty
                     : rank;
         }
+    }
+
+    // Separator
+
+    double averagePatternTime() {
+        double time = 0.0;
+        int profiles = 0;
+
+        synchronized (this.profiles) {
+            for (PatternProfile profile : this.profiles.values()) {
+                if (profile.loaded) {
+                    double average = profile.averagePatternTime();
+
+                    if (average != -1.0) {
+                        time += average;
+                        profiles++;
+                    }
+                }
+            }
+        }
+        return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
+                ? -1.0f
+                : time / (double) profiles;
     }
 
     // Separator

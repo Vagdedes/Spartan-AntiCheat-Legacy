@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -22,20 +23,16 @@ public class PatternProfile {
     }
 
     private final PatternGeneralization generalization;
-    private final PlayerProfile researchProfile;
     private final Map<Long, Float> comparisons;
     private final Comparison lastComparison;
-    private float trustFactorTotal;
     final Map<Long, LinkedList<Float>> correlations;
     final PatternRepetition patternRepetition;
-    private boolean loaded;
+    boolean loaded;
     private final File file;
     private final YamlConfiguration configuration;
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
-        this.researchProfile = profile;
-        this.trustFactorTotal = 0.0f;
 
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -116,8 +113,6 @@ public class PatternProfile {
                 oldTime = entry.getKey();
                 iterator.remove();
                 this.comparisons.put(time, trustFactor);
-                this.trustFactorTotal -= entry.getValue();
-                this.trustFactorTotal += trustFactor;
             }
 
             if (storage) {
@@ -133,7 +128,6 @@ public class PatternProfile {
         } else {
             synchronized (this.comparisons) {
                 this.comparisons.put(time, trustFactor);
-                this.trustFactorTotal += trustFactor;
             }
 
             if (storage) {
@@ -229,12 +223,39 @@ public class PatternProfile {
 
     // Separator
 
-    float averageTrustFactor(long timePeriod) {
-        if (this.researchProfile.isOnline()) {
-            if (System.currentTimeMillis() - this.lastComparison.time <= timePeriod) {
+    double averagePatternTime() {
+        int size = this.comparisons.size();
+
+        if (size > 1) {
+            Iterator<Long> iterator = this.comparisons.keySet().iterator();
+            long previousTime = iterator.next(), currentTime;
+            double total = 0.0;
+
+            while (iterator.hasNext()) {
+                currentTime = iterator.next();
+                total += currentTime - previousTime;
+                previousTime = currentTime;
+            }
+            return total / (size - 1.0);
+        } else {
+            return -1.0;
+        }
+    }
+
+    float trustFactor() {
+        double averagePattern = this.generalization.averagePatternTime();
+
+        if (averagePattern == -1.0) {
+            return -1.0f;
+        } else {
+            int patternsRequired = AlgebraUtils.integerRound(
+                    (System.currentTimeMillis() - this.lastComparison.time) / this.generalization.averagePatternTime()
+            );
+
+            if (patternsRequired <= 1) {
                 return this.lastComparison.trustFactor;
             } else {
-                int dismiss = this.comparisons.size() - this.generalization.initiator.line;
+                int dismiss = this.comparisons.size() - Math.min(patternsRequired, this.generalization.initiator.square);
 
                 if (dismiss < 0) {
                     return -1.0f;
@@ -255,10 +276,6 @@ public class PatternProfile {
                     return sum / (float) this.generalization.initiator.line;
                 }
             }
-        } else if (this.comparisons.size() >= this.generalization.initiator.square - this.generalization.initiator.line) {
-            return this.trustFactorTotal / (float) this.comparisons.size();
-        } else {
-            return -1.0f;
         }
     }
 
