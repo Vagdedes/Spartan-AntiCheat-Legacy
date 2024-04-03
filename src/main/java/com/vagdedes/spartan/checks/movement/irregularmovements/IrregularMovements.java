@@ -535,7 +535,7 @@ public class IrregularMovements extends CheckExecutor {
                     SpartanBukkit.movementPatterns.vertical,
                     GroundUtils.maxHeightLength,
                     (long) objects[0],
-                    (float) objects[1],
+                    ((Number) objects[1]).floatValue(),
                     (short) 1
             );
         } else {

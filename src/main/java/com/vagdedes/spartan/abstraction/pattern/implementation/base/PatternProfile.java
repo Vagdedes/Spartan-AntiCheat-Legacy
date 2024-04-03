@@ -58,8 +58,8 @@ public class PatternProfile {
                     Set<String> keys = this.configuration.getKeys(false);
 
                     if (!keys.isEmpty()) {
-                        int count = 0;
-                        boolean changed = false;
+                        int valid = 0;
+                        Collection<String> remove = new ArrayList<>();
 
                         for (String key : keys) {
                             try {
@@ -67,23 +67,26 @@ public class PatternProfile {
                                 Object value = this.configuration.get(key, -1.0f);
 
                                 if (value instanceof Number) {
-                                    if (count == this.generalization.initiator.square) {
-                                        this.configuration.set(key, null);
-                                        changed = true;
+                                    if (valid == this.generalization.initiator.square) {
+                                        remove.add(key);
                                     } else {
                                         this.updateComparison(time, ((Number) value).floatValue(), false);
-                                        count++;
+                                        valid++;
                                     }
                                 } else {
-                                    this.configuration.set(key, null);
-                                    changed = true;
+                                   remove.add(key);
                                 }
                             } catch (Exception ignored) {
                             }
                         }
 
-                        if (changed) {
+                        if (valid == 0) {
+                            this.file.delete();
+                        } else if (!remove.isEmpty()) {
                             try {
+                                for (String key : remove) {
+                                    this.configuration.set(key, null);
+                                }
                                 this.configuration.save(this.file);
                             } catch (Exception ignored) {
                             }
