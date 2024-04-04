@@ -267,7 +267,7 @@ public class PatternProfile {
             return -1.0;
         } else {
             int patternsRequired = AlgebraUtils.integerRound(
-                    (System.currentTimeMillis() - this.lastComparison.time) / this.generalization.averagePatternTime()
+                    (System.currentTimeMillis() - this.lastComparison.time) / averagePattern
             );
 
             if (patternsRequired <= 1) {
