@@ -78,7 +78,6 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         if (this.initiator.scissors != 0) {
             pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
         }
-        profile.getSpartanPlayer().debug(false, false, pattern);
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {

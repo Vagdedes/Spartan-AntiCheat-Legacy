@@ -14,12 +14,12 @@ public class ProbabilityPie {
 
     public ProbabilityPie(int capacity) {
         this.map = capacity >= 0 ? new LinkedHashMap<>(capacity) : new LinkedHashMap<>();
-        this.total = 0;
+        this.total = 0.0;
     }
 
     public ProbabilityPie clear() {
         this.map.clear();
-        this.total = 0;
+        this.total = 0.0;
         return this;
     }
 

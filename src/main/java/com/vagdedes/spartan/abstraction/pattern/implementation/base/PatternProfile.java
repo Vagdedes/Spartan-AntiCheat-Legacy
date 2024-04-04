@@ -156,8 +156,7 @@ public class PatternProfile {
                 significance = this.generalization.significancePie.getProbability(client);
             }
             double probability = pie.getProbability(client, 1.0),
-                    existingContribution = 1.0 - (1.0 / pie.getRawTotal() + 1.0);
-                Bukkit.broadcastMessage(significance + ", " + probability + ", " + existingContribution + ", " + pie.getRawTotal());
+                    existingContribution = 1.0 - (1.0 / (pie.getRawTotal() + 1.0));
             this.updateComparison(
                     time,
                     Double.MAX_VALUE * significance * probability * existingContribution,

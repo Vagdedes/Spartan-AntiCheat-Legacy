@@ -220,12 +220,12 @@ public class ViolationAnalysis {
 
                 for (PlayerProfile profile : playerProfiles) {
                     if (profile.getDataType() == dataType) {
-                        Double data = probabilityAverage.get(profile);
+                        Double probability = probabilityAverage.get(profile);
 
-                        if (data != null) {
-                            float probability = wave.getPosition(data);
+                        if (probability != null) {
+                            probability = wave.getPosition(probability);
 
-                            if (probability <= 0.1f) {
+                            if (probability <= 0.1) {
                                 profile.evidence.add(
                                         hackType,
                                         "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
