@@ -14,11 +14,12 @@ public class PatternProfile {
 
     private static final class Comparison {
         private long time;
-        private double trustFactor;
+        private double trustFactor, averagePatternTime;
 
         private Comparison(long time, double trustFactor) {
             this.time = time;
             this.trustFactor = trustFactor;
+            this.averagePatternTime = -1.0;
         }
     }
 
@@ -106,9 +107,6 @@ public class PatternProfile {
     }
 
     private void updateComparison(long time, double trustFactor, boolean storage) {
-        this.lastComparison.time = time;
-        this.lastComparison.trustFactor = trustFactor;
-
         if (this.comparisons.size() == this.generalization.initiator.square) {
             long oldTime;
 
@@ -118,6 +116,9 @@ public class PatternProfile {
                 oldTime = entry.getKey();
                 iterator.remove();
                 this.comparisons.put(time, trustFactor);
+                this.lastComparison.time = time;
+                this.lastComparison.trustFactor = trustFactor;
+                this.lastComparison.averagePatternTime = -1.0;
             }
 
             if (storage) {
@@ -133,6 +134,9 @@ public class PatternProfile {
         } else {
             synchronized (this.comparisons) {
                 this.comparisons.put(time, trustFactor);
+                this.lastComparison.time = time;
+                this.lastComparison.trustFactor = trustFactor;
+                this.lastComparison.averagePatternTime = -1.0;
             }
 
             if (storage) {
@@ -234,21 +238,25 @@ public class PatternProfile {
     // Separator
 
     double averagePatternTime() {
-        int size = this.comparisons.size();
-
-        if (size > 1) {
-            Iterator<Long> iterator = this.comparisons.keySet().iterator();
-            long previousTime = iterator.next(), currentTime;
-            double total = 0.0;
-
-            while (iterator.hasNext()) {
-                currentTime = iterator.next();
-                total += currentTime - previousTime;
-                previousTime = currentTime;
-            }
-            return total / (size - 1.0);
+        if (this.lastComparison.averagePatternTime != -1.0) {
+            return this.lastComparison.averagePatternTime;
         } else {
-            return -1.0;
+            int size = this.comparisons.size();
+
+            if (size > 1) {
+                Iterator<Long> iterator = this.comparisons.keySet().iterator();
+                long previousTime = iterator.next(), currentTime;
+                double total = 0.0;
+
+                while (iterator.hasNext()) {
+                    currentTime = iterator.next();
+                    total += currentTime - previousTime;
+                    previousTime = currentTime;
+                }
+                return this.lastComparison.averagePatternTime = total / (size - 1.0);
+            } else {
+                return -1.0;
+            }
         }
     }
 

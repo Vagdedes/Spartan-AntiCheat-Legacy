@@ -18,8 +18,8 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             patternOption = ".pattern",
             situationOption = ".situation";
     static final String[] options = {profileOption, patternOption, situationOption};
-    static final Map<Long, PatternAllCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
-    static final Map<Long, PatternRankCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    static final Map<Long, PatternLinearCache> allCache = Collections.synchronizedMap(new LinkedHashMap<>());
+    static final Map<Long, PatternNonLinearCache> rankedCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
     // Separator
 
@@ -170,13 +170,13 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             Collection<Collection<Double>> result = this.getLinearDataRaw(situation, count);
 
             synchronized (allCache) {
-                PatternAllCache cache = allCache.get(hash);
+                PatternLinearCache cache = allCache.get(hash);
 
                 if (result.isEmpty()) {
                     notify(player, situation);
                 }
                 if (cache == null) {
-                    cache = new PatternAllCache(result);
+                    cache = new PatternLinearCache(result);
                     allCache.put(hash, cache);
                     return cache.data;
                 } else {
@@ -185,11 +185,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             }
         } else {
             synchronized (allCache) {
-                PatternAllCache cache = allCache.get(hash);
+                PatternLinearCache cache = allCache.get(hash);
 
                 if (cache == null) {
                     Collection<Collection<Double>> result = this.getLinearDataRaw(situation, count);
-                    allCache.put(hash, new PatternAllCache(result));
+                    allCache.put(hash, new PatternLinearCache(result));
                     return result;
                 } else if (cache.isExpired()) {
                     return cache.update(this.getLinearDataRaw(situation, count));
@@ -237,13 +237,13 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             ProbabilityPie result = this.getNonLinearDataRaw(situation);
 
             synchronized (rankedCache) {
-                PatternRankCache cache = rankedCache.get(hash);
+                PatternNonLinearCache cache = rankedCache.get(hash);
 
                 if (!result.hasData()) {
                     notify(player, situation);
                 }
                 if (cache == null) {
-                    cache = new PatternRankCache(result);
+                    cache = new PatternNonLinearCache(result);
                     rankedCache.put(hash, cache);
                     return cache.data;
                 } else {
@@ -252,10 +252,10 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             }
         } else {
             synchronized (rankedCache) {
-                PatternRankCache cache = rankedCache.get(hash);
+                PatternNonLinearCache cache = rankedCache.get(hash);
 
                 if (cache == null) {
-                    cache = new PatternRankCache(this.getNonLinearDataRaw(situation));
+                    cache = new PatternNonLinearCache(this.getNonLinearDataRaw(situation));
                     rankedCache.put(
                             hash,
                             cache

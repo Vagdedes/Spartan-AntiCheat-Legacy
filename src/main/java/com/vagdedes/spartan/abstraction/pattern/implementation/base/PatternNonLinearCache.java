@@ -3,11 +3,11 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.abstraction.pattern.AbstractPatternCache;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
-public class PatternRankCache extends AbstractPatternCache {
+public class PatternNonLinearCache extends AbstractPatternCache {
 
     ProbabilityPie data;
 
-    PatternRankCache(ProbabilityPie cached) {
+    PatternNonLinearCache(ProbabilityPie cached) {
         super(true);
         this.data = cached;
     }

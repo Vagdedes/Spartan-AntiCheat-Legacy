@@ -4,11 +4,11 @@ import com.vagdedes.spartan.abstraction.pattern.AbstractPatternCache;
 
 import java.util.Collection;
 
-public class PatternAllCache extends AbstractPatternCache {
+public class PatternLinearCache extends AbstractPatternCache {
 
     Collection<Collection<Double>> data;
 
-    PatternAllCache(Collection<Collection<Double>> cached) {
+    PatternLinearCache(Collection<Collection<Double>> cached) {
         super(true);
         this.data = cached;
     }
