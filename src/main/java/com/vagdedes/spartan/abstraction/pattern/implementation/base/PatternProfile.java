@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -156,12 +155,17 @@ public class PatternProfile {
                 significance = this.generalization.significancePie.getProbability(client);
             }
             double probability = pie.getProbability(client, 1.0),
-                    existingContribution = 1.0 - (1.0 / (pie.getRawTotal() + 1.0));
-            this.updateComparison(
-                    time,
-                    Double.MAX_VALUE * significance * probability * existingContribution,
-                    true
-            );
+                    existingContribution = 1.0 - (1.0 / (pie.getRawTotal() + 1.0)),
+                    trustFactor;
+
+            if (significance == 0.0
+                    || probability == 0.0
+                    || existingContribution == 0.0) {
+                trustFactor = 0.0;
+            } else {
+                trustFactor = significance * probability * existingContribution;
+            }
+            this.updateComparison(time, trustFactor, true);
         }
     }
 
