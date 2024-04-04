@@ -160,7 +160,7 @@ public class Pattern {
                                                         profile,
                                                         time,
                                                         situation,
-                                                        ((Number) pattern).floatValue(),
+                                                        ((Number) pattern).doubleValue(),
                                                         false
                                                 );
                                             }
@@ -203,7 +203,7 @@ public class Pattern {
                         player.getProfile(),
                         time,
                         situation,
-                        number.floatValue(),
+                        number.doubleValue(),
                         include && generalization instanceof PatternGeneralizationStorage
                 );
             }

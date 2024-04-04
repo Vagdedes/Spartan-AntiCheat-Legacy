@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.*;
 
@@ -27,10 +26,9 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     final Pattern parent;
     final PatternGeneralizationInitiator initiator;
     final ProbabilityPie significancePie;
-    private final Collection<ProbabilityRank> comparisons;
     final Map<PlayerProfile, PatternProfile> profiles;
-    private final Collection<Collection<Float>> linearEmpty;
-    private final Collection<Float> specificEmpty;
+    private final Collection<Collection<Double>> linearEmpty;
+    private final Collection<Double> specificEmpty;
     private final ProbabilityPie nonLinearEmpty;
     final Set<PatternProfile> profilesToStore;
 
@@ -38,7 +36,6 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
-        this.comparisons = new LinkedList<>();
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.linearEmpty = new ArrayList<>(0);
         this.specificEmpty = new ArrayList<>(0);
@@ -48,14 +45,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     void clear() {
         synchronized (this.profiles) {
-            synchronized (this.comparisons) {
-                synchronized (this.significancePie) {
-                    synchronized (this.profilesToStore) {
-                        this.profiles.clear();
-                        this.comparisons.clear();
-                        this.significancePie.clear();
-                        this.profilesToStore.clear();
-                    }
+            synchronized (this.significancePie) {
+                synchronized (this.profilesToStore) {
+                    this.profiles.clear();
+                    this.significancePie.clear();
+                    this.profilesToStore.clear();
                 }
             }
         }
@@ -79,11 +73,12 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
     void rawCache(PlayerProfile profile,
                   long time,
                   long situation,
-                  float pattern,
+                  double pattern,
                   boolean store) {
         if (this.initiator.scissors != 0) {
             pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
         }
+        profile.getSpartanPlayer().debug(false, false, pattern);
         PatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.patternRepetition.canUse(pattern)) {
@@ -99,7 +94,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                     }
                 }
                 synchronized (patternProfile.correlations) {
-                    LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
+                    LinkedList<Double> list = patternProfile.correlations.computeIfAbsent(
                             situation,
                             k -> new LinkedList<>()
                     );
@@ -139,11 +134,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     // Separator
 
-    public Collection<Float> getSpecificLinearData(PatternProfile patternProfile,
-                                                   long situation,
-                                                   short count) {
+    public Collection<Double> getSpecificLinearData(PatternProfile patternProfile,
+                                                    long situation,
+                                                    short count) {
         synchronized (patternProfile.correlations) {
-            LinkedList<Float> specific = patternProfile.correlations.get(situation);
+            LinkedList<Double> specific = patternProfile.correlations.get(situation);
 
             if (specific == null) {
                 return this.specificEmpty;
@@ -153,7 +148,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 if (size < count) {
                     return this.specificEmpty;
                 } else if (count == 1) {
-                    Collection<Float> collection = new ArrayList<>(1);
+                    Collection<Double> collection = new ArrayList<>(1);
                     collection.add(specific.getLast());
                     return collection;
                 } else {
@@ -165,15 +160,15 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
     // Separator
 
-    public Collection<Collection<Float>> getLinearData(SpartanPlayer player,
-                                                       long situation,
-                                                       short count) {
+    public Collection<Collection<Double>> getLinearData(SpartanPlayer player,
+                                                        long situation,
+                                                        short count) {
         long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
                 + this.initiator.scissors;
         hash = (hash * SpartanBukkit.hashCodeMultiplierLong) + count;
 
         if (DetectionNotifications.isEnabled(player)) {
-            Collection<Collection<Float>> result = this.getLinearDataRaw(situation, count);
+            Collection<Collection<Double>> result = this.getLinearDataRaw(situation, count);
 
             synchronized (allCache) {
                 PatternAllCache cache = allCache.get(hash);
@@ -194,7 +189,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 PatternAllCache cache = allCache.get(hash);
 
                 if (cache == null) {
-                    Collection<Collection<Float>> result = this.getLinearDataRaw(situation, count);
+                    Collection<Collection<Double>> result = this.getLinearDataRaw(situation, count);
                     allCache.put(hash, new PatternAllCache(result));
                     return result;
                 } else if (cache.isExpired()) {
@@ -206,11 +201,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
         }
     }
 
-    private Collection<Collection<Float>> getLinearDataRaw(long situation, short count) {
+    private Collection<Collection<Double>> getLinearDataRaw(long situation, short count) {
         if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
             return this.linearEmpty;
         } else {
-            Collection<Collection<Float>> collections = new ArrayList<>(this.profiles.size());
+            Collection<Collection<Double>> collections = new ArrayList<>(this.profiles.size());
             int profiles = 0;
 
             synchronized (this.profiles) {
@@ -218,7 +213,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
 
-                        Collection<Float> data = entry.getValue().correlations.get(situation);
+                        Collection<Double> data = entry.getValue().correlations.get(situation);
 
                         if (data != null && data.size() > count) {
                             collections.add(data);
@@ -287,7 +282,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
                     if (entry.getKey().isLegitimate()) {
                         profiles++;
-                        Collection<Float> data;
+                        Collection<Double> data;
 
                         synchronized (entry.getValue().correlations) {
                             data = entry.getValue().correlations.get(situation);
@@ -324,7 +319,7 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
             }
         }
         return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
-                ? -1.0f
+                ? -1.0
                 : time / (double) profiles;
     }
 

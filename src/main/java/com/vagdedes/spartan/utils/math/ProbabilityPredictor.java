@@ -26,8 +26,8 @@ public class ProbabilityPredictor {
 
     public final ProbabilityPie pie;
 
-    private ProbabilityPredictor(Collection<Collection<Float>> totalPatterns,
-                                 Collection<Float> currentPattern) {
+    private ProbabilityPredictor(Collection<Collection<Double>> totalPatterns,
+                                 Collection<Double> currentPattern) {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
 
@@ -38,17 +38,17 @@ public class ProbabilityPredictor {
             } else {
                 long currentPatternHash = HashUtils.collection(currentPattern);
 
-                for (Collection<Float> allPatterns : totalPatterns) {
+                for (Collection<Double> allPatterns : totalPatterns) {
                     boolean next = false;
-                    Iterator<Float> iterator = allPatterns.iterator();
-                    LinkedList<Float> list = new LinkedList<>();
+                    Iterator<Double> iterator = allPatterns.iterator();
+                    LinkedList<Double> list = new LinkedList<>();
 
                     for (int i = 0; i < currentPatternSize; i++) {
                         list.add(iterator.next());
                     }
 
                     while (iterator.hasNext()) {
-                        float pattern = iterator.next();
+                        double pattern = iterator.next();
                         list.add(pattern);
                         list.removeFirst();
 
@@ -65,20 +65,20 @@ public class ProbabilityPredictor {
         }
     }
 
-    private void optimized(Collection<Collection<Float>> totalPatterns,
-                           float currentPattern) {
+    private void optimized(Collection<Collection<Double>> totalPatterns,
+                           double currentPattern) {
         if (!totalPatterns.isEmpty()) {// No general data to compare
-            long currentPatternHash = Float.hashCode(currentPattern);
+            long currentPatternHash = Double.hashCode(currentPattern);
 
-            for (Collection<Float> allPatterns : totalPatterns) {
+            for (Collection<Double> allPatterns : totalPatterns) {
                 boolean next = false;
 
-                for (float pattern : allPatterns) {
+                for (double pattern : allPatterns) {
                     if (next) {
                         next = false;
                         this.pie.add(pattern);
                     }
-                    if (currentPatternHash == Float.hashCode(pattern)) {
+                    if (currentPatternHash == Double.hashCode(pattern)) {
                         next = true;
                     }
                 }

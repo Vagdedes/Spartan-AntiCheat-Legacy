@@ -6,14 +6,14 @@ import java.util.Collection;
 
 public class PatternAllCache extends AbstractPatternCache {
 
-    Collection<Collection<Float>> data;
+    Collection<Collection<Double>> data;
 
-    PatternAllCache(Collection<Collection<Float>> cached) {
+    PatternAllCache(Collection<Collection<Double>> cached) {
         super(true);
         this.data = cached;
     }
 
-    Collection<Collection<Float>> update(Collection<Collection<Float>> cached) {
+    Collection<Collection<Double>> update(Collection<Collection<Double>> cached) {
         this.data = cached;
         this.refresh();
         return this.data;

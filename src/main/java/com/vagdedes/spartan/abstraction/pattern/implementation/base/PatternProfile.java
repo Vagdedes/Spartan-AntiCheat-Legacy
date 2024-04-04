@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -14,18 +15,18 @@ public class PatternProfile {
 
     private static final class Comparison {
         private long time;
-        private float trustFactor;
+        private double trustFactor;
 
-        private Comparison(long time, float trustFactor) {
+        private Comparison(long time, double trustFactor) {
             this.time = time;
             this.trustFactor = trustFactor;
         }
     }
 
     private final PatternGeneralization generalization;
-    private final Map<Long, Float> comparisons;
+    private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
-    final Map<Long, LinkedList<Float>> correlations;
+    final Map<Long, LinkedList<Double>> correlations;
     final PatternRepetition patternRepetition;
     boolean loaded;
     private final File file;
@@ -38,7 +39,7 @@ public class PatternProfile {
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
 
         this.patternRepetition = new PatternRepetition();
-        this.lastComparison = new Comparison(0L, -1.0f);
+        this.lastComparison = new Comparison(0L, -1.0);
 
         this.file = new File(
                 Register.plugin.getDataFolder()
@@ -57,24 +58,26 @@ public class PatternProfile {
                 SpartanBukkit.dataThread.execute(() -> {
                     Set<String> keys = this.configuration.getKeys(false);
 
-                    if (!keys.isEmpty()) {
+                    if (keys.isEmpty()) {
+                        file.delete();
+                    } else {
                         int valid = 0;
                         Collection<String> remove = new ArrayList<>();
 
                         for (String key : keys) {
                             try {
                                 long time = Long.parseLong(key);
-                                Object value = this.configuration.get(key, -1.0f);
+                                Object value = this.configuration.get(key, null);
 
                                 if (value instanceof Number) {
                                     if (valid == this.generalization.initiator.square) {
                                         remove.add(key);
                                     } else {
-                                        this.updateComparison(time, ((Number) value).floatValue(), false);
+                                        this.updateComparison(time, ((Number) value).doubleValue(), false);
                                         valid++;
                                     }
                                 } else {
-                                   remove.add(key);
+                                    remove.add(key);
                                 }
                             } catch (Exception ignored) {
                             }
@@ -103,7 +106,7 @@ public class PatternProfile {
         }
     }
 
-    private void updateComparison(long time, float trustFactor, boolean storage) {
+    private void updateComparison(long time, double trustFactor, boolean storage) {
         this.lastComparison.time = time;
         this.lastComparison.trustFactor = trustFactor;
 
@@ -111,8 +114,8 @@ public class PatternProfile {
             long oldTime;
 
             synchronized (this.comparisons) {
-                Iterator<Map.Entry<Long, Float>> iterator = this.comparisons.entrySet().iterator();
-                Map.Entry<Long, Float> entry = iterator.next();
+                Iterator<Map.Entry<Long, Double>> iterator = this.comparisons.entrySet().iterator();
+                Map.Entry<Long, Double> entry = iterator.next();
                 oldTime = entry.getKey();
                 iterator.remove();
                 this.comparisons.put(time, trustFactor);
@@ -145,18 +148,19 @@ public class PatternProfile {
         }
     }
 
-    public void updateComparison(long time, float client, ProbabilityPie pie) {
+    public void updateComparison(long time, double client, ProbabilityPie pie) {
         if (this.loaded) {
-            float significance;
+            double significance;
 
             synchronized (this.generalization.significancePie) {
                 significance = this.generalization.significancePie.getProbability(client);
             }
-            float probability = pie.getProbability(client, 1.0f),
-                    existingContribution = 1.0f - (1.0f / pie.getRawTotal() + 1.0f);
+            double probability = pie.getProbability(client, 1.0),
+                    existingContribution = 1.0 - (1.0 / pie.getRawTotal() + 1.0);
+                Bukkit.broadcastMessage(significance + ", " + probability + ", " + existingContribution + ", " + pie.getRawTotal());
             this.updateComparison(
                     time,
-                    significance * probability * existingContribution,
+                    Double.MAX_VALUE * significance * probability * existingContribution,
                     true
             );
         }
@@ -245,11 +249,11 @@ public class PatternProfile {
         }
     }
 
-    float trustFactor() {
+    double trustFactor() { // todo use
         double averagePattern = this.generalization.averagePatternTime();
 
         if (averagePattern == -1.0) {
-            return -1.0f;
+            return -1.0;
         } else {
             int patternsRequired = AlgebraUtils.integerRound(
                     (System.currentTimeMillis() - this.lastComparison.time) / this.generalization.averagePatternTime()
@@ -261,12 +265,12 @@ public class PatternProfile {
                 int dismiss = this.comparisons.size() - Math.min(patternsRequired, this.generalization.initiator.square);
 
                 if (dismiss < 0) {
-                    return -1.0f;
+                    return -1.0;
                 } else {
-                    float sum = 0.0f;
+                    double sum = 0.0;
 
                     synchronized (this.comparisons) {
-                        Iterator<Float> iterator = this.comparisons.values().iterator();
+                        Iterator<Double> iterator = this.comparisons.values().iterator();
 
                         for (int i = 0; i < dismiss; i++) {
                             iterator.next();
@@ -276,7 +280,7 @@ public class PatternProfile {
                             sum += iterator.next();
                         }
                     }
-                    return sum / (float) this.generalization.initiator.line;
+                    return sum / (double) this.generalization.initiator.line;
                 }
             }
         }
