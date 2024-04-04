@@ -25,14 +25,12 @@ import java.util.Set;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
-    private static boolean enabled = false;
 
     public static final PluginManager manager = Bukkit.getPluginManager();
     private static final Set<Class<?>> listeners = new LinkedHashSet<>(40);
 
     public void onEnable() {
         plugin = this;
-        enabled = true;
         enable(new Piracy(), Piracy.class);
 
         /*PluginDescriptionFile description = plugin.getDescription();
@@ -100,7 +98,6 @@ public class Register extends JavaPlugin {
 
     public void onDisable() {
         // Always First
-        enabled = false;
         plugin.setNaggable(false);
 
         // Separator
@@ -119,19 +116,17 @@ public class Register extends JavaPlugin {
     }
 
     public static void disablePlugin() {
-        enabled = false;
-
-        if (plugin != null && plugin.isEnabled()) {
+        if (isPluginEnabled()) {
             manager.disablePlugin(plugin);
         }
     }
 
-    public static boolean isPluginEnabled() {
-        return isPluginLoaded() && plugin.isEnabled();
+    public static boolean isPluginLoaded() {
+        return plugin != null;
     }
 
-    public static boolean isPluginLoaded() {
-        return enabled && plugin != null;
+    public static boolean isPluginEnabled() {
+        return isPluginLoaded() && plugin.isEnabled();
     }
 
     public static Class<?>[] getListeners() {

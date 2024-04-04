@@ -542,6 +542,6 @@ public class LiveViolation {
     }
 
     private boolean isDivisorValid(int level, int divisor) {
-        return divisor == 0 || level % divisor == 0;
+        return divisor == 0 || level >= divisor && level % divisor == 0;
     }
 }
