@@ -307,13 +307,11 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
 
         synchronized (this.profiles) {
             for (PatternProfile profile : this.profiles.values()) {
-                if (profile.loaded) {
-                    double average = profile.averagePatternTime();
+                double average = profile.averagePatternTime();
 
-                    if (average != -1.0) {
-                        time += average;
-                        profiles++;
-                    }
+                if (average != -1.0) {
+                    time += average;
+                    profiles++;
                 }
             }
         }

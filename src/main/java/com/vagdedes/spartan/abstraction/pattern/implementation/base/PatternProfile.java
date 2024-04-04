@@ -27,7 +27,7 @@ public class PatternProfile {
     private final Comparison lastComparison;
     final Map<Long, LinkedList<Double>> correlations;
     final PatternRepetition patternRepetition;
-    boolean loaded;
+    private boolean loaded;
     private final File file;
     private final YamlConfiguration configuration;
 
