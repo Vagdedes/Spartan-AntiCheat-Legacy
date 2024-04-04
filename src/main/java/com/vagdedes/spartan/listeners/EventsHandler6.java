@@ -101,7 +101,7 @@ public class EventsHandler6 implements Listener {
                         // Detections
                         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
                         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
-                        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{cause, entity});
+                        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, new Object[]{e.getDamage(), entity});
 
                         if (utility != null) {
                             Object[] objects = new Object[]{entity, utility};
