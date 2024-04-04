@@ -49,14 +49,23 @@ public abstract class PatternGeneralization { // todo optimize legitimate checks
                 synchronized (this.profilesToStore) {
                     this.profiles.clear();
                     this.significancePie.clear();
-                    this.profilesToStore.clear();
+                    this.storeProfiles(true);
                 }
             }
         }
     }
 
-    void storeProfiles() {
-        if (!this.profilesToStore.isEmpty()) {
+    void storeProfiles(boolean local) {
+        if (local) {
+            if (!this.profilesToStore.isEmpty()) {
+                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
+
+                while (iterator.hasNext()) {
+                    iterator.next().store();
+                    iterator.remove();
+                }
+            }
+        } else if (!this.profilesToStore.isEmpty()) {
             synchronized (this.profilesToStore) {
                 Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
 

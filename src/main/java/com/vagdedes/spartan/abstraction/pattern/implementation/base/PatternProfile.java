@@ -34,13 +34,10 @@ public class PatternProfile {
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
-
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
-
         this.patternRepetition = new PatternRepetition();
         this.lastComparison = new Comparison(0L, -1.0);
-
         this.file = new File(
                 Register.plugin.getDataFolder()
                         + "/comparison/"

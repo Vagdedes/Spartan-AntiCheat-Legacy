@@ -105,7 +105,7 @@ public class Pattern {
             ((PatternGeneralizationStorage) this.generalizations.get((short) 0)).store();
         }
         for (PatternGeneralization generalization : this.generalizations.values()) {
-            generalization.storeProfiles();
+            generalization.storeProfiles(false);
         }
     }
 
