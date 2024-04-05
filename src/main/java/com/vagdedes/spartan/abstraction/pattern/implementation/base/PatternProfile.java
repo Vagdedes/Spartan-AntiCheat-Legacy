@@ -270,7 +270,8 @@ public class PatternProfile {
             if (patternsRequired <= 1) {
                 return this.lastComparison.trustFactor;
             } else {
-                int dismiss = this.comparisons.size() - Math.min(patternsRequired, this.generalization.initiator.square);
+                patternsRequired = Math.min(patternsRequired, this.generalization.initiator.square);
+                int dismiss = this.comparisons.size() - patternsRequired;
 
                 if (dismiss < 0) {
                     return -1.0;
@@ -288,7 +289,7 @@ public class PatternProfile {
                             sum += iterator.next();
                         }
                     }
-                    return sum / (double) this.generalization.initiator.line;
+                    return sum / (double) patternsRequired;
                 }
             }
         }
