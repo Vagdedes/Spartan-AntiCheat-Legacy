@@ -4,9 +4,6 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class PatternGeneralizationInitiator {
 
-    // Recent individual weight is for short-term comparison when a player is online
-    // General individual weight is for consideration of multiple scenarios when a player is offline
-    // General weight is for long-term comparison for all players
     final short
             scissors,
             line,
