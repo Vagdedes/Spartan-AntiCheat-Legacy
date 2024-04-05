@@ -45,18 +45,15 @@ public class Pattern {
 
     public static void clear() {
         synchronized (instances) {
-            synchronized (PatternGeneralization.nonLinearCache) {
-                for (Pattern pattern : instances) {
-                    synchronized (pattern.generalizations) {
-                        for (PatternGeneralization generalization : pattern.generalizations.values()) {
-                            generalization.clear();
-                        }
-                        pattern.generalizations.clear();
+            for (Pattern pattern : instances) {
+                synchronized (pattern.generalizations) {
+                    for (PatternGeneralization generalization : pattern.generalizations.values()) {
+                        generalization.clear();
                     }
+                    pattern.generalizations.clear();
                 }
-                instances.clear();
-                PatternGeneralization.nonLinearCache.clear();
             }
+            instances.clear();
         }
     }
 

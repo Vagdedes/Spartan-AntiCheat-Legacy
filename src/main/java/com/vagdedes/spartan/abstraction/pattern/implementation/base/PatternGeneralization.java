@@ -15,7 +15,6 @@ public abstract class PatternGeneralization { // todo fix hacker data removal
             patternOption = ".pattern",
             situationOption = ".situation";
     static final String[] options = {profileOption, patternOption, situationOption};
-    static final Map<Long, PatternNonLinearCache> nonLinearCache = Collections.synchronizedMap(new LinkedHashMap<>());
 
     // Separator
 
@@ -24,7 +23,6 @@ public abstract class PatternGeneralization { // todo fix hacker data removal
     final ProbabilityPie significancePie;
     final Map<PlayerProfile, PatternProfile> profiles;
     private final Collection<Double> empty;
-    private final ProbabilityPie nonLinearEmpty;
     final Set<PatternProfile> profilesToStore;
     final Map<Long, LinkedList<Double>> correlations;
 
@@ -34,7 +32,6 @@ public abstract class PatternGeneralization { // todo fix hacker data removal
         this.significancePie = new ProbabilityPie();
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.empty = new ArrayList<>(0);
-        this.nonLinearEmpty = new ProbabilityPie(0);
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
     }
