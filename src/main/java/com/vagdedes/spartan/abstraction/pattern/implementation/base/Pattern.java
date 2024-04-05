@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -44,20 +45,17 @@ public class Pattern {
 
     public static void clear() {
         synchronized (instances) {
-            synchronized (PatternGeneralization.allCache) {
-                synchronized (PatternGeneralization.rankedCache) {
-                    for (Pattern pattern : instances) {
-                        synchronized (pattern.generalizations) {
-                            for (PatternGeneralization generalization : pattern.generalizations.values()) {
-                                generalization.clear();
-                            }
-                            pattern.generalizations.clear();
+            synchronized (PatternGeneralization.nonLinearCache) {
+                for (Pattern pattern : instances) {
+                    synchronized (pattern.generalizations) {
+                        for (PatternGeneralization generalization : pattern.generalizations.values()) {
+                            generalization.clear();
                         }
+                        pattern.generalizations.clear();
                     }
-                    instances.clear();
-                    PatternGeneralization.allCache.clear();
-                    PatternGeneralization.rankedCache.clear();
                 }
+                instances.clear();
+                PatternGeneralization.nonLinearCache.clear();
             }
         }
     }
@@ -196,9 +194,15 @@ public class Pattern {
             Integer divisor = DetectionNotifications.getDivisor(player, false);
             include = divisor == null || divisor != 69;
         }
+        boolean empty = false;
 
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
+                if (generalization.initiator.isEnabled()) {
+                    synchronized (generalization.correlations) {
+                        empty |= !generalization.correlations.containsKey(situation);
+                    }
+                }
                 generalization.rawCache(
                         player.getProfile(),
                         time,
@@ -206,6 +210,29 @@ public class Pattern {
                         number.doubleValue(),
                         include && generalization instanceof PatternGeneralizationStorage
                 );
+            }
+        }
+
+        if (empty) {
+            notify(player, situation);
+        }
+    }
+
+    private void notify(SpartanPlayer player, long situation) {
+        String message = AwarenessNotifications.getOptionalNotification(
+                "Spartan's Machine Learning algorithms have insufficient data to check you. "
+                        + (player.getProfile().isLegitimate()
+                        ? "Continue playing LEGITIMATELY to train the algorithm so you can try again later."
+                        : "Since you are " + player.getProfile().evidence.getType() + ", either clear your data via '/spartan info'"
+                        + " and play LEGITIMATELY or find a legitimate player to help train the algorithm so you can try again later.")
+        );
+
+        if (message != null) {
+            String s = "pattern-storage-" + this.key;
+
+            if (AwarenessNotifications.canSend(player.uuid, s + "-" + situation, 120)
+                    && AwarenessNotifications.canSend(player.uuid, s, 60)) {
+                player.sendMessage(message);
             }
         }
     }
@@ -217,8 +244,6 @@ public class Pattern {
             return this.generalizations.get(generalization.shortValue());
         }
     }
-
-    // Separator
 
     File[] getLearningFiles() {
         File directory = new File(this.learningFolder);

@@ -85,7 +85,6 @@ public abstract class DetectionExecutor {
         PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
-                player,
                 situation,
                 patternGeneralization,
                 patternProfile,
@@ -111,7 +110,7 @@ public abstract class DetectionExecutor {
         patternGeneralization.getProfile(player.getProfile()).updateComparison(
                 time,
                 client,
-                patternGeneralization.getNonLinearData(player, situation)
+                patternGeneralization.getNonLinearData(situation)
         );
     }
 }
