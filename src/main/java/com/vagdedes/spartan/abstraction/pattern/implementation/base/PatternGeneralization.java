@@ -158,57 +158,10 @@ public abstract class PatternGeneralization { // todo fix hacker data removal
         }
     }
 
-    // Separator
-
-    public ProbabilityPie getNonLinearData(long situation) {
-        long hash = (Long.hashCode(situation) * SpartanBukkit.hashCodeMultiplierLong)
-                + this.initiator.scissors;
-
-        synchronized (nonLinearCache) {
-            PatternNonLinearCache cache = nonLinearCache.get(hash);
-
-            if (cache == null) {
-                cache = new PatternNonLinearCache(this.getNonLinearDataRaw(situation));
-                nonLinearCache.put(
-                        hash,
-                        cache
-                );
-                return cache.data;
-            } else if (cache.isExpired()) {
-                return cache.update(this.getNonLinearDataRaw(situation));
-            } else {
-                return cache.data;
-            }
-        }
-    }
-
-    private ProbabilityPie getNonLinearDataRaw(long situation) {
-        if (!SpartanBukkit.debug && this.profiles.size() < ResearchEngine.requiredProfiles) {
-            return this.nonLinearEmpty;
-        } else {
-            ProbabilityPie rank = new ProbabilityPie();
-            int profiles = 0;
-
-            synchronized (this.profiles) {
-                for (Map.Entry<PlayerProfile, PatternProfile> entry : this.profiles.entrySet()) {
-                    if (entry.getKey().isLegitimate()) {
-                        profiles++;
-                        Collection<Double> data;
-
-                        synchronized (entry.getValue().correlations) {
-                            data = entry.getValue().correlations.get(situation);
-                        }
-
-                        if (data != null) {
-                            rank.addMultiple(data);
-                        }
-                    }
-                }
-            }
-            return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
-                    ? this.nonLinearEmpty
-                    : rank;
-        }
+    public ProbabilityPie getNonLinearData(long situation) { // todo fix to be stored this way based on object
+        return new ProbabilityPie().add(
+                this.correlations.getOrDefault(situation, new LinkedList<>())
+        );
     }
 
     // Separator

@@ -62,7 +62,7 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie add(Collection<Number> collection) {
+    public ProbabilityPie add(Collection<? extends Number> collection) {
         for (Number number : collection) {
             this.add(number);
         }
