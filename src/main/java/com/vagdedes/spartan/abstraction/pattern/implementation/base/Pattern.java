@@ -151,7 +151,7 @@ public class Pattern {
                                             PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
                                             for (PatternGeneralization generalization : generalizations.values()) {
-                                                generalization.rawCache(
+                                                generalization.cache(
                                                         profile,
                                                         time,
                                                         situation,
@@ -210,7 +210,7 @@ public class Pattern {
                         empty |= !generalization.correlations.containsKey(situation);
                     }
                 }
-                generalization.rawCache(
+                generalization.cache(
                         player.getProfile(),
                         time,
                         situation,

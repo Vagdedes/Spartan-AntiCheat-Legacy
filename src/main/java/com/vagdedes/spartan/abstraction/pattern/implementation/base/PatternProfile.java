@@ -26,7 +26,7 @@ public class PatternProfile {
     private final PatternGeneralization generalization;
     private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
-    final Map<Long, LinkedList<Double>> correlations;
+    final Map<Long, Collection<Double>> correlations;
     final PatternRepetition patternRepetition;
     private boolean loaded;
     private final File file;
@@ -220,7 +220,7 @@ public class PatternProfile {
                                                 long time = Long.parseLong(key);
 
                                                 synchronized (this.generalization.correlations) {
-                                                    LinkedList<Double> list = this.generalization.correlations.get(time);
+                                                    Collection<Double> list = this.generalization.correlations.get(time);
 
                                                     if (list != null
                                                             && list.remove(pattern)

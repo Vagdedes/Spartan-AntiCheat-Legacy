@@ -24,7 +24,7 @@ public abstract class PatternGeneralization {
     final Map<PlayerProfile, PatternProfile> profiles;
     private final Collection<Double> empty;
     final Set<PatternProfile> profilesToStore;
-    final Map<Long, LinkedList<Double>> correlations;
+    final Map<Long, Collection<Double>> correlations;
 
     protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         this.parent = pattern;
@@ -72,11 +72,11 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    void rawCache(PlayerProfile profile,
-                  long time,
-                  long situation,
-                  double pattern,
-                  boolean store) {
+    void cache(PlayerProfile profile,
+               long time,
+               long situation,
+               double pattern,
+               boolean store) {
         if (profile.isLegitimate()) {
             PatternProfile patternProfile = this.getProfile(profile);
 
@@ -96,23 +96,10 @@ public abstract class PatternGeneralization {
                         }
                     }
                     synchronized (this.correlations) {
-                        LinkedList<Double> list = this.correlations.computeIfAbsent(
-                                situation,
-                                k -> new LinkedList<>()
-                        );
-                        if (list.size() == this.initiator.cube) {
-                            list.removeFirst();
-                        }
+                        this.rawCache(this.correlations, this.initiator.cube, situation, pattern);
                     }
                     synchronized (patternProfile.correlations) {
-                        LinkedList<Double> list = patternProfile.correlations.computeIfAbsent(
-                                situation,
-                                k -> new LinkedList<>()
-                        );
-                        if (list.size() == this.initiator.line) {
-                            list.removeFirst();
-                        }
-                        list.add(pattern);
+                        this.rawCache(patternProfile.correlations, this.initiator.line, situation, pattern);
                     }
                 }
 
@@ -123,13 +110,32 @@ public abstract class PatternGeneralization {
         }
     }
 
+    private void rawCache(Map<Long, Collection<Double>> map,
+                          int limit,
+                          long situation,
+                          double pattern) {
+        Collection<Double> list = map.computeIfAbsent(
+                situation,
+                k -> new ArrayList<>()
+        );
+
+        if (list.size() == limit) {
+            if (!(list instanceof LinkedList)) {
+                list = new LinkedList<>(list);
+                map.put(situation, list);
+            }
+            ((LinkedList<Double>) list).removeFirst();
+        }
+        list.add(pattern);
+    }
+
     // Separator
 
     public Collection<Double> getSpecificLinearData(PatternProfile patternProfile,
                                                     long situation,
                                                     short count) {
         synchronized (patternProfile.correlations) {
-            LinkedList<Double> specific = patternProfile.correlations.get(situation);
+            Collection<Double> specific = patternProfile.correlations.get(situation);
 
             if (specific == null) {
                 return this.empty;
@@ -138,9 +144,9 @@ public abstract class PatternGeneralization {
 
                 if (size < count) {
                     return this.empty;
-                } else if (count == 1) {
+                } else if (count == 1 && specific instanceof LinkedList) {
                     Collection<Double> collection = new ArrayList<>(1);
-                    collection.add(specific.getLast());
+                    collection.add(((LinkedList<Double>) specific).getLast());
                     return collection;
                 } else {
                     return new ArrayList<>(specific).subList(size - count, size);
@@ -153,16 +159,12 @@ public abstract class PatternGeneralization {
 
     public Collection<Double> getLinearData(long situation) {
         synchronized (this.correlations) {
-            return this.correlations.getOrDefault(situation, new LinkedList<>());
+            return this.correlations.getOrDefault(situation, this.empty);
         }
     }
 
     public ProbabilityPie getNonLinearData(long situation) { // todo fix to be stored this way based on object
-        synchronized (this.correlations) {
-            return new ProbabilityPie().add(
-                    this.correlations.getOrDefault(situation, new LinkedList<>())
-            );
-        }
+        return new ProbabilityPie().add(this.getLinearData(situation));
     }
 
     // Separator
