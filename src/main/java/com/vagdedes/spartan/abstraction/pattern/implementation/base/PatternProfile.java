@@ -184,15 +184,18 @@ public class PatternProfile {
     void delete(PlayerProfile profile) {
         if (this.loaded) {
             this.loaded = false;
-            synchronized (this.generalization.profilesToStore) {
-                this.generalization.profilesToStore.remove(this);
-            }
-            this.file.delete();
 
+            synchronized (this.correlations) {
+                this.correlations.clear();
+            }
             synchronized (this.comparisons) {
                 this.comparisons.clear();
             }
+            synchronized (this.generalization.profilesToStore) {
+                this.generalization.profilesToStore.remove(this);
+            }
             SpartanBukkit.dataThread.execute(() -> {
+                this.file.delete();
                 File[] files = this.generalization.parent.getLearningFiles();
 
                 if (files != null) {

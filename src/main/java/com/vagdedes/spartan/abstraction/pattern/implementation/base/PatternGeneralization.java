@@ -8,7 +8,7 @@ import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 import java.util.*;
 
-public abstract class PatternGeneralization { // todo fix hacker data removal
+public abstract class PatternGeneralization {
 
     static final String
             profileOption = ".profile",
@@ -77,47 +77,51 @@ public abstract class PatternGeneralization { // todo fix hacker data removal
                   long situation,
                   double pattern,
                   boolean store) {
-        if (this.initiator.scissors != 0) {
-            pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
-        }
         PatternProfile patternProfile = this.getProfile(profile);
 
-        if (patternProfile.patternRepetition.canUse(pattern)) {
-            if (this.initiator.isEnabled()) {
-                if (this.significancePie.getSlices() == this.initiator.cube) {
-                    synchronized (this.significancePie) {
-                        this.significancePie.removeLeastSignificant();
-                        this.significancePie.add(pattern);
-                    }
-                } else {
-                    synchronized (this.significancePie) {
-                        this.significancePie.add(pattern);
-                    }
-                }
-                synchronized (this.correlations) {
-                    LinkedList<Double> list = this.correlations.computeIfAbsent(
-                            situation,
-                            k -> new LinkedList<>()
-                    );
-                    if (list.size() == this.initiator.cube) {
-                        list.removeFirst();
-                    }
-                }
-                synchronized (patternProfile.correlations) {
-                    LinkedList<Double> list = patternProfile.correlations.computeIfAbsent(
-                            situation,
-                            k -> new LinkedList<>()
-                    );
-                    if (list.size() == this.initiator.line) {
-                        list.removeFirst();
-                    }
-                    list.add(pattern);
-                }
+        if (profile.isLegitimate()) {
+            if (this.initiator.scissors != 0) {
+                pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
             }
+            if (patternProfile.patternRepetition.canUse(pattern)) {
+                if (this.initiator.isEnabled()) {
+                    if (this.significancePie.getSlices() == this.initiator.cube) {
+                        synchronized (this.significancePie) {
+                            this.significancePie.removeLeastSignificant();
+                            this.significancePie.add(pattern);
+                        }
+                    } else {
+                        synchronized (this.significancePie) {
+                            this.significancePie.add(pattern);
+                        }
+                    }
+                    synchronized (this.correlations) {
+                        LinkedList<Double> list = this.correlations.computeIfAbsent(
+                                situation,
+                                k -> new LinkedList<>()
+                        );
+                        if (list.size() == this.initiator.cube) {
+                            list.removeFirst();
+                        }
+                    }
+                    synchronized (patternProfile.correlations) {
+                        LinkedList<Double> list = patternProfile.correlations.computeIfAbsent(
+                                situation,
+                                k -> new LinkedList<>()
+                        );
+                        if (list.size() == this.initiator.line) {
+                            list.removeFirst();
+                        }
+                        list.add(pattern);
+                    }
+                }
 
-            if (store) {
-                ((PatternGeneralizationStorage) this).set(profile, time, situation, pattern);
+                if (store) {
+                    ((PatternGeneralizationStorage) this).set(profile, time, situation, pattern);
+                }
             }
+        } else if (!patternProfile.correlations.isEmpty()) {
+            patternProfile.delete(profile);
         }
     }
 
