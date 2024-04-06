@@ -77,9 +77,9 @@ public abstract class PatternGeneralization {
                   long situation,
                   double pattern,
                   boolean store) {
-        PatternProfile patternProfile = this.getProfile(profile);
-
         if (profile.isLegitimate()) {
+            PatternProfile patternProfile = this.getProfile(profile);
+
             if (this.initiator.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
             }
@@ -120,8 +120,6 @@ public abstract class PatternGeneralization {
                     ((PatternGeneralizationStorage) this).set(profile, time, situation, pattern);
                 }
             }
-        } else if (!patternProfile.correlations.isEmpty()) {
-            patternProfile.delete(profile);
         }
     }
 

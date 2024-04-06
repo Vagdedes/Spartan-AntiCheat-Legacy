@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -180,6 +181,10 @@ public class PlayerEvidence {
                     break;
                 }
             }
+        }
+        if (this.type != type
+                && type != EvidenceType.Legitimate) {
+            Pattern.delete(this.profile);
         }
         this.type = type;
     }
