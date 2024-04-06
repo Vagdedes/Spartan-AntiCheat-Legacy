@@ -63,27 +63,34 @@ public class Pattern {
     final String learningFolder;
     final Map<Short, PatternGeneralization> generalizations;
     private boolean load;
+    private final boolean linear;
 
-    public Pattern(String key, PatternGeneralizationInitiator initiator, PatternGeneralizationInitiator[] generalizations) {
+    public Pattern(String key,
+                   PatternGeneralizationInitiator initiator,
+                   PatternGeneralizationInitiator[] generalizations,
+                   boolean linear) {
         this.key = key;
         this.learningFolder = Register.plugin.getDataFolder()
                 + "/learning/"
                 + key;
         this.load = false;
+        this.linear = linear;
 
         this.generalizations = Collections.synchronizedMap(
                 new LinkedHashMap<>(generalizations.length + 1)
         );
         this.generalizations.put(
                 (short) 0,
-                new PatternGeneralizationStorage(this, initiator)
+                linear ? new LinearPatternGeneralizationStorage(this, initiator)
+                        : new NonLinearPatternGeneralizationStorage(this, initiator)
         );
 
         if (generalizations.length > 0) {
             for (PatternGeneralizationInitiator loopInitiator : generalizations) {
                 this.generalizations.put(
                         loopInitiator.scissors,
-                        new PatternGeneralizationMemory(this, loopInitiator)
+                        linear ? new LinearPatternGeneralizationMemory(this, loopInitiator)
+                                : new NonLinearPatternGeneralizationMemory(this, loopInitiator)
                 );
             }
         }
@@ -96,8 +103,14 @@ public class Pattern {
     // Separator
 
     public void store() {
-        synchronized (this.generalizations) {
-            ((PatternGeneralizationStorage) this.generalizations.get((short) 0)).store();
+        if (this.linear) {
+            synchronized (this.generalizations) {
+                ((LinearPatternGeneralizationStorage) this.generalizations.get((short) 0)).store();
+            }
+        } else {
+            synchronized (this.generalizations) {
+                ((NonLinearPatternGeneralizationStorage) this.generalizations.get((short) 0)).store();
+            }
         }
         for (PatternGeneralization generalization : this.generalizations.values()) {
             generalization.storeProfiles(false);
@@ -124,9 +137,9 @@ public class Pattern {
             for (Map.Entry<Short, PatternGeneralization> entry : entries) {
                 generalizations.put(
                         entry.getKey(),
-                        entry.getValue() instanceof PatternGeneralizationStorage
-                                ? new PatternGeneralizationStorage(this, entry.getValue().initiator)
-                                : new PatternGeneralizationMemory(this, entry.getValue().initiator)
+                        entry.getValue() instanceof NonLinearPatternGeneralizationStorage
+                                ? new NonLinearPatternGeneralizationStorage(this, entry.getValue().initiator)
+                                : new NonLinearPatternGeneralizationMemory(this, entry.getValue().initiator)
                 );
             }
             for (File file : files) {
@@ -215,7 +228,7 @@ public class Pattern {
                         time,
                         situation,
                         number.doubleValue(),
-                        include && generalization instanceof PatternGeneralizationStorage
+                        include && generalization instanceof NonLinearPatternGeneralizationStorage
                 );
             }
         }

@@ -25,7 +25,8 @@ public class MovementPatterns extends PatternFamily {
                                                 GroundUtils.maxHeightLength,
                                                 0.05
                                         )
-                                }
+                                },
+                                true
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
@@ -35,7 +36,8 @@ public class MovementPatterns extends PatternFamily {
                                                 GroundUtils.maxHeightLength,
                                                 0.05
                                         )
-                                }
+                                },
+                                true
                         ),
                         this.all = new Pattern(
                                 "movement/distance/all",
@@ -45,7 +47,8 @@ public class MovementPatterns extends PatternFamily {
                                                 GroundUtils.maxHeightLength,
                                                 0.05
                                         )
-                                }
+                                },
+                                true
                         ),
                         this.fall = new Pattern(
                                 "movement/distance/fall",
@@ -55,7 +58,8 @@ public class MovementPatterns extends PatternFamily {
                                                 GroundUtils.maxHeightLength,
                                                 0.05
                                         )
-                                }
+                                },
+                                true
                         )
                 }
         );

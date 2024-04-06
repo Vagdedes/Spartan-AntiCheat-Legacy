@@ -22,7 +22,7 @@ public abstract class PatternGeneralization {
     final PatternGeneralizationInitiator initiator;
     final ProbabilityPie significancePie;
     final Map<PlayerProfile, PatternProfile> profiles;
-    private final Collection<Double> empty;
+    protected final Collection<Double> empty;
     final Set<PatternProfile> profilesToStore;
     final Map<Long, Collection<Double>> correlations;
 
@@ -104,7 +104,7 @@ public abstract class PatternGeneralization {
                 }
 
                 if (store) {
-                    ((PatternGeneralizationStorage) this).set(profile, time, situation, pattern);
+                    ((NonLinearPatternGeneralizationStorage) this).set(profile, time, situation, pattern);
                 }
             }
         }
@@ -163,7 +163,7 @@ public abstract class PatternGeneralization {
         }
     }
 
-    public ProbabilityPie getNonLinearData(long situation) { // todo fix to be stored this way based on object
+    public ProbabilityPie getNonLinearData(long situation) {
         return new ProbabilityPie().add(this.getLinearData(situation));
     }
 

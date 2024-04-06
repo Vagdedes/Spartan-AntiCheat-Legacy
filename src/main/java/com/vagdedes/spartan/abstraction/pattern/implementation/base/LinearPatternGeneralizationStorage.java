@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class PatternGeneralizationStorage extends PatternGeneralization {
+public class LinearPatternGeneralizationStorage extends LinearPatternGeneralization {
 
     private static final int GB = 1024 * 1024 * 1024;
 
@@ -17,7 +17,7 @@ public class PatternGeneralizationStorage extends PatternGeneralization {
     private File file;
     private YamlConfiguration configuration;
 
-    PatternGeneralizationStorage(Pattern pattern, PatternGeneralizationInitiator initiator) {
+    LinearPatternGeneralizationStorage(Pattern pattern, PatternGeneralizationInitiator initiator) {
         super(pattern, initiator);
         this.count = 0;
         this.reload();
