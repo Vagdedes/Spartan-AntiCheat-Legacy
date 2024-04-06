@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public class PatternProfile {
+public abstract class PatternProfile {
 
     private static final class Comparison {
         private long time;
@@ -23,10 +23,9 @@ public class PatternProfile {
         }
     }
 
-    private final PatternGeneralization generalization;
+    final PatternGeneralization generalization;
     private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
-    final Map<Long, Collection<Double>> correlations;
     final PatternRepetition patternRepetition;
     private boolean loaded;
     private final File file;
@@ -34,7 +33,6 @@ public class PatternProfile {
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
-        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
         this.patternRepetition = new PatternRepetition();
         this.lastComparison = new Comparison(0L, -1.0);
@@ -184,10 +182,8 @@ public class PatternProfile {
     void delete(PlayerProfile profile) {
         if (this.loaded) {
             this.loaded = false;
+            this.deleteCustomData();
 
-            synchronized (this.correlations) {
-                this.correlations.clear();
-            }
             synchronized (this.comparisons) {
                 this.comparisons.clear();
             }
@@ -217,15 +213,29 @@ public class PatternProfile {
                                             double pattern = configuration.getDouble(key + PatternGeneralization.patternOption, Double.MIN_VALUE);
 
                                             if (pattern != Double.MIN_VALUE) {
-                                                long time = Long.parseLong(key);
+                                                long situation = configuration.getLong(key + PatternGeneralization.situationOption, Long.MIN_VALUE);
 
-                                                synchronized (this.generalization.correlations) {
-                                                    Collection<Double> list = this.generalization.correlations.get(time);
+                                                if (situation != Long.MIN_VALUE) {
+                                                    if (this.generalization instanceof LinearPatternGeneralization) {
+                                                        synchronized (((LinearPatternGeneralization) this.generalization).correlations) {
+                                                            Collection<Double> list = ((LinearPatternGeneralization) this.generalization).correlations.get(situation);
 
-                                                    if (list != null
-                                                            && list.remove(pattern)
-                                                            && list.isEmpty()) {
-                                                        this.generalization.correlations.remove(time);
+                                                            if (list != null
+                                                                    && list.remove(pattern)
+                                                                    && list.isEmpty()) {
+                                                                ((LinearPatternGeneralization) this.generalization).correlations.remove(situation);
+                                                            }
+                                                        }
+                                                    } else {
+                                                        synchronized (((NonLinearPatternGeneralization) this.generalization).correlations) {
+                                                            ProbabilityPie pie = ((NonLinearPatternGeneralization) this.generalization).correlations.get(situation);
+
+                                                            if (pie != null
+                                                                    && pie.remove(pattern)
+                                                                    && pie.isEmpty()) {
+                                                                ((NonLinearPatternGeneralization) this.generalization).correlations.remove(situation);
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -316,5 +326,9 @@ public class PatternProfile {
             }
         }
     }
+
+    // Separator
+
+    abstract void deleteCustomData();
 
 }

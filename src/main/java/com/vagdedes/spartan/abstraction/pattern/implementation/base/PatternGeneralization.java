@@ -22,18 +22,14 @@ public abstract class PatternGeneralization {
     final PatternGeneralizationInitiator initiator;
     final ProbabilityPie significancePie;
     final Map<PlayerProfile, PatternProfile> profiles;
-    protected final Collection<Double> empty;
     final Set<PatternProfile> profilesToStore;
-    final Map<Long, Collection<Double>> correlations;
 
     protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
         this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.empty = new ArrayList<>(0);
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
-        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
     }
 
     void clear() {
@@ -96,10 +92,10 @@ public abstract class PatternGeneralization {
                         }
                     }
                     synchronized (this.correlations) {
-                        this.rawCache(this.correlations, this.initiator.cube, situation, pattern);
+                        this.cache(this.correlations, this.initiator.cube, situation, pattern);
                     }
                     synchronized (patternProfile.correlations) {
-                        this.rawCache(patternProfile.correlations, this.initiator.line, situation, pattern);
+                        this.cache(patternProfile.correlations, this.initiator.line, situation, pattern);
                     }
                 }
 
@@ -110,10 +106,10 @@ public abstract class PatternGeneralization {
         }
     }
 
-    private void rawCache(Map<Long, Collection<Double>> map,
-                          int limit,
-                          long situation,
-                          double pattern) {
+    private void cache(Map<Long, Collection<Double>> map,
+                       int limit,
+                       long situation,
+                       double pattern) {
         Collection<Double> list = map.computeIfAbsent(
                 situation,
                 k -> new ArrayList<>()
@@ -127,44 +123,6 @@ public abstract class PatternGeneralization {
             ((LinkedList<Double>) list).removeFirst();
         }
         list.add(pattern);
-    }
-
-    // Separator
-
-    public Collection<Double> getSpecificLinearData(PatternProfile patternProfile,
-                                                    long situation,
-                                                    short count) {
-        synchronized (patternProfile.correlations) {
-            Collection<Double> specific = patternProfile.correlations.get(situation);
-
-            if (specific == null) {
-                return this.empty;
-            } else {
-                int size = specific.size();
-
-                if (size < count) {
-                    return this.empty;
-                } else if (count == 1 && specific instanceof LinkedList) {
-                    Collection<Double> collection = new ArrayList<>(1);
-                    collection.add(((LinkedList<Double>) specific).getLast());
-                    return collection;
-                } else {
-                    return new ArrayList<>(specific).subList(size - count, size);
-                }
-            }
-        }
-    }
-
-    // Separator
-
-    public Collection<Double> getLinearData(long situation) {
-        synchronized (this.correlations) {
-            return this.correlations.getOrDefault(situation, this.empty);
-        }
-    }
-
-    public ProbabilityPie getNonLinearData(long situation) {
-        return new ProbabilityPie().add(this.getLinearData(situation));
     }
 
     // Separator
@@ -194,9 +152,14 @@ public abstract class PatternGeneralization {
         synchronized (this.profiles) {
             return this.profiles.computeIfAbsent(
                     profile,
-                    k -> new PatternProfile(this, profile)
+                    k -> (this.parent.linear ? new LinearPatternProfile(this, profile)
+                            : new NonLinearPatternProfile(this, profile))
             );
         }
     }
+
+    // Separator
+
+    abstract boolean hasSituation(long situation);
 
 }

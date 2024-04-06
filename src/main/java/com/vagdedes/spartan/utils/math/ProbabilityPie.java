@@ -189,6 +189,10 @@ public class ProbabilityPie {
 
     // Separator
 
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
+
     public int getSlices() {
         return this.map.size();
     }

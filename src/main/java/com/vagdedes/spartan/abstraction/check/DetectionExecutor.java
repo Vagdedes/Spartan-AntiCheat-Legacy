@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.NonLinearPatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
@@ -72,7 +73,7 @@ public abstract class DetectionExecutor {
 
     // Separator
 
-    protected final void linearPredictionToDetection(Pattern patternStorage,
+    protected final void linearMLDetection(Pattern patternStorage,
                                                      int generalization,
                                                      long situation,
                                                      double client,
@@ -97,7 +98,7 @@ public abstract class DetectionExecutor {
         );
     }
 
-    protected final void rankedPredictionToDetection(Pattern patternStorage,
+    protected final void nonLinearMLDetection(Pattern patternStorage,
                                                      int generalization,
                                                      long situation,
                                                      double client) {
@@ -110,7 +111,7 @@ public abstract class DetectionExecutor {
         patternGeneralization.getProfile(player.getProfile()).updateComparison(
                 time,
                 client,
-                patternGeneralization.getNonLinearData(situation)
+                ((NonLinearPatternGeneralization) patternGeneralization).getNonLinearData(situation)
         );
     }
 }

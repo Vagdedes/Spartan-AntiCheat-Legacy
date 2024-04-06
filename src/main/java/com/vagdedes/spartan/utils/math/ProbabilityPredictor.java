@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.utils.math;
 
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.LinearPatternGeneralization;
+import com.vagdedes.spartan.abstraction.pattern.implementation.base.LinearPatternProfile;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
@@ -15,8 +17,8 @@ public class ProbabilityPredictor {
                                              PatternProfile patternProfile,
                                              short count) {
         return new ProbabilityPredictor(
-                patternGeneralization.getLinearData(situation),
-                patternGeneralization.getSpecificLinearData(patternProfile, situation, count)
+                ((LinearPatternGeneralization) patternGeneralization).getLinearData(situation),
+                ((LinearPatternProfile) patternProfile).getLinearData(situation, count)
         );
     }
 

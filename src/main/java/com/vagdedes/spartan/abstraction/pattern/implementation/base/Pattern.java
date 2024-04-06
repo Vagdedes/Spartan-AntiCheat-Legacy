@@ -63,7 +63,7 @@ public class Pattern {
     final String learningFolder;
     final Map<Short, PatternGeneralization> generalizations;
     private boolean load;
-    private final boolean linear;
+    final boolean linear;
 
     public Pattern(String key,
                    PatternGeneralizationInitiator initiator,
@@ -219,9 +219,7 @@ public class Pattern {
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
                 if (generalization.initiator.isEnabled()) {
-                    synchronized (generalization.correlations) {
-                        empty |= !generalization.correlations.containsKey(situation);
-                    }
+                    empty |= !generalization.hasSituation(situation);
                 }
                 generalization.cache(
                         player.getProfile(),
@@ -279,4 +277,5 @@ public class Pattern {
             return null;
         }
     }
+
 }
