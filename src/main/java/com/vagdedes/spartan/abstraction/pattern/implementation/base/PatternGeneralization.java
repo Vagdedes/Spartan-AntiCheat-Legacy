@@ -156,9 +156,11 @@ public abstract class PatternGeneralization { // todo fix hacker data removal
     }
 
     public ProbabilityPie getNonLinearData(long situation) { // todo fix to be stored this way based on object
-        return new ProbabilityPie().add(
-                this.correlations.getOrDefault(situation, new LinkedList<>())
-        );
+        synchronized (this.correlations) {
+            return new ProbabilityPie().add(
+                    this.correlations.getOrDefault(situation, new LinkedList<>())
+            );
+        }
     }
 
     // Separator
