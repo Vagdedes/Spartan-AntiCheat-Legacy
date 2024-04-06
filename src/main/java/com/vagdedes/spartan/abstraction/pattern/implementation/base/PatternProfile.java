@@ -64,13 +64,13 @@ public class PatternProfile {
                         for (String key : keys) {
                             try {
                                 long time = Long.parseLong(key);
-                                Object value = this.configuration.get(key, null);
+                                double value = this.configuration.getDouble(key, Double.MIN_VALUE);
 
-                                if (value instanceof Number) {
+                                if (value != Double.MIN_VALUE) {
                                     if (valid == this.generalization.initiator.square) {
                                         remove.add(key);
                                     } else {
-                                        this.updateComparison(time, ((Number) value).doubleValue(), false);
+                                        this.updateComparison(time, value, false);
                                         valid++;
                                     }
                                 } else {
@@ -183,6 +183,7 @@ public class PatternProfile {
 
     void delete(PlayerProfile profile) {
         if (this.loaded) {
+            this.loaded = false;
             synchronized (this.generalization.profilesToStore) {
                 this.generalization.profilesToStore.remove(this);
             }
@@ -191,44 +192,62 @@ public class PatternProfile {
             synchronized (this.comparisons) {
                 this.comparisons.clear();
             }
-            File[] files = this.generalization.parent.getLearningFiles();
+            SpartanBukkit.dataThread.execute(() -> {
+                File[] files = this.generalization.parent.getLearningFiles();
 
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isFile()
-                            && file.getName().endsWith(".yml")) {
-                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                        Set<String> keys = configuration.getKeys(false);
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()
+                                && file.getName().endsWith(".yml")) {
+                            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                            Set<String> keys = configuration.getKeys(false);
 
-                        if (!keys.isEmpty()) {
-                            boolean found = false;
+                            if (!keys.isEmpty()) {
+                                boolean found = false;
 
-                            for (String key : keys) {
-                                try {
-                                    String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
+                                for (String key : keys) {
+                                    try {
+                                        String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
 
-                                    if (profileName != null
-                                            && profileName.equals(profile.getName())) {
-                                        for (String option : PatternGeneralization.options) {
-                                            configuration.set(key + option, null);
+                                        if (profileName != null
+                                                && profileName.equals(profile.getName())) {
+                                            double pattern = configuration.getDouble(key + PatternGeneralization.patternOption, Double.MIN_VALUE);
+
+                                            if (pattern != Double.MIN_VALUE) {
+                                                long time = Long.parseLong(key);
+
+                                                synchronized (this.generalization.correlations) {
+                                                    LinkedList<Double> list = this.generalization.correlations.get(time);
+
+                                                    if (list != null
+                                                            && list.remove(pattern)
+                                                            && list.isEmpty()) {
+                                                        this.generalization.correlations.remove(time);
+                                                    }
+                                                }
+                                            }
+                                            for (String option : PatternGeneralization.options) {
+                                                configuration.set(key + option, null);
+                                            }
+                                            configuration.set(key, null);
+                                            found = true;
                                         }
-                                        configuration.set(key, null);
-                                        found = true;
+                                    } catch (Exception ignored) {
                                     }
-                                } catch (Exception ignored) {
                                 }
-                            }
 
-                            if (found) {
-                                try {
-                                    configuration.save(file);
-                                } catch (Exception ignored) {
+                                if (found) {
+                                    try {
+                                        configuration.save(file);
+                                    } catch (Exception ignored) {
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
+                this.loaded = true;
+            });
         }
     }
 

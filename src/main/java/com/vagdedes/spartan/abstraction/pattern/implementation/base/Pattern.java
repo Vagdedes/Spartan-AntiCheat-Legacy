@@ -137,10 +137,9 @@ public class Pattern {
                     if (!keys.isEmpty()) {
                         for (String key : keys) {
                             try {
-                                long time = Long.parseLong(key);
-                                Object pattern = configuration.get(key + PatternGeneralization.patternOption, null);
+                                double pattern = configuration.getDouble(key + PatternGeneralization.patternOption, Double.MIN_VALUE);
 
-                                if (pattern instanceof Number) {
+                                if (pattern != Double.MIN_VALUE) {
                                     long situation = configuration.getLong(key + PatternGeneralization.situationOption, Long.MIN_VALUE);
 
                                     if (situation != Long.MIN_VALUE) {
@@ -148,6 +147,7 @@ public class Pattern {
 
                                         if (profileName != null
                                                 && !profileName.isEmpty()) {
+                                            long time = Long.parseLong(key);
                                             PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
                                             for (PatternGeneralization generalization : generalizations.values()) {
@@ -155,12 +155,22 @@ public class Pattern {
                                                         profile,
                                                         time,
                                                         situation,
-                                                        ((Number) pattern).doubleValue(),
+                                                        pattern,
                                                         false
                                                 );
                                             }
                                         }
+                                    } else {
+                                        for (String option : PatternGeneralization.options) {
+                                            configuration.set(key + option, null);
+                                        }
+                                        configuration.set(key, null);
                                     }
+                                } else {
+                                    for (String option : PatternGeneralization.options) {
+                                        configuration.set(key + option, null);
+                                    }
+                                    configuration.set(key, null);
                                 }
                             } catch (Exception ignored) {
                             }
