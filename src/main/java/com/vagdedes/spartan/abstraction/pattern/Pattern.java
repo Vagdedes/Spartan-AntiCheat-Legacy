@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -15,13 +16,17 @@ import java.util.*;
 
 public class Pattern {
 
-    private static final double GB = 1024 * 1024 * 1024;
+    private static final int GB = 1024 * 1024 * 1024;
+    static final int
+            globalDataLimit = 10_000,
+            individualDataLimit = (int) TPS.maximum,
+            comparisonDataLimit = 100;
     static final String
             profileOption = ".profile",
             patternOption = ".pattern",
             situationOption = ".situation";
     static final String[] options = {profileOption, patternOption, situationOption};
-    static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
+    private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
     public static void delete(PlayerProfile profile) {
         synchronized (instances) {
@@ -79,10 +84,7 @@ public class Pattern {
                 + "/learning/"
                 + key;
         this.load = false;
-
-        this.generalizations = Collections.synchronizedMap(
-                new LinkedHashMap<>(generalizations.length + 1)
-        );
+        this.generalizations = Collections.synchronizedMap(new LinkedHashMap<>(generalizations.length));
 
         for (short generalization : generalizations) {
             this.generalizations.put(
@@ -100,7 +102,7 @@ public class Pattern {
 
     int limit() {
         long availableBytes = Cache.maxBytes / Pattern.instances.size();
-        return (int) Math.min(10_000, availableBytes / (8 + 8));
+        return (int) Math.min(globalDataLimit, availableBytes / (8 + 8 + 8)); // Long + Double + ABSTRACT
     }
 
 

@@ -11,8 +11,6 @@ import java.util.*;
 
 public abstract class PatternProfile {
 
-    private static final int limit = 100;
-
     private static final class Comparison {
         private long time;
         private double trustFactor, averagePatternTime;
@@ -65,7 +63,7 @@ public abstract class PatternProfile {
                                 double value = this.configuration.getDouble(key, Double.MIN_VALUE);
 
                                 if (value != Double.MIN_VALUE) {
-                                    if (valid == limit) {
+                                    if (valid == Pattern.comparisonDataLimit) {
                                         remove.add(key);
                                     } else {
                                         this.updateComparison(time, value, false);
@@ -102,7 +100,7 @@ public abstract class PatternProfile {
     }
 
     private void updateComparison(long time, double trustFactor, boolean storage) {
-        if (this.comparisons.size() == limit) {
+        if (this.comparisons.size() == Pattern.comparisonDataLimit) {
             long oldTime;
 
             synchronized (this.comparisons) {
@@ -270,7 +268,7 @@ public abstract class PatternProfile {
             if (patternsRequired <= 1) {
                 return this.lastComparison.trustFactor;
             } else {
-                patternsRequired = Math.min(patternsRequired, limit);
+                patternsRequired = Math.min(patternsRequired, Pattern.comparisonDataLimit);
                 int dismiss = this.comparisons.size() - patternsRequired;
 
                 if (dismiss < 0) {

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.*;
 
@@ -41,7 +40,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             this.addToSignificance(pattern);
 
             synchronized (patternProfile.correlations) {
-                this.manageData(patternProfile.correlations, (int) TPS.maximum, situation, pattern);
+                this.manageData(patternProfile.correlations, Pattern.individualDataLimit, situation, pattern);
             }
             synchronized (patternProfile.lastCorrelation) {
                 patternProfile.lastCorrelation.put(situation, pattern);
