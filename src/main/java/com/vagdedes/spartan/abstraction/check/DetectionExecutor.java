@@ -1,9 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.pattern.NonLinearPatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.Pattern;
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.PatternProfile;
+import com.vagdedes.spartan.abstraction.pattern.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -83,8 +80,8 @@ public abstract class DetectionExecutor {
         if (generalization != 0) {
             client = AlgebraUtils.cut(client, generalization);
         }
-        PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
-        PatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
+        LinearPatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
+        LinearPatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
         ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
                 situation,
                 patternGeneralization,
@@ -107,11 +104,11 @@ public abstract class DetectionExecutor {
         if (generalization != 0) {
             client = AlgebraUtils.cut(client, generalization);
         }
-        PatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
+        NonLinearPatternGeneralization patternGeneralization = patternStorage.getGeneralization(generalization);
         patternGeneralization.getProfile(player.getProfile()).updateComparison(
                 time,
                 client,
-                ((NonLinearPatternGeneralization) patternGeneralization).getNonLinearData(situation)
+                patternGeneralization.getNonLinearData(situation)
         );
     }
 }

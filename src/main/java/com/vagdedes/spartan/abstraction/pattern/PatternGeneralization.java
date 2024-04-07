@@ -72,19 +72,17 @@ public abstract class PatternGeneralization { // todo minimize casting
                 pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
             }
             if (patternProfile.patternRepetition.canUse(pattern)) {
-                if (this.initiator.isEnabled()) {
-                    if (this.significancePie.getSlices() == this.initiator.cube) {
-                        synchronized (this.significancePie) {
-                            this.significancePie.removeLeastSignificant();
-                            this.significancePie.add(pattern);
-                        }
-                    } else {
-                        synchronized (this.significancePie) {
-                            this.significancePie.add(pattern);
-                        }
+                if (this.significancePie.getSlices() == this.initiator.cube) {
+                    synchronized (this.significancePie) {
+                        this.significancePie.removeLeastSignificant();
+                        this.significancePie.add(pattern);
                     }
-                    this.customCache(patternProfile, situation, pattern);
+                } else {
+                    synchronized (this.significancePie) {
+                        this.significancePie.add(pattern);
+                    }
                 }
+                this.customCache(patternProfile, situation, pattern);
 
                 if (store) {
                     this.parent.setToFile(profile, time, situation, pattern);

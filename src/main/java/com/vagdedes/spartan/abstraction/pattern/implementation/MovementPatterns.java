@@ -12,15 +12,10 @@ public class MovementPatterns extends PatternFamily {
 
     public MovementPatterns() {
         super(1_000L, 4);
-        PatternGeneralizationInitiator initiator = new PatternGeneralizationInitiator(
-                0,
-                0.0
-        );
         this.addPatterns(
                 new Pattern[]{
                         this.horizontal = new Pattern(
                                 "movement/distance/horizontal",
-                                initiator,
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,
@@ -31,7 +26,6 @@ public class MovementPatterns extends PatternFamily {
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
-                                initiator,
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,
@@ -42,7 +36,6 @@ public class MovementPatterns extends PatternFamily {
                         ),
                         this.all = new Pattern(
                                 "movement/distance/all",
-                                initiator,
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,
@@ -53,7 +46,6 @@ public class MovementPatterns extends PatternFamily {
                         ),
                         this.fall = new Pattern(
                                 "movement/distance/fall",
-                                initiator,
                                 new PatternGeneralizationInitiator[]{
                                         new PatternGeneralizationInitiator(
                                                 GroundUtils.maxHeightLength,

@@ -74,7 +74,6 @@ public class Pattern {
     private YamlConfiguration configuration;
 
     public Pattern(String key,
-                   PatternGeneralizationInitiator initiator,
                    PatternGeneralizationInitiator[] generalizations,
                    boolean linear) {
         this.key = key;
@@ -85,11 +84,6 @@ public class Pattern {
 
         this.generalizations = Collections.synchronizedMap(
                 new LinkedHashMap<>(generalizations.length + 1)
-        );
-        this.generalizations.put(
-                (short) 0,
-                linear ? new LinearPatternGeneralization(this, initiator)
-                        : new NonLinearPatternGeneralization(this, initiator)
         );
 
         if (generalizations.length > 0) {
@@ -296,7 +290,7 @@ public class Pattern {
         }
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
-                if (notifications && generalization.initiator.isEnabled()) {
+                if (notifications) {
                     found |= generalization.hasSituation(situation);
                 }
                 generalization.cache(
