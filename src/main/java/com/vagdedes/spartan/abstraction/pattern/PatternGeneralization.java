@@ -120,7 +120,8 @@ public abstract class PatternGeneralization {
         synchronized (this.profiles) {
             return this.profiles.computeIfAbsent(
                     profile,
-                    k -> (this.parent.linear ? new LinearPatternProfile(this, profile)
+                    k -> (this instanceof LinearPatternGeneralization
+                            ? new LinearPatternProfile(this, profile)
                             : new NonLinearPatternProfile(this, profile))
             );
         }

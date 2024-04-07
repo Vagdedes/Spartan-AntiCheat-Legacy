@@ -69,7 +69,6 @@ public class Pattern {
     private final String learningFolder;
     private final Map<Short, PatternGeneralization> generalizations;
     private boolean load;
-    final boolean linear;
     private short count;
     private File file;
     private YamlConfiguration configuration;
@@ -83,7 +82,6 @@ public class Pattern {
                 + "/learning/"
                 + key;
         this.load = false;
-        this.linear = linear;
 
         this.generalizations = Collections.synchronizedMap(
                 new LinkedHashMap<>(generalizations.length + 1)
@@ -202,7 +200,7 @@ public class Pattern {
             for (Map.Entry<Short, PatternGeneralization> entry : entries) {
                 generalizations.put(
                         entry.getKey(),
-                        this.linear
+                        entry.getValue() instanceof LinearPatternGeneralization
                                 ? new LinearPatternGeneralization(this, entry.getValue().initiator)
                                 : new NonLinearPatternGeneralization(this, entry.getValue().initiator)
                 );
