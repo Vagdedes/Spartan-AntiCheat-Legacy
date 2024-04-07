@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.math.ProbabilityPie;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -204,27 +203,7 @@ public abstract class PatternProfile {
                                                 long situation = configuration.getLong(key + Pattern.situationOption, Long.MIN_VALUE);
 
                                                 if (situation != Long.MIN_VALUE) {
-                                                    if (this.generalization instanceof LinearPatternGeneralization) {
-                                                        synchronized (((LinearPatternGeneralization) this.generalization).correlations) {
-                                                            Collection<Double> list = ((LinearPatternGeneralization) this.generalization).correlations.get(situation);
-
-                                                            if (list != null
-                                                                    && list.remove(pattern)
-                                                                    && list.isEmpty()) {
-                                                                ((LinearPatternGeneralization) this.generalization).correlations.remove(situation);
-                                                            }
-                                                        }
-                                                    } else {
-                                                        synchronized (((NonLinearPatternGeneralization) this.generalization).correlations) {
-                                                            ProbabilityPie pie = ((NonLinearPatternGeneralization) this.generalization).correlations.get(situation);
-
-                                                            if (pie != null
-                                                                    && pie.remove(pattern)
-                                                                    && pie.isEmpty()) {
-                                                                ((NonLinearPatternGeneralization) this.generalization).correlations.remove(situation);
-                                                            }
-                                                        }
-                                                    }
+                                                    this.generalization.deleteLessons(situation, pattern);
                                                 }
                                             }
                                             for (String option : Pattern.options) {

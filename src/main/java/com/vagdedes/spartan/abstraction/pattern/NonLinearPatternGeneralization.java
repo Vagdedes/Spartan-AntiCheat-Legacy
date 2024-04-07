@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class NonLinearPatternGeneralization extends PatternGeneralization {
 
-    final Map<PlayerProfile, NonLinearPatternProfile> profiles;
-    final Map<Long, ProbabilityPie> correlations;
+    private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
+    private final Map<Long, ProbabilityPie> correlations;
     private final ProbabilityPie empty;
 
     protected NonLinearPatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
@@ -34,7 +34,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean customCache(PlayerProfile profile, long situation, double pattern) {
+    protected boolean customLearn(PlayerProfile profile, long situation, double pattern) {
         NonLinearPatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -53,6 +53,19 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
             return true;
         } else {
             return false;
+        }
+    }
+
+    @Override
+    protected void deleteLessons(long situation, double pattern) {
+        synchronized (this.correlations) {
+            ProbabilityPie pie = this.correlations.get(situation);
+
+            if (pie != null
+                    && pie.remove(pattern)
+                    && pie.isEmpty()) {
+                this.correlations.remove(situation);
+            }
         }
     }
 

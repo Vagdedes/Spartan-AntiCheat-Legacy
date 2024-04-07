@@ -6,8 +6,8 @@ import java.util.*;
 
 public class LinearPatternGeneralization extends PatternGeneralization {
 
-    final Map<PlayerProfile, LinearPatternProfile> profiles;
-    final Map<Long, Collection<Double>> correlations;
+    private final Map<PlayerProfile, LinearPatternProfile> profiles;
+    private final Map<Long, Collection<Double>> correlations;
     private final Collection<Double> empty;
 
     protected LinearPatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
@@ -29,10 +29,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    // Separator
-
     @Override
-    protected boolean customCache(PlayerProfile profile, long situation, double pattern) {
+    protected boolean customLearn(PlayerProfile profile, long situation, double pattern) {
         LinearPatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -50,6 +48,19 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             return true;
         } else {
             return false;
+        }
+    }
+
+    @Override
+    protected void deleteLessons(long situation, double pattern) {
+        synchronized (this.correlations) {
+            Collection<Double> list = this.correlations.get(situation);
+
+            if (list != null
+                    && list.remove(pattern)
+                    && list.isEmpty()) {
+                this.correlations.remove(situation);
+            }
         }
     }
 
@@ -71,8 +82,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
         list.add(pattern);
     }
-
-    // Separator
 
     @Override
     protected void clearProfiles() {
