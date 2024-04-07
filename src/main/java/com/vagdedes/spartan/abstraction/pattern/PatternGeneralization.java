@@ -83,12 +83,7 @@ public abstract class PatternGeneralization {
                             this.significancePie.add(pattern);
                         }
                     }
-                    synchronized (this.correlations) {
-                        this.cache(this.correlations, this.initiator.cube, situation, pattern);
-                    }
-                    synchronized (patternProfile.correlations) {
-                        this.cache(patternProfile.correlations, this.initiator.line, situation, pattern);
-                    }
+                    this.customCache(patternProfile, situation, pattern);
                 }
 
                 if (store) {
@@ -96,25 +91,6 @@ public abstract class PatternGeneralization {
                 }
             }
         }
-    }
-
-    private void cache(Map<Long, Collection<Double>> map,
-                       int limit,
-                       long situation,
-                       double pattern) {
-        Collection<Double> list = map.computeIfAbsent(
-                situation,
-                k -> new ArrayList<>()
-        );
-
-        if (list.size() == limit) {
-            if (!(list instanceof LinkedList)) {
-                list = new LinkedList<>(list);
-                map.put(situation, list);
-            }
-            ((LinkedList<Double>) list).removeFirst();
-        }
-        list.add(pattern);
     }
 
     // Separator
@@ -152,6 +128,8 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    abstract boolean hasSituation(long situation);
+    abstract protected boolean hasSituation(long situation);
+
+    abstract protected void customCache(PatternProfile patternProfile, long situation, double pattern);
 
 }

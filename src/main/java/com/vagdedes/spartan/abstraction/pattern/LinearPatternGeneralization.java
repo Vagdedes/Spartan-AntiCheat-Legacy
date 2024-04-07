@@ -20,10 +20,39 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    boolean hasSituation(long situation) {
+    protected boolean hasSituation(long situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);
         }
+    }
+
+    @Override
+    protected void customCache(PatternProfile patternProfile, long situation, double pattern) {
+        synchronized (this.correlations) {
+            this.customCache(this.correlations, this.initiator.cube, situation, pattern);
+        }
+        synchronized (((LinearPatternProfile) patternProfile).correlations) {
+            this.customCache(((LinearPatternProfile) patternProfile).correlations, this.initiator.line, situation, pattern);
+        }
+    }
+
+    private void customCache(Map<Long, Collection<Double>> map,
+                             int limit,
+                             long situation,
+                             double pattern) {
+        Collection<Double> list = map.computeIfAbsent(
+                situation,
+                k -> new ArrayList<>()
+        );
+
+        if (list.size() == limit) {
+            if (!(list instanceof LinkedList)) {
+                list = new LinkedList<>(list);
+                map.put(situation, list);
+            }
+            ((LinkedList<Double>) list).removeFirst();
+        }
+        list.add(pattern);
     }
 
 }

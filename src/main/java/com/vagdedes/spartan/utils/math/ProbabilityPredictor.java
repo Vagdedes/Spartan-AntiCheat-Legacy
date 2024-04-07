@@ -31,7 +31,7 @@ public class ProbabilityPredictor {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
 
-        if (!totalPatterns.isEmpty() // No general data to compare
+        if (totalPatterns.size() > currentPatternSize // No general data to compare
                 && currentPatternSize > 0) { // No individual data to compare
             if (currentPatternSize == 1) {
                 optimized(totalPatterns, currentPattern.iterator().next());

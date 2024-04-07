@@ -24,9 +24,24 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    boolean hasSituation(long situation) {
+    protected boolean hasSituation(long situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);
+        }
+    }
+
+    @Override
+    protected void customCache(PatternProfile patternProfile, long situation, double pattern) {
+        synchronized (this.correlations) {
+            ProbabilityPie pie = this.correlations.computeIfAbsent(
+                    situation,
+                    k -> new ProbabilityPie()
+            );
+
+            if (pie.getSlices() == this.initiator.cube) {
+                pie.removeLeastSignificant();
+            }
+            pie.add(pattern);
         }
     }
 
