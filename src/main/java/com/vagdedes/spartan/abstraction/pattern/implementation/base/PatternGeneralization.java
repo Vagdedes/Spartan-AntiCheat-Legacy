@@ -10,14 +10,6 @@ import java.util.*;
 
 public abstract class PatternGeneralization {
 
-    static final String
-            profileOption = ".profile",
-            patternOption = ".pattern",
-            situationOption = ".situation";
-    static final String[] options = {profileOption, patternOption, situationOption};
-
-    // Separator
-
     final Pattern parent;
     final PatternGeneralizationInitiator initiator;
     final ProbabilityPie significancePie;
@@ -100,7 +92,7 @@ public abstract class PatternGeneralization {
                 }
 
                 if (store) {
-                    ((NonLinearPatternGeneralizationStorage) this).set(profile, time, situation, pattern);
+                    this.parent.set(profile, time, situation, pattern);
                 }
             }
         }

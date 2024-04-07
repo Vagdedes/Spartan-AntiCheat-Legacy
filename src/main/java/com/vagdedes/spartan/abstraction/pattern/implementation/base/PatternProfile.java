@@ -206,14 +206,14 @@ public abstract class PatternProfile {
 
                                 for (String key : keys) {
                                     try {
-                                        String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
+                                        String profileName = configuration.getString(key + Pattern.profileOption, null);
 
                                         if (profileName != null
                                                 && profileName.equals(profile.getName())) {
-                                            double pattern = configuration.getDouble(key + PatternGeneralization.patternOption, Double.MIN_VALUE);
+                                            double pattern = configuration.getDouble(key + Pattern.patternOption, Double.MIN_VALUE);
 
                                             if (pattern != Double.MIN_VALUE) {
-                                                long situation = configuration.getLong(key + PatternGeneralization.situationOption, Long.MIN_VALUE);
+                                                long situation = configuration.getLong(key + Pattern.situationOption, Long.MIN_VALUE);
 
                                                 if (situation != Long.MIN_VALUE) {
                                                     if (this.generalization instanceof LinearPatternGeneralization) {
@@ -239,7 +239,7 @@ public abstract class PatternProfile {
                                                     }
                                                 }
                                             }
-                                            for (String option : PatternGeneralization.options) {
+                                            for (String option : Pattern.options) {
                                                 configuration.set(key + option, null);
                                             }
                                             configuration.set(key, null);

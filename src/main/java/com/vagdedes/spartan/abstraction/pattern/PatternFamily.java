@@ -25,7 +25,7 @@ public abstract class PatternFamily {
             this.lastStored = System.currentTimeMillis();
 
             for (Pattern patternValue : this.patterns) {
-                patternValue.store();
+                patternValue.storeFiles();
             }
         }
     }

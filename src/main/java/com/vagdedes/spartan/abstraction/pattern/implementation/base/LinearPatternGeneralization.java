@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation.base;
 
 import java.util.*;
 
-public abstract class LinearPatternGeneralization extends PatternGeneralization {
+public class LinearPatternGeneralization extends PatternGeneralization {
 
     final Map<Long, Collection<Double>> correlations;
     final Collection<Double> empty;

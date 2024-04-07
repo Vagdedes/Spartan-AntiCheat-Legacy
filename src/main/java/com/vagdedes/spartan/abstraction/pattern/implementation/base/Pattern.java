@@ -14,6 +14,12 @@ import java.util.*;
 
 public class Pattern {
 
+    private static final double GB = 1024 * 1024 * 1024;
+    static final String
+            profileOption = ".profile",
+            patternOption = ".pattern",
+            situationOption = ".situation";
+    static final String[] options = {profileOption, patternOption, situationOption};
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
     public static void delete(PlayerProfile profile) {
@@ -64,6 +70,9 @@ public class Pattern {
     final Map<Short, PatternGeneralization> generalizations;
     private boolean load;
     final boolean linear;
+    private short count;
+    private File file;
+    private YamlConfiguration configuration;
 
     public Pattern(String key,
                    PatternGeneralizationInitiator initiator,
@@ -81,16 +90,16 @@ public class Pattern {
         );
         this.generalizations.put(
                 (short) 0,
-                linear ? new LinearPatternGeneralizationStorage(this, initiator)
-                        : new NonLinearPatternGeneralizationStorage(this, initiator)
+                linear ? new LinearPatternGeneralization(this, initiator)
+                        : new NonLinearPatternGeneralization(this, initiator)
         );
 
         if (generalizations.length > 0) {
             for (PatternGeneralizationInitiator loopInitiator : generalizations) {
                 this.generalizations.put(
                         loopInitiator.scissors,
-                        linear ? new LinearPatternGeneralizationMemory(this, loopInitiator)
-                                : new NonLinearPatternGeneralizationMemory(this, loopInitiator)
+                        linear ? new LinearPatternGeneralization(this, loopInitiator)
+                                : new NonLinearPatternGeneralization(this, loopInitiator)
                 );
             }
         }
@@ -102,16 +111,71 @@ public class Pattern {
 
     // Separator
 
-    public void store() {
-        if (this.linear) {
-            synchronized (this.generalizations) {
-                ((LinearPatternGeneralizationStorage) this.generalizations.get((short) 0)).store();
+    private void reloadLearningFile() {
+        File[] files = this.getLearningFiles();
+
+        if (files != null) {
+            long length = 0;
+
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+
+                if (file.isFile() && file.getName().endsWith(".yml")) {
+                    length += file.length();
+                } else {
+                    files[i] = null;
+                }
             }
-        } else {
-            synchronized (this.generalizations) {
-                ((NonLinearPatternGeneralizationStorage) this.generalizations.get((short) 0)).store();
+
+            if (length >= GB) {
+                Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+
+                for (File file : files) {
+                    if (file != null) {
+                        long fileLength = file.length();
+
+                        if (file.delete()) {
+                            length -= fileLength;
+
+                            if (length < GB) {
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
+        int hash = Objects.hash(this.key, System.currentTimeMillis());
+        this.file = new File(this.learningFolder + "/" + hash + ".yml");
+
+        if (this.file.exists()) {
+            this.reloadLearningFile();
+        } else {
+            this.configuration = YamlConfiguration.loadConfiguration(this.file);
+        }
+    }
+
+    void set(PlayerProfile profile, long time, long situation, double pattern) {
+        SpartanBukkit.dataThread.execute(() -> {
+            this.count++;
+            this.configuration.set(time + profileOption, profile.getName());
+            this.configuration.set(time + situationOption, situation);
+            this.configuration.set(time + patternOption, pattern);
+        });
+    }
+
+    public void storeFiles() {
+        SpartanBukkit.dataThread.execute(() -> {
+            try {
+                this.configuration.save(this.file);
+
+                if (this.count < 0) { // Short has overflowed (32767)
+                    this.count = 0;
+                    this.reloadLearningFile();
+                }
+            } catch (Exception ignored) {
+            }
+        });
         for (PatternGeneralization generalization : this.generalizations.values()) {
             generalization.storeProfiles(false);
         }
@@ -122,7 +186,7 @@ public class Pattern {
             return;
         }
         this.load = true;
-        store();
+        storeFiles();
         Map<Short, PatternGeneralization> generalizations = new LinkedHashMap<>();
         File[] files = this.getLearningFiles();
 
@@ -137,9 +201,9 @@ public class Pattern {
             for (Map.Entry<Short, PatternGeneralization> entry : entries) {
                 generalizations.put(
                         entry.getKey(),
-                        entry.getValue() instanceof NonLinearPatternGeneralizationStorage
-                                ? new NonLinearPatternGeneralizationStorage(this, entry.getValue().initiator)
-                                : new NonLinearPatternGeneralizationMemory(this, entry.getValue().initiator)
+                        this.linear
+                                ? new LinearPatternGeneralization(this, entry.getValue().initiator)
+                                : new NonLinearPatternGeneralization(this, entry.getValue().initiator)
                 );
             }
             for (File file : files) {
@@ -150,13 +214,13 @@ public class Pattern {
                     if (!keys.isEmpty()) {
                         for (String key : keys) {
                             try {
-                                double pattern = configuration.getDouble(key + PatternGeneralization.patternOption, Double.MIN_VALUE);
+                                double pattern = configuration.getDouble(key + patternOption, Double.MIN_VALUE);
 
                                 if (pattern != Double.MIN_VALUE) {
-                                    long situation = configuration.getLong(key + PatternGeneralization.situationOption, Long.MIN_VALUE);
+                                    long situation = configuration.getLong(key + situationOption, Long.MIN_VALUE);
 
                                     if (situation != Long.MIN_VALUE) {
-                                        String profileName = configuration.getString(key + PatternGeneralization.profileOption, null);
+                                        String profileName = configuration.getString(key + profileOption, null);
 
                                         if (profileName != null
                                                 && !profileName.isEmpty()) {
@@ -174,13 +238,13 @@ public class Pattern {
                                             }
                                         }
                                     } else {
-                                        for (String option : PatternGeneralization.options) {
+                                        for (String option : Pattern.options) {
                                             configuration.set(key + option, null);
                                         }
                                         configuration.set(key, null);
                                     }
                                 } else {
-                                    for (String option : PatternGeneralization.options) {
+                                    for (String option : Pattern.options) {
                                         configuration.set(key + option, null);
                                     }
                                     configuration.set(key, null);
@@ -226,7 +290,7 @@ public class Pattern {
                         time,
                         situation,
                         number.doubleValue(),
-                        include && generalization instanceof NonLinearPatternGeneralizationStorage
+                        include
                 );
             }
         }
