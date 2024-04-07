@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Collection;
@@ -18,8 +17,7 @@ public class SuspicionNotifications {
 
     public static void run() {
         SpartanBukkit.runRepeatingTask(() -> { // Here because there are no other class calls
-            if (!TestServer.isIdentified()
-                    && ResearchEngine.enoughData()
+            if (ResearchEngine.enoughData()
                     && !Config.settings.getBoolean("Notifications.individual_only_notifications")) {
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
                 Iterator<SpartanPlayer> iterator = players.iterator();

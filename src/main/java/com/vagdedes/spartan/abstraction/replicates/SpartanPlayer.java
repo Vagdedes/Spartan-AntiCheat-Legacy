@@ -47,7 +47,10 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.functionality.server.*;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.EventsHandler7;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -1487,9 +1490,7 @@ public class SpartanPlayer {
     }
 
     public boolean groundTeleport(boolean checkGround) {
-        boolean testServer = TestServer.isIdentified();
-
-        if (!testServer && !Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
+        if (!Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
             return false;
         }
         SpartanLocation location = movement.getLocation();
@@ -1538,8 +1539,7 @@ public class SpartanPlayer {
         }
         countedDamage--; // Ignoring the first check of the current location
 
-        if (testServer
-                || Config.settings.getBoolean("Detections.fall_damage_on_teleport")) { // Damage
+        if (Config.settings.getBoolean("Detections.fall_damage_on_teleport")) { // Damage
             if (countedDamage >= Math.max(fallDistance, 4.0)) { // Greater than fall
                 setFallDistance(0.0f, true);
 

@@ -11,7 +11,10 @@ import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
 import com.vagdedes.spartan.functionality.inventory.Summary;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.server.*;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.InventoryUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
@@ -97,9 +100,6 @@ public class MainMenu extends InventoryMenu {
         InventoryUtils.prepareDescription(lore, "Plugin Management");
         Runtime runtime = Runtime.getRuntime();
 
-        if (TestServer.isIdentified()) {
-            lore.add("§7Test Server§8: §aType " + TestServer.getIdentification());
-        }
         if (!MultiVersion.unknownFork || !MultiVersion.other) {
             lore.add("§7Server Information§8: §a" + (MultiVersion.unknownFork ? "Version" : MultiVersion.fork())
                     + (MultiVersion.other ? "" : " " + MultiVersion.versionString()));

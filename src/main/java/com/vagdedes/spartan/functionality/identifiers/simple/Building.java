@@ -9,7 +9,6 @@ import com.vagdedes.spartan.checks.exploits.Exploits;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.BlockFace;
 
@@ -34,8 +33,7 @@ public class Building {
                     || p.getBuffer().start("building=protection=attempts", 20) >= 5)) {
                 handlers.disable(Handlers.HandlerType.TowerBuilding, 10);
 
-                if (TestServer.isIdentified()
-                        || Config.settings.getBoolean("Protections.disallowed_building")) {
+                if (Config.settings.getBoolean("Protections.disallowed_building")) {
                     teleport(p, p.movement.getLocation());
                     p.groundTeleport(false);
                 }
@@ -52,8 +50,7 @@ public class Building {
             boolean offGround = !p.isOnGround() || !p.isOnGroundCustom() || p.movement.getTicksOnAir() > 0;
 
             if (cancelled) {
-                if (TestServer.isIdentified()
-                        || Config.settings.getBoolean("Protections.disallowed_building")) {
+                if (Config.settings.getBoolean("Protections.disallowed_building")) {
                     handlers.add(
                             offGround ? Handlers.HandlerType.TowerBuilding : Handlers.HandlerType.BridgeBuilding,
                             10

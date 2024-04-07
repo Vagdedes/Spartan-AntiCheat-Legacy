@@ -9,7 +9,6 @@ import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
@@ -54,7 +53,7 @@ public class EventsHandler6 implements Listener {
             return;
         }
         // System
-        if (!TestServer.isIdentified() && Config.settings.getBoolean("Important.violations_reset_on_kick")) {
+        if (Config.settings.getBoolean("Important.violations_reset_on_kick")) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 p.getViolations(hackType).reset();
             }

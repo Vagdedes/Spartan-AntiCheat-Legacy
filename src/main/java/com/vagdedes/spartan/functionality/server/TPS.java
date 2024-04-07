@@ -123,7 +123,7 @@ public class TPS {
     // Base
 
     public static boolean areLow(SpartanPlayer player) {
-        if (TestServer.isIdentified() || Config.settings.getBoolean(Settings.tpsProtectionOption)) {
+        if (Config.settings.getBoolean(Settings.tpsProtectionOption)) {
             Calculator calculator;
 
             if (MultiVersion.folia) {

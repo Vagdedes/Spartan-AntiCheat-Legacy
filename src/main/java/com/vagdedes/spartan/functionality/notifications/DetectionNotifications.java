@@ -11,7 +11,6 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -73,7 +72,6 @@ public class DetectionNotifications {
                 && (divisor < 0
 
                 || (all
-                || TestServer.isIdentified()
                 || !ResearchEngine.enoughData()
                 || divisor >= 1
                 || Config.settings.getBoolean("Notifications.individual_only_notifications"))

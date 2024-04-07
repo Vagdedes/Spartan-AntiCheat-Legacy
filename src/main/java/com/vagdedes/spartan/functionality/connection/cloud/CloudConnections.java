@@ -14,7 +14,6 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TestServer;
 import com.vagdedes.spartan.utils.java.RequestUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -201,45 +200,43 @@ public class CloudConnections {
 
     static void punishPlayers() {
         // Doesn't need ID validation due to its validated method call
-        if (!TestServer.isIdentified()) {
-            StringBuilder value = new StringBuilder();
+        StringBuilder value = new StringBuilder();
 
-            for (PlayerProfile playerProfile : ResearchEngine.getHackers()) {
-                SpartanPlayer player = playerProfile.getSpartanPlayer();
-                boolean isNull = player == null;
+        for (PlayerProfile playerProfile : ResearchEngine.getHackers()) {
+            SpartanPlayer player = playerProfile.getSpartanPlayer();
+            boolean isNull = player == null;
 
-                if (isNull || !Permissions.isStaff(player) && !player.isOp()) {
-                    OfflinePlayer offlinePlayer = playerProfile.getOfflinePlayer();
+            if (isNull || !Permissions.isStaff(player) && !player.isOp()) {
+                OfflinePlayer offlinePlayer = playerProfile.getOfflinePlayer();
 
-                    if (offlinePlayer != null && !offlinePlayer.isOp()) {
-                        UUID uuid = offlinePlayer.getUniqueId();
-                        String ipAddress;
+                if (offlinePlayer != null && !offlinePlayer.isOp()) {
+                    UUID uuid = offlinePlayer.getUniqueId();
+                    String ipAddress;
 
-                        if (!isNull && offlinePlayer.isOnline()) {
-                            ipAddress = player.ipAddress;
+                    if (!isNull && offlinePlayer.isOnline()) {
+                        ipAddress = player.ipAddress;
 
-                            if (ipAddress == null) {
-                                ipAddress = "NULL";
-                            }
-                        } else {
+                        if (ipAddress == null) {
                             ipAddress = "NULL";
                         }
-                        value.append(StringUtils.encodeBase64(uuid + CloudBase.separator + ipAddress)).append(CloudBase.separator);
+                    } else {
+                        ipAddress = "NULL";
                     }
+                    value.append(StringUtils.encodeBase64(uuid + CloudBase.separator + ipAddress)).append(CloudBase.separator);
                 }
             }
+        }
 
-            if (value.length() > 0) {
-                value = new StringBuilder(value.substring(0, value.length() - CloudBase.separator.length()));
+        if (value.length() > 0) {
+            value = new StringBuilder(value.substring(0, value.length() - CloudBase.separator.length()));
 
-                try {
-                    RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + " " +
-                                    CloudBase.identification + "&action=add&data=punishedPlayers&version=" + CloudBase.version
-                                    + "&value=" + URLEncoder.encode(value.toString(), "UTF-8"),
-                            "POST");
-                } catch (Exception e) {
-                    CloudBase.throwError(e, "punishedPlayers:ADD");
-                }
+            try {
+                RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + " " +
+                                CloudBase.identification + "&action=add&data=punishedPlayers&version=" + CloudBase.version
+                                + "&value=" + URLEncoder.encode(value.toString(), "UTF-8"),
+                        "POST");
+            } catch (Exception e) {
+                CloudBase.throwError(e, "punishedPlayers:ADD");
             }
         }
     }
@@ -356,8 +353,6 @@ public class CloudConnections {
                 softwareInformation.append("Server:")
                         .append(newLine);
                 softwareInformation.append("Version: ").append(MultiVersion.fork()).append(" ").append(MultiVersion.versionString())
-                        .append(newLine);
-                softwareInformation.append("Testing Environment: ").append(TestServer.isIdentified())
                         .append(newLine);
                 softwareInformation.append("Configuration: ").append(Config.isLegacy() ? "Legacy" : "Normal")
                         .append(newLine).append(newLine);
