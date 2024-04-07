@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.utils.math.ProbabilityPie;
+import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -11,14 +11,14 @@ import java.util.Map;
 public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
-    private final Map<Long, ProbabilityPie> correlations;
-    private final ProbabilityPie empty;
+    private final Map<Long, ProbabilityRank> correlations;
+    private final ProbabilityRank empty;
 
     protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.empty = new ProbabilityPie(0);
+        this.empty = new ProbabilityRank();
     }
 
     @Override
@@ -39,18 +39,18 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                ProbabilityPie pie = this.correlations.computeIfAbsent(
+                ProbabilityRank rank = this.correlations.computeIfAbsent(
                         situation,
-                        k -> new ProbabilityPie()
+                        k -> new ProbabilityRank()
                 );
-                int delete = pie.getSlices() - this.parent.limit();
+                int delete = rank.getParts() - this.parent.limit();
 
                 if (delete > 0) {
                     for (int i = 0; i < delete; i++) {
-                        pie.removeLeastSignificant();
+                        rank.removeLeastSignificant();
                     }
                 }
-                pie.add(pattern);
+                rank.add(pattern);
             }
             this.addToSignificance(pattern);
             return true;
@@ -62,11 +62,11 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected void deleteCustomLessons(long situation, double pattern) {
         synchronized (this.correlations) {
-            ProbabilityPie pie = this.correlations.get(situation);
+            ProbabilityRank rank = this.correlations.get(situation);
 
-            if (pie != null
-                    && pie.remove(pattern)
-                    && pie.isEmpty()) {
+            if (rank != null
+                    && rank.remove(pattern)
+                    && rank.isEmpty()) {
                 this.correlations.remove(situation);
             }
         }
@@ -84,12 +84,23 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
+    public double[] getProbabilityAndPositionAndTotal(long situation, double client) {
+        synchronized (this.correlations) {
+            ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
+            return new double[]{
+                    rank.getProbability(client),
+                    rank.getPosition(client),
+                    rank.getRawTotal()
+            };
+        }
+    }
+
     public double[] getProbabilityAndTotal(long situation, double client) {
         synchronized (this.correlations) {
-            ProbabilityPie pie = this.correlations.getOrDefault(situation, this.empty);
+            ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
             return new double[]{
-                    pie.getProbability(client),
-                    pie.getRawTotal()
+                    rank.getProbability(client),
+                    rank.getRawTotal()
             };
         }
     }

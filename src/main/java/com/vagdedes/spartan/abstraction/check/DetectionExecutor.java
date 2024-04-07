@@ -103,7 +103,8 @@ public abstract class DetectionExecutor {
     protected final void nonLinearMLDetection(Pattern patternStorage,
                                               int generalization,
                                               long situation,
-                                              double client) {
+                                              double client,
+                                              boolean rank) {
         long time = System.currentTimeMillis();
 
         if (generalization != 0) {
@@ -111,12 +112,23 @@ public abstract class DetectionExecutor {
         }
         NonLinearPatternGeneralization patternGeneralization =
                 (NonLinearPatternGeneralization) patternStorage.getGeneralization(generalization);
-        double[] probabilityAndTotal = patternGeneralization.getProbabilityAndTotal(situation, client);
-        patternGeneralization.getProfile(player.getProfile()).updateComparison(
-                time,
-                client,
-                probabilityAndTotal[0],
-                probabilityAndTotal[1]
-        );
+
+        if (rank) {
+            double[] probabilityAndPositionAndTotal = patternGeneralization.getProbabilityAndPositionAndTotal(situation, client);
+            patternGeneralization.getProfile(player.getProfile()).updateComparison(
+                    time,
+                    client,
+                    probabilityAndPositionAndTotal[0] * probabilityAndPositionAndTotal[1],
+                    probabilityAndPositionAndTotal[2]
+            );
+        } else {
+            double[] probabilityAndTotal = patternGeneralization.getProbabilityAndTotal(situation, client);
+            patternGeneralization.getProfile(player.getProfile()).updateComparison(
+                    time,
+                    client,
+                    probabilityAndTotal[0],
+                    probabilityAndTotal[1]
+            );
+        }
     }
 }

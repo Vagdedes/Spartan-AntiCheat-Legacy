@@ -52,17 +52,20 @@ public class ProbabilityRank {
         return this;
     }
 
-    public ProbabilityRank remove(Number number) {
+    public boolean remove(Number number) {
         int count = this.map.getOrDefault(number.doubleValue(), 0);
 
         if (count == 1) {
             this.map.remove(number.doubleValue());
             this.total--;
-        } else if (count > 0) {
-            this.map.put(number.doubleValue(), count - 1);
-            this.total--;
+            return true;
+        } else {
+            if (count > 0) {
+                this.map.put(number.doubleValue(), count - 1);
+                this.total--;
+            }
+            return false;
         }
-        return this;
     }
 
     public ProbabilityRank delete(Number number) {
@@ -73,6 +76,24 @@ public class ProbabilityRank {
             this.total -= count;
         }
         return this;
+    }
+
+    public Number removeLeastSignificant() {
+        double min = Double.MAX_VALUE;
+        Number key = null;
+
+        for (Map.Entry<Double, Integer> entry : this.map.entrySet()) {
+            if (entry.getValue() < min) {
+                min = entry.getValue();
+                key = entry.getKey();
+
+                if (min == 1) {
+                    break;
+                }
+            }
+        }
+        this.map.remove(key);
+        return key;
     }
 
     // Separator
@@ -113,8 +134,12 @@ public class ProbabilityRank {
 
     // Separator
 
-    public boolean hasData() {
-        return this.total > 0;
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
+
+    public int getParts() {
+        return this.map.size();
     }
 
     public int getTotal() {

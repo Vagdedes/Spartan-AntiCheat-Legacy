@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.functionality.server.TPS;
-
 public class PatternRepetition {
 
     private double number;
