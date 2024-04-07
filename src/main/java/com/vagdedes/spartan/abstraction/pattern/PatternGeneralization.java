@@ -113,7 +113,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    void addToSignificance(double pattern) {
+    protected void increaseSignificance(double pattern) {
         int delete = this.significancePie.getSlices() - Pattern.globalDataLimit;
 
         if (delete > 0) {
@@ -127,6 +127,12 @@ public abstract class PatternGeneralization {
             synchronized (this.significancePie) {
                 this.significancePie.add(pattern);
             }
+        }
+    }
+
+    protected void decreaseSignificance(double pattern) {
+        synchronized (this.significancePie) {
+            this.significancePie.remove(pattern);
         }
     }
 
@@ -154,12 +160,12 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-     protected void deleteCustomLessons(long situation, double pattern) {
-         synchronized (this.significancePie) {
-             this.significancePie.remove(pattern);
-         }
-         this.deleteCustomLessonsInternal(situation, pattern);
-     }
+    protected void deleteCustomLessons(long situation, double pattern) {
+        synchronized (this.significancePie) {
+            this.significancePie.remove(pattern);
+        }
+        this.deleteCustomLessonsInternal(situation, pattern);
+    }
 
     abstract protected void deleteCustomLessonsInternal(long situation, double pattern);
 

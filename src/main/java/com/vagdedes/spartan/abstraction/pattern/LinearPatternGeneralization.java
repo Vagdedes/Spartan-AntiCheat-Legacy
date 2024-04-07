@@ -38,7 +38,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             synchronized (this.correlations) {
                 this.manageData(this.correlations, Pattern.individualGlobalDataLimit, situation, pattern);
             }
-            this.addToSignificance(pattern);
+            this.increaseSignificance(pattern);
 
             synchronized (patternProfile.correlations) {
                 this.manageData(patternProfile.correlations, Pattern.individualDataLimit, situation, pattern);
@@ -81,7 +81,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 map.put(situation, list);
             }
             for (int i = 0; i < delete; i++) {
-                ((LinkedList<Double>) list).removeFirst();
+                this.decreaseSignificance(((LinkedList<Double>) list).removeFirst());
             }
         }
         list.add(pattern);

@@ -47,12 +47,12 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
                 if (delete > 0) {
                     for (int i = 0; i < delete; i++) {
-                        rank.removeLeastSignificant();
+                        this.decreaseSignificance(rank.removeLeastSignificant().doubleValue());
                     }
                 }
                 rank.add(pattern);
             }
-            this.addToSignificance(pattern);
+            this.increaseSignificance(pattern);
             return true;
         } else {
             return false;
