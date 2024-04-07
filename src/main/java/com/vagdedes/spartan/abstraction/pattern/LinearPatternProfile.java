@@ -8,11 +8,13 @@ public class LinearPatternProfile extends PatternProfile {
 
     final Map<Long, Collection<Double>> correlations;
     final Map<Long, Double> lastCorrelation;
+    private final Collection<Double> empty;
 
     LinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         super(patternGeneralization, profile);
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.lastCorrelation = new LinkedHashMap<>();
+        this.empty = new ArrayList<>(0);
     }
 
     public double getLastLinearData(long situation) {
@@ -21,23 +23,17 @@ public class LinearPatternProfile extends PatternProfile {
         }
     }
 
-    public Collection<Double> getLinearData(long situation,
-                                            short count) {
+    public Collection<Double> getLinearData(long situation, short count) {
         synchronized (this.correlations) {
             Collection<Double> specific = this.correlations.get(situation);
 
             if (specific == null) {
-                return ((LinearPatternGeneralization) this.generalization).empty;
+                return this.empty;
             } else {
                 int size = specific.size();
 
                 if (size < count) {
-                    return ((LinearPatternGeneralization) this.generalization).empty;
-                } else if (count == 1) {
-                    Double last = this.lastCorrelation.get(situation);
-                    Collection<Double> collection = new ArrayList<>(1);
-                    collection.add(last);
-                    return collection;
+                    return this.empty;
                 } else {
                     return new ArrayList<>(specific).subList(size - count, size);
                 }

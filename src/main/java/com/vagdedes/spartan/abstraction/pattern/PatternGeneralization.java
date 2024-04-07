@@ -74,33 +74,18 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    void cache(PlayerProfile profile,
+    void learn(PlayerProfile profile,
                long time,
                long situation,
                double pattern,
                boolean store) {
         if (profile.isLegitimate()) {
-            PatternProfile patternProfile = this.getProfile(profile);
-
             if (this.initiator.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
             }
-            if (patternProfile.patternRepetition.canUse(pattern)) {
-                if (this.significancePie.getSlices() == this.initiator.cube) {
-                    synchronized (this.significancePie) {
-                        this.significancePie.removeLeastSignificant();
-                        this.significancePie.add(pattern);
-                    }
-                } else {
-                    synchronized (this.significancePie) {
-                        this.significancePie.add(pattern);
-                    }
-                }
-                this.customCache(patternProfile, situation, pattern);
-
-                if (store) {
-                    this.parent.setToFile(profile, time, situation, pattern);
-                }
+            if (this.customCache(profile, situation, pattern)
+                    && store) {
+                this.parent.setToFile(profile, time, situation, pattern);
             }
         }
     }
@@ -126,6 +111,21 @@ public abstract class PatternGeneralization {
                 : time / (double) profiles;
     }
 
+    // Separator
+
+    void addToSignificance(double pattern) {
+        if (this.significancePie.getSlices() == this.initiator.cube) {
+            synchronized (this.significancePie) {
+                this.significancePie.removeLeastSignificant();
+                this.significancePie.add(pattern);
+            }
+        } else {
+            synchronized (this.significancePie) {
+                this.significancePie.add(pattern);
+            }
+        }
+    }
+
     double significance(double value) {
         synchronized (this.significancePie) {
             return this.significancePie.getProbability(value);
@@ -134,13 +134,21 @@ public abstract class PatternGeneralization {
 
     // Separator
 
+    PatternProfile removeProfile(PlayerProfile profile) {
+        synchronized (this.profilesSynchronizer) {
+            return this.removeProfileInternal(profile);
+        }
+    }
+
+    abstract protected PatternProfile removeProfileInternal(PlayerProfile profile);
+
+    // Separator
+
     abstract protected boolean hasSituation(long situation);
 
-    abstract protected void customCache(PatternProfile patternProfile, long situation, double pattern);
+    abstract protected boolean customCache(PlayerProfile profile, long situation, double pattern);
 
     abstract protected void clearProfiles();
-
-    abstract protected PatternProfile removeProfile(PlayerProfile profile);
 
     abstract protected Collection<? extends PatternProfile> getProfiles();
 

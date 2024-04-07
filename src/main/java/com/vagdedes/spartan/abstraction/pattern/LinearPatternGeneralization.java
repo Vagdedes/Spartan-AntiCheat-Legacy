@@ -8,13 +8,18 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     final Map<PlayerProfile, LinearPatternProfile> profiles;
     final Map<Long, Collection<Double>> correlations;
-    final Collection<Double> empty;
+    private final Collection<Double> empty;
 
     protected LinearPatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         super(pattern, initiator);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.empty = new ArrayList<>(0);
+    }
+
+    @Override
+    protected PatternProfile removeProfileInternal(PlayerProfile profile) {
+        return this.profiles.remove(profile);
     }
 
     @Override
@@ -27,15 +32,24 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     // Separator
 
     @Override
-    protected void customCache(PatternProfile patternProfile, long situation, double pattern) {
-        synchronized (this.correlations) {
-            this.customCache(this.correlations, this.initiator.cube, situation, pattern);
-        }
-        synchronized (((LinearPatternProfile) patternProfile).correlations) {
-            this.customCache(((LinearPatternProfile) patternProfile).correlations, this.initiator.line, situation, pattern);
-        }
-        synchronized (((LinearPatternProfile) patternProfile).lastCorrelation) {
-            ((LinearPatternProfile) patternProfile).lastCorrelation.put(situation, pattern);
+    protected boolean customCache(PlayerProfile profile, long situation, double pattern) {
+        LinearPatternProfile patternProfile = this.getProfile(profile);
+
+        if (patternProfile.repetition.canUse(pattern)) {
+            synchronized (this.correlations) {
+                this.customCache(this.correlations, this.initiator.cube, situation, pattern);
+            }
+            this.addToSignificance(pattern);
+
+            synchronized (patternProfile.correlations) {
+                this.customCache(patternProfile.correlations, this.initiator.line, situation, pattern);
+            }
+            synchronized (patternProfile.lastCorrelation) {
+                patternProfile.lastCorrelation.put(situation, pattern);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -63,13 +77,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected void clearProfiles() {
         this.profiles.clear();
-    }
-
-    @Override
-    protected PatternProfile removeProfile(PlayerProfile profile) {
-        synchronized (this.profilesSynchronizer) {
-            return this.profiles.remove(profile);
-        }
     }
 
     @Override

@@ -22,6 +22,11 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
+    protected PatternProfile removeProfileInternal(PlayerProfile profile) {
+        return this.profiles.remove(profile);
+    }
+
+    @Override
     protected boolean hasSituation(long situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);
@@ -29,30 +34,31 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void customCache(PatternProfile patternProfile, long situation, double pattern) {
-        synchronized (this.correlations) {
-            ProbabilityPie pie = this.correlations.computeIfAbsent(
-                    situation,
-                    k -> new ProbabilityPie()
-            );
+    protected boolean customCache(PlayerProfile profile, long situation, double pattern) {
+        NonLinearPatternProfile patternProfile = this.getProfile(profile);
 
-            if (pie.getSlices() == this.initiator.cube) {
-                pie.removeLeastSignificant();
+        if (patternProfile.repetition.canUse(pattern)) {
+            synchronized (this.correlations) {
+                ProbabilityPie pie = this.correlations.computeIfAbsent(
+                        situation,
+                        k -> new ProbabilityPie()
+                );
+
+                if (pie.getSlices() == this.initiator.cube) {
+                    pie.removeLeastSignificant();
+                }
+                pie.add(pattern);
             }
-            pie.add(pattern);
+            this.addToSignificance(pattern);
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
     protected void clearProfiles() {
         this.profiles.clear();
-    }
-
-    @Override
-    protected PatternProfile removeProfile(PlayerProfile profile) {
-        synchronized (this.profilesSynchronizer) {
-            return this.profiles.remove(profile);
-        }
     }
 
     @Override

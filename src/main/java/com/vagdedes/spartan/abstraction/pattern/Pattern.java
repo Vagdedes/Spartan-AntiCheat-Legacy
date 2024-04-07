@@ -216,7 +216,7 @@ public class Pattern {
                                             PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
                                             for (PatternGeneralization generalization : generalizations.values()) {
-                                                generalization.cache(
+                                                generalization.learn(
                                                         profile,
                                                         time,
                                                         situation,
@@ -288,7 +288,7 @@ public class Pattern {
                 if (notifications) {
                     found |= generalization.hasSituation(situation);
                 }
-                generalization.cache(
+                generalization.learn(
                         player.getProfile(),
                         time,
                         situation,

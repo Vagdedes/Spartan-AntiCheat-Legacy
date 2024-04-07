@@ -26,7 +26,7 @@ public abstract class PatternProfile {
     protected final PatternGeneralization generalization;
     private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
-    final PatternRepetition patternRepetition;
+    final PatternRepetition repetition;
     private boolean loaded;
     private final File file;
     private final YamlConfiguration configuration;
@@ -34,7 +34,7 @@ public abstract class PatternProfile {
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.patternRepetition = new PatternRepetition();
+        this.repetition = new PatternRepetition();
         this.lastComparison = new Comparison(0L, -1.0);
         this.file = new File(
                 Register.plugin.getDataFolder()
