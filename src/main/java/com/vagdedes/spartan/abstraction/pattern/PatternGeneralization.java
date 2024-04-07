@@ -144,11 +144,11 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    abstract protected boolean hasSituation(long situation);
+    abstract protected boolean hasPatterns(long situation);
 
     abstract protected boolean customLearn(PlayerProfile profile, long situation, double pattern);
 
-    abstract protected void deleteLessons(long situation, double pattern);
+    abstract protected void deleteCustomLessons(long situation, double pattern);
 
     // Separator
 

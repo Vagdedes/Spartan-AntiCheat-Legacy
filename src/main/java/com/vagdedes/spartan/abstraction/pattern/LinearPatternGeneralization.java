@@ -23,7 +23,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean hasSituation(long situation) {
+    protected boolean hasPatterns(long situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);
         }
@@ -52,7 +52,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteLessons(long situation, double pattern) {
+    protected void deleteCustomLessons(long situation, double pattern) {
         synchronized (this.correlations) {
             Collection<Double> list = this.correlations.get(situation);
 

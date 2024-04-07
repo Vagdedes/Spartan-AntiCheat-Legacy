@@ -27,7 +27,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean hasSituation(long situation) {
+    protected boolean hasPatterns(long situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);
         }
@@ -57,7 +57,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteLessons(long situation, double pattern) {
+    protected void deleteCustomLessons(long situation, double pattern) {
         synchronized (this.correlations) {
             ProbabilityPie pie = this.correlations.get(situation);
 

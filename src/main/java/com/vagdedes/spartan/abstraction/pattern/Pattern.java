@@ -286,7 +286,7 @@ public class Pattern {
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
                 if (notifications) {
-                    found |= generalization.hasSituation(situation);
+                    found |= generalization.hasPatterns(situation);
                 }
                 generalization.learn(
                         player.getProfile(),

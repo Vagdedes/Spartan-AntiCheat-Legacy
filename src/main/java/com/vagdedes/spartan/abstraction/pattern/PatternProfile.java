@@ -203,7 +203,7 @@ public abstract class PatternProfile {
                                                 long situation = configuration.getLong(key + Pattern.situationOption, Long.MIN_VALUE);
 
                                                 if (situation != Long.MIN_VALUE) {
-                                                    this.generalization.deleteLessons(situation, pattern);
+                                                    this.generalization.deleteCustomLessons(situation, pattern);
                                                 }
                                             }
                                             for (String option : Pattern.options) {
