@@ -17,7 +17,7 @@ public class PatternRepetition {
             this.count = 1;
             this.number = number;
             return true;
-        } else if (this.count < TPS.maximum) {
+        } else if (this.count < Pattern.individualDataLimit) {
             this.count++;
             return true;
         } else {

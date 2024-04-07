@@ -9,6 +9,7 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -16,11 +17,11 @@ import java.util.*;
 
 public class Pattern {
 
-    private static final int GB = 1024 * 1024 * 1024;
+    private static final int storageLimit = 1024 * 1024 * 1024;
     static int limit = 0;
     static final int
             globalDataLimit = 10_000,
-            individualDataLimit = (int) TPS.maximum,
+            individualDataLimit = AlgebraUtils.integerRound(TPS.maximum),
             comparisonDataLimit = 100;
     static final String
             profileOption = ".profile",
@@ -125,7 +126,7 @@ public class Pattern {
                 }
             }
 
-            if (length >= GB) {
+            if (length >= storageLimit) {
                 Arrays.sort(files, Comparator.comparingLong(File::lastModified));
 
                 for (File file : files) {
@@ -135,7 +136,7 @@ public class Pattern {
                         if (file.delete()) {
                             length -= fileLength;
 
-                            if (length < GB) {
+                            if (length < storageLimit) {
                                 break;
                             }
                         }
