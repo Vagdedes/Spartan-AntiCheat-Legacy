@@ -2,9 +2,9 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 public abstract class PatternFamily {
 
-    protected final long storeFrequency;
-    protected long lastStored;
-    protected final Pattern[] patterns;
+    private final long storeFrequency;
+    private long lastStored;
+    private final Pattern[] patterns;
 
     protected PatternFamily(long storeFrequency, int patterns) {
         this.storeFrequency = storeFrequency;
