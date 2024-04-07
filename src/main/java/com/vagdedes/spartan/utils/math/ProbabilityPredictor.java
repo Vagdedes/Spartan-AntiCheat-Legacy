@@ -1,12 +1,9 @@
 package com.vagdedes.spartan.utils.math;
 
-import com.vagdedes.spartan.abstraction.pattern.LinearPatternGeneralization;
 import com.vagdedes.spartan.abstraction.pattern.LinearPatternProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class ProbabilityPredictor {
 
@@ -28,18 +25,21 @@ public class ProbabilityPredictor {
     // Separator
 
     public final ProbabilityPie pie;
+    public final Map<Integer, Double> positions;
 
     private ProbabilityPredictor(Collection<Double> totalPatterns,
                                  Collection<Double> currentPattern) {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
+        this.positions = new LinkedHashMap<>();
 
         if (currentPatternSize > 0
                 && totalPatterns.size() > currentPatternSize) {
             long currentPatternHash = HashUtils.collection(currentPattern);
-            boolean next = false;
-            Iterator<Double> iterator = totalPatterns.iterator();
             LinkedList<Double> list = new LinkedList<>();
+            Iterator<Double> iterator = totalPatterns.iterator();
+            boolean next = false;
+            int counter = 0;
 
             for (int i = 0; i < currentPatternSize; i++) {
                 list.add(iterator.next());
@@ -53,10 +53,12 @@ public class ProbabilityPredictor {
                 if (next) {
                     next = false;
                     this.pie.add(pattern);
+                    this.positions.put(counter, pattern);
                 }
                 if (currentPatternHash == HashUtils.collection(list)) {
                     next = true;
                 }
+                counter++;
             }
         }
     }
@@ -64,19 +66,23 @@ public class ProbabilityPredictor {
     private ProbabilityPredictor(Collection<Double> totalPatterns,
                                  double currentPattern) {
         this.pie = new ProbabilityPie();
+        this.positions = new LinkedHashMap<>();
 
         if (currentPattern != -1.0
                 && totalPatterns.size() > 1) {
             boolean next = false;
+            int counter = 0;
 
             for (double pattern : totalPatterns) {
                 if (next) {
                     next = false;
                     this.pie.add(pattern);
+                    this.positions.put(counter, pattern);
                 }
                 if (currentPattern == pattern) {
                     next = true;
                 }
+                counter++;
             }
         }
     }
