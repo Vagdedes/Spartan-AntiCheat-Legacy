@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.pattern.implementation;
 
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
-import com.vagdedes.spartan.abstraction.pattern.PatternGeneralizationInitiator;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 
@@ -16,41 +15,29 @@ public class MovementPatterns extends PatternFamily {
                 new Pattern[]{
                         this.horizontal = new Pattern(
                                 "movement/distance/horizontal",
-                                new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(
-                                                GroundUtils.maxHeightLength,
-                                                0.05
-                                        )
+                                new short[]{
+                                        (short) GroundUtils.maxHeightLength
                                 },
                                 true
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
-                                new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(
-                                                GroundUtils.maxHeightLength,
-                                                0.05
-                                        )
+                                new short[]{
+                                        (short) GroundUtils.maxHeightLength
                                 },
                                 true
                         ),
                         this.all = new Pattern(
                                 "movement/distance/all",
-                                new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(
-                                                GroundUtils.maxHeightLength,
-                                                0.05
-                                        )
+                                new short[]{
+                                        (short) GroundUtils.maxHeightLength
                                 },
                                 true
                         ),
                         this.fall = new Pattern(
                                 "movement/distance/fall",
-                                new PatternGeneralizationInitiator[]{
-                                        new PatternGeneralizationInitiator(
-                                                GroundUtils.maxHeightLength,
-                                                0.05
-                                        )
+                                new short[]{
+                                        (short) GroundUtils.maxHeightLength
                                 },
                                 true
                         )

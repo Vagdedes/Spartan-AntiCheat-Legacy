@@ -17,9 +17,11 @@ public class PatternRepetition {
             this.count = 1;
             this.number = number;
             return true;
-        } else {
+        } else if (this.count < TPS.maximum) {
             this.count++;
-            return this.count <= TPS.maximum;
+            return true;
+        } else {
+            return false;
         }
     }
 }

@@ -11,14 +11,14 @@ import java.util.*;
 public abstract class PatternGeneralization {
 
     final Pattern parent;
-    final PatternGeneralizationInitiator initiator;
+    final short scissors;
     private final ProbabilityPie significancePie;
     private final Set<PatternProfile> profilesToStore;
     protected final Object profilesSynchronizer;
 
-    protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
+    protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
-        this.initiator = initiator;
+        this.scissors = generalization;
         this.significancePie = new ProbabilityPie();
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
         this.profilesSynchronizer = new Object();
@@ -80,8 +80,8 @@ public abstract class PatternGeneralization {
                double pattern,
                boolean store) {
         if (profile.isLegitimate()) {
-            if (this.initiator.scissors != 0) {
-                pattern = AlgebraUtils.cut(pattern, this.initiator.scissors);
+            if (this.scissors != 0) {
+                pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
             if (this.customLearn(profile, situation, pattern)
                     && store) {
@@ -114,9 +114,13 @@ public abstract class PatternGeneralization {
     // Separator
 
     void addToSignificance(double pattern) {
-        if (this.significancePie.getSlices() == this.initiator.cube) {
+        int delete = this.significancePie.getSlices() - this.parent.limit();
+
+        if (delete > 0) {
             synchronized (this.significancePie) {
-                this.significancePie.removeLeastSignificant();
+                for (int i = 0; i < delete; i++) {
+                    this.significancePie.removeLeastSignificant();
+                }
                 this.significancePie.add(pattern);
             }
         } else {

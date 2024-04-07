@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.*;
 
@@ -10,8 +11,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     private final Map<Long, Collection<Double>> correlations;
     private final Collection<Double> empty;
 
-    protected LinearPatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
-        super(pattern, initiator);
+    protected LinearPatternGeneralization(Pattern pattern, short generalization) {
+        super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.empty = new ArrayList<>(0);
@@ -35,12 +36,12 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                this.customCache(this.correlations, this.initiator.cube, situation, pattern);
+                this.manageData(this.correlations, this.parent.limit(), situation, pattern);
             }
             this.addToSignificance(pattern);
 
             synchronized (patternProfile.correlations) {
-                this.customCache(patternProfile.correlations, this.initiator.line, situation, pattern);
+                this.manageData(patternProfile.correlations, (int) TPS.maximum, situation, pattern);
             }
             synchronized (patternProfile.lastCorrelation) {
                 patternProfile.lastCorrelation.put(situation, pattern);
@@ -64,21 +65,24 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    private void customCache(Map<Long, Collection<Double>> map,
-                             int limit,
-                             long situation,
-                             double pattern) {
+    private void manageData(Map<Long, Collection<Double>> map,
+                            int limit,
+                            long situation,
+                            double pattern) {
         Collection<Double> list = map.computeIfAbsent(
                 situation,
                 k -> new ArrayList<>()
         );
+        int delete = list.size() - limit;
 
-        if (list.size() == limit) {
+        if (delete > 0) {
             if (!(list instanceof LinkedList)) {
                 list = new LinkedList<>(list);
                 map.put(situation, list);
             }
-            ((LinkedList<Double>) list).removeFirst();
+            for (int i = 0; i < delete; i++) {
+                ((LinkedList<Double>) list).removeFirst();
+            }
         }
         list.add(pattern);
     }

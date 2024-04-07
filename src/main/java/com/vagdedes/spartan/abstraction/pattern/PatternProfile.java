@@ -11,6 +11,8 @@ import java.util.*;
 
 public abstract class PatternProfile {
 
+    private static final int limit = 100;
+
     private static final class Comparison {
         private long time;
         private double trustFactor, averagePatternTime;
@@ -39,8 +41,7 @@ public abstract class PatternProfile {
                 Register.plugin.getDataFolder()
                         + "/comparison/"
                         + this.generalization.parent.key + "/"
-                        + this.generalization.initiator.scissors + "/"
-                        + this.generalization.initiator.line + "/"
+                        + this.generalization.scissors + "/"
                         + profile.getName() + ".yml"
         );
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
@@ -64,7 +65,7 @@ public abstract class PatternProfile {
                                 double value = this.configuration.getDouble(key, Double.MIN_VALUE);
 
                                 if (value != Double.MIN_VALUE) {
-                                    if (valid == this.generalization.initiator.square) {
+                                    if (valid == limit) {
                                         remove.add(key);
                                     } else {
                                         this.updateComparison(time, value, false);
@@ -101,7 +102,7 @@ public abstract class PatternProfile {
     }
 
     private void updateComparison(long time, double trustFactor, boolean storage) {
-        if (this.comparisons.size() == this.generalization.initiator.square) {
+        if (this.comparisons.size() == limit) {
             long oldTime;
 
             synchronized (this.comparisons) {
@@ -269,7 +270,7 @@ public abstract class PatternProfile {
             if (patternsRequired <= 1) {
                 return this.lastComparison.trustFactor;
             } else {
-                patternsRequired = Math.min(patternsRequired, this.generalization.initiator.square);
+                patternsRequired = Math.min(patternsRequired, limit);
                 int dismiss = this.comparisons.size() - patternsRequired;
 
                 if (dismiss < 0) {

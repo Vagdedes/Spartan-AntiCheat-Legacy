@@ -14,8 +14,8 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     private final Map<Long, ProbabilityPie> correlations;
     private final ProbabilityPie empty;
 
-    protected NonLinearPatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
-        super(pattern, initiator);
+    protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
+        super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.empty = new ProbabilityPie(0);
@@ -43,9 +43,12 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                         situation,
                         k -> new ProbabilityPie()
                 );
+                int delete = pie.getSlices() - this.parent.limit();
 
-                if (pie.getSlices() == this.initiator.cube) {
-                    pie.removeLeastSignificant();
+                if (delete > 0) {
+                    for (int i = 0; i < delete; i++) {
+                        pie.removeLeastSignificant();
+                    }
                 }
                 pie.add(pattern);
             }

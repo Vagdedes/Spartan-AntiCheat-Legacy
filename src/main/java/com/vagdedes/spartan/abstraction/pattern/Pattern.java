@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -20,7 +21,7 @@ public class Pattern {
             patternOption = ".pattern",
             situationOption = ".situation";
     static final String[] options = {profileOption, patternOption, situationOption};
-    private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
+    static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
     public static void delete(PlayerProfile profile) {
         synchronized (instances) {
@@ -71,7 +72,7 @@ public class Pattern {
     private YamlConfiguration configuration;
 
     public Pattern(String key,
-                   PatternGeneralizationInitiator[] generalizations,
+                   short[] generalizations,
                    boolean linear) {
         this.key = key;
         this.learningFolder = Register.plugin.getDataFolder()
@@ -83,11 +84,11 @@ public class Pattern {
                 new LinkedHashMap<>(generalizations.length + 1)
         );
 
-        for (PatternGeneralizationInitiator loopInitiator : generalizations) {
+        for (short generalization : generalizations) {
             this.generalizations.put(
-                    loopInitiator.scissors,
-                    linear ? new LinearPatternGeneralization(this, loopInitiator)
-                            : new NonLinearPatternGeneralization(this, loopInitiator)
+                    generalization,
+                    linear ? new LinearPatternGeneralization(this, generalization)
+                            : new NonLinearPatternGeneralization(this, generalization)
             );
         }
         this.reloadLearningFile();
@@ -96,6 +97,12 @@ public class Pattern {
             instances.add(this);
         }
     }
+
+    int limit() {
+        long availableBytes = Cache.maxBytes / Pattern.instances.size();
+        return (int) Math.min(10_000, availableBytes / (8 + 8));
+    }
+
 
     // Separator
 
@@ -190,8 +197,8 @@ public class Pattern {
                 generalizations.put(
                         entry.getKey(),
                         entry.getValue() instanceof LinearPatternGeneralization
-                                ? new LinearPatternGeneralization(this, entry.getValue().initiator)
-                                : new NonLinearPatternGeneralization(this, entry.getValue().initiator)
+                                ? new LinearPatternGeneralization(this, entry.getValue().scissors)
+                                : new NonLinearPatternGeneralization(this, entry.getValue().scissors)
                 );
             }
             for (File file : files) {
