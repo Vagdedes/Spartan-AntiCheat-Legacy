@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.pattern.implementation.base;
+package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
 

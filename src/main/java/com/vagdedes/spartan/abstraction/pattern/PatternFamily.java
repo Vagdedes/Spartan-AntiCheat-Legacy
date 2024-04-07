@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
-
 public abstract class PatternFamily {
 
     protected final long storeFrequency;

@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.utils.math;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.LinearPatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.LinearPatternProfile;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
+import com.vagdedes.spartan.abstraction.pattern.LinearPatternGeneralization;
+import com.vagdedes.spartan.abstraction.pattern.LinearPatternProfile;
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
+import com.vagdedes.spartan.abstraction.pattern.PatternProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
 
 import java.util.Collection;

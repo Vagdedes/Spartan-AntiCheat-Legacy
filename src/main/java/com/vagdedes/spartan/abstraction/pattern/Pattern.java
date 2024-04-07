@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.pattern.implementation.base;
+package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -44,7 +44,7 @@ public class Pattern {
     public static void reload() {
         synchronized (instances) {
             for (Pattern patternStorage : instances) {
-                patternStorage.load();
+                patternStorage.loadFromFiles();
             }
         }
     }
@@ -66,8 +66,8 @@ public class Pattern {
     // Separator
 
     public final String key;
-    final String learningFolder;
-    final Map<Short, PatternGeneralization> generalizations;
+    private final String learningFolder;
+    private final Map<Short, PatternGeneralization> generalizations;
     private boolean load;
     final boolean linear;
     private short count;
@@ -103,6 +103,7 @@ public class Pattern {
                 );
             }
         }
+        this.reloadLearningFile();
 
         synchronized (instances) {
             instances.add(this);
@@ -164,7 +165,7 @@ public class Pattern {
         });
     }
 
-    public void storeFiles() {
+    void storeFiles() {
         SpartanBukkit.dataThread.execute(() -> {
             try {
                 this.configuration.save(this.file);
@@ -181,12 +182,12 @@ public class Pattern {
         }
     }
 
-    private void load() {
+    private void loadFromFiles() {
         if (this.load) {
             return;
         }
         this.load = true;
-        storeFiles();
+        this.storeFiles();
         Map<Short, PatternGeneralization> generalizations = new LinkedHashMap<>();
         File[] files = this.getLearningFiles();
 

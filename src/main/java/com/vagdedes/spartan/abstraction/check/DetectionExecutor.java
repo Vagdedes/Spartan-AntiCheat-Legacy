@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.NonLinearPatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternProfile;
+import com.vagdedes.spartan.abstraction.pattern.NonLinearPatternGeneralization;
+import com.vagdedes.spartan.abstraction.pattern.Pattern;
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
+import com.vagdedes.spartan.abstraction.pattern.PatternProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;

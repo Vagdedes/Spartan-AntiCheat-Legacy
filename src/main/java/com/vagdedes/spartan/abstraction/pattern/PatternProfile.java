@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.pattern.implementation.base;
+package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -23,7 +23,7 @@ public abstract class PatternProfile {
         }
     }
 
-    final PatternGeneralization generalization;
+    protected final PatternGeneralization generalization;
     private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
     final PatternRepetition patternRepetition;

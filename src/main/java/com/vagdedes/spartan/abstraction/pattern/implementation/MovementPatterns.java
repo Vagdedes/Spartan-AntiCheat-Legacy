@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.pattern.implementation;
 
+import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.Pattern;
-import com.vagdedes.spartan.abstraction.pattern.implementation.base.PatternGeneralizationInitiator;
+import com.vagdedes.spartan.abstraction.pattern.PatternGeneralizationInitiator;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 
 public class MovementPatterns extends PatternFamily {
