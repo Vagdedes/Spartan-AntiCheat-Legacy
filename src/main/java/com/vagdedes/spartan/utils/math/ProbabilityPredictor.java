@@ -11,16 +11,16 @@ import java.util.LinkedList;
 public class ProbabilityPredictor {
 
     public static ProbabilityPredictor build(long situation,
-                                             LinearPatternGeneralization patternGeneralization,
+                                             Collection<Double> patternData,
                                              LinearPatternProfile patternProfile,
                                              short count) {
         return count == 1
                 ? new ProbabilityPredictor(
-                patternGeneralization.getLinearData(situation),
+                patternData,
                 patternProfile.getLastLinearData(situation)
         )
                 : new ProbabilityPredictor(
-                patternGeneralization.getLinearData(situation),
+                patternData,
                 patternProfile.getLinearData(situation, count)
         );
     }

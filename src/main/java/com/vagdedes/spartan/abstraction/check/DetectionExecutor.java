@@ -86,10 +86,9 @@ public abstract class DetectionExecutor {
         LinearPatternGeneralization patternGeneralization =
                 (LinearPatternGeneralization) patternStorage.getGeneralization(generalization);
         LinearPatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
-        ProbabilityPredictor probabilityPredictor = ProbabilityPredictor.build(
-                situation,
-                patternGeneralization,
+        ProbabilityPredictor probabilityPredictor = patternGeneralization.getLinearDataPrediction(
                 patternProfile,
+                situation,
                 count
         );
         patternProfile.updateComparison(

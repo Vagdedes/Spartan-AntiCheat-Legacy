@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 
 import java.util.*;
 
@@ -98,9 +99,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
-    public Collection<Double> getLinearData(long situation) {
+    public ProbabilityPredictor getLinearDataPrediction(LinearPatternProfile patternProfile, long situation, short count) {
         synchronized (this.correlations) {
-            return new ArrayList<>(this.correlations.getOrDefault(situation, this.empty));
+            return ProbabilityPredictor.build(
+                    situation,
+                    this.correlations.getOrDefault(situation, this.empty),
+                    patternProfile,
+                    count
+            );
         }
     }
 
