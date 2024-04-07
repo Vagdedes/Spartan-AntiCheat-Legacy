@@ -269,19 +269,19 @@ public class Pattern {
 
     public void learn(SpartanPlayer player, long situation, Number number) {
         long time = System.currentTimeMillis();
-        boolean include;
+        boolean include, notifications, found = false;
 
         if (SpartanBukkit.debug) {
             include = player.isWhitelisted();
+            notifications = DetectionNotifications.isEnabled(player);
         } else {
             Integer divisor = DetectionNotifications.getDivisor(player, false);
+            notifications = divisor != null;
             include = divisor == null || divisor != 69;
         }
-        boolean found = false;
-
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
-                if (generalization.initiator.isEnabled()) {
+                if (notifications && generalization.initiator.isEnabled()) {
                     found |= generalization.hasSituation(situation);
                 }
                 generalization.cache(
@@ -294,25 +294,16 @@ public class Pattern {
             }
         }
 
-        if (!found) {
-            notify(player, situation);
-        }
-    }
+        if (!found && notifications) {
+            String message = AwarenessNotifications.getOptionalNotification(
+                    "Spartan's Machine Learning algorithms have insufficient data to check you. "
+                            + (player.getProfile().isLegitimate()
+                            ? "Continue playing LEGITIMATELY to train the algorithm so you can try again later."
+                            : "Since you are " + player.getProfile().evidence.getType() + ", either clear your data via '/spartan info'"
+                            + " and play LEGITIMATELY or find a legitimate player to help train the algorithm so you can try again later.")
+            );
 
-    private void notify(SpartanPlayer player, long situation) {
-        String message = AwarenessNotifications.getOptionalNotification(
-                "Spartan's Machine Learning algorithms have insufficient data to check you. "
-                        + (player.getProfile().isLegitimate()
-                        ? "Continue playing LEGITIMATELY to train the algorithm so you can try again later."
-                        : "Since you are " + player.getProfile().evidence.getType() + ", either clear your data via '/spartan info'"
-                        + " and play LEGITIMATELY or find a legitimate player to help train the algorithm so you can try again later.")
-        );
-
-        if (message != null) {
-            String s = "pattern-storage-" + this.key;
-
-            if (AwarenessNotifications.canSend(player.uuid, s + "-" + situation, 120)
-                    && AwarenessNotifications.canSend(player.uuid, s, 60)) {
+            if (message != null && AwarenessNotifications.canSend(player.uuid, "pattern-data", 60)) {
                 player.sendMessage(message);
             }
         }
