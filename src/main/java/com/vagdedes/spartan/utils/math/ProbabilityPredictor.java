@@ -16,7 +16,12 @@ public class ProbabilityPredictor {
                                              PatternGeneralization patternGeneralization,
                                              PatternProfile patternProfile,
                                              short count) {
-        return new ProbabilityPredictor(
+        return count == 1
+                ? new ProbabilityPredictor(
+                ((LinearPatternGeneralization) patternGeneralization).getLinearData(situation),
+                ((LinearPatternProfile) patternProfile).getLastLinearData(situation)
+        )
+                : new ProbabilityPredictor(
                 ((LinearPatternGeneralization) patternGeneralization).getLinearData(situation),
                 ((LinearPatternProfile) patternProfile).getLinearData(situation, count)
         );
@@ -31,40 +36,38 @@ public class ProbabilityPredictor {
         int currentPatternSize = currentPattern.size();
         this.pie = new ProbabilityPie();
 
-        if (totalPatterns.size() > currentPatternSize // No general data to compare
-                && currentPatternSize > 0) { // No individual data to compare
-            if (currentPatternSize == 1) {
-                optimized(totalPatterns, currentPattern.iterator().next());
-            } else {
-                long currentPatternHash = HashUtils.collection(currentPattern);
-                boolean next = false;
-                Iterator<Double> iterator = totalPatterns.iterator();
-                LinkedList<Double> list = new LinkedList<>();
+        if (currentPatternSize > 0
+                && totalPatterns.size() > currentPatternSize) {
+            long currentPatternHash = HashUtils.collection(currentPattern);
+            boolean next = false;
+            Iterator<Double> iterator = totalPatterns.iterator();
+            LinkedList<Double> list = new LinkedList<>();
 
-                for (int i = 0; i < currentPatternSize; i++) {
-                    list.add(iterator.next());
+            for (int i = 0; i < currentPatternSize; i++) {
+                list.add(iterator.next());
+            }
+
+            while (iterator.hasNext()) {
+                double pattern = iterator.next();
+                list.add(pattern);
+                list.removeFirst();
+
+                if (next) {
+                    next = false;
+                    this.pie.add(pattern);
                 }
-
-                while (iterator.hasNext()) {
-                    double pattern = iterator.next();
-                    list.add(pattern);
-                    list.removeFirst();
-
-                    if (next) {
-                        next = false;
-                        this.pie.add(pattern);
-                    }
-                    if (currentPatternHash == HashUtils.collection(list)) {
-                        next = true;
-                    }
+                if (currentPatternHash == HashUtils.collection(list)) {
+                    next = true;
                 }
             }
         }
     }
 
-    private void optimized(Collection<Double> totalPatterns,
-                           double currentPattern) {
-        if (!totalPatterns.isEmpty()) {// No general data to compare
+    private ProbabilityPredictor(Collection<Double> totalPatterns,
+                                 double currentPattern) {
+        this.pie = new ProbabilityPie();
+
+        if (totalPatterns.size() > 1) {
             boolean next = false;
 
             for (double pattern : totalPatterns) {

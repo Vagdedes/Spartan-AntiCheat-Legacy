@@ -34,6 +34,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         synchronized (((LinearPatternProfile) patternProfile).correlations) {
             this.customCache(((LinearPatternProfile) patternProfile).correlations, this.initiator.line, situation, pattern);
         }
+        synchronized (((LinearPatternProfile) patternProfile).lastCorrelation) {
+            ((LinearPatternProfile) patternProfile).lastCorrelation.put(situation, pattern);
+        }
     }
 
     private void customCache(Map<Long, Collection<Double>> map,

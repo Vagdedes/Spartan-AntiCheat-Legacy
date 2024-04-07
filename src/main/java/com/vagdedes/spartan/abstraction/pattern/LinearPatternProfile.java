@@ -7,10 +7,18 @@ import java.util.*;
 public class LinearPatternProfile extends PatternProfile {
 
     final Map<Long, Collection<Double>> correlations;
+    final Map<Long, Double> lastCorrelation;
 
     LinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         super(patternGeneralization, profile);
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.lastCorrelation = new LinkedHashMap<>();
+    }
+
+    public double getLastLinearData(long situation) {
+        synchronized (this.lastCorrelation) {
+            return this.lastCorrelation.getOrDefault(situation, -1.0);
+        }
     }
 
     public Collection<Double> getLinearData(long situation,
@@ -25,9 +33,10 @@ public class LinearPatternProfile extends PatternProfile {
 
                 if (size < count) {
                     return ((LinearPatternGeneralization) this.generalization).empty;
-                } else if (count == 1 && specific instanceof LinkedList) {
+                } else if (count == 1) {
+                    Double last = this.lastCorrelation.get(situation);
                     Collection<Double> collection = new ArrayList<>(1);
-                    collection.add(((LinkedList<Double>) specific).getLast());
+                    collection.add(last);
                     return collection;
                 } else {
                     return new ArrayList<>(specific).subList(size - count, size);
