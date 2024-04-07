@@ -17,6 +17,7 @@ import java.util.*;
 public class Pattern {
 
     private static final int GB = 1024 * 1024 * 1024;
+    static int limit = 0;
     static final int
             globalDataLimit = 10_000,
             individualDataLimit = (int) TPS.maximum,
@@ -98,13 +99,13 @@ public class Pattern {
         synchronized (instances) {
             instances.add(this);
         }
+        long availableBytes = Cache.maxBytes / Pattern.instances.size();
+        limit = (int) Math.min(globalDataLimit, availableBytes / (8 + 8 + 8)); // Long + Double + ABSTRACT
     }
 
     int limit() {
-        long availableBytes = Cache.maxBytes / Pattern.instances.size();
-        return (int) Math.min(globalDataLimit, availableBytes / (8 + 8 + 8)); // Long + Double + ABSTRACT
+        return limit;
     }
-
 
     // Separator
 
