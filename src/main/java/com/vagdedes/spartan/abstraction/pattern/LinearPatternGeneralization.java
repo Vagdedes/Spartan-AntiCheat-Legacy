@@ -1,22 +1,20 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+
 import java.util.*;
 
 public class LinearPatternGeneralization extends PatternGeneralization {
 
+    final Map<PlayerProfile, LinearPatternProfile> profiles;
     final Map<Long, Collection<Double>> correlations;
     final Collection<Double> empty;
 
     protected LinearPatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         super(pattern, initiator);
+        this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.empty = new ArrayList<>(0);
-    }
-
-    public Collection<Double> getLinearData(long situation) {
-        synchronized (this.correlations) {
-            return this.correlations.getOrDefault(situation, this.empty);
-        }
     }
 
     @Override
@@ -25,6 +23,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             return this.correlations.containsKey(situation);
         }
     }
+
+    // Separator
 
     @Override
     protected void customCache(PatternProfile patternProfile, long situation, double pattern) {
@@ -56,6 +56,42 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             ((LinkedList<Double>) list).removeFirst();
         }
         list.add(pattern);
+    }
+
+    // Separator
+
+    @Override
+    protected void clearProfiles() {
+        this.profiles.clear();
+    }
+
+    @Override
+    protected PatternProfile removeProfile(PlayerProfile profile) {
+        synchronized (this.profilesSynchronizer) {
+            return this.profiles.remove(profile);
+        }
+    }
+
+    @Override
+    protected Collection<? extends PatternProfile> getProfiles() {
+        return this.profiles.values();
+    }
+
+    // Separator
+
+    public Collection<Double> getLinearData(long situation) {
+        synchronized (this.correlations) {
+            return new ArrayList<>(this.correlations.getOrDefault(situation, this.empty));
+        }
+    }
+
+    public LinearPatternProfile getProfile(PlayerProfile profile) {
+        synchronized (this.profilesSynchronizer) {
+            return this.profiles.computeIfAbsent(
+                    profile,
+                    k -> new LinearPatternProfile(this, profile)
+            );
+        }
     }
 
 }

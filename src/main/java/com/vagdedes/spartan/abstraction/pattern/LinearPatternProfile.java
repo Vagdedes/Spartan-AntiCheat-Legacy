@@ -50,6 +50,9 @@ public class LinearPatternProfile extends PatternProfile {
         synchronized (this.correlations) {
             this.correlations.clear();
         }
+        synchronized (this.lastCorrelation) {
+            this.lastCorrelation.clear();
+        }
     }
 
 }

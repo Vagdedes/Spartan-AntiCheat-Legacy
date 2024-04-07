@@ -14,10 +14,12 @@ public class ProbabilityPredictor {
                                              LinearPatternGeneralization patternGeneralization,
                                              LinearPatternProfile patternProfile,
                                              short count) {
-        return count == 1 ? new ProbabilityPredictor(
+        return count == 1
+                ? new ProbabilityPredictor(
                 patternGeneralization.getLinearData(situation),
                 patternProfile.getLastLinearData(situation)
-        ) : new ProbabilityPredictor(
+        )
+                : new ProbabilityPredictor(
                 patternGeneralization.getLinearData(situation),
                 patternProfile.getLinearData(situation, count)
         );

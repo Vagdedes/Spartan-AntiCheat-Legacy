@@ -120,10 +120,7 @@ public abstract class PatternProfile {
                 SpartanBukkit.dataThread.execute(() -> {
                     this.configuration.set(Long.toString(oldTime), null);
                     this.configuration.set(Long.toString(time), trustFactor);
-
-                    synchronized (this.generalization.profilesToStore) {
-                        this.generalization.profilesToStore.add(this);
-                    }
+                    this.generalization.queueStorage(this);
                 });
             }
         } else {
@@ -137,24 +134,16 @@ public abstract class PatternProfile {
             if (storage) {
                 SpartanBukkit.dataThread.execute(() -> {
                     this.configuration.set(Long.toString(time), trustFactor);
-
-                    synchronized (this.generalization.profilesToStore) {
-                        this.generalization.profilesToStore.add(this);
-                    }
+                    this.generalization.queueStorage(this);
                 });
             }
         }
     }
 
-    public void updateComparison(long time, double client, ProbabilityPie pie) {
+    public void updateComparison(long time, double client, double probability, double total) {
         if (this.loaded) {
-            double significance;
-
-            synchronized (this.generalization.significancePie) {
-                significance = this.generalization.significancePie.getProbability(client);
-            }
-            double probability = pie.getProbability(client, 1.0),
-                    existingContribution = 1.0 - (1.0 / (pie.getRawTotal() + 1.0)),
+            double significance = this.generalization.significance(client),
+                    existingContribution = 1.0 - (1.0 / (total + 1.0)),
                     trustFactor;
 
             if (significance == 0.0
@@ -187,9 +176,8 @@ public abstract class PatternProfile {
             synchronized (this.comparisons) {
                 this.comparisons.clear();
             }
-            synchronized (this.generalization.profilesToStore) {
-                this.generalization.profilesToStore.remove(this);
-            }
+            this.generalization.dequeueStorage(this);
+
             SpartanBukkit.dataThread.execute(() -> {
                 this.file.delete();
                 File[] files = this.generalization.parent.getLearningFiles();

@@ -27,11 +27,8 @@ public class Pattern {
             for (Pattern instance : instances) {
                 synchronized (instance.generalizations) {
                     for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
-                        PatternProfile patternProfile;
+                        PatternProfile patternProfile = patternGeneralization.removeProfile(profile);
 
-                        synchronized (patternGeneralization.profiles) {
-                            patternProfile = patternGeneralization.profiles.remove(profile);
-                        }
                         if (patternProfile != null) {
                             patternProfile.delete(profile);
                         }
@@ -86,14 +83,12 @@ public class Pattern {
                 new LinkedHashMap<>(generalizations.length + 1)
         );
 
-        if (generalizations.length > 0) {
-            for (PatternGeneralizationInitiator loopInitiator : generalizations) {
-                this.generalizations.put(
-                        loopInitiator.scissors,
-                        linear ? new LinearPatternGeneralization(this, loopInitiator)
-                                : new NonLinearPatternGeneralization(this, loopInitiator)
-                );
-            }
+        for (PatternGeneralizationInitiator loopInitiator : generalizations) {
+            this.generalizations.put(
+                    loopInitiator.scissors,
+                    linear ? new LinearPatternGeneralization(this, loopInitiator)
+                            : new NonLinearPatternGeneralization(this, loopInitiator)
+            );
         }
         this.reloadLearningFile();
 

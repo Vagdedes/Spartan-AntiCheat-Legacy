@@ -8,33 +8,35 @@ import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 import java.util.*;
 
-public abstract class PatternGeneralization { // todo minimize casting
+public abstract class PatternGeneralization {
 
     final Pattern parent;
     final PatternGeneralizationInitiator initiator;
-    final ProbabilityPie significancePie;
-    final Map<PlayerProfile, PatternProfile> profiles;
-    final Set<PatternProfile> profilesToStore;
+    private final ProbabilityPie significancePie;
+    private final Set<PatternProfile> profilesToStore;
+    protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, PatternGeneralizationInitiator initiator) {
         this.parent = pattern;
         this.initiator = initiator;
         this.significancePie = new ProbabilityPie();
-        this.profiles = Collections.synchronizedMap(new LinkedHashMap<>());
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
+        this.profilesSynchronizer = new Object();
     }
 
     void clear() {
-        synchronized (this.profiles) {
+        synchronized (this.profilesSynchronizer) {
             synchronized (this.significancePie) {
                 synchronized (this.profilesToStore) {
-                    this.profiles.clear();
+                    this.clearProfiles();
                     this.significancePie.clear();
                     this.storeProfiles(true);
                 }
             }
         }
     }
+
+    // Separator
 
     void storeProfiles(boolean local) {
         if (local) {
@@ -55,6 +57,18 @@ public abstract class PatternGeneralization { // todo minimize casting
                     iterator.remove();
                 }
             }
+        }
+    }
+
+    void queueStorage(PatternProfile profile) {
+        synchronized (this.profilesToStore) {
+            this.profilesToStore.add(profile);
+        }
+    }
+
+    void dequeueStorage(PatternProfile profile) {
+        synchronized (this.profilesToStore) {
+            this.profilesToStore.remove(profile);
         }
     }
 
@@ -97,8 +111,8 @@ public abstract class PatternGeneralization { // todo minimize casting
         double time = 0.0;
         int profiles = 0;
 
-        synchronized (this.profiles) {
-            for (PatternProfile profile : this.profiles.values()) {
+        synchronized (this.profilesSynchronizer) {
+            for (PatternProfile profile : this.getProfiles()) {
                 double average = profile.averagePatternTime();
 
                 if (average != -1.0) {
@@ -112,16 +126,9 @@ public abstract class PatternGeneralization { // todo minimize casting
                 : time / (double) profiles;
     }
 
-    // Separator
-
-    public PatternProfile getProfile(PlayerProfile profile) {
-        synchronized (this.profiles) {
-            return this.profiles.computeIfAbsent(
-                    profile,
-                    k -> (this instanceof LinearPatternGeneralization
-                            ? new LinearPatternProfile(this, profile)
-                            : new NonLinearPatternProfile(this, profile))
-            );
+    double significance(double value) {
+        synchronized (this.significancePie) {
+            return this.significancePie.getProbability(value);
         }
     }
 
@@ -130,5 +137,11 @@ public abstract class PatternGeneralization { // todo minimize casting
     abstract protected boolean hasSituation(long situation);
 
     abstract protected void customCache(PatternProfile patternProfile, long situation, double pattern);
+
+    abstract protected void clearProfiles();
+
+    abstract protected PatternProfile removeProfile(PlayerProfile profile);
+
+    abstract protected Collection<? extends PatternProfile> getProfiles();
 
 }
