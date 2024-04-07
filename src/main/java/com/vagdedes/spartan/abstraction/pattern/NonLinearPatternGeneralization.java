@@ -43,7 +43,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                         situation,
                         k -> new ProbabilityRank()
                 );
-                int delete = rank.getParts() - this.parent.limit();
+                int delete = rank.getParts() - Pattern.individualGlobalDataLimit;
 
                 if (delete > 0) {
                     for (int i = 0; i < delete; i++) {
@@ -60,7 +60,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteCustomLessons(long situation, double pattern) {
+    protected void deleteCustomLessonsInternal(long situation, double pattern) {
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.get(situation);
 

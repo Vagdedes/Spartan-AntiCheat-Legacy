@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -18,9 +17,9 @@ import java.util.*;
 public class Pattern {
 
     private static final int storageLimit = 1024 * 1024 * 1024;
-    static int limit = 0;
     static final int
             globalDataLimit = 10_000,
+            individualGlobalDataLimit = 1_000,
             individualDataLimit = AlgebraUtils.integerRound(TPS.maximum),
             comparisonDataLimit = 100;
     static final String
@@ -100,14 +99,6 @@ public class Pattern {
         synchronized (instances) {
             instances.add(this);
         }
-        limit = Math.min(
-                globalDataLimit,
-                (Cache.maxBytes / instances.size()) / (8 + 8 + 8) // Long + Double + ABSTRACT
-        );
-    }
-
-    int limit() {
-        return limit;
     }
 
     // Separator

@@ -114,7 +114,7 @@ public abstract class PatternGeneralization {
     // Separator
 
     void addToSignificance(double pattern) {
-        int delete = this.significancePie.getSlices() - this.parent.limit();
+        int delete = this.significancePie.getSlices() - Pattern.globalDataLimit;
 
         if (delete > 0) {
             synchronized (this.significancePie) {
@@ -152,7 +152,16 @@ public abstract class PatternGeneralization {
 
     abstract protected boolean customLearn(PlayerProfile profile, long situation, double pattern);
 
-    abstract protected void deleteCustomLessons(long situation, double pattern);
+    // Separator
+
+     protected void deleteCustomLessons(long situation, double pattern) {
+         synchronized (this.significancePie) {
+             this.significancePie.remove(pattern);
+         }
+         this.deleteCustomLessonsInternal(situation, pattern);
+     }
+
+    abstract protected void deleteCustomLessonsInternal(long situation, double pattern);
 
     // Separator
 

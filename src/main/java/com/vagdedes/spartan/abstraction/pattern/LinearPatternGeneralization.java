@@ -36,7 +36,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                this.manageData(this.correlations, this.parent.limit(), situation, pattern);
+                this.manageData(this.correlations, Pattern.individualGlobalDataLimit, situation, pattern);
             }
             this.addToSignificance(pattern);
 
@@ -53,7 +53,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteCustomLessons(long situation, double pattern) {
+    protected void deleteCustomLessonsInternal(long situation, double pattern) {
         synchronized (this.correlations) {
             Collection<Double> list = this.correlations.get(situation);
 
