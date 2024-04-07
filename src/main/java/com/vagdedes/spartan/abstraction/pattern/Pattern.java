@@ -154,7 +154,7 @@ public class Pattern {
         }
     }
 
-    void set(PlayerProfile profile, long time, long situation, double pattern) {
+    void setToFile(PlayerProfile profile, long time, long situation, double pattern) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
             this.configuration.set(time + profileOption, profile.getName());
@@ -265,6 +265,21 @@ public class Pattern {
         this.load = false;
     }
 
+    File[] getLearningFiles() {
+        File directory = new File(this.learningFolder);
+
+        if (directory.exists()) {
+            if (directory.isDirectory()) {
+                return directory.listFiles();
+            } else {
+                directory.delete();
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     // Separator
 
     public void learn(SpartanPlayer player, long situation, Number number) {
@@ -303,32 +318,16 @@ public class Pattern {
                             + " and play LEGITIMATELY or find a legitimate player to help train the algorithm so you can try again later.")
             );
 
-            if (message != null && AwarenessNotifications.canSend(player.uuid, "pattern-data", 60)) {
+            if (message != null
+                    && AwarenessNotifications.canSend(player.uuid, "pattern-data", 60)) {
                 player.sendMessage(message);
             }
         }
     }
 
-    // Separator
-
     public PatternGeneralization getGeneralization(Integer generalization) {
         synchronized (this.generalizations) {
             return this.generalizations.get(generalization.shortValue());
-        }
-    }
-
-    File[] getLearningFiles() {
-        File directory = new File(this.learningFolder);
-
-        if (directory.exists()) {
-            if (directory.isDirectory()) {
-                return directory.listFiles();
-            } else {
-                directory.delete();
-                return null;
-            }
-        } else {
-            return null;
         }
     }
 

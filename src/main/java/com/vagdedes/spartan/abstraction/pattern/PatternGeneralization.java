@@ -87,7 +87,7 @@ public abstract class PatternGeneralization {
                 }
 
                 if (store) {
-                    this.parent.set(profile, time, situation, pattern);
+                    this.parent.setToFile(profile, time, situation, pattern);
                 }
             }
         }
