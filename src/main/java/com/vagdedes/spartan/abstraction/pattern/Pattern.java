@@ -296,7 +296,7 @@ public class Pattern {
             }
         }
 
-        if (empty) {
+        if (!empty) {
             notify(player, situation);
         }
     }
