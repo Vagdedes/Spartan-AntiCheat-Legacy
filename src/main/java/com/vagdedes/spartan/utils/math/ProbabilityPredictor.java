@@ -49,8 +49,8 @@ public class ProbabilityPredictor {
 
             while (iterator.hasNext()) {
                 double pattern = iterator.next();
-                list.add(pattern);
                 list.removeFirst();
+                list.add(pattern);
 
                 if (next) {
                     next = false;
