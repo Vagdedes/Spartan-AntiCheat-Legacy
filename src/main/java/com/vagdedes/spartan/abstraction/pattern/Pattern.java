@@ -275,9 +275,9 @@ public class Pattern {
 
     // Separator
 
-    public void learn(SpartanPlayer player, long situation, Number number) {
+    public void learn(SpartanPlayer player, long situation, Number pattern) {
         long time = System.currentTimeMillis();
-        boolean include, notifications, found = false;
+        boolean include, notifications, found = false, stored = false;
 
         if (SpartanBukkit.debug) {
             include = player.isWhitelisted();
@@ -292,12 +292,12 @@ public class Pattern {
                 if (notifications) {
                     found |= generalization.hasPatterns(situation);
                 }
-                generalization.learn(
+                stored |= generalization.learn(
                         player.getProfile(),
                         time,
                         situation,
-                        number.doubleValue(),
-                        include
+                        pattern.doubleValue(),
+                        include && !stored
                 );
             }
         }

@@ -3,9 +3,7 @@ package com.vagdedes.spartan.utils.math;
 import com.vagdedes.spartan.abstraction.pattern.LinearPatternProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class ProbabilityPredictor {
 

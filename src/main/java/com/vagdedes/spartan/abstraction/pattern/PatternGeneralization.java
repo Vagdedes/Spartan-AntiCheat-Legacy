@@ -74,7 +74,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    void learn(PlayerProfile profile,
+    boolean learn(PlayerProfile profile,
                long time,
                long situation,
                double pattern,
@@ -86,7 +86,12 @@ public abstract class PatternGeneralization {
             if (this.customLearn(profile, situation, (float) pattern)
                     && store) {
                 this.parent.setToFile(profile, time, situation, pattern);
+                return true;
+            } else {
+                return false;
             }
+        } else {
+            return false;
         }
     }
 
