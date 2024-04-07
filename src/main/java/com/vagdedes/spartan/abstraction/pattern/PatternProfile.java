@@ -22,7 +22,7 @@ public abstract class PatternProfile {
         }
     }
 
-    protected final PatternGeneralization generalization;
+    private final PatternGeneralization generalization;
     private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
     final PatternRepetition repetition;
