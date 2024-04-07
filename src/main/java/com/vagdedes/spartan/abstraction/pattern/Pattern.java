@@ -100,8 +100,10 @@ public class Pattern {
         synchronized (instances) {
             instances.add(this);
         }
-        long availableBytes = Cache.maxBytes / Pattern.instances.size();
-        limit = (int) Math.min(globalDataLimit, availableBytes / (8 + 8 + 8)); // Long + Double + ABSTRACT
+        limit = Math.min(
+                globalDataLimit,
+                (Cache.maxBytes / instances.size()) / (8 + 8 + 8) // Long + Double + ABSTRACT
+        );
     }
 
     int limit() {
