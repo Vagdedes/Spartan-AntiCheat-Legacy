@@ -9,7 +9,7 @@ import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 
 public class MovementPatterns extends PatternFamily {
 
-    public Pattern horizontal, vertical, all, fall;
+    public final Pattern horizontal, vertical, all, fall;
 
     public MovementPatterns() {
         super(1_000L, 4);
