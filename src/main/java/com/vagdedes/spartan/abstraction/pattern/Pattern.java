@@ -279,12 +279,12 @@ public class Pattern {
             Integer divisor = DetectionNotifications.getDivisor(player, false);
             include = divisor == null || divisor != 69;
         }
-        boolean empty = false;
+        boolean found = false;
 
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
                 if (generalization.initiator.isEnabled()) {
-                    empty |= !generalization.hasSituation(situation);
+                    found |= generalization.hasSituation(situation);
                 }
                 generalization.cache(
                         player.getProfile(),
@@ -296,7 +296,7 @@ public class Pattern {
             }
         }
 
-        if (!empty) {
+        if (!found) {
             notify(player, situation);
         }
     }
