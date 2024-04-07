@@ -8,7 +8,7 @@ import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 import java.util.*;
 
-public abstract class PatternGeneralization {
+public abstract class PatternGeneralization { // todo minimize casting
 
     final Pattern parent;
     final PatternGeneralizationInitiator initiator;

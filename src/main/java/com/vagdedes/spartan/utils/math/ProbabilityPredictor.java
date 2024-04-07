@@ -67,7 +67,8 @@ public class ProbabilityPredictor {
                                  double currentPattern) {
         this.pie = new ProbabilityPie();
 
-        if (totalPatterns.size() > 1) {
+        if (currentPattern != -1.0
+                && totalPatterns.size() > 1) {
             boolean next = false;
 
             for (double pattern : totalPatterns) {
