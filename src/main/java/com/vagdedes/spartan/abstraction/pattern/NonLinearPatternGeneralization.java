@@ -34,7 +34,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean customLearn(PlayerProfile profile, long situation, double pattern) {
+    protected boolean customLearn(PlayerProfile profile, long situation, float pattern) {
         NonLinearPatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -47,7 +47,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
                 if (delete > 0) {
                     for (int i = 0; i < delete; i++) {
-                        this.decreaseSignificance(rank.removeLeastSignificant().doubleValue());
+                        this.decreaseSignificance(rank.removeLeastSignificant());
                     }
                 }
                 rank.add(pattern);
@@ -60,7 +60,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteCustomLessonsInternal(long situation, double pattern) {
+    protected void deleteCustomLessonsInternal(long situation, float pattern) {
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.get(situation);
 

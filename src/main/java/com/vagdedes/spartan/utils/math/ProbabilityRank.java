@@ -78,9 +78,9 @@ public class ProbabilityRank {
         return this;
     }
 
-    public Number removeLeastSignificant() {
+    public Double removeLeastSignificant() {
         double min = Double.MAX_VALUE;
-        Number key = null;
+        Double key = null;
 
         for (Map.Entry<Double, Integer> entry : this.map.entrySet()) {
             if (entry.getValue() < min) {

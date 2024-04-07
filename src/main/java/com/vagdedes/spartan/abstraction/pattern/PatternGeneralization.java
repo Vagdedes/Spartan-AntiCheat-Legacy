@@ -83,7 +83,7 @@ public abstract class PatternGeneralization {
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
-            if (this.customLearn(profile, situation, pattern)
+            if (this.customLearn(profile, situation, (float) pattern)
                     && store) {
                 this.parent.setToFile(profile, time, situation, pattern);
             }
@@ -156,18 +156,16 @@ public abstract class PatternGeneralization {
 
     abstract protected boolean hasPatterns(long situation);
 
-    abstract protected boolean customLearn(PlayerProfile profile, long situation, double pattern);
+    abstract protected boolean customLearn(PlayerProfile profile, long situation, float pattern);
 
     // Separator
 
     protected void deleteCustomLessons(long situation, double pattern) {
-        synchronized (this.significancePie) {
-            this.significancePie.remove(pattern);
-        }
-        this.deleteCustomLessonsInternal(situation, pattern);
+        this.decreaseSignificance(pattern);
+        this.deleteCustomLessonsInternal(situation, (float) pattern);
     }
 
-    abstract protected void deleteCustomLessonsInternal(long situation, double pattern);
+    abstract protected void deleteCustomLessonsInternal(long situation, float pattern);
 
     // Separator
 

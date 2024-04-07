@@ -202,6 +202,9 @@ public abstract class PatternProfile {
                                                 long situation = configuration.getLong(key + Pattern.situationOption, Long.MIN_VALUE);
 
                                                 if (situation != Long.MIN_VALUE) {
+                                                    if (this.generalization.scissors != 0) {
+                                                        pattern = AlgebraUtils.cut(pattern, this.generalization.scissors);
+                                                    }
                                                     this.generalization.deleteCustomLessons(situation, pattern);
                                                 }
                                             }

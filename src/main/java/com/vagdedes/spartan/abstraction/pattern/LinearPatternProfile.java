@@ -6,9 +6,9 @@ import java.util.*;
 
 public class LinearPatternProfile extends PatternProfile {
 
-    final Map<Long, Collection<Double>> correlations;
-    final Map<Long, Double> lastCorrelation;
-    private final Collection<Double> empty;
+    final Map<Long, Collection<Float>> correlations;
+    final Map<Long, Float> lastCorrelation;
+    private final Collection<Float> empty;
 
     LinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         super(patternGeneralization, profile);
@@ -17,15 +17,15 @@ public class LinearPatternProfile extends PatternProfile {
         this.empty = new ArrayList<>(0);
     }
 
-    public double getLastLinearData(long situation) {
+    public float getLastLinearData(long situation) {
         synchronized (this.lastCorrelation) {
-            return this.lastCorrelation.getOrDefault(situation, -1.0);
+            return this.lastCorrelation.getOrDefault(situation, -1.0f);
         }
     }
 
-    public Collection<Double> getLinearData(long situation, short count) {
+    public Collection<Float> getLinearData(long situation, short count) {
         synchronized (this.correlations) {
-            Collection<Double> specific = this.correlations.get(situation);
+            Collection<Float> specific = this.correlations.get(situation);
 
             if (specific == null) {
                 return this.empty;

@@ -8,8 +8,8 @@ import java.util.*;
 public class LinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
-    private final Map<Long, Collection<Double>> correlations;
-    private final Collection<Double> empty;
+    private final Map<Long, Collection<Float>> correlations;
+    private final Collection<Float> empty;
 
     protected LinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
@@ -31,7 +31,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean customLearn(PlayerProfile profile, long situation, double pattern) {
+    protected boolean customLearn(PlayerProfile profile, long situation, float pattern) {
         LinearPatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -53,9 +53,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteCustomLessonsInternal(long situation, double pattern) {
+    protected void deleteCustomLessonsInternal(long situation, float pattern) {
         synchronized (this.correlations) {
-            Collection<Double> list = this.correlations.get(situation);
+            Collection<Float> list = this.correlations.get(situation);
 
             if (list != null
                     && list.remove(pattern)
@@ -65,11 +65,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    private void manageData(Map<Long, Collection<Double>> map,
+    private void manageData(Map<Long, Collection<Float>> map,
                             int limit,
                             long situation,
-                            double pattern) {
-        Collection<Double> list = map.computeIfAbsent(
+                            float pattern) {
+        Collection<Float> list = map.computeIfAbsent(
                 situation,
                 k -> new ArrayList<>()
         );
@@ -81,7 +81,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 map.put(situation, list);
             }
             for (int i = 0; i < delete; i++) {
-                this.decreaseSignificance(((LinkedList<Double>) list).removeFirst());
+                this.decreaseSignificance(((LinkedList<Float>) list).removeFirst());
             }
         }
         list.add(pattern);
