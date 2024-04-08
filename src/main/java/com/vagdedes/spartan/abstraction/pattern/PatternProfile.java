@@ -144,7 +144,7 @@ public abstract class PatternProfile {
         }
     }
 
-    void updateComparison(long time, double significance, double probability, double total) {
+    protected final void updateComparison(long time, double significance, double probability, double total) {
         double existingContribution = 1.0 - (1.0 / (total + 1.0)),
                 trustFactor;
 

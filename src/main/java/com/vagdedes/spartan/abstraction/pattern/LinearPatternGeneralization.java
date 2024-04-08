@@ -140,6 +140,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     if (collection != null) {
                         predictor = cache.refresh(new ProbabilityPredictor(collection, current));
                     } else {
+                        this.cache.remove(hash);
                         return false;
                     }
                 } else {
