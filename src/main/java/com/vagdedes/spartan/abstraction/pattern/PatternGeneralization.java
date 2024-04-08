@@ -94,7 +94,7 @@ public abstract class PatternGeneralization {
             }
         } else {
             if (this.hasPatterns()) {
-                Pattern.delete(profile);
+                Pattern.deleteFromFile(profile);
             }
             return false;
         }

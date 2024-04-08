@@ -4,6 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -192,37 +193,48 @@ public abstract class PatternProfile {
                             Set<String> keys = configuration.getKeys(false);
 
                             if (!keys.isEmpty()) {
-                                boolean found = false;
+                                boolean changed = false;
 
                                 for (String key : keys) {
+                                    ConfigurationSection section = configuration.getConfigurationSection(key);
+
+                                    if (section == null) {
+                                        continue;
+                                    }
+                                    Map<String, Object> data = section.getValues(false);
+
+                                    if (data.size() != 3) {
+                                        this.generalization.parent.deleteFromFile(configuration, key);
+                                        changed = true;
+                                        continue;
+                                    }
+                                    Object patternObject = data.get(Pattern.patternOption),
+                                            situation = data.get(Pattern.situationOption),
+                                            profileObject = data.get(Pattern.profileOption);
+
+                                    if (!(patternObject instanceof Double || patternObject instanceof Float)
+                                            || !(situation instanceof Integer || situation instanceof Long || situation instanceof Short)
+                                            || !(profileObject instanceof String)) {
+                                        this.generalization.parent.deleteFromFile(configuration, key);
+                                        changed = true;
+                                        continue;
+                                    }
                                     try {
-                                        String profileName = configuration.getString(key + Pattern.profileOption, null);
+                                        if (profileObject.toString().equals(profile.getName())) {
+                                            double pattern = (double) patternObject;
 
-                                        if (profileName != null
-                                                && profileName.equals(profile.getName())) {
-                                            double pattern = configuration.getDouble(key + Pattern.patternOption, Double.MIN_VALUE);
-
-                                            if (pattern != Double.MIN_VALUE) {
-                                                long situation = configuration.getLong(key + Pattern.situationOption, Long.MIN_VALUE);
-
-                                                if (situation != Long.MIN_VALUE) {
-                                                    if (this.generalization.scissors != 0) {
-                                                        pattern = AlgebraUtils.cut(pattern, this.generalization.scissors);
-                                                    }
-                                                    this.generalization.deleteCustomLessons((int) situation, (float) pattern);
-                                                }
+                                            if (this.generalization.scissors != 0) {
+                                                pattern = AlgebraUtils.cut(pattern, this.generalization.scissors);
                                             }
-                                            for (String option : Pattern.options) {
-                                                configuration.set(key + option, null);
-                                            }
-                                            configuration.set(key, null);
-                                            found = true;
+                                            this.generalization.deleteCustomLessons((int) situation, (float) pattern);
+                                            this.generalization.parent.deleteFromFile(configuration, key);
+                                            changed = true;
                                         }
                                     } catch (Exception ignored) {
                                     }
                                 }
 
-                                if (found) {
+                                if (changed) {
                                     try {
                                         configuration.save(file);
                                     } catch (Exception ignored) {

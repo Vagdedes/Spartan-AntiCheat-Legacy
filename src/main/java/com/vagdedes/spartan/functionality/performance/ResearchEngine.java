@@ -360,7 +360,7 @@ public class ResearchEngine {
         if (isStorageMode()) {
             // Clear Files/Database
             SpartanBukkit.dataThread.execute(() -> {
-                Pattern.delete(profile);
+                Pattern.deleteFromFile(profile);
 
                 synchronized (playerProfiles) {
                     playerProfiles.remove(playerName);
@@ -392,7 +392,7 @@ public class ResearchEngine {
                 }
             });
         } else {
-            SpartanBukkit.dataThread.execute(() -> Pattern.delete(profile));
+            SpartanBukkit.dataThread.execute(() -> Pattern.deleteFromFile(profile));
 
             synchronized (playerProfiles) {
                 playerProfiles.remove(playerName);

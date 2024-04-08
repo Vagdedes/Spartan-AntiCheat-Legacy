@@ -9,6 +9,7 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -22,13 +23,13 @@ public class Pattern {
             individualGlobalDataLimit = 1_000,
             comparisonDataLimit = AlgebraUtils.integerRound(TPS.maximum) * 10;
     static final String
-            profileOption = ".profile",
-            patternOption = ".pattern",
-            situationOption = ".situation";
-    static final String[] options = {profileOption, patternOption, situationOption};
+            profileOption = "profile",
+            patternOption = "pattern",
+            situationOption = "situation";
+    private static final String[] options = {profileOption, patternOption, situationOption};
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
-    public static void delete(PlayerProfile profile) {
+    public static void deleteFromFile(PlayerProfile profile) {
         synchronized (instances) {
             for (Pattern instance : instances) {
                 synchronized (instance.generalizations) {
@@ -152,9 +153,9 @@ public class Pattern {
     void setToFile(PlayerProfile profile, long time, int situation, double pattern) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
-            this.configuration.set(time + profileOption, profile.getName());
-            this.configuration.set(time + situationOption, situation);
-            this.configuration.set(time + patternOption, pattern);
+            this.configuration.set(time + "." + profileOption, profile.getName());
+            this.configuration.set(time + "." + situationOption, situation);
+            this.configuration.set(time + "." + patternOption, pattern);
         });
     }
 
@@ -208,46 +209,63 @@ public class Pattern {
                     Set<String> keys = configuration.getKeys(false);
 
                     if (!keys.isEmpty()) {
+                        boolean changed = false;
+
                         for (String key : keys) {
+                            ConfigurationSection section = configuration.getConfigurationSection(key);
+
+                            if (section == null) {
+                                continue;
+                            }
+                            Map<String, Object> data = section.getValues(false);
+
+                            if (data.size() != 3) {
+                                this.deleteFromFile(configuration, key);
+                                changed = true;
+                                continue;
+                            }
+                            Object pattern = data.get(patternOption),
+                                    situation = data.get(situationOption),
+                                    profileObject = data.get(profileOption);
+
+                            if (!(pattern instanceof Double || pattern instanceof Float)
+                                    || !(situation instanceof Integer || situation instanceof Long || situation instanceof Short)
+                                    || !(profileObject instanceof String)) {
+                                this.deleteFromFile(configuration, key);
+                                changed = true;
+                                continue;
+                            }
                             try {
-                                double pattern = configuration.getDouble(key + patternOption, Double.MIN_VALUE);
+                                String profileName = profileObject.toString();
 
-                                if (pattern != Double.MIN_VALUE) {
-                                    long situation = configuration.getLong(key + situationOption, Long.MIN_VALUE);
+                                if (profileName.isEmpty()) {
+                                    this.deleteFromFile(configuration, key);
+                                    changed = true;
+                                    continue;
+                                }
+                                long time = Long.parseLong(key);
+                                PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
-                                    if (situation != Long.MIN_VALUE) {
-                                        String profileName = configuration.getString(key + profileOption, null);
-
-                                        if (profileName != null
-                                                && !profileName.isEmpty()) {
-                                            long time = Long.parseLong(key);
-                                            PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
-
-                                            for (PatternGeneralization generalization : generalizations.values()) {
-                                                generalization.learn(
-                                                        profile,
-                                                        time,
-                                                        (int) situation,
-                                                        pattern,
-                                                        false
-                                                );
-                                            }
-                                        }
-                                    } else {
-                                        for (String option : Pattern.options) {
-                                            configuration.set(key + option, null);
-                                        }
-                                        configuration.set(key, null);
-                                    }
-                                } else {
-                                    for (String option : Pattern.options) {
-                                        configuration.set(key + option, null);
-                                    }
-                                    configuration.set(key, null);
+                                for (PatternGeneralization generalization : generalizations.values()) {
+                                    generalization.learn(
+                                            profile,
+                                            time,
+                                            (int) situation,
+                                            (double) pattern,
+                                            false
+                                    );
                                 }
                             } catch (Exception ignored) {
                             }
                         }
+
+                        if (changed) {
+                            try {
+                                configuration.save(file);
+                            } catch (Exception ignored) {
+                            }
+                        }
+
                     }
                 }
             }
@@ -260,6 +278,13 @@ public class Pattern {
             }
         }
         this.load = false;
+    }
+
+    void deleteFromFile(YamlConfiguration configuration, String key) {
+        for (String option : Pattern.options) {
+            configuration.set(key + "." + option, null);
+        }
+        configuration.set(key, null);
     }
 
     File[] getLearningFiles() {
