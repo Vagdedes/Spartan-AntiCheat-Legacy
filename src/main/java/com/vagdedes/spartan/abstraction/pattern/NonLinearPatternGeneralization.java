@@ -65,6 +65,11 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
+    protected void compareInternal(PlayerProfile playerProfile, long time, int situation) {
+
+    }
+
+    @Override
     protected void deleteCustomLessonsInternal(int situation, float pattern) {
         synchronized (this.correlations) {
             ProbabilityPie pie = this.correlations.get(situation);
@@ -88,16 +93,6 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     // Separator
-
-    public double[] getProbabilityAndTotal(int situation, double client) {
-        synchronized (this.correlations) {
-            ProbabilityPie pie = this.correlations.getOrDefault(situation, this.empty);
-            return new double[]{
-                    pie.getProbability(client),
-                    pie.getRawTotal()
-            };
-        }
-    }
 
     public NonLinearPatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profilesSynchronizer) {

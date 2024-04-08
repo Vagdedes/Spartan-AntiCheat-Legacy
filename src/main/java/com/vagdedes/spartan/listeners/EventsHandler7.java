@@ -131,12 +131,7 @@ public class EventsHandler7 implements Listener {
         float fall = p.getFallDistance();
 
         // Detections (Always previous so it counts the previous tick and makes the current tick's prediction)
-        int situation = HashUtils.hashPlayer(p);
-        situation = HashUtils.extendInt(situation, HashUtils.hashEnvironment(p, to));
-
-        p.getExecutor(Enums.HackType.IrregularMovements).handle(false, new Object[]{
-                situation, ver
-        });
+        int situation = HashUtils.extendInt(HashUtils.hashPlayer(p), HashUtils.hashEnvironment(p, to));
 
         // Patterns
         SpartanBukkit.movementPatterns.learn(p, situation, dis, hor, ver, fall);
@@ -146,6 +141,7 @@ public class EventsHandler7 implements Listener {
         CombatProcessing.runMove(p, to);
 
         // Detections
+        p.getExecutor(Enums.HackType.IrregularMovements).handle(false, situation);
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD);
         p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
         p.getExecutor(Enums.HackType.KillAura).run(cancelled);

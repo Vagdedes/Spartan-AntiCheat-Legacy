@@ -65,6 +65,11 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     }
 
     @Override
+    protected void compareInternal(PlayerProfile playerProfile, long time, int situation) {
+
+    }
+
+    @Override
     protected void deleteCustomLessonsInternal(int situation, float pattern) {
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.get(situation);
@@ -89,28 +94,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
     // Separator
 
-    public double[] getProbabilityAndPositionAndTotal(int situation, double client) {
-        synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
-            return new double[]{
-                    rank.getProbability(client),
-                    rank.getPosition(client),
-                    rank.getRawTotal()
-            };
-        }
-    }
-
-    public double[] getProbabilityAndTotal(int situation, double client) {
-        synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
-            return new double[]{
-                    rank.getProbability(client),
-                    rank.getRawTotal()
-            };
-        }
-    }
-
-    public NonLinearPatternProfile getProfile(PlayerProfile profile) {
+    private NonLinearPatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profilesSynchronizer) {
             return this.profiles.computeIfAbsent(
                     profile,

@@ -6,8 +6,8 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 import me.vagdedes.spartan.system.Enums;
 
 public abstract class DetectionExecutor {
@@ -70,69 +70,10 @@ public abstract class DetectionExecutor {
 
     // Separator
 
-    protected final void linearMLDetection(Pattern patternStorage,
-                                           int generalization,
-                                           int situation,
-                                           double client,
-                                           short count) {
-        long time = System.currentTimeMillis();
-
-        if (generalization != 0) {
-            client = AlgebraUtils.cut(client, generalization);
-        }
-        LinearPatternGeneralization patternGeneralization =
-                (LinearPatternGeneralization) patternStorage.getGeneralization(generalization);
-        LinearPatternProfile patternProfile = patternGeneralization.getProfile(player.getProfile());
-        ProbabilityPredictor probabilityPredictor = patternGeneralization.getLinearDataPrediction(
-                patternProfile,
-                situation,
-                count
-        );
-        patternProfile.updateComparison(
-                time,
-                client,
-                probabilityPredictor.pie.getProbability(client, 1.0),
-                probabilityPredictor.pie.getRawTotal()
-        );
-    }
-
-    protected final void nonLinearMLDetection(Pattern patternStorage,
-                                              int generalization,
-                                              int situation,
-                                              double client) {
-        long time = System.currentTimeMillis();
-
-        if (generalization != 0) {
-            client = AlgebraUtils.cut(client, generalization);
-        }
-        NonLinearPatternGeneralization patternGeneralization =
-                (NonLinearPatternGeneralization) patternStorage.getGeneralization(generalization);
-        double[] probabilityAndTotal = patternGeneralization.getProbabilityAndTotal(situation, client);
-        patternGeneralization.getProfile(player.getProfile()).updateComparison(
-                time,
-                client,
-                probabilityAndTotal[0],
-                probabilityAndTotal[1]
-        );
-    }
-
-    protected final void nonLinearRankedMLDetection(Pattern patternStorage,
-                                                    int generalization,
-                                                    int situation,
-                                                    double client) {
-        long time = System.currentTimeMillis();
-
-        if (generalization != 0) {
-            client = AlgebraUtils.cut(client, generalization);
-        }
-        NonLinearRankedPatternGeneralization patternGeneralization =
-                (NonLinearRankedPatternGeneralization) patternStorage.getGeneralization(generalization);
-        double[] probabilityAndPositionAndTotal = patternGeneralization.getProbabilityAndPositionAndTotal(situation, client);
-        patternGeneralization.getProfile(player.getProfile()).updateComparison(
-                time,
-                client,
-                probabilityAndPositionAndTotal[0] * probabilityAndPositionAndTotal[1],
-                probabilityAndPositionAndTotal[2]
+    protected final void machineLearningDetection(PatternGeneralization generalization, int situation) {
+        generalization.compare(
+                player.getProfile(),
+                situation
         );
     }
 }

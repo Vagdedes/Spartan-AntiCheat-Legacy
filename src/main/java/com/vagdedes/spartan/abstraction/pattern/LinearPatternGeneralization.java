@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 
 import java.util.*;
 
@@ -41,20 +40,48 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                this.manageData(this.correlations, Pattern.individualGlobalDataLimit, situation, pattern);
+                Collection<Float> list = this.correlations.computeIfAbsent(
+                        situation,
+                        k -> new ArrayList<>()
+                );
+                int delete = list.size() - Pattern.individualGlobalDataLimit;
+
+                if (delete > 0) {
+                    if (!(list instanceof LinkedList)) {
+                        list = new LinkedList<>(list);
+                        this.correlations.put(situation, list);
+                    }
+                    for (int i = 0; i < delete; i++) {
+                        this.decreaseSignificance(((LinkedList<Float>) list).removeFirst());
+                    }
+                }
+                list.add(pattern);
             }
             this.increaseSignificance(pattern);
 
             synchronized (patternProfile.correlations) {
-                this.manageData(patternProfile.correlations, Pattern.individualDataLimit, situation, pattern);
-            }
-            synchronized (patternProfile.lastCorrelation) {
-                patternProfile.lastCorrelation.put(situation, pattern);
+                LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
+                        situation,
+                        k -> new LinkedList<>()
+                );
+                int delete = list.size() - 2;
+
+                if (delete > 0) {
+                    for (int i = 0; i < delete; i++) {
+                        this.decreaseSignificance(list.removeFirst());
+                    }
+                }
+                list.add(pattern);
             }
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    protected void compareInternal(PlayerProfile playerProfile, long time, int situation) {
+
     }
 
     @Override
@@ -70,28 +97,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    private void manageData(Map<Integer, Collection<Float>> map,
-                            int limit,
-                            int situation,
-                            float pattern) {
-        Collection<Float> list = map.computeIfAbsent(
-                situation,
-                k -> new ArrayList<>()
-        );
-        int delete = list.size() - limit;
-
-        if (delete > 0) {
-            if (!(list instanceof LinkedList)) {
-                list = new LinkedList<>(list);
-                map.put(situation, list);
-            }
-            for (int i = 0; i < delete; i++) {
-                this.decreaseSignificance(((LinkedList<Float>) list).removeFirst());
-            }
-        }
-        list.add(pattern);
-    }
-
     @Override
     protected void clearProfiles() {
         this.profiles.clear();
@@ -104,18 +109,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
-    public ProbabilityPredictor getLinearDataPrediction(LinearPatternProfile patternProfile, int situation, short count) {
-        synchronized (this.correlations) {
-            return ProbabilityPredictor.build(
-                    situation,
-                    this.correlations.getOrDefault(situation, this.empty),
-                    patternProfile,
-                    count
-            );
-        }
-    }
-
-    public LinearPatternProfile getProfile(PlayerProfile profile) {
+    private LinearPatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profilesSynchronizer) {
             return this.profiles.computeIfAbsent(
                     profile,

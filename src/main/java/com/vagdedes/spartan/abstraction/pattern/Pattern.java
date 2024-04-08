@@ -20,7 +20,6 @@ public class Pattern {
     static final int
             globalDataLimit = 10_000,
             individualGlobalDataLimit = 1_000,
-            individualDataLimit = AlgebraUtils.integerRound(TPS.maximum),
             comparisonDataLimit = 100;
     static final String
             profileOption = ".profile",

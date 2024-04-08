@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
+import com.vagdedes.spartan.functionality.server.TPS;
+
 public class PatternRepetition {
 
     private float number;
@@ -15,7 +17,7 @@ public class PatternRepetition {
             this.count = 1;
             this.number = number;
             return true;
-        } else if (this.count < Pattern.individualDataLimit) {
+        } else if (this.count < TPS.maximum) {
             this.count++;
             return true;
         } else {

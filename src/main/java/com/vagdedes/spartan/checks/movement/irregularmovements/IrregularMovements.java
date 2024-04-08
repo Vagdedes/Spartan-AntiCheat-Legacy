@@ -529,14 +529,10 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        if (object instanceof Object[]) {
-            Object[] objects = (Object[]) object;
-            this.linearMLDetection(
-                    SpartanBukkit.movementPatterns.vertical,
-                    GroundUtils.maxHeightLength,
-                    (int) objects[0],
-                    (double) objects[1],
-                    (short) 1
+        if (object instanceof Integer) {
+            this.machineLearningDetection(
+                    SpartanBukkit.movementPatterns.vertical.getGeneralization(GroundUtils.maxHeightLength),
+                    (int) object
             );
         } else {
             if (object == null) {
