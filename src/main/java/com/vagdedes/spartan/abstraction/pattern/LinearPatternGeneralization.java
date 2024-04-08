@@ -8,7 +8,7 @@ import java.util.*;
 public class LinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
-    private final Map<Long, Collection<Float>> correlations;
+    private final Map<Integer, Collection<Float>> correlations;
     private final Collection<Float> empty;
 
     protected LinearPatternGeneralization(Pattern pattern, short generalization) {
@@ -24,14 +24,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean hasPatterns(long situation) {
+    protected boolean hasPatterns(int situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);
         }
     }
 
     @Override
-    protected boolean customLearn(PlayerProfile profile, long situation, float pattern) {
+    protected boolean customLearn(PlayerProfile profile, int situation, float pattern) {
         LinearPatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -53,7 +53,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteCustomLessonsInternal(long situation, float pattern) {
+    protected void deleteCustomLessonsInternal(int situation, float pattern) {
         synchronized (this.correlations) {
             Collection<Float> list = this.correlations.get(situation);
 
@@ -65,9 +65,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    private void manageData(Map<Long, Collection<Float>> map,
+    private void manageData(Map<Integer, Collection<Float>> map,
                             int limit,
-                            long situation,
+                            int situation,
                             float pattern) {
         Collection<Float> list = map.computeIfAbsent(
                 situation,
@@ -99,7 +99,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
-    public ProbabilityPredictor getLinearDataPrediction(LinearPatternProfile patternProfile, long situation, short count) {
+    public ProbabilityPredictor getLinearDataPrediction(LinearPatternProfile patternProfile, int situation, short count) {
         synchronized (this.correlations) {
             return ProbabilityPredictor.build(
                     situation,

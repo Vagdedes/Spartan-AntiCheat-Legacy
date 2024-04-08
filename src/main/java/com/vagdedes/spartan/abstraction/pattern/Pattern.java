@@ -147,7 +147,7 @@ public class Pattern {
         }
     }
 
-    void setToFile(PlayerProfile profile, long time, long situation, double pattern) {
+    void setToFile(PlayerProfile profile, long time, int situation, double pattern) {
         SpartanBukkit.dataThread.execute(() -> {
             this.count++;
             this.configuration.set(time + profileOption, profile.getName());
@@ -209,9 +209,9 @@ public class Pattern {
                                 double pattern = configuration.getDouble(key + patternOption, Double.MIN_VALUE);
 
                                 if (pattern != Double.MIN_VALUE) {
-                                    long situation = configuration.getLong(key + situationOption, Long.MIN_VALUE);
+                                    int situation = configuration.getInt(key + situationOption, Integer.MIN_VALUE);
 
-                                    if (situation != Long.MIN_VALUE) {
+                                    if (situation != Integer.MIN_VALUE) {
                                         String profileName = configuration.getString(key + profileOption, null);
 
                                         if (profileName != null
@@ -275,7 +275,7 @@ public class Pattern {
 
     // Separator
 
-    public void learn(SpartanPlayer player, long situation, Number pattern) {
+    public void learn(SpartanPlayer player, int situation, Number pattern) {
         long time = System.currentTimeMillis();
         boolean include, notifications, found = false, stored = false;
 

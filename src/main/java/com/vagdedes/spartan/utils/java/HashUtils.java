@@ -21,17 +21,13 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 
-public class HashUtils {
+public class HashUtils { // todo change to ints
 
-    public static final long
+    public static final int
             trueHash = Boolean.hashCode(true),
             falseHash = Boolean.hashCode(false);
-    private static final long
+    private static final int
             bedWordHash = "BED".hashCode();
-
-    public static long extendLong(long hash, long extra) {
-        return (hash * SpartanBukkit.hashCodeMultiplierLong) + extra;
-    }
 
     public static int extendInt(int hash, int extra) {
         return (hash * SpartanBukkit.hashCodeMultiplier) + extra;
@@ -44,32 +40,32 @@ public class HashUtils {
         return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
     }
 
-    public static long fastCollection(Collection<Number> collection) {
+    public static int fastCollection(Collection<Number> collection) {
         Iterator<Number> iterator = collection.iterator();
-        long hash = (iterator.next().hashCode() * SpartanBukkit.hashCodeMultiplierLong) + collection.size();
+        int hash = (iterator.next().hashCode() * SpartanBukkit.hashCodeMultiplier) + collection.size();
         Number value = null;
 
         while (iterator.hasNext()) {
             value = iterator.next();
         }
         if (value != null) {
-            hash = extendLong(hash, value.hashCode());
+            hash = extendInt(hash, value.hashCode());
         }
         return hash;
     }
 
     // Separator
 
-    public static long collection(Collection<Float> collection) {
-        long hash = 1L;
+    public static int collection(Collection<Float> collection) {
+        int hash = 1;
 
         for (float value : collection) {
-            hash = extendLong(hash, Float.hashCode(value));
+            hash = extendInt(hash, Float.hashCode(value));
         }
         return hash;
     }
 
-    public static long collection(Collection<Number> collection, int fromIndex, int toIndex) {
+    public static int collection(Collection<Number> collection, int fromIndex, int toIndex) {
         Iterator<Number> iterator = collection.iterator();
 
         if (fromIndex > 0) {
@@ -77,34 +73,34 @@ public class HashUtils {
                 if (iterator.hasNext()) {
                     iterator.next();
                 } else {
-                    return 1L;
+                    return 1;
                 }
             }
 
         }
-        long hash = 1L;
+        int hash = 1;
         int pos = fromIndex;
 
         while (iterator.hasNext()) {
-            hash = extendLong(hash, iterator.next().hashCode());
+            hash = extendInt(hash, iterator.next().hashCode());
 
             if (pos == toIndex) {
                 return hash;
             }
             pos++;
         }
-        return 1L;
+        return 1;
     }
 
     // Separator
 
-    public static long hashPlayer(SpartanPlayer player) {
-        long hash = Boolean.hashCode(player.bedrockPlayer);
+    public static int hashPlayer(SpartanPlayer player) {
+        int hash = Boolean.hashCode(player.bedrockPlayer);
         Entity vehicle = player.getVehicle();
         Collection<PotionEffect> potionEffects;
 
         if (vehicle != null) {
-            hash = extendLong(hash, vehicle.getType().toString().hashCode());
+            hash = extendInt(hash, vehicle.getType().toString().hashCode());
 
             if (vehicle instanceof LivingEntity) {
                 potionEffects = ((LivingEntity) vehicle).getActivePotionEffects();
@@ -122,12 +118,12 @@ public class HashUtils {
                         EntityDamageByEntityEvent event = entry.getValue().getEntityDamageByEntityEvent();
 
                         if (event != null) {
-                            hash = extendLong(hash, event.getDamager().getType().toString().hashCode());
-                            hash = extendLong(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
+                            hash = extendInt(hash, event.getDamager().getType().toString().hashCode());
+                            hash = extendInt(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
                         }
-                        hash = extendLong(hash, entry.getKey().toString().hashCode());
-                        hash = extendLong(hash, Long.hashCode(ticksPassed));
-                        hash = extendLong(hash,
+                        hash = extendInt(hash, entry.getKey().toString().hashCode());
+                        hash = extendInt(hash, Long.hashCode(ticksPassed));
+                        hash = extendInt(hash,
                                 Double.hashCode(
                                         AlgebraUtils.cut(entry.getValue().location.distance(player.movement.getLocation()),
                                                 1
@@ -135,20 +131,20 @@ public class HashUtils {
                                 )
                         );
                     } else {
-                        hash = extendLong(hash, falseHash);
+                        hash = extendInt(hash, falseHash);
                     }
                 }
             }
-            hash = extendLong(hash, player.getGameMode().toString().hashCode());
-            hash = extendLong(hash, Double.hashCode(player.getEyeHeight()));
-            hash = extendLong(hash, Boolean.hashCode(player.movement.isGliding()));
-            hash = extendLong(hash, Boolean.hashCode(player.movement.isSwimming()));
-            hash = extendLong(hash, Boolean.hashCode(player.movement.isCrawling()));
-            hash = extendLong(hash, Boolean.hashCode(player.isFrozen()));
-            hash = extendLong(hash, Boolean.hashCode(player.movement.isSneaking()));
-            hash = extendLong(hash, Boolean.hashCode(player.movement.isFlying()));
-            hash = extendLong(hash, Boolean.hashCode(player.isOnGround()));
-            hash = extendLong(hash, Math.min(AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal), 1000));
+            hash = extendInt(hash, player.getGameMode().toString().hashCode());
+            hash = extendInt(hash, Double.hashCode(player.getEyeHeight()));
+            hash = extendInt(hash, Boolean.hashCode(player.movement.isGliding()));
+            hash = extendInt(hash, Boolean.hashCode(player.movement.isSwimming()));
+            hash = extendInt(hash, Boolean.hashCode(player.movement.isCrawling()));
+            hash = extendInt(hash, Boolean.hashCode(player.isFrozen()));
+            hash = extendInt(hash, Boolean.hashCode(player.movement.isSneaking()));
+            hash = extendInt(hash, Boolean.hashCode(player.movement.isFlying()));
+            hash = extendInt(hash, Boolean.hashCode(player.isOnGround()));
+            hash = extendInt(hash, Math.min(AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal), 1000));
             potionEffects = player.getActivePotionEffects();
         }
         if (!potionEffects.isEmpty()) {
@@ -158,20 +154,20 @@ public class HashUtils {
                 map.put(potionEffect.getType().toString().hashCode(), potionEffect);
             }
             for (PotionEffect potionEffect : map.values()) {
-                hash = extendLong(hash, potionEffect.getType().toString().hashCode());
-                hash = extendLong(hash, potionEffect.getAmplifier());
+                hash = extendInt(hash, potionEffect.getType().toString().hashCode());
+                hash = extendInt(hash, potionEffect.getAmplifier());
             }
         }
         return hash;
     }
 
-    public static long hashInventory(SpartanPlayer player) {
-        long hash = Boolean.hashCode(player.isUsingItem());
+    public static int hashInventory(SpartanPlayer player) {
+        int hash = Boolean.hashCode(player.isUsingItem());
         ItemStack[] armors = player.getInventory().getArmorContents();
 
         for (ItemStack armor : armors) {
             if (armor != null) {
-                hash = extendLong(hash, armor.getType().toString().hashCode());
+                hash = extendInt(hash, armor.getType().toString().hashCode());
                 Map<Enchantment, Integer> enchantments = armor.getEnchantments();
 
                 if (!enchantments.isEmpty()) {
@@ -185,21 +181,21 @@ public class HashUtils {
                         );
                     }
                     for (int value : map.values()) {
-                        hash = extendLong(hash, value);
+                        hash = extendInt(hash, value);
                     }
                 } else {
-                    hash = extendLong(hash, falseHash);
+                    hash = extendInt(hash, falseHash);
                 }
             } else {
-                hash = extendLong(hash, falseHash);
+                hash = extendInt(hash, falseHash);
             }
         }
         return hash;
     }
 
-    public static long hashEnvironment(SpartanPlayer player,
+    public static int hashEnvironment(SpartanPlayer player,
                                        SpartanLocation location) {
-        long hash = 1L;
+        int hash = 1;
         boolean foundBlock = false;
 
         for (int y = -1; y <= Math.ceil(player.getEyeHeight()); y++) {
@@ -209,26 +205,26 @@ public class HashUtils {
 
                 if (BlockUtils.isSolid(material)) {
                     foundBlock = true;
-                    hash = extendLong(hash, GroundUtils.getHeightsHashLong(material, trueHash));
-                    hash = extendLong(hash, Double.hashCode(
+                    hash = extendInt(hash, GroundUtils.getHeightsHash(material, trueHash));
+                    hash = extendInt(hash, Double.hashCode(
                             AlgebraUtils.cut(AlgebraUtils.getHorizontalDistance(location, cloned), 1))
                     );
 
                     if (BlockUtils.areBouncingBlocks(material)) {
-                        hash = extendLong(
+                        hash = extendInt(
                                 hash,
                                 BlockUtils.areBeds(material)
                                         ? bedWordHash
                                         : material.toString().hashCode()
                         );
                     } else if (BlockUtils.areIceBlocks(material)) {
-                        hash = extendLong(hash, material.toString().hashCode());
+                        hash = extendInt(hash, material.toString().hashCode());
                     }
                 } else if (block.isLiquid()) {
                     foundBlock = true;
-                    hash = extendLong(hash, material.toString().hashCode());
+                    hash = extendInt(hash, material.toString().hashCode());
                 }
-                hash = extendLong(hash, Boolean.hashCode(block.waterLogged));
+                hash = extendInt(hash, Boolean.hashCode(block.waterLogged));
             }
         }
 
@@ -236,12 +232,12 @@ public class HashUtils {
             double box = location.getY() - location.getBlockY();
 
             if (GroundUtils.heightExists(box)) {
-                hash = extendLong(hash, Double.hashCode(box));
+                hash = extendInt(hash, Double.hashCode(box));
             } else {
-                hash = extendLong(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
+                hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
             }
         }
-        hash = extendLong(hash, player.getBlocksOffGround(PlayerUtils.chunkInt));
+        hash = extendInt(hash, player.getBlocksOffGround(PlayerUtils.chunkInt));
         return hash;
     }
 }

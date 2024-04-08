@@ -8,10 +8,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class NonLinearPatternGeneralization extends PatternGeneralization {
+public class NonLinearPatternGeneralization extends PatternGeneralization { // todo create new one as well with pies only
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
-    private final Map<Long, ProbabilityRank> correlations;
+    private final Map<Integer, ProbabilityRank> correlations;
     private final ProbabilityRank empty;
 
     protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
@@ -27,14 +27,14 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean hasPatterns(long situation) {
+    protected boolean hasPatterns(int situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);
         }
     }
 
     @Override
-    protected boolean customLearn(PlayerProfile profile, long situation, float pattern) {
+    protected boolean customLearn(PlayerProfile profile, int situation, float pattern) {
         NonLinearPatternProfile patternProfile = this.getProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -60,7 +60,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteCustomLessonsInternal(long situation, float pattern) {
+    protected void deleteCustomLessonsInternal(int situation, float pattern) {
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.get(situation);
 
@@ -84,7 +84,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
-    public double[] getProbabilityAndPositionAndTotal(long situation, double client) {
+    public double[] getProbabilityAndPositionAndTotal(int situation, double client) {
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
             return new double[]{
@@ -95,7 +95,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    public double[] getProbabilityAndTotal(long situation, double client) {
+    public double[] getProbabilityAndTotal(int situation, double client) {
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
             return new double[]{

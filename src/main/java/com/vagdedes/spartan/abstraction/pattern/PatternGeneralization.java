@@ -8,7 +8,7 @@ import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 import java.util.*;
 
-public abstract class PatternGeneralization {
+public abstract class PatternGeneralization { // todo change to using floats
 
     final Pattern parent;
     final short scissors;
@@ -75,10 +75,10 @@ public abstract class PatternGeneralization {
     // Separator
 
     boolean learn(PlayerProfile profile,
-               long time,
-               long situation,
-               double pattern,
-               boolean store) {
+                  long time,
+                  int situation,
+                  double pattern,
+                  boolean store) {
         if (profile.isLegitimate()) {
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
@@ -159,18 +159,18 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    abstract protected boolean hasPatterns(long situation);
+    abstract protected boolean hasPatterns(int situation);
 
-    abstract protected boolean customLearn(PlayerProfile profile, long situation, float pattern);
+    abstract protected boolean customLearn(PlayerProfile profile, int situation, float pattern);
 
     // Separator
 
-    protected void deleteCustomLessons(long situation, double pattern) {
+    protected void deleteCustomLessons(int situation, double pattern) {
         this.decreaseSignificance(pattern);
         this.deleteCustomLessonsInternal(situation, (float) pattern);
     }
 
-    abstract protected void deleteCustomLessonsInternal(long situation, float pattern);
+    abstract protected void deleteCustomLessonsInternal(int situation, float pattern);
 
     // Separator
 

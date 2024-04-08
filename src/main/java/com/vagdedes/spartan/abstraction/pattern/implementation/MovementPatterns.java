@@ -46,7 +46,7 @@ public class MovementPatterns extends PatternFamily {
     }
 
     public void learn(SpartanPlayer player,
-                      long situation,
+                      int situation,
                       double dis, double hor, double ver, double fall) {
         this.all.learn(
                 player,

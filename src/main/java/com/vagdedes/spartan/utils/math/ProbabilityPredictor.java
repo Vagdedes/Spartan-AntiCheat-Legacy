@@ -3,11 +3,13 @@ package com.vagdedes.spartan.utils.math;
 import com.vagdedes.spartan.abstraction.pattern.LinearPatternProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 public class ProbabilityPredictor {
 
-    public static ProbabilityPredictor build(long situation,
+    public static ProbabilityPredictor build(int situation,
                                              Collection<Float> patternData,
                                              LinearPatternProfile patternProfile,
                                              short count) {
@@ -33,7 +35,7 @@ public class ProbabilityPredictor {
 
         if (currentPatternSize > 0
                 && totalPatterns.size() > currentPatternSize) {
-            long currentPatternHash = HashUtils.collection(currentPattern);
+            int currentPatternHash = HashUtils.collection(currentPattern);
             LinkedList<Float> list = new LinkedList<>();
             Iterator<Float> iterator = totalPatterns.iterator();
             boolean next = false;

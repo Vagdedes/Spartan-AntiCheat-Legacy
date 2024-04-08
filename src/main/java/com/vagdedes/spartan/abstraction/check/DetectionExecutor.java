@@ -75,7 +75,7 @@ public abstract class DetectionExecutor {
 
     protected final void linearMLDetection(Pattern patternStorage,
                                            int generalization,
-                                           long situation,
+                                           int situation,
                                            double client,
                                            short count) {
         long time = System.currentTimeMillis();
@@ -101,7 +101,7 @@ public abstract class DetectionExecutor {
 
     protected final void nonLinearMLDetection(Pattern patternStorage,
                                               int generalization,
-                                              long situation,
+                                              int situation,
                                               double client,
                                               boolean rank) {
         long time = System.currentTimeMillis();

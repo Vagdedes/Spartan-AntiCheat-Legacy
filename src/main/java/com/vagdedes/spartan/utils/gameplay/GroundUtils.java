@@ -293,11 +293,6 @@ public class GroundUtils {
         return specificHeightsHashes.getOrDefault(m, defaultValue);
     }
 
-    public static long getHeightsHashLong(Material m, long defaultValue) {
-        Integer hash = specificHeightsHashes.get(m);
-        return hash != null ? hash : defaultValue;
-    }
-
     public static double getMaxHeight(Material m) {
         double[] heights = getHeightsRaw(m);
 

@@ -33,7 +33,6 @@ public class SpartanBukkit {
             movementPatterns = new MovementPatterns();
 
     public static final int hashCodeMultiplier = 31;
-    public static final long hashCodeMultiplierLong = 31L;
     private static final Map<UUID, SpartanPlayer> players =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     public static final Class<?> craftPlayer = ReflectionUtils.getClass(

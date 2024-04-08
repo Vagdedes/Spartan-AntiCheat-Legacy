@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public abstract class PatternProfile {
+public abstract class PatternProfile { // todo change to using floats
 
     private static final class Comparison {
         private long time;
@@ -199,9 +199,9 @@ public abstract class PatternProfile {
                                             double pattern = configuration.getDouble(key + Pattern.patternOption, Double.MIN_VALUE);
 
                                             if (pattern != Double.MIN_VALUE) {
-                                                long situation = configuration.getLong(key + Pattern.situationOption, Long.MIN_VALUE);
+                                                int situation = configuration.getInt(key + Pattern.situationOption, Integer.MIN_VALUE);
 
-                                                if (situation != Long.MIN_VALUE) {
+                                                if (situation != Integer.MIN_VALUE) {
                                                     if (this.generalization.scissors != 0) {
                                                         pattern = AlgebraUtils.cut(pattern, this.generalization.scissors);
                                                     }

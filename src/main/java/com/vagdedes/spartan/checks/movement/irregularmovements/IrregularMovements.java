@@ -534,7 +534,7 @@ public class IrregularMovements extends CheckExecutor {
             this.linearMLDetection(
                     SpartanBukkit.movementPatterns.vertical,
                     GroundUtils.maxHeightLength,
-                    (long) objects[0],
+                    (int) objects[0],
                     (double) objects[1],
                     (short) 1
             );
