@@ -80,12 +80,14 @@ public abstract class PatternGeneralization {
                   double pattern,
                   boolean store) {
         if (profile.isLegitimate()) {
+            double original = pattern;
+
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
             if (this.customLearn(profile, situation, (float) pattern)
                     && store) {
-                this.parent.setToFile(profile, time, situation, pattern);
+                this.parent.setToFile(profile, time, situation, original);
                 return true;
             } else {
                 return false;
