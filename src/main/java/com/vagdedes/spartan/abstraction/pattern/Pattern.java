@@ -176,7 +176,7 @@ public class Pattern {
         }
     }
 
-    private void loadFromFiles() {
+    private synchronized void loadFromFiles() {
         if (this.load) {
             return;
         }
