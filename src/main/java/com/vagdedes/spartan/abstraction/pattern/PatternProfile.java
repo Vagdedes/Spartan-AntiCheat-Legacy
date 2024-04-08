@@ -50,30 +50,31 @@ public abstract class PatternProfile {
                 this.loaded = false;
 
                 SpartanBukkit.dataThread.execute(() -> {
-                    Set<String> keys = this.configuration.getKeys(false);
+                    Map<String, Object> values = this.configuration.getValues(false);
 
-                    if (keys.isEmpty()) {
+                    if (values.isEmpty()) {
                         file.delete();
                     } else {
                         int valid = 0;
                         Collection<String> remove = new ArrayList<>();
 
-                        for (String key : keys) {
-                            try {
-                                long time = Long.parseLong(key);
-                                double value = this.configuration.getDouble(key, Double.MIN_VALUE);
-
-                                if (value != Double.MIN_VALUE) {
+                        for (Map.Entry<String, Object> entry : values.entrySet()) {
+                            if (entry.getValue() instanceof Double) {
+                                try {
                                     if (valid == Pattern.comparisonDataLimit) {
-                                        remove.add(key);
+                                        remove.add(entry.getKey());
                                     } else {
-                                        this.updateComparison(time, value, false);
+                                        this.updateComparison(
+                                                Long.parseLong(entry.getKey()),
+                                                (double) entry.getValue(),
+                                                false
+                                        );
                                         valid++;
                                     }
-                                } else {
-                                    remove.add(key);
+                                } catch (Exception ignored) {
                                 }
-                            } catch (Exception ignored) {
+                            } else {
+                                remove.add(entry.getKey());
                             }
                         }
 
