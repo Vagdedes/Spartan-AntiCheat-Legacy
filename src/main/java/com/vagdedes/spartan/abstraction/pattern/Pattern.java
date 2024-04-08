@@ -279,16 +279,12 @@ public class Pattern {
 
     public void learn(SpartanPlayer player, int situation, Number pattern) {
         long time = System.currentTimeMillis();
-        boolean include, notifications, found = false, stored = false;
+        Integer divisor = DetectionNotifications.getDivisor(player, false);
+        boolean include = divisor == null || divisor != 69,
+                notifications = divisor != null,
+                found = false,
+                stored = false;
 
-        if (SpartanBukkit.debug) {
-            include = player.isWhitelisted();
-            notifications = DetectionNotifications.isEnabled(player);
-        } else {
-            Integer divisor = DetectionNotifications.getDivisor(player, false);
-            notifications = divisor != null;
-            include = divisor == null || divisor != 69;
-        }
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
                 if (notifications) {

@@ -114,7 +114,7 @@ public abstract class PatternGeneralization {
                 }
             }
         }
-        return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
+        return profiles < ResearchEngine.requiredProfiles
                 ? -1.0f
                 : time / (float) profiles;
     }
