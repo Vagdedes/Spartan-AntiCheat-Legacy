@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,6 +73,20 @@ public class Threads {
         public boolean execute(Runnable runnable) {
             synchronized (runnables) {
                 return runnables.add(runnable);
+            }
+        }
+
+        public boolean executeWithPriority(Runnable runnable) {
+            synchronized (runnables) {
+                if (runnables.isEmpty()) {
+                    return runnables.add(runnable);
+                } else {
+                    ArrayList<Runnable> runnables = new ArrayList<>(this.runnables.size() + 1);
+                    runnables.add(runnable);
+                    runnables.addAll(this.runnables);
+                    this.runnables.clear();
+                    return this.runnables.addAll(runnables);
+                }
             }
         }
 

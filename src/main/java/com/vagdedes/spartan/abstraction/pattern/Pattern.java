@@ -182,102 +182,105 @@ public class Pattern {
         }
         this.load = true;
         this.storeFiles();
-        Map<Short, PatternGeneralization> generalizations = new HashMap<>();
-        File[] files = this.getLearningFiles();
 
-        if (files != null) {
-            Arrays.sort(files, Comparator.comparingLong(File::lastModified));
-            Set<Map.Entry<Short, PatternGeneralization>> entries;
+        SpartanBukkit.dataThread.executeWithPriority(() -> {
+            Map<Short, PatternGeneralization> generalizations = new HashMap<>();
+            File[] files = this.getLearningFiles();
 
-            synchronized (this.generalizations) {
-                entries = new HashSet<>(this.generalizations.entrySet());
-            }
+            if (files != null) {
+                Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+                Set<Map.Entry<Short, PatternGeneralization>> entries;
 
-            for (Map.Entry<Short, PatternGeneralization> entry : entries) {
-                generalizations.put(
-                        entry.getKey(),
-                        entry.getValue() instanceof LinearPatternGeneralization
-                                ? new LinearPatternGeneralization(this, entry.getValue().scissors)
-                                : (entry.getValue() instanceof NonLinearPatternGeneralization
-                                ? new NonLinearPatternGeneralization(this, entry.getValue().scissors)
-                                : new NonLinearRankedPatternGeneralization(this, entry.getValue().scissors))
-                );
-            }
-            for (File file : files) {
-                if (file.isFile() && file.getName().endsWith(".yml")) {
-                    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                    Set<String> keys = configuration.getKeys(false);
+                synchronized (this.generalizations) {
+                    entries = new HashSet<>(this.generalizations.entrySet());
+                }
 
-                    if (!keys.isEmpty()) {
-                        boolean changed = false;
+                for (Map.Entry<Short, PatternGeneralization> entry : entries) {
+                    generalizations.put(
+                            entry.getKey(),
+                            entry.getValue() instanceof LinearPatternGeneralization
+                                    ? new LinearPatternGeneralization(this, entry.getValue().scissors)
+                                    : (entry.getValue() instanceof NonLinearPatternGeneralization
+                                    ? new NonLinearPatternGeneralization(this, entry.getValue().scissors)
+                                    : new NonLinearRankedPatternGeneralization(this, entry.getValue().scissors))
+                    );
+                }
+                for (File file : files) {
+                    if (file.isFile() && file.getName().endsWith(".yml")) {
+                        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                        Set<String> keys = configuration.getKeys(false);
 
-                        for (String key : keys) {
-                            ConfigurationSection section = configuration.getConfigurationSection(key);
+                        if (!keys.isEmpty()) {
+                            boolean changed = false;
 
-                            if (section == null) {
-                                continue;
-                            }
-                            Map<String, Object> data = section.getValues(false);
+                            for (String key : keys) {
+                                ConfigurationSection section = configuration.getConfigurationSection(key);
 
-                            if (data.size() != 3) {
-                                this.deleteFromFile(configuration, key);
-                                changed = true;
-                                continue;
-                            }
-                            Object pattern = data.get(patternOption),
-                                    situation = data.get(situationOption),
-                                    profileObject = data.get(profileOption);
+                                if (section == null) {
+                                    continue;
+                                }
+                                Map<String, Object> data = section.getValues(false);
 
-                            if (!(pattern instanceof Double || pattern instanceof Float)
-                                    || !(situation instanceof Integer || situation instanceof Long || situation instanceof Short)
-                                    || !(profileObject instanceof String)) {
-                                this.deleteFromFile(configuration, key);
-                                changed = true;
-                                continue;
-                            }
-                            try {
-                                String profileName = profileObject.toString();
-
-                                if (profileName.isEmpty()) {
+                                if (data.size() != 3) {
                                     this.deleteFromFile(configuration, key);
                                     changed = true;
                                     continue;
                                 }
-                                long time = Long.parseLong(key);
-                                PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                Object pattern = data.get(patternOption),
+                                        situation = data.get(situationOption),
+                                        profileObject = data.get(profileOption);
 
-                                for (PatternGeneralization generalization : generalizations.values()) {
-                                    generalization.learn(
-                                            profile,
-                                            time,
-                                            (int) situation,
-                                            (double) pattern,
-                                            false
-                                    );
+                                if (!(pattern instanceof Double || pattern instanceof Float)
+                                        || !(situation instanceof Integer || situation instanceof Long || situation instanceof Short)
+                                        || !(profileObject instanceof String)) {
+                                    this.deleteFromFile(configuration, key);
+                                    changed = true;
+                                    continue;
                                 }
-                            } catch (Exception ignored) {
-                            }
-                        }
+                                try {
+                                    String profileName = profileObject.toString();
 
-                        if (changed) {
-                            try {
-                                configuration.save(file);
-                            } catch (Exception ignored) {
-                            }
-                        }
+                                    if (profileName.isEmpty()) {
+                                        this.deleteFromFile(configuration, key);
+                                        changed = true;
+                                        continue;
+                                    }
+                                    long time = Long.parseLong(key);
+                                    PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
+                                    for (PatternGeneralization generalization : generalizations.values()) {
+                                        generalization.learn(
+                                                profile,
+                                                time,
+                                                (int) situation,
+                                                (double) pattern,
+                                                false
+                                        );
+                                    }
+                                } catch (Exception ignored) {
+                                }
+                            }
+
+                            if (changed) {
+                                try {
+                                    configuration.save(file);
+                                } catch (Exception ignored) {
+                                }
+                            }
+
+                        }
                     }
                 }
             }
-        }
 
-        if (!generalizations.isEmpty()) {
-            synchronized (this.generalizations) {
-                this.generalizations.clear();
-                this.generalizations.putAll(generalizations);
+            if (!generalizations.isEmpty()) {
+                synchronized (this.generalizations) {
+                    this.generalizations.clear();
+                    this.generalizations.putAll(generalizations);
+                }
             }
-        }
-        this.load = false;
+            this.load = false;
+        });
     }
 
     void deleteFromFile(YamlConfiguration configuration, String key) {
