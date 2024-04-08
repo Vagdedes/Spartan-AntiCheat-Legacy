@@ -38,7 +38,7 @@ public abstract class DetectionExecutor {
         SpartanBukkit.detectionThread.execute(runnable);
     }
 
-    // Spearator
+    // Separator
 
     protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
                                 boolean groundTeleport, double damage, int violation) {
@@ -75,15 +75,12 @@ public abstract class DetectionExecutor {
                 situation
         )) {
             double trustFactor = generalization.getProfile(player.getProfile()).trustFactor();
-            ProbabilityRank rank = generalization.rankTrustFactor(trustFactor);
             player.debug(
                     false,
                     false,
-                    trustFactor,
-                    rank.getPosition(trustFactor),
-                    rank.getProbability(trustFactor),
-                    rank.getPosition(trustFactor) * rank.getProbability(trustFactor)
+                    generalization.rankTrustFactor(trustFactor)
             );
         }
     }
+
 }
