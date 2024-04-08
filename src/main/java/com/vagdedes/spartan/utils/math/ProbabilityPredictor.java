@@ -2,7 +2,7 @@ package com.vagdedes.spartan.utils.math;
 
 import java.util.Collection;
 
-public class ProbabilityPredictor { // todo add cache based on search
+public class ProbabilityPredictor {
 
     public final ProbabilityPie beforePie, afterPie;
 

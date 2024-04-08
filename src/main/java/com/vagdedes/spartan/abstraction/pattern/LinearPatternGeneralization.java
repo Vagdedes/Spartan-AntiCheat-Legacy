@@ -1,19 +1,44 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.utils.java.HashUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 
 import java.util.*;
 
 public class LinearPatternGeneralization extends PatternGeneralization {
 
+    private static final class Cache {
+
+        private ProbabilityPredictor predictor;
+        private long expiration;
+
+        private Cache(ProbabilityPredictor predictor) {
+            this.refresh(predictor);
+        }
+
+        private boolean isExpired() {
+            return this.expiration < System.currentTimeMillis();
+        }
+
+        private ProbabilityPredictor refresh(ProbabilityPredictor predictor) {
+            this.predictor = predictor;
+            this.expiration = System.currentTimeMillis() + 1_000;
+            return predictor;
+        }
+    }
+
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
     private final Map<Integer, Collection<Float>> correlations;
+    private final int initialHash;
+    private final Map<Integer, Cache> cache;
 
     protected LinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.initialHash = Objects.hash(pattern.key.hashCode(), System.currentTimeMillis());
+        this.cache = new LinkedHashMap<>();
     }
 
     @Override
@@ -87,14 +112,35 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             }
         }
         ProbabilityPredictor predictor;
+        int hash = HashUtils.extendInt(this.initialHash, Float.hashCode(current));
 
         synchronized (this.correlations) {
-            Collection<Float> list = this.correlations.get(situation);
+            Cache cache = this.cache.get(hash);
 
-            if (list != null) {
-                predictor = new ProbabilityPredictor(list, current);
+            if (cache == null) {
+                Collection<Float> collection = this.correlations.get(situation);
+
+                if (collection != null) {
+                    if (this.cache.size() == Pattern.individualGlobalDataLimit) {
+                        Iterator<Integer> iterator = this.cache.keySet().iterator();
+                        iterator.next();
+                        iterator.remove();
+                    }
+                    predictor = new ProbabilityPredictor(collection, current);
+                    this.cache.put(hash, new Cache(predictor));
+                } else {
+                    return false;
+                }
+            } else if (cache.isExpired()) {
+                Collection<Float> collection = this.correlations.get(situation);
+
+                if (collection != null) {
+                    predictor = cache.refresh(new ProbabilityPredictor(collection, current));
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                predictor = cache.predictor;
             }
         }
         patternProfile.updateComparison(
