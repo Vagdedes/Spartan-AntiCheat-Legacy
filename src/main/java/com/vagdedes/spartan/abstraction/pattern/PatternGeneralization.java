@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPie;
+import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.*;
 
@@ -101,6 +102,19 @@ public abstract class PatternGeneralization {
 
     // Separator
 
+    public ProbabilityRank rankTrustFactor(double trustFactor) {
+        ProbabilityRank rank = new ProbabilityRank();
+
+        synchronized (this.profilesSynchronizer) {
+            for (PatternProfile profile : this.getProfiles()) {
+                rank.add(profile.trustFactor());
+            }
+        }
+        return rank;
+    }
+
+    // Separator
+
     float averagePatternTime() {
         float time = 0.0f;
         int profiles = 0;
@@ -141,7 +155,7 @@ public abstract class PatternGeneralization {
         }
     }
 
-    double significance(float value) {
+    protected final double significance(float value) {
         synchronized (this.significancePie) {
             return this.significancePie.getProbability(value);
         }
