@@ -50,11 +50,15 @@ public class ProbabilityPie {
     }
 
     public ProbabilityPie increase(Number number, int amount) {
-        this.map.put(
-                number.floatValue(),
-                (short) (this.map.getOrDefault(number.floatValue(), (short) 0) + amount)
-        );
-        this.total += amount;
+        short current = this.map.getOrDefault(number.floatValue(), (short) 0);
+
+        if (current < 32767) {
+            this.map.put(
+                    number.floatValue(),
+                    (short) (current + amount)
+            );
+            this.total += amount;
+        }
         return this;
     }
 

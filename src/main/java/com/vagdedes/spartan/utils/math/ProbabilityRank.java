@@ -44,11 +44,15 @@ public class ProbabilityRank {
     }
 
     public ProbabilityRank add(Number number) {
-        this.map.put(
-                number.floatValue(),
-                (short) (this.map.getOrDefault(number.floatValue(), (short) 0) + 1)
-        );
-        this.total++;
+        short current = this.map.getOrDefault(number.floatValue(), (short) 0);
+
+        if (current < 32767) {
+            this.map.put(
+                    number.floatValue(),
+                    (short) (current + 1)
+            );
+            this.total++;
+        }
         return this;
     }
 
