@@ -24,6 +24,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
+    protected boolean hasPatterns() {
+        return !this.correlations.isEmpty();
+    }
+
+    @Override
     protected boolean hasPatterns(int situation) {
         synchronized (this.correlations) {
             return this.correlations.containsKey(situation);

@@ -56,7 +56,7 @@ public class PlayerEvidence {
                 this.historical.clear();
             }
             if (judge) {
-                judgeLocal();
+                this.judgeLocal();
             }
         }
     }
@@ -70,7 +70,7 @@ public class PlayerEvidence {
                 this.historical.remove(hackType);
             }
             if (judge) {
-                judgeLocal();
+                this.judgeLocal();
             }
         }
     }
@@ -84,7 +84,7 @@ public class PlayerEvidence {
                 this.historical.put(hackType, info);
             }
             if (judge) {
-                judgeLocal();
+                this.judgeLocal();
             }
         }
     }
@@ -182,16 +182,12 @@ public class PlayerEvidence {
                 }
             }
         }
-        if (this.type != type
-                && type != EvidenceType.Legitimate) {
-            Pattern.delete(this.profile);
-        }
         this.type = type;
     }
 
     public void judge() {
         synchronized (this.live) {
-            judgeLocal();
+            this.judgeLocal();
         }
     }
 }

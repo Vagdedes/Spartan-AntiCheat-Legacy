@@ -91,6 +91,9 @@ public abstract class PatternGeneralization {
                 return false;
             }
         } else {
+            if (this.hasPatterns()) {
+                Pattern.delete(profile);
+            }
             return false;
         }
     }
@@ -158,6 +161,8 @@ public abstract class PatternGeneralization {
     abstract protected PatternProfile removeProfileInternal(PlayerProfile profile);
 
     // Separator
+
+    abstract protected boolean hasPatterns();
 
     abstract protected boolean hasPatterns(int situation);
 

@@ -105,9 +105,8 @@ public abstract class PatternProfile {
             long oldTime;
 
             synchronized (this.comparisons) {
-                Iterator<Map.Entry<Long, Double>> iterator = this.comparisons.entrySet().iterator();
-                Map.Entry<Long, Double> entry = iterator.next();
-                oldTime = entry.getKey();
+                Iterator<Long> iterator = this.comparisons.keySet().iterator();
+                oldTime = iterator.next();
                 iterator.remove();
                 this.comparisons.put(time, trustFactor);
                 this.lastComparison.time = time;
