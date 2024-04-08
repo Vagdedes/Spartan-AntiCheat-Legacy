@@ -172,9 +172,9 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    protected final void deleteCustomLessons(int situation, double pattern) {
-        this.decreaseSignificance((float) pattern);
-        this.deleteCustomLessonsInternal(situation, (float) pattern);
+    protected final void deleteCustomLessons(int situation, float pattern) {
+        this.decreaseSignificance(pattern);
+        this.deleteCustomLessonsInternal(situation, pattern);
     }
 
     abstract protected void deleteCustomLessonsInternal(int situation, float pattern);

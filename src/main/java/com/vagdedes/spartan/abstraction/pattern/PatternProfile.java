@@ -198,13 +198,13 @@ public abstract class PatternProfile {
                                             double pattern = configuration.getDouble(key + Pattern.patternOption, Double.MIN_VALUE);
 
                                             if (pattern != Double.MIN_VALUE) {
-                                                int situation = configuration.getInt(key + Pattern.situationOption, Integer.MIN_VALUE);
+                                                long situation = configuration.getLong(key + Pattern.situationOption, Long.MIN_VALUE);
 
-                                                if (situation != Integer.MIN_VALUE) {
+                                                if (situation != Long.MIN_VALUE) {
                                                     if (this.generalization.scissors != 0) {
                                                         pattern = AlgebraUtils.cut(pattern, this.generalization.scissors);
                                                     }
-                                                    this.generalization.deleteCustomLessons(situation, pattern);
+                                                    this.generalization.deleteCustomLessons((int) situation, (float) pattern);
                                                 }
                                             }
                                             for (String option : Pattern.options) {

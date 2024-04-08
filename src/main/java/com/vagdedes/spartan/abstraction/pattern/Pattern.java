@@ -211,9 +211,9 @@ public class Pattern {
                                 double pattern = configuration.getDouble(key + patternOption, Double.MIN_VALUE);
 
                                 if (pattern != Double.MIN_VALUE) {
-                                    int situation = configuration.getInt(key + situationOption, Integer.MIN_VALUE);
+                                    long situation = configuration.getLong(key + situationOption, Long.MIN_VALUE);
 
-                                    if (situation != Integer.MIN_VALUE) {
+                                    if (situation != Long.MIN_VALUE) {
                                         String profileName = configuration.getString(key + profileOption, null);
 
                                         if (profileName != null
@@ -225,7 +225,7 @@ public class Pattern {
                                                 generalization.learn(
                                                         profile,
                                                         time,
-                                                        situation,
+                                                        (int) situation,
                                                         pattern,
                                                         false
                                                 );
