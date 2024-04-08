@@ -186,4 +186,6 @@ public abstract class PatternGeneralization {
 
     abstract protected Collection<? extends PatternProfile> getProfiles();
 
+    abstract public PatternProfile getProfile(PlayerProfile profile);
+
 }

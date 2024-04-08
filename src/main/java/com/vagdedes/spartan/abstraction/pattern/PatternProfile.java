@@ -257,7 +257,7 @@ public abstract class PatternProfile {
         }
     }
 
-    double trustFactor() { // todo use
+    public double trustFactor() {
         float averagePattern = this.generalization.averagePatternTime();
 
         if (averagePattern == -1.0f) {

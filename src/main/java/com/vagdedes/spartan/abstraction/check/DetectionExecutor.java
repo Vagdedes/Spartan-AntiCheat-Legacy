@@ -73,7 +73,11 @@ public abstract class DetectionExecutor {
                 player.getProfile(),
                 situation
         )) {
-            // todo
+            player.debug(
+                    false,
+                    false,
+                    generalization.getProfile(player.getProfile()).trustFactor()
+            );
         }
     }
 }

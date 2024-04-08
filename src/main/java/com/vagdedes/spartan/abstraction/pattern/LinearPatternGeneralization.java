@@ -60,7 +60,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     protected boolean customLearn(PlayerProfile profile, int situation, float pattern) {
-        LinearPatternProfile patternProfile = this.getProfile(profile);
+        LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
@@ -97,7 +97,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
-        LinearPatternProfile patternProfile = this.getProfile(profile);
+        LinearPatternProfile patternProfile = this.getLocalProfile(profile);
         float after, current, before;
 
         synchronized (patternProfile.correlations) {
@@ -176,9 +176,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         return this.profiles.values();
     }
 
+    @Override
+    public PatternProfile getProfile(PlayerProfile profile) {
+        return this.getLocalProfile(profile);
+    }
+
     // Separator
 
-    private LinearPatternProfile getProfile(PlayerProfile profile) {
+    private LinearPatternProfile getLocalProfile(PlayerProfile profile) {
         synchronized (this.profilesSynchronizer) {
             return this.profiles.computeIfAbsent(
                     profile,

@@ -38,7 +38,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
     @Override
     protected boolean customLearn(PlayerProfile profile, int situation, float pattern) {
-        NonLinearPatternProfile patternProfile = this.getProfile(profile);
+        NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
@@ -63,7 +63,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
     @Override
     protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
-        NonLinearPatternProfile patternProfile = this.getProfile(profile);
+        NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
         float pattern;
 
         synchronized (patternProfile.correlations) {
@@ -115,9 +115,14 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
         return this.profiles.values();
     }
 
+    @Override
+    public PatternProfile getProfile(PlayerProfile profile) {
+        return this.getLocalProfile(profile);
+    }
+
     // Separator
 
-    private NonLinearPatternProfile getProfile(PlayerProfile profile) {
+    private NonLinearPatternProfile getLocalProfile(PlayerProfile profile) {
         synchronized (this.profilesSynchronizer) {
             return this.profiles.computeIfAbsent(
                     profile,
