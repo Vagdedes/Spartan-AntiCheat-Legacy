@@ -46,12 +46,8 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         situation,
                         k -> new ProbabilityRank()
                 );
-                int delete = rank.getParts() - Pattern.individualGlobalDataLimit;
-
-                if (delete > 0) {
-                    for (int i = 0; i < delete; i++) {
-                        this.decreaseSignificance(rank.removeLeastSignificant());
-                    }
+                if (rank.getParts() == Pattern.individualGlobalDataLimit) {
+                    this.decreaseSignificance(rank.removeLeastSignificant());
                 }
                 rank.add(pattern);
             }

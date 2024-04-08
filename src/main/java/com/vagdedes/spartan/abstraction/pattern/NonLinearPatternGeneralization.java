@@ -46,12 +46,8 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                         situation,
                         k -> new ProbabilityPie()
                 );
-                int delete = pie.getSlices() - Pattern.individualGlobalDataLimit;
-
-                if (delete > 0) {
-                    for (int i = 0; i < delete; i++) {
-                        this.decreaseSignificance(pie.removeLeastSignificant());
-                    }
+                if (pie.getSlices() == Pattern.individualGlobalDataLimit) {
+                    this.decreaseSignificance(pie.removeLeastSignificant());
                 }
                 pie.add(pattern);
             }
@@ -121,7 +117,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
-    public NonLinearPatternProfile getProfile(PlayerProfile profile) {
+    private NonLinearPatternProfile getProfile(PlayerProfile profile) {
         synchronized (this.profilesSynchronizer) {
             return this.profiles.computeIfAbsent(
                     profile,

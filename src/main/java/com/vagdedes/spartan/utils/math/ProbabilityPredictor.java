@@ -4,10 +4,10 @@ import java.util.Collection;
 
 public class ProbabilityPredictor { // todo add cache based on search
 
-    public final ProbabilityPie previousPie, afterPie;
+    public final ProbabilityPie beforePie, afterPie;
 
     public ProbabilityPredictor(Collection<Float> totalPatterns, float currentPattern) {
-        this.previousPie = new ProbabilityPie();
+        this.beforePie = new ProbabilityPie();
         this.afterPie = new ProbabilityPie();
 
         if (currentPattern != Float.MIN_VALUE
@@ -17,7 +17,7 @@ public class ProbabilityPredictor { // todo add cache based on search
 
             for (float pattern : totalPatterns) {
                 if (found != null) {
-                    this.previousPie.add(found);
+                    this.beforePie.add(found);
                     this.afterPie.add(pattern);
 
                     if (currentPattern == pattern) {

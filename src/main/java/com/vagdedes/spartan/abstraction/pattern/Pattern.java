@@ -7,8 +7,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

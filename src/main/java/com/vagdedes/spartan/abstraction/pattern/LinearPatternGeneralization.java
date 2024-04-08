@@ -9,13 +9,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
     private final Map<Integer, Collection<Float>> correlations;
-    private final Collection<Float> empty;
 
     protected LinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.empty = new ArrayList<>(0);
     }
 
     @Override
@@ -45,16 +43,12 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         situation,
                         k -> new ArrayList<>()
                 );
-                int delete = list.size() - Pattern.individualGlobalDataLimit;
-
-                if (delete > 0) {
+                if (list.size() == Pattern.individualGlobalDataLimit) {
                     if (!(list instanceof LinkedList)) {
                         list = new LinkedList<>(list);
                         this.correlations.put(situation, list);
                     }
-                    for (int i = 0; i < delete; i++) {
-                        this.decreaseSignificance(((LinkedList<Float>) list).removeFirst());
-                    }
+                    this.decreaseSignificance(((LinkedList<Float>) list).removeFirst());
                 }
                 list.add(pattern);
             }
@@ -65,12 +59,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         situation,
                         k -> new LinkedList<>()
                 );
-                int delete = list.size() - 2;
-
-                if (delete > 0) {
-                    for (int i = 0; i < delete; i++) {
-                        this.decreaseSignificance(list.removeFirst());
-                    }
+                if (list.size() == 3) {
+                    list.removeFirst();
                 }
                 list.add(pattern);
             }
@@ -83,14 +73,15 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected boolean compareInternal(PlayerProfile playerProfile, long time, int situation) {
         LinearPatternProfile patternProfile = this.getProfile(playerProfile);
-        float last, previous;
+        float after, current, before;
 
         synchronized (patternProfile.correlations) {
             LinkedList<Float> list = patternProfile.correlations.get(situation);
 
-            if (list != null && list.size() >= 2) {
-                last = list.getLast();
-                previous = list.get(list.size() - 2);
+            if (list != null && list.size() >= 3) {
+                after = list.getLast();
+                current = list.get(list.size() - 2);
+                before = list.get(list.size() - 3);
             } else {
                 return false;
             }
@@ -101,15 +92,15 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             Collection<Float> list = this.correlations.get(situation);
 
             if (list != null) {
-                predictor = new ProbabilityPredictor(list, last);
+                predictor = new ProbabilityPredictor(list, current);
             } else {
                 return false;
             }
         }
-        patternProfile.updateComparison( // todo recheck last
+        patternProfile.updateComparison(
                 time,
-                this.significance(last) * this.significance(previous),
-                predictor.afterPie.getProbability(last) * predictor.previousPie.getProbability(previous),
+                this.significance(after) * this.significance(before),
+                predictor.afterPie.getProbability(after) * predictor.beforePie.getProbability(before),
                 predictor.afterPie.getRawTotal()
         );
         return true;

@@ -122,13 +122,9 @@ public abstract class PatternGeneralization {
     // Separator
 
     protected void increaseSignificance(float pattern) {
-        int delete = this.significancePie.getSlices() - Pattern.globalDataLimit;
-
-        if (delete > 0) {
+        if (this.significancePie.getSlices() == Pattern.globalDataLimit) {
             synchronized (this.significancePie) {
-                for (int i = 0; i < delete; i++) {
-                    this.significancePie.removeLeastSignificant();
-                }
+                this.significancePie.removeLeastSignificant();
                 this.significancePie.add(pattern);
             }
         } else {
