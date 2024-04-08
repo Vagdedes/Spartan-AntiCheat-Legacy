@@ -12,7 +12,7 @@ public abstract class PatternFamily {
         this.patterns = new Pattern[patterns];
     }
 
-    protected void addPatterns(Pattern[] patterns) {
+    protected final void addPatterns(Pattern[] patterns) {
         for (int i = 0; i < patterns.length; i++) {
             this.patterns[i] = patterns[i];
         }
