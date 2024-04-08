@@ -21,7 +21,7 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 
-public class HashUtils { // todo change to ints
+public class HashUtils {
 
     public static final int
             trueHash = Boolean.hashCode(true),
