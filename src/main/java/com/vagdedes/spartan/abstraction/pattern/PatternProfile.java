@@ -13,12 +13,13 @@ public abstract class PatternProfile { // todo change to using floats
 
     private static final class Comparison {
         private long time;
-        private double trustFactor, averagePatternTime;
+        private double trustFactor;
+        private float averagePatternTime;
 
         private Comparison(long time, double trustFactor) {
             this.time = time;
             this.trustFactor = trustFactor;
-            this.averagePatternTime = -1.0;
+            this.averagePatternTime = -1.0f;
         }
     }
 
@@ -34,7 +35,7 @@ public abstract class PatternProfile { // todo change to using floats
         this.generalization = patternGeneralization;
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
         this.repetition = new PatternRepetition();
-        this.lastComparison = new Comparison(0L, -1.0);
+        this.lastComparison = new Comparison(0L, -1.0f);
         this.file = new File(
                 Register.plugin.getDataFolder()
                         + "/comparison/"
@@ -111,7 +112,7 @@ public abstract class PatternProfile { // todo change to using floats
                 this.comparisons.put(time, trustFactor);
                 this.lastComparison.time = time;
                 this.lastComparison.trustFactor = trustFactor;
-                this.lastComparison.averagePatternTime = -1.0;
+                this.lastComparison.averagePatternTime = -1.0f;
             }
 
             if (storage) {
@@ -126,7 +127,7 @@ public abstract class PatternProfile { // todo change to using floats
                 this.comparisons.put(time, trustFactor);
                 this.lastComparison.time = time;
                 this.lastComparison.trustFactor = trustFactor;
-                this.lastComparison.averagePatternTime = -1.0;
+                this.lastComparison.averagePatternTime = -1.0f;
             }
 
             if (storage) {
@@ -140,7 +141,7 @@ public abstract class PatternProfile { // todo change to using floats
 
     public void updateComparison(long time, double client, double probability, double total) {
         if (this.loaded) {
-            double significance = this.generalization.significance(client),
+            double significance = this.generalization.significance((float) client),
                     existingContribution = 1.0 - (1.0 / (total + 1.0)),
                     trustFactor;
 
@@ -235,7 +236,7 @@ public abstract class PatternProfile { // todo change to using floats
 
     // Separator
 
-    double averagePatternTime() {
+    float averagePatternTime() {
         if (this.lastComparison.averagePatternTime != -1.0) {
             return this.lastComparison.averagePatternTime;
         } else {
@@ -244,24 +245,24 @@ public abstract class PatternProfile { // todo change to using floats
             if (size > 1) {
                 Iterator<Long> iterator = this.comparisons.keySet().iterator();
                 long previousTime = iterator.next(), currentTime;
-                double total = 0.0;
+                float total = 0.0f;
 
                 while (iterator.hasNext()) {
                     currentTime = iterator.next();
                     total += currentTime - previousTime;
                     previousTime = currentTime;
                 }
-                return this.lastComparison.averagePatternTime = total / (size - 1.0);
+                return this.lastComparison.averagePatternTime = total / ((float) size - 1.0f);
             } else {
-                return -1.0;
+                return -1.0f;
             }
         }
     }
 
     double trustFactor() { // todo use
-        double averagePattern = this.generalization.averagePatternTime();
+        float averagePattern = this.generalization.averagePatternTime();
 
-        if (averagePattern == -1.0) {
+        if (averagePattern == -1.0f) {
             return -1.0;
         } else {
             int patternsRequired = AlgebraUtils.integerRound(

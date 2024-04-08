@@ -7,25 +7,25 @@ import java.util.TreeMap;
 
 public class ProbabilityRank {
 
-    private final Map<Double, Short> map;
-    private double total;
+    private final Map<Float, Short> map;
+    private float total;
 
     public ProbabilityRank() {
         this.map = new TreeMap<>();
-        this.total = 0.0;
+        this.total = 0.0f;
     }
 
     public ProbabilityRank clear() {
         this.map.clear();
-        this.total = 0.0;
+        this.total = 0.0f;
         return this;
     }
 
     public ProbabilityRank addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.map.put(
-                    number.doubleValue(),
-                    (short) (this.map.getOrDefault(number.doubleValue(), (short) 0) + 1)
+                    number.floatValue(),
+                    (short) (this.map.getOrDefault(number.floatValue(), (short) 0) + 1)
             );
             this.total++;
         }
@@ -35,8 +35,8 @@ public class ProbabilityRank {
     public ProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
         for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
             this.map.put(
-                    entry.getKey().doubleValue(),
-                    (short) (this.map.getOrDefault(entry.getKey().doubleValue(), (short) 0) + entry.getValue())
+                    entry.getKey().floatValue(),
+                    (short) (this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue())
             );
             this.total += entry.getValue();
         }
@@ -45,23 +45,23 @@ public class ProbabilityRank {
 
     public ProbabilityRank add(Number number) {
         this.map.put(
-                number.doubleValue(),
-                (short) (this.map.getOrDefault(number.doubleValue(), (short) 0) + 1)
+                number.floatValue(),
+                (short) (this.map.getOrDefault(number.floatValue(), (short) 0) + 1)
         );
         this.total++;
         return this;
     }
 
     public boolean remove(Number number) {
-        short count = this.map.getOrDefault(number.doubleValue(), (short) 0);
+        short count = this.map.getOrDefault(number.floatValue(), (short) 0);
 
         if (count == 1) {
-            this.map.remove(number.doubleValue());
+            this.map.remove(number.floatValue());
             this.total--;
             return true;
         } else {
             if (count > 0) {
-                this.map.put(number.doubleValue(), (short) (count - 1));
+                this.map.put(number.floatValue(), (short) (count - 1));
                 this.total--;
             }
             return false;
@@ -69,20 +69,20 @@ public class ProbabilityRank {
     }
 
     public ProbabilityRank delete(Number number) {
-        short count = this.map.getOrDefault(number.doubleValue(), (short) 0);
+        short count = this.map.getOrDefault(number.floatValue(), (short) 0);
 
         if (count > 0) {
-            this.map.remove(number.doubleValue());
+            this.map.remove(number.floatValue());
             this.total -= count;
         }
         return this;
     }
 
-    public Double removeLeastSignificant() {
-        double min = Double.MAX_VALUE;
-        Double key = null;
+    public Float removeLeastSignificant() {
+        float min = Float.MAX_VALUE;
+        Float key = null;
 
-        for (Map.Entry<Double, Short> entry : this.map.entrySet()) {
+        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
             if (entry.getValue() < min) {
                 min = entry.getValue();
                 key = entry.getKey();
@@ -99,11 +99,12 @@ public class ProbabilityRank {
     // Separator
 
     public double getPosition(Number number, double defaultValue) {
-        Iterator<Map.Entry<Double, Short>> iterator = this.map.entrySet().iterator();
-        double position = 0.0, find = number.doubleValue();
+        Iterator<Map.Entry<Float, Short>> iterator = this.map.entrySet().iterator();
+        double position = 0.0;
+        float find = number.floatValue();
 
         while (iterator.hasNext()) {
-            Map.Entry<Double, Short> next = iterator.next();
+            Map.Entry<Float, Short> next = iterator.next();
 
             if (next.getKey() == find) {
                 if (next.getValue() > 1) {
@@ -124,7 +125,7 @@ public class ProbabilityRank {
     }
 
     public double getProbability(Number number, double defaultValue) {
-        Short count = this.map.get(number.doubleValue());
+        Short count = this.map.get(number.floatValue());
         return count != null ? count / this.total : defaultValue;
     }
 
@@ -146,7 +147,7 @@ public class ProbabilityRank {
         return (int) this.total;
     }
 
-    public double getRawTotal() {
+    public float getRawTotal() {
         return this.total;
     }
 }

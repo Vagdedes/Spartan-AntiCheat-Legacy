@@ -5,8 +5,8 @@ import java.util.stream.Stream;
 
 public class ProbabilityPie {
 
-    private final Map<Double, Short> map;
-    private double total;
+    private final Map<Float, Short> map;
+    private float total;
 
     public ProbabilityPie() {
         this(-1);
@@ -14,12 +14,12 @@ public class ProbabilityPie {
 
     public ProbabilityPie(int capacity) {
         this.map = capacity >= 0 ? new LinkedHashMap<>(capacity) : new LinkedHashMap<>();
-        this.total = 0.0;
+        this.total = 0.0f;
     }
 
     public ProbabilityPie clear() {
         this.map.clear();
-        this.total = 0.0;
+        this.total = 0.0f;
         return this;
     }
 
@@ -35,12 +35,12 @@ public class ProbabilityPie {
     // Separator
 
     public ProbabilityPie create(Number number, int amount) {
-        Short count = this.map.get(number.doubleValue());
+        Short count = this.map.get(number.floatValue());
 
         if (count != null) {
             this.total -= count;
         }
-        this.map.put(number.doubleValue(), (short) amount);
+        this.map.put(number.floatValue(), (short) amount);
         this.total += amount;
         return this;
     }
@@ -51,15 +51,15 @@ public class ProbabilityPie {
 
     public ProbabilityPie increase(Number number, int amount) {
         this.map.put(
-                number.doubleValue(),
-                (short) (this.map.getOrDefault(number.doubleValue(), (short) 0) + amount)
+                number.floatValue(),
+                (short) (this.map.getOrDefault(number.floatValue(), (short) 0) + amount)
         );
         this.total += amount;
         return this;
     }
 
     public ProbabilityPie add(ProbabilityPie pie) {
-        for (Map.Entry<Double, Short> entry : pie.map.entrySet()) {
+        for (Map.Entry<Float, Short> entry : pie.map.entrySet()) {
             this.increase(entry.getKey(), entry.getValue());
         }
         return this;
@@ -75,7 +75,7 @@ public class ProbabilityPie {
     // Separator
 
     public ProbabilityPie delete(Number number) {
-        Short count = this.map.remove(number.doubleValue());
+        Short count = this.map.remove(number.floatValue());
 
         if (count != null) {
             this.total -= count;
@@ -88,7 +88,7 @@ public class ProbabilityPie {
     }
 
     public ProbabilityPie remove(ProbabilityPie pie) {
-        for (Map.Entry<Double, Short> entry : pie.map.entrySet()) {
+        for (Map.Entry<Float, Short> entry : pie.map.entrySet()) {
             this.decrease(entry.getKey(), entry.getValue());
         }
         return this;
@@ -101,16 +101,16 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie removeByEntry(Collection<Map.Entry<Double, Integer>> collection) {
-        for (Map.Entry<Double, Integer> number : collection) {
+    public ProbabilityPie removeByEntry(Collection<Map.Entry<Float, Integer>> collection) {
+        for (Map.Entry<Float, Integer> number : collection) {
             this.map.remove(number.getKey());
         }
         return this;
     }
 
-    public Collection<Double> removeOld(int amount) {
-        Collection<Double> collection = new ArrayList<>(amount);
-        Iterator<Double> iterator = this.map.keySet().iterator();
+    public Collection<Float> removeOld(int amount) {
+        Collection<Float> collection = new ArrayList<>(amount);
+        Iterator<Float> iterator = this.map.keySet().iterator();
 
         while (iterator.hasNext()) {
             collection.add(iterator.next());
@@ -123,11 +123,11 @@ public class ProbabilityPie {
         return collection;
     }
 
-    public Number removeLeastSignificant() {
-        double min = Double.MAX_VALUE;
-        Number key = null;
+    public Float removeLeastSignificant() {
+        float min = Float.MAX_VALUE;
+        Float key = null;
 
-        for (Map.Entry<Double, Short> entry : this.map.entrySet()) {
+        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
             if (entry.getValue() < min) {
                 min = entry.getValue();
                 key = entry.getKey();
@@ -142,15 +142,15 @@ public class ProbabilityPie {
     }
 
     public boolean decrease(Number number, int amount) {
-        Short count = this.map.get(number.doubleValue());
+        Short count = this.map.get(number.floatValue());
 
         if (count != null) {
             if (amount >= count) {
-                this.map.remove(number.doubleValue());
+                this.map.remove(number.floatValue());
                 this.total -= count;
                 return true;
             } else {
-                this.map.put(number.doubleValue(), (short) (count - amount));
+                this.map.put(number.floatValue(), (short) (count - amount));
                 this.total -= amount;
                 return false;
             }
@@ -170,11 +170,11 @@ public class ProbabilityPie {
     }
 
     public double getProbability(Number number, double defaultValue) {
-        Short count = this.map.get(number.doubleValue());
+        Short count = this.map.get(number.floatValue());
         return count != null ? count / this.total : defaultValue;
     }
 
-    public Stream<Map.Entry<Double, Short>> getProbabilitiesRanked() {
+    public Stream<Map.Entry<Float, Short>> getProbabilitiesRanked() {
         return this.map.entrySet().stream().sorted(
                 Map.Entry.comparingByValue(Comparator.reverseOrder())
         );
@@ -187,7 +187,7 @@ public class ProbabilityPie {
     }
 
     public int getCount(Number number, int defaultValue) {
-        return this.map.getOrDefault(number, (short) defaultValue);
+        return this.map.getOrDefault(number.floatValue(), (short) defaultValue);
     }
 
     // Separator
@@ -204,7 +204,7 @@ public class ProbabilityPie {
         return (int) this.total;
     }
 
-    public double getRawTotal() {
+    public float getRawTotal() {
         return this.total;
     }
 

@@ -97,23 +97,23 @@ public abstract class PatternGeneralization { // todo change to using floats
 
     // Separator
 
-    double averagePatternTime() {
-        double time = 0.0;
+    float averagePatternTime() {
+        float time = 0.0f;
         int profiles = 0;
 
         synchronized (this.profilesSynchronizer) {
             for (PatternProfile profile : this.getProfiles()) {
-                double average = profile.averagePatternTime();
+                float average = profile.averagePatternTime();
 
-                if (average != -1.0) {
+                if (average != -1.0f) {
                     time += average;
                     profiles++;
                 }
             }
         }
         return !SpartanBukkit.debug && profiles < ResearchEngine.requiredProfiles
-                ? -1.0
-                : time / (double) profiles;
+                ? -1.0f
+                : time / (float) profiles;
     }
 
     // Separator
@@ -135,13 +135,13 @@ public abstract class PatternGeneralization { // todo change to using floats
         }
     }
 
-    protected void decreaseSignificance(double pattern) {
+    protected void decreaseSignificance(float pattern) {
         synchronized (this.significancePie) {
             this.significancePie.remove(pattern);
         }
     }
 
-    double significance(double value) {
+    double significance(float value) {
         synchronized (this.significancePie) {
             return this.significancePie.getProbability(value);
         }
@@ -166,7 +166,7 @@ public abstract class PatternGeneralization { // todo change to using floats
     // Separator
 
     protected void deleteCustomLessons(int situation, double pattern) {
-        this.decreaseSignificance(pattern);
+        this.decreaseSignificance((float) pattern);
         this.deleteCustomLessonsInternal(situation, (float) pattern);
     }
 
