@@ -62,7 +62,7 @@ public abstract class PatternProfile {
                         for (Map.Entry<String, Object> entry : values.entrySet()) {
                             if (entry.getValue() instanceof Double) {
                                 try {
-                                    if (valid == Pattern.comparisonDataLimit) {
+                                    if (valid == Pattern.maxComparisonDataLimit) {
                                         remove.add(entry.getKey());
                                     } else {
                                         this.updateComparison(
@@ -109,7 +109,7 @@ public abstract class PatternProfile {
     // Separator
 
     private void updateComparison(long time, double trustFactor, boolean storage) {
-        if (this.comparisons.size() == Pattern.comparisonDataLimit) {
+        if (this.comparisons.size() == Pattern.maxComparisonDataLimit) {
             long oldTime;
 
             synchronized (this.comparisons) {
@@ -286,28 +286,25 @@ public abstract class PatternProfile {
 
             if (patternsRequired <= 1) {
                 return this.lastComparison.trustFactor;
-            } else {
-                patternsRequired = Math.min(patternsRequired, Pattern.comparisonDataLimit);
+            } else if (comparisons.size() >= Pattern.minComparisonDataLimit) {
+                patternsRequired = Math.min(patternsRequired, this.comparisons.size());
                 int dismiss = this.comparisons.size() - patternsRequired;
+                double sum = 0.0;
 
-                if (dismiss < 0) {
-                    return -1.0;
-                } else {
-                    double sum = 0.0;
+                synchronized (this.comparisons) {
+                    Iterator<Double> iterator = this.comparisons.values().iterator();
 
-                    synchronized (this.comparisons) {
-                        Iterator<Double> iterator = this.comparisons.values().iterator();
-
-                        for (int i = 0; i < dismiss; i++) {
-                            iterator.next();
-                        }
-
-                        while (iterator.hasNext()) {
-                            sum += iterator.next();
-                        }
+                    for (int i = 0; i < dismiss; i++) {
+                        iterator.next();
                     }
-                    return sum / (double) patternsRequired;
+
+                    while (iterator.hasNext()) {
+                        sum += iterator.next();
+                    }
                 }
+                return sum / (double) patternsRequired;
+            } else {
+                return -1.0;
             }
         }
     }
