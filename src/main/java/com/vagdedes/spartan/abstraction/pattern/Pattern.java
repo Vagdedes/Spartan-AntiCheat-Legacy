@@ -151,7 +151,7 @@ public class Pattern {
     }
 
     void setToFile(PlayerProfile profile, long time, int situation, double pattern) {
-        SpartanBukkit.dataThread.execute(() -> {
+        SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
             this.count++;
             this.configuration.set(time + "." + profileOption, profile.getName());
             this.configuration.set(time + "." + situationOption, situation);
@@ -160,7 +160,7 @@ public class Pattern {
     }
 
     void storeFiles() {
-        SpartanBukkit.dataThread.execute(() -> {
+        SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
             try {
                 this.configuration.save(this.file);
 

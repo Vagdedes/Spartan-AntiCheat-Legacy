@@ -556,10 +556,10 @@ public class ResearchEngine {
             }
         };
 
-        if (!SpartanBukkit.isSynchronised()) {
-            runnable.run();
-        } else {
+        if (SpartanBukkit.isSynchronised()) {
             SpartanBukkit.dataThread.executeIfFree(runnable);
+        } else {
+            runnable.run();
         }
     }
 

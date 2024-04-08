@@ -50,7 +50,7 @@ public abstract class PatternProfile {
             if (this.file.isFile()) {
                 this.loaded = false;
 
-                SpartanBukkit.dataThread.execute(() -> {
+                SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     Map<String, Object> values = this.configuration.getValues(false);
 
                     if (values.isEmpty()) {
@@ -123,7 +123,7 @@ public abstract class PatternProfile {
             }
 
             if (storage) {
-                SpartanBukkit.dataThread.execute(() -> {
+                SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     this.configuration.set(Long.toString(oldTime), null);
                     this.configuration.set(Long.toString(time), trustFactor);
                     this.generalization.queueStorage(this);
@@ -138,7 +138,7 @@ public abstract class PatternProfile {
             }
 
             if (storage) {
-                SpartanBukkit.dataThread.execute(() -> {
+                SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     this.configuration.set(Long.toString(time), trustFactor);
                     this.generalization.queueStorage(this);
                 });
@@ -163,7 +163,7 @@ public abstract class PatternProfile {
     // Separator
 
     void store() {
-        SpartanBukkit.dataThread.execute(() -> {
+        SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
             try {
                 this.configuration.save(this.file);
             } catch (Exception ignored) {
@@ -181,7 +181,7 @@ public abstract class PatternProfile {
             }
             this.generalization.dequeueStorage(this);
 
-            SpartanBukkit.dataThread.execute(() -> {
+            SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                 this.file.delete();
                 File[] files = this.generalization.parent.getLearningFiles();
 

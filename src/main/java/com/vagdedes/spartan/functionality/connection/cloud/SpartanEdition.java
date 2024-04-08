@@ -43,7 +43,7 @@ public class SpartanEdition {
     // Verification
 
     public static void refresh() {
-        Runnable runnable = () -> {
+        SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
             if (SpartanBukkit.canAdvertise && !alternativeVersion) {
                 boolean changed = false;
 
@@ -75,13 +75,7 @@ public class SpartanEdition {
                     }
                 }
             }
-        };
-
-        if (SpartanBukkit.isSynchronised()) {
-            SpartanBukkit.connectionThread.execute(runnable);
-        } else {
-            runnable.run();
-        }
+        });
     }
 
     // General

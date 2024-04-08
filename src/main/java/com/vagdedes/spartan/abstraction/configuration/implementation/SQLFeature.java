@@ -366,7 +366,7 @@ public class SQLFeature extends ConfigurationBuilder {
             }
 
             if (list.size() >= 10) {
-                Runnable runnable = () -> {
+                SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     List<String> newList;
 
                     synchronized (list) {
@@ -376,13 +376,7 @@ public class SQLFeature extends ConfigurationBuilder {
                     for (String insert : newList) {
                         update(insert);
                     }
-                };
-
-                if (SpartanBukkit.isSynchronised()) {
-                    SpartanBukkit.dataThread.execute(runnable);
-                } else {
-                    runnable.run();
-                }
+                });
             }
         }
     }

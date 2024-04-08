@@ -1,9 +1,8 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+
+import java.util.*;
 
 public class Threads {
 
@@ -76,12 +75,23 @@ public class Threads {
             }
         }
 
+        public boolean executeIfSyncElseHere(Runnable runnable) {
+            if (SpartanBukkit.isSynchronised()) {
+                synchronized (runnables) {
+                    return runnables.add(runnable);
+                }
+            } else {
+                runnable.run();
+                return false;
+            }
+        }
+
         public boolean executeWithPriority(Runnable runnable) {
             synchronized (runnables) {
                 if (runnables.isEmpty()) {
                     return runnables.add(runnable);
                 } else {
-                    ArrayList<Runnable> runnables = new ArrayList<>(this.runnables.size() + 1);
+                    Collection<Runnable> runnables = new ArrayList<>(this.runnables.size() + 1);
                     runnables.add(runnable);
                     runnables.addAll(this.runnables);
                     this.runnables.clear();
