@@ -23,8 +23,8 @@ public class SpartanBukkit {
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
-            playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(2L),
             dataThread = new Threads.ThreadPool(1L),
+            playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L),
             chunkThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L),
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
 

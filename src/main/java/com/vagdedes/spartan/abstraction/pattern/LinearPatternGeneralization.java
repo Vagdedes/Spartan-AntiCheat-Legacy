@@ -35,10 +35,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     protected LinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
-        this.profiles = new LinkedHashMap<>();
-        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.profiles = new HashMap<>();
+        this.correlations = Collections.synchronizedMap(new HashMap<>());
         this.initialHash = Objects.hash(pattern.key.hashCode(), System.currentTimeMillis());
-        this.cache = new LinkedHashMap<>();
+        this.cache = new HashMap<>();
     }
 
     @Override

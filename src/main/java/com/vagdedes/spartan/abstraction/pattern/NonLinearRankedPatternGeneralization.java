@@ -5,7 +5,7 @@ import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class NonLinearRankedPatternGeneralization extends PatternGeneralization {
@@ -15,8 +15,8 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
     protected NonLinearRankedPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
-        this.profiles = new LinkedHashMap<>();
-        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.profiles = new HashMap<>();
+        this.correlations = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override

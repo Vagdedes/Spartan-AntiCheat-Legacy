@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class NonLinearPatternProfile extends PatternProfile {
@@ -12,7 +12,7 @@ public class NonLinearPatternProfile extends PatternProfile {
 
     NonLinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         super(patternGeneralization, profile);
-        this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.correlations = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override

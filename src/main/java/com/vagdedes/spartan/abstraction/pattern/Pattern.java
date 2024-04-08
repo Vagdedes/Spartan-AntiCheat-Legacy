@@ -85,7 +85,7 @@ public class Pattern {
                 + "/learning/"
                 + key;
         this.load = false;
-        this.generalizations = Collections.synchronizedMap(new LinkedHashMap<>(generalizations.length));
+        this.generalizations = Collections.synchronizedMap(new HashMap<>(generalizations.length));
 
         for (short generalization : generalizations) {
             this.generalizations.put(
@@ -181,7 +181,7 @@ public class Pattern {
         }
         this.load = true;
         this.storeFiles();
-        Map<Short, PatternGeneralization> generalizations = new LinkedHashMap<>();
+        Map<Short, PatternGeneralization> generalizations = new HashMap<>();
         File[] files = this.getLearningFiles();
 
         if (files != null) {
