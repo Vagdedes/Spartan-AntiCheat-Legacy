@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 import me.vagdedes.spartan.system.Enums;
 
 public abstract class DetectionExecutor {
@@ -78,6 +77,7 @@ public abstract class DetectionExecutor {
             player.debug(
                     false,
                     false,
+                    trustFactor,
                     generalization.rankTrustFactor(trustFactor)
             );
         }

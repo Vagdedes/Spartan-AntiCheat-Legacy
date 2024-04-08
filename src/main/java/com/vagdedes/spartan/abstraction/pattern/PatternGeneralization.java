@@ -103,20 +103,24 @@ public abstract class PatternGeneralization {
     // Separator
 
     public double rankTrustFactor(double trustFactor) {
-        ProbabilityRank rank = new ProbabilityRank();
+        if (trustFactor == -1.0) {
+            return 1.0;
+        } else {
+            ProbabilityRank rank = new ProbabilityRank();
 
-        synchronized (this.profilesSynchronizer) {
-            for (PatternProfile profile : this.getProfiles()) {
-                double other = profile.trustFactor();
+            synchronized (this.profilesSynchronizer) {
+                for (PatternProfile profile : this.getProfiles()) {
+                    double other = profile.trustFactor();
 
-                if (other != -1.0) {
-                    rank.add(other);
+                    if (other != -1.0) {
+                        rank.add(other);
+                    }
                 }
             }
+            return rank.getParts() < ResearchEngine.requiredProfiles
+                    ? 1.0
+                    : rank.getPosition(trustFactor);
         }
-        return rank.getParts() < ResearchEngine.requiredProfiles
-                ? 1.0
-                : rank.getPosition(trustFactor);
     }
 
     // Separator
