@@ -79,7 +79,8 @@ public class Pattern {
 
     public Pattern(String key,
                    short[] generalizations,
-                   boolean linear) {
+                   boolean linear,
+                   boolean ranked) {
         this.key = key;
         this.learningFolder = Register.plugin.getDataFolder()
                 + "/learning/"
@@ -91,7 +92,9 @@ public class Pattern {
             this.generalizations.put(
                     generalization,
                     linear ? new LinearPatternGeneralization(this, generalization)
-                            : new NonLinearPatternGeneralization(this, generalization)
+                            : (ranked
+                            ? new NonLinearRankedPatternGeneralization(this, generalization)
+                            : new NonLinearPatternGeneralization(this, generalization))
             );
         }
         this.reloadLearningFile();
@@ -195,7 +198,9 @@ public class Pattern {
                         entry.getKey(),
                         entry.getValue() instanceof LinearPatternGeneralization
                                 ? new LinearPatternGeneralization(this, entry.getValue().scissors)
-                                : new NonLinearPatternGeneralization(this, entry.getValue().scissors)
+                                : (entry.getValue() instanceof NonLinearPatternGeneralization
+                                ? new NonLinearPatternGeneralization(this, entry.getValue().scissors)
+                                : new NonLinearRankedPatternGeneralization(this, entry.getValue().scissors))
                 );
             }
             for (File file : files) {

@@ -1,24 +1,24 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
+import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class NonLinearPatternGeneralization extends PatternGeneralization { // todo create new one as well with pies only
+public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
-    private final Map<Integer, ProbabilityRank> correlations;
-    private final ProbabilityRank empty;
+    private final Map<Integer, ProbabilityPie> correlations;
+    private final ProbabilityPie empty;
 
     protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.empty = new ProbabilityRank();
+        this.empty = new ProbabilityPie(0);
     }
 
     @Override
@@ -39,18 +39,18 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                ProbabilityRank rank = this.correlations.computeIfAbsent(
+                ProbabilityPie pie = this.correlations.computeIfAbsent(
                         situation,
-                        k -> new ProbabilityRank()
+                        k -> new ProbabilityPie()
                 );
-                int delete = rank.getParts() - Pattern.individualGlobalDataLimit;
+                int delete = pie.getSlices() - Pattern.individualGlobalDataLimit;
 
                 if (delete > 0) {
                     for (int i = 0; i < delete; i++) {
-                        this.decreaseSignificance(rank.removeLeastSignificant());
+                        this.decreaseSignificance(pie.removeLeastSignificant());
                     }
                 }
-                rank.add(pattern);
+                pie.add(pattern);
             }
             this.increaseSignificance(pattern);
             return true;
@@ -62,11 +62,11 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     @Override
     protected void deleteCustomLessonsInternal(int situation, float pattern) {
         synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.get(situation);
+            ProbabilityPie pie = this.correlations.get(situation);
 
-            if (rank != null
-                    && rank.remove(pattern)
-                    && rank.isEmpty()) {
+            if (pie != null
+                    && pie.remove(pattern)
+                    && pie.isEmpty()) {
                 this.correlations.remove(situation);
             }
         }
@@ -84,23 +84,12 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
 
     // Separator
 
-    public double[] getProbabilityAndPositionAndTotal(int situation, double client) {
-        synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
-            return new double[]{
-                    rank.getProbability(client),
-                    rank.getPosition(client),
-                    rank.getRawTotal()
-            };
-        }
-    }
-
     public double[] getProbabilityAndTotal(int situation, double client) {
         synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.getOrDefault(situation, this.empty);
+            ProbabilityPie pie = this.correlations.getOrDefault(situation, this.empty);
             return new double[]{
-                    rank.getProbability(client),
-                    rank.getRawTotal()
+                    pie.getProbability(client),
+                    pie.getRawTotal()
             };
         }
     }

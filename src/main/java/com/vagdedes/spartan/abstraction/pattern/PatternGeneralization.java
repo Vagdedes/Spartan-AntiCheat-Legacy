@@ -118,7 +118,7 @@ public abstract class PatternGeneralization { // todo change to using floats
 
     // Separator
 
-    protected void increaseSignificance(double pattern) {
+    protected void increaseSignificance(float pattern) {
         int delete = this.significancePie.getSlices() - Pattern.globalDataLimit;
 
         if (delete > 0) {

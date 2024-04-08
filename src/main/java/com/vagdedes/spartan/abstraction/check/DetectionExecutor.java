@@ -1,9 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.pattern.LinearPatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.LinearPatternProfile;
-import com.vagdedes.spartan.abstraction.pattern.NonLinearPatternGeneralization;
-import com.vagdedes.spartan.abstraction.pattern.Pattern;
+import com.vagdedes.spartan.abstraction.pattern.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -102,8 +99,7 @@ public abstract class DetectionExecutor {
     protected final void nonLinearMLDetection(Pattern patternStorage,
                                               int generalization,
                                               int situation,
-                                              double client,
-                                              boolean rank) {
+                                              double client) {
         long time = System.currentTimeMillis();
 
         if (generalization != 0) {
@@ -111,23 +107,32 @@ public abstract class DetectionExecutor {
         }
         NonLinearPatternGeneralization patternGeneralization =
                 (NonLinearPatternGeneralization) patternStorage.getGeneralization(generalization);
+        double[] probabilityAndTotal = patternGeneralization.getProbabilityAndTotal(situation, client);
+        patternGeneralization.getProfile(player.getProfile()).updateComparison(
+                time,
+                client,
+                probabilityAndTotal[0],
+                probabilityAndTotal[1]
+        );
+    }
 
-        if (rank) {
-            double[] probabilityAndPositionAndTotal = patternGeneralization.getProbabilityAndPositionAndTotal(situation, client);
-            patternGeneralization.getProfile(player.getProfile()).updateComparison(
-                    time,
-                    client,
-                    probabilityAndPositionAndTotal[0] * probabilityAndPositionAndTotal[1],
-                    probabilityAndPositionAndTotal[2]
-            );
-        } else {
-            double[] probabilityAndTotal = patternGeneralization.getProbabilityAndTotal(situation, client);
-            patternGeneralization.getProfile(player.getProfile()).updateComparison(
-                    time,
-                    client,
-                    probabilityAndTotal[0],
-                    probabilityAndTotal[1]
-            );
+    protected final void nonLinearRankedMLDetection(Pattern patternStorage,
+                                                    int generalization,
+                                                    int situation,
+                                                    double client) {
+        long time = System.currentTimeMillis();
+
+        if (generalization != 0) {
+            client = AlgebraUtils.cut(client, generalization);
         }
+        NonLinearRankedPatternGeneralization patternGeneralization =
+                (NonLinearRankedPatternGeneralization) patternStorage.getGeneralization(generalization);
+        double[] probabilityAndPositionAndTotal = patternGeneralization.getProbabilityAndPositionAndTotal(situation, client);
+        patternGeneralization.getProfile(player.getProfile()).updateComparison(
+                time,
+                client,
+                probabilityAndPositionAndTotal[0] * probabilityAndPositionAndTotal[1],
+                probabilityAndPositionAndTotal[2]
+        );
     }
 }

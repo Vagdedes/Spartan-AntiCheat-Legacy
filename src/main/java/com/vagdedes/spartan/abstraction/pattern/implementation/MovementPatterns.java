@@ -18,28 +18,32 @@ public class MovementPatterns extends PatternFamily {
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },
-                                true
+                                true,
+                                false
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },
-                                true
+                                true,
+                                false
                         ),
                         this.all = new Pattern(
                                 "movement/distance/all",
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },
-                                true
+                                true,
+                                false
                         ),
                         this.fall = new Pattern(
                                 "movement/distance/fall",
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },
-                                true
+                                true,
+                                false
                         )
                 }
         );
