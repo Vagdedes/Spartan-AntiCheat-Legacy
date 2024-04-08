@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.*;
 
-public abstract class PatternProfile { // todo change to using floats
+public abstract class PatternProfile {
 
     private static final class Comparison {
         private long time;

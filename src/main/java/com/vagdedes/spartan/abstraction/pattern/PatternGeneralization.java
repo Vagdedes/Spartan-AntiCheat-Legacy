@@ -8,7 +8,7 @@ import com.vagdedes.spartan.utils.math.ProbabilityPie;
 
 import java.util.*;
 
-public abstract class PatternGeneralization { // todo change to using floats
+public abstract class PatternGeneralization {
 
     final Pattern parent;
     final short scissors;
