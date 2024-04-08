@@ -98,59 +98,64 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
-        float after, current, before;
 
-        synchronized (patternProfile.correlations) {
-            LinkedList<Float> list = patternProfile.correlations.get(situation);
+        if (patternProfile.isLoaded()) {
+            float after, current, before;
 
-            if (list != null && list.size() >= 3) {
-                after = list.getLast();
-                current = list.get(list.size() - 2);
-                before = list.get(list.size() - 3);
-            } else {
-                return false;
+            synchronized (patternProfile.correlations) {
+                LinkedList<Float> list = patternProfile.correlations.get(situation);
+
+                if (list != null && list.size() >= 3) {
+                    after = list.getLast();
+                    current = list.get(list.size() - 2);
+                    before = list.get(list.size() - 3);
+                } else {
+                    return false;
+                }
             }
-        }
-        ProbabilityPredictor predictor;
-        int hash = HashUtils.extendInt(this.initialHash, situation);
-        hash = HashUtils.extendInt(hash, Float.hashCode(current));
+            ProbabilityPredictor predictor;
+            int hash = HashUtils.extendInt(this.initialHash, situation);
+            hash = HashUtils.extendInt(hash, Float.hashCode(current));
 
-        synchronized (this.correlations) {
-            Cache cache = this.cache.get(hash);
+            synchronized (this.correlations) {
+                Cache cache = this.cache.get(hash);
 
-            if (cache == null) {
-                Collection<Float> collection = this.correlations.get(situation);
+                if (cache == null) {
+                    Collection<Float> collection = this.correlations.get(situation);
 
-                if (collection != null) {
-                    if (this.cache.size() == Pattern.individualGlobalDataLimit) {
-                        Iterator<Integer> iterator = this.cache.keySet().iterator();
-                        iterator.next();
-                        iterator.remove();
+                    if (collection != null) {
+                        if (this.cache.size() == Pattern.individualGlobalDataLimit) {
+                            Iterator<Integer> iterator = this.cache.keySet().iterator();
+                            iterator.next();
+                            iterator.remove();
+                        }
+                        predictor = new ProbabilityPredictor(collection, current);
+                        this.cache.put(hash, new Cache(predictor));
+                    } else {
+                        return false;
                     }
-                    predictor = new ProbabilityPredictor(collection, current);
-                    this.cache.put(hash, new Cache(predictor));
-                } else {
-                    return false;
-                }
-            } else if (cache.isExpired()) {
-                Collection<Float> collection = this.correlations.get(situation);
+                } else if (cache.isExpired()) {
+                    Collection<Float> collection = this.correlations.get(situation);
 
-                if (collection != null) {
-                    predictor = cache.refresh(new ProbabilityPredictor(collection, current));
+                    if (collection != null) {
+                        predictor = cache.refresh(new ProbabilityPredictor(collection, current));
+                    } else {
+                        return false;
+                    }
                 } else {
-                    return false;
+                    predictor = cache.predictor;
                 }
-            } else {
-                predictor = cache.predictor;
             }
+            patternProfile.updateComparison(
+                    time,
+                    this.significance(after) * this.significance(before),
+                    predictor.afterPie.getProbability(after) * predictor.beforePie.getProbability(before),
+                    predictor.afterPie.getRawTotal()
+            );
+            return true;
+        } else {
+            return false;
         }
-        patternProfile.updateComparison(
-                time,
-                this.significance(after) * this.significance(before),
-                predictor.afterPie.getProbability(after) * predictor.beforePie.getProbability(before),
-                predictor.afterPie.getRawTotal()
-        );
-        return true;
     }
 
     @Override

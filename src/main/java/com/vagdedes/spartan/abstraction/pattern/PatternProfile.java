@@ -100,6 +100,12 @@ public abstract class PatternProfile {
         }
     }
 
+    protected final boolean isLoaded() {
+        return this.loaded;
+    }
+
+    // Separator
+
     private void updateComparison(long time, double trustFactor, boolean storage) {
         if (this.comparisons.size() == Pattern.comparisonDataLimit) {
             long oldTime;
@@ -139,19 +145,17 @@ public abstract class PatternProfile {
     }
 
     void updateComparison(long time, double significance, double probability, double total) {
-        if (this.loaded) {
-            double existingContribution = 1.0 - (1.0 / (total + 1.0)),
-                    trustFactor;
+        double existingContribution = 1.0 - (1.0 / (total + 1.0)),
+                trustFactor;
 
-            if (significance == 0.0
-                    || probability == 0.0
-                    || existingContribution == 0.0) {
-                trustFactor = 0.0;
-            } else {
-                trustFactor = significance * probability * existingContribution;
-            }
-            this.updateComparison(time, trustFactor, true);
+        if (significance == 0.0
+                || probability == 0.0
+                || existingContribution == 0.0) {
+            trustFactor = 0.0;
+        } else {
+            trustFactor = significance * probability * existingContribution;
         }
+        this.updateComparison(time, trustFactor, true);
     }
 
     // Separator

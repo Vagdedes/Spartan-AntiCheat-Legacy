@@ -64,31 +64,36 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     @Override
     protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
-        float pattern;
 
-        synchronized (patternProfile.correlations) {
-            Float cache = patternProfile.correlations.get(situation);
+        if (patternProfile.isLoaded()) {
+            float pattern;
 
-            if (cache != null) {
-                pattern = cache;
-            } else {
-                return false;
+            synchronized (patternProfile.correlations) {
+                Float cache = patternProfile.correlations.get(situation);
+
+                if (cache != null) {
+                    pattern = cache;
+                } else {
+                    return false;
+                }
             }
-        }
-        synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.get(situation);
+            synchronized (this.correlations) {
+                ProbabilityRank rank = this.correlations.get(situation);
 
-            if (rank != null) {
-                patternProfile.updateComparison(
-                        time,
-                        this.significance(pattern),
-                        rank.getPosition(pattern) * rank.getProbability(pattern),
-                        rank.getRawTotal()
-                );
-                return true;
-            } else {
-                return false;
+                if (rank != null) {
+                    patternProfile.updateComparison(
+                            time,
+                            this.significance(pattern),
+                            rank.getPosition(pattern) * rank.getProbability(pattern),
+                            rank.getRawTotal()
+                    );
+                    return true;
+                } else {
+                    return false;
+                }
             }
+        } else {
+            return false;
         }
     }
 

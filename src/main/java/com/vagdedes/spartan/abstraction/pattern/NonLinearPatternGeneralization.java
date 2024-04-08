@@ -64,31 +64,36 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
-        float pattern;
 
-        synchronized (patternProfile.correlations) {
-            Float cache = patternProfile.correlations.get(situation);
+        if (patternProfile.isLoaded()) {
+            float pattern;
 
-            if (cache != null) {
-                pattern = cache;
-            } else {
-                return false;
+            synchronized (patternProfile.correlations) {
+                Float cache = patternProfile.correlations.get(situation);
+
+                if (cache != null) {
+                    pattern = cache;
+                } else {
+                    return false;
+                }
             }
-        }
-        synchronized (this.correlations) {
-            ProbabilityPie pie = this.correlations.get(situation);
+            synchronized (this.correlations) {
+                ProbabilityPie pie = this.correlations.get(situation);
 
-            if (pie != null) {
-                patternProfile.updateComparison(
-                        time,
-                        this.significance(pattern),
-                        pie.getProbability(pattern),
-                        pie.getRawTotal()
-                );
-                return true;
-            } else {
-                return false;
+                if (pie != null) {
+                    patternProfile.updateComparison(
+                            time,
+                            this.significance(pattern),
+                            pie.getProbability(pattern),
+                            pie.getRawTotal()
+                    );
+                    return true;
+                } else {
+                    return false;
+                }
             }
+        } else {
+            return false;
         }
     }
 
