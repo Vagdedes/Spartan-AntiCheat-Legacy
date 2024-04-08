@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 
 import java.util.*;
 
@@ -80,8 +81,38 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void compareInternal(PlayerProfile playerProfile, long time, int situation) {
+    protected boolean compareInternal(PlayerProfile playerProfile, long time, int situation) {
+        LinearPatternProfile patternProfile = this.getProfile(playerProfile);
+        float last, previous;
 
+        synchronized (patternProfile.correlations) {
+            LinkedList<Float> list = patternProfile.correlations.get(situation);
+
+            if (list != null && list.size() >= 2) {
+                last = list.getLast();
+                previous = list.get(list.size() - 2);
+            } else {
+                return false;
+            }
+        }
+        ProbabilityPredictor predictor;
+
+        synchronized (this.correlations) {
+            Collection<Float> list = this.correlations.get(situation);
+
+            if (list != null) {
+                predictor = new ProbabilityPredictor(list, last);
+            } else {
+                return false;
+            }
+        }
+        patternProfile.updateComparison( // todo recheck last
+                time,
+                this.significance(last) * this.significance(previous),
+                predictor.afterPie.getProbability(last) * predictor.previousPie.getProbability(previous),
+                predictor.afterPie.getRawTotal()
+        );
+        return true;
     }
 
     @Override

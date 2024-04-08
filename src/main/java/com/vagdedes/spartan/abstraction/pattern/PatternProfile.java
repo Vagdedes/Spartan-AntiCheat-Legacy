@@ -138,10 +138,9 @@ public abstract class PatternProfile {
         }
     }
 
-    void updateComparison(long time, double client, double probability, double total) {
+    void updateComparison(long time, double significance, double probability, double total) {
         if (this.loaded) {
-            double significance = this.generalization.significance((float) client),
-                    existingContribution = 1.0 - (1.0 / (total + 1.0)),
+            double existingContribution = 1.0 - (1.0 / (total + 1.0)),
                     trustFactor;
 
             if (significance == 0.0

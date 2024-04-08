@@ -16,30 +16,6 @@ public class LinearPatternProfile extends PatternProfile {
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
     }
 
-    float getPreviousData(int situation) {
-        synchronized (this.correlations) {
-            LinkedList<Float> list = this.correlations.get(situation);
-
-            if (list != null) {
-                return list.size() <= 1 ? Float.MIN_VALUE : list.get(list.size() - 2);
-            } else {
-                return Float.MIN_VALUE;
-            }
-        }
-    }
-
-    float getLastData(int situation) {
-        synchronized (this.correlations) {
-            LinkedList<Float> list = this.correlations.get(situation);
-
-            if (list != null) {
-                return list.isEmpty() ? Float.MIN_VALUE : list.getLast();
-            } else {
-                return Float.MIN_VALUE;
-            }
-        }
-    }
-
     @Override
     void deleteCustomData() {
         synchronized (this.correlations) {

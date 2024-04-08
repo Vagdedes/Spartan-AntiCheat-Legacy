@@ -71,9 +71,11 @@ public abstract class DetectionExecutor {
     // Separator
 
     protected final void machineLearningDetection(PatternGeneralization generalization, int situation) {
-        generalization.compare(
+        if (generalization.compare(
                 player.getProfile(),
                 situation
-        );
+        )) {
+            // todo
+        }
     }
 }

@@ -12,13 +12,11 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
     private final Map<Integer, ProbabilityPie> correlations;
-    private final ProbabilityPie empty;
 
     protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.empty = new ProbabilityPie(0);
     }
 
     @Override
@@ -57,6 +55,9 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                 }
                 pie.add(pattern);
             }
+            synchronized (patternProfile.correlations) {
+                patternProfile.correlations.put(situation, pattern);
+            }
             this.increaseSignificance(pattern);
             return true;
         } else {
@@ -65,8 +66,34 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void compareInternal(PlayerProfile playerProfile, long time, int situation) {
+    protected boolean compareInternal(PlayerProfile playerProfile, long time, int situation) {
+        NonLinearPatternProfile patternProfile = this.getProfile(playerProfile);
+        float pattern;
 
+        synchronized (patternProfile.correlations) {
+            Float cache = patternProfile.correlations.get(situation);
+
+            if (cache != null) {
+                pattern = cache;
+            } else {
+                return false;
+            }
+        }
+        synchronized (this.correlations) {
+            ProbabilityPie pie = this.correlations.get(situation);
+
+            if (pie != null) {
+                patternProfile.updateComparison(
+                        time,
+                        this.significance(pattern),
+                        pie.getProbability(pattern),
+                        pie.getRawTotal()
+                );
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override

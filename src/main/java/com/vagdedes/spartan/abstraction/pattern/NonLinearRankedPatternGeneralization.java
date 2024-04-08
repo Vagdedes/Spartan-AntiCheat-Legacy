@@ -12,13 +12,11 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
     private final Map<Integer, ProbabilityRank> correlations;
-    private final ProbabilityRank empty;
 
     protected NonLinearRankedPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
         this.profiles = new LinkedHashMap<>();
         this.correlations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.empty = new ProbabilityRank();
     }
 
     @Override
@@ -57,6 +55,9 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                 }
                 rank.add(pattern);
             }
+            synchronized (patternProfile.correlations) {
+                patternProfile.correlations.put(situation, pattern);
+            }
             this.increaseSignificance(pattern);
             return true;
         } else {
@@ -65,8 +66,34 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     }
 
     @Override
-    protected void compareInternal(PlayerProfile playerProfile, long time, int situation) {
+    protected boolean compareInternal(PlayerProfile playerProfile, long time, int situation) {
+        NonLinearPatternProfile patternProfile = this.getProfile(playerProfile);
+        float pattern;
 
+        synchronized (patternProfile.correlations) {
+            Float cache = patternProfile.correlations.get(situation);
+
+            if (cache != null) {
+                pattern = cache;
+            } else {
+                return false;
+            }
+        }
+        synchronized (this.correlations) {
+            ProbabilityRank rank = this.correlations.get(situation);
+
+            if (rank != null) {
+                patternProfile.updateComparison(
+                        time,
+                        this.significance(pattern),
+                        rank.getPosition(pattern) * rank.getProbability(pattern),
+                        rank.getRawTotal()
+                );
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override

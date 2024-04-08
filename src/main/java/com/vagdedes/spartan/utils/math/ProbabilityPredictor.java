@@ -6,8 +6,7 @@ public class ProbabilityPredictor { // todo add cache based on search
 
     public final ProbabilityPie previousPie, afterPie;
 
-    public ProbabilityPredictor(Collection<Float> totalPatterns,
-                                float currentPattern) {
+    public ProbabilityPredictor(Collection<Float> totalPatterns, float currentPattern) {
         this.previousPie = new ProbabilityPie();
         this.afterPie = new ProbabilityPie();
 
