@@ -23,7 +23,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
         private ProbabilityPredictor refresh(ProbabilityPredictor predictor) {
             this.predictor = predictor;
-            this.expiration = System.currentTimeMillis() + 1_000;
+            this.expiration = System.currentTimeMillis() + 1_000L;
             return predictor;
         }
     }
@@ -96,8 +96,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean compareInternal(PlayerProfile playerProfile, long time, int situation) {
-        LinearPatternProfile patternProfile = this.getProfile(playerProfile);
+    protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
+        LinearPatternProfile patternProfile = this.getProfile(profile);
         float after, current, before;
 
         synchronized (patternProfile.correlations) {
@@ -112,7 +112,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             }
         }
         ProbabilityPredictor predictor;
-        int hash = HashUtils.extendInt(this.initialHash, Float.hashCode(current));
+        int hash = HashUtils.extendInt(this.initialHash, situation);
+        hash = HashUtils.extendInt(hash, Float.hashCode(current));
 
         synchronized (this.correlations) {
             Cache cache = this.cache.get(hash);

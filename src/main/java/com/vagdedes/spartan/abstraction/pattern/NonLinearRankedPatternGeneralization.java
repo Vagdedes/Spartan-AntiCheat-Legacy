@@ -62,8 +62,8 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     }
 
     @Override
-    protected boolean compareInternal(PlayerProfile playerProfile, long time, int situation) {
-        NonLinearPatternProfile patternProfile = this.getProfile(playerProfile);
+    protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
+        NonLinearPatternProfile patternProfile = this.getProfile(profile);
         float pattern;
 
         synchronized (patternProfile.correlations) {

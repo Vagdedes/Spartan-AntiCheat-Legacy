@@ -164,8 +164,8 @@ public abstract class PatternGeneralization {
 
     abstract protected boolean customLearn(PlayerProfile profile, int situation, float pattern);
 
-    public boolean compare(PlayerProfile playerProfile, int situation) {
-        return this.compareInternal(playerProfile, System.currentTimeMillis(), situation);
+    public boolean compare(PlayerProfile profile, int situation) {
+        return this.compareInternal(profile, System.currentTimeMillis(), situation);
     }
 
     protected abstract boolean compareInternal(PlayerProfile playerProfile, long time, int situation);
