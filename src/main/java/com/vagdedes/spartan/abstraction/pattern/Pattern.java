@@ -7,6 +7,8 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -18,7 +20,7 @@ public class Pattern {
     static final int
             globalDataLimit = 10_000,
             individualGlobalDataLimit = 1_000,
-            comparisonDataLimit = 100;
+            comparisonDataLimit = AlgebraUtils.integerRound(TPS.maximum) * 10;
     static final String
             profileOption = ".profile",
             patternOption = ".pattern",
