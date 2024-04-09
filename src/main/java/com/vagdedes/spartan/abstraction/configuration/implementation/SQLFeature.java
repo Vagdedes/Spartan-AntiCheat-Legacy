@@ -181,7 +181,7 @@ public class SQLFeature extends ConfigurationBuilder {
         addOption("escape_special_characters", false);
         refreshConfiguration();
 
-        SpartanBukkit.dataThread.execute(this::connect);
+        SpartanBukkit.dataThread.executeWithPriority(this::connect);
 
         if (!local && exists) {
             CrossServerInformation.sendConfiguration(file);
