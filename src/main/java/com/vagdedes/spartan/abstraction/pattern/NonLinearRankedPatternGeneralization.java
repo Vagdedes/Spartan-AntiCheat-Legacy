@@ -84,7 +84,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                     patternProfile.updateComparison(
                             time,
                             this.significance(pattern),
-                            0.0,
+                            Pattern.noDataProbability,
                             0.0
                     );
                 } else {

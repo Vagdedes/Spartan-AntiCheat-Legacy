@@ -151,8 +151,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             patternProfile.updateComparison(
                     time,
                     this.significance(current),
-                    cache.predictor.afterPie.getProbability(after, 0.0)
-                            * cache.predictor.beforePie.getProbability(before, 0.0),
+                    cache.predictor.afterPie.getProbability(after, Pattern.noDataProbability)
+                            * cache.predictor.beforePie.getProbability(before, Pattern.noDataProbability),
                     cache.dataSize
             );
             return true;

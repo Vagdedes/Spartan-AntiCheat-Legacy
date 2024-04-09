@@ -23,6 +23,7 @@ public class Pattern {
             individualGlobalDataLimit = 1_000,
             maxComparisonDataLimit = AlgebraUtils.integerRound(TPS.maximum) * 10,
             minComparisonDataLimit = TPS.tickTimeInteger;
+    static final double noDataProbability = 0.0;
     static final String
             profileOption = "profile",
             patternOption = "pattern",
