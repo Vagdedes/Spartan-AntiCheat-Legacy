@@ -190,7 +190,7 @@ public abstract class PatternProfile {
         });
     }
 
-    final void delete(PlayerProfile profile) {
+    final synchronized void delete(PlayerProfile profile) {
         if (this.loaded) {
             this.loaded = false;
             this.deleteCustomData();

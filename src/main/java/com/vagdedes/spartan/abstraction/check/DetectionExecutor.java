@@ -75,7 +75,7 @@ public abstract class DetectionExecutor {
                 player.getProfile(),
                 situation
         )) {
-            if (false) {
+            if (true) {
                 double trustFactor = generalization.getProfile(player.getProfile()).trustFactor(player),
                         rank = generalization.rankTrustFactor(player, trustFactor);
 
