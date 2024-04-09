@@ -73,7 +73,7 @@ public abstract class DetectionExecutor {
                 player.getProfile(),
                 situation
         )) {
-            double trustFactor = generalization.getProfile(player.getProfile()).trustFactor();
+            double trustFactor = generalization.getProfile(player.getProfile()).trustFactor(player);
             player.debug(
                     false,
                     false,
