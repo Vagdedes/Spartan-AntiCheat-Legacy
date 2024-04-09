@@ -33,9 +33,7 @@ import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
-import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.Latency;
-import com.vagdedes.spartan.functionality.connection.Piracy;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.ElytraUse;
@@ -56,6 +54,7 @@ import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
 import com.vagdedes.spartan.utils.server.PluginUtils;
@@ -501,13 +500,11 @@ public class SpartanPlayer {
     }
 
     public boolean debug(boolean broadcast, boolean cutDecimals, Object... message) {
-        if (!Piracy.enabled
-                && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
-                && Bukkit.getMotd().contains(Register.plugin.getName())) {
+        if (SpartanBukkit.testMode) {
             Player p = getPlayer();
 
             if (p != null && p.isWhitelisted()) {
-                String string = ChatColor.GRAY + p.getName() + ChatColor.DARK_GRAY + ": " + ChatColor.RED;
+                String string = "§7" + p.getName() + "§8: ";
 
                 if (message == null || message.length == 0) {
                     string += new Random().nextInt();
@@ -517,12 +514,20 @@ public class SpartanPlayer {
 
                         for (Object object : message) {
                             if (object instanceof Double) {
-                                message[i] = AlgebraUtils.cut((double) object, 5);
+                                message[i] = (i % 2 == 0 ? "§7" : "§c")
+                                        + AlgebraUtils.cut((double) object, GroundUtils.maxHeightLength);
                             }
                             i++;
                         }
+                    } else {
+                        int i = 0;
+
+                        for (Object object : message) {
+                            message[i] = (i % 2 == 0 ? "§7" : "§c") + object;
+                            i++;
+                        }
                     }
-                    string += Arrays.toString(message);
+                    string += StringUtils.toString(message, "§8, ");
                 }
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 

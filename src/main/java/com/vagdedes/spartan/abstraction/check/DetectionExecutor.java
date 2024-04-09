@@ -78,7 +78,7 @@ public abstract class DetectionExecutor {
                     false,
                     false,
                     trustFactor,
-                    generalization.rankTrustFactor(trustFactor)
+                    generalization.rankTrustFactor(player, trustFactor)
             );
         }
     }

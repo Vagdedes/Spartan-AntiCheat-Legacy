@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.HashPie;
@@ -24,7 +26,7 @@ public abstract class PatternGeneralization {
         this.profilesSynchronizer = new Object();
     }
 
-    void clear() {
+    final void clear() {
         synchronized (this.profilesSynchronizer) {
             synchronized (this.significancePie) {
                 synchronized (this.profilesToStore) {
@@ -38,7 +40,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    void storeProfiles(boolean local) {
+    final void storeProfiles(boolean local) {
         if (local) {
             if (!this.profilesToStore.isEmpty()) {
                 Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
@@ -60,13 +62,13 @@ public abstract class PatternGeneralization {
         }
     }
 
-    void queueStorage(PatternProfile profile) {
+    final void queueStorage(PatternProfile profile) {
         synchronized (this.profilesToStore) {
             this.profilesToStore.add(profile);
         }
     }
 
-    void dequeueStorage(PatternProfile profile) {
+    final void dequeueStorage(PatternProfile profile) {
         synchronized (this.profilesToStore) {
             this.profilesToStore.remove(profile);
         }
@@ -74,7 +76,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    boolean learn(PlayerProfile profile,
+    final boolean learn(PlayerProfile profile,
                   long time,
                   int situation,
                   double pattern,
@@ -102,20 +104,25 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    public double rankTrustFactor(double trustFactor) {
+    public final double rankTrustFactor(SpartanPlayer player, double trustFactor) {
         if (trustFactor == -1.0) {
             return 1.0;
         } else {
             ProbabilityRank rank = new ProbabilityRank();
+            Integer divisor = DetectionNotifications.getDivisor(player, false);
 
-            synchronized (this.profilesSynchronizer) {
-                for (PatternProfile profile : this.getProfiles()) {
-                    double other = profile.trustFactor();
+            if (divisor == null || divisor != Pattern.testingNotificationDivisor) {
+                synchronized (this.profilesSynchronizer) {
+                    for (PatternProfile profile : this.getProfiles()) {
+                        double other = profile.trustFactor();
 
-                    if (other != -1.0) {
-                        rank.add(other);
+                        if (other != -1.0) {
+                            rank.add(other);
+                        }
                     }
                 }
+            } else {
+                rank.addMultiple(this.getProfile(player.getProfile()).trustFactors());
             }
             return rank.getParts() < ResearchEngine.requiredProfiles
                     ? 1.0
@@ -125,7 +132,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    float averagePatternTime() {
+    final float averagePatternTime() {
         float time = 0.0f;
         int profiles = 0;
 

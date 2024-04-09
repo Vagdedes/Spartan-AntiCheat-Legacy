@@ -164,7 +164,7 @@ public abstract class PatternProfile {
 
     // Separator
 
-    void store() {
+    final void store() {
         SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
             try {
                 this.configuration.save(this.file);
@@ -173,7 +173,7 @@ public abstract class PatternProfile {
         });
     }
 
-    void delete(PlayerProfile profile) {
+    final void delete(PlayerProfile profile) {
         if (this.loaded) {
             this.loaded = false;
             this.deleteCustomData();
@@ -253,7 +253,7 @@ public abstract class PatternProfile {
 
     // Separator
 
-    float averagePatternTime() {
+    final float averagePatternTime() {
         if (this.lastComparison.averagePatternTime != -1.0f) {
             return this.lastComparison.averagePatternTime;
         } else {
@@ -276,7 +276,7 @@ public abstract class PatternProfile {
         }
     }
 
-    public double trustFactor() {
+    public final double trustFactor() {
         float averagePattern = this.generalization.averagePatternTime();
 
         if (averagePattern == -1.0f) {
@@ -308,6 +308,16 @@ public abstract class PatternProfile {
             } else {
                 return -1.0;
             }
+        }
+    }
+
+    final Collection<Double> trustFactors() {
+        if (comparisons.size() >= Pattern.minComparisonDataLimit) {
+            synchronized (this.comparisons) {
+                return new ArrayList<>(comparisons.values());
+            }
+        } else {
+            return new ArrayList<>(0);
         }
     }
 

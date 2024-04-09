@@ -19,6 +19,7 @@ public class Pattern {
 
     private static final int storageLimit = 1024 * 1024 * 1024;
     static final int
+            testingNotificationDivisor = 69,
             globalDataLimit = 10_000,
             individualGlobalDataLimit = 1_000,
             maxComparisonDataLimit = AlgebraUtils.integerRound(TPS.maximum) * 10,
@@ -312,7 +313,7 @@ public class Pattern {
     public void learn(SpartanPlayer player, int situation, Number pattern) {
         long time = System.currentTimeMillis();
         Integer divisor = DetectionNotifications.getDivisor(player, false);
-        boolean include = divisor == null || divisor != 69,
+        boolean include = divisor == null || divisor != testingNotificationDivisor,
                 notifications = divisor != null,
                 found = false,
                 stored = false;

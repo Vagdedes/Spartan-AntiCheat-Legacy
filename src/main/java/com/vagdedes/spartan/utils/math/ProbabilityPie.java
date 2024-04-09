@@ -35,6 +35,17 @@ public class ProbabilityPie {
         return this;
     }
 
+    public ProbabilityPie addMultiple(Map<? extends Number, Integer> map) {
+        for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
+            this.map.put(
+                    entry.getKey().floatValue(),
+                    (short) (this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue())
+            );
+            this.total += entry.getValue();
+        }
+        return this;
+    }
+
     // Separator
 
     public ProbabilityPie create(Number number, int amount) {
