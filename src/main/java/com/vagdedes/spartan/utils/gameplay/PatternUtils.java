@@ -407,14 +407,14 @@ public class PatternUtils {
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                                if (surroundingLocation.getBlock().isLiquid()) {
+                                if (surroundingLocation.getBlock().isLiquidOrWaterLogged()) {
                                     synchronized (memory) {
                                         childMap.put(positionIdentifiers[position], true);
                                     }
                                     return true;
                                 }
                             }
-                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquid()) {
+                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged()) {
                             synchronized (memory) {
                                 childMap.put(positionIdentifiers[position], true);
                             }
@@ -434,13 +434,13 @@ public class PatternUtils {
 
                     if (surroundings) {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                            if (surroundingLocation.getBlock().isLiquid()) {
+                            if (surroundingLocation.getBlock().isLiquidOrWaterLogged()) {
                                 childMap.put(positionIdentifiers[position], true);
                                 return true;
                             }
                         }
                     } else {
-                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquid()) {
+                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged()) {
                             childMap.put(positionIdentifiers[position], true);
                             return true;
                         }
@@ -485,14 +485,14 @@ public class PatternUtils {
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
-                    if (surroundingLocation.getBlock().isLiquid()) {
+                    if (surroundingLocation.getBlock().isLiquidOrWaterLogged()) {
                         synchronized (memory) {
                             childMap.put(positionIdentifier, true);
                         }
                         return true;
                     }
                 }
-            } else if (location.clone().add(x, y, z).getBlock().isLiquid()) {
+            } else if (location.clone().add(x, y, z).getBlock().isLiquidOrWaterLogged()) {
                 synchronized (memory) {
                     childMap.put(positionIdentifier, true);
                 }

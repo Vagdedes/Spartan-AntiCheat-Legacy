@@ -212,7 +212,7 @@ public class GroundUtils {
         }
         SpartanBlock block = loc.getBlock();
 
-        if (liquid && block.isLiquid()
+        if (liquid && block.isLiquidOrWaterLogged()
                 || climbable && BlockUtils.canClimb(block.material)) {
             if (original) {
                 p.movement.setAirTicks(0);

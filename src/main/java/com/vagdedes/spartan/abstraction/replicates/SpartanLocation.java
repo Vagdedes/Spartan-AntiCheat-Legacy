@@ -121,7 +121,7 @@ public class SpartanLocation {
         this(player, world, chunk, x, y, z, yaw, pitch);
 
         if (block != null) {
-            loadBlock(block.material, block.data, block.isLiquid(), block.waterLogged);
+            loadBlock(block.material, block.data, block.liquid, block.waterLogged);
         } else {
             this.block = null;
         }

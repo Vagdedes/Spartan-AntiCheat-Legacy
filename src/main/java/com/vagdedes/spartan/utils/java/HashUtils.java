@@ -221,7 +221,7 @@ public class HashUtils {
                     } else if (BlockUtils.areIceBlocks(material)) {
                         hash = extendInt(hash, material.toString().hashCode());
                     }
-                } else if (block.isLiquid()) {
+                } else if (block.isLiquidOrWaterLogged()) {
                     foundBlock = true;
                     hash = extendInt(hash, material.toString().hashCode());
                 }

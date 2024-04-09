@@ -70,7 +70,7 @@ public class SpartanBlock {
         return chunk;
     }
 
-    public boolean isLiquid() {
+    public boolean isLiquidOrWaterLogged() {
         return liquid || waterLogged;
     }
 
