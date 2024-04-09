@@ -12,7 +12,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     private static final class Cache {
 
         private ProbabilityPredictor predictor;
-        private int dataSize;
+        private double contribution;
         private long expiration;
 
         private Cache(ProbabilityPredictor predictor, int dataSize) {
@@ -25,7 +25,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
         private ProbabilityPredictor refresh(ProbabilityPredictor predictor, int dataSize) {
             this.predictor = predictor;
-            this.dataSize = dataSize;
+            this.contribution = AlgebraUtils.contribution(dataSize);
             this.expiration = System.currentTimeMillis() + 1_000L;
             return predictor;
         }
@@ -156,18 +156,18 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     profile,
                     time,
                     this.significance(current),
-                    cache.predictor.afterPie.getRatio(after, Pattern.noDataProbability)
-                            * cache.predictor.beforePie.getRatio(before, Pattern.noDataProbability),
-                    (1.0 - AlgebraUtils.contribution(cache.dataSize))
+                    cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
+                            * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
+                    (1.0 - cache.contribution)
                             * (1.0 - this.uniqueContribution(situation, current))
             );
             profile.getSpartanPlayer().debug(
                     false,
                     false,
                     this.significance(current),
-                    cache.predictor.afterPie.getRatio(after, Pattern.noDataProbability)
-                            * cache.predictor.beforePie.getRatio(before, Pattern.noDataProbability),
-                    (1.0 - AlgebraUtils.contribution(cache.dataSize))
+                    cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
+                            * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
+                    (1.0 - cache.contribution)
                             * (1.0 - this.uniqueContribution(situation, current))
             );
             return true;

@@ -25,7 +25,9 @@ public class Pattern {
             comparisonDataLimit = 256,
             comparisonDataRequirement = 64,
             comparisonDataLimitBase = 2;
-    static final double noDataProbability = 0.0;
+    static final double
+            defaultRatio = 0.0,
+            defaultPosition = 1.0;
     static final String
             profileOption = "profile",
             patternOption = "pattern",

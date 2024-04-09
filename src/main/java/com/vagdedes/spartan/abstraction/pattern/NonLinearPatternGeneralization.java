@@ -89,7 +89,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                             profile,
                             time,
                             this.significance(pattern),
-                            Pattern.noDataProbability,
+                            Pattern.defaultRatio,
                             0.0
                     );
                 } else {
@@ -97,7 +97,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                             profile,
                             time,
                             this.significance(pattern),
-                            pie.getRatio(pattern),
+                            pie.getRatio(pattern, Pattern.defaultRatio),
                             (1.0 - AlgebraUtils.contribution(pie.getRawTotal()))
                                     * (1.0 - this.uniqueContribution(situation, pattern))
                     );

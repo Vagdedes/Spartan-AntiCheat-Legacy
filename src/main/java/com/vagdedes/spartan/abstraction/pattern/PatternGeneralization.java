@@ -119,7 +119,7 @@ public abstract class PatternGeneralization {
 
     public final double rankTrustFactor(SpartanPlayer player, double trustFactor) {
         if (trustFactor == -1.0) {
-            return 1.0;
+            return Pattern.defaultPosition;
         } else {
             ProbabilityRank rank = new ProbabilityRank();
             Integer divisor = SpartanBukkit.testMode
@@ -140,8 +140,8 @@ public abstract class PatternGeneralization {
                 rank.addMultiple(this.getProfile(player.getProfile()).trustFactors());
             }
             return rank.getParts() < ResearchEngine.requiredProfiles
-                    ? 1.0
-                    : rank.getPosition(trustFactor);
+                    ? Pattern.defaultPosition
+                    : rank.getPosition(trustFactor, Pattern.defaultPosition);
         }
     }
 
@@ -182,7 +182,7 @@ public abstract class PatternGeneralization {
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.computeIfAbsent(
                     situation,
-                    k -> new HashPie(Pattern.globalDataLimitBase, 1.0f)
+                    k -> new HashPie(Pattern.individualGlobalDataLimitBase, 1.0f)
             );
 
             if (pie.getSlices() == Pattern.individualGlobalDataLimit - 1) {
@@ -199,26 +199,26 @@ public abstract class PatternGeneralization {
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.get(situation);
 
-            if (pie != null) {
-                pie.remove(pattern, patternProfile.hash);
-
-                if (pie.isEmpty()) {
-                    this.uniqueContribution.remove(situation);
-                }
+            if (pie != null
+                    && pie.remove(pattern, patternProfile.hash)
+                    && pie.isEmpty()) {
+                this.uniqueContribution.remove(situation);
             }
         }
     }
 
     protected final double significance(float pattern) {
         synchronized (this.significance) {
-            return this.significance.getRatio(pattern);
+            return this.significance.getRatio(pattern, Pattern.defaultRatio);
         }
     }
 
     protected final double uniqueContribution(int situation, float pattern) {
         synchronized (this.uniqueContribution) {
-            HashPie pie = this.uniqueContribution.get(situation); // todo
-            return pie == null ? 1.0 : AlgebraUtils.contribution(pie.getRatio(pattern));
+            HashPie pie = this.uniqueContribution.get(situation);
+            return pie == null
+                    ? Pattern.defaultRatio
+                    : AlgebraUtils.contribution(pie.getRatio(pattern, Pattern.defaultRatio));
         }
     }
 

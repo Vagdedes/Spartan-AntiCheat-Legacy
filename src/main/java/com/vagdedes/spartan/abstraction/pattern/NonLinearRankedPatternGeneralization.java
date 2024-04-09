@@ -89,7 +89,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                             profile,
                             time,
                             this.significance(pattern),
-                            Pattern.noDataProbability,
+                            Pattern.defaultRatio,
                             0.0
                     );
                 } else {
@@ -97,7 +97,8 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                             profile,
                             time,
                             this.significance(pattern),
-                            rank.getPosition(pattern) * rank.getRatio(pattern),
+                            rank.getPosition(pattern, Pattern.defaultPosition)
+                                    * rank.getRatio(pattern, Pattern.defaultRatio),
                             (1.0 - AlgebraUtils.contribution(rank.getRawTotal()))
                                     * (1.0 - this.uniqueContribution(situation, pattern))
                     );
