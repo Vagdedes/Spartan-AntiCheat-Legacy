@@ -290,7 +290,7 @@ public abstract class PatternProfile {
     }
 
     public final double trustFactor(SpartanPlayer player) {
-        if (SpartanBukkit.testMode) {
+        if (SpartanBukkit.testMode && player != null) {
             Integer divisor = DetectionNotifications.getDivisor(player, false);
 
             if (divisor != null && divisor == Pattern.testingNotificationDivisor) {

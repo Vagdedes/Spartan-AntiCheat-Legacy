@@ -117,7 +117,7 @@ public abstract class PatternGeneralization {
             if (divisor == null || divisor != Pattern.testingNotificationDivisor) {
                 synchronized (this.profilesSynchronizer) {
                     for (PatternProfile profile : this.getProfiles()) {
-                        double other = profile.trustFactor();
+                        double other = profile.trustFactor(null);
 
                         if (other != -1.0) {
                             rank.add(other);
