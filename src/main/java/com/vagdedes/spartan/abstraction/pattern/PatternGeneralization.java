@@ -13,7 +13,7 @@ import java.util.*;
 
 public abstract class PatternGeneralization {
 
-    final Pattern parent;
+    public final Pattern parent;
     final short scissors;
     private final HashPie significancePie;
     private final Set<PatternProfile> profilesToStore;

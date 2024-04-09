@@ -532,7 +532,9 @@ public class IrregularMovements extends CheckExecutor {
         if (object instanceof Integer) {
             this.machineLearningDetection(
                     SpartanBukkit.movementPatterns.vertical.getGeneralization(GroundUtils.maxHeightLength),
-                    (int) object
+                    (int) object,
+                    20,
+                    0.01
             );
         } else {
             if (object == null) {

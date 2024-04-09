@@ -9,7 +9,7 @@ public class Decimals {
             CALCULATE_MAX = -3,
             CALCULATE_MIN = -4,
             CALCULATE_REMAINING = -5;
-    private final Map<String, List<Double>> storage;
+    private final Map<String, LinkedList<Double>> storage;
 
     public Decimals() {
         this.storage = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -23,7 +23,7 @@ public class Decimals {
 
     public double get(String name, double def, int newestToOldestIndex) {
         synchronized (storage) {
-            List<Double> list = storage.get(name);
+            LinkedList<Double> list = storage.get(name);
 
             if (list == null) {
                 return def;
@@ -113,7 +113,7 @@ public class Decimals {
 
     public void set(String name, double value) {
         synchronized (storage) {
-            List<Double> list = storage.get(name);
+            LinkedList<Double> list = storage.get(name);
 
             if (list != null) {
                 list.clear();
@@ -128,22 +128,17 @@ public class Decimals {
 
     public double add(String name, double value, int maxSize) {
         synchronized (storage) {
-            List<Double> list = storage.get(name);
+            LinkedList<Double> list = storage.get(name);
 
             if (list != null) {
                 list.add(value);
 
                 if (maxSize > 0) {
-                    int size = list.size();
+                    int delete = list.size() - maxSize;
 
-                    if (size > maxSize) {
-                        size -= maxSize;
-                        Iterator<Double> iterator = list.iterator();
-
-                        while (iterator.hasNext() && size > 0) {
-                            iterator.next();
-                            iterator.remove();
-                            size--;
+                    if (delete > 0) {
+                        for (int i = 0; i < delete; i++) {
+                            list.removeFirst();
                         }
                     }
                 }
@@ -172,6 +167,20 @@ public class Decimals {
         }
     }
 
+    public void removeOldest(String name) {
+        synchronized (storage) {
+            LinkedList<Double> list = storage.get(name);
+
+            if (list != null && !list.isEmpty()) {
+                list.removeFirst();
+
+                if (list.isEmpty()) {
+                    storage.remove(name);
+                }
+            }
+        }
+    }
+
     public void remove(String[] names) {
         synchronized (storage) {
             for (String name : names) {
@@ -182,7 +191,7 @@ public class Decimals {
 
     public void remove(String name, double value) {
         synchronized (storage) {
-            List<Double> list = storage.get(name);
+            LinkedList<Double> list = storage.get(name);
 
             if (list != null && list.remove(value) && list.isEmpty()) {
                 storage.remove(name);
@@ -191,7 +200,7 @@ public class Decimals {
     }
 
     public int getCount(String name) {
-        List<Double> list;
+        LinkedList<Double> list;
 
         synchronized (storage) {
             list = storage.get(name);
@@ -200,12 +209,16 @@ public class Decimals {
     }
 
     public List<Double> getOldestToNewestList(String name) {
-        List<Double> list;
+        LinkedList<Double> list;
 
         synchronized (storage) {
             list = storage.get(name);
+
+            if (list != null) {
+                return new ArrayList<>(list);
+            }
         }
-        return list == null ? new ArrayList<>(0) : list;
+        return new ArrayList<>(0);
     }
 
     private int newestToOldestPosition(int size, int index) {

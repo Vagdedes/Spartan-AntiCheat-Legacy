@@ -504,7 +504,7 @@ public class SpartanPlayer {
             Player p = getPlayer();
 
             if (p != null && p.isWhitelisted()) {
-                String string = "§f" + p.getName() + "§8: ";
+                String string = "§f" + p.getName();
 
                 if (message == null || message.length == 0) {
                     string += new Random().nextInt();
@@ -527,7 +527,7 @@ public class SpartanPlayer {
                             i++;
                         }
                     }
-                    string += StringUtils.toString(message, "§8, ");
+                    string += StringUtils.toString(message, "");
                 }
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 

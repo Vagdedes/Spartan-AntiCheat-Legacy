@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -68,18 +69,36 @@ public abstract class DetectionExecutor {
 
     // Separator
 
-    protected final void machineLearningDetection(PatternGeneralization generalization, int situation) {
+    protected final void machineLearningDetection(PatternGeneralization generalization, int situation,
+                                                  int repetitions, double min) {
         if (generalization.compare(
                 player.getProfile(),
                 situation
         )) {
-            double trustFactor = generalization.getProfile(player.getProfile()).trustFactor(player);
-            player.debug(
-                    false,
-                    false,
-                    trustFactor,
-                    generalization.rankTrustFactor(player, trustFactor)
-            );
+            double trustFactor = generalization.getProfile(player.getProfile()).trustFactor(player),
+                    rank = generalization.rankTrustFactor(player, trustFactor);
+
+            if (rank != -1.0) {
+                if (repetitions > 1) {
+                    Decimals decimals = player.getDecimals(hackType);
+
+                    if (decimals.getCount(generalization.parent.key) == repetitions) {
+                        player.debug(
+                                false,
+                                true,
+                                decimals.get(generalization.parent.key, 1.0, Decimals.CALCULATE_AVERAGE)
+                        );
+                        decimals.removeOldest(generalization.parent.key);
+                    }
+                    decimals.add(generalization.parent.key, trustFactor);
+                } else {
+                    player.debug(
+                            false,
+                            true,
+                            rank
+                    );
+                }
+            }
         }
     }
 
