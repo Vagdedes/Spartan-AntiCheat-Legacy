@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.Collection;
@@ -86,21 +85,21 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
                 if (rank == null) {
                     patternProfile.finishComparison(
-                            profile,
-                            time,
-                            this.significance(pattern),
+                            time, profile,
+                            situation,
+                            pattern,
                             Pattern.defaultRatio,
-                            0.0
+                            0
                     );
                 } else {
                     patternProfile.finishComparison(
-                            profile,
                             time,
-                            this.significance(pattern),
+                            profile,
+                            situation,
+                            pattern,
                             rank.getPosition(pattern, Pattern.defaultPosition)
                                     * rank.getRatio(pattern, Pattern.defaultRatio),
-                            (1.0 - AlgebraUtils.contribution(rank.getRawTotal()))
-                                    * (1.0 - this.uniqueContribution(situation, pattern))
+                            rank.getTotal()
                     );
                 }
             }

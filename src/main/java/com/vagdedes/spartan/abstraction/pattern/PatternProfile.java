@@ -158,12 +158,16 @@ public abstract class PatternProfile {
         }
     }
 
-    protected final void finishComparison(PlayerProfile profile,
-                                          long time,
-                                          double significance,
+    protected final void finishComparison(long time,
+                                          PlayerProfile profile,
+                                          int situation,
+                                          float pattern,
                                           double probability,
-                                          double existingContribution) {
-        double trustFactor;
+                                          int dataSize) {
+        double significance = this.generalization.significance(pattern),
+                existingContribution = (1.0 - AlgebraUtils.contribution(dataSize))
+                        * (1.0 - this.generalization.uniqueContribution(situation, pattern)),
+                trustFactor;
 
         if (significance == 0.0
                 || probability == 0.0

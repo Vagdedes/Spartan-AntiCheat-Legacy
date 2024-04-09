@@ -158,8 +158,4 @@ public class ProbabilityRank {
     public int getTotal() {
         return (int) this.total;
     }
-
-    public float getRawTotal() {
-        return this.total;
-    }
 }

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 
 import java.util.*;
@@ -12,7 +11,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     private static final class Cache {
 
         private ProbabilityPredictor predictor;
-        private double contribution;
+        private int dataSize;
         private long expiration;
 
         private Cache(ProbabilityPredictor predictor, int dataSize) {
@@ -25,7 +24,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
         private ProbabilityPredictor refresh(ProbabilityPredictor predictor, int dataSize) {
             this.predictor = predictor;
-            this.contribution = AlgebraUtils.contribution(dataSize);
+            this.dataSize = dataSize;
             this.expiration = System.currentTimeMillis() + 1_000L;
             return predictor;
         }
@@ -106,14 +105,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.isLoaded()) {
-            float after, current, before;
+            float after, pattern, before;
 
             synchronized (patternProfile.correlations) {
                 LinkedList<Float> list = patternProfile.correlations.get(situation);
 
                 if (list != null && list.size() >= 3) {
                     after = list.getLast();
-                    current = list.get(list.size() - 2);
+                    pattern = list.get(list.size() - 2);
                     before = list.get(list.size() - 3);
                 } else {
                     return false;
@@ -121,7 +120,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             }
             Cache cache;
             int hash = HashUtils.extendInt(this.initialHash, situation);
-            hash = HashUtils.extendInt(hash, Float.hashCode(current));
+            hash = HashUtils.extendInt(hash, Float.hashCode(pattern));
 
             synchronized (this.correlations) {
                 cache = this.cache.get(hash);
@@ -132,7 +131,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     if (collection == null) {
                         cache = new Cache(new ProbabilityPredictor(), 0);
                     } else {
-                        cache = new Cache(new ProbabilityPredictor(collection, current), collection.size());
+                        cache = new Cache(new ProbabilityPredictor(collection, pattern), collection.size());
 
                         if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
                             Iterator<Integer> iterator = this.cache.keySet().iterator();
@@ -148,27 +147,18 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         cache = new Cache(new ProbabilityPredictor(), 0);
                         this.cache.remove(hash);
                     } else {
-                        cache.refresh(new ProbabilityPredictor(collection, current), collection.size());
+                        cache.refresh(new ProbabilityPredictor(collection, pattern), collection.size());
                     }
                 }
             }
             patternProfile.finishComparison(
-                    profile,
                     time,
-                    this.significance(current),
+                    profile,
+                    situation,
+                    pattern,
                     cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
                             * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
-                    (1.0 - cache.contribution)
-                            * (1.0 - this.uniqueContribution(situation, current))
-            );
-            profile.getSpartanPlayer().debug(
-                    false,
-                    false,
-                    this.significance(current),
-                    cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
-                            * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
-                    (1.0 - cache.contribution)
-                            * (1.0 - this.uniqueContribution(situation, current))
+                    cache.dataSize
             );
             return true;
         } else {

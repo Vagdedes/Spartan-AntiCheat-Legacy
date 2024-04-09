@@ -207,13 +207,13 @@ public abstract class PatternGeneralization {
         }
     }
 
-    protected final double significance(float pattern) {
+    final double significance(float pattern) {
         synchronized (this.significance) {
             return this.significance.getRatio(pattern, Pattern.defaultRatio);
         }
     }
 
-    protected final double uniqueContribution(int situation, float pattern) {
+    final double uniqueContribution(int situation, float pattern) {
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.get(situation);
             return pie == null
