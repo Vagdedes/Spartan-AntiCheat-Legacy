@@ -200,13 +200,6 @@ public abstract class PatternGeneralization {
     abstract protected boolean customLearn(PlayerProfile profile, int situation, float pattern);
 
     public boolean compare(PlayerProfile profile, int situation) {
-        if (SpartanBukkit.testMode) {
-            Integer divisor = DetectionNotifications.getDivisor(profile.getSpartanPlayer(), false);
-
-            if (divisor != null && divisor == Pattern.testingNotificationDivisor) {
-                return true;
-            }
-        }
         return this.compareInternal(profile, System.currentTimeMillis(), situation);
     }
 

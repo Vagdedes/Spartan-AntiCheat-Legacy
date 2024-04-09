@@ -82,6 +82,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
                 if (rank == null) {
                     patternProfile.updateComparison(
+                            profile,
                             time,
                             this.significance(pattern),
                             Pattern.noDataProbability,
@@ -89,6 +90,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                     );
                 } else {
                     patternProfile.updateComparison(
+                            profile,
                             time,
                             this.significance(pattern),
                             rank.getPosition(pattern) * rank.getRatio(pattern),

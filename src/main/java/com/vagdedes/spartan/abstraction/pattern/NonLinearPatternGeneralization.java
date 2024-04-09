@@ -82,6 +82,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
                 if (pie == null) {
                     patternProfile.updateComparison(
+                            profile,
                             time,
                             this.significance(pattern),
                             Pattern.noDataProbability,
@@ -89,6 +90,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                     );
                 } else {
                     patternProfile.updateComparison(
+                            profile,
                             time,
                             this.significance(pattern),
                             pie.getRatio(pattern),

@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,6 +69,7 @@ public abstract class PatternProfile {
                                         remove.add(entry.getKey());
                                     } else {
                                         this.updateComparison(
+                                                null,
                                                 Long.parseLong(entry.getKey()),
                                                 (double) entry.getValue(),
                                                 false
@@ -110,7 +112,17 @@ public abstract class PatternProfile {
 
     // Separator
 
-    private void updateComparison(long time, double trustFactor, boolean storage) {
+    private void updateComparison(PlayerProfile profile, long time, double trustFactor, boolean storage) {
+        if (SpartanBukkit.testMode && profile != null) {
+            Integer divisor = DetectionNotifications.getDivisor(profile.getSpartanPlayer(), false);
+
+            if (divisor != null && divisor == Pattern.testingNotificationDivisor) {
+                this.lastComparison.time = time;
+                this.lastComparison.trustFactor = trustFactor;
+                this.lastComparison.averagePatternTime = -1.0f;
+                return;
+            }
+        }
         if (this.comparisons.size() == Pattern.maxComparisonDataLimit) {
             long oldTime;
 
@@ -148,7 +160,7 @@ public abstract class PatternProfile {
         }
     }
 
-    protected final void updateComparison(long time, double significance, double probability, double total) {
+    protected final void updateComparison(PlayerProfile profile, long time, double significance, double probability, double total) {
         double existingContribution = 1.0 - (1.0 / (total + 1.0)),
                 trustFactor;
 
@@ -159,7 +171,7 @@ public abstract class PatternProfile {
         } else {
             trustFactor = significance * probability * existingContribution;
         }
-        this.updateComparison(time, trustFactor, true);
+        this.updateComparison(profile, time, trustFactor, true);
     }
 
     // Separator
