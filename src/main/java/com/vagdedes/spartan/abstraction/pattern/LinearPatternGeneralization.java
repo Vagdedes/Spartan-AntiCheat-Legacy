@@ -75,11 +75,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         list = new LinkedList<>(list);
                         this.correlations.put(situation, list);
                     }
-                    this.decreaseSignificance(((LinkedList<Float>) list).removeFirst());
+                    this.decreaseSignificance(patternProfile.hash, ((LinkedList<Float>) list).removeFirst());
                 }
                 list.add(pattern);
             }
-            this.increaseSignificance(pattern);
+            this.increaseSignificance(patternProfile.hash, pattern);
 
             synchronized (patternProfile.correlations) {
                 LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
@@ -151,8 +151,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             patternProfile.updateComparison(
                     time,
                     this.significance(current),
-                    cache.predictor.afterPie.getProbability(after, Pattern.noDataProbability)
-                            * cache.predictor.beforePie.getProbability(before, Pattern.noDataProbability),
+                    cache.predictor.afterPie.getRatio(after, Pattern.noDataProbability)
+                            * cache.predictor.beforePie.getRatio(before, Pattern.noDataProbability),
                     cache.dataSize
             );
             return true;

@@ -1,6 +1,9 @@
 package com.vagdedes.spartan.utils.math;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class ProbabilityPie {
@@ -13,7 +16,7 @@ public class ProbabilityPie {
     }
 
     public ProbabilityPie(int capacity) {
-        this.map = capacity >= 0 ? new LinkedHashMap<>(capacity) : new LinkedHashMap<>();
+        this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.total = 0.0f;
     }
 
@@ -98,35 +101,6 @@ public class ProbabilityPie {
         return this;
     }
 
-    public ProbabilityPie removeByCollection(Collection<Number> collection) {
-        for (Number number : collection) {
-            this.remove(number);
-        }
-        return this;
-    }
-
-    public ProbabilityPie removeByEntry(Collection<Map.Entry<Float, Integer>> collection) {
-        for (Map.Entry<Float, Integer> number : collection) {
-            this.map.remove(number.getKey());
-        }
-        return this;
-    }
-
-    public Collection<Float> removeOld(int amount) {
-        Collection<Float> collection = new ArrayList<>(amount);
-        Iterator<Float> iterator = this.map.keySet().iterator();
-
-        while (iterator.hasNext()) {
-            collection.add(iterator.next());
-            iterator.remove();
-
-            if (--amount == 0) {
-                break;
-            }
-        }
-        return collection;
-    }
-
     public Float removeLeastSignificant() {
         float min = Float.MAX_VALUE;
         Float key = null;
@@ -169,11 +143,11 @@ public class ProbabilityPie {
         return count / this.total;
     }
 
-    public double getProbability(Number number) {
-        return this.getProbability(number, 0.0);
+    public double getRatio(Number number) {
+        return this.getRatio(number, 0.0);
     }
 
-    public double getProbability(Number number, double defaultValue) {
+    public double getRatio(Number number, double defaultValue) {
         Short count = this.map.get(number.floatValue());
         return count != null ? count / this.total : defaultValue;
     }
@@ -197,7 +171,7 @@ public class ProbabilityPie {
     // Separator
 
     public boolean isEmpty() {
-        return this.map.isEmpty();
+        return this.total == 0;
     }
 
     public int getSlices() {
@@ -210,10 +184,6 @@ public class ProbabilityPie {
 
     public float getRawTotal() {
         return this.total;
-    }
-
-    public boolean hasData() {
-        return this.total > 0;
     }
 }
 

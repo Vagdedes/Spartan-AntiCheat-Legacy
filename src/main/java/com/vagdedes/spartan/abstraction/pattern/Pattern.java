@@ -334,11 +334,11 @@ public class Pattern {
 
         if (!found && notifications) {
             String message = AwarenessNotifications.getOptionalNotification(
-                    "Spartan's Machine Learning algorithms have insufficient data to check you. "
+                    "Parts of Spartan's Machine Learning algorithm have insufficient data to check you. "
                             + (player.getProfile().isLegitimate()
-                            ? "Continue playing LEGITIMATELY to train the algorithm so you can try again later."
+                            ? "Continue playing LEGITIMATELY to train the algorithm and get better results."
                             : "Since you are " + player.getProfile().evidence.getType() + ", either clear your data via '/spartan info'"
-                            + " and play LEGITIMATELY or find a legitimate player to help train the algorithm so you can try again later.")
+                            + " and play LEGITIMATELY or find a legitimate player to help train the algorithm and get better results.")
             );
 
             if (message != null

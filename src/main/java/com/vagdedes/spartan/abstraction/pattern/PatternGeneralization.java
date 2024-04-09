@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.math.ProbabilityPie;
+import com.vagdedes.spartan.utils.math.HashPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.*;
@@ -12,14 +12,14 @@ public abstract class PatternGeneralization {
 
     final Pattern parent;
     final short scissors;
-    private final ProbabilityPie significancePie;
+    private final HashPie significancePie;
     private final Set<PatternProfile> profilesToStore;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.significancePie = new ProbabilityPie();
+        this.significancePie = new HashPie();
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
         this.profilesSynchronizer = new Object();
     }
@@ -146,28 +146,28 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    protected final void increaseSignificance(float pattern) {
+    protected final void increaseSignificance(int hash, float pattern) {
         if (this.significancePie.getSlices() == Pattern.globalDataLimit) {
             synchronized (this.significancePie) {
                 this.significancePie.removeLeastSignificant();
-                this.significancePie.add(pattern);
+                this.significancePie.add(hash, pattern);
             }
         } else {
             synchronized (this.significancePie) {
-                this.significancePie.add(pattern);
+                this.significancePie.add(hash, pattern);
             }
         }
     }
 
-    protected final void decreaseSignificance(float pattern) {
+    protected final void decreaseSignificance(int hash, float pattern) {
         synchronized (this.significancePie) {
-            this.significancePie.remove(pattern);
+            this.significancePie.remove(hash, pattern);
         }
     }
 
     protected final double significance(float value) {
         synchronized (this.significancePie) {
-            return this.significancePie.getProbability(value);
+            return this.significancePie.getRatio(value);
         }
     }
 
@@ -197,8 +197,8 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    protected final void deleteCustomLessons(int situation, float pattern) {
-        this.decreaseSignificance(pattern);
+    protected final void deleteCustomLessons(int hash, int situation, float pattern) {
+        this.decreaseSignificance(hash, pattern);
         this.deleteCustomLessonsInternal(situation, pattern);
     }
 

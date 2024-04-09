@@ -47,14 +47,14 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         k -> new ProbabilityRank()
                 );
                 if (rank.getParts() == Pattern.individualGlobalDataLimit) {
-                    this.decreaseSignificance(rank.removeLeastSignificant());
+                    this.decreaseSignificance(patternProfile.hash, rank.removeLeastSignificant());
                 }
                 rank.add(pattern);
             }
             synchronized (patternProfile.correlations) {
                 patternProfile.correlations.put(situation, pattern);
             }
-            this.increaseSignificance(pattern);
+            this.increaseSignificance(patternProfile.hash, pattern);
             return true;
         } else {
             return false;
@@ -91,7 +91,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                     patternProfile.updateComparison(
                             time,
                             this.significance(pattern),
-                            rank.getPosition(pattern) * rank.getProbability(pattern),
+                            rank.getPosition(pattern) * rank.getRatio(pattern),
                             rank.getRawTotal()
                     );
                 }

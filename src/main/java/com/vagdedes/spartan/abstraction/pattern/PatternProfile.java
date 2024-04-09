@@ -24,6 +24,7 @@ public abstract class PatternProfile {
         }
     }
 
+    int hash;
     private final PatternGeneralization generalization;
     private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
@@ -33,6 +34,7 @@ public abstract class PatternProfile {
     private final YamlConfiguration configuration;
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
+        this.hash = profile.getName().hashCode();
         this.generalization = patternGeneralization;
         this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
         this.repetition = new PatternRepetition();
@@ -226,7 +228,7 @@ public abstract class PatternProfile {
                                             if (this.generalization.scissors != 0) {
                                                 pattern = AlgebraUtils.cut(pattern, this.generalization.scissors);
                                             }
-                                            this.generalization.deleteCustomLessons((int) situation, (float) pattern);
+                                            this.generalization.deleteCustomLessons(this.hash, (int) situation, (float) pattern);
                                             this.generalization.parent.deleteFromFile(configuration, key);
                                             changed = true;
                                         }

@@ -21,6 +21,8 @@ public class ProbabilityRank {
         return this;
     }
 
+    // Separator
+
     public ProbabilityRank addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.map.put(
@@ -43,6 +45,8 @@ public class ProbabilityRank {
         return this;
     }
 
+    // Separator
+
     public ProbabilityRank add(Number number) {
         short current = this.map.getOrDefault(number.floatValue(), (short) 0);
 
@@ -55,6 +59,8 @@ public class ProbabilityRank {
         }
         return this;
     }
+
+    // Separator
 
     public boolean remove(Number number) {
         short count = this.map.getOrDefault(number.floatValue(), (short) 0);
@@ -128,13 +134,15 @@ public class ProbabilityRank {
         return this.getPosition(number, 1.0);
     }
 
-    public double getProbability(Number number, double defaultValue) {
+    // Separator
+
+    public double getRatio(Number number, double defaultValue) {
         Short count = this.map.get(number.floatValue());
         return count != null ? count / this.total : defaultValue;
     }
 
-    public double getProbability(Number number) {
-        return this.getProbability(number, 0.0);
+    public double getRatio(Number number) {
+        return this.getRatio(number, 0.0);
     }
 
     // Separator

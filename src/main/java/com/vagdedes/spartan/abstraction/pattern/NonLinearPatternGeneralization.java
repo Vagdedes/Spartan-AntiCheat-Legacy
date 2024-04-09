@@ -47,14 +47,14 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                         k -> new ProbabilityPie()
                 );
                 if (pie.getSlices() == Pattern.individualGlobalDataLimit) {
-                    this.decreaseSignificance(pie.removeLeastSignificant());
+                    this.decreaseSignificance(patternProfile.hash, pie.removeLeastSignificant());
                 }
                 pie.add(pattern);
             }
             synchronized (patternProfile.correlations) {
                 patternProfile.correlations.put(situation, pattern);
             }
-            this.increaseSignificance(pattern);
+            this.increaseSignificance(patternProfile.hash, pattern);
             return true;
         } else {
             return false;
@@ -91,7 +91,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                     patternProfile.updateComparison(
                             time,
                             this.significance(pattern),
-                            pie.getProbability(pattern),
+                            pie.getRatio(pattern),
                             pie.getRawTotal()
                     );
                 }
