@@ -60,20 +60,16 @@ public class IDs {
         return platform == 2 || "%%__FILEHASH__%%".length() != 16;
     }
 
-    public static boolean isSongoda() {
-        return platform == 4 || nonce().length() == 36;
-    }
-
     public static boolean isPolymart() {
         return platform == 3 || "%%__POLYMART__%%".length() == 1;
     }
 
     public static boolean isSpigotMC() {
-        return platform == 1 || Piracy.enabled && !CloudBase.hasToken() && !isBuiltByBit() && !isSongoda() && !isPolymart();
+        return platform == 1 || Piracy.enabled && !CloudBase.hasToken() && !isBuiltByBit() && !isPolymart();
     }
 
     public static String getPlatform(boolean notNull) {
-        return IDs.isBuiltByBit() ? "BuiltByBit" : IDs.isPolymart() ? "Polymart" : IDs.isSongoda() ? "Songoda" : notNull || isSpigotMC() ? "SpigotMC" : null;
+        return IDs.isBuiltByBit() ? "BuiltByBit" : IDs.isPolymart() ? "Polymart" : notNull || isSpigotMC() ? "SpigotMC" : null;
     }
 
     public static String hide(String id) {

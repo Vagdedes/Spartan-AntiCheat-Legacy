@@ -19,10 +19,10 @@ public class SpartanBukkit {
 
     public static final boolean
             testMode = !Piracy.enabled
-            && !IDs.isBuiltByBit() && !IDs.isPolymart() && !IDs.isSongoda()
+            && !IDs.isBuiltByBit() && !IDs.isPolymart()
             && Bukkit.getMotd().contains(Register.plugin.getName()),
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
-            canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isSongoda() || IDs.isPolymart();
+            canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
