@@ -22,7 +22,7 @@ public abstract class PatternGeneralization {
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.significancePie = new HashPie();
+        this.significancePie = new HashPie(Pattern.globalDataLimitBase);
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
         this.profilesSynchronizer = new Object();
     }

@@ -68,7 +68,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             synchronized (this.correlations) {
                 Collection<Float> list = this.correlations.computeIfAbsent(
                         situation,
-                        k -> new ArrayList<>()
+                        k -> new ArrayList<>(Pattern.individualGlobalDataLimitBase)
                 );
                 if (list.size() == Pattern.individualGlobalDataLimit) {
                     if (!(list instanceof LinkedList)) {

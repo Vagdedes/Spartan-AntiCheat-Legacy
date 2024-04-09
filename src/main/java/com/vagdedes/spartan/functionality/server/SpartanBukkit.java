@@ -18,8 +18,7 @@ import java.util.*;
 public class SpartanBukkit {
 
     public static final boolean
-            testMode = !Piracy.enabled
-            && !IDs.isBuiltByBit() && !IDs.isPolymart()
+            testMode = !Piracy.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart()
             && Bukkit.getMotd().contains(Register.plugin.getName()),
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
             canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isPolymart();

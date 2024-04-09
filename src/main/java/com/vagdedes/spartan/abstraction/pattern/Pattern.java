@@ -21,7 +21,9 @@ public class Pattern {
     static final int
             testingNotificationDivisor = 69,
             globalDataLimit = 10_000,
+            globalDataLimitBase = 625,
             individualGlobalDataLimit = 1_000,
+            individualGlobalDataLimitBase = 125,
             maxComparisonDataLimit = AlgebraUtils.integerRound(TPS.maximum) * 10,
             minComparisonDataLimit = TPS.tickTimeInteger;
     static final double noDataProbability = 0.0;

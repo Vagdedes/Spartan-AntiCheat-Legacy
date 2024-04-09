@@ -37,7 +37,7 @@ public abstract class PatternProfile {
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.hash = profile.getName().hashCode();
         this.generalization = patternGeneralization;
-        this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>(Pattern.minComparisonDataLimit));
         this.repetition = new PatternRepetition();
         this.lastComparison = new Comparison(0L, -1.0);
         this.file = new File(
