@@ -38,7 +38,7 @@ public abstract class PatternProfile {
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.hash = profile.getName().hashCode();
         this.generalization = patternGeneralization;
-        this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>(Pattern.minComparisonDataLimit));
+        this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>(Pattern.comparisonDataLimitBase, 1.0f));
         this.repetition = new PatternRepetition();
         this.lastComparison = new Comparison(0L, -1.0);
         this.file = new File(
@@ -66,17 +66,14 @@ public abstract class PatternProfile {
                         for (Map.Entry<String, Object> entry : values.entrySet()) {
                             if (entry.getValue() instanceof Double) {
                                 try {
-                                    if (valid == Pattern.maxComparisonDataLimit) {
-                                        remove.add(entry.getKey());
-                                    } else {
-                                        this.updateComparison(
-                                                null,
-                                                Long.parseLong(entry.getKey()),
-                                                (double) entry.getValue(),
-                                                false
-                                        );
-                                        valid++;
-                                    }
+                                    this.updateComparison(
+                                            null,
+                                            Long.parseLong(entry.getKey()),
+                                            (double) entry.getValue(),
+                                            false,
+                                            true
+                                    );
+                                    valid++;
                                 } catch (Exception ignored) {
                                 }
                             } else {
@@ -113,7 +110,8 @@ public abstract class PatternProfile {
 
     // Separator
 
-    private void updateComparison(PlayerProfile profile, long time, double trustFactor, boolean storage) {
+    private void updateComparison(PlayerProfile profile, long time, double trustFactor,
+                                  boolean store, boolean delete) {
         if (SpartanBukkit.testMode && profile != null) {
             Integer divisor = DetectionNotifications.getDivisor(profile.getSpartanPlayer(), false);
 
@@ -124,7 +122,7 @@ public abstract class PatternProfile {
                 return;
             }
         }
-        if (this.comparisons.size() == Pattern.maxComparisonDataLimit) {
+        if (this.comparisons.size() == Pattern.comparisonDataLimit - 1) {
             long oldTime;
 
             synchronized (this.comparisons) {
@@ -137,10 +135,14 @@ public abstract class PatternProfile {
                 this.lastComparison.averagePatternTime = -1.0f;
             }
 
-            if (storage) {
+            if (store || delete) {
                 SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
-                    this.configuration.set(Long.toString(oldTime), null);
-                    this.configuration.set(Long.toString(time), trustFactor);
+                    if (delete) {
+                        this.configuration.set(Long.toString(oldTime), null);
+                    }
+                    if (store) {
+                        this.configuration.set(Long.toString(time), trustFactor);
+                    }
                     this.generalization.queueStorage(this);
                 });
             }
@@ -152,7 +154,7 @@ public abstract class PatternProfile {
                 this.lastComparison.averagePatternTime = -1.0f;
             }
 
-            if (storage) {
+            if (store) {
                 SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     this.configuration.set(Long.toString(time), trustFactor);
                     this.generalization.queueStorage(this);
@@ -172,7 +174,7 @@ public abstract class PatternProfile {
         } else {
             trustFactor = significance * probability * existingContribution;
         }
-        this.updateComparison(profile, time, trustFactor, true);
+        this.updateComparison(profile, time, trustFactor, true, true);
     }
 
     // Separator
@@ -308,7 +310,7 @@ public abstract class PatternProfile {
 
             if (patternsRequired <= 1) {
                 return this.lastComparison.trustFactor;
-            } else if (comparisons.size() >= Pattern.minComparisonDataLimit) {
+            } else if (comparisons.size() >= Pattern.comparisonDataRequirement) {
                 patternsRequired = Math.min(patternsRequired, this.comparisons.size());
                 int dismiss = this.comparisons.size() - patternsRequired;
                 double sum = 0.0;
@@ -332,7 +334,7 @@ public abstract class PatternProfile {
     }
 
     final Collection<Double> trustFactors() {
-        if (comparisons.size() >= Pattern.minComparisonDataLimit) {
+        if (comparisons.size() >= Pattern.comparisonDataRequirement) {
             synchronized (this.comparisons) {
                 return new ArrayList<>(comparisons.values());
             }

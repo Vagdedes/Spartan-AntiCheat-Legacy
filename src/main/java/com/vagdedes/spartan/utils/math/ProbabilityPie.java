@@ -20,6 +20,11 @@ public class ProbabilityPie {
         this.total = 0.0f;
     }
 
+    public ProbabilityPie(int capacity, float loadFactor) {
+        this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
+        this.total = 0.0f;
+    }
+
     public ProbabilityPie clear() {
         this.map.clear();
         this.total = 0.0f;

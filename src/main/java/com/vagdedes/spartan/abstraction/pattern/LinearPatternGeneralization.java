@@ -40,7 +40,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         this.profiles = new HashMap<>();
         this.correlations = Collections.synchronizedMap(new HashMap<>());
         this.initialHash = Objects.hash(pattern.key.hashCode(), System.currentTimeMillis());
-        this.cache = new HashMap<>();
+        this.cache = new HashMap<>(Pattern.individualGlobalDataLimitBase, 1.0f);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         situation,
                         k -> new ArrayList<>(Pattern.individualGlobalDataLimitBase)
                 );
-                if (list.size() == Pattern.individualGlobalDataLimit) {
+                if (list.size() == Pattern.individualGlobalDataLimit - 1) {
                     if (!(list instanceof LinkedList)) {
                         list = new LinkedList<>(list);
                         this.correlations.put(situation, list);
@@ -130,7 +130,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     } else {
                         cache = new Cache(new ProbabilityPredictor(collection, current), collection.size());
 
-                        if (this.cache.size() == Pattern.individualGlobalDataLimit) {
+                        if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
                             Iterator<Integer> iterator = this.cache.keySet().iterator();
                             iterator.next();
                             iterator.remove();

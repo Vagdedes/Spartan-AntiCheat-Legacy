@@ -22,7 +22,7 @@ public abstract class PatternGeneralization {
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.significancePie = new HashPie(Pattern.globalDataLimitBase);
+        this.significancePie = new HashPie(Pattern.globalDataLimitBase, 1.0f);
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
         this.profilesSynchronizer = new Object();
     }
@@ -157,7 +157,7 @@ public abstract class PatternGeneralization {
     // Separator
 
     protected final void increaseSignificance(int hash, float pattern) {
-        if (this.significancePie.getSlices() == Pattern.globalDataLimit) {
+        if (this.significancePie.getSlices() == Pattern.globalDataLimit - 1) {
             synchronized (this.significancePie) {
                 this.significancePie.removeLeastSignificant();
                 this.significancePie.add(hash, pattern);
