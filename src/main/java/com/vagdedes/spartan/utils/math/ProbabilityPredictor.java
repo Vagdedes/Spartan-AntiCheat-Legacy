@@ -6,6 +6,11 @@ public class ProbabilityPredictor {
 
     public final ProbabilityPie beforePie, afterPie;
 
+    public ProbabilityPredictor() {
+        this.beforePie = new ProbabilityPie(0);
+        this.afterPie = new ProbabilityPie(0);
+    }
+
     public ProbabilityPredictor(Collection<Float> totalPatterns, float currentPattern) {
         this.beforePie = new ProbabilityPie();
         this.afterPie = new ProbabilityPie();

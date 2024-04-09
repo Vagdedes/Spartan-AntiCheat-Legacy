@@ -11,18 +11,20 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     private static final class Cache {
 
         private ProbabilityPredictor predictor;
+        private int dataSize;
         private long expiration;
 
-        private Cache(ProbabilityPredictor predictor) {
-            this.refresh(predictor);
+        private Cache(ProbabilityPredictor predictor, int dataSize) {
+            this.refresh(predictor, dataSize);
         }
 
         private boolean isExpired() {
             return this.expiration < System.currentTimeMillis();
         }
 
-        private ProbabilityPredictor refresh(ProbabilityPredictor predictor) {
+        private ProbabilityPredictor refresh(ProbabilityPredictor predictor, int dataSize) {
             this.predictor = predictor;
+            this.dataSize = dataSize;
             this.expiration = System.currentTimeMillis() + 1_000L;
             return predictor;
         }
@@ -113,45 +115,45 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     return false;
                 }
             }
-            ProbabilityPredictor predictor;
+            Cache cache;
             int hash = HashUtils.extendInt(this.initialHash, situation);
             hash = HashUtils.extendInt(hash, Float.hashCode(current));
 
             synchronized (this.correlations) {
-                Cache cache = this.cache.get(hash);
+                cache = this.cache.get(hash);
 
                 if (cache == null) {
                     Collection<Float> collection = this.correlations.get(situation);
 
-                    if (collection != null) {
+                    if (collection == null) {
+                        cache = new Cache(new ProbabilityPredictor(), 0);
+                    } else {
+                        cache = new Cache(new ProbabilityPredictor(collection, current), collection.size());
+
                         if (this.cache.size() == Pattern.individualGlobalDataLimit) {
                             Iterator<Integer> iterator = this.cache.keySet().iterator();
                             iterator.next();
                             iterator.remove();
                         }
-                        predictor = new ProbabilityPredictor(collection, current);
-                        this.cache.put(hash, new Cache(predictor));
-                    } else {
-                        return false;
+                        this.cache.put(hash, cache);
                     }
                 } else if (cache.isExpired()) {
                     Collection<Float> collection = this.correlations.get(situation);
 
-                    if (collection != null) {
-                        predictor = cache.refresh(new ProbabilityPredictor(collection, current));
-                    } else {
+                    if (collection == null) {
+                        cache = new Cache(new ProbabilityPredictor(), 0);
                         this.cache.remove(hash);
-                        return false;
+                    } else {
+                        cache.refresh(new ProbabilityPredictor(collection, current), collection.size());
                     }
-                } else {
-                    predictor = cache.predictor;
                 }
             }
             patternProfile.updateComparison(
                     time,
-                    this.significance(after) * this.significance(before),
-                    predictor.afterPie.getProbability(after) * predictor.beforePie.getProbability(before),
-                    predictor.afterPie.getRawTotal()
+                    this.significance(current),
+                    cache.predictor.afterPie.getProbability(after, 0.0)
+                            * cache.predictor.beforePie.getProbability(before, 0.0),
+                    cache.dataSize
             );
             return true;
         } else {

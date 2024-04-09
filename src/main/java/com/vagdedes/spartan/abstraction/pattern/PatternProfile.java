@@ -36,7 +36,7 @@ public abstract class PatternProfile {
         this.generalization = patternGeneralization;
         this.comparisons = Collections.synchronizedMap(new HashMap<>());
         this.repetition = new PatternRepetition();
-        this.lastComparison = new Comparison(0L, -1.0f);
+        this.lastComparison = new Comparison(0L, -1.0);
         this.file = new File(
                 Register.plugin.getDataFolder()
                         + "/comparison/"

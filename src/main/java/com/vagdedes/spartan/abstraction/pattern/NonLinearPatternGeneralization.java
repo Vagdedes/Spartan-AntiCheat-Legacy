@@ -80,18 +80,23 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
             synchronized (this.correlations) {
                 ProbabilityPie pie = this.correlations.get(situation);
 
-                if (pie != null) {
+                if (pie == null) {
+                    patternProfile.updateComparison(
+                            time,
+                            this.significance(pattern),
+                            0.0,
+                            0.0
+                    );
+                } else {
                     patternProfile.updateComparison(
                             time,
                             this.significance(pattern),
                             pie.getProbability(pattern),
                             pie.getRawTotal()
                     );
-                    return true;
-                } else {
-                    return false;
                 }
             }
+            return true;
         } else {
             return false;
         }

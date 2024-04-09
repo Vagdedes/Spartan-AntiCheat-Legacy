@@ -80,18 +80,23 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
             synchronized (this.correlations) {
                 ProbabilityRank rank = this.correlations.get(situation);
 
-                if (rank != null) {
+                if (rank == null) {
+                    patternProfile.updateComparison(
+                            time,
+                            this.significance(pattern),
+                            0.0,
+                            0.0
+                    );
+                } else {
                     patternProfile.updateComparison(
                             time,
                             this.significance(pattern),
                             rank.getPosition(pattern) * rank.getProbability(pattern),
                             rank.getRawTotal()
                     );
-                    return true;
-                } else {
-                    return false;
                 }
             }
+            return true;
         } else {
             return false;
         }
