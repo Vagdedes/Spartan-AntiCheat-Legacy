@@ -58,6 +58,7 @@ public class PlayerUtils {
             lowPrecision = highPrecision * 2.0,
             chunk = 16.0,
             climbingScaffoldingMax = climbingDefault + 0.2,
+            totalJumpingMotion,
             maxJumpingMotionDifference;
 
     public static final double[]
@@ -96,10 +97,12 @@ public class PlayerUtils {
         jumps.add(jumping[0]);
         Iterator<Double> iterator = jumps.iterator();
         double maxJumpingMotionDifferenceLocal = Double.MIN_VALUE,
-                previousJumpingMotion = iterator.next();
+                previousJumpingMotion = iterator.next(),
+                totalJumpingMotionLocal = 0.0;
 
         while (iterator.hasNext()) {
             double currentMotion = iterator.next();
+            totalJumpingMotionLocal += currentMotion;
             maxJumpingMotionDifferenceLocal = Math.max(
                     previousJumpingMotion - currentMotion,
                     maxJumpingMotionDifferenceLocal
@@ -107,6 +110,7 @@ public class PlayerUtils {
             previousJumpingMotion = currentMotion;
         }
         maxJumpingMotionDifference = maxJumpingMotionDifferenceLocal;
+        totalJumpingMotion = totalJumpingMotionLocal;
 
         // Separator
 

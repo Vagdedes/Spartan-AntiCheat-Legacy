@@ -194,11 +194,12 @@ public class HashUtils {
     }
 
     public static int hashEnvironment(SpartanPlayer player,
-                                       SpartanLocation location) {
+                                      SpartanLocation location) {
         int hash = 1;
         boolean foundBlock = false;
 
-        for (int y = -1; y <= Math.ceil(player.getEyeHeight()); y++) {
+        for (int y = -AlgebraUtils.integerCeil(PlayerUtils.totalJumpingMotion);
+             y <= AlgebraUtils.integerCeil(player.getEyeHeight()); y++) {
             for (SpartanLocation cloned : location.clone().getSurroundingLocations(1.0, y, 1.0, true)) {
                 SpartanBlock block = cloned.getBlock();
                 Material material = block.material;

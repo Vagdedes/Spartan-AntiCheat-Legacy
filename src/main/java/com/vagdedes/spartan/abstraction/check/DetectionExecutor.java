@@ -90,7 +90,7 @@ public abstract class DetectionExecutor {
                         );
                         decimals.removeOldest(generalization.parent.key);
                     }
-                    decimals.add(generalization.parent.key, trustFactor);
+                    decimals.add(generalization.parent.key, rank);
                 } else {
                     player.debug(
                             false,

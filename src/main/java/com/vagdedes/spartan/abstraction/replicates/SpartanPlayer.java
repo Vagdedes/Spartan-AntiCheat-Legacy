@@ -514,7 +514,7 @@ public class SpartanPlayer {
 
                         for (Object object : message) {
                             if (object instanceof Double) {
-                                message[i] = (i % 2 == 0 ? "§7" : "§c")
+                                message[i] = (i % 2 == 0 ? "§c" : "§7")
                                         + AlgebraUtils.cut((double) object, GroundUtils.maxHeightLength);
                             }
                             i++;
@@ -523,7 +523,7 @@ public class SpartanPlayer {
                         int i = 0;
 
                         for (Object object : message) {
-                            message[i] = (i % 2 == 0 ? "§7" : "§c") + object;
+                            message[i] = (i % 2 == 0 ? "§c" : "§7") + object;
                             i++;
                         }
                     }

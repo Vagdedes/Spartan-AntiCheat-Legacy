@@ -156,6 +156,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                             * cache.predictor.beforePie.getRatio(before, Pattern.noDataProbability),
                     cache.dataSize
             );
+            profile.getSpartanPlayer().debug(
+                    false,
+                    false,
+                    this.significance(current),
+                    cache.predictor.afterPie.getRatio(after, Pattern.noDataProbability)
+                            * cache.predictor.beforePie.getRatio(before, Pattern.noDataProbability),
+                    1.0 - (1.0 / (cache.dataSize + 1.0))
+            );
             return true;
         } else {
             return false;

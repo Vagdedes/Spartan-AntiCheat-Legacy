@@ -28,11 +28,6 @@ public class Decimals {
             if (list == null) {
                 return def;
             }
-            int size = list.size();
-
-            if (size == 0) {
-                return def;
-            }
             switch (newestToOldestIndex) {
                 case CALCULATE_AVERAGE:
                     double sum = 0.0;
@@ -40,7 +35,7 @@ public class Decimals {
                     for (double dbl : list) {
                         sum += dbl;
                     }
-                    return sum / ((double) size);
+                    return sum / ((double) list.size());
                 case CALCULATE_SUMMARY:
                     sum = 0.0;
 
@@ -63,7 +58,7 @@ public class Decimals {
                     }
                     return sum;
                 case CALCULATE_REMAINING:
-                    if (size == 1) {
+                    if (list.size() == 1) {
                         return def;
                     }
                     sum = 0.0;
@@ -80,10 +75,10 @@ public class Decimals {
                     }
                     return sum;
                 default:
-                    if (newestToOldestIndex >= size) {
+                    if (newestToOldestIndex >= list.size()) {
                         return def;
                     } else {
-                        return list.get(newestToOldestPosition(size, newestToOldestIndex));
+                        return list.get(newestToOldestPosition(list.size(), newestToOldestIndex));
                     }
             }
         }
