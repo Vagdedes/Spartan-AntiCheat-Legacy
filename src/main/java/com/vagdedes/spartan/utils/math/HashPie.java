@@ -29,16 +29,16 @@ public class HashPie {
 
     // Separator
 
-    public HashPie addMultiple(int hash, Collection<? extends Number> numbers) {
+    public HashPie addMultiple(Collection<? extends Number> numbers, int hash) {
         for (Number number : numbers) {
-            this.add(hash, number);
+            this.add(number, hash);
         }
         return this;
     }
 
     // Separator
 
-    public HashPie add(int hash, Number number) {
+    public HashPie add(Number number, int hash) {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null) {
@@ -74,7 +74,7 @@ public class HashPie {
 
     // Separator
 
-    public boolean remove(int hash, Number number) {
+    public boolean remove(Number number, int hash) {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null && set.remove(hash)) {

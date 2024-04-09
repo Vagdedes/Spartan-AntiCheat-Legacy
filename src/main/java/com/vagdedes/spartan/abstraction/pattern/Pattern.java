@@ -38,7 +38,7 @@ public class Pattern {
             for (Pattern instance : instances) {
                 synchronized (instance.generalizations) {
                     for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
-                        PatternProfile patternProfile = patternGeneralization.removeProfile(profile);
+                        PatternProfile patternProfile = patternGeneralization.deleteProfile(profile);
 
                         if (patternProfile != null) {
                             patternProfile.delete(profile);

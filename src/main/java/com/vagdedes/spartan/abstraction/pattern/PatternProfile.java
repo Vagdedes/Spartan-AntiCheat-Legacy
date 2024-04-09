@@ -26,7 +26,7 @@ public abstract class PatternProfile {
         }
     }
 
-    int hash;
+    final int hash;
     private final PatternGeneralization generalization;
     private final Map<Long, Double> comparisons;
     private final Comparison lastComparison;
@@ -66,12 +66,11 @@ public abstract class PatternProfile {
                         for (Map.Entry<String, Object> entry : values.entrySet()) {
                             if (entry.getValue() instanceof Double) {
                                 try {
-                                    this.updateComparison(
+                                    this.finishComparison(
                                             null,
                                             Long.parseLong(entry.getKey()),
                                             (double) entry.getValue(),
-                                            false,
-                                            true
+                                            false
                                     );
                                     valid++;
                                 } catch (Exception ignored) {
@@ -110,8 +109,7 @@ public abstract class PatternProfile {
 
     // Separator
 
-    private void updateComparison(PlayerProfile profile, long time, double trustFactor,
-                                  boolean store, boolean delete) {
+    private void finishComparison(PlayerProfile profile, long time, double trustFactor, boolean store) {
         if (SpartanBukkit.testMode && profile != null) {
             Integer divisor = DetectionNotifications.getDivisor(profile.getSpartanPlayer(), false);
 
@@ -135,17 +133,14 @@ public abstract class PatternProfile {
                 this.lastComparison.averagePatternTime = -1.0f;
             }
 
-            if (store || delete) {
-                SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
-                    if (delete) {
-                        this.configuration.set(Long.toString(oldTime), null);
-                    }
-                    if (store) {
-                        this.configuration.set(Long.toString(time), trustFactor);
-                    }
-                    this.generalization.queueStorage(this);
-                });
-            }
+            SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
+                this.configuration.set(Long.toString(oldTime), null);
+
+                if (store) {
+                    this.configuration.set(Long.toString(time), trustFactor);
+                }
+                this.generalization.queueStorage(this);
+            });
         } else {
             synchronized (this.comparisons) {
                 this.comparisons.put(time, trustFactor);
@@ -163,9 +158,12 @@ public abstract class PatternProfile {
         }
     }
 
-    protected final void updateComparison(PlayerProfile profile, long time, double significance, double probability, double total) {
-        double existingContribution = 1.0 - (1.0 / (total + 1.0)),
-                trustFactor;
+    protected final void finishComparison(PlayerProfile profile,
+                                          long time,
+                                          double significance,
+                                          double probability,
+                                          double existingContribution) {
+        double trustFactor;
 
         if (significance == 0.0
                 || probability == 0.0
@@ -174,7 +172,7 @@ public abstract class PatternProfile {
         } else {
             trustFactor = significance * probability * existingContribution;
         }
-        this.updateComparison(profile, time, trustFactor, true, true);
+        this.finishComparison(profile, time, trustFactor, true);
     }
 
     // Separator
@@ -243,7 +241,7 @@ public abstract class PatternProfile {
                                             if (this.generalization.scissors != 0) {
                                                 pattern = AlgebraUtils.cut(pattern, this.generalization.scissors);
                                             }
-                                            this.generalization.deleteCustomLessons(this.hash, (int) situation, (float) pattern);
+                                            this.generalization.deletePattern((int) situation, this, (float) pattern);
                                             this.generalization.parent.deleteFromFile(configuration, key);
                                             changed = true;
                                         }

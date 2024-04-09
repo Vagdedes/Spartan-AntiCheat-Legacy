@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 
 import java.util.*;
@@ -44,7 +45,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected PatternProfile removeProfileInternal(PlayerProfile profile) {
+    protected PatternProfile customDeleteProfile(PlayerProfile profile) {
         return this.profiles.remove(profile);
     }
 
@@ -61,7 +62,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean customLearn(PlayerProfile profile, int situation, float pattern) {
+    protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -75,11 +76,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         list = new LinkedList<>(list);
                         this.correlations.put(situation, list);
                     }
-                    this.decreaseSignificance(patternProfile.hash, ((LinkedList<Float>) list).removeFirst());
+                    this.decreaseImportance(
+                            situation,
+                            patternProfile,
+                            ((LinkedList<Float>) list).removeFirst()
+                    );
                 }
                 list.add(pattern);
             }
-            this.increaseSignificance(patternProfile.hash, pattern);
 
             synchronized (patternProfile.correlations) {
                 LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
@@ -91,14 +95,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 }
                 list.add(pattern);
             }
-            return true;
+            return patternProfile;
         } else {
-            return false;
+            return null;
         }
     }
 
     @Override
-    protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
+    protected boolean customCompare(PlayerProfile profile, long time, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.isLoaded()) {
@@ -148,13 +152,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     }
                 }
             }
-            patternProfile.updateComparison(
+            patternProfile.finishComparison(
                     profile,
                     time,
                     this.significance(current),
                     cache.predictor.afterPie.getRatio(after, Pattern.noDataProbability)
                             * cache.predictor.beforePie.getRatio(before, Pattern.noDataProbability),
-                    cache.dataSize
+                    (1.0 - AlgebraUtils.contribution(cache.dataSize))
+                            * (1.0 - this.uniqueContribution(situation, current))
             );
             profile.getSpartanPlayer().debug(
                     false,
@@ -162,7 +167,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     this.significance(current),
                     cache.predictor.afterPie.getRatio(after, Pattern.noDataProbability)
                             * cache.predictor.beforePie.getRatio(before, Pattern.noDataProbability),
-                    1.0 - (1.0 / (cache.dataSize + 1.0))
+                    (1.0 - AlgebraUtils.contribution(cache.dataSize))
+                            * (1.0 - this.uniqueContribution(situation, current))
             );
             return true;
         } else {
@@ -171,7 +177,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected void deleteCustomLessonsInternal(int situation, float pattern) {
+    protected void customDeletePattern(int situation, float pattern) {
         synchronized (this.correlations) {
             Collection<Float> list = this.correlations.get(situation);
 

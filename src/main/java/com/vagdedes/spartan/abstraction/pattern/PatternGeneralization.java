@@ -15,25 +15,30 @@ public abstract class PatternGeneralization {
 
     public final Pattern parent;
     final short scissors;
-    private final HashPie significancePie;
+    private final HashPie significance;
+    private final Map<Integer, HashPie> uniqueContribution;
     private final Set<PatternProfile> profilesToStore;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.significancePie = new HashPie(Pattern.globalDataLimitBase, 1.0f);
+        this.significance = new HashPie(Pattern.globalDataLimitBase, 1.0f);
+        this.uniqueContribution = Collections.synchronizedMap(new HashMap<>());
         this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
         this.profilesSynchronizer = new Object();
     }
 
     final void clear() {
         synchronized (this.profilesSynchronizer) {
-            synchronized (this.significancePie) {
+            synchronized (this.significance) {
                 synchronized (this.profilesToStore) {
-                    this.clearProfiles();
-                    this.significancePie.clear();
-                    this.storeProfiles(true);
+                    synchronized (this.uniqueContribution) {
+                        this.clearProfiles();
+                        this.significance.clear();
+                        this.uniqueContribution.clear();
+                        this.storeProfiles(true);
+                    }
                 }
             }
         }
@@ -88,10 +93,17 @@ public abstract class PatternGeneralization {
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
-            if (this.customLearn(profile, situation, (float) pattern)
-                    && store) {
-                this.parent.setToFile(profile, time, situation, original);
-                return true;
+            PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern);
+
+            if (patternProfile != null) {
+                this.increaseImportance(situation, patternProfile, (float) pattern);
+
+                if (store) {
+                    this.parent.setToFile(profile, time, situation, original);
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -156,40 +168,69 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    protected final void increaseSignificance(int hash, float pattern) {
-        if (this.significancePie.getSlices() == Pattern.globalDataLimit - 1) {
-            synchronized (this.significancePie) {
-                this.significancePie.removeLeastSignificant();
-                this.significancePie.add(hash, pattern);
+    private void increaseImportance(int situation, PatternProfile patternProfile, float pattern) {
+        if (this.significance.getSlices() == Pattern.globalDataLimit - 1) {
+            synchronized (this.significance) {
+                this.significance.removeLeastSignificant();
+                this.significance.add(pattern, patternProfile.hash);
             }
         } else {
-            synchronized (this.significancePie) {
-                this.significancePie.add(hash, pattern);
+            synchronized (this.significance) {
+                this.significance.add(pattern, patternProfile.hash);
+            }
+        }
+        synchronized (this.uniqueContribution) {
+            HashPie pie = this.uniqueContribution.computeIfAbsent(
+                    situation,
+                    k -> new HashPie(Pattern.globalDataLimitBase, 1.0f)
+            );
+
+            if (pie.getSlices() == Pattern.individualGlobalDataLimit - 1) {
+                pie.removeLeastSignificant();
+            }
+            pie.add(pattern, patternProfile.hash);
+        }
+    }
+
+    protected final void decreaseImportance(int situation, PatternProfile patternProfile, float pattern) {
+        synchronized (this.significance) {
+            this.significance.remove(pattern, patternProfile.hash);
+        }
+        synchronized (this.uniqueContribution) {
+            HashPie pie = this.uniqueContribution.get(situation);
+
+            if (pie != null) {
+                pie.remove(pattern, patternProfile.hash);
+
+                if (pie.isEmpty()) {
+                    this.uniqueContribution.remove(situation);
+                }
             }
         }
     }
 
-    protected final void decreaseSignificance(int hash, float pattern) {
-        synchronized (this.significancePie) {
-            this.significancePie.remove(hash, pattern);
+    protected final double significance(float pattern) {
+        synchronized (this.significance) {
+            return this.significance.getRatio(pattern);
         }
     }
 
-    protected final double significance(float value) {
-        synchronized (this.significancePie) {
-            return this.significancePie.getRatio(value);
+    protected final double uniqueContribution(int situation, float pattern) {
+        synchronized (this.uniqueContribution) {
+            HashPie pie = this.uniqueContribution.get(situation); // todo
+            return pie == null ? 1.0 : AlgebraUtils.contribution(pie.getRatio(pattern));
         }
     }
 
     // Separator
 
-    PatternProfile removeProfile(PlayerProfile profile) {
+    final PatternProfile deleteProfile(PlayerProfile profile) {
         synchronized (this.profilesSynchronizer) {
-            return this.removeProfileInternal(profile);
+            return this.customDeleteProfile(profile);
         }
     }
 
-    abstract protected PatternProfile removeProfileInternal(PlayerProfile profile);
+    abstract protected PatternProfile customDeleteProfile(PlayerProfile profile);
 
     // Separator
 
@@ -197,22 +238,22 @@ public abstract class PatternGeneralization {
 
     abstract protected boolean hasPatterns(int situation);
 
-    abstract protected boolean customLearn(PlayerProfile profile, int situation, float pattern);
+    abstract protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern);
 
     public boolean compare(PlayerProfile profile, int situation) {
-        return this.compareInternal(profile, System.currentTimeMillis(), situation);
+        return this.customCompare(profile, System.currentTimeMillis(), situation);
     }
 
-    protected abstract boolean compareInternal(PlayerProfile playerProfile, long time, int situation);
+    protected abstract boolean customCompare(PlayerProfile playerProfile, long time, int situation);
 
     // Separator
 
-    protected final void deleteCustomLessons(int hash, int situation, float pattern) {
-        this.decreaseSignificance(hash, pattern);
-        this.deleteCustomLessonsInternal(situation, pattern);
+    protected final void deletePattern(int situation, PatternProfile patternProfile, float pattern) {
+        this.customDeletePattern(situation, pattern);
+        this.decreaseImportance(situation, patternProfile, pattern);
     }
 
-    abstract protected void deleteCustomLessonsInternal(int situation, float pattern);
+    abstract protected void customDeletePattern(int situation, float pattern);
 
     // Separator
 

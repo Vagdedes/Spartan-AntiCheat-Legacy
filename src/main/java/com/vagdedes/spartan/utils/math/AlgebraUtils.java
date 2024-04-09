@@ -54,6 +54,12 @@ public class AlgebraUtils {
 
     // Separator
 
+    public static double contribution(double total) {
+        return 1.0 / (total + 1.0);
+    }
+
+    // Separator
+
     public static int roundToNearest(double number, int nearest) {
         return (int) (nearest * Math.round(number / (double) nearest));
     }

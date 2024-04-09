@@ -238,7 +238,7 @@ public class HashUtils {
                 hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
             }
         }
-        hash = extendInt(hash, player.getBlocksOffGround(PlayerUtils.chunkInt));
+        hash = extendInt(hash, AlgebraUtils.roundToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum));
         return hash;
     }
 }

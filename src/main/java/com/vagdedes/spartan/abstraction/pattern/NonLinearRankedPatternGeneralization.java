@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.Collection;
@@ -20,7 +21,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     }
 
     @Override
-    protected PatternProfile removeProfileInternal(PlayerProfile profile) {
+    protected PatternProfile customDeleteProfile(PlayerProfile profile) {
         return this.profiles.remove(profile);
     }
 
@@ -37,7 +38,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     }
 
     @Override
-    protected boolean customLearn(PlayerProfile profile, int situation, float pattern) {
+    protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.repetition.canUse(pattern)) {
@@ -47,22 +48,25 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         k -> new ProbabilityRank()
                 );
                 if (rank.getParts() == Pattern.individualGlobalDataLimit) {
-                    this.decreaseSignificance(patternProfile.hash, rank.removeLeastSignificant());
+                    this.decreaseImportance(
+                            situation,
+                            patternProfile,
+                            rank.removeLeastSignificant()
+                    );
                 }
                 rank.add(pattern);
             }
             synchronized (patternProfile.correlations) {
                 patternProfile.correlations.put(situation, pattern);
             }
-            this.increaseSignificance(patternProfile.hash, pattern);
-            return true;
+            return patternProfile;
         } else {
-            return false;
+            return null;
         }
     }
 
     @Override
-    protected boolean compareInternal(PlayerProfile profile, long time, int situation) {
+    protected boolean customCompare(PlayerProfile profile, long time, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.isLoaded()) {
@@ -81,7 +85,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                 ProbabilityRank rank = this.correlations.get(situation);
 
                 if (rank == null) {
-                    patternProfile.updateComparison(
+                    patternProfile.finishComparison(
                             profile,
                             time,
                             this.significance(pattern),
@@ -89,12 +93,13 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                             0.0
                     );
                 } else {
-                    patternProfile.updateComparison(
+                    patternProfile.finishComparison(
                             profile,
                             time,
                             this.significance(pattern),
                             rank.getPosition(pattern) * rank.getRatio(pattern),
-                            rank.getRawTotal()
+                            (1.0 - AlgebraUtils.contribution(rank.getRawTotal()))
+                                    * (1.0 - this.uniqueContribution(situation, pattern))
                     );
                 }
             }
@@ -105,7 +110,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     }
 
     @Override
-    protected void deleteCustomLessonsInternal(int situation, float pattern) {
+    protected void customDeletePattern(int situation, float pattern) {
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.get(situation);
 
