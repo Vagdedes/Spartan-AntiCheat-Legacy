@@ -75,7 +75,7 @@ public class ResearchEngine {
                 if (schedulerTicks == 0) {
                     schedulerTicks = cacheRefreshTicks * 10;
 
-                    SpartanBukkit.dataThread.executeIfFree(() -> {
+                    SpartanBukkit.analysisThread.executeIfFree(() -> {
                         if (Config.sql.isEnabled()) {
                             refresh(Register.isPluginEnabled());
                         } else if (schedulerTicks % cacheRefreshTicks == 0) {
@@ -87,7 +87,7 @@ public class ResearchEngine {
                     schedulerTicks -= 1;
 
                     if (schedulerTicks % cacheRefreshTicks == 0) {
-                        SpartanBukkit.dataThread.executeIfFree(() -> {
+                        SpartanBukkit.analysisThread.executeIfFree(() -> {
                             updateCache();
                             MainMenu.refresh();
                         });
@@ -293,7 +293,7 @@ public class ResearchEngine {
     // Separator
 
     public static void resetData(Enums.HackType hackType) {
-        SpartanBukkit.dataThread.execute(() -> {
+        SpartanBukkit.analysisThread.executeWithPriority(() -> {
             String hackTypeString = hackType.toString();
             hackType.getCheck().clearIgnoredViolations();
 
@@ -359,9 +359,9 @@ public class ResearchEngine {
 
         if (isStorageMode()) {
             // Clear Files/Database
-            SpartanBukkit.dataThread.execute(() -> {
-                Pattern.deleteFromFile(profile);
+            Pattern.deleteFromFile(profile);
 
+            SpartanBukkit.analysisThread.executeWithPriority(() -> {
                 synchronized (playerProfiles) {
                     playerProfiles.remove(playerName);
                 }
@@ -392,7 +392,7 @@ public class ResearchEngine {
                 }
             });
         } else {
-            SpartanBukkit.dataThread.execute(() -> Pattern.deleteFromFile(profile));
+            Pattern.deleteFromFile(profile);
 
             synchronized (playerProfiles) {
                 playerProfiles.remove(playerName);
@@ -557,7 +557,7 @@ public class ResearchEngine {
         };
 
         if (SpartanBukkit.isSynchronised()) {
-            SpartanBukkit.dataThread.executeIfFree(runnable);
+            SpartanBukkit.analysisThread.executeIfFree(runnable);
         } else {
             runnable.run();
         }

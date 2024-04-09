@@ -181,7 +181,7 @@ public abstract class PatternProfile {
             }
             this.generalization.dequeueStorage(this);
 
-            SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
+            SpartanBukkit.dataThread.executeWithPriority(() -> {
                 this.file.delete();
                 File[] files = this.generalization.parent.getLearningFiles();
 
