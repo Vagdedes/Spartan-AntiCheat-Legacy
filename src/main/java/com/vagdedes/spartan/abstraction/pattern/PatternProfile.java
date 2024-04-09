@@ -34,7 +34,7 @@ public abstract class PatternProfile {
 
     PatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
         this.generalization = patternGeneralization;
-        this.comparisons = Collections.synchronizedMap(new HashMap<>());
+        this.comparisons = Collections.synchronizedMap(new LinkedHashMap<>());
         this.repetition = new PatternRepetition();
         this.lastComparison = new Comparison(0L, -1.0);
         this.file = new File(
@@ -252,7 +252,7 @@ public abstract class PatternProfile {
     // Separator
 
     float averagePatternTime() {
-        if (this.lastComparison.averagePatternTime != -1.0) {
+        if (this.lastComparison.averagePatternTime != -1.0f) {
             return this.lastComparison.averagePatternTime;
         } else {
             int size = this.comparisons.size();
