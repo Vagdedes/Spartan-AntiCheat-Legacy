@@ -312,7 +312,9 @@ public class Pattern {
 
     public void learn(SpartanPlayer player, int situation, Number pattern) {
         long time = System.currentTimeMillis();
-        Integer divisor = DetectionNotifications.getDivisor(player, false);
+        Integer divisor = SpartanBukkit.testMode
+                ? DetectionNotifications.getDivisor(player, false)
+                : null;
         boolean include = divisor == null || divisor != testingNotificationDivisor,
                 notifications = divisor != null,
                 found = false,

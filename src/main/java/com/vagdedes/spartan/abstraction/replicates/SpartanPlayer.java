@@ -504,7 +504,7 @@ public class SpartanPlayer {
             Player p = getPlayer();
 
             if (p != null && p.isWhitelisted()) {
-                String string = "§7" + p.getName() + "§8: ";
+                String string = "§f" + p.getName() + "§8: ";
 
                 if (message == null || message.length == 0) {
                     string += new Random().nextInt();

@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.HashPie;
 import com.vagdedes.spartan.utils.math.ProbabilityRank;
@@ -77,10 +78,10 @@ public abstract class PatternGeneralization {
     // Separator
 
     final boolean learn(PlayerProfile profile,
-                  long time,
-                  int situation,
-                  double pattern,
-                  boolean store) {
+                        long time,
+                        int situation,
+                        double pattern,
+                        boolean store) {
         if (profile.isLegitimate()) {
             double original = pattern;
 
@@ -109,7 +110,9 @@ public abstract class PatternGeneralization {
             return 1.0;
         } else {
             ProbabilityRank rank = new ProbabilityRank();
-            Integer divisor = DetectionNotifications.getDivisor(player, false);
+            Integer divisor = SpartanBukkit.testMode
+                    ? DetectionNotifications.getDivisor(player, false)
+                    : null;
 
             if (divisor == null || divisor != Pattern.testingNotificationDivisor) {
                 synchronized (this.profilesSynchronizer) {
@@ -197,6 +200,13 @@ public abstract class PatternGeneralization {
     abstract protected boolean customLearn(PlayerProfile profile, int situation, float pattern);
 
     public boolean compare(PlayerProfile profile, int situation) {
+        if (SpartanBukkit.testMode) {
+            Integer divisor = DetectionNotifications.getDivisor(profile.getSpartanPlayer(), false);
+
+            if (divisor != null && divisor == Pattern.testingNotificationDivisor) {
+                return true;
+            }
+        }
         return this.compareInternal(profile, System.currentTimeMillis(), situation);
     }
 

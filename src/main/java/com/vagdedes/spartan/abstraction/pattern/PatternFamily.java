@@ -18,7 +18,7 @@ public abstract class PatternFamily {
         }
     }
 
-    public void store() {
+    public final void store() {
         if (System.currentTimeMillis() - this.lastStored >= this.storeFrequency) {
             this.lastStored = System.currentTimeMillis();
 
