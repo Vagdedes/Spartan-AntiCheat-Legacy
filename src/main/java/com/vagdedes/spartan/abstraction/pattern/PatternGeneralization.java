@@ -1,15 +1,13 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.HashPie;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class PatternGeneralization {
 
@@ -17,7 +15,6 @@ public abstract class PatternGeneralization {
     final short scissors;
     private final HashPie significance;
     private final Map<Integer, HashPie> uniqueContribution;
-    private final Set<PatternProfile> profilesToStore;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
@@ -25,58 +22,18 @@ public abstract class PatternGeneralization {
         this.scissors = generalization;
         this.significance = new HashPie(Pattern.globalDataLimitBase, 1.0f);
         this.uniqueContribution = Collections.synchronizedMap(new HashMap<>());
-        this.profilesToStore = Collections.synchronizedSet(new HashSet<>());
         this.profilesSynchronizer = new Object();
     }
 
     final void clear() {
         synchronized (this.profilesSynchronizer) {
             synchronized (this.significance) {
-                synchronized (this.profilesToStore) {
-                    synchronized (this.uniqueContribution) {
-                        this.clearProfiles();
-                        this.significance.clear();
-                        this.uniqueContribution.clear();
-                        this.storeProfiles(true);
-                    }
+                synchronized (this.uniqueContribution) {
+                    this.clearProfiles();
+                    this.significance.clear();
+                    this.uniqueContribution.clear();
                 }
             }
-        }
-    }
-
-    // Separator
-
-    final void storeProfiles(boolean local) {
-        if (local) {
-            if (!this.profilesToStore.isEmpty()) {
-                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
-
-                while (iterator.hasNext()) {
-                    iterator.next().store();
-                    iterator.remove();
-                }
-            }
-        } else if (!this.profilesToStore.isEmpty()) {
-            synchronized (this.profilesToStore) {
-                Iterator<PatternProfile> iterator = this.profilesToStore.iterator();
-
-                while (iterator.hasNext()) {
-                    iterator.next().store();
-                    iterator.remove();
-                }
-            }
-        }
-    }
-
-    final void queueStorage(PatternProfile profile) {
-        synchronized (this.profilesToStore) {
-            this.profilesToStore.add(profile);
-        }
-    }
-
-    final void dequeueStorage(PatternProfile profile) {
-        synchronized (this.profilesToStore) {
-            this.profilesToStore.remove(profile);
         }
     }
 
@@ -113,57 +70,6 @@ public abstract class PatternGeneralization {
             }
             return false;
         }
-    }
-
-    // Separator
-
-    public final double rankTrustFactor(SpartanPlayer player, double trustFactor) {
-        if (trustFactor == -1.0) {
-            return Pattern.defaultPosition;
-        } else {
-            ProbabilityRank rank = new ProbabilityRank();
-            Integer divisor = SpartanBukkit.testMode
-                    ? DetectionNotifications.getDivisor(player, false)
-                    : null;
-
-            if (divisor == null || divisor != Pattern.testingNotificationDivisor) {
-                synchronized (this.profilesSynchronizer) {
-                    for (PatternProfile profile : this.getProfiles()) {
-                        double other = profile.trustFactor(null);
-
-                        if (other != -1.0) {
-                            rank.add(other);
-                        }
-                    }
-                }
-            } else {
-                rank.addMultiple(this.getProfile(player.getProfile()).trustFactors());
-            }
-            return rank.getParts() < ResearchEngine.requiredProfiles
-                    ? Pattern.defaultPosition
-                    : rank.getPosition(trustFactor, Pattern.defaultPosition);
-        }
-    }
-
-    // Separator
-
-    final float averagePatternTime() {
-        float time = 0.0f;
-        int profiles = 0;
-
-        synchronized (this.profilesSynchronizer) {
-            for (PatternProfile profile : this.getProfiles()) {
-                float average = profile.averagePatternTime();
-
-                if (average != -1.0f) {
-                    time += average;
-                    profiles++;
-                }
-            }
-        }
-        return profiles < ResearchEngine.requiredProfiles
-                ? -1.0f
-                : time / (float) profiles;
     }
 
     // Separator

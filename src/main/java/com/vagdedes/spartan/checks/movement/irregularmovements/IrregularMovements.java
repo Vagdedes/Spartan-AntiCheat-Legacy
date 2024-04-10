@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
@@ -533,7 +534,7 @@ public class IrregularMovements extends CheckExecutor {
             this.machineLearningDetection(
                     SpartanBukkit.movementPatterns.vertical.getGeneralization(GroundUtils.maxHeightLength),
                     (int) object,
-                    20,
+                    1,
                     0.01
             );
         } else {

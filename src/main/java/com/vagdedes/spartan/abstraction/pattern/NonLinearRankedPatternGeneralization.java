@@ -67,46 +67,41 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     @Override
     protected boolean customCompare(PlayerProfile profile, long time, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
+        float pattern;
 
-        if (patternProfile.isLoaded()) {
-            float pattern;
+        synchronized (patternProfile.correlations) {
+            Float cache = patternProfile.correlations.get(situation);
 
-            synchronized (patternProfile.correlations) {
-                Float cache = patternProfile.correlations.get(situation);
-
-                if (cache != null) {
-                    pattern = cache;
-                } else {
-                    return false;
-                }
+            if (cache != null) {
+                pattern = cache;
+            } else {
+                return false;
             }
-            synchronized (this.correlations) {
-                ProbabilityRank rank = this.correlations.get(situation);
-
-                if (rank == null) {
-                    patternProfile.finishComparison(
-                            time, profile,
-                            situation,
-                            pattern,
-                            Pattern.defaultRatio,
-                            0
-                    );
-                } else {
-                    patternProfile.finishComparison(
-                            time,
-                            profile,
-                            situation,
-                            pattern,
-                            rank.getPosition(pattern, Pattern.defaultPosition)
-                                    * rank.getRatio(pattern, Pattern.defaultRatio),
-                            rank.getTotal()
-                    );
-                }
-            }
-            return true;
-        } else {
-            return false;
         }
+        synchronized (this.correlations) {
+            ProbabilityRank rank = this.correlations.get(situation);
+
+            if (rank == null) {
+                patternProfile.finishComparison(
+                        time, profile,
+                        situation,
+                        pattern,
+                        Pattern.defaultRatio,
+                        0
+                );
+            } else {
+                patternProfile.finishComparison(
+                        time,
+                        profile,
+                        situation,
+                        pattern,
+                        rank.getPosition(pattern, Pattern.defaultPosition)
+                                * rank.getRatio(pattern, Pattern.defaultRatio),
+                        rank.getTotal()
+                );
+            }
+        }
+        return true;
     }
 
     @Override

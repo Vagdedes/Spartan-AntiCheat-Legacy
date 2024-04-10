@@ -177,9 +177,6 @@ public class Pattern {
             } catch (Exception ignored) {
             }
         });
-        for (PatternGeneralization generalization : this.generalizations.values()) {
-            generalization.storeProfiles(false);
-        }
     }
 
     private synchronized void loadFromFiles() {
@@ -319,13 +316,9 @@ public class Pattern {
         boolean notifications = divisor != null,
                 found = false,
                 stored = false,
-                include;
+                include = !SpartanBukkit.testMode || !player.isWhitelisted()
+                        && (!notifications || divisor != testingNotificationDivisor);
 
-        if (SpartanBukkit.testMode) {
-            include = !player.isWhitelisted() && (!notifications || divisor != testingNotificationDivisor);
-        } else {
-            include = true;
-        }
         synchronized (this.generalizations) {
             for (PatternGeneralization generalization : this.generalizations.values()) {
                 if (notifications) {
@@ -357,7 +350,7 @@ public class Pattern {
         }
     }
 
-    public PatternGeneralization getGeneralization(Integer generalization) {
+    public PatternGeneralization getGeneralization(Number generalization) {
         synchronized (this.generalizations) {
             return this.generalizations.get(generalization.shortValue());
         }

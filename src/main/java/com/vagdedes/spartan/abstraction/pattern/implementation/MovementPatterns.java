@@ -7,6 +7,8 @@ import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 
 public class MovementPatterns extends PatternFamily {
 
+    public static final short horizontalGeneralization = (short) (GroundUtils.maxHeightLength / 2);
+
     public final Pattern horizontal, vertical, all, fall;
 
     public MovementPatterns() {
@@ -16,7 +18,7 @@ public class MovementPatterns extends PatternFamily {
                         this.horizontal = new Pattern(
                                 "movement/distance/horizontal",
                                 new short[]{
-                                        (short) GroundUtils.maxHeightLength
+                                        horizontalGeneralization
                                 },
                                 true,
                                 false

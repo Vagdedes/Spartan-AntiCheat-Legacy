@@ -104,66 +104,62 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     protected boolean customCompare(PlayerProfile profile, long time, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        if (patternProfile.isLoaded()) {
-            float after, pattern, before;
+        float after, pattern, before;
 
-            synchronized (patternProfile.correlations) {
-                LinkedList<Float> list = patternProfile.correlations.get(situation);
+        synchronized (patternProfile.correlations) {
+            LinkedList<Float> list = patternProfile.correlations.get(situation);
 
-                if (list != null && list.size() >= 3) {
-                    after = list.getLast();
-                    pattern = list.get(list.size() - 2);
-                    before = list.get(list.size() - 3);
-                } else {
-                    return false;
-                }
+            if (list != null && list.size() >= 3) {
+                after = list.getLast();
+                pattern = list.get(list.size() - 2);
+                before = list.get(list.size() - 3);
+            } else {
+                return false;
             }
-            Cache cache;
-            int hash = HashUtils.extendInt(this.initialHash, situation);
-            hash = HashUtils.extendInt(hash, Float.hashCode(pattern));
-
-            synchronized (this.correlations) {
-                cache = this.cache.get(hash);
-
-                if (cache == null) {
-                    Collection<Float> collection = this.correlations.get(situation);
-
-                    if (collection == null) {
-                        cache = new Cache(new ProbabilityPredictor(), 0);
-                    } else {
-                        cache = new Cache(new ProbabilityPredictor(collection, pattern), collection.size());
-
-                        if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
-                            Iterator<Integer> iterator = this.cache.keySet().iterator();
-                            iterator.next();
-                            iterator.remove();
-                        }
-                        this.cache.put(hash, cache);
-                    }
-                } else if (cache.isExpired()) {
-                    Collection<Float> collection = this.correlations.get(situation);
-
-                    if (collection == null) {
-                        cache = new Cache(new ProbabilityPredictor(), 0);
-                        this.cache.remove(hash);
-                    } else {
-                        cache.refresh(new ProbabilityPredictor(collection, pattern), collection.size());
-                    }
-                }
-            }
-            patternProfile.finishComparison(
-                    time,
-                    profile,
-                    situation,
-                    pattern,
-                    cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
-                            * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
-                    cache.dataSize
-            );
-            return true;
-        } else {
-            return false;
         }
+        Cache cache;
+        int hash = HashUtils.extendInt(this.initialHash, situation);
+        hash = HashUtils.extendInt(hash, Float.hashCode(pattern));
+
+        synchronized (this.correlations) {
+            cache = this.cache.get(hash);
+
+            if (cache == null) {
+                Collection<Float> collection = this.correlations.get(situation);
+
+                if (collection == null) {
+                    cache = new Cache(new ProbabilityPredictor(), 0);
+                } else {
+                    cache = new Cache(new ProbabilityPredictor(collection, pattern), collection.size());
+
+                    if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
+                        Iterator<Integer> iterator = this.cache.keySet().iterator();
+                        iterator.next();
+                        iterator.remove();
+                    }
+                    this.cache.put(hash, cache);
+                }
+            } else if (cache.isExpired()) {
+                Collection<Float> collection = this.correlations.get(situation);
+
+                if (collection == null) {
+                    cache = new Cache(new ProbabilityPredictor(), 0);
+                    this.cache.remove(hash);
+                } else {
+                    cache.refresh(new ProbabilityPredictor(collection, pattern), collection.size());
+                }
+            }
+        }
+        patternProfile.finishComparison(
+                time,
+                profile,
+                situation,
+                pattern,
+                cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
+                        * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
+                cache.dataSize
+        );
+        return true;
     }
 
     @Override

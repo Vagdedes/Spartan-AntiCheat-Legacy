@@ -75,32 +75,7 @@ public abstract class DetectionExecutor {
                 player.getProfile(),
                 situation
         )) {
-            if (true) {
-                double trustFactor = generalization.getProfile(player.getProfile()).trustFactor(player),
-                        rank = generalization.rankTrustFactor(player, trustFactor);
 
-                if (rank != -1.0) {
-                    if (repetitions > 1) {
-                        Decimals decimals = player.getDecimals(hackType);
-
-                        if (decimals.getCount(generalization.parent.key) == repetitions) {
-                            player.debug(
-                                    false,
-                                    true,
-                                    decimals.get(generalization.parent.key, 1.0, Decimals.CALCULATE_AVERAGE)
-                            );
-                            decimals.removeOldest(generalization.parent.key);
-                        }
-                        decimals.add(generalization.parent.key, rank);
-                    } else {
-                        player.debug(
-                                false,
-                                true,
-                                rank
-                        );
-                    }
-                }
-            }
         }
     }
 

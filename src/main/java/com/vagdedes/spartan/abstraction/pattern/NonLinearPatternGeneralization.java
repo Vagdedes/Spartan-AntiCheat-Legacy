@@ -67,46 +67,41 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected boolean customCompare(PlayerProfile profile, long time, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
+        float pattern;
 
-        if (patternProfile.isLoaded()) {
-            float pattern;
+        synchronized (patternProfile.correlations) {
+            Float cache = patternProfile.correlations.get(situation);
 
-            synchronized (patternProfile.correlations) {
-                Float cache = patternProfile.correlations.get(situation);
-
-                if (cache != null) {
-                    pattern = cache;
-                } else {
-                    return false;
-                }
+            if (cache != null) {
+                pattern = cache;
+            } else {
+                return false;
             }
-            synchronized (this.correlations) {
-                ProbabilityPie pie = this.correlations.get(situation);
-
-                if (pie == null) {
-                    patternProfile.finishComparison(
-                            time,
-                            profile,
-                            situation,
-                            pattern,
-                            Pattern.defaultRatio,
-                            0
-                    );
-                } else {
-                    patternProfile.finishComparison(
-                            time,
-                            profile,
-                            situation,
-                            pattern,
-                            pie.getRatio(pattern, Pattern.defaultRatio),
-                            pie.getTotal()
-                    );
-                }
-            }
-            return true;
-        } else {
-            return false;
         }
+        synchronized (this.correlations) {
+            ProbabilityPie pie = this.correlations.get(situation);
+
+            if (pie == null) {
+                patternProfile.finishComparison(
+                        time,
+                        profile,
+                        situation,
+                        pattern,
+                        Pattern.defaultRatio,
+                        0
+                );
+            } else {
+                patternProfile.finishComparison(
+                        time,
+                        profile,
+                        situation,
+                        pattern,
+                        pie.getRatio(pattern, Pattern.defaultRatio),
+                        pie.getTotal()
+                );
+            }
+        }
+        return true;
     }
 
     @Override
