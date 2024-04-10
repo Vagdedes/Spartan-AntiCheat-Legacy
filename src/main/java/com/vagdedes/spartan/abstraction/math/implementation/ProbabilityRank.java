@@ -1,11 +1,13 @@
-package com.vagdedes.spartan.utils.math;
+package com.vagdedes.spartan.abstraction.math.implementation;
+
+import com.vagdedes.spartan.abstraction.math.AbstractRank;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ProbabilityRank {
+public class ProbabilityRank implements AbstractRank {
 
     private final Map<Float, Short> map;
     private float total;
@@ -15,15 +17,15 @@ public class ProbabilityRank {
         this.total = 0.0f;
     }
 
-    public ProbabilityRank clear() {
+    @Override
+    public void clear() {
         this.map.clear();
         this.total = 0.0f;
-        return this;
     }
 
     // Separator
 
-    public ProbabilityRank addMultiple(Collection<? extends Number> numbers) {
+    public void addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.map.put(
                     number.floatValue(),
@@ -31,23 +33,21 @@ public class ProbabilityRank {
             );
             this.total++;
         }
-        return this;
     }
 
-    public ProbabilityRank addMultiple(Map<? extends Number, Integer> map) {
-        for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
+    public void addMultiple(Map<? extends Number, ? extends Number> map) {
+        for (Map.Entry<? extends Number, ? extends Number> entry : map.entrySet()) {
             this.map.put(
                     entry.getKey().floatValue(),
-                    (short) (this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue())
+                    (short) (this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue().shortValue())
             );
-            this.total += entry.getValue();
+            this.total += entry.getValue().shortValue();
         }
-        return this;
     }
 
     // Separator
 
-    public ProbabilityRank add(Number number) {
+    public void add(Number number) {
         short current = this.map.getOrDefault(number.floatValue(), (short) 0);
 
         if (current < 32767) {
@@ -57,7 +57,6 @@ public class ProbabilityRank {
             );
             this.total++;
         }
-        return this;
     }
 
     // Separator
@@ -78,16 +77,16 @@ public class ProbabilityRank {
         }
     }
 
-    public ProbabilityRank delete(Number number) {
+    public void delete(Number number) {
         short count = this.map.getOrDefault(number.floatValue(), (short) 0);
 
         if (count > 0) {
             this.map.remove(number.floatValue());
             this.total -= count;
         }
-        return this;
     }
 
+    @Override
     public Float removeLeastSignificant() {
         float min = Float.MAX_VALUE;
         Float key = null;
@@ -108,6 +107,7 @@ public class ProbabilityRank {
 
     // Separator
 
+    @Override
     public double getPosition(Number number, double defaultValue) {
         Iterator<Map.Entry<Float, Short>> iterator = this.map.entrySet().iterator();
         double position = 0.0;
@@ -130,31 +130,49 @@ public class ProbabilityRank {
         return defaultValue;
     }
 
+    @Override
     public double getPosition(Number number) {
         return this.getPosition(number, 1.0);
     }
 
     // Separator
 
+    @Override
     public double getRatio(Number number, double defaultValue) {
         Short count = this.map.get(number.floatValue());
         return count != null ? count / this.total : defaultValue;
     }
 
+    @Override
     public double getRatio(Number number) {
         return this.getRatio(number, 0.0);
     }
 
     // Separator
 
+    @Override
+    public int getCount(Number number) {
+        return this.getCount(number, 0);
+    }
+
+    @Override
+    public int getCount(Number number, int defaultValue) {
+        return this.map.getOrDefault(number.floatValue(), (short) defaultValue);
+    }
+
+    // Separator
+
+    @Override
     public boolean isEmpty() {
         return this.map.isEmpty();
     }
 
+    @Override
     public int getParts() {
         return this.map.size();
     }
 
+    @Override
     public int getTotal() {
         return (int) this.total;
     }

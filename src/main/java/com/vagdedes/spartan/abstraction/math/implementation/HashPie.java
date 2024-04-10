@@ -54,23 +54,6 @@ public class HashPie implements AbstractPie {
         }
     }
 
-    public void add(HashPie pie) {
-        for (Map.Entry<Float, Set<Integer>> entry : pie.map.entrySet()) {
-            Set<Integer> set = this.map.get(entry.getKey());
-
-            if (set != null) {
-                for (int hash : entry.getValue()) {
-                    if (set.add(hash)) {
-                        this.total++;
-                    }
-                }
-            } else {
-                this.map.put(entry.getKey(), new HashSet<>(entry.getValue()));
-                this.total += entry.getValue().size();
-            }
-        }
-    }
-
     // Separator
 
     public boolean remove(Number number, int hash) {
@@ -84,21 +67,6 @@ public class HashPie implements AbstractPie {
             return true;
         } else {
             return false;
-        }
-    }
-
-    public void remove(HashPie pie) {
-        for (Map.Entry<Float, Set<Integer>> entry : pie.map.entrySet()) {
-            Set<Integer> set = this.map.get(entry.getKey());
-
-            if (set != null) {
-                set.removeAll(entry.getValue());
-
-                if (set.isEmpty()) {
-                    this.map.remove(entry.getKey());
-                }
-                this.total -= entry.getValue().size();
-            }
         }
     }
 

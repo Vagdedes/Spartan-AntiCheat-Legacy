@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.math.implementation.HashPie;
+import com.vagdedes.spartan.abstraction.math.implementation.HashRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -31,12 +32,14 @@ public abstract class PatternGeneralization {
 
     public final Pattern parent;
     final short scissors;
+    private final HashRank significance;
     private final Map<Integer, HashPie> uniqueContribution;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
+        this.significance = new HashRank(Pattern.globalDataLimitBase, 1.0f);
         this.uniqueContribution = Collections.synchronizedMap(new HashMap<>());
         this.profilesSynchronizer = new Object();
     }
@@ -44,8 +47,11 @@ public abstract class PatternGeneralization {
     final void clear() {
         synchronized (this.profilesSynchronizer) {
             synchronized (this.uniqueContribution) {
-                this.clearProfiles();
-                this.uniqueContribution.clear();
+                synchronized (this.significance) {
+                    this.clearProfiles();
+                    this.uniqueContribution.clear();
+                    this.significance.clear();
+                }
             }
         }
     }
@@ -88,6 +94,16 @@ public abstract class PatternGeneralization {
     // Separator
 
     private void increaseImportance(int situation, PatternProfile patternProfile, float pattern) {
+        if (this.significance.getParts() == Pattern.globalDataLimit - 1) {
+            synchronized (this.significance) {
+                this.significance.removeLeastSignificant();
+                this.significance.add(pattern, patternProfile.hash);
+            }
+        } else {
+            synchronized (this.significance) {
+                this.significance.add(pattern, patternProfile.hash);
+            }
+        }
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.computeIfAbsent(
                     situation,
@@ -102,6 +118,9 @@ public abstract class PatternGeneralization {
     }
 
     protected final void decreaseImportance(int situation, int profileHash, float pattern) {
+        synchronized (this.significance) {
+            this.significance.remove(pattern, profileHash);
+        }
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.get(situation);
 
@@ -115,6 +134,12 @@ public abstract class PatternGeneralization {
 
     protected final void decreaseImportance(int situation, PatternProfile patternProfile, float pattern) {
         this.decreaseImportance(situation, patternProfile.hash, pattern);
+    }
+
+    final double significance(float pattern) {
+        synchronized (this.significance) {
+            return this.significance.getPosition(pattern, Pattern.defaultPosition);
+        }
     }
 
     final int uniqueContribution(int situation, PatternProfile patternProfile, float pattern) {

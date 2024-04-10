@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.utils.math.ProbabilityRank;
 
 import java.util.Collection;
 import java.util.Collections;

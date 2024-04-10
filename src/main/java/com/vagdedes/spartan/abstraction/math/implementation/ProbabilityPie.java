@@ -79,12 +79,6 @@ public class ProbabilityPie implements AbstractPie {
         }
     }
 
-    public void add(ProbabilityPie pie) {
-        for (Map.Entry<Float, Short> entry : pie.map.entrySet()) {
-            this.increase(entry.getKey(), entry.getValue());
-        }
-    }
-
     public void add(Collection<? extends Number> collection) {
         for (Number number : collection) {
             this.add(number);
@@ -103,12 +97,6 @@ public class ProbabilityPie implements AbstractPie {
 
     public boolean remove(Number number) {
         return this.decrease(number, 1);
-    }
-
-    public void remove(ProbabilityPie pie) {
-        for (Map.Entry<Float, Short> entry : pie.map.entrySet()) {
-            this.decrease(entry.getKey(), entry.getValue());
-        }
     }
 
     public Float removeLeastSignificant() {
