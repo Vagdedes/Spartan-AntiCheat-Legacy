@@ -101,7 +101,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean customCompare(PlayerProfile profile, long time, int situation) {
+    public Comparison comparison(PlayerProfile profile, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
         float after, pattern, before;
 
@@ -113,7 +113,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 pattern = list.get(list.size() - 2);
                 before = list.get(list.size() - 3);
             } else {
-                return false;
+                return null;
             }
         }
         Cache cache;
@@ -149,15 +149,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 }
             }
         }
-        patternProfile.finishComparison(
-                profile,
+        return new Comparison(
+                this,
                 situation,
                 pattern,
                 cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
                         * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
                 cache.dataSize
         );
-        return true;
     }
 
     @Override

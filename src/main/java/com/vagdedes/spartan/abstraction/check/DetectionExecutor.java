@@ -71,33 +71,31 @@ public abstract class DetectionExecutor {
 
     protected final void machineLearningDetection(PatternGeneralization generalization, int situation,
                                                   int repetitions, double min) {
-        if (generalization.compare(
-                player.getProfile(),
-                situation
-        )) {
-            if (false) {
-                double data = 0.0;
+        if (true) {
+            PatternGeneralization.Comparison comparison = generalization.comparison(
+                    player.getProfile(),
+                    situation
+            );
+            if (repetitions > 1) {
+                Decimals decimals = player.getDecimals(hackType);
 
-                if (repetitions > 1) {
-                    Decimals decimals = player.getDecimals(hackType);
-
-                    if (decimals.getCount(generalization.parent.key) == repetitions) {
-                        player.debug(
-                                false,
-                                true,
-                                decimals.get(generalization.parent.key, 1.0, Decimals.CALCULATE_AVERAGE)
-                        );
-                        decimals.removeOldest(generalization.parent.key);
-                    }
-                    decimals.add(generalization.parent.key, data);
-                } else {
+                if (decimals.getCount(generalization.parent.key) == repetitions) {
                     player.debug(
                             false,
                             true,
-                            generalization.parent.key,
-                            data
+                            decimals.get(generalization.parent.key, 1.0, Decimals.CALCULATE_AVERAGE)
                     );
+                    decimals.removeOldest(generalization.parent.key);
                 }
+                decimals.add(generalization.parent.key, 0.0);
+            } else {
+                player.debug(
+                        false,
+                        true,
+                        comparison.probability,
+                        comparison.existingContribution,
+                        comparison.enoughData
+                );
             }
         }
     }

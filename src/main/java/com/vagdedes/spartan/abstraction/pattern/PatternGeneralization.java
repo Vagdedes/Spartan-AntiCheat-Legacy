@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.HashPie;
 
@@ -10,6 +11,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class PatternGeneralization {
+
+    public static final class Comparison {
+
+        public final boolean enoughData;
+        public final double probability, existingContribution;
+
+        Comparison(PatternGeneralization patternGeneralization,
+                   int situation,
+                   float pattern,
+                   double probability,
+                   int dataSize) {
+            this.enoughData = dataSize >= ResearchEngine.requiredProfiles;
+            this.probability = probability;
+            this.existingContribution = (1.0 - AlgebraUtils.contribution(dataSize))
+                    * (1.0 - patternGeneralization.uniqueContribution(situation, pattern));
+        }
+    }
 
     public final Pattern parent;
     final short scissors;
@@ -156,11 +174,7 @@ public abstract class PatternGeneralization {
 
     abstract protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern);
 
-    public boolean compare(PlayerProfile profile, int situation) {
-        return this.customCompare(profile, System.currentTimeMillis(), situation);
-    }
-
-    protected abstract boolean customCompare(PlayerProfile playerProfile, long time, int situation);
+    public abstract Comparison comparison(PlayerProfile playerProfile, int situation);
 
     // Separator
 

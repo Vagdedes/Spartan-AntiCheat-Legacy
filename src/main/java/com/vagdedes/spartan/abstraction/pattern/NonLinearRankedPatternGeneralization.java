@@ -65,7 +65,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     }
 
     @Override
-    protected boolean customCompare(PlayerProfile profile, long time, int situation) {
+    public Comparison comparison(PlayerProfile profile, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
         float pattern;
 
@@ -75,23 +75,23 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
             if (cache != null) {
                 pattern = cache;
             } else {
-                return false;
+                return null;
             }
         }
         synchronized (this.correlations) {
             ProbabilityRank rank = this.correlations.get(situation);
 
             if (rank == null) {
-                patternProfile.finishComparison(
-                        profile,
+                return new Comparison(
+                        this,
                         situation,
                         pattern,
                         Pattern.defaultRatio,
                         0
                 );
             } else {
-                patternProfile.finishComparison(
-                        profile,
+                return new Comparison(
+                        this,
                         situation,
                         pattern,
                         rank.getPosition(pattern, Pattern.defaultPosition)
@@ -100,7 +100,6 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                 );
             }
         }
-        return true;
     }
 
     @Override
