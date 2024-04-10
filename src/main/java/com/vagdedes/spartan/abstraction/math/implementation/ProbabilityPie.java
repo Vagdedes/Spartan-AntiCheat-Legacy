@@ -1,4 +1,6 @@
-package com.vagdedes.spartan.utils.math;
+package com.vagdedes.spartan.abstraction.math.implementation;
+
+import com.vagdedes.spartan.abstraction.math.AbstractPie;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -6,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class ProbabilityPie {
+public class ProbabilityPie implements AbstractPie {
 
     private final Map<Float, Short> map;
     private float total;
@@ -25,22 +27,21 @@ public class ProbabilityPie {
         this.total = 0.0f;
     }
 
-    public ProbabilityPie clear() {
+    @Override
+    public void clear() {
         this.map.clear();
         this.total = 0.0f;
-        return this;
     }
 
     // Separator
 
-    public ProbabilityPie addMultiple(Collection<? extends Number> numbers) {
+    public void addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
             this.add(number);
         }
-        return this;
     }
 
-    public ProbabilityPie addMultiple(Map<? extends Number, Integer> map) {
+    public void addMultiple(Map<? extends Number, Integer> map) {
         for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
             this.map.put(
                     entry.getKey().floatValue(),
@@ -48,12 +49,11 @@ public class ProbabilityPie {
             );
             this.total += entry.getValue();
         }
-        return this;
     }
 
     // Separator
 
-    public ProbabilityPie create(Number number, int amount) {
+    public void create(Number number, int amount) {
         Short count = this.map.get(number.floatValue());
 
         if (count != null) {
@@ -61,14 +61,13 @@ public class ProbabilityPie {
         }
         this.map.put(number.floatValue(), (short) amount);
         this.total += amount;
-        return this;
     }
 
-    public ProbabilityPie add(Number number) {
-        return this.increase(number, 1);
+    public void add(Number number) {
+        this.increase(number, 1);
     }
 
-    public ProbabilityPie increase(Number number, int amount) {
+    public void increase(Number number, int amount) {
         short current = this.map.getOrDefault(number.floatValue(), (short) 0);
 
         if (current < 32767) {
@@ -78,43 +77,38 @@ public class ProbabilityPie {
             );
             this.total += amount;
         }
-        return this;
     }
 
-    public ProbabilityPie add(ProbabilityPie pie) {
+    public void add(ProbabilityPie pie) {
         for (Map.Entry<Float, Short> entry : pie.map.entrySet()) {
             this.increase(entry.getKey(), entry.getValue());
         }
-        return this;
     }
 
-    public ProbabilityPie add(Collection<? extends Number> collection) {
+    public void add(Collection<? extends Number> collection) {
         for (Number number : collection) {
             this.add(number);
         }
-        return this;
     }
 
     // Separator
 
-    public ProbabilityPie delete(Number number) {
+    public void delete(Number number) {
         Short count = this.map.remove(number.floatValue());
 
         if (count != null) {
             this.total -= count;
         }
-        return this;
     }
 
     public boolean remove(Number number) {
         return this.decrease(number, 1);
     }
 
-    public ProbabilityPie remove(ProbabilityPie pie) {
+    public void remove(ProbabilityPie pie) {
         for (Map.Entry<Float, Short> entry : pie.map.entrySet()) {
             this.decrease(entry.getKey(), entry.getValue());
         }
-        return this;
     }
 
     public Float removeLeastSignificant() {
@@ -159,10 +153,12 @@ public class ProbabilityPie {
         return count / this.total;
     }
 
+    @Override
     public double getRatio(Number number) {
         return this.getRatio(number, 0.0);
     }
 
+    @Override
     public double getRatio(Number number, double defaultValue) {
         Short count = this.map.get(number.floatValue());
         return count != null ? count / this.total : defaultValue;
@@ -176,24 +172,29 @@ public class ProbabilityPie {
 
     // Separator
 
+    @Override
     public int getCount(Number number) {
         return this.getCount(number, 0);
     }
 
+    @Override
     public int getCount(Number number, int defaultValue) {
         return this.map.getOrDefault(number.floatValue(), (short) defaultValue);
     }
 
     // Separator
 
+    @Override
     public boolean isEmpty() {
         return this.total == 0;
     }
 
+    @Override
     public int getSlices() {
         return this.map.size();
     }
 
+    @Override
     public int getTotal() {
         return (int) this.total;
     }

@@ -1,8 +1,10 @@
-package com.vagdedes.spartan.utils.math;
+package com.vagdedes.spartan.abstraction.math.implementation;
+
+import com.vagdedes.spartan.abstraction.math.AbstractPie;
 
 import java.util.*;
 
-public class HashPie {
+public class HashPie implements AbstractPie {
 
     private final Map<Float, Set<Integer>> map;
     private float total;
@@ -21,24 +23,23 @@ public class HashPie {
         this.total = 0.0f;
     }
 
-    public HashPie clear() {
+    @Override
+    public void clear() {
         this.map.clear();
         this.total = 0.0f;
-        return this;
     }
 
     // Separator
 
-    public HashPie addMultiple(Collection<? extends Number> numbers, int hash) {
+    public void addMultiple(Collection<? extends Number> numbers, int hash) {
         for (Number number : numbers) {
             this.add(number, hash);
         }
-        return this;
     }
 
     // Separator
 
-    public HashPie add(Number number, int hash) {
+    public void add(Number number, int hash) {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null) {
@@ -51,10 +52,9 @@ public class HashPie {
             this.map.put(number.floatValue(), set);
             this.total++;
         }
-        return this;
     }
 
-    public HashPie add(HashPie pie) {
+    public void add(HashPie pie) {
         for (Map.Entry<Float, Set<Integer>> entry : pie.map.entrySet()) {
             Set<Integer> set = this.map.get(entry.getKey());
 
@@ -69,7 +69,6 @@ public class HashPie {
                 this.total += entry.getValue().size();
             }
         }
-        return this;
     }
 
     // Separator
@@ -88,7 +87,7 @@ public class HashPie {
         }
     }
 
-    public HashPie remove(HashPie pie) {
+    public void remove(HashPie pie) {
         for (Map.Entry<Float, Set<Integer>> entry : pie.map.entrySet()) {
             Set<Integer> set = this.map.get(entry.getKey());
 
@@ -101,9 +100,9 @@ public class HashPie {
                 this.total -= entry.getValue().size();
             }
         }
-        return this;
     }
 
+    @Override
     public Float removeLeastSignificant() {
         float min = Float.MAX_VALUE;
         Float key = null;
@@ -124,10 +123,12 @@ public class HashPie {
 
     // Separator
 
+    @Override
     public double getRatio(Number number) {
         return this.getRatio(number, 0.0);
     }
 
+    @Override
     public double getRatio(Number number, double defaultValue) {
         Set<Integer> set = this.map.get(number.floatValue());
         return set != null ? set.size() / this.total : defaultValue;
@@ -135,10 +136,12 @@ public class HashPie {
 
     // Separator
 
+    @Override
     public int getCount(Number number) {
         return this.getCount(number, 0);
     }
 
+    @Override
     public int getCount(Number number, int defaultValue) {
         Set<Integer> set = this.map.get(number.floatValue());
         return set == null ? defaultValue : set.size();
@@ -151,20 +154,19 @@ public class HashPie {
 
     // Separator
 
+    @Override
     public boolean isEmpty() {
         return this.total == 0;
     }
 
+    @Override
     public int getSlices() {
         return this.map.size();
     }
 
+    @Override
     public int getTotal() {
         return (int) this.total;
-    }
-
-    public float getRawTotal() {
-        return this.total;
     }
 }
 

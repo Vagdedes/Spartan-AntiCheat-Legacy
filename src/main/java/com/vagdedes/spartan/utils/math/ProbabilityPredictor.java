@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.utils.math;
 
+import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityPie;
+
 import java.util.Collection;
 
 public class ProbabilityPredictor {

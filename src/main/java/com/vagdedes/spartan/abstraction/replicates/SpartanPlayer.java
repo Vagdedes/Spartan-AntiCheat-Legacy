@@ -509,19 +509,19 @@ public class SpartanPlayer {
                 if (message == null || message.length == 0) {
                     string += new Random().nextInt();
                 } else {
-                    int i = 1;
+                    int i = 0;
 
                     if (cutDecimals) {
                         for (Object object : message) {
                             if (object instanceof Double) {
-                                message[i] = (i % 2 == 0 ? "§c" : "§7")
+                                message[i] = ((i + 1) % 2 == 0 ? "§c" : "§7")
                                         + AlgebraUtils.cut((double) object, GroundUtils.maxHeightLength);
                             }
                             i++;
                         }
                     } else {
                         for (Object object : message) {
-                            message[i] = (i % 2 == 0 ? "§c" : "§7") + object;
+                            message[i] = ((i + 1) % 2 == 0 ? "§c" : "§7") + object;
                             i++;
                         }
                     }

@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
+import com.vagdedes.spartan.abstraction.math.implementation.HashPie;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.math.HashPie;
 
 import java.util.*;
 
