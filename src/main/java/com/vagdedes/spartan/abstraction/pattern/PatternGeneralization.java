@@ -66,7 +66,7 @@ public abstract class PatternGeneralization {
             }
         } else {
             if (this.hasPatterns()) {
-                Pattern.deleteFromFile(profile);
+                Pattern.deleteFromFile(profile, false);
             }
             return false;
         }
@@ -98,19 +98,23 @@ public abstract class PatternGeneralization {
         }
     }
 
-    protected final void decreaseImportance(int situation, PatternProfile patternProfile, float pattern) {
+    protected final void decreaseImportance(int situation, int profileHash, float pattern) {
         synchronized (this.significance) {
-            this.significance.remove(pattern, patternProfile.hash);
+            this.significance.remove(pattern, profileHash);
         }
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.get(situation);
 
             if (pie != null
-                    && pie.remove(pattern, patternProfile.hash)
+                    && pie.remove(pattern, profileHash)
                     && pie.isEmpty()) {
                 this.uniqueContribution.remove(situation);
             }
         }
+    }
+
+    protected final void decreaseImportance(int situation, PatternProfile patternProfile, float pattern) {
+        this.decreaseImportance(situation, patternProfile.hash, pattern);
     }
 
     final double significance(float pattern) {
@@ -131,9 +135,15 @@ public abstract class PatternGeneralization {
     // Separator
 
     final PatternProfile deleteProfile(PlayerProfile profile) {
+        PatternProfile patternProfile;
+
         synchronized (this.profilesSynchronizer) {
-            return this.customDeleteProfile(profile);
+            patternProfile = this.customDeleteProfile(profile);
         }
+        if (patternProfile != null) {
+            patternProfile.deleteCustomData();
+        }
+        return patternProfile;
     }
 
     abstract protected PatternProfile customDeleteProfile(PlayerProfile profile);
@@ -154,9 +164,9 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    protected final void deletePattern(int situation, PatternProfile patternProfile, float pattern) {
+    protected final void deletePattern(int situation, int profileHash, float pattern) {
         this.customDeletePattern(situation, pattern);
-        this.decreaseImportance(situation, patternProfile, pattern);
+        this.decreaseImportance(situation, profileHash, pattern);
     }
 
     abstract protected void customDeletePattern(int situation, float pattern);
@@ -166,7 +176,5 @@ public abstract class PatternGeneralization {
     abstract protected void clearProfiles();
 
     abstract protected Collection<? extends PatternProfile> getProfiles();
-
-    abstract public PatternProfile getProfile(PlayerProfile profile);
 
 }

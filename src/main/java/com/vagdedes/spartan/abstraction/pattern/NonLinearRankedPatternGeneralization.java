@@ -83,7 +83,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
             if (rank == null) {
                 patternProfile.finishComparison(
-                        time, profile,
+                        profile,
                         situation,
                         pattern,
                         Pattern.defaultRatio,
@@ -91,7 +91,6 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                 );
             } else {
                 patternProfile.finishComparison(
-                        time,
                         profile,
                         situation,
                         pattern,
@@ -125,11 +124,6 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     @Override
     protected Collection<? extends PatternProfile> getProfiles() {
         return this.profiles.values();
-    }
-
-    @Override
-    public PatternProfile getProfile(PlayerProfile profile) {
-        return this.getLocalProfile(profile);
     }
 
     // Separator

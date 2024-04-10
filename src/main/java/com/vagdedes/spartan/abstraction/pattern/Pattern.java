@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -21,10 +22,7 @@ public class Pattern {
             globalDataLimit = 10_000,
             globalDataLimitBase = 625,
             individualGlobalDataLimit = 1_024,
-            individualGlobalDataLimitBase = 2,
-            comparisonDataLimit = 256,
-            comparisonDataRequirement = 64,
-            comparisonDataLimitBase = 2;
+            individualGlobalDataLimitBase = 2;
     static final double
             defaultRatio = 0.0,
             defaultPosition = 1.0;
@@ -35,18 +33,97 @@ public class Pattern {
     private static final String[] options = {profileOption, patternOption, situationOption};
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
 
-    public static void deleteFromFile(PlayerProfile profile) {
+    static int hash(PlayerProfile playerProfile) {
+        return playerProfile.getName().hashCode();
+    }
+
+    public static void deleteFromFile(PlayerProfile profile, boolean completely) {
         synchronized (instances) {
             for (Pattern instance : instances) {
-                synchronized (instance.generalizations) {
-                    for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
-                        PatternProfile patternProfile = patternGeneralization.deleteProfile(profile);
+                SpartanBukkit.dataThread.executeWithPriority(() -> {
+                    File[] files = instance.getLearningFiles();
 
-                        if (patternProfile != null) {
-                            patternProfile.delete(profile);
+                    if (files != null) {
+                        for (File file : files) {
+                            if (file.isFile()
+                                    && file.getName().endsWith(".yml")) {
+                                YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                                Set<String> keys = configuration.getKeys(false);
+
+                                if (!keys.isEmpty()) {
+                                    int profileHash = hash(profile);
+                                    boolean changed = false;
+
+                                    for (String key : keys) {
+                                        ConfigurationSection section = configuration.getConfigurationSection(key);
+
+                                        if (section == null) {
+                                            continue;
+                                        }
+                                        Map<String, Object> data = section.getValues(false);
+
+                                        if (data.size() != 3) {
+                                            instance.deleteFromFile(configuration, key);
+                                            changed = true;
+                                            continue;
+                                        }
+                                        Object patternObject = data.get(Pattern.patternOption),
+                                                situation = data.get(Pattern.situationOption),
+                                                profileObject = data.get(Pattern.profileOption);
+
+                                        if (!(patternObject instanceof Double || patternObject instanceof Float)
+                                                || !(situation instanceof Integer || situation instanceof Long || situation instanceof Short)
+                                                || !(profileObject instanceof String)) {
+                                            instance.deleteFromFile(configuration, key);
+                                            changed = true;
+                                            continue;
+                                        }
+                                        try {
+                                            if (profileObject.toString().equals(profile.getName())) {
+                                                double pattern = (double) patternObject;
+
+                                                synchronized (instance.generalizations) {
+                                                    for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
+                                                        if (patternGeneralization.scissors != 0) {
+                                                            patternGeneralization.deletePattern(
+                                                                    (int) situation,
+                                                                    profileHash,
+                                                                    (float) AlgebraUtils.cut(pattern, patternGeneralization.scissors)
+                                                            );
+                                                        } else {
+                                                            patternGeneralization.deletePattern(
+                                                                    (int) situation,
+                                                                    profileHash,
+                                                                    (float) pattern
+                                                            );
+                                                        }
+                                                    }
+                                                }
+                                                instance.deleteFromFile(configuration, key);
+                                                changed = true;
+                                            }
+                                        } catch (Exception ignored) {
+                                        }
+                                    }
+
+                                    if (changed) {
+                                        try {
+                                            configuration.save(file);
+                                        } catch (Exception ignored) {
+                                        }
+                                    }
+                                    if (completely) {
+                                        synchronized (instance.generalizations) {
+                                            for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
+                                                patternGeneralization.deleteProfile(profile);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }
+                });
             }
         }
     }
@@ -286,14 +363,14 @@ public class Pattern {
         });
     }
 
-    void deleteFromFile(YamlConfiguration configuration, String key) {
+    private void deleteFromFile(YamlConfiguration configuration, String key) {
         for (String option : Pattern.options) {
             configuration.set(key + "." + option, null);
         }
         configuration.set(key, null);
     }
 
-    File[] getLearningFiles() {
+    private File[] getLearningFiles() {
         File directory = new File(this.learningFolder);
 
         if (directory.exists()) {

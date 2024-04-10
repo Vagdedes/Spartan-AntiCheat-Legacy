@@ -75,7 +75,30 @@ public abstract class DetectionExecutor {
                 player.getProfile(),
                 situation
         )) {
+            if (false) {
+                double data = 0.0;
 
+                if (repetitions > 1) {
+                    Decimals decimals = player.getDecimals(hackType);
+
+                    if (decimals.getCount(generalization.parent.key) == repetitions) {
+                        player.debug(
+                                false,
+                                true,
+                                decimals.get(generalization.parent.key, 1.0, Decimals.CALCULATE_AVERAGE)
+                        );
+                        decimals.removeOldest(generalization.parent.key);
+                    }
+                    decimals.add(generalization.parent.key, data);
+                } else {
+                    player.debug(
+                            false,
+                            true,
+                            generalization.parent.key,
+                            data
+                    );
+                }
+            }
         }
     }
 

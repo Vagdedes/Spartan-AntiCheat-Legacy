@@ -83,7 +83,6 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
             if (pie == null) {
                 patternProfile.finishComparison(
-                        time,
                         profile,
                         situation,
                         pattern,
@@ -92,7 +91,6 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                 );
             } else {
                 patternProfile.finishComparison(
-                        time,
                         profile,
                         situation,
                         pattern,
@@ -125,11 +123,6 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected Collection<? extends PatternProfile> getProfiles() {
         return this.profiles.values();
-    }
-
-    @Override
-    public PatternProfile getProfile(PlayerProfile profile) {
-        return this.getLocalProfile(profile);
     }
 
     // Separator
