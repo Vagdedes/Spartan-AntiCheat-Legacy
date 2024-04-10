@@ -84,6 +84,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
             if (rank == null) {
                 return new Comparison(
                         this,
+                        patternProfile,
                         situation,
                         pattern,
                         Pattern.defaultRatio,
@@ -92,6 +93,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
             } else {
                 return new Comparison(
                         this,
+                        patternProfile,
                         situation,
                         pattern,
                         rank.getPosition(pattern, Pattern.defaultPosition)

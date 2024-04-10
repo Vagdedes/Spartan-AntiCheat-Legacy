@@ -5,10 +5,7 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.HashPie;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class PatternGeneralization {
 
@@ -18,39 +15,37 @@ public abstract class PatternGeneralization {
         public final double probability, existingContribution;
 
         Comparison(PatternGeneralization patternGeneralization,
+                   PatternProfile patternProfile,
                    int situation,
                    float pattern,
                    double probability,
                    int dataSize) {
-            this.enoughData = dataSize >= ResearchEngine.requiredProfiles;
+            int dataProfiles = patternGeneralization.uniqueContribution(situation, patternProfile, pattern);
+            this.enoughData = dataProfiles >= ResearchEngine.requiredProfiles;
             this.probability = probability;
             this.existingContribution = (1.0 - AlgebraUtils.contribution(dataSize))
-                    * (1.0 - patternGeneralization.uniqueContribution(situation, pattern));
+                    * (1.0 - AlgebraUtils.contribution(dataProfiles));
         }
+
     }
 
     public final Pattern parent;
     final short scissors;
-    private final HashPie significance;
     private final Map<Integer, HashPie> uniqueContribution;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.significance = new HashPie(Pattern.globalDataLimitBase, 1.0f);
         this.uniqueContribution = Collections.synchronizedMap(new HashMap<>());
         this.profilesSynchronizer = new Object();
     }
 
     final void clear() {
         synchronized (this.profilesSynchronizer) {
-            synchronized (this.significance) {
-                synchronized (this.uniqueContribution) {
-                    this.clearProfiles();
-                    this.significance.clear();
-                    this.uniqueContribution.clear();
-                }
+            synchronized (this.uniqueContribution) {
+                this.clearProfiles();
+                this.uniqueContribution.clear();
             }
         }
     }
@@ -93,16 +88,6 @@ public abstract class PatternGeneralization {
     // Separator
 
     private void increaseImportance(int situation, PatternProfile patternProfile, float pattern) {
-        if (this.significance.getSlices() == Pattern.globalDataLimit - 1) {
-            synchronized (this.significance) {
-                this.significance.removeLeastSignificant();
-                this.significance.add(pattern, patternProfile.hash);
-            }
-        } else {
-            synchronized (this.significance) {
-                this.significance.add(pattern, patternProfile.hash);
-            }
-        }
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.computeIfAbsent(
                     situation,
@@ -117,9 +102,6 @@ public abstract class PatternGeneralization {
     }
 
     protected final void decreaseImportance(int situation, int profileHash, float pattern) {
-        synchronized (this.significance) {
-            this.significance.remove(pattern, profileHash);
-        }
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.get(situation);
 
@@ -135,24 +117,24 @@ public abstract class PatternGeneralization {
         this.decreaseImportance(situation, patternProfile.hash, pattern);
     }
 
-    final double significance(float pattern) {
-        synchronized (this.significance) {
-            return this.significance.getRatio(pattern, Pattern.defaultRatio);
-        }
-    }
-
-    final double uniqueContribution(int situation, float pattern) {
+    final int uniqueContribution(int situation, PatternProfile patternProfile, float pattern) {
         synchronized (this.uniqueContribution) {
             HashPie pie = this.uniqueContribution.get(situation);
-            return pie == null
-                    ? Pattern.defaultRatio
-                    : AlgebraUtils.contribution(pie.getRatio(pattern, Pattern.defaultRatio));
+
+            if (pie == null) {
+                return 0;
+            } else {
+                Set<Integer> set = pie.getSet(pattern);
+                return set.contains(patternProfile.hash)
+                        ? set.size() - 1
+                        : set.size();
+            }
         }
     }
 
     // Separator
 
-    final PatternProfile deleteProfile(PlayerProfile profile) {
+    final void deleteProfile(PlayerProfile profile) {
         PatternProfile patternProfile;
 
         synchronized (this.profilesSynchronizer) {
@@ -161,7 +143,6 @@ public abstract class PatternGeneralization {
         if (patternProfile != null) {
             patternProfile.deleteCustomData();
         }
-        return patternProfile;
     }
 
     abstract protected PatternProfile customDeleteProfile(PlayerProfile profile);

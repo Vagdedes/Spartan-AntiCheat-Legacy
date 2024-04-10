@@ -144,6 +144,11 @@ public class HashPie {
         return set == null ? defaultValue : set.size();
     }
 
+    public Set<Integer> getSet(Number number) {
+        Set<Integer> set = this.map.get(number.floatValue());
+        return set == null ? new HashSet<>(0) : new HashSet<>(set);
+    }
+
     // Separator
 
     public boolean isEmpty() {

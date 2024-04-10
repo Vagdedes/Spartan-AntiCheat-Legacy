@@ -84,6 +84,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
             if (pie == null) {
                 return new Comparison(
                         this,
+                        patternProfile,
                         situation,
                         pattern,
                         Pattern.defaultRatio,
@@ -92,6 +93,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
             } else {
                 return new Comparison(
                         this,
+                        patternProfile,
                         situation,
                         pattern,
                         pie.getRatio(pattern, Pattern.defaultRatio),

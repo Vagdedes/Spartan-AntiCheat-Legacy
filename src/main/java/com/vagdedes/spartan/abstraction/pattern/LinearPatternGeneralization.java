@@ -151,6 +151,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
         return new Comparison(
                 this,
+                patternProfile,
                 situation,
                 pattern,
                 cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)

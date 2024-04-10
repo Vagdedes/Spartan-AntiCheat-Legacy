@@ -509,9 +509,9 @@ public class SpartanPlayer {
                 if (message == null || message.length == 0) {
                     string += new Random().nextInt();
                 } else {
-                    if (cutDecimals) {
-                        int i = 0;
+                    int i = 1;
 
+                    if (cutDecimals) {
                         for (Object object : message) {
                             if (object instanceof Double) {
                                 message[i] = (i % 2 == 0 ? "§c" : "§7")
@@ -520,8 +520,6 @@ public class SpartanPlayer {
                             i++;
                         }
                     } else {
-                        int i = 0;
-
                         for (Object object : message) {
                             message[i] = (i % 2 == 0 ? "§c" : "§7") + object;
                             i++;
