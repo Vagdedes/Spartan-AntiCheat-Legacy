@@ -516,6 +516,8 @@ public class SpartanPlayer {
                             if (object instanceof Double) {
                                 message[i] = ((i + 1) % 2 == 0 ? "§c" : "§7")
                                         + AlgebraUtils.cut((double) object, GroundUtils.maxHeightLength);
+                            } else {
+                                message[i] = ((i + 1) % 2 == 0 ? "§c" : "§7") + object;
                             }
                             i++;
                         }
@@ -525,7 +527,7 @@ public class SpartanPlayer {
                             i++;
                         }
                     }
-                    string += StringUtils.toString(message, "");
+                    string += StringUtils.toString(message, " ");
                 }
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 

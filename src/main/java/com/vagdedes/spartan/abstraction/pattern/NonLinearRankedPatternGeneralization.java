@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
+import com.vagdedes.spartan.abstraction.math.implementation.NumberRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ import java.util.Map;
 public class NonLinearRankedPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
-    private final Map<Integer, ProbabilityRank> correlations;
+    private final Map<Integer, NumberRank> correlations;
 
     protected NonLinearRankedPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
@@ -42,9 +42,9 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                ProbabilityRank rank = this.correlations.computeIfAbsent(
+                NumberRank rank = this.correlations.computeIfAbsent(
                         situation,
-                        k -> new ProbabilityRank()
+                        k -> new NumberRank()
                 );
                 if (rank.getParts() == Pattern.individualGlobalDataLimit) {
                     this.decreaseImportance(
@@ -79,7 +79,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
             }
         }
         synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.get(situation);
+            NumberRank rank = this.correlations.get(situation);
 
             if (rank == null) {
                 return new Comparison(
@@ -107,7 +107,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     @Override
     protected void customDeletePattern(int situation, float pattern) {
         synchronized (this.correlations) {
-            ProbabilityRank rank = this.correlations.get(situation);
+            NumberRank rank = this.correlations.get(situation);
 
             if (rank != null
                     && rank.remove(pattern)

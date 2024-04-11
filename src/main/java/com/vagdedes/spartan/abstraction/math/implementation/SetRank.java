@@ -1,31 +1,37 @@
 package com.vagdedes.spartan.abstraction.math.implementation;
 
-import com.vagdedes.spartan.abstraction.math.AbstractPie;
+import com.vagdedes.spartan.abstraction.math.AbstractRank;
 
 import java.util.*;
 
-public class HashPie implements AbstractPie {
+public class SetRank implements AbstractRank {
 
     private final Map<Float, Set<Integer>> map;
+    private final Map<Integer, Integer> rank;
     private float total;
 
-    public HashPie() {
-        this(-1);
-    }
-
-    public HashPie(int capacity) {
-        this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
+    public SetRank() {
+        this.map = new HashMap<>();
+        this.rank = new TreeMap<>();
         this.total = 0.0f;
     }
 
-    public HashPie(int capacity, float loadFactor) {
+    public SetRank(int capacity) {
+        this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
+        this.rank = new TreeMap<>();
+        this.total = 0.0f;
+    }
+
+    public SetRank(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
+        this.rank = new TreeMap<>();
         this.total = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
+        this.rank.clear();
         this.total = 0.0f;
     }
 
@@ -45,11 +51,14 @@ public class HashPie implements AbstractPie {
         if (set != null) {
             if (set.add(hash)) {
                 this.total++;
+                this.decreaseRank(set.size() - 1);
+                this.increaseRank(set.size());
             }
         } else {
             set = new HashSet<>();
             set.add(hash);
             this.map.put(number.floatValue(), set);
+            this.increaseRank(1);
             this.total++;
         }
     }
@@ -60,8 +69,12 @@ public class HashPie implements AbstractPie {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null && set.remove(hash)) {
+            this.decreaseRank(set.size() + 1);
+
             if (set.isEmpty()) {
                 this.map.remove(number.floatValue());
+            } else {
+                this.increaseRank(set.size());
             }
             this.total--;
             return true;
@@ -72,7 +85,7 @@ public class HashPie implements AbstractPie {
 
     @Override
     public Float removeLeastSignificant() {
-        float min = Float.MAX_VALUE;
+        int min = Integer.MAX_VALUE;
         Float key = null;
 
         for (Map.Entry<Float, Set<Integer>> entry : this.map.entrySet()) {
@@ -86,15 +99,12 @@ public class HashPie implements AbstractPie {
             }
         }
         this.map.remove(key);
+        this.decreaseRank(min);
+        this.total -= min;
         return key;
     }
 
     // Separator
-
-    @Override
-    public double getRatio(Number number) {
-        return this.getRatio(number, 0.0);
-    }
 
     @Override
     public double getRatio(Number number, double defaultValue) {
@@ -103,11 +113,6 @@ public class HashPie implements AbstractPie {
     }
 
     // Separator
-
-    @Override
-    public int getCount(Number number) {
-        return this.getCount(number, 0);
-    }
 
     @Override
     public int getCount(Number number, int defaultValue) {
@@ -124,11 +129,11 @@ public class HashPie implements AbstractPie {
 
     @Override
     public boolean isEmpty() {
-        return this.total == 0;
+        return this.map.isEmpty();
     }
 
     @Override
-    public int getSlices() {
+    public int getParts() {
         return this.map.size();
     }
 
@@ -136,5 +141,42 @@ public class HashPie implements AbstractPie {
     public int getTotal() {
         return (int) this.total;
     }
-}
 
+    // Separator
+
+    private void increaseRank(int size) {
+        this.rank.put(size, this.rank.getOrDefault(size, 0) + 1);
+    }
+
+    private void decreaseRank(int size) {
+        this.rank.put(size, this.rank.get(size) - 1);
+    }
+
+    // Separator
+
+    @Override
+    public double getPosition(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Iterator<Map.Entry<Integer, Integer>> iterator = rank.entrySet().iterator();
+            double position = 0.0;
+            int find = this.map.get(number.floatValue()).size();
+
+            while (iterator.hasNext()) {
+                Map.Entry<Integer, Integer> next = iterator.next();
+
+                if (next.getKey() == find) {
+                    if (next.getValue() > 1) {
+                        return (position + (next.getValue() / 2.0)) / this.total;
+                    } else {
+                        return (position + 1.0) / this.total;
+                    }
+                } else if (next.getKey() > find) {
+                    return position / this.total;
+                }
+                position += next.getValue();
+            }
+        }
+        return defaultValue;
+    }
+
+}

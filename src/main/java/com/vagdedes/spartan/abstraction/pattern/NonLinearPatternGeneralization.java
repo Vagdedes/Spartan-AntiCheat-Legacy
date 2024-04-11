@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityPie;
+import com.vagdedes.spartan.abstraction.math.implementation.NumberPie;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ import java.util.Map;
 public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
-    private final Map<Integer, ProbabilityPie> correlations;
+    private final Map<Integer, NumberPie> correlations;
 
     protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
@@ -42,11 +42,11 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                ProbabilityPie pie = this.correlations.computeIfAbsent(
+                NumberPie pie = this.correlations.computeIfAbsent(
                         situation,
-                        k -> new ProbabilityPie(Pattern.individualGlobalDataLimitBase, 1.0f)
+                        k -> new NumberPie(Pattern.individualGlobalDataLimitBase, 1.0f)
                 );
-                if (pie.getSlices() == Pattern.individualGlobalDataLimit - 1) {
+                if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
                     this.decreaseImportance(
                             situation,
                             patternProfile,
@@ -79,7 +79,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
             }
         }
         synchronized (this.correlations) {
-            ProbabilityPie pie = this.correlations.get(situation);
+            NumberPie pie = this.correlations.get(situation);
 
             if (pie == null) {
                 return new Comparison(
@@ -106,7 +106,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected void customDeletePattern(int situation, float pattern) {
         synchronized (this.correlations) {
-            ProbabilityPie pie = this.correlations.get(situation);
+            NumberPie pie = this.correlations.get(situation);
 
             if (pie != null
                     && pie.remove(pattern)

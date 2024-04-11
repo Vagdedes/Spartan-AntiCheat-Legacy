@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.math.implementation.ProbabilityRank;
+import com.vagdedes.spartan.abstraction.math.implementation.NumberRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -216,7 +216,7 @@ public class ViolationAnalysis {
 
             if (probabilityData != null) {
                 Map<PlayerProfile, Double> probabilityAverage = profileAverageProbability.get(majorHash);
-                ProbabilityRank wave = new ProbabilityRank();
+                NumberRank wave = new NumberRank();
                 wave.addMultiple(probabilityData);
 
                 for (PlayerProfile profile : playerProfiles) {
@@ -224,7 +224,7 @@ public class ViolationAnalysis {
                         Double probability = probabilityAverage.get(profile);
 
                         if (probability != null) {
-                            probability = wave.getPosition(probability);
+                            probability = wave.getPosition(probability, 1.0);
 
                             if (probability <= 0.1) {
                                 profile.evidence.add(

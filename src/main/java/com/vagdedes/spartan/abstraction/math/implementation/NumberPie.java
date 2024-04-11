@@ -8,21 +8,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class ProbabilityPie implements AbstractPie {
+public class NumberPie implements AbstractPie {
 
     private final Map<Float, Short> map;
     private float total;
 
-    public ProbabilityPie() {
+    public NumberPie() {
         this(-1);
     }
 
-    public ProbabilityPie(int capacity) {
+    public NumberPie(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.total = 0.0f;
     }
 
-    public ProbabilityPie(int capacity, float loadFactor) {
+    public NumberPie(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.total = 0.0f;
     }
@@ -100,7 +100,7 @@ public class ProbabilityPie implements AbstractPie {
     }
 
     public Float removeLeastSignificant() {
-        float min = Float.MAX_VALUE;
+        int min = Integer.MAX_VALUE;
         Float key = null;
 
         for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
@@ -114,6 +114,7 @@ public class ProbabilityPie implements AbstractPie {
             }
         }
         this.map.remove(key);
+        this.total -= min;
         return key;
     }
 
@@ -142,11 +143,6 @@ public class ProbabilityPie implements AbstractPie {
     }
 
     @Override
-    public double getRatio(Number number) {
-        return this.getRatio(number, 0.0);
-    }
-
-    @Override
     public double getRatio(Number number, double defaultValue) {
         Short count = this.map.get(number.floatValue());
         return count != null ? count / this.total : defaultValue;
@@ -161,11 +157,6 @@ public class ProbabilityPie implements AbstractPie {
     // Separator
 
     @Override
-    public int getCount(Number number) {
-        return this.getCount(number, 0);
-    }
-
-    @Override
     public int getCount(Number number, int defaultValue) {
         return this.map.getOrDefault(number.floatValue(), (short) defaultValue);
     }
@@ -178,7 +169,7 @@ public class ProbabilityPie implements AbstractPie {
     }
 
     @Override
-    public int getSlices() {
+    public int getParts() {
         return this.map.size();
     }
 

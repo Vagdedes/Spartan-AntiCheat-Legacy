@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ProbabilityRank implements AbstractRank {
+public class NumberRank implements AbstractRank {
 
     private final Map<Float, Short> map;
     private float total;
 
-    public ProbabilityRank() {
+    public NumberRank() {
         this.map = new TreeMap<>();
         this.total = 0.0f;
     }
@@ -77,18 +77,9 @@ public class ProbabilityRank implements AbstractRank {
         }
     }
 
-    public void delete(Number number) {
-        short count = this.map.getOrDefault(number.floatValue(), (short) 0);
-
-        if (count > 0) {
-            this.map.remove(number.floatValue());
-            this.total -= count;
-        }
-    }
-
     @Override
     public Float removeLeastSignificant() {
-        float min = Float.MAX_VALUE;
+        int min = Integer.MAX_VALUE;
         Float key = null;
 
         for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
@@ -102,6 +93,7 @@ public class ProbabilityRank implements AbstractRank {
             }
         }
         this.map.remove(key);
+        this.total -= min;
         return key;
     }
 
@@ -109,30 +101,27 @@ public class ProbabilityRank implements AbstractRank {
 
     @Override
     public double getPosition(Number number, double defaultValue) {
-        Iterator<Map.Entry<Float, Short>> iterator = this.map.entrySet().iterator();
-        double position = 0.0;
-        float find = number.floatValue();
+        if (this.map.size() > 1) {
+            Iterator<Map.Entry<Float, Short>> iterator = this.map.entrySet().iterator();
+            double position = 0.0;
+            float find = number.floatValue();
 
-        while (iterator.hasNext()) {
-            Map.Entry<Float, Short> next = iterator.next();
+            while (iterator.hasNext()) {
+                Map.Entry<Float, Short> next = iterator.next();
 
-            if (next.getKey() == find) {
-                if (next.getValue() > 1) {
-                    return (position + (next.getValue() / 2.0)) / this.total;
-                } else {
-                    return (position + 1.0) / this.total;
+                if (next.getKey() == find) {
+                    if (next.getValue() > 1) {
+                        return (position + (next.getValue() / 2.0)) / this.total;
+                    } else {
+                        return (position + 1.0) / this.total;
+                    }
+                } else if (next.getKey() > find) {
+                    return position / this.total;
                 }
-            } else if (next.getKey() > find) {
-                return position / this.total;
+                position += next.getValue();
             }
-            position += next.getValue();
         }
         return defaultValue;
-    }
-
-    @Override
-    public double getPosition(Number number) {
-        return this.getPosition(number, 1.0);
     }
 
     // Separator
@@ -143,17 +132,7 @@ public class ProbabilityRank implements AbstractRank {
         return count != null ? count / this.total : defaultValue;
     }
 
-    @Override
-    public double getRatio(Number number) {
-        return this.getRatio(number, 0.0);
-    }
-
     // Separator
-
-    @Override
-    public int getCount(Number number) {
-        return this.getCount(number, 0);
-    }
 
     @Override
     public int getCount(Number number, int defaultValue) {

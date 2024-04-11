@@ -93,7 +93,8 @@ public abstract class DetectionExecutor {
                         false,
                         true,
                         comparison.probability,
-                        comparison.existingContribution,
+                        comparison.size,
+                        comparison.mass,
                         comparison.enoughData
                 );
             }
