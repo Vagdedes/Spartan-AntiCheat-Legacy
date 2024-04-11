@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NonLinearPatternGeneralization extends PatternGeneralization {
+public class NonLinearPatternGeneralization extends PatternGeneralization { // todo change
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
     private final Map<Integer, NumberPie> correlations;
@@ -87,8 +87,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                         patternProfile,
                         situation,
                         pattern,
-                        Pattern.defaultRatio,
-                        0
+                        Pattern.defaultRatio
                 );
             } else {
                 return new Comparison(
@@ -96,8 +95,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                         patternProfile,
                         situation,
                         pattern,
-                        pie.getRatio(pattern, Pattern.defaultRatio),
-                        pie.getTotal()
+                        pie.getRatio(pattern, Pattern.defaultRatio)
                 );
             }
         }

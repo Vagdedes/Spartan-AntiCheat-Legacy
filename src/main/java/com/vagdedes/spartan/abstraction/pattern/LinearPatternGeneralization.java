@@ -155,8 +155,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 situation,
                 pattern,
                 cache.predictor.afterPie.getRatio(after, Pattern.defaultRatio)
-                        * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio),
-                cache.dataSize
+                        * cache.predictor.beforePie.getRatio(before, Pattern.defaultRatio)
         );
     }
 

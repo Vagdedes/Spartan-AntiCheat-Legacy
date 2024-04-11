@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.abstraction.math.implementation.SetPie;
 import com.vagdedes.spartan.abstraction.math.implementation.SetRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
@@ -12,26 +11,23 @@ public abstract class PatternGeneralization {
 
     public static final class Comparison {
 
-        public final boolean enoughData;
         public final double
-                probability,
-                mass,
-                size,
-                similarity,
-                consistency;
+                probability, // chance
+                mass, // contribution
+                size, // significance
+                distance, // similarity
+                frequency; // consistency
 
         Comparison(PatternGeneralization patternGeneralization,
                    PatternProfile patternProfile,
                    int situation,
                    float pattern,
-                   double probability,
-                   int dataSize) {
-            int dataProfiles = patternGeneralization.uniqueContribution(situation, patternProfile, pattern);
-            this.enoughData = dataProfiles >= ResearchEngine.requiredProfiles;
+                   double probability) {
             this.probability = probability;
-            this.mass = (1.0 - AlgebraUtils.contribution(dataSize))
-                    * (1.0 - AlgebraUtils.contribution(dataProfiles));
+            this.mass = 0.0; // todo
             this.size = patternGeneralization.size(pattern);
+            this.distance = 0.0; // todo
+            this.frequency = 0.0; // todo
         }
 
     }
@@ -144,7 +140,7 @@ public abstract class PatternGeneralization {
 
     final double size(float pattern) {
         synchronized (this.size) {
-            return this.size.getPosition(pattern, Pattern.defaultPosition);
+            return this.size.getSize(pattern, Pattern.defaultPosition);
         }
     }
 

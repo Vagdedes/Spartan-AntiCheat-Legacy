@@ -95,7 +95,8 @@ public abstract class DetectionExecutor {
                         comparison.probability,
                         comparison.size,
                         comparison.mass,
-                        comparison.enoughData
+                        comparison.distance,
+                        comparison.frequency
                 );
             }
         }

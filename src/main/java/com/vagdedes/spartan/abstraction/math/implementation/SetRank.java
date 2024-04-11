@@ -155,7 +155,7 @@ public class SetRank implements AbstractRank {
     // Separator
 
     @Override
-    public double getPosition(Number number, double defaultValue) {
+    public double getSize(Number number, double defaultValue) {
         if (this.map.size() > 1) {
             Iterator<Map.Entry<Integer, Integer>> iterator = rank.entrySet().iterator();
             double position = 0.0;

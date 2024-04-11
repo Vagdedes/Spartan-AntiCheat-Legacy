@@ -2,10 +2,7 @@ package com.vagdedes.spartan.abstraction.math.implementation;
 
 import com.vagdedes.spartan.abstraction.math.AbstractRank;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MapRank implements AbstractRank {
 
@@ -62,9 +59,15 @@ public class MapRank implements AbstractRank {
                 map.put(hash, (short) 1);
                 this.total++;
                 this.uniqueTotal++;
+                this.decreaseRank(map.size() - 1);
+                this.increaseRank(map.size());
+                this.decreaseUniqueRank(map.size() - 1);
+                this.increaseUniqueRank(map.size());
             } else if (value < 32767) {
                 map.put(hash, (short) (value + 1));
                 this.total++;
+                this.decreaseRank(value);
+                this.increaseRank(value + 1);
             }
         } else {
             map = new HashMap<>();
@@ -72,6 +75,8 @@ public class MapRank implements AbstractRank {
             this.map.put(number.floatValue(), map);
             this.total++;
             this.uniqueTotal++;
+            this.increaseRank(1);
+            this.increaseUniqueRank(1);
         }
     }
 
@@ -242,12 +247,52 @@ public class MapRank implements AbstractRank {
     // Separator
 
     @Override
-    public double getPosition(Number number, double defaultValue) {
-        return 0;
+    public double getSize(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Iterator<Map.Entry<Integer, Integer>> iterator = rank.entrySet().iterator();
+            double position = 0.0;
+            int find = this.map.get(number.floatValue()).size();
+
+            while (iterator.hasNext()) {
+                Map.Entry<Integer, Integer> next = iterator.next();
+
+                if (next.getKey() == find) {
+                    if (next.getValue() > 1) {
+                        return (position + (next.getValue() / 2.0)) / this.total;
+                    } else {
+                        return (position + 1.0) / this.total;
+                    }
+                } else if (next.getKey() > find) {
+                    return position / this.total;
+                }
+                position += next.getValue();
+            }
+        }
+        return defaultValue;
     }
 
     public double getUniquePosition(Number number, int hash, double defaultValue) {
-        return 0;
+        if (this.map.size() > 1) {
+            Iterator<Map.Entry<Integer, Integer>> iterator = uniqueRank.entrySet().iterator();
+            double position = 0.0;
+            int find = this.map.get(number.floatValue()).get(hash);
+
+            while (iterator.hasNext()) {
+                Map.Entry<Integer, Integer> next = iterator.next();
+
+                if (next.getKey() == find) {
+                    if (next.getValue() > 1) {
+                        return (position + (next.getValue() / 2.0)) / this.total;
+                    } else {
+                        return (position + 1.0) / this.total;
+                    }
+                } else if (next.getKey() > find) {
+                    return position / this.total;
+                }
+                position += next.getValue();
+            }
+        }
+        return defaultValue;
     }
 
 }

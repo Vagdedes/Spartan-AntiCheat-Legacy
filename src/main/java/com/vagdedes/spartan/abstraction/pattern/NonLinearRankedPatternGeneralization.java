@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NonLinearRankedPatternGeneralization extends PatternGeneralization {
+public class NonLinearRankedPatternGeneralization extends PatternGeneralization { // todo change
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
     private final Map<Integer, NumberRank> correlations;
@@ -87,8 +87,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         patternProfile,
                         situation,
                         pattern,
-                        Pattern.defaultRatio,
-                        0
+                        Pattern.defaultRatio
                 );
             } else {
                 return new Comparison(
@@ -96,9 +95,8 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         patternProfile,
                         situation,
                         pattern,
-                        rank.getPosition(pattern, Pattern.defaultPosition)
-                                * rank.getRatio(pattern, Pattern.defaultRatio),
-                        rank.getTotal()
+                        rank.getSize(pattern, Pattern.defaultPosition)
+                                * rank.getRatio(pattern, Pattern.defaultRatio)
                 );
             }
         }
