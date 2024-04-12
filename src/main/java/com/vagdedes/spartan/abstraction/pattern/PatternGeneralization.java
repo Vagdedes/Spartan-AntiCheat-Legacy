@@ -5,18 +5,21 @@ import com.vagdedes.spartan.abstraction.math.implementation.SetRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class PatternGeneralization {
 
     public static final class Comparison {
 
         public final double
-                probability, // chance
-                mass, // contribution
-                size, // significance
-                distance, // similarity
-                frequency; // consistency
+                probability,
+                contribution,
+                significance,
+                similarity,
+                consistency;
 
         Comparison(PatternGeneralization patternGeneralization,
                    PatternProfile patternProfile,
@@ -24,10 +27,10 @@ public abstract class PatternGeneralization {
                    float pattern,
                    double probability) {
             this.probability = probability;
-            this.mass = 0.0; // todo
-            this.size = patternGeneralization.size(pattern);
-            this.distance = 0.0; // todo
-            this.frequency = 0.0; // todo
+            this.contribution = 0.0; // todo
+            this.significance = patternGeneralization.size(pattern);
+            this.similarity = 0.0; // todo
+            this.consistency = 0.0; // todo
         }
 
     }
@@ -139,24 +142,11 @@ public abstract class PatternGeneralization {
     }
 
     final double size(float pattern) {
-        synchronized (this.size) {
-            return this.size.getSize(pattern, Pattern.defaultPosition);
-        }
+        return 0.0; // todo
     }
 
-    final int uniqueContribution(int situation, PatternProfile patternProfile, float pattern) {
-        synchronized (this.mass) {
-            SetPie pie = this.mass.get(situation);
-
-            if (pie == null) {
-                return 0;
-            } else {
-                Set<Integer> set = pie.getSet(pattern);
-                return set.contains(patternProfile.hash)
-                        ? set.size() - 1
-                        : set.size();
-            }
-        }
+    final double uniqueContribution(int situation, PatternProfile patternProfile, float pattern) {
+        return 0.0; // todo
     }
 
     // Separator

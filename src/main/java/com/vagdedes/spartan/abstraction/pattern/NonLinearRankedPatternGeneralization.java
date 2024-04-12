@@ -95,7 +95,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         patternProfile,
                         situation,
                         pattern,
-                        rank.getSize(pattern, Pattern.defaultPosition)
+                        rank.getPosition(pattern, Pattern.defaultPosition)
                                 * rank.getRatio(pattern, Pattern.defaultRatio)
                 );
             }

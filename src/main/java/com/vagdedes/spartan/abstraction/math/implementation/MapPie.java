@@ -1,15 +1,16 @@
 package com.vagdedes.spartan.abstraction.math.implementation;
 
-import com.vagdedes.spartan.abstraction.math.AbstractPie;
+import com.vagdedes.spartan.abstraction.math.AbstractKeyValuePie;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
-public class MapPie implements AbstractPie {
+public class MapPie implements AbstractKeyValuePie {
 
     private final Map<Float, Map<Integer, Short>> map;
-    private float total, uniqueTotal;
+    private float total, specificTotal;
 
     public MapPie() {
         this(-1);
@@ -18,20 +19,61 @@ public class MapPie implements AbstractPie {
     public MapPie(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.total = 0.0f;
-        this.uniqueTotal = 0.0f;
+        this.specificTotal = 0.0f;
     }
 
     public MapPie(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.total = 0.0f;
-        this.uniqueTotal = 0.0f;
+        this.specificTotal = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
         this.total = 0.0f;
-        this.uniqueTotal = 0.0f;
+        this.specificTotal = 0.0f;
+    }
+
+    @Override
+    public Float removeLeastSignificant() {
+        int min = Integer.MAX_VALUE;
+        Float key = null;
+
+        for (Map.Entry<Float, Map<Integer, Short>> entry : this.map.entrySet()) {
+            if (entry.getValue().size() < min) {
+                min = entry.getValue().size();
+                key = entry.getKey();
+
+                if (min == 1) {
+                    int specific = 0;
+
+                    for (short count : entry.getValue().values()) {
+                        specific += count;
+                    }
+                    this.specificTotal -= specific;
+                    break;
+                }
+            }
+        }
+        this.map.remove(key);
+        this.total -= min;
+        return key;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
+
+    @Override
+    public int getParts() {
+        return this.map.size();
+    }
+
+    @Override
+    public int getTotal() {
+        return (int) this.total;
     }
 
     // Separator
@@ -42,8 +84,6 @@ public class MapPie implements AbstractPie {
         }
     }
 
-    // Separator
-
     public void add(Number number, int hash) {
         Map<Integer, Short> map = this.map.get(number.floatValue());
 
@@ -53,21 +93,19 @@ public class MapPie implements AbstractPie {
             if (value == null) {
                 map.put(hash, (short) 1);
                 this.total++;
-                this.uniqueTotal++;
+                this.specificTotal++;
             } else if (value < 32767) {
                 map.put(hash, (short) (value + 1));
-                this.total++;
+                this.specificTotal++;
             }
         } else {
             map = new HashMap<>();
             map.put(hash, (short) 1);
             this.map.put(number.floatValue(), map);
             this.total++;
-            this.uniqueTotal++;
+            this.specificTotal++;
         }
     }
-
-    // Separator
 
     public boolean remove(Number number, int hash) {
         Map<Integer, Short> map = this.map.get(number.floatValue());
@@ -83,10 +121,10 @@ public class MapPie implements AbstractPie {
                         this.map.remove(number.floatValue());
                     }
                     this.total--;
-                    this.uniqueTotal--;
+                    this.specificTotal--;
                 } else {
                     map.put(hash, (short) (value - 1));
-                    this.total--;
+                    this.specificTotal--;
                 }
                 return true;
             } else {
@@ -97,120 +135,96 @@ public class MapPie implements AbstractPie {
         }
     }
 
+    // Separator
+
     @Override
-    public Float removeLeastSignificant() {
-        int min = Integer.MAX_VALUE;
-        Float key = null;
-
-        for (Map.Entry<Float, Map<Integer, Short>> entry : this.map.entrySet()) {
-            if (entry.getValue().size() < min) {
-                min = entry.getValue().size();
-                key = entry.getKey();
-
-                if (min == 1) {
-                    break;
-                }
-            }
-        }
-        this.map.remove(key);
-        this.total -= min;
-        return key;
+    public double getContribution(Number number, double defaultValue) {
+        return 1.0 - (1.0 / (this.total + 1.0));
     }
 
-    // Separator
+    @Override
+    public double getContribution(Number number, int ignoreHash, double defaultValue) {
+        Map<Integer, Short> map = this.map.get(number.floatValue());
+
+        if (map != null) {
+            return 1.0 - (1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0));
+        } else {
+            return defaultValue;
+        }
+    }
 
     @Override
     public double getRatio(Number number, double defaultValue) {
         Map<Integer, Short> map = this.map.get(number.floatValue());
-
-        if (map != null) {
-            int count = 0;
-
-            for (short value : map.values()) {
-                count += value;
-            }
-            return count / this.total;
-        } else {
-            return defaultValue;
-        }
+        return map != null ? map.size() / this.total : defaultValue;
     }
 
-    public double getRatio(Number number, int ignoreHash, double defaultValue) {
-        Map<Integer, Short> map = this.map.get(number.floatValue());
+    @Override
+    public double getDistance(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Map<Integer, Short> selfMap = this.map.get(number.floatValue());
 
-        if (map != null) {
-            int count = 0;
+            if (selfMap != null) {
+                double average = 0.0;
+                Map<Double, Integer> rank = new TreeMap<>();
+                Collection<Map<Integer, Short>> values = this.map.values();
 
-            for (Map.Entry<Integer, Short> entry : map.entrySet()) {
-                if (entry.getKey() != ignoreHash) {
-                    count += entry.getValue();
+                for (Map<Integer, Short> map : values) {
+                    average += map.size();
+                }
+                average /= this.map.size();
+
+                for (Map<Integer, Short> map : values) {
+                    double distance = Math.abs(map.size() - average);
+                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                }
+                average = Math.abs(selfMap.size() - average);
+                int position = 0;
+
+                for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
+                    if (entry.getKey() == average) {
+                        return position / (double) rank.size();
+                    } else {
+                        position += entry.getValue();
+                    }
                 }
             }
-            return count / this.total;
-        } else {
-            return defaultValue;
         }
+        return defaultValue;
     }
-
-    public double getUniqueRatio(Number number, double defaultValue) {
-        Map<Integer, Short> map = this.map.get(number.floatValue());
-        return map != null ? map.size() / this.uniqueTotal : defaultValue;
-    }
-
-    public double getUniqueRatio(Number number, int ignoreHash, double defaultValue) {
-        Map<Integer, Short> map = this.map.get(number.floatValue());
-        return map != null
-                ? (map.containsKey(ignoreHash) ? map.size() - 1 : map.size()) / this.uniqueTotal
-                : defaultValue;
-    }
-
-    // Separator
 
     @Override
-    public int getCount(Number number, int defaultValue) {
+    public double getSpecificContribution(Number number, double defaultValue) {
+        return 1.0 - (1.0 / (this.specificTotal + 1.0));
+    }
+
+    @Override
+    public double getSpecificContribution(Number number, int ignoreHash, double defaultValue) {
         Map<Integer, Short> map = this.map.get(number.floatValue());
 
         if (map != null) {
-            int count = 0;
-
-            for (short value : map.values()) {
-                count += value;
-            }
-            return count;
+            Short count = map.get(ignoreHash);
+            return 1.0 - (1.0 / (this.specificTotal + (count != null ? -count : 0.0) + 1.0));
         } else {
             return defaultValue;
         }
     }
 
-    public int getUniqueCount(Number number) {
-        return this.getUniqueCount(number, 0);
-    }
-
-    public int getUniqueCount(Number number, int defaultValue) {
+    @Override
+    public double getSpecificRatio(Number number, int hash, double defaultValue) {
         Map<Integer, Short> map = this.map.get(number.floatValue());
-        return map == null ? defaultValue : map.size();
-    }
 
-    public Map<Integer, Short> getMap(Number number) {
-        Map<Integer, Short> map = this.map.get(number.floatValue());
-        return map == null ? new HashMap<>(0) : new HashMap<>(map);
-    }
-
-    // Separator
-
-    @Override
-    public boolean isEmpty() {
-        return this.total == 0;
+        if (map != null) {
+            Short count = map.get(hash);
+            return count != null ? count / this.specificTotal : defaultValue;
+        } else {
+            return defaultValue;
+        }
     }
 
     @Override
-    public int getParts() {
-        return this.map.size();
-    }
-
-    @Override
-    public int getTotal() {
-        return (int) this.total;
+    public double getSpecificDistance(Number number, int hash, double defaultValue) {
+        return 0;
     }
 
 }

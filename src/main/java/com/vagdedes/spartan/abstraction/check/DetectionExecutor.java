@@ -93,10 +93,10 @@ public abstract class DetectionExecutor {
                         false,
                         true,
                         comparison.probability,
-                        comparison.size,
-                        comparison.mass,
-                        comparison.distance,
-                        comparison.frequency
+                        comparison.significance,
+                        comparison.contribution,
+                        comparison.similarity,
+                        comparison.consistency
                 );
             }
         }

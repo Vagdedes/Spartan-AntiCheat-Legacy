@@ -3,10 +3,9 @@ package com.vagdedes.spartan.abstraction.math.implementation;
 import com.vagdedes.spartan.abstraction.math.AbstractPie;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.TreeMap;
 
 public class NumberPie implements AbstractPie {
 
@@ -33,6 +32,40 @@ public class NumberPie implements AbstractPie {
         this.total = 0.0f;
     }
 
+    public Float removeLeastSignificant() {
+        int min = Integer.MAX_VALUE;
+        Float key = null;
+
+        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
+            if (entry.getValue() < min) {
+                min = entry.getValue();
+                key = entry.getKey();
+
+                if (min == 1) {
+                    break;
+                }
+            }
+        }
+        this.map.remove(key);
+        this.total -= min;
+        return key;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
+
+    @Override
+    public int getParts() {
+        return this.map.size();
+    }
+
+    @Override
+    public int getTotal() {
+        return (int) this.total;
+    }
+
     // Separator
 
     public void addMultiple(Collection<? extends Number> numbers) {
@@ -53,82 +86,29 @@ public class NumberPie implements AbstractPie {
 
     // Separator
 
-    public void create(Number number, int amount) {
-        Short count = this.map.get(number.floatValue());
-
-        if (count != null) {
-            this.total -= count;
-        }
-        this.map.put(number.floatValue(), (short) amount);
-        this.total += amount;
-    }
-
     public void add(Number number) {
-        this.increase(number, 1);
-    }
-
-    public void increase(Number number, int amount) {
         short current = this.map.getOrDefault(number.floatValue(), (short) 0);
 
         if (current < 32767) {
             this.map.put(
                     number.floatValue(),
-                    (short) (current + amount)
+                    (short) (current + 1)
             );
-            this.total += amount;
-        }
-    }
-
-    public void add(Collection<? extends Number> collection) {
-        for (Number number : collection) {
-            this.add(number);
-        }
-    }
-
-    // Separator
-
-    public void delete(Number number) {
-        Short count = this.map.remove(number.floatValue());
-
-        if (count != null) {
-            this.total -= count;
+            this.total += 1;
         }
     }
 
     public boolean remove(Number number) {
-        return this.decrease(number, 1);
-    }
-
-    public Float removeLeastSignificant() {
-        int min = Integer.MAX_VALUE;
-        Float key = null;
-
-        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
-            if (entry.getValue() < min) {
-                min = entry.getValue();
-                key = entry.getKey();
-
-                if (min == 1) {
-                    break;
-                }
-            }
-        }
-        this.map.remove(key);
-        this.total -= min;
-        return key;
-    }
-
-    public boolean decrease(Number number, int amount) {
         Short count = this.map.get(number.floatValue());
 
         if (count != null) {
-            if (amount >= count) {
+            if (count == 1) {
                 this.map.remove(number.floatValue());
                 this.total -= count;
                 return true;
             } else {
-                this.map.put(number.floatValue(), (short) (count - amount));
-                this.total -= amount;
+                this.map.put(number.floatValue(), (short) (count - 1));
+                this.total -= 1;
                 return false;
             }
         } else {
@@ -138,8 +118,9 @@ public class NumberPie implements AbstractPie {
 
     // Separator
 
-    public double getProbabilityWithCount(int count) {
-        return count / this.total;
+    @Override
+    public double getContribution(Number number, double defaultValue) {
+        return 1.0 - (1.0 / (this.total + 1.0));
     }
 
     @Override
@@ -148,34 +129,38 @@ public class NumberPie implements AbstractPie {
         return count != null ? count / this.total : defaultValue;
     }
 
-    public Stream<Map.Entry<Float, Short>> getProbabilitiesRanked() {
-        return this.map.entrySet().stream().sorted(
-                Map.Entry.comparingByValue(Comparator.reverseOrder())
-        );
-    }
-
-    // Separator
-
     @Override
-    public int getCount(Number number, int defaultValue) {
-        return this.map.getOrDefault(number.floatValue(), (short) defaultValue);
-    }
+    public double getDistance(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Short selfCount = this.map.get(number.floatValue());
 
-    // Separator
+            if (selfCount != null) {
+                double average = 0.0;
+                Map<Double, Integer> rank = new TreeMap<>();
+                Collection<Short> values = this.map.values();
 
-    @Override
-    public boolean isEmpty() {
-        return this.total == 0;
-    }
+                for (short count : values) {
+                    average += count;
+                }
+                average /= this.map.size();
 
-    @Override
-    public int getParts() {
-        return this.map.size();
-    }
+                for (short count : values) {
+                    double distance = Math.abs(count - average);
+                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                }
+                average = Math.abs(selfCount - average);
+                int position = 0;
 
-    @Override
-    public int getTotal() {
-        return (int) this.total;
+                for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
+                    if (entry.getKey() == average) {
+                        return position / (double) rank.size();
+                    } else {
+                        position += entry.getValue();
+                    }
+                }
+            }
+        }
+        return defaultValue;
     }
 }
 

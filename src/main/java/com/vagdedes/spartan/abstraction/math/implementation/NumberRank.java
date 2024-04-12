@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.math.implementation;
 import com.vagdedes.spartan.abstraction.math.AbstractRank;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -21,6 +20,41 @@ public class NumberRank implements AbstractRank {
     public void clear() {
         this.map.clear();
         this.total = 0.0f;
+    }
+
+    @Override
+    public Float removeLeastSignificant() {
+        int min = Integer.MAX_VALUE;
+        Float key = null;
+
+        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
+            if (entry.getValue() < min) {
+                min = entry.getValue();
+                key = entry.getKey();
+
+                if (min == 1) {
+                    break;
+                }
+            }
+        }
+        this.map.remove(key);
+        this.total -= min;
+        return key;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
+
+    @Override
+    public int getParts() {
+        return this.map.size();
+    }
+
+    @Override
+    public int getTotal() {
+        return (int) this.total;
     }
 
     // Separator
@@ -45,8 +79,6 @@ public class NumberRank implements AbstractRank {
         }
     }
 
-    // Separator
-
     public void add(Number number) {
         short current = this.map.getOrDefault(number.floatValue(), (short) 0);
 
@@ -58,8 +90,6 @@ public class NumberRank implements AbstractRank {
             this.total++;
         }
     }
-
-    // Separator
 
     public boolean remove(Number number) {
         short count = this.map.getOrDefault(number.floatValue(), (short) 0);
@@ -77,54 +107,12 @@ public class NumberRank implements AbstractRank {
         }
     }
 
-    @Override
-    public Float removeLeastSignificant() {
-        int min = Integer.MAX_VALUE;
-        Float key = null;
-
-        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
-            if (entry.getValue() < min) {
-                min = entry.getValue();
-                key = entry.getKey();
-
-                if (min == 1) {
-                    break;
-                }
-            }
-        }
-        this.map.remove(key);
-        this.total -= min;
-        return key;
-    }
-
     // Separator
 
     @Override
-    public double getSize(Number number, double defaultValue) {
-        if (this.map.size() > 1) {
-            Iterator<Map.Entry<Float, Short>> iterator = this.map.entrySet().iterator();
-            double position = 0.0;
-            float find = number.floatValue();
-
-            while (iterator.hasNext()) {
-                Map.Entry<Float, Short> next = iterator.next();
-
-                if (next.getKey() == find) {
-                    if (next.getValue() > 1) {
-                        return (position + (next.getValue() / 2.0)) / this.total;
-                    } else {
-                        return (position + 1.0) / this.total;
-                    }
-                } else if (next.getKey() > find) {
-                    return position / this.total;
-                }
-                position += next.getValue();
-            }
-        }
-        return defaultValue;
+    public double getContribution(Number number, double defaultValue) {
+        return 1.0 - (1.0 / (this.total + 1.0));
     }
-
-    // Separator
 
     @Override
     public double getRatio(Number number, double defaultValue) {
@@ -132,27 +120,59 @@ public class NumberRank implements AbstractRank {
         return count != null ? count / this.total : defaultValue;
     }
 
-    // Separator
-
     @Override
-    public int getCount(Number number, int defaultValue) {
-        return this.map.getOrDefault(number.floatValue(), (short) defaultValue);
+    public double getDistance(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Short selfCount = this.map.get(number.floatValue());
+
+            if (selfCount != null) {
+                double average = 0.0;
+                Map<Double, Integer> rank = new TreeMap<>();
+                Collection<Short> values = this.map.values();
+
+                for (short count : values) {
+                    average += count;
+                }
+                average /= this.map.size();
+
+                for (short count : values) {
+                    double distance = Math.abs(count - average);
+                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                }
+                average = Math.abs(selfCount - average);
+                int position = 0;
+
+                for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
+                    if (entry.getKey() == average) {
+                        return position / (double) rank.size();
+                    } else {
+                        position += entry.getValue();
+                    }
+                }
+            }
+        }
+        return defaultValue;
     }
 
-    // Separator
-
     @Override
-    public boolean isEmpty() {
-        return this.map.isEmpty();
-    }
+    public double getPosition(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            int position = 0;
+            float find = number.floatValue();
 
-    @Override
-    public int getParts() {
-        return this.map.size();
-    }
-
-    @Override
-    public int getTotal() {
-        return (int) this.total;
+            for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
+                if (entry.getKey() == find) {
+                    if (entry.getValue() > 1) {
+                        return (position + (entry.getValue() / 2.0)) / this.total;
+                    } else {
+                        return (position + 1.0) / this.total;
+                    }
+                } else if (entry.getKey() > find) {
+                    return position / this.total;
+                }
+                position += entry.getValue();
+            }
+        }
+        return defaultValue;
     }
 }

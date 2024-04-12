@@ -1,20 +1,12 @@
 package com.vagdedes.spartan.abstraction.math;
 
-public interface AbstractPie {
+public interface AbstractPie extends AbstractMath {
 
-    void clear();
-
-    Float removeLeastSignificant();
+    double getContribution(Number number, double defaultValue);
 
     double getRatio(Number number, double defaultValue);
 
-    int getCount(Number number, int defaultValue);
-
-    boolean isEmpty();
-
-    int getParts();
-
-    int getTotal();
+    double getDistance(Number number, double defaultValue);
 
 }
 
