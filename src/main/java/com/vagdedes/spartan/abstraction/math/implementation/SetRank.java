@@ -146,6 +146,39 @@ public class SetRank implements AbstractKeyRank {
 
             if (selfSet != null) {
                 double average = 0.0;
+                Set<Double> rank = new TreeSet<>();
+                Collection<Set<Integer>> values = this.map.values();
+
+                for (Set<Integer> set : values) {
+                    average += set.size();
+                }
+                average /= this.map.size();
+
+                for (Set<Integer> set : values) {
+                    rank.add(Math.abs(set.size() - average));
+                }
+                average = Math.abs(selfSet.size() - average);
+                int position = 0;
+
+                for (double distance : rank) {
+                    if (distance == average) {
+                        return position / (double) rank.size();
+                    } else {
+                        position++;
+                    }
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getWaveProbability(Number number, boolean absolute, double defaultValue) {
+        if (this.map.size() > 1) {
+            Set<Integer> selfSet = this.map.get(number.floatValue());
+
+            if (selfSet != null) {
+                double average = 0.0;
                 Map<Double, Integer> rank = new TreeMap<>();
                 Collection<Set<Integer>> values = this.map.values();
 
@@ -155,10 +188,10 @@ public class SetRank implements AbstractKeyRank {
                 average /= this.map.size();
 
                 for (Set<Integer> set : values) {
-                    double distance = Math.abs(set.size() - average);
+                    double distance = absolute ? Math.abs(set.size() - average) : set.size() - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
-                average = Math.abs(selfSet.size() - average);
+                average = absolute ? Math.abs(selfSet.size() - average) : selfSet.size() - average;
                 int position = 0;
 
                 for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
@@ -172,6 +205,7 @@ public class SetRank implements AbstractKeyRank {
         }
         return defaultValue;
     }
+
     @Override
     public double getPosition(Number number, double defaultValue) {
         if (this.map.size() > 1) {

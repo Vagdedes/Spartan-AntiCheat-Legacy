@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.math.AbstractKeyPie;
 
 import java.util.*;
 
-public class SetPie implements AbstractKeyPie {
+public class SetPie implements AbstractKeyPie { // todo optimize distance with total and map with double distance and integer count
 
     private final Map<Float, Set<Integer>> map;
     private float total;
@@ -132,6 +132,39 @@ public class SetPie implements AbstractKeyPie {
 
             if (selfSet != null) {
                 double average = 0.0;
+                Set<Double> rank = new TreeSet<>();
+                Collection<Set<Integer>> values = this.map.values();
+
+                for (Set<Integer> set : values) {
+                    average += set.size();
+                }
+                average /= this.map.size();
+
+                for (Set<Integer> set : values) {
+                    rank.add(Math.abs(set.size() - average));
+                }
+                average = Math.abs(selfSet.size() - average);
+                int position = 0;
+
+                for (double distance : rank) {
+                    if (distance == average) {
+                        return position / (double) rank.size();
+                    } else {
+                        position++;
+                    }
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getWaveProbability(Number number, boolean absolute, double defaultValue) {
+        if (this.map.size() > 1) {
+            Set<Integer> selfSet = this.map.get(number.floatValue());
+
+            if (selfSet != null) {
+                double average = 0.0;
                 Map<Double, Integer> rank = new TreeMap<>();
                 Collection<Set<Integer>> values = this.map.values();
 
@@ -141,10 +174,10 @@ public class SetPie implements AbstractKeyPie {
                 average /= this.map.size();
 
                 for (Set<Integer> set : values) {
-                    double distance = Math.abs(set.size() - average);
+                    double distance = absolute ? Math.abs(set.size() - average) : set.size() - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
-                average = Math.abs(selfSet.size() - average);
+                average = absolute ? Math.abs(selfSet.size() - average) : selfSet.size() - average;
                 int position = 0;
 
                 for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
@@ -158,5 +191,6 @@ public class SetPie implements AbstractKeyPie {
         }
         return defaultValue;
     }
+
 }
 

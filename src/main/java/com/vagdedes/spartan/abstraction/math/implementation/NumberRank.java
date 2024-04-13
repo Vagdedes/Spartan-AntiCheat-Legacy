@@ -2,9 +2,7 @@ package com.vagdedes.spartan.abstraction.math.implementation;
 
 import com.vagdedes.spartan.abstraction.math.AbstractRank;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class NumberRank implements AbstractRank {
 
@@ -127,6 +125,39 @@ public class NumberRank implements AbstractRank {
 
             if (selfCount != null) {
                 double average = 0.0;
+                Set<Double> rank = new TreeSet<>();
+                Collection<Short> values = this.map.values();
+
+                for (short count : values) {
+                    average += count;
+                }
+                average /= this.map.size();
+
+                for (short count : values) {
+                    rank.add(Math.abs(count - average));
+                }
+                average = Math.abs(selfCount - average);
+                int position = 0;
+
+                for (double distance : rank) {
+                    if (distance == average) {
+                        return position / (double) rank.size();
+                    } else {
+                        position++;
+                    }
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getWaveProbability(Number number, boolean absolute, double defaultValue) {
+        if (this.map.size() > 1) {
+            Short selfCount = this.map.get(number.floatValue());
+
+            if (selfCount != null) {
+                double average = 0.0;
                 Map<Double, Integer> rank = new TreeMap<>();
                 Collection<Short> values = this.map.values();
 
@@ -136,10 +167,10 @@ public class NumberRank implements AbstractRank {
                 average /= this.map.size();
 
                 for (short count : values) {
-                    double distance = Math.abs(count - average);
+                    double distance = absolute ? Math.abs(count - average) : count - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
-                average = Math.abs(selfCount - average);
+                average = absolute ? Math.abs(selfCount - average) : selfCount - average;
                 int position = 0;
 
                 for (Map.Entry<Double, Integer> entry : rank.entrySet()) {

@@ -2,10 +2,7 @@ package com.vagdedes.spartan.abstraction.math.implementation;
 
 import com.vagdedes.spartan.abstraction.math.AbstractKeyValuePie;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MapPie implements AbstractKeyValuePie {
 
@@ -166,6 +163,39 @@ public class MapPie implements AbstractKeyValuePie {
 
             if (selfMap != null) {
                 double average = 0.0;
+                Set<Double> rank = new TreeSet<>();
+                Collection<Map<Integer, Short>> values = this.map.values();
+
+                for (Map<Integer, Short> map : values) {
+                    average += map.size();
+                }
+                average /= this.map.size();
+
+                for (Map<Integer, Short> map : values) {
+                    rank.add(Math.abs(map.size() - average));
+                }
+                average = Math.abs(selfMap.size() - average);
+                int position = 0;
+
+                for (double distance : rank) {
+                    if (distance == average) {
+                        return position / (double) rank.size();
+                    } else {
+                        position++;
+                    }
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getWaveProbability(Number number, boolean absolute, double defaultValue) {
+        if (this.map.size() > 1) {
+            Map<Integer, Short> selfMap = this.map.get(number.floatValue());
+
+            if (selfMap != null) {
+                double average = 0.0;
                 Map<Double, Integer> rank = new TreeMap<>();
                 Collection<Map<Integer, Short>> values = this.map.values();
 
@@ -175,10 +205,10 @@ public class MapPie implements AbstractKeyValuePie {
                 average /= this.map.size();
 
                 for (Map<Integer, Short> map : values) {
-                    double distance = Math.abs(map.size() - average);
+                    double distance = absolute ? Math.abs(map.size() - average) : map.size() - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
-                average = Math.abs(selfMap.size() - average);
+                average = absolute ? Math.abs(selfMap.size() - average) : selfMap.size() - average;
                 int position = 0;
 
                 for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
@@ -224,7 +254,12 @@ public class MapPie implements AbstractKeyValuePie {
 
     @Override
     public double getSpecificDistance(Number number, int hash, double defaultValue) {
-        return 0;
+        return 0; // todo
+    }
+
+    @Override
+    public double getSpecificWaveProbability(Number number, boolean absolute, double defaultValue) {
+        return 0; // todo
     }
 
 }
