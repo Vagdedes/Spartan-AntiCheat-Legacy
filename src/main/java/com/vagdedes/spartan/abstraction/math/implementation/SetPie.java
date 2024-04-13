@@ -4,10 +4,10 @@ import com.vagdedes.spartan.abstraction.math.AbstractKeyPie;
 
 import java.util.*;
 
-public class SetPie implements AbstractKeyPie { // todo optimize distance with total and map with double distance and integer count
+public class SetPie implements AbstractKeyPie {
 
     private final Map<Float, Set<Integer>> map;
-    private float total;
+    private float total, summary;
 
     public SetPie() {
         this(-1);
@@ -16,37 +16,44 @@ public class SetPie implements AbstractKeyPie { // todo optimize distance with t
     public SetPie(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     public SetPie(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     @Override
     public Float removeLeastSignificant() {
-        int min = Integer.MAX_VALUE;
-        Float key = null;
+        if (this.map.isEmpty()) {
+            return null;
+        } else {
+            int min = Integer.MAX_VALUE;
+            Float key = null;
 
-        for (Map.Entry<Float, Set<Integer>> entry : this.map.entrySet()) {
-            if (entry.getValue().size() < min) {
-                min = entry.getValue().size();
-                key = entry.getKey();
+            for (Map.Entry<Float, Set<Integer>> entry : this.map.entrySet()) {
+                if (entry.getValue().size() < min) {
+                    min = entry.getValue().size();
+                    key = entry.getKey();
 
-                if (min == 1) {
-                    break;
+                    if (min == 1) {
+                        break;
+                    }
                 }
             }
+            this.map.remove(key);
+            this.total -= min;
+            return key;
         }
-        this.map.remove(key);
-        this.total -= min;
-        return key;
     }
 
     @Override
@@ -131,16 +138,10 @@ public class SetPie implements AbstractKeyPie { // todo optimize distance with t
             Set<Integer> selfSet = this.map.get(number.floatValue());
 
             if (selfSet != null) {
-                double average = 0.0;
+                double average = this.total / (double) this.map.size();
                 Set<Double> rank = new TreeSet<>();
-                Collection<Set<Integer>> values = this.map.values();
 
-                for (Set<Integer> set : values) {
-                    average += set.size();
-                }
-                average /= this.map.size();
-
-                for (Set<Integer> set : values) {
+                for (Set<Integer> set : this.map.values()) {
                     rank.add(Math.abs(set.size() - average));
                 }
                 average = Math.abs(selfSet.size() - average);
@@ -164,16 +165,10 @@ public class SetPie implements AbstractKeyPie { // todo optimize distance with t
             Set<Integer> selfSet = this.map.get(number.floatValue());
 
             if (selfSet != null) {
-                double average = 0.0;
+                double average = this.total / (double) this.map.size();
                 Map<Double, Integer> rank = new HashMap<>();
-                Collection<Set<Integer>> values = this.map.values();
 
-                for (Set<Integer> set : values) {
-                    average += set.size();
-                }
-                average /= this.map.size();
-
-                for (Set<Integer> set : values) {
+                for (Set<Integer> set : this.map.values()) {
                     double distance = absolute ? Math.abs(set.size() - average) : set.size() - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }

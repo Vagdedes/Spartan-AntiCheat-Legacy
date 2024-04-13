@@ -7,7 +7,7 @@ import java.util.*;
 public class NumberPie implements AbstractPie {
 
     private final Map<Float, Short> map;
-    private float total;
+    private float total, summary;
 
     public NumberPie() {
         this(-1);
@@ -16,36 +16,44 @@ public class NumberPie implements AbstractPie {
     public NumberPie(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     public NumberPie(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     public Float removeLeastSignificant() {
-        int min = Integer.MAX_VALUE;
-        Float key = null;
+        if (this.map.isEmpty()) {
+            return null;
+        } else {
+            int min = Integer.MAX_VALUE;
+            Float key = null;
 
-        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
-            if (entry.getValue() < min) {
-                min = entry.getValue();
-                key = entry.getKey();
+            for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
+                if (entry.getValue() < min) {
+                    min = entry.getValue();
+                    key = entry.getKey();
 
-                if (min == 1) {
-                    break;
+                    if (min == 1) {
+                        break;
+                    }
                 }
             }
+            this.map.remove(key);
+            this.total -= min;
+            this.summary -= key;
+            return key;
         }
-        this.map.remove(key);
-        this.total -= min;
-        return key;
     }
 
     @Override
@@ -71,13 +79,15 @@ public class NumberPie implements AbstractPie {
         }
     }
 
-    public void addMultiple(Map<? extends Number, Integer> map) {
-        for (Map.Entry<? extends Number, Integer> entry : map.entrySet()) {
-            this.map.put(
-                    entry.getKey().floatValue(),
-                    (short) (this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue())
+    public void addMultiple(Map<? extends Number, ? extends Number> map) {
+        for (Map.Entry<? extends Number, ? extends Number> entry : map.entrySet()) {
+            short newCount = (short) Math.min(
+                    this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue().shortValue(),
+                    32767
             );
-            this.total += entry.getValue();
+            this.map.put(entry.getKey().floatValue(), newCount);
+            this.total += entry.getValue().shortValue();
+            this.summary += entry.getKey().floatValue();
         }
     }
 
@@ -91,7 +101,8 @@ public class NumberPie implements AbstractPie {
                     number.floatValue(),
                     (short) (current + 1)
             );
-            this.total += 1;
+            this.total++;
+            this.summary += number.floatValue();
         }
     }
 
@@ -99,13 +110,14 @@ public class NumberPie implements AbstractPie {
         Short count = this.map.get(number.floatValue());
 
         if (count != null) {
+            this.total--;
+            this.summary -= number.floatValue();
+
             if (count == 1) {
                 this.map.remove(number.floatValue());
-                this.total -= count;
                 return true;
             } else {
                 this.map.put(number.floatValue(), (short) (count - 1));
-                this.total -= 1;
                 return false;
             }
         } else {
@@ -132,16 +144,10 @@ public class NumberPie implements AbstractPie {
             Short selfCount = this.map.get(number.floatValue());
 
             if (selfCount != null) {
-                double average = 0.0;
+                double average = this.summary / (double) this.map.size();
                 Set<Double> rank = new TreeSet<>();
-                Collection<Short> values = this.map.values();
 
-                for (short count : values) {
-                    average += count;
-                }
-                average /= this.map.size();
-
-                for (short count : values) {
+                for (short count : this.map.values()) {
                     rank.add(Math.abs(count - average));
                 }
                 average = Math.abs(selfCount - average);
@@ -165,16 +171,10 @@ public class NumberPie implements AbstractPie {
             Short selfCount = this.map.get(number.floatValue());
 
             if (selfCount != null) {
-                double average = 0.0;
+                double average = this.summary / (double) this.map.size();
                 Map<Double, Integer> rank = new HashMap<>();
-                Collection<Short> values = this.map.values();
 
-                for (short count : values) {
-                    average += count;
-                }
-                average /= this.map.size();
-
-                for (short count : values) {
+                for (short count : this.map.values()) {
                     double distance = absolute ? Math.abs(count - average) : count - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }

@@ -7,37 +7,44 @@ import java.util.*;
 public class NumberRank implements AbstractRank {
 
     private final Map<Float, Short> map;
-    private float total;
+    private float total, summary;
 
     public NumberRank() {
         this.map = new TreeMap<>();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
         this.total = 0.0f;
+        this.summary = 0.0f;
     }
 
     @Override
     public Float removeLeastSignificant() {
-        int min = Integer.MAX_VALUE;
-        Float key = null;
+        if (this.map.isEmpty()) {
+            return null;
+        } else {
+            int min = Integer.MAX_VALUE;
+            Float key = null;
 
-        for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
-            if (entry.getValue() < min) {
-                min = entry.getValue();
-                key = entry.getKey();
+            for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
+                if (entry.getValue() < min) {
+                    min = entry.getValue();
+                    key = entry.getKey();
 
-                if (min == 1) {
-                    break;
+                    if (min == 1) {
+                        break;
+                    }
                 }
             }
+            this.map.remove(key);
+            this.total -= min;
+            this.summary -= key;
+            return key;
         }
-        this.map.remove(key);
-        this.total -= min;
-        return key;
     }
 
     @Override
@@ -59,21 +66,19 @@ public class NumberRank implements AbstractRank {
 
     public void addMultiple(Collection<? extends Number> numbers) {
         for (Number number : numbers) {
-            this.map.put(
-                    number.floatValue(),
-                    (short) (this.map.getOrDefault(number.floatValue(), (short) 0) + 1)
-            );
-            this.total++;
+            this.add(number);
         }
     }
 
     public void addMultiple(Map<? extends Number, ? extends Number> map) {
         for (Map.Entry<? extends Number, ? extends Number> entry : map.entrySet()) {
-            this.map.put(
-                    entry.getKey().floatValue(),
-                    (short) (this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue().shortValue())
+            short newCount = (short) Math.min(
+                    this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue().shortValue(),
+                    32767
             );
+            this.map.put(entry.getKey().floatValue(), newCount);
             this.total += entry.getValue().shortValue();
+            this.summary += entry.getKey().floatValue();
         }
     }
 
@@ -86,21 +91,25 @@ public class NumberRank implements AbstractRank {
                     (short) (current + 1)
             );
             this.total++;
+            this.summary += number.floatValue();
         }
     }
 
     public boolean remove(Number number) {
-        short count = this.map.getOrDefault(number.floatValue(), (short) 0);
+        Short count = this.map.get(number.floatValue());
 
-        if (count == 1) {
-            this.map.remove(number.floatValue());
+        if (count != null) {
             this.total--;
-            return true;
-        } else {
-            if (count > 0) {
+            this.summary -= number.floatValue();
+
+            if (count == 1) {
+                this.map.remove(number.floatValue());
+                return true;
+            } else {
                 this.map.put(number.floatValue(), (short) (count - 1));
-                this.total--;
+                return false;
             }
+        } else {
             return false;
         }
     }
@@ -124,16 +133,10 @@ public class NumberRank implements AbstractRank {
             Short selfCount = this.map.get(number.floatValue());
 
             if (selfCount != null) {
-                double average = 0.0;
+                double average = this.summary / (double) this.map.size();
                 Set<Double> rank = new TreeSet<>();
-                Collection<Short> values = this.map.values();
 
-                for (short count : values) {
-                    average += count;
-                }
-                average /= this.map.size();
-
-                for (short count : values) {
+                for (short count : this.map.values()) {
                     rank.add(Math.abs(count - average));
                 }
                 average = Math.abs(selfCount - average);
@@ -157,16 +160,10 @@ public class NumberRank implements AbstractRank {
             Short selfCount = this.map.get(number.floatValue());
 
             if (selfCount != null) {
-                double average = 0.0;
+                double average = this.summary / (double) this.map.size();
                 Map<Double, Integer> rank = new HashMap<>();
-                Collection<Short> values = this.map.values();
 
-                for (short count : values) {
-                    average += count;
-                }
-                average /= this.map.size();
-
-                for (short count : values) {
+                for (short count : this.map.values()) {
                     double distance = absolute ? Math.abs(count - average) : count - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
@@ -198,4 +195,5 @@ public class NumberRank implements AbstractRank {
         }
         return defaultValue;
     }
+
 }

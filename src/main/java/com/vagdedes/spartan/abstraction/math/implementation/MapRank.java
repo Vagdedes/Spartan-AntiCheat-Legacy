@@ -41,28 +41,32 @@ public class MapRank implements AbstractKeyValueRank {
 
     @Override
     public Float removeLeastSignificant() {
-        int min = Integer.MAX_VALUE;
-        Float key = null;
+        if (this.map.isEmpty()) {
+            return null;
+        } else {
+            int min = Integer.MAX_VALUE;
+            Float key = null;
 
-        for (Map.Entry<Float, Map<Integer, Short>> entry : this.map.entrySet()) {
-            if (entry.getValue().size() < min) {
-                min = entry.getValue().size();
-                key = entry.getKey();
+            for (Map.Entry<Float, Map<Integer, Short>> entry : this.map.entrySet()) {
+                if (entry.getValue().size() < min) {
+                    min = entry.getValue().size();
+                    key = entry.getKey();
 
-                if (min == 1) {
-                    int specific = 0;
+                    if (min == 1) {
+                        int specific = 0;
 
-                    for (short count : entry.getValue().values()) {
-                        specific += count;
+                        for (short count : entry.getValue().values()) {
+                            specific += count;
+                        }
+                        this.specificTotal -= specific;
+                        break;
                     }
-                    this.specificTotal -= specific;
-                    break;
                 }
             }
+            this.map.remove(key);
+            this.total -= min;
+            return key;
         }
-        this.map.remove(key);
-        this.total -= min;
-        return key;
     }
 
     @Override
@@ -177,16 +181,10 @@ public class MapRank implements AbstractKeyValueRank {
             Map<Integer, Short> selfMap = this.map.get(number.floatValue());
 
             if (selfMap != null) {
-                double average = 0.0;
+                double average = this.total / (double) this.map.size();
                 Set<Double> rank = new TreeSet<>();
-                Collection<Map<Integer, Short>> values = this.map.values();
 
-                for (Map<Integer, Short> map : values) {
-                    average += map.size();
-                }
-                average /= this.map.size();
-
-                for (Map<Integer, Short> map : values) {
+                for (Map<Integer, Short> map : this.map.values()) {
                     rank.add(Math.abs(map.size() - average));
                 }
                 average = Math.abs(selfMap.size() - average);
@@ -210,16 +208,10 @@ public class MapRank implements AbstractKeyValueRank {
             Map<Integer, Short> selfMap = this.map.get(number.floatValue());
 
             if (selfMap != null) {
-                double average = 0.0;
+                double average = this.total / (double) this.map.size();
                 Map<Double, Integer> rank = new HashMap<>();
-                Collection<Map<Integer, Short>> values = this.map.values();
 
-                for (Map<Integer, Short> map : values) {
-                    average += map.size();
-                }
-                average /= this.map.size();
-
-                for (Map<Integer, Short> map : values) {
+                for (Map<Integer, Short> map : this.map.values()) {
                     double distance = absolute ? Math.abs(map.size() - average) : map.size() - average;
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
