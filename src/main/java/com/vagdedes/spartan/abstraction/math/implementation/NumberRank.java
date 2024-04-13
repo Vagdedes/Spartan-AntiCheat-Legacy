@@ -7,19 +7,17 @@ import java.util.*;
 public class NumberRank implements AbstractRank {
 
     private final Map<Float, Short> map;
-    private float total, summary;
+    private float total;
 
     public NumberRank() {
         this.map = new TreeMap<>();
         this.total = 0.0f;
-        this.summary = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
         this.total = 0.0f;
-        this.summary = 0.0f;
     }
 
     @Override
@@ -42,7 +40,6 @@ public class NumberRank implements AbstractRank {
             }
             this.map.remove(key);
             this.total -= min;
-            this.summary -= key;
             return key;
         }
     }
@@ -78,7 +75,6 @@ public class NumberRank implements AbstractRank {
             );
             this.map.put(entry.getKey().floatValue(), newCount);
             this.total += entry.getValue().shortValue();
-            this.summary += entry.getKey().floatValue();
         }
     }
 
@@ -91,7 +87,6 @@ public class NumberRank implements AbstractRank {
                     (short) (current + 1)
             );
             this.total++;
-            this.summary += number.floatValue();
         }
     }
 
@@ -100,7 +95,6 @@ public class NumberRank implements AbstractRank {
 
         if (count != null) {
             this.total--;
-            this.summary -= number.floatValue();
 
             if (count == 1) {
                 this.map.remove(number.floatValue());
@@ -133,7 +127,7 @@ public class NumberRank implements AbstractRank {
             Short selfCount = this.map.get(number.floatValue());
 
             if (selfCount != null) {
-                double average = this.summary / (double) this.map.size();
+                double average = this.total / (double) this.map.size();
                 Set<Double> rank = new TreeSet<>();
 
                 for (short count : this.map.values()) {
@@ -160,7 +154,7 @@ public class NumberRank implements AbstractRank {
             Short selfCount = this.map.get(number.floatValue());
 
             if (selfCount != null) {
-                double average = this.summary / (double) this.map.size();
+                double average = this.total / (double) this.map.size();
                 Map<Double, Integer> rank = new HashMap<>();
 
                 for (short count : this.map.values()) {

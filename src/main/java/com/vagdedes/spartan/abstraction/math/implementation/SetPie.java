@@ -7,7 +7,7 @@ import java.util.*;
 public class SetPie implements AbstractKeyPie {
 
     private final Map<Float, Set<Integer>> map;
-    private float total, summary;
+    private float total;
 
     public SetPie() {
         this(-1);
@@ -16,20 +16,17 @@ public class SetPie implements AbstractKeyPie {
     public SetPie(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.total = 0.0f;
-        this.summary = 0.0f;
     }
 
     public SetPie(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.total = 0.0f;
-        this.summary = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
         this.total = 0.0f;
-        this.summary = 0.0f;
     }
 
     @Override

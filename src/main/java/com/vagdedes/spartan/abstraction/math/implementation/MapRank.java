@@ -278,16 +278,61 @@ public class MapRank implements AbstractKeyValueRank {
 
     @Override
     public double getSpecificDistance(Number number, int hash, double defaultValue) {
-        return 0; // todo
+        if (!this.map.isEmpty()) {
+            Map<Integer, Short> selfMap = this.map.get(number.floatValue());
+
+            if (selfMap != null && selfMap.size() > 1) {
+                Short selfCount = selfMap.get(hash);
+
+                if (selfCount != null) {
+                    double average = this.specificTotal / (double) selfMap.size();
+                    Set<Double> rank = new TreeSet<>();
+
+                    for (short count : selfMap.values()) {
+                        rank.add(Math.abs(count - average));
+                    }
+                    average = Math.abs(selfCount - average);
+                    int position = 0;
+
+                    for (double distance : rank) {
+                        if (distance == average) {
+                            return position / (double) rank.size();
+                        } else {
+                            position++;
+                        }
+                    }
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getSpecificWaveProbability(Number number, int hash, boolean absolute, double defaultValue) {
+        if (!this.map.isEmpty()) {
+            Map<Integer, Short> selfMap = this.map.get(number.floatValue());
+
+            if (selfMap != null && selfMap.size() > 1) {
+                Short selfCount = selfMap.get(hash);
+
+                if (selfCount != null) {
+                    double average = this.total / (double) selfMap.size();
+                    Map<Double, Integer> rank = new HashMap<>();
+
+                    for (short count : selfMap.values()) {
+                        double distance = absolute ? Math.abs(count - average) : count - average;
+                        rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                    }
+                    average = absolute ? Math.abs(selfCount - average) : selfCount - average;
+                    return rank.get(average) / (double) rank.size();
+                }
+            }
+        }
+        return defaultValue;
     }
 
     @Override
     public double getSpecificPosition(Number number, int hash, double defaultValue) {
-        return 0; // todo
-    }
-
-    @Override
-    public double getSpecificWaveProbability(Number number, boolean absolute, double defaultValue) {
         return 0; // todo
     }
 

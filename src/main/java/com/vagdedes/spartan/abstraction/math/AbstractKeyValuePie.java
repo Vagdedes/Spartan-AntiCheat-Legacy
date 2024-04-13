@@ -10,6 +10,6 @@ public interface AbstractKeyValuePie extends AbstractKeyPie {
 
     double getSpecificDistance(Number number, int hash, double defaultValue);
 
-    double getSpecificWaveProbability(Number number, boolean absolute, double defaultValue);
+    double getSpecificWaveProbability(Number number, int hash, boolean absolute, double defaultValue);
 }
 
