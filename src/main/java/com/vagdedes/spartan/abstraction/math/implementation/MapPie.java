@@ -7,7 +7,7 @@ import java.util.*;
 public class MapPie implements AbstractKeyValuePie {
 
     private final Map<Float, Map<Integer, Short>> map;
-    private float specificTotal;
+    private float total, specificTotal;
 
     public MapPie() {
         this(-1);
@@ -15,17 +15,20 @@ public class MapPie implements AbstractKeyValuePie {
 
     public MapPie(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
+        this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
 
     public MapPie(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
+        this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
+        this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
 
@@ -54,6 +57,7 @@ public class MapPie implements AbstractKeyValuePie {
                 }
             }
             this.map.remove(key);
+            this.total -= min;
             return key;
         }
     }
@@ -70,12 +74,7 @@ public class MapPie implements AbstractKeyValuePie {
 
     @Override
     public int getTotal() {
-        return this.map.size();
-    }
-
-    @Override
-    public int getSpecificTotal() {
-        return (int) specificTotal;
+        return (int) this.total;
     }
 
     // Separator
@@ -94,6 +93,7 @@ public class MapPie implements AbstractKeyValuePie {
 
             if (value == null) {
                 map.put(hash, (short) 1);
+                this.total++;
                 this.specificTotal++;
             } else if (value < 32767) {
                 map.put(hash, (short) (value + 1));
@@ -103,6 +103,7 @@ public class MapPie implements AbstractKeyValuePie {
             map = new HashMap<>();
             map.put(hash, (short) 1);
             this.map.put(number.floatValue(), map);
+            this.total++;
             this.specificTotal++;
         }
     }
@@ -114,16 +115,17 @@ public class MapPie implements AbstractKeyValuePie {
             Short value = map.get(hash);
 
             if (value != null) {
-                this.specificTotal--;
-
                 if (value == 1) {
                     map.remove(hash);
 
                     if (map.isEmpty()) {
                         this.map.remove(number.floatValue());
                     }
+                    this.total--;
+                    this.specificTotal--;
                 } else {
                     map.put(hash, (short) (value - 1));
+                    this.specificTotal--;
                 }
                 return true;
             } else {
@@ -138,7 +140,7 @@ public class MapPie implements AbstractKeyValuePie {
 
     @Override
     public double getContribution(Number number, double defaultValue) {
-        return 1.0 - (1.0 / (this.map.size() + 1.0));
+        return 1.0 - (1.0 / (this.total + 1.0));
     }
 
     @Override
@@ -146,7 +148,7 @@ public class MapPie implements AbstractKeyValuePie {
         Map<Integer, Short> map = this.map.get(number.floatValue());
 
         if (map != null) {
-            return 1.0 - (1.0 / (this.map.size() + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0));
+            return 1.0 - (1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0));
         } else {
             return defaultValue;
         }
@@ -155,7 +157,7 @@ public class MapPie implements AbstractKeyValuePie {
     @Override
     public double getRatio(Number number, double defaultValue) {
         Map<Integer, Short> map = this.map.get(number.floatValue());
-        return map != null ? map.size() / (double) this.map.size() : defaultValue;
+        return map != null ? map.size() / this.total : defaultValue;
     }
 
     @Override
@@ -274,7 +276,7 @@ public class MapPie implements AbstractKeyValuePie {
                 Short selfCount = selfMap.get(hash);
 
                 if (selfCount != null) {
-                    double average = this.specificTotal / (double) selfMap.size();
+                    double average = this.total / (double) selfMap.size();
                     Map<Double, Integer> rank = new HashMap<>();
 
                     for (short count : selfMap.values()) {

@@ -7,8 +7,8 @@ import java.util.*;
 public class MapRank implements AbstractKeyValueRank {
 
     private final Map<Float, Map<Integer, Short>> map;
-    private final Map<Integer, Integer> rank, specificRank;
-    private float specificTotal;
+    private final Map<Integer, Integer> rank, uniqueRank;
+    private float total, specificTotal;
 
     public MapRank() {
         this(-1);
@@ -17,14 +17,16 @@ public class MapRank implements AbstractKeyValueRank {
     public MapRank(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.rank = new TreeMap<>();
-        this.specificRank = new TreeMap<>();
+        this.uniqueRank = new TreeMap<>();
+        this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
 
     public MapRank(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.rank = new TreeMap<>();
-        this.specificRank = new TreeMap<>();
+        this.uniqueRank = new TreeMap<>();
+        this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
 
@@ -32,7 +34,8 @@ public class MapRank implements AbstractKeyValueRank {
     public void clear() {
         this.map.clear();
         this.rank.clear();
-        this.specificRank.clear();
+        this.uniqueRank.clear();
+        this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
 
@@ -61,6 +64,7 @@ public class MapRank implements AbstractKeyValueRank {
                 }
             }
             this.map.remove(key);
+            this.total -= min;
             return key;
         }
     }
@@ -77,12 +81,7 @@ public class MapRank implements AbstractKeyValueRank {
 
     @Override
     public int getTotal() {
-        return this.map.size();
-    }
-
-    @Override
-    public int getSpecificTotal() {
-        return (int) specificTotal;
+        return (int) this.total;
     }
 
     // Separator
@@ -100,21 +99,27 @@ public class MapRank implements AbstractKeyValueRank {
             Short value = map.get(hash);
 
             if (value == null) {
-                this.decreaseRank(map.size());
                 map.put(hash, (short) 1);
-                this.increaseRank(map.size());
+                this.total++;
                 this.specificTotal++;
+                this.decreaseRank(map.size() - 1);
+                this.increaseRank(map.size());
+                this.decreaseUniqueRank(map.size() - 1);
+                this.increaseUniqueRank(map.size());
             } else if (value < 32767) {
                 map.put(hash, (short) (value + 1));
-                this.specificTotal++;
+                this.total++;
+                this.decreaseRank(value);
+                this.increaseRank(value + 1);
             }
         } else {
             map = new HashMap<>();
             map.put(hash, (short) 1);
             this.map.put(number.floatValue(), map);
+            this.total++;
             this.specificTotal++;
             this.increaseRank(1);
-            this.increaseSpecificRank(1);
+            this.increaseUniqueRank(1);
         }
     }
 
@@ -125,16 +130,17 @@ public class MapRank implements AbstractKeyValueRank {
             Short value = map.get(hash);
 
             if (value != null) {
-                this.specificTotal--;
-
                 if (value == 1) {
                     map.remove(hash);
 
                     if (map.isEmpty()) {
                         this.map.remove(number.floatValue());
                     }
+                    this.total--;
+                    this.specificTotal--;
                 } else {
                     map.put(hash, (short) (value - 1));
+                    this.total--;
                 }
                 return true;
             } else {
@@ -149,7 +155,7 @@ public class MapRank implements AbstractKeyValueRank {
 
     @Override
     public double getContribution(Number number, double defaultValue) {
-        return 1.0 - (1.0 / (this.map.size() + 1.0));
+        return 1.0 - (1.0 / (this.total + 1.0));
     }
 
     @Override
@@ -157,7 +163,7 @@ public class MapRank implements AbstractKeyValueRank {
         Map<Integer, Short> map = this.map.get(number.floatValue());
 
         if (map != null) {
-            return 1.0 - (1.0 / (this.map.size() + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0));
+            return 1.0 - (1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0));
         } else {
             return defaultValue;
         }
@@ -166,7 +172,7 @@ public class MapRank implements AbstractKeyValueRank {
     @Override
     public double getRatio(Number number, double defaultValue) {
         Map<Integer, Short> map = this.map.get(number.floatValue());
-        return map != null ? map.size() / (double) this.map.size() : defaultValue;
+        return map != null ? map.size() / this.total : defaultValue;
     }
 
     @Override
@@ -228,12 +234,12 @@ public class MapRank implements AbstractKeyValueRank {
 
                 if (next.getKey() == find) {
                     if (next.getValue() > 1) {
-                        return (position + (next.getValue() / 2.0)) / (double) this.map.size();
+                        return (position + (next.getValue() / 2.0)) / this.total;
                     } else {
-                        return (position + 1) / (double) this.map.size();
+                        return (position + 1.0) / this.total;
                     }
                 } else if (next.getKey() > find) {
-                    return position / (double) this.map.size();
+                    return position / this.total;
                 }
                 position += next.getValue();
             }
@@ -310,7 +316,7 @@ public class MapRank implements AbstractKeyValueRank {
                 Short selfCount = selfMap.get(hash);
 
                 if (selfCount != null) {
-                    double average = this.specificTotal / (double) selfMap.size();
+                    double average = this.total / (double) selfMap.size();
                     Map<Double, Integer> rank = new HashMap<>();
 
                     for (short count : selfMap.values()) {
@@ -327,34 +333,7 @@ public class MapRank implements AbstractKeyValueRank {
 
     @Override
     public double getSpecificPosition(Number number, int hash, double defaultValue) {
-        if (!this.map.isEmpty()) {
-            Map<Integer, Short> selfMap = this.map.get(number.floatValue());
-
-            if (selfMap != null && selfMap.size() > 1) {
-                Short selfCount = selfMap.get(hash);
-
-                if (selfCount != null) {
-                    int find = selfCount;
-                    Iterator<Map.Entry<Integer, Integer>> iterator = specificRank.entrySet().iterator();
-                    int position = 0;
-
-                    while (iterator.hasNext()) {
-                        Map.Entry<Integer, Integer> next = iterator.next();
-
-                        if (next.getKey() == find) {
-                            if (next.getValue() > 1) {
-                                return (position + (next.getValue() / 2.0)) / this.specificTotal;
-                            } else {
-                                return (position + 1) / this.specificTotal;
-                            }
-                        } else {
-                            position += next.getValue();
-                        }
-                    }
-                }
-            }
-        }
-        return defaultValue;
+        return 0; // todo
     }
 
     // Separator
@@ -367,12 +346,12 @@ public class MapRank implements AbstractKeyValueRank {
         this.rank.put(size, this.rank.get(size) - 1);
     }
 
-    private void increaseSpecificRank(int size) {
-        this.specificRank.put(size, this.specificRank.getOrDefault(size, 0) + 1);
+    private void increaseUniqueRank(int size) {
+        this.uniqueRank.put(size, this.uniqueRank.getOrDefault(size, 0) + 1);
     }
 
-    private void decreaseSpecificRank(int size) {
-        this.specificRank.put(size, this.specificRank.get(size) - 1);
+    private void decreaseUniqueRank(int size) {
+        this.uniqueRank.put(size, this.uniqueRank.get(size) - 1);
     }
 
 }
