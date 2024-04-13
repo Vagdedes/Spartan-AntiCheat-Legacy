@@ -7,7 +7,6 @@ import java.util.*;
 public class SetPie implements AbstractKeyPie {
 
     private final Map<Float, Set<Integer>> map;
-    private float total;
 
     public SetPie() {
         this(-1);
@@ -15,18 +14,15 @@ public class SetPie implements AbstractKeyPie {
 
     public SetPie(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
-        this.total = 0.0f;
     }
 
     public SetPie(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
-        this.total = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
-        this.total = 0.0f;
     }
 
     @Override
@@ -48,7 +44,6 @@ public class SetPie implements AbstractKeyPie {
                 }
             }
             this.map.remove(key);
-            this.total -= min;
             return key;
         }
     }
@@ -65,7 +60,7 @@ public class SetPie implements AbstractKeyPie {
 
     @Override
     public int getTotal() {
-        return (int) this.total;
+        return this.map.size();
     }
 
     // Separator
@@ -80,14 +75,11 @@ public class SetPie implements AbstractKeyPie {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null) {
-            if (set.add(hash)) {
-                this.total++;
-            }
+            set.add(hash);
         } else {
             set = new HashSet<>();
             set.add(hash);
             this.map.put(number.floatValue(), set);
-            this.total++;
         }
     }
 
@@ -98,7 +90,6 @@ public class SetPie implements AbstractKeyPie {
             if (set.isEmpty()) {
                 this.map.remove(number.floatValue());
             }
-            this.total--;
             return true;
         } else {
             return false;
@@ -109,7 +100,7 @@ public class SetPie implements AbstractKeyPie {
 
     @Override
     public double getContribution(Number number, double defaultValue) {
-        return 1.0 - (1.0 / (this.total + 1.0));
+        return 1.0 - (1.0 / (this.map.size() + 1.0));
     }
 
     @Override
@@ -117,7 +108,7 @@ public class SetPie implements AbstractKeyPie {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null) {
-            return 1.0 - (1.0 / (this.total + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0));
+            return 1.0 - (1.0 / (this.map.size() + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0));
         } else {
             return defaultValue;
         }
@@ -126,7 +117,7 @@ public class SetPie implements AbstractKeyPie {
     @Override
     public double getRatio(Number number, double defaultValue) {
         Set<Integer> set = this.map.get(number.floatValue());
-        return set != null ? set.size() / this.total : defaultValue;
+        return set != null ? set.size() / (double) this.map.size() : defaultValue;
     }
 
     @Override

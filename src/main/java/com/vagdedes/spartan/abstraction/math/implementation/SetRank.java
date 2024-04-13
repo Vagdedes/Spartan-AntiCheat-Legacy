@@ -8,7 +8,6 @@ public class SetRank implements AbstractKeyRank {
 
     private final Map<Float, Set<Integer>> map;
     private final Map<Integer, Integer> rank;
-    private float total;
 
     public SetRank() {
         this(-1);
@@ -17,20 +16,17 @@ public class SetRank implements AbstractKeyRank {
     public SetRank(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.rank = new TreeMap<>();
-        this.total = 0.0f;
     }
 
     public SetRank(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.rank = new TreeMap<>();
-        this.total = 0.0f;
     }
 
     @Override
     public void clear() {
         this.map.clear();
         this.rank.clear();
-        this.total = 0.0f;
     }
 
     @Override
@@ -53,7 +49,6 @@ public class SetRank implements AbstractKeyRank {
             }
             this.map.remove(key);
             this.decreaseRank(min);
-            this.total -= min;
             return key;
         }
     }
@@ -70,7 +65,7 @@ public class SetRank implements AbstractKeyRank {
 
     @Override
     public int getTotal() {
-        return (int) this.total;
+        return this.map.size();
     }
 
     // Separator
@@ -86,7 +81,6 @@ public class SetRank implements AbstractKeyRank {
 
         if (set != null) {
             if (set.add(hash)) {
-                this.total++;
                 this.decreaseRank(set.size() - 1);
                 this.increaseRank(set.size());
             }
@@ -95,7 +89,6 @@ public class SetRank implements AbstractKeyRank {
             set.add(hash);
             this.map.put(number.floatValue(), set);
             this.increaseRank(1);
-            this.total++;
         }
     }
 
@@ -110,7 +103,6 @@ public class SetRank implements AbstractKeyRank {
             } else {
                 this.increaseRank(set.size());
             }
-            this.total--;
             return true;
         } else {
             return false;
@@ -121,7 +113,7 @@ public class SetRank implements AbstractKeyRank {
 
     @Override
     public double getContribution(Number number, double defaultValue) {
-        return 1.0 - (1.0 / (this.total + 1.0));
+        return 1.0 - (1.0 / (this.map.size() + 1.0));
     }
 
     @Override
@@ -129,7 +121,7 @@ public class SetRank implements AbstractKeyRank {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null) {
-            return 1.0 - (1.0 / (this.total + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0));
+            return 1.0 - (1.0 / (this.map.size() + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0));
         } else {
             return defaultValue;
         }
@@ -138,7 +130,7 @@ public class SetRank implements AbstractKeyRank {
     @Override
     public double getRatio(Number number, double defaultValue) {
         Set<Integer> set = this.map.get(number.floatValue());
-        return set != null ? set.size() / this.total : defaultValue;
+        return set != null ? set.size() / (double) this.map.size() : defaultValue;
     }
 
     @Override
@@ -200,12 +192,12 @@ public class SetRank implements AbstractKeyRank {
 
                 if (next.getKey() == find) {
                     if (next.getValue() > 1) {
-                        return (position + (next.getValue() / 2.0)) / this.total;
+                        return (position + (next.getValue() / 2.0)) / (double) this.map.size();
                     } else {
-                        return (position + 1.0) / this.total;
+                        return (position + 1) / (double) this.map.size();
                     }
                 } else if (next.getKey() > find) {
-                    return position / this.total;
+                    return position / (double) this.map.size();
                 }
                 position += next.getValue();
             }

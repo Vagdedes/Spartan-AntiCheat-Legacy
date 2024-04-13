@@ -2,6 +2,8 @@ package com.vagdedes.spartan.abstraction.math;
 
 public interface AbstractKeyValuePie extends AbstractKeyPie {
 
+    int getSpecificTotal();
+
     double getSpecificContribution(Number number, double defaultValue);
 
     double getSpecificContribution(Number number, int ignoreHash, double defaultValue);
