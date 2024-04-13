@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.math.implementation.SetPie;
-import com.vagdedes.spartan.abstraction.math.implementation.SetRank;
+import com.vagdedes.spartan.abstraction.math.implementation.MapRank;
+import com.vagdedes.spartan.abstraction.math.implementation.SetMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
@@ -19,7 +19,7 @@ public abstract class PatternGeneralization {
                 contribution,
                 significance,
                 similarity,
-                consistency;
+                outcome;
 
         Comparison(PatternGeneralization patternGeneralization,
                    PatternProfile patternProfile,
@@ -27,24 +27,25 @@ public abstract class PatternGeneralization {
                    float pattern,
                    double probability) {
             this.probability = probability;
-            this.contribution = 0.0; // todo
-            this.significance = patternGeneralization.size(pattern);
-            this.similarity = 0.0; // todo
-            this.consistency = 0.0; // todo
+            this.contribution = patternGeneralization.contribution(situation, patternProfile, pattern);
+            this.significance = patternGeneralization.significance(situation, patternProfile, pattern);
+            this.similarity = patternGeneralization.similarity(situation, patternProfile, pattern);
+            this.outcome = (this.probability + this.contribution + this.significance + this.similarity) / 4.0;
         }
 
     }
 
     public final Pattern parent;
     final short scissors;
-    private final SetRank size;
-    private final Map<Integer, SetPie> mass;
+    private final MapRank situationSignificance, patternSignificance;
+    private final Map<Integer, SetMath> mass;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.size = new SetRank(Pattern.globalDataLimitBase, 1.0f);
+        this.situationSignificance = new MapRank(Pattern.globalDataLimitBase, 1.0f);
+        this.patternSignificance = new MapRank(Pattern.globalDataLimitBase, 1.0f);
         this.mass = Collections.synchronizedMap(new HashMap<>());
         this.profilesSynchronizer = new Object();
     }
@@ -52,10 +53,13 @@ public abstract class PatternGeneralization {
     final void clear() {
         synchronized (this.profilesSynchronizer) {
             synchronized (this.mass) {
-                synchronized (this.size) {
-                    this.clearProfiles();
-                    this.mass.clear();
-                    this.size.clear();
+                synchronized (this.situationSignificance) {
+                    synchronized (this.patternSignificance) {
+                        this.clearProfiles();
+                        this.mass.clear();
+                        this.situationSignificance.clear();
+                        this.patternSignificance.clear();
+                    }
                 }
             }
         }
@@ -99,20 +103,20 @@ public abstract class PatternGeneralization {
     // Separator
 
     private void increaseImportance(int situation, PatternProfile patternProfile, float pattern) {
-        if (this.size.getParts() == Pattern.globalDataLimit - 1) {
-            synchronized (this.size) {
-                this.size.removeLeastSignificant();
-                this.size.add(pattern, patternProfile.hash);
+        if (this.situationSignificance.getParts() == Pattern.globalDataLimit - 1) {
+            synchronized (this.situationSignificance) {
+                this.situationSignificance.removeLeastSignificant();
+                this.situationSignificance.add(pattern, patternProfile.hash);
             }
         } else {
-            synchronized (this.size) {
-                this.size.add(pattern, patternProfile.hash);
+            synchronized (this.situationSignificance) {
+                this.situationSignificance.add(pattern, patternProfile.hash);
             }
         }
         synchronized (this.mass) {
-            SetPie pie = this.mass.computeIfAbsent(
+            SetMath pie = this.mass.computeIfAbsent(
                     situation,
-                    k -> new SetPie(Pattern.individualGlobalDataLimitBase, 1.0f)
+                    k -> new SetMath(Pattern.individualGlobalDataLimitBase, 1.0f)
             );
 
             if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
@@ -123,11 +127,11 @@ public abstract class PatternGeneralization {
     }
 
     protected final void decreaseImportance(int situation, int profileHash, float pattern) {
-        synchronized (this.size) {
-            this.size.remove(pattern, profileHash);
+        synchronized (this.situationSignificance) {
+            this.situationSignificance.remove(pattern, profileHash);
         }
         synchronized (this.mass) {
-            SetPie pie = this.mass.get(situation);
+            SetMath pie = this.mass.get(situation);
 
             if (pie != null
                     && pie.remove(pattern, profileHash)
@@ -141,11 +145,15 @@ public abstract class PatternGeneralization {
         this.decreaseImportance(situation, patternProfile.hash, pattern);
     }
 
-    final double size(float pattern) {
+    final double significance(int situation, PatternProfile patternProfile, float pattern) {
         return 0.0; // todo
     }
 
-    final double uniqueContribution(int situation, PatternProfile patternProfile, float pattern) {
+    final double contribution(int situation, PatternProfile patternProfile, float pattern) {
+        return 0.0; // todo
+    }
+
+    final double similarity(int situation, PatternProfile patternProfile, float pattern) {
         return 0.0; // todo
     }
 

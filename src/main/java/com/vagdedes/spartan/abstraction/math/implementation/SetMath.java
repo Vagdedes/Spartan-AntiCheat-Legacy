@@ -4,21 +4,21 @@ import com.vagdedes.spartan.abstraction.math.AbstractKeyPie;
 
 import java.util.*;
 
-public class SetPie implements AbstractKeyPie {
+public class SetMath implements AbstractKeyPie {
 
     private final Map<Float, Set<Integer>> map;
     private float total;
 
-    public SetPie() {
+    public SetMath() {
         this(-1);
     }
 
-    public SetPie(int capacity) {
+    public SetMath(int capacity) {
         this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
         this.total = 0.0f;
     }
 
-    public SetPie(int capacity, float loadFactor) {
+    public SetMath(int capacity, float loadFactor) {
         this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
         this.total = 0.0f;
     }
@@ -157,7 +157,7 @@ public class SetPie implements AbstractKeyPie {
     }
 
     @Override
-    public double getWaveProbability(Number number, boolean absolute, double defaultValue) {
+    public double getSlopeProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
             Set<Integer> selfSet = this.map.get(number.floatValue());
 
@@ -166,11 +166,29 @@ public class SetPie implements AbstractKeyPie {
                 Map<Double, Integer> rank = new HashMap<>();
 
                 for (Set<Integer> set : this.map.values()) {
-                    double distance = absolute ? Math.abs(set.size() - average) : set.size() - average;
+                    double distance = Math.abs(set.size() - average);
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
-                average = absolute ? Math.abs(selfSet.size() - average) : selfSet.size() - average;
-                return rank.get(average) / (double) rank.size();
+                return rank.get(Math.abs(selfSet.size() - average)) / (double) rank.size();
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getCurveProbability(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Set<Integer> selfSet = this.map.get(number.floatValue());
+
+            if (selfSet != null) {
+                double average = this.total / (double) this.map.size();
+                Map<Double, Integer> rank = new HashMap<>();
+
+                for (Set<Integer> set : this.map.values()) {
+                    double distance = set.size() - average;
+                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                }
+                return rank.get(selfSet.size() - average) / (double) rank.size();
             }
         }
         return defaultValue;

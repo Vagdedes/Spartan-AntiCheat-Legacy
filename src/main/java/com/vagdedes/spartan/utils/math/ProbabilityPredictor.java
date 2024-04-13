@@ -1,21 +1,21 @@
 package com.vagdedes.spartan.utils.math;
 
-import com.vagdedes.spartan.abstraction.math.implementation.NumberPie;
+import com.vagdedes.spartan.abstraction.math.implementation.NumberMath;
 
 import java.util.Collection;
 
 public class ProbabilityPredictor {
 
-    public final NumberPie beforePie, afterPie;
+    public final NumberMath beforePie, afterPie;
 
     public ProbabilityPredictor() {
-        this.beforePie = new NumberPie(0);
-        this.afterPie = new NumberPie(0);
+        this.beforePie = new NumberMath(0);
+        this.afterPie = new NumberMath(0);
     }
 
     public ProbabilityPredictor(Collection<Float> totalPatterns, float currentPattern) {
-        this.beforePie = new NumberPie();
-        this.afterPie = new NumberPie();
+        this.beforePie = new NumberMath();
+        this.afterPie = new NumberMath();
 
         if (currentPattern != Float.MIN_VALUE
                 && totalPatterns.size() > 1) {

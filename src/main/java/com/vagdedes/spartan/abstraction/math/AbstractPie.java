@@ -8,7 +8,9 @@ public interface AbstractPie extends AbstractMath {
 
     double getDistance(Number number, double defaultValue);
 
-    double getWaveProbability(Number number, boolean absolute, double defaultValue);
+    double getSlopeProbability(Number number, double defaultValue);
+
+    double getCurveProbability(Number number, double defaultValue);
 
 }
 

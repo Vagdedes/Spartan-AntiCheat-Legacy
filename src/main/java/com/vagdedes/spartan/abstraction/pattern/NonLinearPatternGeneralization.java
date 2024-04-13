@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.math.implementation.NumberPie;
+import com.vagdedes.spartan.abstraction.math.implementation.NumberMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ import java.util.Map;
 public class NonLinearPatternGeneralization extends PatternGeneralization { // todo change
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
-    private final Map<Integer, NumberPie> correlations;
+    private final Map<Integer, NumberMath> correlations;
 
     protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
@@ -42,9 +42,9 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
 
         if (patternProfile.repetition.canUse(pattern)) {
             synchronized (this.correlations) {
-                NumberPie pie = this.correlations.computeIfAbsent(
+                NumberMath pie = this.correlations.computeIfAbsent(
                         situation,
-                        k -> new NumberPie(Pattern.individualGlobalDataLimitBase, 1.0f)
+                        k -> new NumberMath(Pattern.individualGlobalDataLimitBase, 1.0f)
                 );
                 if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
                     this.decreaseImportance(
@@ -79,7 +79,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
             }
         }
         synchronized (this.correlations) {
-            NumberPie pie = this.correlations.get(situation);
+            NumberMath pie = this.correlations.get(situation);
 
             if (pie == null) {
                 return new Comparison(
@@ -104,7 +104,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     @Override
     protected void customDeletePattern(int situation, float pattern) {
         synchronized (this.correlations) {
-            NumberPie pie = this.correlations.get(situation);
+            NumberMath pie = this.correlations.get(situation);
 
             if (pie != null
                     && pie.remove(pattern)

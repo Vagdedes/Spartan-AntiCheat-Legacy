@@ -149,7 +149,7 @@ public class NumberRank implements AbstractRank {
     }
 
     @Override
-    public double getWaveProbability(Number number, boolean absolute, double defaultValue) {
+    public double getSlopeProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
             Short selfCount = this.map.get(number.floatValue());
 
@@ -158,11 +158,29 @@ public class NumberRank implements AbstractRank {
                 Map<Double, Integer> rank = new HashMap<>();
 
                 for (short count : this.map.values()) {
-                    double distance = absolute ? Math.abs(count - average) : count - average;
+                    double distance = Math.abs(count - average);
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
-                average = absolute ? Math.abs(selfCount - average) : selfCount - average;
-                return rank.get(average) / (double) rank.size();
+                return rank.get(Math.abs(selfCount - average)) / (double) rank.size();
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getCurveProbability(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Short selfCount = this.map.get(number.floatValue());
+
+            if (selfCount != null) {
+                double average = this.total / (double) this.map.size();
+                Map<Double, Integer> rank = new HashMap<>();
+
+                for (short count : this.map.values()) {
+                    double distance = count - average;
+                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                }
+                return rank.get(selfCount - average) / (double) rank.size();
             }
         }
         return defaultValue;

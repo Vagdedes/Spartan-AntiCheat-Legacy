@@ -169,7 +169,7 @@ public class SetRank implements AbstractKeyRank {
     }
 
     @Override
-    public double getWaveProbability(Number number, boolean absolute, double defaultValue) {
+    public double getSlopeProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
             Set<Integer> selfSet = this.map.get(number.floatValue());
 
@@ -178,11 +178,29 @@ public class SetRank implements AbstractKeyRank {
                 Map<Double, Integer> rank = new HashMap<>();
 
                 for (Set<Integer> set : this.map.values()) {
-                    double distance = absolute ? Math.abs(set.size() - average) : set.size() - average;
+                    double distance = Math.abs(set.size() - average);
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
-                average = absolute ? Math.abs(selfSet.size() - average) : selfSet.size() - average;
-                return rank.get(average) / (double) rank.size();
+                return rank.get(Math.abs(selfSet.size() - average)) / (double) rank.size();
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public double getCurveProbability(Number number, double defaultValue) {
+        if (this.map.size() > 1) {
+            Set<Integer> selfSet = this.map.get(number.floatValue());
+
+            if (selfSet != null) {
+                double average = this.total / (double) this.map.size();
+                Map<Double, Integer> rank = new HashMap<>();
+
+                for (Set<Integer> set : this.map.values()) {
+                    double distance = set.size() - average;
+                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                }
+                return rank.get(selfSet.size() - average) / (double) rank.size();
             }
         }
         return defaultValue;
