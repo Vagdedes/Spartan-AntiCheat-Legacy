@@ -166,7 +166,7 @@ public class NumberPie implements AbstractPie {
 
             if (selfCount != null) {
                 double average = 0.0;
-                Map<Double, Integer> rank = new TreeMap<>();
+                Map<Double, Integer> rank = new HashMap<>();
                 Collection<Short> values = this.map.values();
 
                 for (short count : values) {
@@ -179,15 +179,7 @@ public class NumberPie implements AbstractPie {
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
                 average = absolute ? Math.abs(selfCount - average) : selfCount - average;
-                int position = 0;
-
-                for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
-                    if (entry.getKey() == average) {
-                        return position / (double) rank.size();
-                    } else {
-                        position += entry.getValue();
-                    }
-                }
+                return rank.get(average) / (double) rank.size();
             }
         }
         return defaultValue;

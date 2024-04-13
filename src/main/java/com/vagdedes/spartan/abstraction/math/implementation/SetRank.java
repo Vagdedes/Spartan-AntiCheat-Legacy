@@ -179,7 +179,7 @@ public class SetRank implements AbstractKeyRank {
 
             if (selfSet != null) {
                 double average = 0.0;
-                Map<Double, Integer> rank = new TreeMap<>();
+                Map<Double, Integer> rank = new HashMap<>();
                 Collection<Set<Integer>> values = this.map.values();
 
                 for (Set<Integer> set : values) {
@@ -192,15 +192,7 @@ public class SetRank implements AbstractKeyRank {
                     rank.put(distance, rank.getOrDefault(distance, 0) + 1);
                 }
                 average = absolute ? Math.abs(selfSet.size() - average) : selfSet.size() - average;
-                int position = 0;
-
-                for (Map.Entry<Double, Integer> entry : rank.entrySet()) {
-                    if (entry.getKey() == average) {
-                        return position / (double) rank.size();
-                    } else {
-                        position += entry.getValue();
-                    }
-                }
+                return rank.get(average) / (double) rank.size();
             }
         }
         return defaultValue;
