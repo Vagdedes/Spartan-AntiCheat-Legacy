@@ -12,5 +12,17 @@ public interface AbstractMath {
 
     int getTotal();
 
+    // Separator
+
+    double getContribution(Number number, double defaultValue);
+
+    double getRatio(Number number, double defaultValue);
+
+    double getDistance(Number number, double defaultValue);
+
+    double getSlopeProbability(Number number, double defaultValue);
+
+    double getCurveProbability(Number number, double defaultValue);
+
 }
 

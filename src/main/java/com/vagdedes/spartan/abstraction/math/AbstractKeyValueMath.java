@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.math;
 
-public interface AbstractKeyValuePie extends AbstractKeyPie {
+public interface AbstractKeyValueMath extends AbstractKeyMath {
 
     double getSpecificContribution(Number number, double defaultValue);
 

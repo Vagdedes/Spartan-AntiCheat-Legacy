@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.math.implementation.MapRank;
+import com.vagdedes.spartan.abstraction.math.implementation.MapMath;
 import com.vagdedes.spartan.abstraction.math.implementation.SetMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -37,15 +37,15 @@ public abstract class PatternGeneralization {
 
     public final Pattern parent;
     final short scissors;
-    private final MapRank situationSignificance, patternSignificance;
+    private final MapMath situationSignificance, patternSignificance;
     private final Map<Integer, SetMath> mass;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.situationSignificance = new MapRank(Pattern.globalDataLimitBase, 1.0f);
-        this.patternSignificance = new MapRank(Pattern.globalDataLimitBase, 1.0f);
+        this.situationSignificance = new MapMath(Pattern.globalDataLimitBase, 1.0f);
+        this.patternSignificance = new MapMath(Pattern.globalDataLimitBase, 1.0f);
         this.mass = Collections.synchronizedMap(new HashMap<>());
         this.profilesSynchronizer = new Object();
     }

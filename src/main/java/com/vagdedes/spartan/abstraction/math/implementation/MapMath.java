@@ -1,10 +1,11 @@
 package com.vagdedes.spartan.abstraction.math.implementation;
 
-import com.vagdedes.spartan.abstraction.math.AbstractKeyValuePie;
+
+import com.vagdedes.spartan.abstraction.math.AbstractKeyValueMath;
 
 import java.util.*;
 
-public class MapMath implements AbstractKeyValuePie {
+public class MapMath implements AbstractKeyValueMath {
 
     private final Map<Float, Map<Integer, Short>> map;
     private float total, specificTotal;

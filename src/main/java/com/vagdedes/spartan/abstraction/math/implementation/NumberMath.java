@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.abstraction.math.implementation;
 
-import com.vagdedes.spartan.abstraction.math.AbstractPie;
+import com.vagdedes.spartan.abstraction.math.AbstractMath;
 
 import java.util.*;
 
-public class NumberMath implements AbstractPie {
+public class NumberMath implements AbstractMath {
 
     private final Map<Float, Short> map;
     private float total;
