@@ -115,6 +115,8 @@ public class MapPie implements AbstractKeyValuePie {
             Short value = map.get(hash);
 
             if (value != null) {
+                this.specificTotal--;
+
                 if (value == 1) {
                     map.remove(hash);
 
@@ -122,10 +124,8 @@ public class MapPie implements AbstractKeyValuePie {
                         this.map.remove(number.floatValue());
                     }
                     this.total--;
-                    this.specificTotal--;
                 } else {
                     map.put(hash, (short) (value - 1));
-                    this.specificTotal--;
                 }
                 return true;
             } else {
@@ -276,7 +276,7 @@ public class MapPie implements AbstractKeyValuePie {
                 Short selfCount = selfMap.get(hash);
 
                 if (selfCount != null) {
-                    double average = this.total / (double) selfMap.size();
+                    double average = this.specificTotal / (double) selfMap.size();
                     Map<Double, Integer> rank = new HashMap<>();
 
                     for (short count : selfMap.values()) {
