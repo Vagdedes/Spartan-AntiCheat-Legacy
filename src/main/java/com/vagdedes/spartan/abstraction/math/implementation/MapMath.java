@@ -78,6 +78,18 @@ public class MapMath implements AbstractKeyValueMath {
         return (int) this.total;
     }
 
+    @Override
+    public int getCount(Number number) {
+        Map<Integer, Short> map = this.map.get(number.floatValue());
+        return map == null ? 0 : map.size();
+    }
+
+    @Override
+    public int getSpecificCount(Number number, int hash) {
+        Map<Integer, Short> map = this.map.get(number.floatValue());
+        return map == null ? 0 : map.getOrDefault(hash, (short) 0);
+    }
+
     // Separator
 
     public void addMultiple(Collection<? extends Number> numbers, int hash) {

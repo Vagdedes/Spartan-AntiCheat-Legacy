@@ -68,6 +68,12 @@ public class SetMath implements AbstractKeyMath {
         return (int) this.total;
     }
 
+    @Override
+    public int getCount(Number number) {
+        Set<Integer> set = this.map.get(number.floatValue());
+        return set == null ? 0 : set.size();
+    }
+
     // Separator
 
     public void addMultiple(Collection<? extends Number> numbers, int hash) {

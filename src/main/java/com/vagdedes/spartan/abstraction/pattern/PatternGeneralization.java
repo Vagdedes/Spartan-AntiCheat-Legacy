@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.math.implementation.MapMath;
 import com.vagdedes.spartan.abstraction.math.implementation.SetMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -28,7 +27,7 @@ public abstract class PatternGeneralization {
                    double probability) {
             this.probability = probability;
             this.contribution = patternGeneralization.contribution(situation, patternProfile, pattern);
-            this.significance = patternGeneralization.significance(situation, patternProfile, pattern);
+            this.significance = patternGeneralization.significance(situation, pattern);
             this.similarity = patternGeneralization.similarity(situation, patternProfile, pattern);
             this.outcome = (this.probability + this.contribution + this.significance + this.similarity) / 4.0;
         }
@@ -37,15 +36,15 @@ public abstract class PatternGeneralization {
 
     public final Pattern parent;
     final short scissors;
-    private final MapMath situationSignificance, patternSignificance;
+    private final SetMath situationSignificance, patternSignificance;
     private final Map<Integer, SetMath> mass;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.situationSignificance = new MapMath(Pattern.globalDataLimitBase, 1.0f);
-        this.patternSignificance = new MapMath(Pattern.globalDataLimitBase, 1.0f);
+        this.situationSignificance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
+        this.patternSignificance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
         this.mass = Collections.synchronizedMap(new HashMap<>());
         this.profilesSynchronizer = new Object();
     }
@@ -106,11 +105,21 @@ public abstract class PatternGeneralization {
         if (this.situationSignificance.getParts() == Pattern.globalDataLimit - 1) {
             synchronized (this.situationSignificance) {
                 this.situationSignificance.removeLeastSignificant();
-                this.situationSignificance.add(pattern, patternProfile.hash);
+                this.situationSignificance.add(situation, patternProfile.hash);
             }
         } else {
             synchronized (this.situationSignificance) {
-                this.situationSignificance.add(pattern, patternProfile.hash);
+                this.situationSignificance.add(situation, patternProfile.hash);
+            }
+        }
+        if (this.patternSignificance.getParts() == Pattern.globalDataLimit - 1) {
+            synchronized (this.patternSignificance) {
+                this.patternSignificance.removeLeastSignificant();
+                this.patternSignificance.add(pattern, patternProfile.hash);
+            }
+        } else {
+            synchronized (this.patternSignificance) {
+                this.patternSignificance.add(pattern, patternProfile.hash);
             }
         }
         synchronized (this.mass) {
@@ -145,15 +154,22 @@ public abstract class PatternGeneralization {
         this.decreaseImportance(situation, patternProfile.hash, pattern);
     }
 
-    final double significance(int situation, PatternProfile patternProfile, float pattern) {
+    private double significance(int situation, float pattern) {
+        synchronized (this.situationSignificance) {
+            synchronized (this.patternSignificance) {
+                double profileCount = this.getProfileCount();
+                return ((this.patternSignificance.getCount(pattern) / profileCount)
+                        + (this.situationSignificance.getCount(situation) / profileCount))
+                        / 2.0;
+            }
+        }
+    }
+
+    private double contribution(int situation, PatternProfile patternProfile, float pattern) {
         return 0.0; // todo
     }
 
-    final double contribution(int situation, PatternProfile patternProfile, float pattern) {
-        return 0.0; // todo
-    }
-
-    final double similarity(int situation, PatternProfile patternProfile, float pattern) {
+    private double similarity(int situation, PatternProfile patternProfile, float pattern) {
         return 0.0; // todo
     }
 
@@ -196,5 +212,7 @@ public abstract class PatternGeneralization {
     abstract protected void clearProfiles();
 
     abstract protected Collection<? extends PatternProfile> getProfiles();
+
+    abstract protected int getProfileCount();
 
 }

@@ -12,6 +12,8 @@ public interface AbstractMath {
 
     int getTotal();
 
+    int getCount(Number number);
+
     // Separator
 
     double getContribution(Number number, double defaultValue);

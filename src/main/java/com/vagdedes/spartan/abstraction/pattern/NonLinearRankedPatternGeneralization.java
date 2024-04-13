@@ -125,6 +125,11 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
         return this.profiles.values();
     }
 
+    @Override
+    protected int getProfileCount() {
+        return this.profiles.size();
+    }
+
     // Separator
 
     private NonLinearPatternProfile getLocalProfile(PlayerProfile profile) {

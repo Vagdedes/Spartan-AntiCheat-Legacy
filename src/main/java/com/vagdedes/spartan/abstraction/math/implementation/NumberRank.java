@@ -59,6 +59,11 @@ public class NumberRank implements AbstractRank {
         return (int) this.total;
     }
 
+    @Override
+    public int getCount(Number number) {
+        return this.map.getOrDefault(number.floatValue(), (short) 0);
+    }
+
     // Separator
 
     public void addMultiple(Collection<? extends Number> numbers) {
