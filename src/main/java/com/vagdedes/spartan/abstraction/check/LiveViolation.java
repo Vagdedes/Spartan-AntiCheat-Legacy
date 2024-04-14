@@ -180,7 +180,7 @@ public class LiveViolation {
     private int calculateLevel(Long time) {
         if (time != null) {
             time -= System.currentTimeMillis();
-            return time > 0L ? (int) (time / Check.violationTimeWorth) : 0;
+            return time > 0L ? AlgebraUtils.integerCeil(time / (double) Check.violationTimeWorth) : 0;
         } else {
             return 0;
         }
