@@ -152,7 +152,7 @@ public class Pattern {
     public final String key;
     private final String learningFolder;
     private final Map<Short, PatternGeneralization> generalizations;
-    private boolean load;
+    private boolean loaded, loading;
     private short count;
     private File file;
     private YamlConfiguration configuration;
@@ -165,7 +165,8 @@ public class Pattern {
         this.learningFolder = Register.plugin.getDataFolder()
                 + "/learning/"
                 + key;
-        this.load = false;
+        this.loaded = false;
+        this.loading = false;
         this.generalizations = Collections.synchronizedMap(new HashMap<>(generalizations.length));
 
         for (short generalization : generalizations) {
@@ -254,10 +255,11 @@ public class Pattern {
     }
 
     private synchronized void loadFromFiles() {
-        if (this.load) {
+        if (this.loading) {
             return;
         }
-        this.load = true;
+        this.loading = true;
+        this.loaded = false;
         this.storeFiles();
 
         SpartanBukkit.dataThread.executeWithPriority(() -> {
@@ -356,8 +358,13 @@ public class Pattern {
                     this.generalizations.putAll(generalizations);
                 }
             }
-            this.load = false;
+            this.loaded = true;
+            this.loading = false;
         });
+    }
+
+    boolean isLoaded() {
+        return this.loaded;
     }
 
     private void deleteFromFile(YamlConfiguration configuration, String key) {

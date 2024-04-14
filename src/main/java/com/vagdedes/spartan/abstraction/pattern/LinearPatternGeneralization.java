@@ -101,7 +101,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    public Comparison comparison(PlayerProfile profile, int situation) {
+    public Comparison customComparison(PlayerProfile profile, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
         float after, pattern, before;
 

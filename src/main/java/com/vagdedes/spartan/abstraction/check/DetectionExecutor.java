@@ -95,7 +95,8 @@ public abstract class DetectionExecutor {
                         comparison.probability,
                         comparison.significance,
                         comparison.contribution,
-                        comparison.similarity
+                        comparison.similarity,
+                        comparison.outcome
                 );
             }
         }

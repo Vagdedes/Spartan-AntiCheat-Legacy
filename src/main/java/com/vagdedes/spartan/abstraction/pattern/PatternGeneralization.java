@@ -21,6 +21,14 @@ public abstract class PatternGeneralization {
                 similarity,
                 outcome;
 
+        private Comparison() {
+            this.probability = 1.0;
+            this.contribution = 1.0;
+            this.significance = 1.0;
+            this.similarity = 1.0;
+            this.outcome = 1.0;
+        }
+
         Comparison(PatternGeneralization patternGeneralization,
                    PatternProfile patternProfile,
                    int situation,
@@ -30,7 +38,7 @@ public abstract class PatternGeneralization {
             this.contribution = patternGeneralization.contribution(situation, patternProfile);
             this.significance = patternGeneralization.significance(situation, pattern);
             this.similarity = patternGeneralization.similarity(situation, patternProfile, pattern);
-            this.outcome = (this.probability + this.contribution + this.significance + this.similarity) / 4.0;
+            this.outcome = (this.probability + this.contribution + (this.significance * this.similarity)) / 3.0;
         }
 
     }
@@ -182,11 +190,8 @@ public abstract class PatternGeneralization {
         synchronized (this.contribution) {
             MapMath math = this.contribution.get(situation);
 
-            // 0.0 for specific-distance because there's high likelihood there is data
-            // in distance and not in specific-distance and we don't want to cancel it
-
             if (math != null) {
-                return (1.0 - math.getDistance(patternProfile.hash, 1.0))
+                return (1.0 - math.getDistance(patternProfile.hash, 0.0))
                         * (1.0 - math.getSpecificDistance(patternProfile.hash, Float.hashCode(pattern), 0.0));
             }
         }
@@ -216,7 +221,13 @@ public abstract class PatternGeneralization {
 
     abstract protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern);
 
-    public abstract Comparison comparison(PlayerProfile playerProfile, int situation);
+    public Comparison comparison(PlayerProfile playerProfile, int situation) {
+        return this.parent.isLoaded()
+                ? this.customComparison(playerProfile, situation)
+                : new Comparison();
+    }
+
+    protected abstract Comparison customComparison(PlayerProfile playerProfile, int situation);
 
     // Separator
 

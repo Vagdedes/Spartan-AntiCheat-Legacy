@@ -65,7 +65,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     }
 
     @Override
-    public Comparison comparison(PlayerProfile profile, int situation) {
+    public Comparison customComparison(PlayerProfile profile, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
         float pattern;
 
