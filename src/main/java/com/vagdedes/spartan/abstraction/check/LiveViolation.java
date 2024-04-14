@@ -61,12 +61,19 @@ public class LiveViolation {
             synchronized (this.queue) {
                 Iterator<HackPrevention> iterator = this.queue.values().iterator();
 
-                if (iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     HackPrevention prevention = iterator.next();
 
-                    if (prevention.processed && prevention.stay <= newPrevention.stay) {
+                    if (prevention.processed) {
+                        if (prevention.stay <= newPrevention.stay) {
+                            iterator.remove();
+                            this.queue.putIfAbsent(newPrevention.information.hashCode(), newPrevention);
+                            break;
+                        }
+                    } else if (prevention.expiration < System.currentTimeMillis()) {
                         iterator.remove();
                         this.queue.putIfAbsent(newPrevention.information.hashCode(), newPrevention);
+                        break;
                     }
                 }
             }
