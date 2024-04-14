@@ -23,9 +23,6 @@ public class Pattern {
             globalDataLimitBase = 625,
             individualGlobalDataLimit = 1_024,
             individualGlobalDataLimitBase = 2;
-    static final double
-            defaultRatio = 0.0,
-            defaultPosition = 1.0;
     static final String
             profileOption = "profile",
             patternOption = "pattern",

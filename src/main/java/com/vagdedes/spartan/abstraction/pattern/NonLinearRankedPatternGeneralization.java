@@ -87,7 +87,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         patternProfile,
                         situation,
                         pattern,
-                        Pattern.defaultRatio
+                        0.0
                 );
             } else {
                 return new Comparison(
@@ -95,8 +95,8 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         patternProfile,
                         situation,
                         pattern,
-                        rank.getPosition(pattern, Pattern.defaultPosition)
-                                * rank.getRatio(pattern, Pattern.defaultRatio)
+                        rank.getPosition(pattern, 1.0)
+                                * rank.getRatio(pattern, 0.0)
                 );
             }
         }

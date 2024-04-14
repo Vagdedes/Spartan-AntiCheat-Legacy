@@ -171,23 +171,26 @@ public abstract class PatternGeneralization {
             MapMath math = this.contribution.get(situation);
 
             if (math != null) {
-                return math.getContribution(patternProfile.hash)
-                        * math.getSpecificContribution(patternProfile.hash);
+                return (1.0 - math.getContribution(patternProfile.hash))
+                        * (1.0 - math.getSpecificContribution(patternProfile.hash));
             }
         }
-        return Pattern.defaultRatio;
+        return 0.0;
     }
 
     private double similarity(int situation, PatternProfile patternProfile, float pattern) {
         synchronized (this.contribution) {
             MapMath math = this.contribution.get(situation);
 
+            // 0.0 for specific-distance because there's high likelihood there is data
+            // in distance and not in specific-distance and we don't want to cancel it
+
             if (math != null) {
-                return 1.0 - (math.getDistance(patternProfile.hash, 0.0)
-                        * math.getSpecificDistance(patternProfile.hash, Float.hashCode(pattern), 0.0));
+                return (1.0 - math.getDistance(patternProfile.hash, 1.0))
+                        * (1.0 - math.getSpecificDistance(patternProfile.hash, Float.hashCode(pattern), 0.0));
             }
         }
-        return Pattern.defaultRatio;
+        return 0.0;
     }
 
     // Separator
