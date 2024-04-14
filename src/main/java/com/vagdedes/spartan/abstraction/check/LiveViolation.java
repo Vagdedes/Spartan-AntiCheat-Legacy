@@ -76,9 +76,10 @@ public class LiveViolation {
     public boolean process() {
         HackPrevention hp;
         boolean processed;
+        Iterator<HackPrevention> iterator;
 
         synchronized (this.queue) {
-            Iterator<HackPrevention> iterator = this.queue.values().iterator();
+            iterator = this.queue.values().iterator();
 
             if (iterator.hasNext()) {
                 hp = iterator.next();
@@ -102,7 +103,10 @@ public class LiveViolation {
                 || !disableCause.pointerMatches(hp.information))) {
             Check check = hackType.getCheck();
             InformationAnalysis analysis = new InformationAnalysis(hackType, hp.information);
-            int violations = this.getLevel(analysis.identity) + 1;
+            int violations = Math.max(
+                    this.getLevel(analysis.identity) + 1,
+                    AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
+            );
             PlayerViolation playerViolation = new PlayerViolation(
                     hp.time,
                     hackType,
@@ -151,6 +155,8 @@ public class LiveViolation {
                     hp.handle(player, hackType);
                     return true;
                 }
+            } else {
+                iterator.remove();
             }
         }
         return false;

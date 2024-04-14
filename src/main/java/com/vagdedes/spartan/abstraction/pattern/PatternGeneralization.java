@@ -38,7 +38,7 @@ public abstract class PatternGeneralization {
             this.contribution = patternGeneralization.contribution(situation, patternProfile);
             this.significance = patternGeneralization.significance(situation, pattern);
             this.similarity = patternGeneralization.similarity(situation, patternProfile, pattern);
-            this.outcome = ((this.probability * this.contribution) + (this.significance * this.similarity)) / 2.0;
+            this.outcome = this.probability * this.contribution * this.significance * this.similarity;
         }
 
     }
