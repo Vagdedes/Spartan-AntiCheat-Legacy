@@ -40,7 +40,7 @@ public class GhostHand extends CheckExecutor {
                             && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
                             || BlockUtils.isFullSolid(itb.material))) {
                         cancel("type: break, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
-                                null, 1, false, 0.0, 0);
+                                null, 1);
                     }
                 }
             }
@@ -60,7 +60,7 @@ public class GhostHand extends CheckExecutor {
                             && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
                             || BlockUtils.isFullSolid(itb.material))) {
                         cancel("type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
-                                null, 1, false, 0.0, 0);
+                                null, 1);
                     }
                 }
             }

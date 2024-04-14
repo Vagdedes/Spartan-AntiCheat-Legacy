@@ -143,7 +143,7 @@ public class Pattern extends DetectionExecutor {
             int observations = regression.observations;
 
             if (total >= correlation) {
-                killAura.violateAll("type: pattern(long)"
+                killAura.violateLive("type: pattern(long)"
                         + ", scenario: " + scenario
                         + ", total: " + total
                         + ", r2: " + r2

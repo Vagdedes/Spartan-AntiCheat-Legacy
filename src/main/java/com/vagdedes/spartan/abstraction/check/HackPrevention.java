@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.checks.movement.speed.Speed;
-import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -14,7 +13,6 @@ public class HackPrevention {
 
     final String information;
     final SpartanLocation location;
-    final int violation;
     final boolean groundTeleport;
     boolean processed;
     final double damage;
@@ -26,8 +24,7 @@ public class HackPrevention {
 
     public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose,
                           SpartanLocation location, int cancelTicks, boolean groundTeleport,
-                          double damage, int violation) {
-        // Object Data
+                          double damage) {
         this.time = System.currentTimeMillis();
         this.tick = TPS.getTick(player);
         this.stay = cancelTicks;
@@ -37,19 +34,6 @@ public class HackPrevention {
         this.groundTeleport = groundTeleport;
         this.damage = damage;
         this.processed = false;
-
-        // Redundancy
-        Check check = hackType.getCheck();
-
-        if (violation == 1 && check.type == Enums.CheckType.MOVEMENT) {
-            if (VehicleAccess.hasExitCooldown(player, hackType)) {
-                this.violation = 0;
-            } else {
-                this.violation = violation;
-            }
-        } else {
-            this.violation = violation;
-        }
         player.getViolations(hackType).queue(this);
     }
 

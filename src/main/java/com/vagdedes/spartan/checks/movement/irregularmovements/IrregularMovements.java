@@ -460,7 +460,7 @@ public class IrregularMovements extends CheckExecutor {
         p.getBuffer(hackType).remove(sharedInstance ? instance.split("-", 2)[0].substring(1) : instance);
     }
 
-    boolean cancel(String information, String instance, String extra, int buffer, int time, boolean increaseViolations) {
+    boolean cancel(String information, String instance, String extra, int buffer, int time) {
         boolean prevention, violate, hasBuffer,
                 sharedInstance = instance.charAt(0) == '*';
         int bufferAmount;
@@ -510,17 +510,11 @@ public class IrregularMovements extends CheckExecutor {
                             + information + (extra == null ? "" : ", extra: 1, " + extra),
                     violate ? DetectionLocation.get(player, true) : null,
                     0,
-                    groundTeleport,
-                    0.0,
-                    increaseViolations ? 1 : 0
+                    groundTeleport
             );
             return violate;
         }
         return false;
-    }
-
-    boolean cancel(String information, String instance, String extra, int buffer, int time) {
-        return cancel(information, instance, extra, buffer, time, true);
     }
 
     boolean cancel(String information, String instance, int buffer) {

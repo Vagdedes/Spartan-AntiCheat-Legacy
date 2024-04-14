@@ -9,7 +9,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
@@ -35,33 +34,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 
 public class LiveViolation {
-
-    private static final Map<LiveViolation, PlayerViolation> maxLevel
-            = Cache.store(Collections.synchronizedMap(new LinkedHashMap<>()));
-
-    static {
-        if (Register.isPluginLoaded()) {
-            SpartanBukkit.runRepeatingTask(() -> {
-                if (!maxLevel.isEmpty()) {
-                    synchronized (maxLevel) {
-                        Iterator<Map.Entry<LiveViolation, PlayerViolation>> iterator = maxLevel.entrySet().iterator();
-
-                        while (iterator.hasNext()) {
-                            Map.Entry<LiveViolation, PlayerViolation> entry = iterator.next();
-                            LiveViolation violations = entry.getKey();
-
-                            if (violations.getLevel(entry.getValue().identity) < Check.maxViolationsPerCycle) {
-                                new HackPrevention(violations.player, violations.hackType, entry.getValue().information,
-                                        null, 0, false, 0.0, 1);
-                            } else {
-                                iterator.remove();
-                            }
-                        }
-                    }
-                }
-            }, 1L, 1L);
-        }
-    }
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
@@ -150,44 +122,20 @@ public class LiveViolation {
 
             if (processed) {
                 performNotification(hp.information, playerViolation, false, canPrevent);
-            } else {
-                switch (hp.violation) {
-                    case 2:
-                        // Algorithm will redirect this to case '1'.
-                        synchronized (maxLevel) {
-                            maxLevel.put(this, playerViolation);
-                        }
-                        break;
-                    case 1:
-                        if (enabledDeveloperAPI) {
-                            PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(player.getPlayer(), hackType, violations, hp.information);
-                            Register.manager.callEvent(playerViolationEvent);
+            } else if (enabledDeveloperAPI) {
+                PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(player.getPlayer(), hackType, violations, hp.information);
+                Register.manager.callEvent(playerViolationEvent);
 
-                            if (playerViolationEvent.isCancelled()) {
-                                break;
-                            }
-                        }
-                        player.getProfile().getViolationHistory(hackType).store(playerViolation);
-                        this.increaseLevel(playerViolation.identity);
-                        performNotification(hp.information, playerViolation, true, canPrevent);
-
-                        if (canPrevent) {
-                            this.performPunishments(playerViolation);
-                        }
-                        break;
-                    default:
-                        if (enabledDeveloperAPI) {
-                            PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(player.getPlayer(), hackType, violations, hp.information);
-                            Register.manager.callEvent(playerViolationEvent);
-
-                            if (playerViolationEvent.isCancelled()) {
-                                break;
-                            }
-                        }
-                        player.getProfile().getViolationHistory(hackType).store(playerViolation);
-                        performNotification(hp.information, playerViolation, false, canPrevent);
-                        break;
+                if (playerViolationEvent.isCancelled()) {
+                    return false;
                 }
+            }
+            player.getProfile().getViolationHistory(hackType).store(playerViolation);
+            this.increaseLevel(playerViolation.identity);
+            performNotification(hp.information, playerViolation, true, canPrevent);
+
+            if (canPrevent) {
+                this.performPunishments(playerViolation);
             }
 
             if (canPrevent) {
@@ -297,9 +245,6 @@ public class LiveViolation {
         }
 
         if (event == null || !event.isCancelled()) {
-            synchronized (maxLevel) {
-                maxLevel.remove(this);
-            }
             synchronized (this.level) {
                 this.level.clear();
             }

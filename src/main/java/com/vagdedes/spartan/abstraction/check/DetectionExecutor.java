@@ -41,30 +41,25 @@ public abstract class DetectionExecutor {
     // Separator
 
     protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
-                                boolean groundTeleport, double damage, int violation) {
-        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, violation);
-    }
-
-    protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
                                 boolean groundTeleport, double damage) {
-        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, damage, 1);
+        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, damage);
     }
 
     protected final void cancel(String verbose, SpartanLocation location, int cancelTicks,
                                 boolean groundTeleport) {
-        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, 0.0, 1);
+        new HackPrevention(player, hackType, verbose, location, cancelTicks, groundTeleport, 0.0);
     }
 
-    protected final void cancel(String verbose, SpartanLocation location, int teleportCooldown) {
-        new HackPrevention(player, hackType, verbose, location, teleportCooldown, false, 0.0, 1);
+    protected final void cancel(String verbose, SpartanLocation location, int cancelTicks) {
+        new HackPrevention(player, hackType, verbose, location, cancelTicks, false, 0.0);
     }
 
     protected final void cancel(String verbose, SpartanLocation location) {
-        new HackPrevention(player, hackType, verbose, location, 0, false, 0.0, 1);
+        new HackPrevention(player, hackType, verbose, location, 0, false, 0.0);
     }
 
     protected final void cancel(String verbose) {
-        new HackPrevention(player, hackType, verbose, null, 0, false, 0.0, 1);
+        new HackPrevention(player, hackType, verbose, null, 0, false, 0.0);
     }
 
     // Separator

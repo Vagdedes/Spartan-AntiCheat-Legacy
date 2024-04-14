@@ -93,12 +93,7 @@ public class FastBreak extends CheckExecutor {
                                     + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                     + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]")
                                     + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
-
-                            if (BlockUtils.isSensitive(block.material, originalLimit)) {
-                                cancel(prevention, null, 0, false, 0.0, 0);
-                            } else {
-                                cancel(prevention, null, seconds);
-                            }
+                            cancel(prevention, null, seconds);
                         }
                     }
                 }
@@ -164,12 +159,7 @@ public class FastBreak extends CheckExecutor {
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)
                             + ", limit: " + limit;
-
-                    if (BlockUtils.isSensitive(player, block.material)) {
-                        cancel(prevention, null, 0, false, 0.0, 0);
-                    } else {
-                        cancel(prevention, null, seconds);
-                    }
+                    cancel(prevention, null, seconds);
                 }
                 lastBlock = block;
             }

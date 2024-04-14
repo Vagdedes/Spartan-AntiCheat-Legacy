@@ -86,12 +86,6 @@ public class KillAura extends CheckExecutor {
         player.getViolations(hackType).process();
     }
 
-    void violateAll(String information) {
-        cancel(information,
-                null, 0, false,
-                0.0, 2);
-    }
-
     boolean canRunEntity(LivingEntity entity) {
         if (entity.getVehicle() == null
                 && !CombatUtils.isEntityWide(CombatUtils.getWidthAndHeight(entity)[0])) {
