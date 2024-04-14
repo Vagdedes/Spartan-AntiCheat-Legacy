@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
+import com.vagdedes.spartan.abstraction.math.implementation.MapMath;
 import com.vagdedes.spartan.abstraction.math.implementation.SetMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -37,7 +38,7 @@ public abstract class PatternGeneralization {
     public final Pattern parent;
     final short scissors;
     private final SetMath situationSignificance, patternSignificance;
-    private final Map<Integer, SetMath> mass;
+    private final Map<Integer, MapMath> contribution;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
@@ -45,17 +46,17 @@ public abstract class PatternGeneralization {
         this.scissors = generalization;
         this.situationSignificance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
         this.patternSignificance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
-        this.mass = Collections.synchronizedMap(new HashMap<>());
+        this.contribution = Collections.synchronizedMap(new HashMap<>());
         this.profilesSynchronizer = new Object();
     }
 
     final void clear() {
         synchronized (this.profilesSynchronizer) {
-            synchronized (this.mass) {
+            synchronized (this.contribution) {
                 synchronized (this.situationSignificance) {
                     synchronized (this.patternSignificance) {
                         this.clearProfiles();
-                        this.mass.clear();
+                        this.contribution.clear();
                         this.situationSignificance.clear();
                         this.patternSignificance.clear();
                     }
@@ -122,16 +123,16 @@ public abstract class PatternGeneralization {
                 this.patternSignificance.add(pattern, patternProfile.hash);
             }
         }
-        synchronized (this.mass) {
-            SetMath pie = this.mass.computeIfAbsent(
+        synchronized (this.contribution) {
+            MapMath math = this.contribution.computeIfAbsent(
                     situation,
-                    k -> new SetMath(Pattern.individualGlobalDataLimitBase, 1.0f)
+                    k -> new MapMath(Pattern.individualGlobalDataLimitBase, 1.0f)
             );
 
-            if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
-                pie.removeLeastSignificant();
+            if (math.getParts() == Pattern.individualGlobalDataLimit - 1) {
+                math.removeLeastSignificant();
             }
-            pie.add(pattern, patternProfile.hash);
+            math.add(patternProfile.hash, Float.hashCode(pattern));
         }
     }
 
@@ -139,13 +140,13 @@ public abstract class PatternGeneralization {
         synchronized (this.situationSignificance) {
             this.situationSignificance.remove(pattern, profileHash);
         }
-        synchronized (this.mass) {
-            SetMath pie = this.mass.get(situation);
+        synchronized (this.contribution) {
+            MapMath math = this.contribution.get(situation);
 
-            if (pie != null
-                    && pie.remove(pattern, profileHash)
-                    && pie.isEmpty()) {
-                this.mass.remove(situation);
+            if (math != null
+                    && math.remove(profileHash, Float.hashCode(pattern))
+                    && math.isEmpty()) {
+                this.contribution.remove(situation);
             }
         }
     }
@@ -158,14 +159,21 @@ public abstract class PatternGeneralization {
         synchronized (this.situationSignificance) {
             synchronized (this.patternSignificance) {
                 double profileCount = this.getProfileCount();
-                return ((this.patternSignificance.getCount(pattern) / profileCount)
-                        + (this.situationSignificance.getCount(situation) / profileCount))
-                        / 2.0;
+                return (this.patternSignificance.getCount(pattern) / profileCount)
+                        * (this.situationSignificance.getCount(situation) / profileCount);
             }
         }
     }
 
     private double contribution(int situation, PatternProfile patternProfile, float pattern) {
+        synchronized (this.contribution) {
+            MapMath math = this.contribution.get(situation);
+
+            if (math != null) {
+                return math.getContribution(patternProfile.hash)
+                        * math.getSpecificContribution(patternProfile.hash);
+            }
+        }
         return 0.0; // todo
     }
 

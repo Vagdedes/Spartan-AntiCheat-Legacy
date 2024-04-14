@@ -126,8 +126,14 @@ public class NumberMath implements AbstractMath {
     // Separator
 
     @Override
-    public double getContribution(Number number, double defaultValue) {
+    public double getContribution() {
         return 1.0 - (1.0 / (this.total + 1.0));
+    }
+
+    @Override
+    public double getContribution(Number ignoreNumber) {
+        short count = this.map.getOrDefault(ignoreNumber.floatValue(), (short) 0);
+        return 1.0 - (1.0 / (this.total - count + 1.0));
     }
 
     @Override
