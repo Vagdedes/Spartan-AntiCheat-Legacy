@@ -159,7 +159,7 @@ public class MapMath implements AbstractKeyValueMath {
     @Override
     public double getContribution(Number ignoreNumber) {
         Map<Integer, Short> map = this.map.get(ignoreNumber.floatValue());
-        return 1.0 - (1.0 / (this.total - (map != null ? map.size() : 0) + 1.0));
+        return 1.0 / (this.total - (map != null ? map.size() : 0) + 1.0);
     }
 
     @Override
@@ -167,9 +167,9 @@ public class MapMath implements AbstractKeyValueMath {
         Map<Integer, Short> map = this.map.get(number.floatValue());
 
         if (map != null) {
-            return 1.0 - (1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0));
+            return 1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0);
         } else {
-            return 1.0 - (1.0 / (this.total + 1.0));
+            return 1.0 / (this.total + 1.0);
         }
     }
 
@@ -246,7 +246,7 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getSpecificContribution() {
-        return 1.0 - (1.0 / (this.specificTotal + 1.0));
+        return 1.0 / (this.specificTotal + 1.0);
     }
 
     @Override
@@ -259,9 +259,9 @@ public class MapMath implements AbstractKeyValueMath {
             for (short count : map.values()) {
                 total += count;
             }
-            return 1.0 - (1.0 / (this.specificTotal - total + 1.0));
+            return 1.0 / (this.specificTotal - total + 1.0);
         } else {
-            return 1.0 - (1.0 / (this.specificTotal + 1.0));
+            return 1.0 / (this.specificTotal + 1.0);
         }
     }
 
@@ -271,9 +271,9 @@ public class MapMath implements AbstractKeyValueMath {
 
         if (map != null) {
             Short count = map.get(ignoreHash);
-            return 1.0 - (1.0 / (this.specificTotal + (count != null ? -count : 0.0) + 1.0));
+            return 1.0 / (this.specificTotal + (count != null ? -count : 0.0) + 1.0);
         } else {
-            return 1.0 - (1.0 / (this.specificTotal + 1.0));
+            return 1.0 / (this.specificTotal + 1.0);
         }
     }
 

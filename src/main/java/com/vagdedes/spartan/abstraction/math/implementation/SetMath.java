@@ -115,13 +115,13 @@ public class SetMath implements AbstractKeyMath {
 
     @Override
     public double getContribution() {
-        return 1.0 - (1.0 / (this.total + 1.0));
+        return 1.0 / (this.total + 1.0);
     }
 
     @Override
     public double getContribution(Number ignoreNumber) {
         Set<Integer> set = this.map.get(ignoreNumber.floatValue());
-        return 1.0 - (1.0 / (this.total - (set != null ? set.size() : 0) + 1.0));
+        return 1.0 / (this.total - (set != null ? set.size() : 0) + 1.0);
     }
 
     @Override
@@ -129,9 +129,9 @@ public class SetMath implements AbstractKeyMath {
         Set<Integer> set = this.map.get(number.floatValue());
 
         if (set != null) {
-            return 1.0 - (1.0 / (this.total + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0));
+            return 1.0 / (this.total + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0);
         } else {
-            return 1.0 - (1.0 / (this.total + 1.0));
+            return 1.0 / (this.total + 1.0);
         }
     }
 

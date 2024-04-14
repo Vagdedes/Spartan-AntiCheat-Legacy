@@ -27,7 +27,7 @@ public abstract class PatternGeneralization {
                    float pattern,
                    double probability) {
             this.probability = probability;
-            this.contribution = patternGeneralization.contribution(situation, patternProfile, pattern);
+            this.contribution = patternGeneralization.contribution(situation, patternProfile);
             this.significance = patternGeneralization.significance(situation, pattern);
             this.similarity = patternGeneralization.similarity(situation, patternProfile, pattern);
             this.outcome = (this.probability + this.contribution + this.significance + this.similarity) / 4.0;
@@ -159,13 +159,14 @@ public abstract class PatternGeneralization {
         synchronized (this.situationSignificance) {
             synchronized (this.patternSignificance) {
                 double profileCount = this.getProfileCount();
-                return (this.patternSignificance.getCount(pattern) / profileCount)
-                        * (this.situationSignificance.getCount(situation) / profileCount);
+                return ((1.0 - this.situationSignificance.getCount(situation) / profileCount)
+                        + (1.0 - this.patternSignificance.getCount(pattern) / profileCount))
+                        / 2.0;
             }
         }
     }
 
-    private double contribution(int situation, PatternProfile patternProfile, float pattern) {
+    private double contribution(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
             MapMath math = this.contribution.get(situation);
 
@@ -174,11 +175,19 @@ public abstract class PatternGeneralization {
                         * math.getSpecificContribution(patternProfile.hash);
             }
         }
-        return 0.0; // todo
+        return Pattern.defaultRatio;
     }
 
     private double similarity(int situation, PatternProfile patternProfile, float pattern) {
-        return 0.0; // todo
+        synchronized (this.contribution) {
+            MapMath math = this.contribution.get(situation);
+
+            if (math != null) {
+                return 1.0 - (math.getDistance(patternProfile.hash, 0.0)
+                        * math.getSpecificDistance(patternProfile.hash, Float.hashCode(pattern), 0.0));
+            }
+        }
+        return Pattern.defaultRatio;
     }
 
     // Separator

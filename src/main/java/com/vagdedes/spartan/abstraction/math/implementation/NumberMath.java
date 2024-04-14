@@ -127,13 +127,13 @@ public class NumberMath implements AbstractMath {
 
     @Override
     public double getContribution() {
-        return 1.0 - (1.0 / (this.total + 1.0));
+        return 1.0 / (this.total + 1.0);
     }
 
     @Override
     public double getContribution(Number ignoreNumber) {
         short count = this.map.getOrDefault(ignoreNumber.floatValue(), (short) 0);
-        return 1.0 - (1.0 / (this.total - count + 1.0));
+        return 1.0 / (this.total - count + 1.0);
     }
 
     @Override
