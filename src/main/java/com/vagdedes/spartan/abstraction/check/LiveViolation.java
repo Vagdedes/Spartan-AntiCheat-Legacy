@@ -82,7 +82,7 @@ public class LiveViolation {
 
     public boolean process() {
         HackPrevention hp;
-        boolean processed;
+        boolean processed, removed;
         Iterator<HackPrevention> iterator;
 
         synchronized (this.queue) {
@@ -94,8 +94,10 @@ public class LiveViolation {
 
                 if (hp.expiration < TPS.getTick(player)) {
                     iterator.remove();
+                    removed = true;
                 } else {
                     hp.processed = true;
+                    removed = false;
                 }
             } else {
                 return false;
@@ -136,7 +138,9 @@ public class LiveViolation {
                 Register.manager.callEvent(playerViolationEvent);
 
                 if (playerViolationEvent.isCancelled()) {
-                    iterator.remove();
+                    if (!removed) {
+                        iterator.remove();
+                    }
                     return false;
                 }
             }
@@ -161,10 +165,10 @@ public class LiveViolation {
                     hp.handle(player, hackType);
                     return true;
                 }
-            } else {
+            } else if (!removed) {
                 iterator.remove();
             }
-        } else {
+        } else if (!removed) {
             iterator.remove();
         }
         return false;
