@@ -38,7 +38,7 @@ public abstract class PatternGeneralization {
             this.contribution = patternGeneralization.contribution(situation, patternProfile);
             this.significance = patternGeneralization.significance(situation, pattern);
             this.similarity = patternGeneralization.similarity(situation, patternProfile, pattern);
-            this.outcome = this.probability * this.contribution * this.significance * this.similarity;
+            this.outcome = ((this.probability * this.contribution) + (this.significance * this.similarity)) / 2.0;
         }
 
     }
@@ -167,9 +167,8 @@ public abstract class PatternGeneralization {
         synchronized (this.situationSignificance) {
             synchronized (this.patternSignificance) {
                 double profileCount = this.getProfileCount();
-                return ((this.situationSignificance.getCount(situation) / profileCount)
-                        + (this.patternSignificance.getCount(pattern) / profileCount))
-                        / 2.0;
+                return (this.situationSignificance.getCount(situation) / profileCount)
+                        * (this.patternSignificance.getCount(pattern) / profileCount);
             }
         }
     }
