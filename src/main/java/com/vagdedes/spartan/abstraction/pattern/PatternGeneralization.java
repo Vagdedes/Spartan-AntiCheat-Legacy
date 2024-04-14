@@ -164,13 +164,16 @@ public abstract class PatternGeneralization {
     }
 
     private double significance(int situation, float pattern) {
+        double profileCount = this.getProfileCount();
+        int situationCount, patternCount;
+
         synchronized (this.situationSignificance) {
-            synchronized (this.patternSignificance) {
-                double profileCount = this.getProfileCount();
-                return (this.situationSignificance.getCount(situation) / profileCount)
-                        * (this.patternSignificance.getCount(pattern) / profileCount);
-            }
+            situationCount = this.situationSignificance.getCount(situation);
         }
+        synchronized (this.patternSignificance) {
+            patternCount = this.patternSignificance.getCount(pattern);
+        }
+        return ((situationCount / profileCount) + (patternCount / profileCount)) / 2.0;
     }
 
     private double contribution(int situation, PatternProfile patternProfile) {
