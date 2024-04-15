@@ -971,7 +971,7 @@ public class Check {
             }
 
             // Return List
-            return new ArrayList<>(commandsFound);
+            return commandsFound;
         }
     }
 }

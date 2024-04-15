@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
-import com.vagdedes.spartan.functionality.connection.cloud.DiscordWebhooks;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
@@ -100,10 +99,10 @@ public class Settings extends ConfigurationBuilder {
 
         addOption(MaximumCheckedPlayers.option, 100); // test server alternative
 
-        addOption(DiscordWebhooks.configurationSection + ".webhook_hex_color", "4caf50");
-        addOption(DiscordWebhooks.configurationSection + ".checks_webhook_url", "");
-        addOption(DiscordWebhooks.configurationSection + ".punishments_webhook_url", "");
-        addOption(DiscordWebhooks.configurationSection + ".communication_webhook_url", "");
+        addOption("Discord.webhook_hex_color", "4caf50");
+        addOption("Discord.checks_webhook_url", "");
+        addOption("Discord.punishments_webhook_url", "");
+        addOption("Discord.communication_webhook_url", "");
 
         if (!local && exists) {
             CrossServerInformation.sendConfiguration(file);

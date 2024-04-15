@@ -283,15 +283,16 @@ public class LiveViolation {
 
         if (check.canPunish) {
             boolean legacy = Config.isLegacy();
-            Collection<String> commands = legacy
+            List<String> commands = new ArrayList<>(legacy
                     ? check.getLegacyCommands(playerViolation.level)
-                    : Config.settings.getPunishmentCommands();
+                    : Config.settings.getPunishmentCommands());
 
             if (!commands.isEmpty()) {
                 Player n = player.getPlayer();
 
                 if (n != null && n.isOnline()) {
                     boolean performed = false, found = false;
+                    int index = 0;
 
                     if (legacy) {
                         boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
@@ -300,6 +301,7 @@ public class LiveViolation {
                             if (command != null) {
                                 found = true;
                                 String modifiedCommand = ConfigUtils.replaceWithSyntax(player, command, hackType);
+                                commands.set(index, modifiedCommand);
 
                                 if (enabledDeveloperAPI) {
                                     PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(n, hackType, modifiedCommand);
@@ -316,6 +318,7 @@ public class LiveViolation {
                                     }
                                 }, 1);
                             }
+                            index++;
                         }
                     } else {
                         Collection<Enums.HackType> detectedHacks = player.getProfile().evidence.calculate(player, playerViolation);
@@ -338,6 +341,7 @@ public class LiveViolation {
                                             command.replaceAll("\\{detections}|\\{detection}", detections),
                                             null
                                     );
+                                    commands.set(index, modifiedCommand);
 
                                     if (enabledDeveloperAPI) {
                                         PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(n, hackType, detectedHacks, modifiedCommand);
@@ -355,16 +359,13 @@ public class LiveViolation {
                                         }
                                     }, 1);
                                 }
+                                index++;
                             }
                         }
                     }
 
                     if (performed) {
-                        String commandsString = StringUtils.toString(commands, "\n");
-
-                        if (!commandsString.isEmpty()) {
-                            player.getProfile().punishmentHistory.increasePunishments(player, commandsString);
-                        }
+                        player.getProfile().punishmentHistory.increasePunishments(player, StringUtils.toString(commands, "\n"));
                     } else if (found && AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-cancelled-punishment-event")) {
                         String notification = "Just a reminder that the punishments of the '" + hackType + "' check were just cancelled via code by a third-party plugin."
                                 + " Please do not reach support for this as it relates only to your server.";

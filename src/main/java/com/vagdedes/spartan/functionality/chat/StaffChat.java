@@ -3,7 +3,7 @@ package com.vagdedes.spartan.functionality.chat;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -36,10 +36,16 @@ public class StaffChat {
                 }
 
                 SpartanLocation location = p.movement.getLocation();
-                CrossServerInformation.queueNotificationWithWebhook(p.uuid, p.name,
-                        location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-                        "Staff Chat", msg,
-                        false);
+                CloudConnections.executeDiscordWebhook(
+                        "communication",
+                        p.uuid,
+                        p.name,
+                        location.getBlockX(),
+                        location.getBlockY(),
+                        location.getBlockZ(),
+                        "Staff Chat",
+                        msg
+                );
                 return true;
             }
         }

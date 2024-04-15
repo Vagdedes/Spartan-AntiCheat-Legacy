@@ -33,7 +33,7 @@ public class PlayerProfile {
         // Separator
         this.uuid = null;
         this.name = name;
-        this.punishmentHistory = new PunishmentHistory(this);
+        this.punishmentHistory = new PunishmentHistory();
         this.playerCombat = new PlayerCombat(this);
         this.evidence = new PlayerEvidence(this);
         this.skull = null;
@@ -67,7 +67,7 @@ public class PlayerProfile {
         this.uuid = player.uuid;
         this.name = player.name;
         this.offlinePlayer = player.getPlayer(); // Attention
-        this.punishmentHistory = new PunishmentHistory(this);
+        this.punishmentHistory = new PunishmentHistory();
         this.playerCombat = new PlayerCombat(this);
         this.evidence = new PlayerEvidence(this);
         this.skull = null;
