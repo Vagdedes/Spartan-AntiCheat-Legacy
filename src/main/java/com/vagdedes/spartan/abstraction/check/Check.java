@@ -9,12 +9,9 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.server.ConfigUtils;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -39,7 +36,6 @@ public class Check {
     public final Enums.HackType hackType;
     private String name;
     public final Enums.CheckType type;
-    private final Map<Integer, Collection<String>> commandsLegacy;
     private final Map<String, Object> options;
     private boolean silent;
     public final boolean handleCancelledEvents;
@@ -245,12 +241,10 @@ public class Check {
 
         this.options = Collections.synchronizedMap(new LinkedHashMap<>());
         this.hackType = hackType;
-        this.commandsLegacy = Collections.synchronizedMap(new LinkedHashMap<>(maxViolationsPerCycle));
         this.ignoredViolations = copy ? ignoredViolations : Collections.synchronizedMap(ignoredViolations);
 
         // Separator
 
-        boolean legacy = Config.isLegacy();
         Object silent = hackType == Enums.HackType.AutoRespawn ? null : getOption("silent", false, false),
                 handleCancelledEvents = getOption("cancelled_event", false, false);
 
@@ -261,73 +255,32 @@ public class Check {
         // Separator
         Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
         this.enabled = new boolean[ResearchEngine.usableDataTypes.length];
+        Object oldOptionValue = getOption("enabled", null, false);
+        boolean hasOldOption = oldOptionValue instanceof Boolean;
 
-        if (legacy) {
-            Object optionValue = getOption("enabled", true, false);
-            boolean boolValue = optionValue instanceof Boolean ? (boolean) optionValue :
+        if (hasOldOption) {
+            setOption("enabled", null);
+        }
+
+        for (Enums.DataType dataType : dataTypes) {
+            Object optionValue = getOption(
+                    "enabled." + dataType.lowerCase,
+                    hasOldOption ? oldOptionValue : true,
+                    false
+            );
+            this.enabled[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
                     optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
-
-            for (Enums.DataType dataType : dataTypes) {
-                this.enabled[dataType.ordinal()] = boolValue;
-            }
-        } else {
-            Object oldOptionValue = getOption("enabled", null, false);
-            boolean hasOldOption = oldOptionValue instanceof Boolean;
-
-            if (hasOldOption) {
-                setOption("enabled", null);
-            }
-
-            for (Enums.DataType dataType : dataTypes) {
-                Object optionValue = getOption(
-                        "enabled." + dataType.lowerCase,
-                        hasOldOption ? oldOptionValue : true,
-                        false
-                );
-                this.enabled[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
-                        optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
-                                optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
-                                        Boolean.parseBoolean(optionValue.toString().toLowerCase());
-            }
         }
         this.supportsLiveEvidence = hackType != Enums.HackType.XRay;
 
         if (this.supportsLiveEvidence) {
-            boolean canPunishByDefault = hackType != Enums.HackType.GhostHand;
-
-            if (legacy) {
-                ConfigurationSection section = Register.plugin.getConfig().getConfigurationSection(hackType + ".punishments");
-                this.canPunish = section != null && !section.getKeys(false).isEmpty();
-
-                if (!this.canPunish && canPunishByDefault) {
-                    File file = Config.getFile();
-
-                    try {
-                        if (file.exists() || file.createNewFile()) {
-                            for (int position = 0; position < Check.maxCommands; position++) {
-                                ConfigUtils.add(
-                                        file,
-                                        hackType + ".punishments." + AlgebraUtils.integerRound(standardIgnoredViolations * standardIgnoredViolations) + "." + (position + 1),
-                                        Config.settings.getDefaultPunishmentCommands().get(position)
-                                );
-                            }
-                        } else {
-                            AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
-                        }
-                    } catch (Exception ex) {
-                        AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
-                        ex.printStackTrace();
-                    }
-                }
-            } else {
-                Object punish = getOption("punish", canPunishByDefault, false);
-                this.canPunish = punish instanceof Boolean ? (boolean) punish :
-                        punish instanceof Long || punish instanceof Integer || punish instanceof Short ? ((long) punish) > 0L :
-                                punish instanceof Double || punish instanceof Float ? ((double) punish) > 0.0 :
-                                        Boolean.parseBoolean(punish.toString().toLowerCase());
-            }
+            Object punish = getOption("punish", hackType != Enums.HackType.GhostHand, false); // GhostHand: can punish by default
+            this.canPunish = punish instanceof Boolean ? (boolean) punish :
+                    punish instanceof Long || punish instanceof Integer || punish instanceof Short ? ((long) punish) > 0L :
+                            punish instanceof Double || punish instanceof Float ? ((double) punish) > 0.0 :
+                                    Boolean.parseBoolean(punish.toString().toLowerCase());
         } else {
             this.canPunish = false;
         }
@@ -433,9 +386,6 @@ public class Check {
     }
 
     public void clearConfigurationCache() {
-        synchronized (commandsLegacy) {
-            commandsLegacy.clear(); // Always clear regardless
-        }
         synchronized (options) {
             options.clear();
         }
@@ -571,10 +521,6 @@ public class Check {
 
                     try {
                         configuration.save(file);
-
-                        if (Config.isLegacy()) {
-                            Register.plugin.reloadConfig();
-                        }
                         options.remove(key); // Remove instead of modifying to be on demand and have the chance to catch changes by the user
                     } catch (Exception ex) {
                         AwarenessNotifications.forcefullySend("Failed to store '" + key + "' option in '" + file.getName() + "' file.");
@@ -671,10 +617,6 @@ public class Check {
                                 try {
                                     configuration.save(file);
                                     options.put(option, def);
-
-                                    if (Config.isLegacy()) {
-                                        Register.plugin.reloadConfig();
-                                    }
                                 } catch (Exception ex) {
                                     AwarenessNotifications.forcefullySend("Failed to store '" + key + "' option in '" + file.getName() + "' file.");
                                     ex.printStackTrace();
@@ -689,10 +631,6 @@ public class Check {
 
                             try {
                                 configuration.save(file);
-
-                                if (Config.isLegacy()) {
-                                    Register.plugin.reloadConfig();
-                                }
                             } catch (Exception ex) {
                                 AwarenessNotifications.forcefullySend("Failed to store '" + key + "' option in '" + file.getName() + "' file.");
                                 ex.printStackTrace();
@@ -880,98 +818,6 @@ public class Check {
                     );
                 }
             }
-        }
-    }
-
-    // Separator
-
-    public Collection<String> getLegacyCommands(int violation) {
-        synchronized (commandsLegacy) {
-            // Cache
-            Collection<String> commandsFound = commandsLegacy.get(violation);
-
-            if (commandsFound != null) {
-                return new ArrayList<>(commandsFound);
-            }
-            // Base Variables
-            FileConfiguration config = Register.plugin.getConfig();
-            commandsFound = new ArrayList<>();
-            String punishmentKey = hackType + ".punishments.";
-
-            // Numbers Handler
-            boolean containsNumber = config.contains(punishmentKey + violation);
-            Set<Integer> mathFound = new HashSet<>(maxMath);
-
-            for (int math = 1; math <= maxMath; math++) {
-                if (math > 1 && config.contains(punishmentKey + violation + "*" + math) || config.contains(punishmentKey + violation + "+" + math)) {
-                    mathFound.add(math);
-                }
-            }
-            boolean containsMath = !mathFound.isEmpty();
-
-            // Search Handler
-            if (containsNumber || containsMath) {
-                for (int command = 1; command <= maxCommands; command++) {
-                    boolean multiply = false;
-                    String punishmentKeyModifiable = punishmentKey + violation;
-                    int mathKey = 0;
-
-                    if (containsMath) {
-                        for (int math : mathFound) {
-                            String key = punishmentKeyModifiable + "*" + math + "." + command;
-
-                            if (config.contains(key)) {
-                                multiply = true;
-                                mathKey = math;
-                                punishmentKeyModifiable = key;
-                                break;
-                            } else {
-                                key = punishmentKeyModifiable + "+" + math + "." + command;
-
-                                if (config.contains(key)) {
-                                    mathKey = math;
-                                    punishmentKeyModifiable = key;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (mathKey == 0) {
-                        punishmentKeyModifiable = punishmentKeyModifiable + "." + command;
-                    }
-
-                    if (config.contains(punishmentKeyModifiable)) {
-                        String commandContent = config.getString(punishmentKeyModifiable);
-
-                        if (commandContent != null && !commandContent.isEmpty()) {
-                            commandsFound.add(commandContent);
-                            commandsLegacy.put(violation, commandsFound);
-
-                            if (mathKey > 0 && violation > 0) {
-                                int violationModifiable = violation;
-
-                                while (violationModifiable <= maxViolationsPerCycle) {
-
-                                    if (multiply) {
-                                        violationModifiable *= mathKey;
-                                    } else {
-                                        violationModifiable += mathKey;
-                                    }
-                                    commandsLegacy.putIfAbsent(violationModifiable, commandsFound);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Empty Handler
-            if (commandsFound.isEmpty()) {
-                commandsLegacy.put(violation, new LinkedList<>());
-            }
-
-            // Return List
-            return commandsFound;
         }
     }
 }

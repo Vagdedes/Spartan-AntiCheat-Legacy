@@ -354,8 +354,6 @@ public class CloudConnections {
                         .append(newLine);
                 softwareInformation.append("Version: ").append(MultiVersion.fork()).append(" ").append(MultiVersion.versionString())
                         .append(newLine);
-                softwareInformation.append("Configuration: ").append(Config.isLegacy() ? "Legacy" : "Normal")
-                        .append(newLine).append(newLine);
 
                 softwareInformation.append("Plugins:").append(newLine)
                         .append(StringUtils.toString(Register.manager.getPlugins(), comma))

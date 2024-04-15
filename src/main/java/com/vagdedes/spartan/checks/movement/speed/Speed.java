@@ -168,6 +168,13 @@ public class Speed extends CheckExecutor {
         Double hor = this.player.movement.getNmsHorizontalDistance();
 
         if (hor == null || hor < sneaking || player.movement.wasInLiquids() || !canDo()) {
+            player.debug(false, false,
+                    1,
+                    hor == null,
+                    hor < sneaking,
+                    player.movement.wasInLiquids(),
+                    !canDo()
+            );
             return false;
         }
         Double ver = this.player.movement.getNmsHorizontalDistance(),
@@ -181,6 +188,7 @@ public class Speed extends CheckExecutor {
                 || oldHor == null
                 || box == null
                 || oldBox == null) {
+            player.debug(false, false, 3);
             return false;
         }
         int air = this.player.movement.getTicksOnAir();

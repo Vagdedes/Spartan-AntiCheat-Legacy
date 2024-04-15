@@ -33,7 +33,7 @@ public class HackPrevention {
                    double damage) {
         this.time = System.currentTimeMillis();
         this.tick = TPS.getTick(player);
-        this.expiration =  this.tick + cancelTicks;
+        this.expiration = this.tick + cancelTicks;
         this.information = verbose;
         this.location = location;
         this.groundTeleport = groundTeleport;
@@ -47,17 +47,16 @@ public class HackPrevention {
     }
 
     boolean handle(SpartanPlayer player) {
-        SpartanLocation preventionFrom = this.location;
         boolean result = false;
 
-        if (preventionFrom != null) {
-            result = player.safeTeleport(preventionFrom);
+        if (this.location != null) {
+            result = player.safeTeleport(this.location);
         }
         if (this.groundTeleport) {
             result |= player.groundTeleport(true);
         }
-        if (damage > 0.0) {
-            result |= player.applyFallDamage(damage);
+        if (this.damage > 0.0) {
+            result |= player.applyFallDamage(this.damage);
         }
         return result;
     }

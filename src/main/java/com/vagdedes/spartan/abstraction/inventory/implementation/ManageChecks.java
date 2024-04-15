@@ -160,41 +160,17 @@ public class ManageChecks extends InventoryMenu {
                 + (silent ? "§a" : "§c") + "Silent §8/ "
                 + (check.canPunish ? "§a" : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");
+        int counter = 0;
 
-        if (Config.isLegacy()) {
-            for (int i = 1; i <= Check.maxViolationsPerCycle; i++) {
-                int counter = 0;
+        for (String s : Config.settings.getPunishmentCommands()) {
+            if (s != null) {
+                counter++;
+                String base = "§7" + counter + "§8:§f ";
 
-                for (String s : check.getLegacyCommands(i)) {
-                    if (s != null) {
-                        counter++;
-                        String base = "§7" + i + "§8:§f ";
-
-                        if (s.length() > 40) {
-                            lore.add(base + s.substring(0, 40));
-                        } else {
-                            lore.add(base + s);
-                        }
-
-                        if (counter >= Check.maxCommands) {
-                            break;
-                        }
-                    }
-                }
-            }
-        } else {
-            int counter = 0;
-
-            for (String s : Config.settings.getPunishmentCommands()) {
-                if (s != null) {
-                    counter++;
-                    String base = "§7" + counter + "§8:§f ";
-
-                    if (s.length() > 40) {
-                        lore.add(base + s.substring(0, 40));
-                    } else {
-                        lore.add(base + s);
-                    }
+                if (s.length() > 40) {
+                    lore.add(base + s.substring(0, 40));
+                } else {
+                    lore.add(base + s);
                 }
             }
         }

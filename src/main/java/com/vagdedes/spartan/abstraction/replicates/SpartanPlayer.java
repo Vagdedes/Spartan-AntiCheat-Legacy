@@ -271,12 +271,12 @@ public class SpartanPlayer {
                 SpartanBukkit.runTask(p, () -> {
                     if (p != null) {
                         // Ground Identification Cache
-                        p.ping = -1;
                         p.movement.setDetectionLocation(false);
                         Player n = p.getPlayer();
 
                         if (n != null) {
                             // Only
+                            p.ping = Latency.ping(n);
                             p.setFrozen(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && n.isFrozen());
                             p.setInvulnerable(p.isFrozen() || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && n.isInvulnerable());
 
@@ -1657,10 +1657,6 @@ public class SpartanPlayer {
     }
 
     public int getPing() {
-        if (ping == -1) {
-            Player p = this.getPlayer();
-            return p != null ? (ping = Latency.ping(p)) : 0;
-        }
         return ping;
     }
 }

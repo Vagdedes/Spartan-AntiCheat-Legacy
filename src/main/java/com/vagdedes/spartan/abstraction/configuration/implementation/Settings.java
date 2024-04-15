@@ -130,9 +130,9 @@ public class Settings extends ConfigurationBuilder {
         return defaultPunishments;
     }
 
-    public Collection<String> getPunishmentCommands() {
+    public List<String> getPunishmentCommands() {
         if (punishments != null) {
-            return punishments;
+            return new ArrayList<>(punishments);
         } else {
             String sectionString = "Punishments.Commands";
 
@@ -170,9 +170,9 @@ public class Settings extends ConfigurationBuilder {
                         }
                     }
                 }
-                return punishments = list;
+                return new ArrayList<>(punishments = list);
             } else {
-                return punishments = new ArrayList<>(0);
+                return new ArrayList<>(punishments = new ArrayList<>(0));
             }
         }
     }

@@ -542,8 +542,8 @@ public class SpartanPlayerMovement {
 
     public void setDetectionLocation(boolean force) {
         if (force
-                || this.location.world != this.detectionLocation.world
-                || this.location.distance(this.detectionLocation) >= 1.0
+                || !this.location.world.equals(this.detectionLocation.world)
+                || this.location.distance(this.detectionLocation) > PlayerUtils.terminalVelocity
                 && !this.parent.wasDetected(true)) {
             SpartanLocation location = this.location.clone();
             int minHeight = BlockUtils.getMinHeight(location.world);
