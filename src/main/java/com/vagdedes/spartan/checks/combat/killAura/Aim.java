@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the utility and yaw/pitch movement when in an active fight
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -346,7 +347,7 @@ public class Aim extends DetectionExecutor {
                                 averageAccuracy /= tableGeneralizationLevel;
 
                                 if (averageAccuracy < 1.0) {
-                                    if (buffer.start(entityKey, bufferTime) == bufferThreshold) {
+                                    if (buffer.start(entityKey, bufferTime, Check.violationsMeasurementTicks) >= (bufferThreshold / (double) bufferTime)) {
                                         buffer.remove(entityKey);
                                         remove(entity, null);
                                         killAura.violateLive(
@@ -379,7 +380,7 @@ public class Aim extends DetectionExecutor {
             } else {
                 String entityOffRangeKey = "=off-range";
 
-                if (buffer.start(entityOffRangeKey, 20) == 3) {
+                if (buffer.start(entityOffRangeKey, 20, Check.violationsMeasurementTicks) >= 0.15) {
                     buffer.remove(entityOffRangeKey);
                     buffer.remove(entityKey);
                     remove(entity, null);

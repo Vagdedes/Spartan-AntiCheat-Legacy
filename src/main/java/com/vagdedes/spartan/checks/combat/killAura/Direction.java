@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the utility
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -32,8 +33,9 @@ public class Direction extends DetectionExecutor {
                     + ", diagonal-distance: " + distance);
         } else if (widthRatio >= 4.0) {
             Buffer buffer = player.getBuffer(hackType);
+            int ticks = CombatUtils.getFightTicks(player) * 5;
 
-            if (buffer.start(key, CombatUtils.getFightTicks(player) * 5) == 2) {
+            if (buffer.start(key, ticks, Check.violationsMeasurementTicks) >= (2 / (double) ticks)) {
                 buffer.remove(key);
                 cancel("type: direction(beyond-buffered)"
                         + ", entity: " + CombatUtils.entityToString(entity)

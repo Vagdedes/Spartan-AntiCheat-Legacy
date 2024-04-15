@@ -23,7 +23,7 @@ public class Buffer {
             this.reset();
         }
 
-        private double ticksPassed() {
+        private long ticksPassed() {
             return TPS.getTick(this.parent.player) - this.start;
         }
 
@@ -123,6 +123,32 @@ public class Buffer {
         return obj != null ? obj.decrease(amount) : 0;
     }
 
+    public int count(String name, int maxTicks) {
+        BufferChild obj;
+
+        synchronized (storage) {
+            obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
+        }
+        if (obj.ticksPassed() > maxTicks) {
+            obj.reset();
+        }
+        return obj.increase(1);
+    }
+
+    public int getRemainingTicks(String name, int maxTicks) {
+        BufferChild obj;
+
+        synchronized (storage) {
+            obj = storage.get(name);
+        }
+        if (obj == null) {
+            return 0;
+        } else {
+            long ticksPassed = obj.ticksPassed();
+            return ticksPassed > maxTicks ? 0 : (int) (maxTicks - ticksPassed);
+        }
+    }
+
     public double start(String name, int minimumTicks, int maxTicks) {
         BufferChild obj;
 
@@ -138,7 +164,7 @@ public class Buffer {
         } else {
             count = obj.increase(1);
         }
-        return count >= minimumTicks ? count / ticksPassed : 0.0;
+        return count >= minimumTicks ? count / (double) ticksPassed : 0.0;
     }
 
     public boolean canDo(String name) {

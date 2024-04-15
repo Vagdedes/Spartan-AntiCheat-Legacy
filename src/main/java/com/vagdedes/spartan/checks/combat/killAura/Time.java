@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of amount of entities hit in a given time
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -85,8 +86,9 @@ public class Time extends DetectionExecutor {
                         if (time <= dynamicMinimumTime) {
                             dynamicMinimumTime = Math.max(time, 50L);
                             Buffer buffer = player.getBuffer(hackType);
+                            int ticks = 10 * ((int) dynamicMinimumTime);
 
-                            if (buffer.start(subKey, 10 * ((int) dynamicMinimumTime)) == 8) {
+                            if (buffer.start(subKey, ticks, Check.violationsMeasurementTicks) == (8 / (double) ticks)) {
                                 buffer.remove(subKey);
                                 cancel("type: time(consistency)"
                                         + ", width: " + width
@@ -112,7 +114,7 @@ public class Time extends DetectionExecutor {
             String subKey = key + ticks + "=" + entityRequirement,
                     entityKey = subKey + "=" + entity.getEntityId();
             Buffer buffer = player.getBuffer(hackType); // Do not use the combat buffer as the passing of time is very important
-            int remainingTicks = buffer.getRemainingTicks(subKey);
+            int remainingTicks = buffer.getRemainingTicks(subKey, ticks);
             List<Integer> validEntities = new ArrayList<>();
 
             if (remainingTicks == 0) { // Start of the buffer
@@ -135,8 +137,8 @@ public class Time extends DetectionExecutor {
             }
 
             if (validEntities.size() == entityRequirement) {
-                if (buffer.start(entityKey, remainingTicks) == 1 // Entity data always before detection buffer
-                        && buffer.start(subKey, ticks) == entityRequirement) {
+                if (buffer.count(entityKey, remainingTicks) == 1 // Entity data always before detection buffer
+                        && buffer.count(subKey, ticks) == entityRequirement) {
                     for (int id : validEntities) {
                         buffer.remove(subKey + "=" + id);
                     }

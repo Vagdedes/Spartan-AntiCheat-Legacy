@@ -5,6 +5,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -40,8 +41,8 @@ public class Response extends DetectionExecutor {
             if (angleTicks == 0) {
                 int bufferTicks = CombatUtils.getFightTicks(player) * 5;
 
-                if (buffer.start(key + "=run", bufferTicks) == 1
-                        && buffer.start(Response.key, bufferTicks) == 2) {
+                if (buffer.count(key + "=run", bufferTicks) == 1
+                        && buffer.count(Response.key, bufferTicks) == 2) {
                     buffer.clear(Response.key);
                     cancel("type: response"
                             + ", width: " + width
@@ -54,7 +55,10 @@ public class Response extends DetectionExecutor {
     }
 
     void runMove(Buffer buffer) {
-        if (buffer.start(key + "=tick", 1) == 1) { // This algorithm runs regardless of combat, so makes sure it runs once per tick or one's latency
+        Cooldowns cooldowns = player.getCooldowns(hackType);
+
+        if (cooldowns.canDo(key + "=tick")) { // This algorithm runs regardless of combat, so makes sure it runs once per tick or one's latency
+            cooldowns.add(key + "=tick", 1);
             List<Entity> entities = player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 
             if (!entities.isEmpty()) {
@@ -71,9 +75,8 @@ public class Response extends DetectionExecutor {
 
                                 if (Math.abs(utility[0]) <= (CombatUtils.getWidthAndHeight(entity)[0] * 1.5)) {
                                     buffer.remove(removeKey);
-                                    buffer.start(key, bufferTicksMemory);
-                                    buffer.setRemainingTicks(key, bufferTicksMemory);
-                                } else if (buffer.start(removeKey, bufferTicksMemory) >= bufferFails) {
+                                    buffer.count(key, bufferTicksMemory);
+                                } else if (buffer.count(removeKey, bufferTicksMemory) >= bufferFails) {
                                     buffer.remove(removeKey);
                                     buffer.remove(key);
                                 }

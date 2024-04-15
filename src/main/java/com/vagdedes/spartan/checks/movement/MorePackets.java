@@ -95,9 +95,11 @@ public class MorePackets extends CheckExecutor {
                 if (lastTick < 10L) { // First stage
                     if (hackType.getCheck().getBooleanOption("check_instant_movements", true)) {
                         boolean decreasedRequirement;
-                        int tickBuffer = buffer.start(instantMotionKey + "=first", 1),
-                                zeroTickBuffer = lastTick == 0L ? buffer.start(instantMotionKey + "=first=special", 1) : buffer.get(instantMotionKey + "=first=special"),
-                                cases;
+                        double tickBuffer = buffer.count(instantMotionKey + "=first", 1),
+                                zeroTickBuffer = lastTick == 0L
+                                        ? buffer.count(instantMotionKey + "=first=special", 1)
+                                        : buffer.get(instantMotionKey + "=first=special");
+                        int cases;
 
                         if (tickBuffer >= 10) {
                             cases = 1; // Allow the player to pass when they reach the ticks requirement

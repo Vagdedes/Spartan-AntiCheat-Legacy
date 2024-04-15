@@ -56,7 +56,7 @@ public class Distance extends DetectionExecutor {
                                 Buffer buffer = player.getBuffer(hackType);
                                 int ticks = CombatUtils.getFightTicks(player) * 6;
 
-                                if (buffer.start(key, ticks, Check.violationsMeasurementTicks) == (3 / (double) ticks)) {
+                                if (buffer.start(key, ticks, Check.violationsMeasurementTicks) >= (3 / (double) ticks)) {
                                     buffer.remove(key);
                                     cancel("type: distance"
                                             + ", time-passed: " + timePassed

@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the yaw movement in patterns
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -170,8 +171,9 @@ public class Pattern extends DetectionExecutor {
 
             if (total >= correlation) {
                 Buffer buffer = player.getBuffer(hackType);
+                int ticks = (minObservations * 2) * CombatUtils.getFightTicks(player);
 
-                if (buffer.start(key, (minObservations * 2) * CombatUtils.getFightTicks(player)) == 2) { // Once suspected, player has 2 more tries time-wise to complete the 2nd point
+                if (buffer.start(key, ticks, Check.violationsMeasurementTicks) == (2 / (double) ticks)) { // Once suspected, player has 2 more tries time-wise to complete the 2nd point
                     buffer.remove(key);
                     cancel("type: pattern(short)"
                             + ", scenario: " + scenario

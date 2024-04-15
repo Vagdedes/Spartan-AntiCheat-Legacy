@@ -93,7 +93,7 @@ public class NoSwing extends CheckExecutor {
             if (!player.getTimer(hackType).has("animation")) {
                 Buffer buffer = player.getBuffer(hackType);
 
-                if (buffer.start("damage", refreshTime) >= 3) {
+                if (buffer.count("damage", refreshTime) >= 3) {
                     buffer.remove("damage");
                     cancel("type: damage"
                             + ", entity: " + CombatUtils.entityToString(entity)
