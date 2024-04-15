@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
@@ -23,13 +22,9 @@ public class Check {
 
     public static final int
             maxCommands = 10,
-            maxViolationsPerCycle = 100,
-            standardIgnoredViolations = 3;
-    public static final long
-            violationCycleMilliseconds = 60_000L,
-            violationTimeWorth = violationCycleMilliseconds / maxViolationsPerCycle;
-    public static final int violationCycleTicks = (int) (violationCycleMilliseconds / TPS.tickTime);
-    private static final int maxMath = 10;
+            standardIgnoredViolations = 3,
+            violationsMeasurementDuration = 60_000,
+            violationTimeWorth = 600;
 
     // Object
 
@@ -761,7 +756,7 @@ public class Check {
                     }) {
                         ignoredViolations.computeIfAbsent(
                                 data,
-                                k -> new LinkedHashMap<>(maxViolationsPerCycle)
+                                k -> new LinkedHashMap<>()
                         ).put(
                                 entry.getKey(),
                                 AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest

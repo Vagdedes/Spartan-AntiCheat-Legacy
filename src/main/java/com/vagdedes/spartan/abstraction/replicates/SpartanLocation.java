@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -740,11 +738,9 @@ public class SpartanLocation {
             if (playerProfile.isSuspectedOrHacker()) {
                 return getSurroundingLocations(x, y, z, true);
             } else {
-                LiveViolation liveViolation = player.getLastViolation();
                 return getSurroundingLocations(
                         x, y, z,
-                        liveViolation.hasLevel()
-                                || liveViolation.getTicksPassed() <= Check.violationCycleTicks
+                        player.getLastViolation().hasLevel()
                 );
             }
         }

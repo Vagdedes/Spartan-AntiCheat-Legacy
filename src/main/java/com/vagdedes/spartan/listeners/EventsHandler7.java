@@ -112,13 +112,6 @@ public class EventsHandler7 implements Listener {
             p.movement.setLastHeadMovement();
         }
 
-        // Handlers
-        for (Enums.HackType hackType : handledChecks) {
-            if (p.getViolations(hackType).prevent()) {
-                return;
-            }
-        }
-
         // Values
         double preXZ = AlgebraUtils.getPreDistance(to.getX(), from.getX()) + AlgebraUtils.getPreDistance(to.getZ(), from.getZ()),
                 toY = to.getY(),
@@ -147,6 +140,12 @@ public class EventsHandler7 implements Listener {
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, dis);
 
         if (dis == 0.0) {
+            // Handlers
+            for (Enums.HackType hackType : handledChecks) {
+                if (p.getViolations(hackType).prevent()) {
+                    break;
+                }
+            }
             return;
         }
 
@@ -160,6 +159,13 @@ public class EventsHandler7 implements Listener {
         p.getExecutor(Enums.HackType.Speed).run(cancelled);
         p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.WATER);
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
+
+        // Handlers
+        for (Enums.HackType hackType : handledChecks) {
+            if (p.getViolations(hackType).prevent()) {
+                break;
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

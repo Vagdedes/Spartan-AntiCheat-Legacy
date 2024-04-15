@@ -450,7 +450,7 @@ public class ResearchEngine {
                 String[] incomingInformation = CloudConnections.getCrossServerInformation("log", crossServerInformationOption);
 
                 if (incomingInformation.length > 0) {
-                    String key = AntiCheatLogs.syntaxDate(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now()), AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1));
+                    String key = AntiCheatLogs.syntaxDate(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now()), new Random().nextInt());
 
                     for (String information : incomingInformation) {
                         AntiCheatLogs.logInfo(null, information, null, null, null, false, -1);
@@ -477,7 +477,7 @@ public class ResearchEngine {
                         while (rs.next()) {
                             String data = rs.getString("information");
                             String[] all = TimeUtils.getAll(rs.getTimestamp("creation_date"));
-                            String date = "(" + AlgebraUtils.randomInteger(1, Check.maxViolationsPerCycle - 1) + ")[" + all[0] + " " + all[1] + "]";
+                            String date = "(" + new Random().nextInt() + ")[" + all[0] + " " + all[1] + "]";
                             cache.put(date, data);
                             byteSize += date.length() + data.length();
 
@@ -716,7 +716,7 @@ public class ResearchEngine {
             // Separator
 
             if (enoughData()) {
-                double duration = 1000.0; // 1 second
+                double analysisDuration = 1_000.0; // 1 second
 
                 for (Enums.HackType hackType : hackTypes) {
                     hackType.getCheck().clearIgnoredViolations();
@@ -734,7 +734,7 @@ public class ResearchEngine {
                                     // Organize the violations into time period pieces
                                     if (!list.isEmpty()) {
                                         for (PlayerViolation playerViolation : list) {
-                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.time / duration);
+                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.time / analysisDuration);
                                             ViolationAnalysis.TimePeriod timePeriod = averages.get(timeMoment);
 
                                             if (timePeriod == null) {
@@ -769,10 +769,10 @@ public class ResearchEngine {
                                 }
 
                                 // Calculate the average violations for each executed detection and multiply to get the bigger image
-                                duration = Check.violationCycleMilliseconds / duration;
+                                analysisDuration = Check.violationsMeasurementDuration / analysisDuration;
 
                                 for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
-                                    entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * duration);
+                                    entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * analysisDuration);
                                 }
                                 hackType.getCheck().setIgnoredViolations(dataType, violationAverages);
                             } else {

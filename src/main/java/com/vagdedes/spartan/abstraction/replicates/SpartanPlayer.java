@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
@@ -228,7 +227,7 @@ public class SpartanPlayer {
                 for (SpartanPlayer p : players) {
                     if (clearCache) {
                         for (Enums.HackType hackType : Enums.HackType.values()) {
-                            if (p.getViolations(hackType).getTicksPassed() > Check.violationCycleTicks) {
+                            if (p.getViolations(hackType).getTicksPassed() > 1200) {
                                 p.getBuffer(hackType).clear();
                                 p.getTimer(hackType).clear();
                                 p.getDecimals(hackType).clear();
@@ -1483,7 +1482,7 @@ public class SpartanPlayer {
     // Teleport
 
     public boolean safeTeleport(SpartanLocation loc) {
-        if (this.getWorld() == loc.world) {
+        if (this.getWorld().equals(loc.world)) {
             return this.teleport(movement.getLocation());
         } else {
             return false;
@@ -1494,10 +1493,10 @@ public class SpartanPlayer {
         if (!Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
             return false;
         }
-        SpartanLocation location = movement.getLocation();
+        SpartanLocation location = this.movement.getLocation();
 
         if (checkGround
-                && onGroundCustom
+                && this.onGroundCustom
                 && GroundUtils.isOnGround(this, location, 0.0, false, false)) {
             return false;
         }

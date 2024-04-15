@@ -116,7 +116,7 @@ public class ViolationAnalysis {
                             }
                         }
 
-                        if (totalViolations >= Check.maxViolationsPerCycle) {
+                        if (totalViolations >= (ResearchEngine.requiredProfiles * ResearchEngine.requiredProfiles)) {
                             calculateProfileProbability(
                                     playerProfiles,
                                     hackType,
@@ -165,7 +165,7 @@ public class ViolationAnalysis {
 
                 if (!violations.isEmpty()) {
                     for (PlayerViolation violation : violations) {
-                        long time = AlgebraUtils.floorToNearest(violation.time, (int) Check.violationCycleMilliseconds);
+                        long time = AlgebraUtils.floorToNearest(violation.time, Check.violationsMeasurementDuration);
                         PlayerViolation highest = highestViolation.get(time);
 
                         if (highest == null || violation.level > highest.level) {

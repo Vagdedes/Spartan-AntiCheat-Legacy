@@ -46,18 +46,15 @@ public class HackPrevention {
         return tick > this.expiration;
     }
 
-    boolean handle(SpartanPlayer player) {
-        boolean result = false;
-
+    void handle(SpartanPlayer player) {
         if (this.location != null) {
-            result = player.safeTeleport(this.location);
+            player.safeTeleport(this.location);
         }
         if (this.groundTeleport) {
-            result |= player.groundTeleport(true);
+            player.groundTeleport(true);
         }
         if (this.damage > 0.0) {
-            result |= player.applyFallDamage(this.damage);
+            player.applyFallDamage(this.damage);
         }
-        return result;
     }
 }

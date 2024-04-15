@@ -342,7 +342,7 @@ public class CommandExecution implements CommandExecutor {
                             String divisorString = args[1];
 
                             if (AlgebraUtils.validInteger(divisorString)) {
-                                int divisor = Math.min(Integer.parseInt(divisorString), Check.maxViolationsPerCycle);
+                                int divisor = Integer.parseInt(divisorString);
 
                                 if (divisor > 0) {
                                     Integer cachedDivisor = DetectionNotifications.getDivisor(player, true);

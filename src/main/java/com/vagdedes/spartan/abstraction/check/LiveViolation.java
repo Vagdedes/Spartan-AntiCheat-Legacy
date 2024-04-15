@@ -62,12 +62,9 @@ public class LiveViolation {
                     newPrevention.time,
                     hackType,
                     newPrevention.information,
-                    Math.min(
-                            Math.max(
-                                    this.getLevel(analysis.identity) + 1,
-                                    AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
-                            ),
-                            Check.maxViolationsPerCycle
+                    Math.max(
+                            this.getLevel(analysis.identity) + 1,
+                            AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
                     ),
                     analysis
             );
@@ -106,13 +103,6 @@ public class LiveViolation {
             } else {
                 SpartanBukkit.transferTask(player, runnable);
             }
-        } else {
-            player.debug(false, false,
-                    2,
-                    !CheckDelay.hasCooldown(player),
-                    !CloudBase.isPublicInformationCancelled(hackType, newPrevention.information),
-                    (disableCause == null || !disableCause.pointerMatches(newPrevention.information))
-            );
         }
     }
 
@@ -122,9 +112,16 @@ public class LiveViolation {
             if (Config.settings.getBoolean("Important.enable_developer_api")) {
                 CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getPlayer(), hackType);
                 Register.manager.callEvent(checkCancelEvent);
-                return !checkCancelEvent.isCancelled() && this.prevention.handle(player);
+
+                if (!checkCancelEvent.isCancelled()) {
+                    this.prevention.handle(player);
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return this.prevention.handle(player);
+                this.prevention.handle(player);
+                return true;
             }
         } else {
             return false;
@@ -139,9 +136,7 @@ public class LiveViolation {
         synchronized (this.level) {
             time = this.level.get(hash);
         }
-        return time != null
-                ? Math.min(this.calculateLevel(time), Check.maxViolationsPerCycle)
-                : 0;
+        return time != null ? this.calculateLevel(time) : 0;
     }
 
     private int calculateLevel(long time) {
@@ -157,10 +152,6 @@ public class LiveViolation {
 
             for (Long level : this.level.values()) {
                 total += this.calculateLevel(level);
-
-                if (total >= Check.maxViolationsPerCycle) {
-                    return Check.maxViolationsPerCycle;
-                }
             }
             return total;
         } else {
@@ -371,59 +362,57 @@ public class LiveViolation {
     }
 
     private void performNotification(PlayerViolation playerViolation) {
-        if (playerViolation.level < Check.maxViolationsPerCycle) {
-            boolean canPrevent = this.prevention != null,
-                    individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
-            int ignoredViolations = playerViolation.getIgnoredViolations(player);
-            String message = ConfigUtils.replaceWithSyntax(
-                    player,
-                    Config.messages.getColorfulString("detection_notification")
-                            .replace("{info}", playerViolation.information),
-                    hackType
-            );
+        boolean canPrevent = this.prevention != null,
+                individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
+        int ignoredViolations = playerViolation.getIgnoredViolations(player);
+        String message = ConfigUtils.replaceWithSyntax(
+                player,
+                Config.messages.getColorfulString("detection_notification")
+                        .replace("{info}", playerViolation.information),
+                hackType
+        );
 
-            if (canPrevent
-                    || !hackType.getCheck().supportsLiveEvidence) {
-                CrossServerInformation.queueNotification(message, true);
+        if (canPrevent
+                || !hackType.getCheck().supportsLiveEvidence) {
+            CrossServerInformation.queueNotification(message, true);
+        }
+        SpartanLocation location = player.movement.getLocation();
+        String information = Config.getConstruct() + player.name + " failed " + hackType + " (VL: " + playerViolation
+                + ") " + "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString()
+                + "), (I-V: " + (canPrevent ? "-" : "") + ignoredViolations + ") (Silent: "
+                + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
+                + "(Ping: " + player.getPing() + "ms), (TPS: "
+                + AlgebraUtils.cut(TPS.get(player, false), 3) + "), " +
+                "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
+                + location.getBlockZ() + "), (" + playerViolation.information + ")]";
+        AntiCheatLogs.logInfo(player, information, information, null, hackType, true, playerViolation.level);
+
+        // Local Notifications
+        String command = Config.settings.getString("Notifications.message_clickable_command")
+                .replace("{player}", player.name);
+
+        if (individualOnlyNotifications) {
+            Integer divisor = DetectionNotifications.getDivisor(player, false);
+
+            if (DetectionNotifications.canAcceptMessages(player, divisor, false)
+                    && isDivisorValid(playerViolation.level, divisor)) { // Attention
+                ClickableMessage.sendCommand(player, message, "Command: " + command, command);
             }
-            SpartanLocation location = player.movement.getLocation();
-            String information = Config.getConstruct() + player.name + " failed " + hackType + " (VL: " + playerViolation
-                    + ") " + "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString()
-                    + "), (I-V: " + (canPrevent ? "-" : "") + ignoredViolations + ") (Silent: "
-                    + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
-                    + "(Ping: " + player.getPing() + "ms), (TPS: "
-                    + AlgebraUtils.cut(TPS.get(player, false), 3) + "), " +
-                    "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
-                    + location.getBlockZ() + "), (" + playerViolation.information + ")]";
-            AntiCheatLogs.logInfo(player, information, information, null, hackType, true, playerViolation.level);
+        } else {
+            List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers(false);
 
-            // Local Notifications
-            String command = Config.settings.getString("Notifications.message_clickable_command")
-                    .replace("{player}", player.name);
-
-            if (individualOnlyNotifications) {
-                Integer divisor = DetectionNotifications.getDivisor(player, false);
-
-                if (DetectionNotifications.canAcceptMessages(player, divisor, false)
-                        && isDivisorValid(playerViolation.level, divisor)) { // Attention
-                    ClickableMessage.sendCommand(player, message, "Command: " + command, command);
-                }
-            } else {
-                List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers(false);
-
-                if (!notificationPlayers.isEmpty()) {
-                    for (SpartanPlayer staff : notificationPlayers) {
-                        if (isDivisorValid(
-                                playerViolation.level,
-                                NotifyViolation.get(staff, player, ignoredViolations)
-                        )) {
-                            ClickableMessage.sendCommand(
-                                    staff,
-                                    message,
-                                    "Command: " + command,
-                                    command
-                            );
-                        }
+            if (!notificationPlayers.isEmpty()) {
+                for (SpartanPlayer staff : notificationPlayers) {
+                    if (isDivisorValid(
+                            playerViolation.level,
+                            NotifyViolation.get(staff, player, ignoredViolations)
+                    )) {
+                        ClickableMessage.sendCommand(
+                                staff,
+                                message,
+                                "Command: " + command,
+                                command
+                        );
                     }
                 }
             }
