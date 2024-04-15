@@ -26,13 +26,13 @@ import java.util.*;
 public class Aim extends DetectionExecutor {
 
     private final KillAura killAura;
+    private final Map<Integer, DirectionData> map;
 
     Aim(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
+        map = new LinkedHashMap<>(Config.getMaxPlayers());
     }
-
-    private final Map<Integer, DirectionData> map = new LinkedHashMap<>(Config.getMaxPlayers());
 
     private static final double
             maxObservableDistance = CombatUtils.maxHitDistance * 1.5,
@@ -215,10 +215,6 @@ public class Aim extends DetectionExecutor {
     }
 
     // Separator
-
-    void remove() {
-        map.clear();
-    }
 
     void run(LivingEntity entity, SpartanLocation location, double width, double height) {
         getPastDirectionData(

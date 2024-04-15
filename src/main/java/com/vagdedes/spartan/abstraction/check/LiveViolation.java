@@ -59,9 +59,12 @@ public class LiveViolation {
                     && (disableCause == null
                     || !disableCause.pointerMatches(newPrevention.information))) {
                 InformationAnalysis analysis = new InformationAnalysis(hackType, newPrevention.information);
-                int violations = Math.max(
-                        this.getLevel(analysis.identity) + 1,
-                        AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
+                int violations = Math.min(
+                        Math.max(
+                                this.getLevel(analysis.identity) + 1,
+                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
+                        ),
+                        Check.maxViolationsPerCycle
                 );
                 PlayerViolation playerViolation = new PlayerViolation(
                         newPrevention.time,
@@ -102,7 +105,7 @@ public class LiveViolation {
         if (SpartanBukkit.isSynchronised()) {
             runnable.run();
         } else {
-            SpartanBukkit.transferTask(runnable);
+            SpartanBukkit.transferTask(player, runnable);
         }
     }
 
@@ -130,12 +133,16 @@ public class LiveViolation {
         synchronized (this.level) {
             time = this.level.get(hash);
         }
-        return time != null ? this.calculateLevel(time) : 0;
+        return time != null
+                ? Math.min(this.calculateLevel(time), Check.maxViolationsPerCycle)
+                : 0;
     }
 
     private int calculateLevel(long time) {
         time -= System.currentTimeMillis();
-        return time > 0L ? AlgebraUtils.integerCeil(time / (double) Check.violationTimeWorth) : 0;
+        return time > 0L
+                ? AlgebraUtils.integerCeil(time / (double) Check.violationTimeWorth)
+                : 0;
     }
 
     public int getTotalLevel() {
@@ -144,6 +151,10 @@ public class LiveViolation {
 
             for (Long level : this.level.values()) {
                 total += this.calculateLevel(level);
+
+                if (total >= Check.maxViolationsPerCycle) {
+                    return Check.maxViolationsPerCycle;
+                }
             }
             return total;
         } else {
@@ -231,8 +242,8 @@ public class LiveViolation {
                 || !hackType.getCheck().isSilent(player.getWorld().getName()));
     }
 
-    public long getLastTick() {
-        return lastTick;
+    public long getTicksPassed() {
+        return TPS.getTick(player) - lastTick;
     }
 
     // Separator

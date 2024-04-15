@@ -15,22 +15,18 @@ import java.util.List;
 public class Strafe extends DetectionExecutor {
 
     private final KillAura killAura;
+    private Vector oldDirection;
 
     Strafe(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
+        oldDirection = executor.player.movement.getLocation().getDirection();
     }
-
-    private Vector oldDirection = null;
 
     private static final String
             key = Strafe.class.getName(),
             nmsKey = key + "=nms";
     private static final double differenceRequirement = 0.001;
-
-    void remove() {
-        oldDirection = null;
-    }
 
     void run(SpartanLocation location, Buffer buffer) {
         if (player.movement.isMoving(true)
@@ -53,43 +49,40 @@ public class Strafe extends DetectionExecutor {
                                 if (distance > entityWidth // We want the player in a certain distance, otherwise we risk having easily low width
                                         && Math.abs(width) <= Math.min(entityWidth + 0.1, KillAura.normalWidthToPlayerView)) {
                                     Vector direction = location.getDirection();
+                                    Decimals decimals = player.getDecimals(hackType);
+                                    Double nmsDistance = player.movement.getNmsDistance();
+                                    double directionalDistance = direction.distance(oldDirection),
+                                            oldDirectionalDistance = decimals.get(key, 0.0),
+                                            oldNmsDistance = decimals.get(nmsKey, 0.0);
 
-                                    if (oldDirection != null) {
-                                        Decimals decimals = player.getDecimals(hackType);
-                                        Double nmsDistance = player.movement.getNmsDistance();
-                                        double directionalDistance = direction.distance(oldDirection),
-                                                oldDirectionalDistance = decimals.get(key, 0.0),
-                                                oldNmsDistance = decimals.get(nmsKey, 0.0);
+                                    if (directionalDistance > 0.0
+                                            && oldDirectionalDistance > 0.0
+                                            && nmsDistance != null && nmsDistance >= KillAura.universalNmsDistanceRequirement
+                                            && oldNmsDistance >= KillAura.universalNmsDistanceRequirement) {
+                                        double distanceDifference = Math.abs(directionalDistance - oldDirectionalDistance),
+                                                nmsDistanceDifference = Math.abs(nmsDistance - oldNmsDistance);
 
-                                        if (directionalDistance > 0.0
-                                                && oldDirectionalDistance > 0.0
-                                                && nmsDistance != null && nmsDistance >= KillAura.universalNmsDistanceRequirement
-                                                && oldNmsDistance >= KillAura.universalNmsDistanceRequirement) {
-                                            double distanceDifference = Math.abs(directionalDistance - oldDirectionalDistance),
-                                                    nmsDistanceDifference = Math.abs(nmsDistance - oldNmsDistance);
-
-                                            if (distanceDifference < differenceRequirement
-                                                    && nmsDistanceDifference < differenceRequirement
-                                                    && buffer.start(key, 20) == 7) {
-                                                cancel("type: strafe"
-                                                        + ", directional-distance: " + directionalDistance
-                                                        + ", directional-distance-difference: " + distanceDifference
-                                                        + ", nms-distance: " + nmsDistance
-                                                        + ", nms-distance-difference: " + nmsDistanceDifference
-                                                        + ", nms-distance-requirement: " + KillAura.universalNmsDistanceRequirement
-                                                        + ", difference-requirement: " + differenceRequirement
-                                                        + ", diagonal-distance: " + distance
-                                                        + ", width: " + width
-                                                        + ", entity-width: " + entityWidth);
-                                            }
+                                        if (distanceDifference < differenceRequirement
+                                                && nmsDistanceDifference < differenceRequirement
+                                                && buffer.start(key, 20) == 7) {
+                                            cancel("type: strafe"
+                                                    + ", directional-distance: " + directionalDistance
+                                                    + ", directional-distance-difference: " + distanceDifference
+                                                    + ", nms-distance: " + nmsDistance
+                                                    + ", nms-distance-difference: " + nmsDistanceDifference
+                                                    + ", nms-distance-requirement: " + KillAura.universalNmsDistanceRequirement
+                                                    + ", difference-requirement: " + differenceRequirement
+                                                    + ", diagonal-distance: " + distance
+                                                    + ", width: " + width
+                                                    + ", entity-width: " + entityWidth);
                                         }
-                                        decimals.set(key, directionalDistance);
+                                    }
+                                    decimals.set(key, directionalDistance);
 
-                                        if (nmsDistance != null) {
-                                            decimals.set(nmsKey, nmsDistance);
-                                        } else {
-                                            decimals.remove(nmsKey);
-                                        }
+                                    if (nmsDistance != null) {
+                                        decimals.set(nmsKey, nmsDistance);
+                                    } else {
+                                        decimals.remove(nmsKey);
                                     }
                                     oldDirection = direction;
                                     break; // We just need one entity in angle to run this detection, so we break the loop

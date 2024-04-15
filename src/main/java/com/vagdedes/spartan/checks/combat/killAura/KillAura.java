@@ -136,12 +136,7 @@ public class KillAura extends CheckExecutor {
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        if (object == null) {
-            aim.remove();
-            sensitivity.remove();
-            strafe.remove();
-            pattern.remove();
-        } else if (object instanceof PlayerFight) {
+        if (object instanceof PlayerFight) {
             if (canDo()) {
                 analysis.run((PlayerFight) object);
             }

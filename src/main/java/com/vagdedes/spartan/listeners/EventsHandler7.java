@@ -11,7 +11,6 @@ import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovement
 import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
@@ -172,12 +171,14 @@ public class EventsHandler7 implements Listener {
             return;
         }
         // Object
+        p.resetHandlers();
         p.movement.resetLocationData();
 
         // Detections
         CheckDelay.cancel(p.uuid, 20);
 
         // System
-        Cache.clear(p, n, false, true, true, false, p.movement.getLocation());
+        p.getExecutor(Enums.HackType.MorePackets).handle(false, p.movement.getLocation());
+        p.getExecutor(Enums.HackType.Exploits).handle(false, p.movement.getLocation());
     }
 }

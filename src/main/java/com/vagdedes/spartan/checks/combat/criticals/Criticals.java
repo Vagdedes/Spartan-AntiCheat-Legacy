@@ -211,12 +211,8 @@ public class Criticals extends CheckExecutor {
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        if (object instanceof Boolean) {
-            if ((boolean) object) {
-                if (!CriticalsUtils.canCollectFrom(player)) {
-                    CriticalsUtils.memory.remove(player.name);
-                }
-            } else {
+        if (object == null) {
+            if (!CriticalsUtils.canCollectFrom(player)) {
                 CriticalsUtils.memory.remove(player.name);
             }
         } else if (canDo()) {

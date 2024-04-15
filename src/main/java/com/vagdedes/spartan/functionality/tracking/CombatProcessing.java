@@ -26,18 +26,6 @@ public class CombatProcessing {
             yawDifference = yaw + "-difference",
             pitchDifference = pitch + "-difference";
 
-    public static void remove(SpartanPlayer player) {
-        directionalComparison.remove(player.uuid);
-    }
-
-    private static final String[]
-            teleportationList = new String[]{yaw, pitch, yawDifference, pitchDifference};
-
-    public static void runTeleport(SpartanPlayer p) {
-        p.getDecimals().remove(teleportationList);
-        remove(p);
-    }
-
     public static void runMove(SpartanPlayer p, SpartanLocation to) {
         Vector[] directions = directionalComparison.get(p.uuid);
         float yawVar = to.getYaw(), pitchVar = to.getPitch();

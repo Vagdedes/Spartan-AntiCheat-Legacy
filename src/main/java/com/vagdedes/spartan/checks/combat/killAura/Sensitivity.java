@@ -16,15 +16,16 @@ import java.util.List;
 public class Sensitivity extends DetectionExecutor {
 
     private final KillAura killAura;
+    private Float
+            previousPitch,
+            previousPitchDifference;
 
     Sensitivity(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
+        previousPitch = executor.player.movement.getFromLocation().getPitch();
+        previousPitchDifference = 0.0f;
     }
-
-    private Float
-            previousPitch = null,
-            previousPitchDifference = null;
 
     private static final String key = Sensitivity.class.getName();
     private static final double
@@ -36,11 +37,6 @@ public class Sensitivity extends DetectionExecutor {
     private static final int
             requiredGCDs = 5,
             maxFailedDivisions = 3;
-
-    void remove() {
-        previousPitch = null;
-        previousPitchDifference = null;
-    }
 
     void run(SpartanLocation location, Buffer buffer) {
         if (!player.bedrockPlayer) {
@@ -54,36 +50,32 @@ public class Sensitivity extends DetectionExecutor {
                     float pitch = location.getPitch();
 
                     if (Math.abs(pitch) <= 90.0f) {
-                        if (previousPitch != null) {
-                            float pitchDifference = Math.abs(pitch - previousPitch);
+                        float pitchDifference = Math.abs(pitch - previousPitch);
 
-                            if (pitchDifference > 0.0) {
-                                if (this.previousPitchDifference != null
-                                        && this.previousPitchDifference > 0.0) {
-                                    double gcd = AlgebraUtils.findGCD(gcdLimit, pitchDifference * gcdMultiplier, this.previousPitchDifference * gcdMultiplier) / gcdMultiplier;
+                        if (pitchDifference > 0.0
+                                && this.previousPitchDifference > 0.0) {
+                            double gcd = AlgebraUtils.findGCD(gcdLimit, pitchDifference * gcdMultiplier, this.previousPitchDifference * gcdMultiplier) / gcdMultiplier;
 
-                                    if (gcd <= minimumGCD) {
-                                        if (gcd <= safeGCD ?
-                                                buffer.start(key + "=safe", 20) == 5 :
-                                                buffer.start(key, 20) == 13) { // 2/3rds
-                                            buffer.remove(key);
-                                            killAura.violateLive("type: sensitivity(minimum)"
-                                                    + ", pitch: " + pitch
-                                                    + ", previous-pitch: " + previousPitch
-                                                    + ", pitch-difference: " + pitchDifference
-                                                    + ", previous-pitch-difference: " + this.previousPitchDifference
-                                                    + ", greatest-common-divisor: " + gcd
-                                                    + ", limit: " + minimumGCD);
-                                        }
-                                    } else if (suspectedOrHacker) {
-                                        runAbstract(decimals, 2, gcd);
-                                    } else { // Some players may false this due to their client, so this helps prevent it
-                                        buffer.decrease(key, 1);
-                                    }
+                            if (gcd <= minimumGCD) {
+                                if (gcd <= safeGCD ?
+                                        buffer.start(key + "=safe", 20) == 5 :
+                                        buffer.start(key, 20) == 13) { // 2/3rds
+                                    buffer.remove(key);
+                                    killAura.violateLive("type: sensitivity(minimum)"
+                                            + ", pitch: " + pitch
+                                            + ", previous-pitch: " + previousPitch
+                                            + ", pitch-difference: " + pitchDifference
+                                            + ", previous-pitch-difference: " + this.previousPitchDifference
+                                            + ", greatest-common-divisor: " + gcd
+                                            + ", limit: " + minimumGCD);
                                 }
+                            } else if (suspectedOrHacker) {
+                                runAbstract(decimals, 2, gcd);
+                            } else { // Some players may false this due to their client, so this helps prevent it
+                                buffer.decrease(key, 1);
                             }
-                            previousPitchDifference = pitchDifference;
                         }
+                        previousPitchDifference = pitchDifference;
                         previousPitch = pitch;
                     }
                 }

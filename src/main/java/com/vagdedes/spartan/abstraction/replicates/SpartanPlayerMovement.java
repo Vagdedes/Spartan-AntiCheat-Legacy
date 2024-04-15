@@ -5,6 +5,7 @@ import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -43,7 +44,7 @@ public class SpartanPlayerMovement {
             extraPackets;
     private long lastHeadMovement;
     private boolean gliding, swimming, sprinting, sneaking, flying;
-    private SpartanLocation location, fromLocation, eventTo, eventFrom;
+    private SpartanLocation location, fromLocation, eventTo, eventFrom, detectionLocation;
     private long locationTime;
 
     SpartanPlayerMovement(SpartanPlayer parent, Player p) {
@@ -89,6 +90,7 @@ public class SpartanPlayerMovement {
         this.fromLocation = this.location;
         this.eventTo = this.location;
         this.eventFrom = this.location;
+        this.detectionLocation = this.location;
         this.locationTime = 0L;
     }
 
@@ -342,7 +344,7 @@ public class SpartanPlayerMovement {
         this.removeLastLiquidTime();
         this.parent.handlers.removeMany(Handlers.HandlerFamily.Velocity);
 
-        if (!Liquid.isLocation(this.parent, this.parent.movement.getLocation())) {
+        if (!Liquid.isLocation(this.parent, this.getLocation())) {
             this.removeLastLiquidTime();
         }
     }
@@ -519,6 +521,10 @@ public class SpartanPlayerMovement {
         return eventFrom;
     }
 
+    public SpartanLocation getDetectionLocation() {
+        return detectionLocation;
+    }
+
     private SpartanLocation getVehicleLocation() {
         Entity vehicle = this.parent.getVehicle();
 
@@ -532,6 +538,21 @@ public class SpartanPlayerMovement {
                     isNull ? vehicleLocation.getPitch() : playerLocation.getPitch());
         }
         return null;
+    }
+
+    public void setDetectionLocation(boolean force) {
+        if (force
+                || this.location.world != this.detectionLocation.world
+                || this.location.distance(this.detectionLocation) >= 1.0
+                && !this.parent.wasDetected(true)) {
+            SpartanLocation location = this.location.clone();
+            int minHeight = BlockUtils.getMinHeight(location.world);
+
+            if (location.getBlockY() < minHeight) {
+                location.setY(minHeight);
+            }
+            this.detectionLocation = location;
+        }
     }
 
     public void processLastMoveEvent(SpartanLocation to, SpartanLocation from) {

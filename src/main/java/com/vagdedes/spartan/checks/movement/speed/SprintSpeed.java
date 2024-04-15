@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
-import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
@@ -88,7 +87,7 @@ public class SprintSpeed extends DetectionExecutor {
                 if (cases != 0 && buffer.start("food=level", 15) >= 10) {
                     cancel(
                             "type: sprint(food-level), case: " + cases,
-                            DetectionLocation.get(player, true)
+                            player.movement.getDetectionLocation()
                     );
                 }
             }
@@ -132,7 +131,7 @@ public class SprintSpeed extends DetectionExecutor {
                                     + ", limit: " + limit
                                     + ", distance: " + distance
                                     + ", distance-requirement: " + distanceRequirement,
-                                    DetectionLocation.get(player, true)
+                                    player.movement.getDetectionLocation()
                             );
                         }
                     }

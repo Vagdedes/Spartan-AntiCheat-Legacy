@@ -26,13 +26,13 @@ import java.util.Map;
 public class Pattern extends DetectionExecutor {
 
     private final KillAura killAura;
+    private SpartanLocation[] selfLocations;
 
     Pattern(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
+        selfLocations = new SpartanLocation[]{executor.player.movement.getFromLocation()};
     }
-
-    private SpartanLocation[] selfLocations = null;
 
     private final Map<Integer, Location> entityLocations = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final int
@@ -53,8 +53,7 @@ public class Pattern extends DetectionExecutor {
 
     void run(LivingEntity entity, SpartanLocation location) {
         if (!CombatUtils.hasBlockBehind(player, entity)
-                && (entity instanceof Player || entity instanceof Monster)
-                && selfLocations != null) {
+                && (entity instanceof Player || entity instanceof Monster)) {
             int scenario = 1;
             double previousYawDifference = 0.0;
             Decimals decimals = player.getDecimals(hackType);
@@ -82,14 +81,10 @@ public class Pattern extends DetectionExecutor {
     }
 
     void runMove(SpartanLocation location) {
-        if (selfLocations != null) {
-            if (selfLocations.length > 1) {
-                selfLocations = new SpartanLocation[]{location, selfLocations[0], selfLocations[1]};
-            } else {
-                selfLocations = new SpartanLocation[]{location, selfLocations[0]};
-            }
+        if (selfLocations.length > 1) {
+            selfLocations = new SpartanLocation[]{location, selfLocations[0], selfLocations[1]};
         } else {
-            selfLocations = new SpartanLocation[]{location};
+            selfLocations = new SpartanLocation[]{location, selfLocations[0]};
         }
 
         // Separator

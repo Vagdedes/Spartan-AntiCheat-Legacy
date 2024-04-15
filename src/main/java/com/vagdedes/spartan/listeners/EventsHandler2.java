@@ -3,10 +3,7 @@ package com.vagdedes.spartan.listeners;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -44,16 +41,9 @@ public class EventsHandler2 implements Listener {
         }
 
         // System
-        boolean distance = to.distance(e.getFrom()) >= PlayerUtils.chunk && !p.wasDetected(true);
-        Cache.clear(p, n,
-                false,
-                distance,
-                distance,
-                cancelled,
-                to);
-
-        if (!cancelled) {
-            CombatProcessing.runTeleport(p);
+        if (!p.wasDetected(true)) {
+            p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, to);
+            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, to);
         }
     }
 

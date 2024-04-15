@@ -13,7 +13,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
-import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -382,7 +381,7 @@ public class Speed extends CheckExecutor {
                 if (modifiedLimit == Speed.air && !honey && !explosion && hor >= air_decreased
                         && buffer.start("value-decrease", 50) == 3) {
                     buffer.remove("value-decrease");
-                    cancel("type: air(decreased), horizontal: " + hor, DetectionLocation.get(player, true));
+                    cancel("type: air(decreased), horizontal: " + hor, player.movement.getDetectionLocation());
                 }
 
                 //Separator
@@ -397,7 +396,7 @@ public class Speed extends CheckExecutor {
                         && !PatternUtils.isBlockPattern(hopIllegalSingle, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                         && !PatternUtils.isBlockPattern(hopIllegal, to, true, BlockUtils.semi_solid)
                         && !BlockUtils.isSlime(player, to, 3) && buffer.start("hop=illegal", 10) >= 4) {
-                    cancel("type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
+                    cancel("type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                 }
 
                 //Separator
@@ -405,7 +404,7 @@ public class Speed extends CheckExecutor {
                     double diff = Math.abs(hor - oldHor);
 
                     if (hor > oldHor && diff >= 0.35 && ver == 0.5) {
-                        cancel("type: upwards(difference), horizontal: " + hor + ", old-horizontal: " + oldHor + ", difference: " + diff, DetectionLocation.get(player, true));
+                        cancel("type: upwards(difference), horizontal: " + hor + ", old-horizontal: " + oldHor + ", difference: " + diff, player.movement.getDetectionLocation());
                     }
                 }
 
@@ -424,9 +423,9 @@ public class Speed extends CheckExecutor {
 
                     if (hor > oldHor) {
                         if (aboveBlocksCopy && dmCopy == blocks_ice && diff >= 0.33) {
-                            cancel("type: ice-speed(blocks), difference: " + diff + ", horizontal: " + hor + ", old-horizontal: " + oldHor, DetectionLocation.get(player, true));
+                            cancel("type: ice-speed(blocks), difference: " + diff + ", horizontal: " + hor + ", old-horizontal: " + oldHor, player.movement.getDetectionLocation());
                         } else if (iceTicks >= 20 && hor >= 0.5 && (diff >= 0.25 || diff <= 0.15)) {
-                            cancel("type: ice-speed(normal), difference: " + diff + ", horizontal: " + hor + ", old-horizontal: " + oldHor, DetectionLocation.get(player, true));
+                            cancel("type: ice-speed(normal), difference: " + diff + ", horizontal: " + hor + ", old-horizontal: " + oldHor, player.movement.getDetectionLocation());
                         }
                     }
                 }
@@ -434,7 +433,7 @@ public class Speed extends CheckExecutor {
                 // Separator
                 if (dmCopy == ice && !aboveBlocksCopy && !piston) {
                     if (hor >= 0.5 && buffer.start("ice_speed=counter", 20) >= 7) {
-                        cancel("type: ice-speed(counter), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
+                        cancel("type: ice-speed(counter), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                     if (groundCustom && hor >= (dmCopy * (2.0 / 3.0))
                             && buffer.canDo(reasonCopy)
@@ -442,7 +441,7 @@ public class Speed extends CheckExecutor {
                             && PatternUtils.isBlockPattern(minusOne, to, true, BlockUtils.ice)
                             && buffer.start("ice_speed", 10) == 4) {
                         buffer.remove("ice_speed");
-                        cancel("type: ice-speed(ground), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
+                        cancel("type: ice-speed(ground), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                 }
 
@@ -468,14 +467,14 @@ public class Speed extends CheckExecutor {
                         }
 
                         if (hor >= 0.215 && illegal && !fairlyPushed && air <= 12 && !player.isOnFire() && !BouncingBlocks.isBelow(player) && !building) {
-                            cancel("type: fall-distance(illegal), horizontal: " + hor + ", limit: " + dmCopy + ", fall-distance: " + fallDistance + ", a: " + air + ", box: " + box + ", vertical: " + ver, DetectionLocation.get(player, true));
+                            cancel("type: fall-distance(illegal), horizontal: " + hor + ", limit: " + dmCopy + ", fall-distance: " + fallDistance + ", a: " + air + ", box: " + box + ", vertical: " + ver, player.movement.getDetectionLocation());
                         } else if (hor > 0.335 && fallDistance > 0.0f && (!groundVanilla || !groundCustom) && !BlockUtils.isSemiSolid(locM1)) {
-                            cancel("type: fall-distance(normal), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver, DetectionLocation.get(player, true));
+                            cancel("type: fall-distance(normal), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver, player.movement.getDetectionLocation());
 
                         } else if (groundCustom && hor >= 0.36 && fallDistance == 0.0f && box == 0.0) {
                             if (buffer.start("fall-distance", 10) == 2) {
                                 buffer.remove("fall-distance");
-                                cancel("type: fall-distance(ground), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver, DetectionLocation.get(player, true));
+                                cancel("type: fall-distance(ground), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver, player.movement.getDetectionLocation());
                             }
                         }
                     }
@@ -485,14 +484,14 @@ public class Speed extends CheckExecutor {
                 if (dmCopy == Speed.air && hor >= 0.34 && hor < modifiedLimit && (!groundVanilla || !groundCustom)
                         && buffer.start("hop=motion", 20) == 12) {
                     buffer.remove("hop=motion");
-                    cancel("type: hop(motion), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
+                    cancel("type: hop(motion), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                 }
 
                 // Separator
                 if (dmCopy == ground_jump_speed && hor >= 0.36 && hor < modifiedLimit && ver <= 0.0 && !aboveBlocksCopy
                         && buffer.start("ground_jump_speed", 10) == 3) {
                     buffer.remove("ground_jump_speed");
-                    cancel("type: ground(jump-speed), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
+                    cancel("type: ground(jump-speed), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                 }
 
                 // Separator
@@ -509,13 +508,13 @@ public class Speed extends CheckExecutor {
                     if (allow
                             && !PatternUtils.isBlockPattern(groundLocations, to, true, BlockUtils.semi_solid)
                             && buffer.start("high_normal_speed", 20) >= 18) {
-                        cancel("type: ground(high), horizontal: " + hor + ", limit: " + dmCopy, DetectionLocation.get(player, true));
+                        cancel("type: ground(high), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                     long time = player.getTimer(hackType).get("repeated=" + v);
 
                     if (time <= 250L && buffer.start("repeated", 10) == 3) {
                         buffer.remove("repeated");
-                        cancel("type: repeated, t: " + time + ", horizontal: " + v + ", limit: " + dmCopy, DetectionLocation.get(player, true));
+                        cancel("type: repeated, t: " + time + ", horizontal: " + v + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                     player.getTimer(hackType).set("repeated=" + v);
                 }
@@ -524,7 +523,7 @@ public class Speed extends CheckExecutor {
                 if (dmCopy == ypos && reasonCopy.equals("ypos") && hor >= 0.4 && hor < modifiedLimit
                         && buffer.start("ypos=attempts", 20) == 4) {
                     buffer.remove("ypos=attempts");
-                    cancel("type: ypos, horizontal: " + hor + ", limit: " + dmCopy + ", dynamic-limit: " + modifiedLimit, DetectionLocation.get(player, true));
+                    cancel("type: ypos, horizontal: " + hor + ", limit: " + dmCopy + ", dynamic-limit: " + modifiedLimit, player.movement.getDetectionLocation());
                 }
             });
         }
@@ -579,7 +578,7 @@ public class Speed extends CheckExecutor {
                         buffer.remove(reasonCopy);
                         cancel("type: normal, reason: " + reasonCopy + ", horizontal: " +
                                 hor + ", limit: " + dmCopy + ", dynamic-limit: " + modifiedLimit + ", vertical: " + ver + ", air: " + air
-                                + ", difference: " + Math.abs(hor - oldHor), DetectionLocation.get(player, true));
+                                + ", difference: " + Math.abs(hor - oldHor), player.movement.getDetectionLocation());
                     }
                 }
             });

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
@@ -38,9 +39,7 @@ import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.ElytraUse;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Velocity;
-import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
@@ -228,7 +227,15 @@ public class SpartanPlayer {
             if (hasPlayers) {
                 for (SpartanPlayer p : players) {
                     if (clearCache) {
-                        Cache.clearCheckCache(p);
+                        for (Enums.HackType hackType : Enums.HackType.values()) {
+                            if (p.getViolations(hackType).getTicksPassed() > Check.violationCycleTicks) {
+                                p.getBuffer(hackType).clear();
+                                p.getTimer(hackType).clear();
+                                p.getDecimals(hackType).clear();
+                                p.getCooldowns(hackType).clear();
+                                p.getTracker(hackType).clear();
+                            }
+                        }
                     }
                     p.nearbyEntitiesDistance = 0;
                     p.movement.resetLocationData();
@@ -265,6 +272,7 @@ public class SpartanPlayer {
                     if (p != null) {
                         // Ground Identification Cache
                         p.ping = -1;
+                        p.movement.setDetectionLocation(false);
                         Player n = p.getPlayer();
 
                         if (n != null) {
@@ -307,7 +315,6 @@ public class SpartanPlayer {
                             if (MultiVersion.folia || !SpartanBukkit.isSynchronised()) {
                                 PlayerUtils.update(p, n, true);
                             }
-                            DetectionLocation.run(p);
                         } else {
                             p.runChecks[0] = false;
                             p.runChecks[1] = false;

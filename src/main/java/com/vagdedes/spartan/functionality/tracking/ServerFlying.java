@@ -6,7 +6,6 @@ import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovement
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Velocity;
-import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.Permissions;
 
 public class ServerFlying {
@@ -30,7 +29,7 @@ public class ServerFlying {
 
             if (nmsDistance != null && nmsDistance >= limit
                     || p.movement.getCustomDistance() >= limit) {
-                p.safeTeleport(DetectionLocation.get(p, true));
+                p.safeTeleport(p.movement.getDetectionLocation());
             }
         }
     }

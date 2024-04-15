@@ -34,7 +34,6 @@ public class MorePackets extends CheckExecutor {
             horizontalKey = "motion-xz",
             verticalKey = "motion-y",
             lastTickKey = "last-tick",
-            suspiciouslastTickKey = "suspicious-last-tick",
             refreshLocationKey = "refresh-location",
             instantMotionKey = "instant-motion";
 

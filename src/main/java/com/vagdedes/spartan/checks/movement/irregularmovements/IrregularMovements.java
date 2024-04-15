@@ -11,9 +11,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
-import com.vagdedes.spartan.functionality.identifiers.simple.DetectionLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -54,8 +52,6 @@ public class IrregularMovements extends CheckExecutor {
         liquids = (IrregularMovementsLiquids) detections[5];
         motion = (IrregularMovementsMotion) detections[6];
     }
-
-    private SpartanLocation oldFrom = null;
 
     // Keys
     private static final String
@@ -141,12 +137,6 @@ public class IrregularMovements extends CheckExecutor {
                 }
             } else {
                 liquidBlocks = false;
-            }
-
-            // Allow check to run when all cache is collected
-            if (oldFrom == null) {
-                oldFrom = from;
-                return false;
             }
 
             // Final Variables
@@ -436,8 +426,6 @@ public class IrregularMovements extends CheckExecutor {
                     cancel(prevention, "illegal-down", illegalBufferLimit);
                 }
             }
-        } else {
-            oldFrom = null;
         }
         return false;
     }
@@ -508,7 +496,7 @@ public class IrregularMovements extends CheckExecutor {
             cancel(
                     "type: " + instance + "(" + buffer + (hasBuffer ? "/" + time + "/" + bufferAmount : "") + "), "
                             + information + (extra == null ? "" : ", extra: 1, " + extra),
-                    violate ? DetectionLocation.get(player, true) : null,
+                    violate ? player.movement.getDetectionLocation() : null,
                     0,
                     groundTeleport
             );
@@ -523,20 +511,6 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        if (object instanceof Integer) {
-            this.machineLearningDetection(
-                    SpartanBukkit.movementPatterns.vertical.getGeneralization(GroundUtils.maxHeightLength),
-                    (int) object,
-                    1,
-                    0.01
-            );
-        } else {
-            if (object == null) {
-                oldFrom = null;
-            } else {
-                oldFrom = (SpartanLocation) object;
-            }
-        }
         return false;
     }
 
