@@ -47,66 +47,67 @@ public class LiveViolation {
         this.hackType = hackType;
         this.level = Collections.synchronizedMap(new LinkedHashMap<>());
         this.lastTick = 0L;
-        this.prevention = null;
+        this.prevention = new HackPrevention();
     }
 
     // Separator
 
-    void run(HackPrevention prevention) {
-        if (!CheckDelay.hasCooldown(player)
-                && !CloudBase.isPublicInformationCancelled(hackType, prevention.information)
-                && (disableCause == null
-                || !disableCause.pointerMatches(prevention.information))) {
-            InformationAnalysis analysis = new InformationAnalysis(hackType, prevention.information);
-            int violations = Math.max(
-                    this.getLevel(analysis.identity) + 1,
-                    AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
-            );
-            PlayerViolation playerViolation = new PlayerViolation(
-                    prevention.time,
-                    hackType,
-                    prevention.information,
-                    violations,
-                    analysis
-            );
-            this.lastTick = prevention.tick;
-            this.player.setLastViolation(this);
-
-            if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                        player.getPlayer(),
-                        hackType,
-                        violations,
-                        prevention.information
+    void run(HackPrevention newPrevention) {
+        Runnable runnable = () -> {
+            if (!CheckDelay.hasCooldown(player)
+                    && !CloudBase.isPublicInformationCancelled(hackType, newPrevention.information)
+                    && (disableCause == null
+                    || !disableCause.pointerMatches(newPrevention.information))) {
+                InformationAnalysis analysis = new InformationAnalysis(hackType, newPrevention.information);
+                int violations = Math.max(
+                        this.getLevel(analysis.identity) + 1,
+                        AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
                 );
-                Register.manager.callEvent(playerViolationEvent);
+                PlayerViolation playerViolation = new PlayerViolation(
+                        newPrevention.time,
+                        hackType,
+                        newPrevention.information,
+                        violations,
+                        analysis
+                );
+                this.lastTick = newPrevention.tick;
+                this.player.setLastViolation(this);
 
-                if (playerViolationEvent.isCancelled()) {
-                    this.prevention = null;
-                    return;
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                    PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
+                            player.getPlayer(),
+                            hackType,
+                            violations,
+                            newPrevention.information
+                    );
+                    Register.manager.callEvent(playerViolationEvent);
+
+                    if (playerViolationEvent.isCancelled()) {
+                        return;
+                    }
                 }
+                player.getProfile().getViolationHistory(hackType).store(playerViolation);
+                this.increaseLevel(playerViolation.identity);
+                this.performNotification(newPrevention.information, playerViolation);
+                this.performPunishments(playerViolation);
+                this.prevention = newPrevention;
+                this.prevention.canPrevent = !hackType.getCheck().isSilent(player.getWorld().getName())
+                        && (silentCause == null
+                        || !silentCause.pointerMatches(newPrevention.information))
+                        && (player.getProfile().isSuspectedOrHacker(hackType)
+                        || violations >= playerViolation.getIgnoredViolations(player));
             }
+        };
 
-            if (!hackType.getCheck().isSilent(player.getWorld().getName())
-                    && (silentCause == null
-                    || !silentCause.pointerMatches(prevention.information))
-                    && (player.getProfile().isSuspectedOrHacker(hackType)
-                    || violations >= playerViolation.getIgnoredViolations(player))) {
-                this.prevention = prevention;
-            } else {
-                this.prevention = null;
-            }
-            player.getProfile().getViolationHistory(hackType).store(playerViolation);
-            this.increaseLevel(playerViolation.identity);
-            this.performNotification(prevention.information, playerViolation);
-            this.performPunishments(playerViolation);
+        if (SpartanBukkit.isSynchronised()) {
+            runnable.run();
         } else {
-            this.prevention = null;
+            SpartanBukkit.transferTask(runnable);
         }
     }
 
     public boolean prevent() {
-        if (this.prevention != null
+        if (this.prevention.canPrevent
                 && !this.prevention.hasExpired(TPS.getTick(player))) {
             if (Config.settings.getBoolean("Important.enable_developer_api")) {
                 CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getPlayer(), hackType);
@@ -129,16 +130,12 @@ public class LiveViolation {
         synchronized (this.level) {
             time = this.level.get(hash);
         }
-        return this.calculateLevel(time);
+        return time != null ? this.calculateLevel(time) : 0;
     }
 
-    private int calculateLevel(Long time) {
-        if (time != null) {
-            time -= System.currentTimeMillis();
-            return time > 0L ? AlgebraUtils.integerCeil(time / (double) Check.violationTimeWorth) : 0;
-        } else {
-            return 0;
-        }
+    private int calculateLevel(long time) {
+        time -= System.currentTimeMillis();
+        return time > 0L ? AlgebraUtils.integerCeil(time / (double) Check.violationTimeWorth) : 0;
     }
 
     public int getTotalLevel() {

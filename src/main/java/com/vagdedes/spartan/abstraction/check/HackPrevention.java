@@ -10,24 +10,35 @@ public class HackPrevention {
     final String information;
     private final SpartanLocation location;
     private final boolean groundTeleport;
+    boolean canPrevent;
     private final double damage;
-    long stay;
     private final long expiration;
     final long time, tick;
 
     // Separator
+
+    HackPrevention() {
+        this.time = 0L;
+        this.tick = 0L;
+        this.expiration = 0L;
+        this.information = "";
+        this.location = null;
+        this.groundTeleport = false;
+        this.damage = 0.0;
+        this.canPrevent = false;
+    }
 
     HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose,
                    SpartanLocation location, int cancelTicks, boolean groundTeleport,
                    double damage) {
         this.time = System.currentTimeMillis();
         this.tick = TPS.getTick(player);
-        this.stay = cancelTicks;
-        this.expiration = cancelTicks == 0 ? 0L : this.tick + this.stay;
+        this.expiration =  this.tick + cancelTicks;
         this.information = verbose;
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
+        this.canPrevent = false;
         player.getViolations(hackType).run(this);
     }
 
