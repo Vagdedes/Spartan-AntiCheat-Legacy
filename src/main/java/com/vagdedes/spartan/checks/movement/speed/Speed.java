@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Speed extends CheckExecutor {
+public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
     public static final HackType check = HackType.Speed;
     private final SprintSpeed sprintDetection;

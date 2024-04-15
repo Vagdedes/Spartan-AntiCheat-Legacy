@@ -24,7 +24,7 @@ public class Check {
             maxCommands = 10,
             standardIgnoredViolations = 3,
             violationsMeasurementDuration = 60_000,
-            violationTimeWorth = 600;
+            violationTimeWorth = 1_000;
 
     // Object
 

@@ -53,78 +53,82 @@ public class LiveViolation {
     // Separator
 
     void run(HackPrevention newPrevention) {
-        if (!CheckDelay.hasCooldown(player)
-                && !CloudBase.isPublicInformationCancelled(hackType, newPrevention.information)
-                && (disableCause == null
-                || !disableCause.pointerMatches(newPrevention.information))) {
-            InformationAnalysis analysis = new InformationAnalysis(hackType, newPrevention.information);
-            PlayerViolation playerViolation = new PlayerViolation(
-                    newPrevention.time,
-                    hackType,
-                    newPrevention.information,
-                    Math.max(
-                            this.getLevel(analysis.identity) + 1,
-                            AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
-                    ),
-                    analysis
-            );
-            boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-            this.lastTick = newPrevention.tick;
-            this.player.setLastViolation(this);
+        synchronized (this) {
+            if (!CheckDelay.hasCooldown(player)
+                    && !CloudBase.isPublicInformationCancelled(hackType, newPrevention.information)
+                    && (disableCause == null
+                    || !disableCause.pointerMatches(newPrevention.information))) {
+                InformationAnalysis analysis = new InformationAnalysis(hackType, newPrevention.information);
+                PlayerViolation playerViolation = new PlayerViolation(
+                        newPrevention.time,
+                        hackType,
+                        newPrevention.information,
+                        Math.max(
+                                this.getLevel(analysis.identity) + 1,
+                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
+                        ),
+                        analysis
+                );
+                boolean event = Config.settings.getBoolean("Important.enable_developer_api");
+                this.lastTick = newPrevention.tick;
+                this.player.setLastViolation(this);
 
-            Runnable runnable = () -> {
-                if (event) {
-                    PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                            player.getPlayer(),
-                            hackType,
-                            playerViolation.level,
-                            newPrevention.information
-                    );
-                    Register.manager.callEvent(playerViolationEvent);
+                Runnable runnable = () -> {
+                    if (event) {
+                        PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
+                                player.getPlayer(),
+                                hackType,
+                                playerViolation.level,
+                                newPrevention.information
+                        );
+                        Register.manager.callEvent(playerViolationEvent);
 
-                    if (playerViolationEvent.isCancelled()) {
-                        return;
+                        if (playerViolationEvent.isCancelled()) {
+                            return;
+                        }
                     }
-                }
-                player.getProfile().getViolationHistory(hackType).store(playerViolation);
-                this.increaseLevel(playerViolation.identity);
-                this.performNotification(playerViolation);
-                this.performPunishments(playerViolation);
-                this.prevention = newPrevention;
-                this.prevention.canPrevent = !hackType.getCheck().isSilent(player.getWorld().getName())
-                        && (silentCause == null
-                        || !silentCause.pointerMatches(newPrevention.information))
-                        && (player.getProfile().isSuspectedOrHacker(hackType)
-                        || playerViolation.level >= playerViolation.getIgnoredViolations(player));
-            };
+                    player.getProfile().getViolationHistory(hackType).store(playerViolation);
+                    this.increaseLevel(playerViolation.identity);
+                    this.performNotification(playerViolation);
+                    this.performPunishments(playerViolation);
+                    this.prevention = newPrevention;
+                    this.prevention.canPrevent = !hackType.getCheck().isSilent(player.getWorld().getName())
+                            && (silentCause == null
+                            || !silentCause.pointerMatches(newPrevention.information))
+                            && (player.getProfile().isSuspectedOrHacker(hackType)
+                            || playerViolation.level >= playerViolation.getIgnoredViolations(player));
+                };
 
-            if (!event || SpartanBukkit.isSynchronised()) {
-                runnable.run();
-            } else {
-                SpartanBukkit.transferTask(player, runnable);
+                if (!event || SpartanBukkit.isSynchronised()) {
+                    runnable.run();
+                } else {
+                    SpartanBukkit.transferTask(player, runnable);
+                }
             }
         }
     }
 
     public boolean prevent() {
-        if (this.prevention.canPrevent
-                && !this.prevention.hasExpired(TPS.getTick(player))) {
-            if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getPlayer(), hackType);
-                Register.manager.callEvent(checkCancelEvent);
+        synchronized (this) {
+            if (this.prevention.canPrevent
+                    && !this.prevention.hasExpired(TPS.getTick(player))) {
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getPlayer(), hackType);
+                    Register.manager.callEvent(checkCancelEvent);
 
-                if (!checkCancelEvent.isCancelled()) {
+                    if (!checkCancelEvent.isCancelled()) {
+                        this.prevention.handle(player);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
                     this.prevention.handle(player);
                     return true;
-                } else {
-                    return false;
                 }
             } else {
-                this.prevention.handle(player);
-                return true;
+                return false;
             }
-        } else {
-            return false;
         }
     }
 
