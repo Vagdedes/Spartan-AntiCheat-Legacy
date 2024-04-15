@@ -1,10 +1,12 @@
 package com.vagdedes.spartan.checks.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
+import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -140,7 +142,7 @@ public class IrregularMovements extends CheckExecutor {
             }
 
             // Final Variables
-            Buffer buffers = player.getBuffer(hackType);
+            Decimals decimals = player.getDecimals(hackType);
             boolean levitationEffect = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && PlayerUtils.hasLevitationEffect(player),
                     incompatibility = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || Compatibility.CompatibilityType.ItemAttributes.isFunctional(),
                     fullAirTicksOffGround = airTicks >= fullOffGroundTicks,
@@ -317,8 +319,8 @@ public class IrregularMovements extends CheckExecutor {
                     canGoUp, canGoDown, canJump, canFall,
                     checkUp, checkDown, checkJump, checkFall, checkHorizontal
             );
-            boolean changedScenario = cacheBoolean(cooldowns, buffers.get(changeScenario, scenarioCode) != scenarioCode, "changed-scenario", 5);
-            buffers.set(IrregularMovements.changeScenario, scenarioCode);
+            boolean changedScenario = cacheBoolean(cooldowns, decimals.get(changeScenario, scenarioCode) != scenarioCode, "changed-scenario", 5);
+            decimals.set(IrregularMovements.changeScenario, scenarioCode);
 
             // Variable Modification
             if (waterElevator) { // Allow the player to go a bit down when in a water soul-sand elevator
@@ -451,7 +453,7 @@ public class IrregularMovements extends CheckExecutor {
     boolean cancel(String information, String instance, String extra, int buffer, int time) {
         boolean prevention, violate, hasBuffer,
                 sharedInstance = instance.charAt(0) == '*';
-        int bufferAmount;
+        double bufferAmount;
 
         if (buffer > 1) {
             boolean suspected;
@@ -475,16 +477,16 @@ public class IrregularMovements extends CheckExecutor {
 
             Buffer bufferObj = player.getBuffer(hackType);
             String key = sharedInstance ? instance.split("-", 2)[0].substring(1) : instance;
-            violate = (bufferAmount = bufferObj.start(key, time)) >= buffer;
+            violate = (bufferAmount = bufferObj.start(key, time, Check.violationsMeasurementTicks)) >= (buffer/(double)time);
 
             if (violate) {
                 prevention = true;
                 bufferObj.remove(key); // Reset buffer after its completion
             } else {
-                prevention = suspected && bufferAmount > 2; // Create fake violation if circumstances are met
+                prevention = suspected && bufferAmount > 2.0; // Create fake violation if circumstances are met
             }
         } else {
-            bufferAmount = 0;
+            bufferAmount = 0.0;
             hasBuffer = false;
             prevention = true;
             violate = true;

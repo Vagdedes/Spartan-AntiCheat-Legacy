@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.movement;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -93,6 +94,7 @@ public class NoFall extends CheckExecutor {
 
     private void checkPattern(SpartanLocation to, SpartanLocation from,
                               Buffer buffer,
+                              Decimals decimals,
                               float fallDistanceDifference,
                               double vertical,
                               int airTicks) {
@@ -108,12 +110,13 @@ public class NoFall extends CheckExecutor {
                 int pattern = buffer.get(key);
 
                 if (pattern > 1) {
-                    int cachedPattern = buffer.get(key + "=cache", Integer.MIN_VALUE);
+                    double cachedPattern = decimals.get(key + "=cache", Double.MIN_VALUE);
 
-                    if (cachedPattern != Integer.MIN_VALUE && cachedPattern == pattern) {
+                    if (cachedPattern != Double.MIN_VALUE
+                            && cachedPattern == pattern) {
                         cancel("type: pattern, fall-distance-difference: " + fallDistanceDifference + ", air: " + airTicks + ", distance: " + vertical, from, 5, true, 2.0);
                     }
-                    buffer.set(key + "=cache", pattern);
+                    decimals.set(key + "=cache", pattern);
                 }
                 buffer.remove(key);
             }
@@ -176,12 +179,12 @@ public class NoFall extends CheckExecutor {
                 int toY = to.getBlockY(), fromY = from.getBlockY();
 
                 if (toY < fromY) {
-                    int blockY = buffer.get(ratioKey + "block-y", Integer.MIN_VALUE);
+                    double blockY = decimals.get(ratioKey + "block-y", Double.MIN_VALUE);
 
-                    if (blockY != Integer.MIN_VALUE && blockY != toY) {
+                    if (blockY != Double.MIN_VALUE && blockY != toY) {
                         buffer.increase(ratioKey + "blocks", 1);
                     }
-                    buffer.set(ratioKey + "block-y", toY);
+                    decimals.set(ratioKey + "block-y", toY);
 
                     if (vertical < -(PlayerUtils.gravityAcceleration * 8) && airTicks > 8) {
                         buffer.set(ratioKey + "validated", 1);
@@ -192,9 +195,13 @@ public class NoFall extends CheckExecutor {
                     if (!player.movement.isJumping(vertical)) {
                         int cases, bufferTicks = 5, bufferRequirement = 2;
 
-                        if (player.isOnGroundCustom() && (!player.bedrockPlayer || buffer.start(ratioKey + "ground", bufferTicks) >= bufferRequirement)) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
+                        if (player.isOnGroundCustom()
+                                && (!player.bedrockPlayer
+                                || buffer.start(ratioKey + "ground", bufferTicks, Check.violationsMeasurementTicks) >= (bufferRequirement / (double) bufferTicks))) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
                             cases = 1;
-                        } else if (vertical == 0.0 && (requiresSuspicion || buffer.start(ratioKey + "movement", bufferTicks) >= bufferRequirement)) {
+                        } else if (vertical == 0.0
+                                && (requiresSuspicion
+                                || buffer.start(ratioKey + "movement", bufferTicks, Check.violationsMeasurementTicks) >= (bufferRequirement / (double) bufferTicks))) {
                             buffer.remove(ratioKey + "movement");
                             cases = 2;
                         } else if (vertical > 0.0) {
@@ -307,7 +314,7 @@ public class NoFall extends CheckExecutor {
                                 checkAir(to, from, fallDistanceDifference, (fallDistance - Math.floor(fallDistance)), vertical, airTicks, requiresSuspicion);
 
                                 if (requiresSuspicion) {
-                                    checkPattern(to, from, buffer, fallDistanceDifference, vertical, airTicks);
+                                    checkPattern(to, from, buffer, decimals, fallDistanceDifference, vertical, airTicks);
                                 }
                             }
                         }

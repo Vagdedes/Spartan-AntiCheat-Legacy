@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.player;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Decimals;
@@ -63,7 +64,7 @@ public class FastHeal extends CheckExecutor {
                         if (limit > 0L) {
                             Buffer buffer = player.getBuffer(hackType);
 
-                            if (time < limit && buffer.start(checkID, 10) >= 3) {
+                            if (time < limit && buffer.start(checkID, 10, Check.violationsMeasurementTicks) >= 0.3) {
                                 buffer.remove(checkID);
                                 cancel("type: default, ms: " + time + ", limit: " + limit);
                             }

@@ -2,8 +2,6 @@ package com.vagdedes.spartan.abstraction.data;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import me.vagdedes.spartan.system.Enums;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,63 +12,62 @@ public class Buffer {
 
     private final Map<String, BufferChild> storage;
     private final SpartanPlayer player;
-    private final boolean combat;
 
     private static class BufferChild {
 
-        private int count;
-        private long ticks;
+        private final Buffer parent;
+        private long count, start;
 
-        private BufferChild(int count) {
-            this.count = count;
-            this.ticks = 0L;
+        private BufferChild(Buffer buffer) {
+            this.parent = buffer;
+            this.reset();
+        }
+
+        private double ticksPassed() {
+            return TPS.getTick(this.parent.player) - this.start;
+        }
+
+        private int increase(int amount) {
+            long tick = TPS.getTick(this.parent.player);
+
+            if (this.count <= tick) {
+                this.count = tick + amount;
+                this.start = tick;
+                return 1;
+            } else {
+                this.count += amount;
+                return this.simpleCount(tick);
+            }
+        }
+
+        private int decrease(int amount) {
+            if (this.count > amount) {
+                this.count -= amount;
+                return this.simpleCount(TPS.getTick(this.parent.player));
+            } else {
+                this.count = 0L;
+                return 0;
+            }
+        }
+
+        private int count() {
+            long tick = TPS.getTick(this.parent.player);
+            return this.count <= tick ? 0 : this.simpleCount(tick);
+        }
+
+        private int simpleCount(long tick) {
+            return (int) (this.count - tick);
+        }
+
+        private void reset() {
+            this.count = 0L;
+            this.start = 0L;
         }
     }
 
-    public Buffer(SpartanPlayer player, Enums.HackType hackType) {
+    public Buffer(SpartanPlayer player) {
         this.player = player;
         this.storage = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.combat = hackType != null
-                && hackType.getCheck().type == Enums.CheckType.COMBAT;
-    }
-
-    // Runnable
-
-    public void run(SpartanPlayer player) {
-        if (combat && !storage.isEmpty()) {
-            Iterator<BufferChild> iterator;
-
-            synchronized (storage) {
-                iterator = storage.values().iterator();
-            }
-            while (true) {
-                BufferChild bufferChild;
-
-                synchronized (storage) {
-                    if (!iterator.hasNext()) {
-                        break;
-                    }
-                    bufferChild = iterator.next();
-
-                    if (bufferChild.ticks == 0L) {
-                        iterator.remove();
-                        continue;
-                    }
-                }
-
-                if (player.getEnemiesNumber(CombatUtils.maxHitDistance, true) > 0) {
-                    bufferChild.ticks -= 1L;
-                } else {
-                    for (Enums.HackType hackType : Enums.HackType.values()) {
-                        if (hackType.getCheck().type == Enums.CheckType.COMBAT
-                                && player.getViolations(hackType).isDetected(false)) {
-                            bufferChild.ticks -= 1L;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     // Implementation
@@ -81,17 +78,13 @@ public class Buffer {
         }
     }
 
-    public int get(String name, int def) {
-        BufferChild object;
+    public int get(String name) {
+        BufferChild obj;
 
         synchronized (storage) {
-            object = storage.get(name);
+            obj = storage.get(name);
         }
-        return object != null ? object.count : def;
-    }
-
-    public int get(String name) {
-        return get(name, 0);
+        return obj != null ? obj.count() : 0;
     }
 
     public void set(String name, int amount) {
@@ -99,110 +92,53 @@ public class Buffer {
 
         synchronized (storage) {
             obj = storage.get(name);
+
+            if (obj == null) {
+                obj = new BufferChild(this);
+                storage.put(name, obj);
+            }
         }
-        if (obj != null) {
-            obj.count = amount;
-        } else {
-            storage.put(name, new BufferChild(amount));
-        }
+        obj.reset();
+        obj.increase(amount);
     }
 
     public int increase(String name, int amount) {
-        synchronized (storage) {
-            BufferChild obj = storage.get(name);
+        BufferChild obj;
 
-            if (obj != null) {
-                return obj.count += amount;
-            } else {
-                storage.put(name, new BufferChild(amount));
-                return amount;
-            }
+        synchronized (storage) {
+            obj = storage.computeIfAbsent(
+                    name,
+                    k -> new BufferChild(this)
+            );
         }
+        return obj.increase(amount);
     }
 
     public int decrease(String name, int amount) {
-        synchronized (storage) {
-            BufferChild obj = storage.get(name);
-
-            if (obj != null) {
-                return obj.count = Math.max(obj.count - amount, 0);
-            } else {
-                storage.put(name, new BufferChild(amount));
-                return amount;
-            }
-        }
-    }
-
-    public int start(String name, int ticks) {
         BufferChild obj;
 
         synchronized (storage) {
-            obj = storage.computeIfAbsent(name, k -> new BufferChild(0));
+            obj = storage.get(name);
         }
-
-        if (this.getRemainingTicks(obj) == 0) {
-            obj.ticks = combat
-                    ? (CombatUtils.newPvPMechanicsEnabled() ? ticks * 2L : ticks)
-                    : TPS.getTick(player) + ticks;
-
-            if (obj.count >= 0) {
-                return obj.count = 1;
-            }
-        }
-        obj.count += 1;
-        return obj.count;
+        return obj != null ? obj.decrease(amount) : 0;
     }
 
-    public double ratioStart(String name, int minimumTicks, int maxTicks) {
+    public double start(String name, int minimumTicks, int maxTicks) {
         BufferChild obj;
 
         synchronized (storage) {
-            obj = storage.computeIfAbsent(name, k -> new BufferChild(0));
+            obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
         }
-        int remainingTicks = this.getRemainingTicks(obj);
+        double ticksPassed = obj.ticksPassed();
+        int count;
 
-        if (remainingTicks == 0) {
-            obj.ticks = combat
-                    ? (CombatUtils.newPvPMechanicsEnabled() ? maxTicks * 2L : maxTicks)
-                    : TPS.getTick(player) + maxTicks;
-
-            if (obj.count > 0) {
-                obj.count = 0;
-            }
-        }
-        obj.count += 1;
-        return (maxTicks - remainingTicks) >= minimumTicks
-                ? obj.count / (double) maxTicks
-                : 0.0;
-    }
-
-    private int getRemainingTicks(BufferChild object) {
-        if (combat) {
-            return (int) object.ticks;
+        if (ticksPassed > maxTicks) {
+            obj.reset();
+            count = obj.increase(1);
         } else {
-            long ticks = object.ticks - TPS.getTick(player);
-            return ticks < 0L ? 0 : (int) ticks;
+            count = obj.increase(1);
         }
-    }
-
-    public int getRemainingTicks(String name) {
-        BufferChild object;
-
-        synchronized (storage) {
-            object = storage.get(name);
-        }
-        return object == null ? 0 : this.getRemainingTicks(object);
-    }
-
-    public void setRemainingTicks(String name, int ticks) {
-        BufferChild object;
-
-        synchronized (storage) {
-            object = storage.get(name);
-        }
-        if (object != null) {
-            object.ticks = combat ? ticks : TPS.getTick(player) + ticks;
-        }
+        return count >= minimumTicks ? count / ticksPassed : 0.0;
     }
 
     public boolean canDo(String name) {
@@ -236,4 +172,5 @@ public class Buffer {
             }
         }
     }
+
 }

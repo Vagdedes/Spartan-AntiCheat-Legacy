@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.combat.killAura;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -64,7 +65,7 @@ public class Strafe extends DetectionExecutor {
 
                                         if (distanceDifference < differenceRequirement
                                                 && nmsDistanceDifference < differenceRequirement
-                                                && buffer.start(key, 20) == 7) {
+                                                && buffer.start(key, 20, Check.violationsMeasurementTicks) >= 0.35) {
                                             cancel("type: strafe"
                                                     + ", directional-distance: " + directionalDistance
                                                     + ", directional-distance-difference: " + distanceDifference

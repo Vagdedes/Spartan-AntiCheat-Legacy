@@ -68,7 +68,7 @@ public class ImpossibleInventory extends CheckExecutor {
 
             if (cases != 0
                     && (cases != jumping
-                    || player.getBuffer(check).start("cursor-usage", 20) >= 3)) {
+                    || player.getBuffer(check).start("cursor-usage", 20, Check.violationsMeasurementTicks) >= 0.15)) {
                 cancel("type: cursor-usage, case: " + cases, player.movement.getEventFromLocation(), 0, false);
             }
         }
@@ -98,7 +98,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
                 && PlayerUtils.isUsingAnInventory(player, 0)
                 && !PatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)
-                && (cases != jumping || player.getBuffer(check).start("closed-inventory", 20) >= requiredJumpingMotions)) {
+                && (cases != jumping || player.getBuffer(check).start("closed-inventory", 20, Check.violationsMeasurementTicks) >= (requiredJumpingMotions / 20.0))) {
             cancel("type: closed-inventory, case: " + cases);
         }
     }

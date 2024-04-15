@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.combat.killAura;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -38,7 +39,12 @@ public class Movement extends DetectionExecutor {
                     Buffer buffer = player.getBuffer(hackType);
 
                     if (difference < differenceRequirement) {
-                        if (buffer.start(key, 10 * CombatUtils.getFightTicks(player)) == 6) {
+                        int ticks = CombatUtils.getFightTicks(player) * 10;
+                        if (buffer.start(
+                                key,
+                                ticks,
+                                Check.violationsMeasurementTicks
+                        ) == (6 / (double) ticks)) {
                             buffer.remove(key);
                             cancel("type: movement"
                                     + ", width: " + width

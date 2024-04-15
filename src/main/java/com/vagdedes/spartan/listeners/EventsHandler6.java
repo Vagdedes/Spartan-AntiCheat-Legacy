@@ -22,7 +22,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 
@@ -165,8 +164,6 @@ public class EventsHandler6 implements Listener {
         if (p == null) {
             return;
         }
-        PlayerAnimationType animationType = e.getAnimationType();
-
         // Detections
         p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
     }

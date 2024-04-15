@@ -30,7 +30,7 @@ public class MovementProcessing {
             if (p.getBuffer().increase(key, 1) >= maxTicks) {
                 p.getBuffer().remove(key);
 
-                if (p.getDecimals().get(key, Decimals.CALCULATE_AVERAGE) >= 0.01) {
+                if (p.getDecimals().get(key, 0.0, Decimals.CALCULATE_AVERAGE) >= 0.01) {
                     p.movement.setExtraPackets(p.movement.getExtraPackets() + 1);
                 } else {
                     p.movement.setExtraPackets(0);

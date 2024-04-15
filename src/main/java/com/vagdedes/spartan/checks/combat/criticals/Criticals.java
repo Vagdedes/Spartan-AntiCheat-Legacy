@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.combat.criticals;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Handlers;
@@ -119,9 +120,14 @@ public class Criticals extends CheckExecutor {
                 && !player.isOnGround()
                 && player.movement.getLocation().getY() % 1.0 == 0.0) {
             float fallDistance = player.getFallDistance();
+            int ticks = 14 * 11;
 
             if (fallDistance > 0.0f
-                    && player.getBuffer(hackType).start("location=attempts", 14 * 11) >= 2) {
+                    && player.getBuffer(hackType).start(
+                    "location=attempts",
+                    ticks,
+                    Check.violationsMeasurementTicks
+            ) >= (2 / (double) ticks)) {
                 cancel("type: location, fall-distance: " + fallDistance);
             }
         }

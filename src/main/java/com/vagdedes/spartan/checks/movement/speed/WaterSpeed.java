@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.movement.speed;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
@@ -182,7 +183,7 @@ public class WaterSpeed extends DetectionExecutor {
                         }
                     }
                 }
-            } else if (!suspicion && buffer.start("cannot-check-block", 20) >= 3) {
+            } else if (!suspicion && buffer.start("cannot-check-block", 20, Check.violationsMeasurementTicks) >= 0.15) {
                 horizontalBufferCopy = freezeBuffers(buffer, 1);
             }
             runBuffers(to, locM1, horizontal, vertical, buffer);
@@ -200,10 +201,10 @@ public class WaterSpeed extends DetectionExecutor {
                     boolean cancel;
 
                     if (limit == out_water) {
-                        cancel = (horizontal - limit) >= 0.35 || buffer.start("water=safety=max", 20) >= 5;
+                        cancel = (horizontal - limit) >= 0.35 || buffer.start("water=safety=max", 20, Check.violationsMeasurementTicks) >= 0.25;
                     } else {
                         cancel = limit != modifiedLimit
-                                || buffer.start("water=safety=min", 12) >= 4;
+                                || buffer.start("water=safety=min", 12, Check.violationsMeasurementTicks) >= 0.33;
                     }
 
                     if (cancel) {

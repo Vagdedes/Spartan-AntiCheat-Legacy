@@ -151,7 +151,6 @@ public class EventsHandler7 implements Listener {
 
         // Detections
         ServerFlying.run(p);
-        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.CHUNK);
         p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.SPRINT);
         p.getExecutor(Enums.HackType.NoFall).run(cancelled);
         p.getExecutor(Enums.HackType.NoSlowdown).run(cancelled);
@@ -185,6 +184,5 @@ public class EventsHandler7 implements Listener {
 
         // System
         p.getExecutor(Enums.HackType.MorePackets).handle(false, p.movement.getLocation());
-        p.getExecutor(Enums.HackType.Exploits).handle(false, p.movement.getLocation());
     }
 }

@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.functionality.identifiers.simple;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
@@ -30,7 +31,7 @@ public class Building {
             if ((ms <= TPS.tickTime
                     || blockFace == BlockFace.SELF)
                     && (p.getViolations(Enums.HackType.FastPlace).hasLevel()
-                    || p.getBuffer().start("building=protection=attempts", 20) >= 5)) {
+                    || p.getBuffer().start("building=protection=attempts", 20, Check.violationsMeasurementTicks) >= 0.25)) {
                 handlers.disable(Handlers.HandlerType.TowerBuilding, 10);
 
                 if (Config.settings.getBoolean("Protections.disallowed_building")) {

@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the GCD (Greatest Common Divisor) of pitch movement
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -58,8 +59,8 @@ public class Sensitivity extends DetectionExecutor {
 
                             if (gcd <= minimumGCD) {
                                 if (gcd <= safeGCD ?
-                                        buffer.start(key + "=safe", 20) == 5 :
-                                        buffer.start(key, 20) == 13) { // 2/3rds
+                                        buffer.start(key + "=safe", 20, Check.violationsMeasurementTicks) >= 0.25 :
+                                        buffer.start(key, 20, Check.violationsMeasurementTicks) >= 0.65) {
                                     buffer.remove(key);
                                     killAura.violateLive("type: sensitivity(minimum)"
                                             + ", pitch: " + pitch

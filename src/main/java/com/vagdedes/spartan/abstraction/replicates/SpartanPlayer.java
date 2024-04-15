@@ -251,11 +251,6 @@ public class SpartanPlayer {
                             PlayerUtils.run(p, n, potionEffects);
                         }
 
-                        // Buffer Cache
-                        for (Buffer buffer : p.buffer) {
-                            buffer.run(p);
-                        }
-
                         // Preventions
                         for (Enums.HackType hackType : EventsHandler7.handledChecks) {
                             if (p.getViolations(hackType).prevent()) {
@@ -409,7 +404,7 @@ public class SpartanPlayer {
 
         for (Enums.HackType hackType : hackTypes) {
             int id = hackType.ordinal();
-            this.buffer[id] = new Buffer(this, hackType);
+            this.buffer[id] = new Buffer(this);
             this.timer[id] = new Timer();
             this.decimals[id] = new Decimals();
             this.tracker[id] = new Tracker();
@@ -497,7 +492,7 @@ public class SpartanPlayer {
             }
         }
         this.lastViolation = this.violations[0];
-        this.buffer[hackTypes.length] = new Buffer(this, null);
+        this.buffer[hackTypes.length] = new Buffer(this);
         this.timer[hackTypes.length] = new Timer();
         this.decimals[hackTypes.length] = new Decimals();
         this.tracker[hackTypes.length] = new Tracker();

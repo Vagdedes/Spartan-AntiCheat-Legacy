@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.world;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -111,7 +112,7 @@ public class FastBreak extends CheckExecutor {
                 Buffer buffer = player.getBuffer(hackType);
                 String key = "breaks-per-second";
 
-                if (buffer.start(key, 20) >= limit) {
+                if (buffer.start(key, 20, Check.violationsMeasurementTicks) >= (limit / 20.0)) {
                     buffer.remove(key);
                     cancel(
                             "type: breaks-per-second"
@@ -132,7 +133,8 @@ public class FastBreak extends CheckExecutor {
             if (limit > 0) {
                 String key = "indirect-surroundings";
                 Buffer buffer = player.getBuffer(hackType);
-                int bufferTime = 20, bufferThreshold;
+                int bufferTime = 20;
+                double bufferThreshold;
 
                 if (lastBlock != null) {
                     if (!(block.x == lastBlock.x && block.y == lastBlock.y && block.z == lastBlock.z // Same
@@ -146,15 +148,15 @@ public class FastBreak extends CheckExecutor {
                             || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Back-Diagonal
                             || block.x == lastBlock.x && block.y == (lastBlock.y + 1) && block.z == lastBlock.z // Up
                             || block.x == lastBlock.x && block.y == (lastBlock.y - 1) && block.z == lastBlock.z)) { // Down
-                        bufferThreshold = buffer.start(key, bufferTime);
+                        bufferThreshold = buffer.start(key, bufferTime, Check.violationsMeasurementTicks);
                     } else {
                         bufferThreshold = buffer.get(key);
                     }
                 } else {
-                    bufferThreshold = buffer.start(key, bufferTime);
+                    bufferThreshold = buffer.start(key, bufferTime, Check.violationsMeasurementTicks);
                 }
 
-                if (bufferThreshold >= limit) {
+                if (bufferThreshold >= (limit / (double) bufferTime)) {
                     buffer.remove(key);
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)

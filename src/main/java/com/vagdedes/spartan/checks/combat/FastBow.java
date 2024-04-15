@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.combat;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanInventory;
@@ -45,7 +46,7 @@ public class FastBow extends CheckExecutor {
         Buffer buffer = player.getBuffer(hackType);
         String key = "bow-force";
 
-        if (buffer.start(key, 20) >= 2) {
+        if (buffer.start(key, 20, Check.violationsMeasurementTicks) >= 2) {
             buffer.remove(key);
             cancel("type: bow-force, ms: " + time);
         }
@@ -54,15 +55,10 @@ public class FastBow extends CheckExecutor {
     private void checkBowShots() {
         if (hackType.getCheck().getBooleanOption("check_bow_shots", true)) {
             Buffer buffer = player.getBuffer(hackType);
-            int minimum = 10, maximum = 30;
-            double ratio = 0.7;
 
-            if (buffer.ratioStart("bow-shots", minimum, maximum) >= ratio) {
+            if (buffer.start("bow-shots", 10, Check.violationsMeasurementTicks) >= 0.7) {
                 buffer.remove("bow-shots");
-                cancel("type: bow-shots, minimum-ticks: " + minimum
-                        + ", maximum-ticks: " + maximum
-                        + ", remaining-ticks: " + buffer.getRemainingTicks("bow-shots")
-                        + ", ratio: " + ratio);
+                cancel("type: bow-shots");
             }
         }
     }

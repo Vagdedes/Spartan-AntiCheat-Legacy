@@ -573,15 +573,13 @@ public class PlayerUtils {
             amplifier += 1;
 
             if (extraTicks > 0) {
-                Buffer buffer = entity.getBuffer();
-                buffer.set(key, amplifier);
-                buffer.setRemainingTicks(key, extraTicks);
+                entity.getDecimals().set(key, amplifier);
+                entity.getCooldowns().add(key, extraTicks);
             }
             return amplifier;
         }
         if (extraTicks > 0) {
-            Buffer buffer = entity.getBuffer();
-            return buffer.getRemainingTicks(key) > 0 ? buffer.get(key, 0) : 0;
+            return !entity.getCooldowns().canDo(key) ? (int) entity.getDecimals().get(key, 0.0) : 0;
         }
         return 0;
     }

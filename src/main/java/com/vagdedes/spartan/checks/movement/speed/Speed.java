@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.movement.speed;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
@@ -382,7 +383,7 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
                 // Separator
                 if (modifiedLimit == Speed.air && !honey && !explosion && hor >= air_decreased
-                        && buffer.start("value-decrease", 50) == 3) {
+                        && buffer.start("value-decrease", 50, Check.violationsMeasurementTicks) >= 0.06) {
                     buffer.remove("value-decrease");
                     cancel("type: air(decreased), horizontal: " + hor, player.movement.getDetectionLocation());
                 }
@@ -398,7 +399,8 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
                         && !BlockUtils.isSlime(player, to, 2)
                         && !PatternUtils.isBlockPattern(hopIllegalSingle, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                         && !PatternUtils.isBlockPattern(hopIllegal, to, true, BlockUtils.semi_solid)
-                        && !BlockUtils.isSlime(player, to, 3) && buffer.start("hop=illegal", 10) >= 4) {
+                        && !BlockUtils.isSlime(player, to, 3)
+                        && buffer.start("hop=illegal", 10, Check.violationsMeasurementTicks) >= 0.4) {
                     cancel("type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                 }
 
@@ -435,15 +437,16 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
                 // Separator
                 if (dmCopy == ice && !aboveBlocksCopy && !piston) {
-                    if (hor >= 0.5 && buffer.start("ice_speed=counter", 20) >= 7) {
+                    if (hor >= 0.5
+                            && buffer.start("ice-speed=counter", 20, Check.violationsMeasurementTicks) >= 0.35) {
                         cancel("type: ice-speed(counter), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                     if (groundCustom && hor >= (dmCopy * (2.0 / 3.0))
                             && buffer.canDo(reasonCopy)
                             && !PatternUtils.isBlockPattern(genericHitbox, to, true, BlockUtils.semi_solid)
                             && PatternUtils.isBlockPattern(minusOne, to, true, BlockUtils.ice)
-                            && buffer.start("ice_speed", 10) == 4) {
-                        buffer.remove("ice_speed");
+                            && buffer.start("ice-speed", 10, Check.violationsMeasurementTicks) >= 0.4) {
+                        buffer.remove("ice-speed");
                         cancel("type: ice-speed(ground), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                 }
@@ -475,7 +478,7 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
                             cancel("type: fall-distance(normal), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver, player.movement.getDetectionLocation());
 
                         } else if (groundCustom && hor >= 0.36 && fallDistance == 0.0f && box == 0.0) {
-                            if (buffer.start("fall-distance", 10) == 2) {
+                            if (buffer.start("fall-distance", 10, Check.violationsMeasurementTicks) >= 0.2) {
                                 buffer.remove("fall-distance");
                                 cancel("type: fall-distance(ground), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver, player.movement.getDetectionLocation());
                             }
@@ -485,15 +488,15 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
                 // Separator
                 if (dmCopy == Speed.air && hor >= 0.34 && hor < modifiedLimit && (!groundVanilla || !groundCustom)
-                        && buffer.start("hop=motion", 20) == 12) {
+                        && buffer.start("hop=motion", 20, Check.violationsMeasurementTicks) >= 0.6) {
                     buffer.remove("hop=motion");
                     cancel("type: hop(motion), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                 }
 
                 // Separator
                 if (dmCopy == ground_jump_speed && hor >= 0.36 && hor < modifiedLimit && ver <= 0.0 && !aboveBlocksCopy
-                        && buffer.start("ground_jump_speed", 10) == 3) {
-                    buffer.remove("ground_jump_speed");
+                        && buffer.start("ground-jump-speed", 10, Check.violationsMeasurementTicks) >= 0.3) {
+                    buffer.remove("ground-jump-speed");
                     cancel("type: ground(jump-speed), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                 }
 
@@ -510,12 +513,12 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
                     if (allow
                             && !PatternUtils.isBlockPattern(groundLocations, to, true, BlockUtils.semi_solid)
-                            && buffer.start("high_normal_speed", 20) >= 18) {
+                            && buffer.start("high_normal_speed", 20, Check.violationsMeasurementTicks) >= 0.9) {
                         cancel("type: ground(high), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                     long time = player.getTimer(hackType).get("repeated=" + v);
 
-                    if (time <= 250L && buffer.start("repeated", 10) == 3) {
+                    if (time <= 250L && buffer.start("repeated", 10, Check.violationsMeasurementTicks) >= 0.3) {
                         buffer.remove("repeated");
                         cancel("type: repeated, t: " + time + ", horizontal: " + v + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
@@ -524,7 +527,7 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
                 // Separator
                 if (dmCopy == ypos && reasonCopy.equals("ypos") && hor >= 0.4 && hor < modifiedLimit
-                        && buffer.start("ypos=attempts", 20) == 4) {
+                        && buffer.start("ypos=attempts", 20, Check.violationsMeasurementTicks) >= 0.2) {
                     buffer.remove("ypos=attempts");
                     cancel("type: ypos, horizontal: " + hor + ", limit: " + dmCopy + ", dynamic-limit: " + modifiedLimit, player.movement.getDetectionLocation());
                 }
@@ -574,7 +577,7 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
                     if (!buffer.canDo(reasonCopy)) {
                         buffer.remove(reasonCopy);
                     }
-                    if (buffer.start(reasonCopy, time) == attempts
+                    if (buffer.start(reasonCopy, time, Check.violationsMeasurementTicks) >= (attempts / (double) time)
                             || hasTrident && modifiedLimit == trident
                             || knockback && modifiedLimit == bow
                             || !knockback && (damage && !hasTrident || explosion) && hor >= dmg) {
@@ -643,7 +646,7 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
                 if (nonSolidFree
                         && (ver <= 0.5
-                        || buffer.start("upwards=" + AlgebraUtils.cut(ver, 3), 10) >= 2)) { // Step Blocks
+                        || buffer.start("upwards=" + AlgebraUtils.cut(ver, 3), 10, Check.violationsMeasurementTicks) >= 0.2)) { // Step Blocks
                     reason = "upwards";
                     dm = cacheLimit(decimals, dm, upwards, 15);
                 } else if (PatternUtils.isBlockPattern(belowBlocks, custom, true, BlockUtils.slabs, BlockUtils.stairs)) {

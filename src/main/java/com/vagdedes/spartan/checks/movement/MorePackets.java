@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.movement;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
@@ -128,7 +129,12 @@ public class MorePackets extends CheckExecutor {
                             }
 
                             if (passedLimit
-                                    && (decreasedRequirement || buffer.start(instantMotionKey + "=second", 1) >= 2)) { // Third stage
+                                    && (decreasedRequirement
+                                    || buffer.start(
+                                    instantMotionKey + "=second",
+                                    1,
+                                    Check.violationsMeasurementTicks
+                            ) >= 2.0)) { // Third stage
                                 buffer.remove(new String[]{
                                         instantMotionKey + "=first",
                                         instantMotionKey + "=first=special",

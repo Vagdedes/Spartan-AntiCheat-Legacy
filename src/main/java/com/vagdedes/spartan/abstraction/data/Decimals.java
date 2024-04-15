@@ -88,10 +88,6 @@ public class Decimals {
         return get(name, def, 0);
     }
 
-    public double get(String name, int newestToOldestIndex) {
-        return get(name, Double.MAX_VALUE, newestToOldestIndex);
-    }
-
     public double get(String name) {
         return get(name, Double.MAX_VALUE, 0);
     }

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.checks.inventory;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Timer;
@@ -29,17 +30,10 @@ public class ItemDrops extends CheckExecutor {
 
             if (time <= 50L) {
                 Buffer buffer = player.getBuffer(check);
-                int minimum = 10, maximum = 30;
-                double ratio = 0.7;
 
-                if (buffer.ratioStart("", minimum, maximum) >= ratio) {
+                if (buffer.start("", 10, Check.violationsMeasurementTicks) >= 0.7) {
                     buffer.remove("");
-                    cancel("type: default"
-                            + ", ms: " + time
-                            + ", minimum-ticks: " + minimum
-                            + ", maximum-ticks: " + maximum
-                            + ", remaining-ticks: " + buffer.getRemainingTicks("bow-shots")
-                            + ", ratio: " + ratio, null, 10);
+                    cancel("type: default, ms: " + time, null, 10);
                 }
             }
             timer.set("");

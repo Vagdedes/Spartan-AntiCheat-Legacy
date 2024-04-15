@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of usually legitimate but abnormally long and consistent distance
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -53,8 +54,9 @@ public class Distance extends DetectionExecutor {
 
                             if (distance >= limit) { // Make sure the player's average distance is appropriate
                                 Buffer buffer = player.getBuffer(hackType);
+                                int ticks = CombatUtils.getFightTicks(player) * 6;
 
-                                if (buffer.start(key, CombatUtils.getFightTicks(player) * 6) == 3) {
+                                if (buffer.start(key, ticks, Check.violationsMeasurementTicks) == (3 / (double) ticks)) {
                                     buffer.remove(key);
                                     cancel("type: distance"
                                             + ", time-passed: " + timePassed

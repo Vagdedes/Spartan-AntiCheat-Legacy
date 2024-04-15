@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.world;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -225,7 +226,7 @@ public class ImpossibleActions extends CheckExecutor {
                             Buffer buffer = player.getBuffer(hackType);
                             String scenario = scaffold ? "scaffold" : "tower";
 
-                            if (buffer.start(scenario, 20) >= (!scaffold ? 4 : 5)) {
+                            if (buffer.start(scenario, 20, Check.violationsMeasurementTicks) >= (!scaffold ? 0.2 : 0.25)) {
                                 buffer.remove(scenario);
                                 cancel("type: " + scenario
                                                 + ", block: " + BlockUtils.materialToString(blockType)

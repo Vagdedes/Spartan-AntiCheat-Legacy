@@ -2,6 +2,7 @@ package com.vagdedes.spartan.checks.combat.killAura;
 
 // Study of the head movement from before to the moment of hitting an entity, but also the activity of the direction
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -69,8 +70,9 @@ public class Rotations extends DetectionExecutor {
                                             + ", valid-positions: " + validPositions);
                         } else if (distanceRatio >= 2.0) {
                             Buffer buffer = player.getBuffer(hackType);
+                            int ticks = CombatUtils.getFightTicks(player) * 5;
 
-                            if (buffer.start(key, CombatUtils.getFightTicks(player) * 5) == 2) {
+                            if (buffer.start(key, ticks, Check.violationsMeasurementTicks) == (2 / (double) ticks)) {
                                 buffer.remove(key);
                                 cancel(
                                         "type: rotations(yaw-buffered)"

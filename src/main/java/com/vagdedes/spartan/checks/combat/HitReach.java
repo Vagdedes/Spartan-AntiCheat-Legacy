@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.checks.combat;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
@@ -92,12 +93,8 @@ public class HitReach extends CheckExecutor {
                             }
 
                             if (!NoHitDelay.hasCooldown(player) && (!isPlayer || !NoHitDelay.hasCooldown(damaged))
-                                    && buffer.start("horizontal-short=" + minimumNotReached, ticks) >= attempts) {
-                                buffer.remove("horizontal-long");
-                                cancel("type: horizontal(short), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
-                            } else if (buffer.start("horizontal-long", ticks * 2) >= (attempts * 2)) {
-                                buffer.clear("horizontal-short");
-                                cancel("type: horizontal(long), distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
+                                    && buffer.start("horizontal=" + minimumNotReached, ticks, Check.violationsMeasurementTicks) >= (attempts / (double) ticks)) {
+                                cancel("type: horizontal, distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
                             }
                         }
                     }

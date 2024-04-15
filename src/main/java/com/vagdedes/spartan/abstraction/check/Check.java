@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
@@ -24,6 +25,7 @@ public class Check {
             maxCommands = 10,
             standardIgnoredViolations = 3,
             violationsMeasurementDuration = 60_000,
+            violationsMeasurementTicks = violationsMeasurementDuration / TPS.tickTimeInteger,
             violationTimeWorth = 1_000;
 
     // Object
