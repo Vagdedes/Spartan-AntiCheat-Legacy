@@ -1,30 +1,25 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.checks.movement.speed.Speed;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 
 public class HackPrevention {
 
     final String information;
-    final SpartanLocation location;
-    final boolean groundTeleport;
-    boolean processed;
-    final double damage;
-    final long time, tick, stay, expiration;
-
-    private static final Cooldowns cooldowns = new Cooldowns(null);
+    private final SpartanLocation location;
+    private final boolean groundTeleport;
+    private final double damage;
+    long stay;
+    private final long expiration;
+    final long time, tick;
 
     // Separator
 
-    public HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose,
-                          SpartanLocation location, int cancelTicks, boolean groundTeleport,
-                          double damage) {
+    HackPrevention(SpartanPlayer player, Enums.HackType hackType, String verbose,
+                   SpartanLocation location, int cancelTicks, boolean groundTeleport,
+                   double damage) {
         this.time = System.currentTimeMillis();
         this.tick = TPS.getTick(player);
         this.stay = cancelTicks;
@@ -33,40 +28,26 @@ public class HackPrevention {
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
-        this.processed = false;
-        player.getViolations(hackType).queue(this);
+        player.getViolations(hackType).run(this);
     }
 
-    void handle(SpartanPlayer player, Enums.HackType hackType) {
+    boolean hasExpired(long tick) {
+        return tick > this.expiration;
+    }
+
+    boolean handle(SpartanPlayer player) {
         SpartanLocation preventionFrom = this.location;
-        boolean teleported = preventionFrom != null
-                && player.safeTeleport(preventionFrom);
+        boolean result = false;
 
-        if (this.groundTeleport
-                && player.groundTeleport(true)) {
-            teleported = true;
+        if (preventionFrom != null) {
+            result = player.safeTeleport(preventionFrom);
         }
-        if (teleported) {
-            String key = player.uuid + "velocity";
-
-            if (cooldowns.canDo(key)
-                    && player.movement.getNmsHorizontalDistance() <= 0.75
-                    && (hackType == Enums.HackType.IrregularMovements
-                    || hackType == Enums.HackType.Speed && this.information.contains(Speed.strongPrevention))) {
-                if (player.movement.getNmsHorizontalDistance() <= 0.75) {
-                    double vertical = player.movement.getNmsVerticalDistance();
-
-                    if (vertical == 0.0 || vertical >= PlayerUtils.actualTerminalVelocity) {
-                        cooldowns.add(key, 5);
-                        player.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
-                        player.setVelocity(player.movement.getLocation().getDirection().setY(PlayerUtils.gravityAcceleration));
-                    }
-                }
-            }
+        if (this.groundTeleport) {
+            result |= player.groundTeleport(true);
         }
-
         if (damage > 0.0) {
-            player.applyFallDamage(damage);
+            result |= player.applyFallDamage(damage);
         }
+        return result;
     }
 }

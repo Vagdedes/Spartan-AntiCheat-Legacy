@@ -73,7 +73,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -253,7 +252,7 @@ public class SpartanPlayer {
 
                         // Preventions
                         for (Enums.HackType hackType : EventsHandler7.handledChecks) {
-                            if (p.getViolations(hackType).process()) {
+                            if (p.getViolations(hackType).prevent()) {
                                 break;
                             }
                         }
@@ -1477,17 +1476,11 @@ public class SpartanPlayer {
     // Teleport
 
     public boolean safeTeleport(SpartanLocation loc) {
-        if (!isSleeping()) {
-            if (getWorld() == loc.world) {
-                SpartanLocation to = movement.getLocation();
-                to.setX(loc.getX());
-                to.setY(loc.getY());
-                to.setZ(loc.getZ());
-                return teleport(loc);
-            }
-            return teleport(movement.getLocation());
+        if (this.getWorld() == loc.world) {
+            return this.teleport(movement.getLocation());
+        } else {
+            return false;
         }
-        return false;
     }
 
     public boolean groundTeleport(boolean checkGround) {
@@ -1558,20 +1551,16 @@ public class SpartanPlayer {
 
     // Separator
 
-    private void prepareForAbstractMovement() {
-        this.movement.setSprinting(false);
-        this.movement.setSneaking(false);
-        this.movement.setSwimming(false, 0);
-        this.movement.setGliding(false, false);
-        this.movement.removeLastLiquidTime();
-    }
-
     public boolean teleport(SpartanLocation location) {
         Player p = getPlayer();
 
         if (p != null && p.isOnline()) {
             p.leaveVehicle();
-            prepareForAbstractMovement();
+            this.movement.setSprinting(false);
+            this.movement.setSneaking(false);
+            this.movement.setSwimming(false, 0);
+            this.movement.setGliding(false, false);
+            this.movement.removeLastLiquidTime();
 
             if (MultiVersion.folia) {
                 p.teleportAsync(location.getBukkitLocation());
@@ -1583,24 +1572,14 @@ public class SpartanPlayer {
         return false;
     }
 
-    public synchronized void setVelocity(Vector vector) {
-        Player p = getPlayer();
-
-        if (p != null && p.isOnline()) {
-            p.leaveVehicle();
-            prepareForAbstractMovement();
-            p.setVelocity(vector);
-        }
-    }
-
     // Separator
 
-    public void applyFallDamage(double d) {
+    public boolean applyFallDamage(double d) {
         handlers.disable(Handlers.HandlerType.Velocity, 3);
-        this.damage(d, EntityDamageEvent.DamageCause.FALL);
+        return this.damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 
-    public void damage(double amount, EntityDamageEvent.DamageCause damageCause) {
+    public boolean damage(double amount, EntityDamageEvent.DamageCause damageCause) {
         Player p = getPlayer();
 
         if (p != null && p.isOnline()) {
@@ -1608,6 +1587,9 @@ public class SpartanPlayer {
             p.damage(amount);
             p.setLastDamageCause(event);
             this.addReceivedDamage(event);
+            return true;
+        } else {
+            return false;
         }
     }
 

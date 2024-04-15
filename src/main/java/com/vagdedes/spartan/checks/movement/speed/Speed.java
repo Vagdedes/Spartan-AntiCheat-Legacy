@@ -49,7 +49,6 @@ public class Speed extends CheckExecutor {
     public static final byte
             SPRINT = 0,
             WATER = 1;
-    public static final String strongPrevention = "normal";
     private static final double walking = 0.292;
     public static double ground = 0.325;
     private static final double incompatibility = 0.75;
@@ -578,7 +577,7 @@ public class Speed extends CheckExecutor {
                             || knockback && modifiedLimit == bow
                             || !knockback && (damage && !hasTrident || explosion) && hor >= dmg) {
                         buffer.remove(reasonCopy);
-                        cancel("type: " + strongPrevention + ", reason: " + reasonCopy + ", horizontal: " +
+                        cancel("type: normal, reason: " + reasonCopy + ", horizontal: " +
                                 hor + ", limit: " + dmCopy + ", dynamic-limit: " + modifiedLimit + ", vertical: " + ver + ", air: " + air
                                 + ", difference: " + Math.abs(hor - oldHor), DetectionLocation.get(player, true));
                     }

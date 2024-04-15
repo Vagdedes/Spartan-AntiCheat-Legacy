@@ -46,8 +46,8 @@ public class EventsHandler5 implements Listener {
             p.getExecutor(Enums.HackType.NoSlowdown).handle(cancelled, e);
             p.getExecutor(Enums.HackType.FastHeal).handle(cancelled, e);
 
-            if (p.getViolations(Enums.HackType.FastEat).process()
-                    || p.getViolations(Enums.HackType.NoSlowdown).process()) {
+            if (p.getViolations(Enums.HackType.FastEat).prevent()
+                    || p.getViolations(Enums.HackType.NoSlowdown).prevent()) {
                 e.setCancelled(true);
                 p.setFoodLevel(n.getFoodLevel(), false);
             } else {
@@ -74,7 +74,7 @@ public class EventsHandler5 implements Listener {
             // Detections
             p.getExecutor(Enums.HackType.FastHeal).handle(e.isCancelled(), e);
 
-            if (p.getViolations(Enums.HackType.FastHeal).process()) {
+            if (p.getViolations(Enums.HackType.FastHeal).prevent()) {
                 e.setCancelled(true);
             }
         }
@@ -107,12 +107,12 @@ public class EventsHandler5 implements Listener {
         p.getExecutor(Enums.HackType.MorePackets).handle(false, e);
         DetectionNotifications.runMining(p, b, cancelled);
 
-        if (p.getViolations(Enums.HackType.NoSwing).process()
-                || p.getViolations(Enums.HackType.BlockReach).process()
-                || p.getViolations(Enums.HackType.ImpossibleActions).process()
-                || p.getViolations(Enums.HackType.FastBreak).process()
-                || p.getViolations(Enums.HackType.GhostHand).process()
-                || p.getViolations(Enums.HackType.XRay).process()) {
+        if (p.getViolations(Enums.HackType.NoSwing).prevent()
+                || p.getViolations(Enums.HackType.BlockReach).prevent()
+                || p.getViolations(Enums.HackType.ImpossibleActions).prevent()
+                || p.getViolations(Enums.HackType.FastBreak).prevent()
+                || p.getViolations(Enums.HackType.GhostHand).prevent()
+                || p.getViolations(Enums.HackType.XRay).prevent()) {
             e.setCancelled(true);
         }
     }
@@ -147,9 +147,9 @@ public class EventsHandler5 implements Listener {
             p.getExecutor(Enums.HackType.FastPlace).handle(cancelled, e);
         }
 
-        if (p.getViolations(Enums.HackType.FastPlace).process()
-                || p.getViolations(Enums.HackType.BlockReach).process()
-                || p.getViolations(Enums.HackType.ImpossibleActions).process()) {
+        if (p.getViolations(Enums.HackType.FastPlace).prevent()
+                || p.getViolations(Enums.HackType.BlockReach).prevent()
+                || p.getViolations(Enums.HackType.ImpossibleActions).prevent()) {
             e.setCancelled(true);
         }
     }

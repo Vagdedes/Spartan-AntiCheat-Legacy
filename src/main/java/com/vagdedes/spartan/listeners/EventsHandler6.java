@@ -119,10 +119,10 @@ public class EventsHandler6 implements Listener {
                             }
                         }
 
-                        if (p.getViolations(Enums.HackType.KillAura).process()
-                                || p.getViolations(Enums.HackType.Criticals).process()
-                                || p.getViolations(Enums.HackType.NoSwing).process()
-                                || p.getViolations(Enums.HackType.FastClicks).process()) {
+                        if (p.getViolations(Enums.HackType.KillAura).prevent()
+                                || p.getViolations(Enums.HackType.Criticals).prevent()
+                                || p.getViolations(Enums.HackType.NoSwing).prevent()
+                                || p.getViolations(Enums.HackType.FastClicks).prevent()) {
                             e.setCancelled(true);
                         }
                     }

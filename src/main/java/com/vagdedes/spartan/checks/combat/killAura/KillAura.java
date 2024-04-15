@@ -83,7 +83,7 @@ public class KillAura extends CheckExecutor {
 
     void violateLive(String information) {
         cancel(information, null, CombatUtils.getFightTicks(player));
-        player.getViolations(hackType).process();
+        player.getViolations(hackType).prevent();
     }
 
     boolean canRunEntity(LivingEntity entity) {

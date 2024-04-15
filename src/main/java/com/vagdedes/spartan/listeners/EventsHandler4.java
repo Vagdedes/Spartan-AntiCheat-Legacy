@@ -47,7 +47,7 @@ public class EventsHandler4 implements Listener {
         // Detections
         p.getExecutor(Enums.HackType.ItemDrops).run(cancelled);
 
-        if (p.getViolations(Enums.HackType.ItemDrops).process()) {
+        if (p.getViolations(Enums.HackType.ItemDrops).prevent()) {
             e.setCancelled(true);
         }
     }
@@ -94,8 +94,8 @@ public class EventsHandler4 implements Listener {
             p.getExecutor(Enums.HackType.InventoryClicks).handle(cancelled, e);
 
             // GUIs
-            if (p.getViolations(Enums.HackType.ImpossibleInventory).process()
-                    | p.getViolations(Enums.HackType.InventoryClicks).process()) {
+            if (p.getViolations(Enums.HackType.ImpossibleInventory).prevent()
+                    | p.getViolations(Enums.HackType.InventoryClicks).prevent()) {
                 e.setCancelled(true);
             } else if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
                 for (InventoryMenu menu : InteractiveInventory.menus) {

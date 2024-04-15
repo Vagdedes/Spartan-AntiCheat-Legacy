@@ -115,7 +115,7 @@ public class EventsHandler7 implements Listener {
 
         // Handlers
         for (Enums.HackType hackType : handledChecks) {
-            if (p.getViolations(hackType).process()) {
+            if (p.getViolations(hackType).prevent()) {
                 return;
             }
         }

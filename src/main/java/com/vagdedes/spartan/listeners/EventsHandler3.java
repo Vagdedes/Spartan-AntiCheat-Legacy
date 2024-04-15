@@ -131,7 +131,7 @@ public class EventsHandler3 implements Listener {
         // Detections
         p.getExecutor(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
 
-        if (p.getViolations(Enums.HackType.Exploits).process()) {
+        if (p.getViolations(Enums.HackType.Exploits).prevent()) {
             e.setCancelled(true);
         }
     }
@@ -186,8 +186,8 @@ public class EventsHandler3 implements Listener {
             }
             p.getExecutor(Enums.HackType.FastBow).handle(false, e);
 
-            if (p.getViolations(Enums.HackType.GhostHand).process()
-                    || p.getViolations(Enums.HackType.FastClicks).process()) {
+            if (p.getViolations(Enums.HackType.GhostHand).prevent()
+                    || p.getViolations(Enums.HackType.FastClicks).prevent()) {
                 e.setCancelled(true);
             }
         }

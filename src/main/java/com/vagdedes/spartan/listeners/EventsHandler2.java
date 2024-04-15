@@ -97,7 +97,7 @@ public class EventsHandler2 implements Listener {
                 // Detections
                 p.getExecutor(Enums.HackType.FastBow).handle(cancelled, e);
 
-                if (p.getViolations(Enums.HackType.FastBow).process()) {
+                if (p.getViolations(Enums.HackType.FastBow).prevent()) {
                     e.setCancelled(true);
                 }
             }
