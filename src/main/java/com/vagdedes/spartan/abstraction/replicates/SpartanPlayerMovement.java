@@ -531,8 +531,7 @@ public class SpartanPlayerMovement {
     public void setDetectionLocation(boolean force) {
         if (force
                 || !this.location.world.equals(this.detectionLocation.world)
-                || this.location.getChunkX() != this.detectionLocation.getChunkX()
-                || this.location.getChunkZ() != this.detectionLocation.getChunkZ()) {
+                || this.location.distance(this.detectionLocation) > PlayerUtils.terminalVelocity) {
             SpartanLocation location = this.getLocation();
             int minHeight = BlockUtils.getMinHeight(location.world);
 
