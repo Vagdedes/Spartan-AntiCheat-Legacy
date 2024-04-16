@@ -45,7 +45,6 @@ public class SpartanPlayerMovement {
     private long lastHeadMovement;
     private boolean gliding, swimming, sprinting, sneaking, flying;
     private SpartanLocation location, fromLocation, eventTo, eventFrom, detectionLocation;
-    private long locationTime;
 
     SpartanPlayerMovement(SpartanPlayer parent, Player p) {
         this.parent = parent;
@@ -91,7 +90,6 @@ public class SpartanPlayerMovement {
         this.eventTo = this.location;
         this.eventFrom = this.location;
         this.detectionLocation = this.location;
-        this.locationTime = 0L;
     }
 
     public double getCustomDistance() {
@@ -487,25 +485,15 @@ public class SpartanPlayerMovement {
             return vehicle;
         } else {
             if (SpartanBukkit.isSynchronised()) {
-                long ms = System.currentTimeMillis();
+                Player p = this.parent.getPlayer();
 
-                if ((ms - this.locationTime) > TPS.tickTime) {
-                    this.locationTime = ms;
-                    Player p = this.parent.getPlayer();
-
-                    if (p != null) {
-                        SpartanLocation from = this.location.clone();
-                        this.location = new SpartanLocation(this.parent, p.getLocation());
-
-                        if (from != null) {
-                            this.location.retrieveDataFrom(from);
-                        }
-                    } else {
-                        this.location = new SpartanLocation();
-                    }
+                if (p != null) {
+                    SpartanLocation from = this.location.clone();
+                    this.location = new SpartanLocation(this.parent, p.getLocation());
+                    this.location.retrieveDataFrom(from);
                 }
             }
-            return location;
+            return this.location;
         }
     }
 
@@ -567,10 +555,6 @@ public class SpartanPlayerMovement {
 
     public void setFromLocation(SpartanLocation loc) {
         this.fromLocation = loc;
-    }
-
-    public void resetLocationData() {
-        this.locationTime = 0L;
     }
 
     // Separator

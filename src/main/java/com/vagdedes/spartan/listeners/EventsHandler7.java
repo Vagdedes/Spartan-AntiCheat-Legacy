@@ -177,7 +177,6 @@ public class EventsHandler7 implements Listener {
         }
         // Object
         p.resetHandlers();
-        p.movement.resetLocationData();
 
         // Detections
         CheckDelay.cancel(p.uuid, 20);

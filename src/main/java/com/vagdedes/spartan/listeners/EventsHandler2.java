@@ -35,11 +35,6 @@ public class EventsHandler2 implements Listener {
         boolean cancelled = e.isCancelled();
         SpartanLocation to = new SpartanLocation(p, nto);
 
-        // Object
-        if (!cancelled) {
-            p.movement.resetLocationData();
-        }
-
         // System
         p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, to);
     }

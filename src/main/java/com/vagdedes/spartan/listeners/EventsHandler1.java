@@ -101,7 +101,6 @@ public class EventsHandler1 implements Listener {
             }
         }
         p.resetHandlers();
-        p.movement.resetLocationData();
         p.movement.setDetectionLocation(true);
         p.setDead(true);
         p.setSleeping(false);
@@ -121,7 +120,6 @@ public class EventsHandler1 implements Listener {
         p.getExecutor(Enums.HackType.IrregularMovements).handle(false, null);
 
         // Objects
-        p.movement.resetLocationData();
         p.movement.setDetectionLocation(true);
         p.setDead(false);
         p.setSleeping(false);

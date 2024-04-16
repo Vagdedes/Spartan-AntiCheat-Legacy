@@ -237,7 +237,6 @@ public class SpartanPlayer {
                         }
                     }
                     p.nearbyEntitiesDistance = 0;
-                    p.movement.resetLocationData();
                     p.runCheck.clear();
                     p.runCheckAccountLag.clear();
 

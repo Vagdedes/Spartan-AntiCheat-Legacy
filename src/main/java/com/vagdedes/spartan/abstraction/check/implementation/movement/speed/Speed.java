@@ -387,22 +387,6 @@ public class Speed extends CheckExecutor {
                 }
 
                 //Separator
-                if (ver > 0.0 && air <= 12
-                        && !explosion
-                        && !jumping
-                        && (dmCopy == Speed.air || dmCopy == ground || dmCopy == ground_jump_speed || dmCopy == ground_block_speed
-                        || dmCopy == ground_block_speed_extended || dmCopy == sneaking || dmCopy == walking)
-                        && (!groundVanilla || !groundCustom)
-                        && !BouncingBlocks.isBelow(player)
-                        && !BlockUtils.isSlime(player, to, 2)
-                        && !PatternUtils.isBlockPattern(hopIllegalSingle, to, true, BlockUtils.solid, BlockUtils.semi_solid)
-                        && !PatternUtils.isBlockPattern(hopIllegal, to, true, BlockUtils.semi_solid)
-                        && !BlockUtils.isSlime(player, to, 3)
-                        && buffer.start("hop=illegal", 10, Check.detectionMeasurementTicks) >= 0.4) {
-                    cancel("type: hop(illegal), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
-                }
-
-                //Separator
                 if (dmCopy == upwards) {
                     double diff = Math.abs(hor - oldHor);
 
@@ -437,6 +421,7 @@ public class Speed extends CheckExecutor {
                 if (dmCopy == ice && !aboveBlocksCopy && !piston) {
                     if (hor >= 0.5
                             && buffer.start("ice-speed=counter", 20, Check.detectionMeasurementTicks) >= 0.35) {
+                        buffer.remove("ice-speed=counter");
                         cancel("type: ice-speed(counter), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                     if (groundCustom && hor >= (dmCopy * (2.0 / 3.0))
@@ -511,7 +496,8 @@ public class Speed extends CheckExecutor {
 
                     if (allow
                             && !PatternUtils.isBlockPattern(groundLocations, to, true, BlockUtils.semi_solid)
-                            && buffer.start("high_normal_speed", 20, Check.detectionMeasurementTicks) >= 0.9) {
+                            && buffer.start("high-normal-speed", 20, Check.detectionMeasurementTicks) >= 0.9) {
+                        buffer.remove("high-normal-speed");
                         cancel("type: ground(high), horizontal: " + hor + ", limit: " + dmCopy, player.movement.getDetectionLocation());
                     }
                     long time = player.getTimer(hackType).get("repeated=" + v);
