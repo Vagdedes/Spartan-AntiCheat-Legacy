@@ -1449,7 +1449,7 @@ public class SpartanPlayer {
 
     public boolean safeTeleport(SpartanLocation loc) {
         if (this.getWorld().equals(loc.world)) {
-            return this.teleport(movement.getLocation());
+            return this.teleport(loc);
         } else {
             return false;
         }
@@ -1501,7 +1501,6 @@ public class SpartanPlayer {
                     loopLocation.setY(Math.floor(progressiveY) + Math.max(blockBox, box));
                 }
                 safeTeleport(loopLocation);
-                this.debug(false, false, loopLocation.getY(), this.movement.getLocation().getY());
                 break;
             }
         }
