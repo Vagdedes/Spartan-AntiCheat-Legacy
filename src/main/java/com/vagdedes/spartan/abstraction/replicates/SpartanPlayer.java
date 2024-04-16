@@ -3,10 +3,6 @@ package com.vagdedes.spartan.abstraction.replicates;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.data.Timer;
-import com.vagdedes.spartan.abstraction.data.*;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.FastBow;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.HitReach;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.VelocityCheck;
@@ -27,6 +23,10 @@ import com.vagdedes.spartan.abstraction.check.implementation.player.FastEat;
 import com.vagdedes.spartan.abstraction.check.implementation.player.FastHeal;
 import com.vagdedes.spartan.abstraction.check.implementation.player.NoSwing;
 import com.vagdedes.spartan.abstraction.check.implementation.world.*;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.data.Timer;
+import com.vagdedes.spartan.abstraction.data.*;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
@@ -1452,7 +1452,6 @@ public class SpartanPlayer {
         if (this.getWorld().equals(loc.world)) {
             return this.teleport(movement.getLocation());
         } else {
-            this.debug(false, false, false);
             return false;
         }
     }
@@ -1470,7 +1469,8 @@ public class SpartanPlayer {
         }
         SpartanLocation locationP1 = location.clone().add(0, 1, 0);
 
-        if (BlockUtils.isSolid(locationP1) && !(BlockUtils.areWalls(locationP1) || BlockUtils.canClimb(locationP1))) {
+        if (BlockUtils.isSolid(locationP1)
+                && !(BlockUtils.areWalls(locationP1) || BlockUtils.canClimb(locationP1))) {
             return false;
         }
         World world = getWorld();
@@ -1487,7 +1487,7 @@ public class SpartanPlayer {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
             Material material = loopLocation.getBlock().material;
 
-            if (iterations != PlayerUtils.chunkInt
+            if (iterations != PlayerUtils.chunk
                     && (BlockUtils.canClimb(material)
                     || BlockUtils.areWalls(material)
                     || !BlockUtils.isSolid(material))) {

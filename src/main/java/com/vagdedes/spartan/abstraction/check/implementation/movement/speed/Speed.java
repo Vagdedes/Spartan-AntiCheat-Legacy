@@ -30,7 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Speed extends CheckExecutor { // todo fix buffers and debug check
+public class Speed extends CheckExecutor {
 
     public static final HackType check = HackType.Speed;
     private final SprintSpeed sprintDetection;
@@ -200,7 +200,7 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
                 extremelyPushed = player.getHandlers().has(Handlers.HandlerType.ExtremeCollision),
                 fairlyPushed = extremelyPushed || PlayerUtils.hasNearbyCollisions(player),
                 piston = player.getHandlers().has(Handlers.HandlerType.Piston),
-                honey = !PatternUtils.isBlockPattern(Speed.honey, to, true, BlockUtils.honey_block);
+                honey = PatternUtils.isBlockPattern(Speed.honey, to, true, BlockUtils.honey_block);
         SpartanLocation loc1 = to.clone().add(0, 1, 0),
                 locM1 = to.clone().add(0, -1, 0);
 
@@ -213,7 +213,8 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
 
             if (piston) {
                 dm = cacheLimit(decimals, dm, blocks_ice, 15);
-            } else if (player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak) || BlockUtils.isSlime(player, to, 2)) {
+            } else if (player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
+                    || BlockUtils.isSlime(player, to, 2)) {
                 dm = cacheLimit(decimals, dm, blocks_slime, 15);
             } else {
                 dm = cacheLimit(decimals, dm, blocks, 15);
@@ -291,7 +292,6 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
             if (getGreaterRepetitiveLimit(decimals) == blocks_ice || !cooldowns.canDo("ice=reminder")) {
                 dm = cacheLimit(decimals, dm, ice, 10);
             } else if (honey || BlockUtils.isSlime(player, to, 3)) {
-
                 if (PatternUtils.isBlockPattern(aboveBlock, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                     dm = cacheLimit(decimals, dm, blocks_slime, 12);
                 } else {
@@ -331,10 +331,8 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
         // Always after calculating all limits
         double limitTicks = getLimitTicks(decimals);
 
-        if (decimals.has(limitTicks)) {
-            limitTicks -= 1;
-
-            if (limitTicks <= 0) {
+        if (limitTicks > 0) {
+            if (--limitTicks == 0) {
                 decimals.remove(new String[]{
                         "repetitive-limit",
                         "ticks"
@@ -850,19 +848,12 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
     }
 
     private double cacheLimit(Decimals decimals, double existingLimit, double newLimit, int ticks) {
-        if (newLimit > existingLimit) {
+        if (newLimit >= existingLimit) {
             existingLimit = newLimit;
-        }
-        if (ticks > 0) {
-            double repetitiveLimit = decimals.get("repetitive-limit", 0.0);
 
-            if (existingLimit >= repetitiveLimit) {
-                if (existingLimit != repetitiveLimit) {
-                    decimals.set("repetitive-limit", existingLimit);
-                }
-                if (ticks >= decimals.get("ticks", 0.0)) {
-                    decimals.set("ticks", ticks);
-                }
+            if (ticks > 0 && ticks >= getLimitTicks(decimals)) {
+                decimals.set("repetitive-limit", existingLimit);
+                decimals.set("ticks", ticks);
             }
         }
         return existingLimit;
@@ -873,6 +864,6 @@ public class Speed extends CheckExecutor { // todo fix buffers and debug check
     }
 
     private double getLimitTicks(Decimals decimals) {
-        return decimals.get("ticks");
+        return decimals.get("ticks", 0.0);
     }
 }

@@ -69,7 +69,6 @@ public class PlayerUtils {
     public static final int
             height,
             fallDamageBlocks = 4,
-            chunkInt = AlgebraUtils.integerRound(chunk),
             jumpingMotions = 5;
 
     private static final Set<Double> jumps = new HashSet<>(jumpingMotions);
