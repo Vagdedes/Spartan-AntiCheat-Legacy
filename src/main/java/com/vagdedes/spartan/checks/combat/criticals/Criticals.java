@@ -126,7 +126,7 @@ public class Criticals extends CheckExecutor {
                     && player.getBuffer(hackType).start(
                     "location=attempts",
                     ticks,
-                    Check.violationsMeasurementTicks
+                    Check.detectionMeasurementTicks
             ) >= (2 / (double) ticks)) {
                 cancel("type: location, fall-distance: " + fallDistance);
             }

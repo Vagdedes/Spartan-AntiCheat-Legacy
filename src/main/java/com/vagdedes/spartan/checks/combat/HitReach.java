@@ -93,7 +93,7 @@ public class HitReach extends CheckExecutor {
                             }
 
                             if (!NoHitDelay.hasCooldown(player) && (!isPlayer || !NoHitDelay.hasCooldown(damaged))
-                                    && buffer.start("horizontal=" + minimumNotReached, ticks, Check.violationsMeasurementTicks) >= (attempts / (double) ticks)) {
+                                    && buffer.start("horizontal=" + minimumNotReached, ticks, Check.detectionMeasurementTicks) >= (attempts / (double) ticks)) {
                                 cancel("type: horizontal, distance: " + distance + ", limit: " + limit + ", preferred-limit: " + preferredLimit);
                             }
                         }

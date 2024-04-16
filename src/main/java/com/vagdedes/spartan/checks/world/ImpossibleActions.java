@@ -226,7 +226,7 @@ public class ImpossibleActions extends CheckExecutor {
                             Buffer buffer = player.getBuffer(hackType);
                             String scenario = scaffold ? "scaffold" : "tower";
 
-                            if (buffer.start(scenario, 20, Check.violationsMeasurementTicks) >= (!scaffold ? 0.2 : 0.25)) {
+                            if (buffer.start(scenario, 20, Check.detectionMeasurementTicks) >= (!scaffold ? 0.2 : 0.25)) {
                                 buffer.remove(scenario);
                                 cancel("type: " + scenario
                                                 + ", block: " + BlockUtils.materialToString(blockType)

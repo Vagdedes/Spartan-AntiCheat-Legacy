@@ -64,7 +64,7 @@ public class FastHeal extends CheckExecutor {
                         if (limit > 0L) {
                             Buffer buffer = player.getBuffer(hackType);
 
-                            if (time < limit && buffer.start(checkID, 10, Check.violationsMeasurementTicks) >= 0.3) {
+                            if (time < limit && buffer.start(checkID, 10, Check.detectionMeasurementTicks) >= 0.3) {
                                 buffer.remove(checkID);
                                 cancel("type: default, ms: " + time + ", limit: " + limit);
                             }

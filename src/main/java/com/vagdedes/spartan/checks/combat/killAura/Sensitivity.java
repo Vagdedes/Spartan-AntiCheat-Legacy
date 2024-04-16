@@ -59,8 +59,8 @@ public class Sensitivity extends DetectionExecutor {
 
                             if (gcd <= minimumGCD) {
                                 if (gcd <= safeGCD ?
-                                        buffer.start(key + "=safe", 20, Check.violationsMeasurementTicks) >= 0.25 :
-                                        buffer.start(key, 20, Check.violationsMeasurementTicks) >= 0.65) {
+                                        buffer.start(key + "=safe", 20, Check.detectionMeasurementTicks) >= 0.25 :
+                                        buffer.start(key, 20, Check.detectionMeasurementTicks) >= 0.65) {
                                     buffer.remove(key);
                                     killAura.violateLive("type: sensitivity(minimum)"
                                             + ", pitch: " + pitch

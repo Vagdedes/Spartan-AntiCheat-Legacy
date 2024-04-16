@@ -126,10 +126,6 @@ public class Settings extends ConfigurationBuilder {
         }
     }
 
-    public List<String> getDefaultPunishmentCommands() {
-        return defaultPunishments;
-    }
-
     public List<String> getPunishmentCommands() {
         if (punishments != null) {
             return new ArrayList<>(punishments);

@@ -135,7 +135,7 @@ public class MorePackets extends CheckExecutor {
                                     || buffer.start(
                                     instantMotionKey + "=second",
                                     1,
-                                    Check.violationsMeasurementTicks
+                                    Check.detectionMeasurementTicks
                             ) >= 2.0)) { // Third stage
                                 buffer.remove(new String[]{
                                         instantMotionKey + "=first",

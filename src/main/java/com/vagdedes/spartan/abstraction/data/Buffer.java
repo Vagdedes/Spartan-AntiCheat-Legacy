@@ -16,7 +16,8 @@ public class Buffer {
     private static class BufferChild {
 
         private final Buffer parent;
-        private long count, start;
+        private int count;
+        private long start;
 
         private BufferChild(Buffer buffer) {
             this.parent = buffer;
@@ -28,40 +29,23 @@ public class Buffer {
         }
 
         private int increase(int amount) {
-            long tick = TPS.getTick(this.parent.player);
-
-            if (this.count <= tick) {
-                this.count = tick + amount;
-                this.start = tick;
-                return 1;
-            } else {
-                this.count += amount;
-                return this.simpleCount(tick);
-            }
+            this.count += amount;
+            return this.count;
         }
 
         private int decrease(int amount) {
             if (this.count > amount) {
                 this.count -= amount;
-                return this.simpleCount(TPS.getTick(this.parent.player));
+                return this.count;
             } else {
-                this.count = 0L;
+                this.count = 0;
                 return 0;
             }
         }
 
-        private int count() {
-            long tick = TPS.getTick(this.parent.player);
-            return this.count <= tick ? 0 : this.simpleCount(tick);
-        }
-
-        private int simpleCount(long tick) {
-            return (int) (this.count - tick);
-        }
-
         private void reset() {
-            this.count = 0L;
-            this.start = 0L;
+            this.count = 0;
+            this.start = TPS.getTick(this.parent.player);
         }
     }
 
@@ -84,7 +68,7 @@ public class Buffer {
         synchronized (storage) {
             obj = storage.get(name);
         }
-        return obj != null ? obj.count() : 0;
+        return obj != null ? obj.count : 0;
     }
 
     public void set(String name, int amount) {

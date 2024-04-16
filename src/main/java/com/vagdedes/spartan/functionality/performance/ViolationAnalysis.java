@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.performance;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.math.implementation.NumberRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
@@ -165,7 +164,7 @@ public class ViolationAnalysis {
 
                 if (!violations.isEmpty()) {
                     for (PlayerViolation violation : violations) {
-                        long time = AlgebraUtils.floorToNearest(violation.time, Check.violationsMeasurementDuration);
+                        long time = AlgebraUtils.floorToNearest(violation.time, ResearchEngine.violationsMeasurementDuration);
                         PlayerViolation highest = highestViolation.get(time);
 
                         if (highest == null || violation.level > highest.level) {

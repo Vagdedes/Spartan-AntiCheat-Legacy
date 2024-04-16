@@ -65,7 +65,7 @@ public class Strafe extends DetectionExecutor {
 
                                         if (distanceDifference < differenceRequirement
                                                 && nmsDistanceDifference < differenceRequirement
-                                                && buffer.start(key, 20, Check.violationsMeasurementTicks) >= 0.35) {
+                                                && buffer.start(key, 20, Check.detectionMeasurementTicks) >= 0.35) {
                                             cancel("type: strafe"
                                                     + ", directional-distance: " + directionalDistance
                                                     + ", directional-distance-difference: " + distanceDifference

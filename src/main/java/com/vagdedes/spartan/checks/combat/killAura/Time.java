@@ -88,7 +88,7 @@ public class Time extends DetectionExecutor {
                             Buffer buffer = player.getBuffer(hackType);
                             int ticks = 10 * ((int) dynamicMinimumTime);
 
-                            if (buffer.start(subKey, ticks, Check.violationsMeasurementTicks) == (8 / (double) ticks)) {
+                            if (buffer.start(subKey, ticks, Check.detectionMeasurementTicks) == (8 / (double) ticks)) {
                                 buffer.remove(subKey);
                                 cancel("type: time(consistency)"
                                         + ", width: " + width

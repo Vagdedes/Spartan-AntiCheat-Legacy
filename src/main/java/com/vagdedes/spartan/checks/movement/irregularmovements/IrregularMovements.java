@@ -477,16 +477,16 @@ public class IrregularMovements extends CheckExecutor {
 
             Buffer bufferObj = player.getBuffer(hackType);
             String key = sharedInstance ? instance.split("-", 2)[0].substring(1) : instance;
-            violate = (bufferAmount = bufferObj.start(key, time, Check.violationsMeasurementTicks)) >= (buffer/(double)time);
+            violate = (bufferAmount = bufferObj.start(key, time, Check.detectionMeasurementTicks)) >= (buffer / (double) time);
 
             if (violate) {
                 prevention = true;
                 bufferObj.remove(key); // Reset buffer after its completion
             } else {
-                prevention = suspected && bufferAmount > 2.0; // Create fake violation if circumstances are met
+                prevention = suspected && bufferAmount > (2 / (double) time); // Create fake violation if circumstances are met
             }
         } else {
-            bufferAmount = 0.0;
+            bufferAmount = 0;
             hasBuffer = false;
             prevention = true;
             violate = true;

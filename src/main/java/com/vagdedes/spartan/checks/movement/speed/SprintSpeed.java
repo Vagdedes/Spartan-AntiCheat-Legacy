@@ -85,7 +85,7 @@ public class SprintSpeed extends DetectionExecutor {
                         player.movement.isSprintJumping() ? 3
                                 : 0;
 
-                if (cases != 0 && buffer.start("food=level", 15, Check.violationsMeasurementTicks) >= 0.66) {
+                if (cases != 0 && buffer.start("food=level", 15, Check.detectionMeasurementTicks) >= 0.66) {
                     cancel(
                             "type: sprint(food-level), case: " + cases,
                             player.movement.getDetectionLocation()
@@ -121,7 +121,7 @@ public class SprintSpeed extends DetectionExecutor {
                         double distance = to.distance(comparison);
 
                         if (distance <= distanceRequirement
-                                && (!jumping || buffer.start(key + direction.name, 20, Check.violationsMeasurementTicks) >= 0.6)) {
+                                && (!jumping || buffer.start(key + direction.name, 20, Check.detectionMeasurementTicks) >= 0.6)) {
                             violated = true;
                             cancel(
                                     "type: sprint(omnidirectional)"

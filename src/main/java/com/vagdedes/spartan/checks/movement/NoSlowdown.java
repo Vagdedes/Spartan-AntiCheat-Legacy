@@ -148,7 +148,7 @@ public class NoSlowdown extends CheckExecutor {
                     Buffer buffer = player.getBuffer(hackType);
                     String key = "use=" + reason;
 
-                    if (limit == 1 || buffer.start(key, 10, Check.violationsMeasurementTicks) >= (limit / 10.0)) {
+                    if (limit == 1 || buffer.start(key, 10, Check.detectionMeasurementTicks) >= (limit / 10.0)) {
                         buffer.remove(key);
                         String verbose = "type: " + reason
                                 + ", holding: " + items

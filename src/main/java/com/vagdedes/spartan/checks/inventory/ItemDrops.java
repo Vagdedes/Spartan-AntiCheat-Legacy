@@ -31,7 +31,7 @@ public class ItemDrops extends CheckExecutor {
             if (time <= 50L) {
                 Buffer buffer = player.getBuffer(check);
 
-                if (buffer.start("", 10, Check.violationsMeasurementTicks) >= 0.7) {
+                if (buffer.start("", 10, Check.detectionMeasurementTicks) >= 0.7) {
                     buffer.remove("");
                     cancel("type: default, ms: " + time, null, 10);
                 }

@@ -35,6 +35,8 @@ import java.util.*;
 
 public class LiveViolation {
 
+    private static final long violationTimeWorth = 1_000L;
+
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
     private long lastTick;
@@ -52,17 +54,17 @@ public class LiveViolation {
 
     // Separator
 
-    void run(HackPrevention newPrevention) {
+    void run(HackPrevention newPrevention, String information, long time, long tick) {
         synchronized (this) {
             if (!CheckDelay.hasCooldown(player)
-                    && !CloudBase.isPublicInformationCancelled(hackType, newPrevention.information)
+                    && !CloudBase.isPublicInformationCancelled(hackType, information)
                     && (disableCause == null
-                    || !disableCause.pointerMatches(newPrevention.information))) {
-                InformationAnalysis analysis = new InformationAnalysis(hackType, newPrevention.information);
+                    || !disableCause.pointerMatches(information))) {
+                InformationAnalysis analysis = new InformationAnalysis(hackType, information);
                 PlayerViolation playerViolation = new PlayerViolation(
-                        newPrevention.time,
+                        time,
                         hackType,
-                        newPrevention.information,
+                        information,
                         Math.max(
                                 this.getLevel(analysis.identity) + 1,
                                 AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
@@ -70,7 +72,7 @@ public class LiveViolation {
                         analysis
                 );
                 boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-                this.lastTick = newPrevention.tick;
+                this.lastTick = tick;
                 this.player.setLastViolation(this);
 
                 Runnable runnable = () -> {
@@ -79,7 +81,7 @@ public class LiveViolation {
                                 player.getPlayer(),
                                 hackType,
                                 playerViolation.level,
-                                newPrevention.information
+                                information
                         );
                         Register.manager.callEvent(playerViolationEvent);
 
@@ -94,7 +96,7 @@ public class LiveViolation {
                     this.prevention = newPrevention;
                     this.prevention.canPrevent = !hackType.getCheck().isSilent(player.getWorld().getName())
                             && (silentCause == null
-                            || !silentCause.pointerMatches(newPrevention.information))
+                            || !silentCause.pointerMatches(information))
                             && (player.getProfile().isSuspectedOrHacker(hackType)
                             || playerViolation.level >= playerViolation.getIgnoredViolations(player));
                 };
@@ -146,7 +148,7 @@ public class LiveViolation {
     private int calculateLevel(long time) {
         time -= System.currentTimeMillis();
         return time > 0L
-                ? AlgebraUtils.integerCeil(time / (double) Check.violationTimeWorth)
+                ? AlgebraUtils.integerCeil(time / (double) violationTimeWorth)
                 : 0;
     }
 
@@ -181,14 +183,14 @@ public class LiveViolation {
             Long time = this.level.get(hash);
 
             if (time == null) {
-                this.level.put(hash, System.currentTimeMillis() + (Check.violationTimeWorth * multiplier));
+                this.level.put(hash, System.currentTimeMillis() + (violationTimeWorth * multiplier));
             } else {
                 long current = System.currentTimeMillis();
 
                 if (time < current) {
-                    this.level.put(hash, current + (Check.violationTimeWorth * multiplier));
+                    this.level.put(hash, current + (violationTimeWorth * multiplier));
                 } else {
-                    this.level.put(hash, time + (Check.violationTimeWorth * multiplier));
+                    this.level.put(hash, time + (violationTimeWorth * multiplier));
                 }
             }
         }

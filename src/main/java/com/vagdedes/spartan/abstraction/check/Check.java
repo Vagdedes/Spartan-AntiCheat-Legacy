@@ -24,9 +24,7 @@ public class Check {
     public static final int
             maxCommands = 10,
             standardIgnoredViolations = 3,
-            violationsMeasurementDuration = 60_000,
-            violationsMeasurementTicks = violationsMeasurementDuration / TPS.tickTimeInteger,
-            violationTimeWorth = 1_000;
+            detectionMeasurementTicks = AlgebraUtils.integerRound(TPS.maximum * 20);
 
     // Object
 

@@ -173,7 +173,7 @@ public class Pattern extends DetectionExecutor {
                 Buffer buffer = player.getBuffer(hackType);
                 int ticks = (minObservations * 2) * CombatUtils.getFightTicks(player);
 
-                if (buffer.start(key, ticks, Check.violationsMeasurementTicks) == (2 / (double) ticks)) { // Once suspected, player has 2 more tries time-wise to complete the 2nd point
+                if (buffer.start(key, ticks, Check.detectionMeasurementTicks) == (2 / (double) ticks)) { // Once suspected, player has 2 more tries time-wise to complete the 2nd point
                     buffer.remove(key);
                     cancel("type: pattern(short)"
                             + ", scenario: " + scenario

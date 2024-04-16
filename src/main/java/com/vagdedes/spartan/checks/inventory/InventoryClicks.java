@@ -49,7 +49,7 @@ public class InventoryClicks extends CheckExecutor {
                 if (shift
                         && !quick
                         && !player.getOpenInventory().isUsingTheCursor()
-                        && buffer.start(key + "shift", 5, Check.violationsMeasurementTicks) > 0.5) { // Inventory
+                        && buffer.start(key + "shift", 5, Check.detectionMeasurementTicks) > 0.5) { // Inventory
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);
                 } else {
@@ -59,16 +59,16 @@ public class InventoryClicks extends CheckExecutor {
                     if (timer.has(time)
                             && (!shift && !quick || newHash != oldHash)) {
                         if (time < 150L) {
-                            if (buffer.start("slow", 10, Check.violationsMeasurementTicks) >= 0.8) {
+                            if (buffer.start("slow", 10, Check.detectionMeasurementTicks) >= 0.8) {
                                 buffer.remove("slow");
                                 cancel("type: slow, ms: " + time + ", item: " + type);
                             }
                             if (time < 100L) {
-                                if (buffer.start("average", 5, Check.violationsMeasurementTicks) >= 0.8) {
+                                if (buffer.start("average", 5, Check.detectionMeasurementTicks) >= 0.8) {
                                     buffer.remove("average");
                                     cancel("type: average, ms: " + time + ", item: " + type);
                                 }
-                                if (time < 50L && buffer.start("fast", 5, Check.violationsMeasurementTicks) >= (time == 0L ? 0.8 : 0.2)) {
+                                if (time < 50L && buffer.start("fast", 5, Check.detectionMeasurementTicks) >= (time == 0L ? 0.8 : 0.2)) {
                                     buffer.remove("fast");
                                     cancel("type: fast, ms: " + time + ", item: " + type);
                                 }

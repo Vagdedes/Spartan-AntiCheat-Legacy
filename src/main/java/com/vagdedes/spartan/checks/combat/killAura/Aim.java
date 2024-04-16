@@ -347,7 +347,7 @@ public class Aim extends DetectionExecutor {
                                 averageAccuracy /= tableGeneralizationLevel;
 
                                 if (averageAccuracy < 1.0) {
-                                    if (buffer.start(entityKey, bufferTime, Check.violationsMeasurementTicks) >= (bufferThreshold / (double) bufferTime)) {
+                                    if (buffer.start(entityKey, bufferTime, Check.detectionMeasurementTicks) >= (bufferThreshold / (double) bufferTime)) {
                                         buffer.remove(entityKey);
                                         remove(entity, null);
                                         killAura.violateLive(
@@ -380,7 +380,7 @@ public class Aim extends DetectionExecutor {
             } else {
                 String entityOffRangeKey = "=off-range";
 
-                if (buffer.start(entityOffRangeKey, 20, Check.violationsMeasurementTicks) >= 0.15) {
+                if (buffer.start(entityOffRangeKey, 20, Check.detectionMeasurementTicks) >= 0.15) {
                     buffer.remove(entityOffRangeKey);
                     buffer.remove(entityKey);
                     remove(entity, null);

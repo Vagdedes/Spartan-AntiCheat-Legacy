@@ -43,7 +43,7 @@ public class Movement extends DetectionExecutor {
                         if (buffer.start(
                                 key,
                                 ticks,
-                                Check.violationsMeasurementTicks
+                                Check.detectionMeasurementTicks
                         ) == (6 / (double) ticks)) {
                             buffer.remove(key);
                             cancel("type: movement"

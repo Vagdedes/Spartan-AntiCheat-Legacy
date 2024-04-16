@@ -35,7 +35,7 @@ public class Direction extends DetectionExecutor {
             Buffer buffer = player.getBuffer(hackType);
             int ticks = CombatUtils.getFightTicks(player) * 5;
 
-            if (buffer.start(key, ticks, Check.violationsMeasurementTicks) >= (2 / (double) ticks)) {
+            if (buffer.start(key, ticks, Check.detectionMeasurementTicks) >= (2 / (double) ticks)) {
                 buffer.remove(key);
                 cancel("type: direction(beyond-buffered)"
                         + ", entity: " + CombatUtils.entityToString(entity)

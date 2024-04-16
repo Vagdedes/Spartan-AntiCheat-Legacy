@@ -197,11 +197,11 @@ public class NoFall extends CheckExecutor {
 
                         if (player.isOnGroundCustom()
                                 && (!player.bedrockPlayer
-                                || buffer.start(ratioKey + "ground", bufferTicks, Check.violationsMeasurementTicks) >= (bufferRequirement / (double) bufferTicks))) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
+                                || buffer.start(ratioKey + "ground", bufferTicks, Check.detectionMeasurementTicks) >= (bufferRequirement / (double) bufferTicks))) { // Attention: p.isOnGroundCustom() replace isOnGround(to, 0, 0, 0) recently
                             cases = 1;
                         } else if (vertical == 0.0
                                 && (requiresSuspicion
-                                || buffer.start(ratioKey + "movement", bufferTicks, Check.violationsMeasurementTicks) >= (bufferRequirement / (double) bufferTicks))) {
+                                || buffer.start(ratioKey + "movement", bufferTicks, Check.detectionMeasurementTicks) >= (bufferRequirement / (double) bufferTicks))) {
                             buffer.remove(ratioKey + "movement");
                             cases = 2;
                         } else if (vertical > 0.0) {

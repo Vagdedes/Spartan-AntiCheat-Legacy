@@ -46,12 +46,12 @@ public class FastPlace extends CheckExecutor {
                         int ticks = 20;
 
                         if (time <= 150L) {
-                            if (buffer.start("slow", ticks, Check.violationsMeasurementTicks) >= 0.4) {
+                            if (buffer.start("slow", ticks, Check.detectionMeasurementTicks) >= 0.4) {
                                 cancel("type: slow, ms: " + time + ", block: " + BlockUtils.materialToString(material),
                                         null, ticks);
                             }
                             if (time <= 100L) {
-                                if (buffer.start("medium", ticks, Check.violationsMeasurementTicks) >= 0.35) {
+                                if (buffer.start("medium", ticks, Check.detectionMeasurementTicks) >= 0.35) {
                                     cancel("type: medium, ms: " + time + ", block: " + BlockUtils.materialToString(material),
                                             null, ticks);
                                 }
@@ -62,7 +62,7 @@ public class FastPlace extends CheckExecutor {
                                             && !player.bedrockPlayer
                                             && hackType.getCheck().getBooleanOption("check_fast", true)
                                             && !Compatibility.CompatibilityType.VeinMiner.isFunctional()
-                                            && buffer.start("fast", ticks, Check.violationsMeasurementTicks) >= 0.2) {
+                                            && buffer.start("fast", ticks, Check.detectionMeasurementTicks) >= 0.2) {
                                         cancel(detection + ", ms: " + time + ", block: " + BlockUtils.materialToString(material),
                                                 null, ticks);
                                     }

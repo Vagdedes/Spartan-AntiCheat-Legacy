@@ -46,7 +46,7 @@ public class FastBow extends CheckExecutor {
         Buffer buffer = player.getBuffer(hackType);
         String key = "bow-force";
 
-        if (buffer.start(key, 20, Check.violationsMeasurementTicks) >= 2) {
+        if (buffer.start(key, 20, Check.detectionMeasurementTicks) >= 2) {
             buffer.remove(key);
             cancel("type: bow-force, ms: " + time);
         }
@@ -56,7 +56,7 @@ public class FastBow extends CheckExecutor {
         if (hackType.getCheck().getBooleanOption("check_bow_shots", true)) {
             Buffer buffer = player.getBuffer(hackType);
 
-            if (buffer.start("bow-shots", 10, Check.violationsMeasurementTicks) >= 0.7) {
+            if (buffer.start("bow-shots", 10, Check.detectionMeasurementTicks) >= 0.7) {
                 buffer.remove("bow-shots");
                 cancel("type: bow-shots");
             }

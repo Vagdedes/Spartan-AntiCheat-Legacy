@@ -112,7 +112,7 @@ public class FastBreak extends CheckExecutor {
                 Buffer buffer = player.getBuffer(hackType);
                 String key = "breaks-per-second";
 
-                if (buffer.start(key, 20, Check.violationsMeasurementTicks) >= (limit / 20.0)) {
+                if (buffer.start(key, 20, Check.detectionMeasurementTicks) >= (limit / 20.0)) {
                     buffer.remove(key);
                     cancel(
                             "type: breaks-per-second"
@@ -148,12 +148,12 @@ public class FastBreak extends CheckExecutor {
                             || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Back-Diagonal
                             || block.x == lastBlock.x && block.y == (lastBlock.y + 1) && block.z == lastBlock.z // Up
                             || block.x == lastBlock.x && block.y == (lastBlock.y - 1) && block.z == lastBlock.z)) { // Down
-                        bufferThreshold = buffer.start(key, bufferTime, Check.violationsMeasurementTicks);
+                        bufferThreshold = buffer.start(key, bufferTime, Check.detectionMeasurementTicks);
                     } else {
                         bufferThreshold = buffer.get(key);
                     }
                 } else {
-                    bufferThreshold = buffer.start(key, bufferTime, Check.violationsMeasurementTicks);
+                    bufferThreshold = buffer.start(key, bufferTime, Check.detectionMeasurementTicks);
                 }
 
                 if (bufferThreshold >= (limit / (double) bufferTime)) {

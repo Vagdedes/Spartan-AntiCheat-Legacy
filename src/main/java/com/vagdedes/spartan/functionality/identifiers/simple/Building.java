@@ -31,7 +31,7 @@ public class Building {
             if ((ms <= TPS.tickTime
                     || blockFace == BlockFace.SELF)
                     && (p.getViolations(Enums.HackType.FastPlace).hasLevel()
-                    || p.getBuffer().start("building=protection=attempts", 20, Check.violationsMeasurementTicks) >= 0.25)) {
+                    || p.getBuffer().start("building=protection=attempts", 20, Check.detectionMeasurementTicks) >= 0.25)) {
                 handlers.disable(Handlers.HandlerType.TowerBuilding, 10);
 
                 if (Config.settings.getBoolean("Protections.disallowed_building")) {

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
@@ -37,6 +36,7 @@ import java.util.*;
 public class ResearchEngine {
 
     public static final double requiredProfiles = 10;
+    public static final int violationsMeasurementDuration = 60_000;
     private static final double minimumAverageMining = 16.0;
 
     private static final int cacheRefreshTicks = 1200;
@@ -769,7 +769,7 @@ public class ResearchEngine {
                                 }
 
                                 // Calculate the average violations for each executed detection and multiply to get the bigger image
-                                analysisDuration = Check.violationsMeasurementDuration / analysisDuration;
+                                analysisDuration = violationsMeasurementDuration / analysisDuration;
 
                                 for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
                                     entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * analysisDuration);
