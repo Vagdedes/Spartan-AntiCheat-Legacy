@@ -357,7 +357,7 @@ public class Speed extends CheckExecutor {
                                 || Compatibility.CompatibilityType.MythicMobs.isFunctional()
                                 || Compatibility.CompatibilityType.mcMMO.isFunctional() ? 0.6 :
                                 0.0,
-                hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.0)
+                hackType.getCheck().getDecimalOption("minimum_limit_in_blocks", 0.5)
         ), modifiedLimit = adjustLimit(to, reason, dm, difference, hasTrident, knockback, hitDelay, explosion, selfHit, damage, vehicle, minimumLimit),
                 dmCopy = dm;
         sprintDetection.setLimit(modifiedLimit);

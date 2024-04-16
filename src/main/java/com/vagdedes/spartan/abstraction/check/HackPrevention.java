@@ -26,13 +26,12 @@ public class HackPrevention {
     HackPrevention(SpartanPlayer player, Enums.HackType hackType, String information,
                    SpartanLocation location, int cancelTicks, boolean groundTeleport,
                    double damage) {
-        long time = System.currentTimeMillis(),
-                tick = TPS.getTick(player);
+        long time = System.currentTimeMillis();
         this.canPrevent = false;
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
-        this.expiration = tick + cancelTicks;
+        this.expiration = TPS.getTick(player) + cancelTicks;
         player.getViolations(hackType).run(this, information, time);
     }
 

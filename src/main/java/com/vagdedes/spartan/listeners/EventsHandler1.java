@@ -81,7 +81,6 @@ public class EventsHandler1 implements Listener {
             return;
         }
         // Detections
-        p.getExecutor(Enums.HackType.KillAura).handle(false, null);
         p.getExecutor(Enums.HackType.ImpossibleActions).run(false);
         p.getExecutor(Enums.HackType.AutoRespawn).run(false);
         p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, ImpossibleInventory.DEATH);
@@ -115,9 +114,6 @@ public class EventsHandler1 implements Listener {
         if (p == null) {
             return;
         }
-        // Detections
-        p.getExecutor(Enums.HackType.KillAura).handle(false, null);
-        p.getExecutor(Enums.HackType.IrregularMovements).handle(false, null);
 
         // Objects
         p.movement.setDetectionLocation(true);

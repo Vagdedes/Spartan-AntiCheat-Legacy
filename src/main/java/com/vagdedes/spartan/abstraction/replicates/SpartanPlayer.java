@@ -1501,6 +1501,7 @@ public class SpartanPlayer {
                     loopLocation.setY(Math.floor(progressiveY) + Math.max(blockBox, box));
                 }
                 safeTeleport(loopLocation);
+                this.debug(false, false, loopLocation.getY(), this.movement.getLocation().getY());
                 break;
             }
         }
