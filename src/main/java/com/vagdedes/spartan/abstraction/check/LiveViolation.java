@@ -39,7 +39,6 @@ public class LiveViolation {
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
-    private long lastTick;
     private final Map<Integer, Long> level;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
@@ -48,13 +47,12 @@ public class LiveViolation {
         this.player = player;
         this.hackType = hackType;
         this.level = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.lastTick = 0L;
         this.prevention = new HackPrevention();
     }
 
     // Separator
 
-    void run(HackPrevention newPrevention, String information, long time, long tick) {
+    void run(HackPrevention newPrevention, String information, long time) {
         synchronized (this) {
             if (!CheckDelay.hasCooldown(player)
                     && !CloudBase.isPublicInformationCancelled(hackType, information)
@@ -72,7 +70,6 @@ public class LiveViolation {
                         analysis
                 );
                 boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-                this.lastTick = tick;
                 this.player.setLastViolation(this);
 
                 Runnable runnable = () -> {
@@ -228,24 +225,6 @@ public class LiveViolation {
         // Always last
         player.getProfile().evidence.remove(hackType, true, false, true);
         InteractiveInventory.playerInfo.refresh(player.name);
-    }
-
-    // Separator
-
-    public boolean isDetected(boolean prevention) {
-        return lastTick == TPS.getTick(player)
-                && (!prevention
-                || !hackType.getCheck().isSilent(player.getWorld().getName()));
-    }
-
-    public boolean wasDetected(boolean prevention) {
-        return lastTick >= (TPS.getTick(player) - 1)
-                && (!prevention
-                || !hackType.getCheck().isSilent(player.getWorld().getName()));
-    }
-
-    public long getTicksPassed() {
-        return TPS.getTick(player) - lastTick;
     }
 
     // Separator

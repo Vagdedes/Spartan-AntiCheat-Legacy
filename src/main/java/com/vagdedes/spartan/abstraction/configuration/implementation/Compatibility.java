@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.configuration.implementation;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
-import com.vagdedes.spartan.checks.movement.speed.Speed;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
 import com.vagdedes.spartan.compatibility.manual.abilities.*;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShotPlus;

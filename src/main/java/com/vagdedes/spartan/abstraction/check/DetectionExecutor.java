@@ -7,9 +7,14 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 public abstract class DetectionExecutor {
+
+    private static final long
+            potentialProcessing = 10L,
+            tMinus = TPS.tickTime - potentialProcessing;
 
     public final CheckExecutor executor;
     public final Enums.HackType hackType;
@@ -24,10 +29,10 @@ public abstract class DetectionExecutor {
     protected final void runAsync(Runnable runnable) {
         if (!MultiVersion.folia
                 && (hackType.getCheck().isSilent(player.getWorld().getName())
-                || TPS.getMillisecondsPassed(player) <= 40L)) {
+                || TPS.getMillisecondsPassed(player) <= tMinus)) {
             SpartanBukkit.detectionThread.executeIfFreeElseHere(runnable);
         } else {
-            // If there are less than 10 milliseconds available and the check is not silent,
+            // If there are less than X milliseconds available and the check is not silent,
             // we definitely run the detection on the main thread because we run into the
             // danger of moving the possible prevention in the next tick
             runnable.run();

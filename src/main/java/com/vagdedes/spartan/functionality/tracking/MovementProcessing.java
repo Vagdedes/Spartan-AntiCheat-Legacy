@@ -2,7 +2,9 @@ package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 public class MovementProcessing {
 
@@ -21,24 +23,17 @@ public class MovementProcessing {
 
         // Extra Packets
         String key = "player-data=extra-packets";
+        double difference = p.movement.getCustomDistance() - dis;
+        p.getDecimals().add(key, difference, AlgebraUtils.integerRound(TPS.maximum));
 
-        if (!p.isDetected(true)) {
-            int maxTicks = 20;
-            double difference = p.movement.getCustomDistance() - dis;
-            p.getDecimals().add(key, difference, maxTicks);
-
-            if (p.getBuffer().increase(key, 1) >= maxTicks) {
-                p.getBuffer().remove(key);
-
-                if (p.getDecimals().get(key, 0.0, Decimals.CALCULATE_AVERAGE) >= 0.01) {
-                    p.movement.setExtraPackets(p.movement.getExtraPackets() + 1);
-                } else {
-                    p.movement.setExtraPackets(0);
-                }
-            }
-        } else { // Reset so it can again start from zero
+        if (p.getBuffer().increase(key, 1) >= TPS.maximum) {
             p.getBuffer().remove(key);
-            p.getDecimals().remove(key);
+
+            if (p.getDecimals().get(key, 0.0, Decimals.CALCULATE_AVERAGE) >= 0.01) {
+                p.movement.setExtraPackets(p.movement.getExtraPackets() + 1);
+            } else {
+                p.movement.setExtraPackets(0);
+            }
         }
     }
 }

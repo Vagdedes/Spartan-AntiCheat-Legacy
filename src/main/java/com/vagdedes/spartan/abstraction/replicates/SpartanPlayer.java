@@ -7,26 +7,26 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.data.*;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.checks.combat.FastBow;
-import com.vagdedes.spartan.checks.combat.HitReach;
-import com.vagdedes.spartan.checks.combat.VelocityCheck;
-import com.vagdedes.spartan.checks.combat.criticals.Criticals;
-import com.vagdedes.spartan.checks.combat.fastClicks.FastClicks;
-import com.vagdedes.spartan.checks.combat.killAura.KillAura;
-import com.vagdedes.spartan.checks.exploits.Exploits;
-import com.vagdedes.spartan.checks.inventory.ImpossibleInventory;
-import com.vagdedes.spartan.checks.inventory.InventoryClicks;
-import com.vagdedes.spartan.checks.inventory.ItemDrops;
-import com.vagdedes.spartan.checks.movement.MorePackets;
-import com.vagdedes.spartan.checks.movement.NoFall;
-import com.vagdedes.spartan.checks.movement.NoSlowdown;
-import com.vagdedes.spartan.checks.movement.irregularmovements.IrregularMovements;
-import com.vagdedes.spartan.checks.movement.speed.Speed;
-import com.vagdedes.spartan.checks.player.AutoRespawn;
-import com.vagdedes.spartan.checks.player.FastEat;
-import com.vagdedes.spartan.checks.player.FastHeal;
-import com.vagdedes.spartan.checks.player.NoSwing;
-import com.vagdedes.spartan.checks.world.*;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.FastBow;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.HitReach;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.VelocityCheck;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.criticals.Criticals;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.fastClicks.FastClicks;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.killAura.KillAura;
+import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;
+import com.vagdedes.spartan.abstraction.check.implementation.inventory.ImpossibleInventory;
+import com.vagdedes.spartan.abstraction.check.implementation.inventory.InventoryClicks;
+import com.vagdedes.spartan.abstraction.check.implementation.inventory.ItemDrops;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.NoSlowdown;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
+import com.vagdedes.spartan.abstraction.check.implementation.player.AutoRespawn;
+import com.vagdedes.spartan.abstraction.check.implementation.player.FastEat;
+import com.vagdedes.spartan.abstraction.check.implementation.player.FastHeal;
+import com.vagdedes.spartan.abstraction.check.implementation.player.NoSwing;
+import com.vagdedes.spartan.abstraction.check.implementation.world.*;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
@@ -227,7 +227,7 @@ public class SpartanPlayer {
                 for (SpartanPlayer p : players) {
                     if (clearCache) {
                         for (Enums.HackType hackType : Enums.HackType.values()) {
-                            if (p.getViolations(hackType).getTicksPassed() > 1200) {
+                            if (!p.getViolations(hackType).hasLevel()) {
                                 p.getBuffer(hackType).clear();
                                 p.getTimer(hackType).clear();
                                 p.getDecimals(hackType).clear();
@@ -627,34 +627,6 @@ public class SpartanPlayer {
 
     public void setLastViolation(LiveViolation liveViolation) {
         this.lastViolation = liveViolation;
-    }
-
-    // Separator
-
-    public boolean isDetected(boolean prevention) {
-        if (lastViolation.isDetected(prevention)) {
-            return true;
-        } else {
-            for (LiveViolation liveViolation : violations) {
-                if (liveViolation.isDetected(prevention)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public boolean wasDetected(boolean prevention) {
-        if (lastViolation.wasDetected(prevention)) {
-            return true;
-        } else {
-            for (LiveViolation liveViolation : violations) {
-                if (liveViolation.wasDetected(prevention)) {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 
     // Separator
@@ -1480,6 +1452,7 @@ public class SpartanPlayer {
         if (this.getWorld().equals(loc.world)) {
             return this.teleport(movement.getLocation());
         } else {
+            this.debug(false, false, false);
             return false;
         }
     }
@@ -1569,8 +1542,9 @@ public class SpartanPlayer {
                 p.teleport(location.getBukkitLocation());
             }
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     // Separator

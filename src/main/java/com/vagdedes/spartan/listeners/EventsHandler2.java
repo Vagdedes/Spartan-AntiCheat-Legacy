@@ -41,10 +41,7 @@ public class EventsHandler2 implements Listener {
         }
 
         // System
-        if (!p.wasDetected(true)) {
-            p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, to);
-            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, to);
-        }
+        p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, to);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

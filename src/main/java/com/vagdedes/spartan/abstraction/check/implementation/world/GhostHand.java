@@ -1,0 +1,93 @@
+package com.vagdedes.spartan.abstraction.check.implementation.world;
+
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
+import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
+import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.GameMode;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+
+public class GhostHand extends CheckExecutor {
+
+    private static final HackType check = HackType.GhostHand;
+
+    public GhostHand(SpartanPlayer player) {
+        super(check, player);
+    }
+
+    @Override
+    public boolean handleInternal(boolean cancelled, Object object) {
+        if (object instanceof BlockBreakEvent) {
+            BlockBreakEvent event = (BlockBreakEvent) object;
+
+            if (event.isCancelled()) {
+                player.getCooldowns(hackType).add("break-protection", 2);
+            } else if (canDo()) {
+                SpartanBlock b = new SpartanBlock(player, event.getBlock());
+
+                if (canDo(b)
+                        && hackType.getCheck().getBooleanOption("check_block_breaking", true)
+                        && !BlockUtils.isSensitive(player, b.material)) {
+                    SpartanBlock itb = player.getIllegalTargetBlock(b);
+
+                    if (itb != null
+                            && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
+                            || BlockUtils.isFullSolid(itb.material))) {
+                        cancel("type: break, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
+                                null, 1);
+                    }
+                }
+            }
+        } else if (canDo()) {
+            PlayerInteractEvent event = (PlayerInteractEvent) object;
+
+            if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
+
+                if (canDo(b)
+                        || !hackType.getCheck().getBooleanOption("check_player_interactions", true)
+                        || !BlockUtils.isChangeable(b.getLocation())
+                        && !BlockUtils.areEggs(player.getItemInHand().getType())) {
+                    SpartanBlock itb = player.getIllegalTargetBlock(b);
+
+                    if (itb != null
+                            && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
+                            || BlockUtils.isFullSolid(itb.material))) {
+                        cancel("type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
+                                null, 1);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean runInternal(boolean cancelled) {
+        return false;
+    }
+
+    private boolean canDo(SpartanBlock b) {
+        return b.world == player.getWorld() && !BlockUtils.areWires(b.material);
+    }
+
+    @Override
+    protected boolean canDo() {
+        if (player.canRunCheck(hackType, true)
+                && !player.movement.wasFlying()
+                && !Vehicles.has(player, "drill")
+                && !PrinterMode.canCancel(player)
+                && !mcMMO.hasGeneralAbility(player)) {
+            GameMode gameMode = player.getGameMode();
+            return gameMode == GameMode.SURVIVAL
+                    || gameMode == GameMode.ADVENTURE;
+        }
+        return false;
+    }
+}

@@ -33,7 +33,7 @@ public class HackPrevention {
         this.groundTeleport = groundTeleport;
         this.damage = damage;
         this.expiration = tick + cancelTicks;
-        player.getViolations(hackType).run(this, information, time, tick);
+        player.getViolations(hackType).run(this, information, time);
     }
 
     boolean hasExpired(long tick) {
