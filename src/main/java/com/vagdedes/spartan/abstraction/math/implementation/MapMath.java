@@ -80,13 +80,13 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public int getCount(Number number) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
         return map == null ? 0 : map.size();
     }
 
     @Override
     public int getSpecificCount(Number number, int hash) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
         return map == null ? 0 : map.getOrDefault(hash, (short) 0);
     }
 
@@ -99,7 +99,7 @@ public class MapMath implements AbstractKeyValueMath {
     }
 
     public void add(Number number, int hash) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
             Short value = map.get(hash);
@@ -115,14 +115,14 @@ public class MapMath implements AbstractKeyValueMath {
         } else {
             map = new HashMap<>();
             map.put(hash, (short) 1);
-            this.map.put(number.intValue(), map);
+            this.map.put(number.hashCode(), map);
             this.total++;
             this.specificTotal++;
         }
     }
 
     public boolean remove(Number number, int hash) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
             Short value = map.get(hash);
@@ -134,7 +134,7 @@ public class MapMath implements AbstractKeyValueMath {
                     map.remove(hash);
 
                     if (map.isEmpty()) {
-                        this.map.remove(number.intValue());
+                        this.map.remove(number.hashCode());
                     }
                     this.total--;
                 } else {
@@ -163,13 +163,13 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getGeneralContribution(Number ignoreNumber) {
-        Map<Integer, Short> map = this.map.get(ignoreNumber.intValue());
+        Map<Integer, Short> map = this.map.get(ignoreNumber.hashCode());
         return 1.0 / (this.total - (map != null ? map.size() : 0) + 1.0);
     }
 
     @Override
     public double getGeneralContribution(Number number, int ignoreHash) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
             return 1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0);
@@ -180,7 +180,7 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getPersonalContribution(Number number, int ignoreHash) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
             return 1.0 / (map.size() + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0);
@@ -191,14 +191,14 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getRatio(Number number, double defaultValue) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
         return map != null ? map.size() / this.total : defaultValue;
     }
 
     @Override
     public double getDistance(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Map<Integer, Short> selfMap = this.map.get(number.intValue());
+            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
 
             if (selfMap != null) {
                 double average = this.total / (double) this.map.size();
@@ -225,7 +225,7 @@ public class MapMath implements AbstractKeyValueMath {
     @Override
     public double getSlopeProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Map<Integer, Short> selfMap = this.map.get(number.intValue());
+            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
 
             if (selfMap != null) {
                 double average = this.total / (double) this.map.size();
@@ -244,7 +244,7 @@ public class MapMath implements AbstractKeyValueMath {
     @Override
     public double getCurveProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Map<Integer, Short> selfMap = this.map.get(number.intValue());
+            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
 
             if (selfMap != null) {
                 double average = this.total / (double) this.map.size();
@@ -267,7 +267,7 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getSpecificGeneralContribution(Number ignoreNumber) {
-        Map<Integer, Short> map = this.map.get(ignoreNumber.intValue());
+        Map<Integer, Short> map = this.map.get(ignoreNumber.hashCode());
 
         if (map != null) {
             int total = 0;
@@ -283,7 +283,7 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getSpecificGeneralContribution(Number number, int ignoreHash) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
             Short count = map.get(ignoreHash);
@@ -295,7 +295,7 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getSpecificPersonalContribution(Number number, int ignoreHash) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
             int total = 0;
@@ -312,7 +312,7 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getSpecificRatio(Number number, int hash, double defaultValue) {
-        Map<Integer, Short> map = this.map.get(number.intValue());
+        Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
             Short count = map.get(hash);
@@ -325,7 +325,7 @@ public class MapMath implements AbstractKeyValueMath {
     @Override
     public double getSpecificDistance(Number number, int hash, double defaultValue) {
         if (!this.map.isEmpty()) {
-            Map<Integer, Short> selfMap = this.map.get(number.intValue());
+            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
 
             if (selfMap != null && selfMap.size() > 1) {
                 Short selfCount = selfMap.get(hash);
@@ -356,7 +356,7 @@ public class MapMath implements AbstractKeyValueMath {
     @Override
     public double getSpecificSlopeProbability(Number number, int hash, double defaultValue) {
         if (!this.map.isEmpty()) {
-            Map<Integer, Short> selfMap = this.map.get(number.intValue());
+            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
 
             if (selfMap != null && selfMap.size() > 1) {
                 Short selfCount = selfMap.get(hash);
@@ -379,7 +379,7 @@ public class MapMath implements AbstractKeyValueMath {
     @Override
     public double getSpecificCurveProbability(Number number, int hash, double defaultValue) {
         if (!this.map.isEmpty()) {
-            Map<Integer, Short> selfMap = this.map.get(number.intValue());
+            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
 
             if (selfMap != null && selfMap.size() > 1) {
                 Short selfCount = selfMap.get(hash);

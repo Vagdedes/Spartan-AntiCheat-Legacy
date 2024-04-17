@@ -69,7 +69,7 @@ public class NumberMath implements AbstractMath {
 
     @Override
     public int getCount(Number number) {
-        return this.map.getOrDefault(number.intValue(), (short) 0);
+        return this.map.getOrDefault(number.hashCode(), (short) 0);
     }
 
     // Separator
@@ -83,10 +83,10 @@ public class NumberMath implements AbstractMath {
     public void addMultiple(Map<? extends Number, ? extends Number> map) {
         for (Map.Entry<? extends Number, ? extends Number> entry : map.entrySet()) {
             short newCount = (short) Math.min(
-                    this.map.getOrDefault(entry.getKey().intValue(), (short) 0) + entry.getValue().shortValue(),
+                    this.map.getOrDefault(entry.getKey().hashCode(), (short) 0) + entry.getValue().shortValue(),
                     32767
             );
-            this.map.put(entry.getKey().intValue(), newCount);
+            this.map.put(entry.getKey().hashCode(), newCount);
             this.total += entry.getValue().shortValue();
         }
     }
@@ -94,11 +94,11 @@ public class NumberMath implements AbstractMath {
     // Separator
 
     public void add(Number number) {
-        short current = this.map.getOrDefault(number.intValue(), (short) 0);
+        short current = this.map.getOrDefault(number.hashCode(), (short) 0);
 
         if (current < 32767) {
             this.map.put(
-                    number.intValue(),
+                    number.hashCode(),
                     (short) (current + 1)
             );
             this.total++;
@@ -106,16 +106,16 @@ public class NumberMath implements AbstractMath {
     }
 
     public boolean remove(Number number) {
-        Short count = this.map.get(number.intValue());
+        Short count = this.map.get(number.hashCode());
 
         if (count != null) {
             this.total--;
 
             if (count == 1) {
-                this.map.remove(number.intValue());
+                this.map.remove(number.hashCode());
                 return true;
             } else {
-                this.map.put(number.intValue(), (short) (count - 1));
+                this.map.put(number.hashCode(), (short) (count - 1));
                 return false;
             }
         } else {
@@ -137,20 +137,20 @@ public class NumberMath implements AbstractMath {
 
     @Override
     public double getGeneralContribution(Number ignoreNumber) {
-        short count = this.map.getOrDefault(ignoreNumber.intValue(), (short) 0);
+        short count = this.map.getOrDefault(ignoreNumber.hashCode(), (short) 0);
         return 1.0 / (this.total - count + 1.0);
     }
 
     @Override
     public double getRatio(Number number, double defaultValue) {
-        Short count = this.map.get(number.intValue());
+        Short count = this.map.get(number.hashCode());
         return count != null ? count / this.total : defaultValue;
     }
 
     @Override
     public double getDistance(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.intValue());
+            Short selfCount = this.map.get(number.hashCode());
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
@@ -177,7 +177,7 @@ public class NumberMath implements AbstractMath {
     @Override
     public double getSlopeProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.intValue());
+            Short selfCount = this.map.get(number.hashCode());
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
@@ -196,7 +196,7 @@ public class NumberMath implements AbstractMath {
     @Override
     public double getCurveProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.intValue());
+            Short selfCount = this.map.get(number.hashCode());
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
