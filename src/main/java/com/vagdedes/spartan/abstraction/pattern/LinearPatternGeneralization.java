@@ -84,12 +84,12 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     public Comparison customComparison(PlayerProfile profile, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
-        float after, pattern, before;
+        float after, now, before;
 
         if (patternProfile.correlations.size() >= 3) {
             synchronized (patternProfile.correlations) {
                 after = patternProfile.correlations.get(patternProfile.correlations.size() - 1);
-                pattern = patternProfile.correlations.get(patternProfile.correlations.size() - 2);
+                now = patternProfile.correlations.get(patternProfile.correlations.size() - 2);
                 before = patternProfile.correlations.get(patternProfile.correlations.size() - 3);
             }
         } else {
@@ -97,7 +97,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
         Cache cache;
         int hash = HashUtils.extendInt(this.initialHash, situation);
-        hash = HashUtils.extendInt(hash, Float.hashCode(pattern));
+        hash = HashUtils.extendInt(hash, Float.hashCode(now));
 
         synchronized (this.correlations) {
             cache = this.cache.get(hash);
@@ -108,7 +108,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 if (collection == null) {
                     cache = new Cache(new ProbabilityPredictor());
                 } else {
-                    cache = new Cache(new ProbabilityPredictor(collection, pattern));
+                    cache = new Cache(new ProbabilityPredictor(collection, now));
 
                     if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
                         Iterator<Integer> iterator = this.cache.keySet().iterator();
@@ -124,7 +124,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     cache = new Cache(new ProbabilityPredictor());
                     this.cache.remove(hash);
                 } else {
-                    cache.refresh(new ProbabilityPredictor(collection, pattern));
+                    cache.refresh(new ProbabilityPredictor(collection, now));
                 }
             }
         }
@@ -132,7 +132,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 this,
                 patternProfile,
                 situation,
-                pattern,
+                new float[]{before, now, after},
                 cache.predictor.afterPie.getRatio(after, 0.0)
                         * cache.predictor.beforePie.getRatio(before, 0.0)
         );

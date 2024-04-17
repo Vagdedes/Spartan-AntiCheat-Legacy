@@ -36,6 +36,23 @@ public abstract class PatternGeneralization {
             this.outcome = ((this.probability * this.contribution) + this.significance) / 2.0;
         }
 
+        Comparison(PatternGeneralization patternGeneralization,
+                   PatternProfile patternProfile,
+                   int situation,
+                   float[] patterns,
+                   double probability) {
+            this.probability = probability;
+            this.contribution = patternGeneralization.contribution(situation, patternProfile);
+
+            double significance = 0.0;
+
+            for (float pattern : patterns) {
+                significance += patternGeneralization.significance(pattern);
+            }
+            this.significance = significance / (double) patterns.length;
+            this.outcome = ((this.probability * this.contribution) + this.significance) / 2.0;
+        }
+
         public boolean isValid() {
             return this.outcome != -1.0;
         }
