@@ -12,6 +12,4 @@ public abstract class PatternProfile {
         this.repetition = new PatternRepetition();
     }
 
-    abstract void deleteCustomData();
-
 }

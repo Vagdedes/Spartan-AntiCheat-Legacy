@@ -11,16 +11,9 @@ public class LinearPatternProfile extends PatternProfile {
 
     final Map<Integer, LinkedList<Float>> correlations;
 
-    LinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
+    LinearPatternProfile(PlayerProfile profile) {
         super(profile);
         this.correlations = Collections.synchronizedMap(new HashMap<>());
-    }
-
-    @Override
-    void deleteCustomData() {
-        synchronized (this.correlations) {
-            this.correlations.clear();
-        }
     }
 
 }

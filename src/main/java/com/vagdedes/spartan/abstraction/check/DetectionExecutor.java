@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.pattern.PatternGeneralization;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -74,14 +73,17 @@ public abstract class DetectionExecutor {
                     player.getProfile(),
                     situation
             );
-            player.debug(
-                    false,
-                    true,
-                    comparison.probability,
-                    comparison.contribution,
-                    comparison.significance,
-                    comparison.outcome
-            );
+
+            if (comparison.isValid()) {
+                player.debug(
+                        false,
+                        true,
+                        comparison.probability,
+                        comparison.contribution,
+                        comparison.significance,
+                        comparison.outcome
+                );
+            }
         }
     }
 

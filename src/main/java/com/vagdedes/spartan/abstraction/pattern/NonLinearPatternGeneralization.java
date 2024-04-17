@@ -20,8 +20,10 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     }
 
     @Override
-    protected PatternProfile customDeleteProfile(PlayerProfile profile) {
-        return this.profiles.remove(profile);
+    protected PatternProfile deleteProfile(PlayerProfile profile) {
+        synchronized (this.profilesSynchronizer) {
+            return this.profiles.remove(profile);
+        }
     }
 
     @Override
@@ -126,7 +128,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
         synchronized (this.profilesSynchronizer) {
             return this.profiles.computeIfAbsent(
                     profile,
-                    k -> new NonLinearPatternProfile(this, profile)
+                    k -> new NonLinearPatternProfile(profile)
             );
         }
     }

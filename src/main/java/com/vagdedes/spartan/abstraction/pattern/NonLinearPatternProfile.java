@@ -10,16 +10,9 @@ public class NonLinearPatternProfile extends PatternProfile {
 
     final Map<Integer, Float> correlations;
 
-    NonLinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
+    NonLinearPatternProfile(PlayerProfile profile) {
         super(profile);
         this.correlations = Collections.synchronizedMap(new HashMap<>());
-    }
-
-    @Override
-    void deleteCustomData() {
-        synchronized (this.correlations) {
-            this.correlations.clear();
-        }
     }
 
 }

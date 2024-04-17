@@ -19,10 +19,10 @@ public abstract class PatternGeneralization {
                 outcome;
 
         Comparison() {
-            this.probability = 1.0;
-            this.contribution = 1.0;
-            this.significance = 1.0;
-            this.outcome = 1.0;
+            this.probability = -1.0;
+            this.contribution = -1.0;
+            this.significance = -1.0;
+            this.outcome = -1.0;
         }
 
         Comparison(PatternGeneralization patternGeneralization,
@@ -34,6 +34,10 @@ public abstract class PatternGeneralization {
             this.contribution = patternGeneralization.contribution(situation, patternProfile);
             this.significance = patternGeneralization.significance(pattern);
             this.outcome = ((this.probability * this.contribution) + this.significance) / 2.0;
+        }
+
+        public boolean isValid() {
+            return this.outcome >= 0.0;
         }
 
     }
@@ -146,18 +150,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    final void deleteProfile(PlayerProfile profile) {
-        PatternProfile patternProfile;
-
-        synchronized (this.profilesSynchronizer) {
-            patternProfile = this.customDeleteProfile(profile);
-        }
-        if (patternProfile != null) {
-            patternProfile.deleteCustomData();
-        }
-    }
-
-    abstract protected PatternProfile customDeleteProfile(PlayerProfile profile);
+    abstract protected PatternProfile deleteProfile(PlayerProfile profile);
 
     // Separator
 

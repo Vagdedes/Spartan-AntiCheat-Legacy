@@ -41,8 +41,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected PatternProfile customDeleteProfile(PlayerProfile profile) {
-        return this.profiles.remove(profile);
+    protected PatternProfile deleteProfile(PlayerProfile profile) {
+        synchronized (this.profilesSynchronizer) {
+            return this.profiles.remove(profile);
+        }
     }
 
     @Override
@@ -181,7 +183,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         synchronized (this.profilesSynchronizer) {
             return this.profiles.computeIfAbsent(
                     profile,
-                    k -> new LinearPatternProfile(this, profile)
+                    k -> new LinearPatternProfile(profile)
             );
         }
     }
