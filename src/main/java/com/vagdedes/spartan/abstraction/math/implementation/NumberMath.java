@@ -29,15 +29,15 @@ public class NumberMath implements AbstractMath {
         this.total = 0.0f;
     }
 
-    public Integer removeLeastSignificant() {
+    public Number removeLeastSignificant() {
         if (this.map.isEmpty()) {
             return null;
         } else {
-            int min = Integer.MAX_VALUE;
+            short min = Short.MAX_VALUE;
             Integer key = null;
 
             for (Map.Entry<Integer, Short> entry : this.map.entrySet()) {
-                if (entry.getValue() < min) {
+                if (entry.getValue() <= min) {
                     min = entry.getValue();
                     key = entry.getKey();
 

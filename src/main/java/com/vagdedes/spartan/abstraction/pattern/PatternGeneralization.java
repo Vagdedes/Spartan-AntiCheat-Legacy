@@ -6,8 +6,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 
-import java.util.Collection;
-
 public abstract class PatternGeneralization {
 
     public static final class Comparison {
@@ -87,31 +85,12 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    final boolean learn(PlayerProfile profile,
-                        long time,
-                        int situation,
-                        double pattern,
-                        boolean store) {
-        if (profile.isLegitimate()) {
-            double original = pattern;
-
+    final boolean learn(PlayerProfile profile, int situation, double pattern) {
+        if (profile.isLegitimate()) { // todo fix
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
-            PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern);
-
-            if (patternProfile != null) {
-                this.increaseImportance(situation, patternProfile, (float) pattern);
-
-                if (store) {
-                    this.parent.setToFile(profile, time, situation, original);
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+           return this.customLearn(profile, situation, (float) pattern) != null;
         } else {
             return false;
         }
@@ -154,7 +133,6 @@ public abstract class PatternGeneralization {
         synchronized (this.significance) {
             patternCount = this.significance.getCount(pattern);
         }
-        Bukkit.getConsoleSender().sendMessage(patternCount + " " + this.getProfileCount() + " " + pattern);
         return patternCount / (double) this.getProfileCount();
     }
 
@@ -195,8 +173,6 @@ public abstract class PatternGeneralization {
     // Separator
 
     abstract protected void clearProfiles();
-
-    abstract protected Collection<? extends PatternProfile> getProfiles();
 
     abstract protected int getProfileCount();
 

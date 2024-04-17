@@ -126,7 +126,7 @@ public class EventsHandler7 implements Listener {
         int situation = HashUtils.extendInt(HashUtils.hashPlayer(p), HashUtils.hashEnvironment(p, to));
 
         // Patterns
-        SpartanBukkit.movementPatterns.learn(p, situation, dis, hor, ver, fall);
+        SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);
 
         // Handlers
         MovementProcessing.run(p, dis, hor, ver, box, fall);

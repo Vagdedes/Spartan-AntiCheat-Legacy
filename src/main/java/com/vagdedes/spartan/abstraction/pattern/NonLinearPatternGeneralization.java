@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.abstraction.math.implementation.NumberMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,9 +67,9 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
             }
         }
         synchronized (this.correlations) {
-            NumberMath pie = this.correlations.get(situation);
+            NumberMath math = this.correlations.get(situation);
 
-            if (pie == null) {
+            if (math == null) {
                 return new Comparison(
                         this,
                         patternProfile,
@@ -84,7 +83,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
                         patternProfile,
                         situation,
                         pattern,
-                        pie.getRatio(pattern, 0.0)
+                        math.getRatio(pattern, 0.0)
                 );
             }
         }
@@ -106,11 +105,6 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     @Override
     protected void clearProfiles() {
         this.profiles.clear();
-    }
-
-    @Override
-    protected Collection<? extends PatternProfile> getProfiles() {
-        return this.profiles.values();
     }
 
     @Override

@@ -6,26 +6,24 @@ import java.util.Collection;
 
 public class ProbabilityPredictor {
 
-    public final NumberMath beforePie, afterPie;
+    public final NumberMath before, after;
 
     public ProbabilityPredictor() {
-        this.beforePie = new NumberMath(0);
-        this.afterPie = new NumberMath(0);
+        this.before = new NumberMath(0);
+        this.after = new NumberMath(0);
     }
 
     public ProbabilityPredictor(Collection<Float> totalPatterns, float currentPattern) {
-        this.beforePie = new NumberMath();
-        this.afterPie = new NumberMath();
-
-        if (currentPattern != Float.MIN_VALUE
-                && totalPatterns.size() > 1) {
+        if (totalPatterns.size() > 1) {
+            this.before = new NumberMath();
+            this.after = new NumberMath();
             Float found = null;
             float previous = Float.MIN_VALUE;
 
             for (float pattern : totalPatterns) {
                 if (found != null) {
-                    this.beforePie.add(found);
-                    this.afterPie.add(pattern);
+                    this.before.add(found);
+                    this.after.add(pattern);
 
                     if (currentPattern == pattern) {
                         found = previous;
@@ -37,6 +35,9 @@ public class ProbabilityPredictor {
                 }
                 previous = pattern;
             }
+        } else {
+            this.before = new NumberMath(0);
+            this.after = new NumberMath(0);
         }
     }
 

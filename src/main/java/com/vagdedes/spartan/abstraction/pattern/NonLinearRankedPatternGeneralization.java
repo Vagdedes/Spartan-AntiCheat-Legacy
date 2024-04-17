@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.abstraction.math.implementation.NumberRank;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,11 +106,6 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     @Override
     protected void clearProfiles() {
         this.profiles.clear();
-    }
-
-    @Override
-    protected Collection<? extends PatternProfile> getProfiles() {
-        return this.profiles.values();
     }
 
     @Override

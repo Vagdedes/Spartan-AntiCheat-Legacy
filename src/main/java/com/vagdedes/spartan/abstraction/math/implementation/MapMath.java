@@ -34,7 +34,7 @@ public class MapMath implements AbstractKeyValueMath {
     }
 
     @Override
-    public Integer removeLeastSignificant() {
+    public Number removeLeastSignificant() {
         if (this.map.isEmpty()) {
             return null;
         } else {

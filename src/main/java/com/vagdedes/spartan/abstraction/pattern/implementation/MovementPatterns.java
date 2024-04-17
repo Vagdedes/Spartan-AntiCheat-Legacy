@@ -9,10 +9,10 @@ public class MovementPatterns extends PatternFamily {
 
     public static final short horizontalGeneralization = (short) (GroundUtils.maxHeightLength / 2);
 
-    public final Pattern horizontal, vertical, all, fall;
+    public final Pattern horizontal, vertical, fall;
 
     public MovementPatterns() {
-        super(1_000L, 4);
+        super(1_000L, 3);
         this.addPatterns(
                 new Pattern[]{
                         this.horizontal = new Pattern(
@@ -25,14 +25,6 @@ public class MovementPatterns extends PatternFamily {
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
-                                new short[]{
-                                        (short) GroundUtils.maxHeightLength
-                                },
-                                true,
-                                false
-                        ),
-                        this.all = new Pattern(
-                                "movement/distance/all",
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },
@@ -53,12 +45,7 @@ public class MovementPatterns extends PatternFamily {
 
     public void learn(SpartanPlayer player,
                       int situation,
-                      double dis, double hor, double ver, double fall) {
-        this.all.learn(
-                player,
-                situation,
-                dis
-        );
+                      double hor, double ver, double fall) {
         this.horizontal.learn(
                 player,
                 situation,

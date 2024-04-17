@@ -19,7 +19,7 @@ public class Pattern {
     private static final int storageLimit = 1024 * 1024 * 1024;
     static final int
             testingNotificationDivisor = 69,
-            globalDataLimit = 10_000,
+            globalDataLimit = 320_000,
             globalDataLimitBase = 625,
             individualGlobalDataLimit = 1_024,
             individualGlobalDataLimitBase = 2;
@@ -230,7 +230,7 @@ public class Pattern {
         }
     }
 
-    void setToFile(PlayerProfile profile, long time, int situation, double pattern) {
+    private void setToFile(PlayerProfile profile, long time, int situation, double pattern) {
         SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
             this.count++;
             this.configuration.set(time + "." + profileOption, profile.getName());
@@ -329,10 +329,8 @@ public class Pattern {
                                     for (PatternGeneralization generalization : generalizations.values()) {
                                         generalization.learn(
                                                 profile,
-                                                time,
                                                 (int) situation,
-                                                (double) pattern,
-                                                false
+                                                (double) pattern
                                         );
                                     }
                                 } catch (Exception ignored) {
@@ -389,26 +387,31 @@ public class Pattern {
     public void learn(SpartanPlayer player, int situation, Number pattern) {
         if (this.loaded) {
             long time = System.currentTimeMillis();
+            PlayerProfile profile = player.getProfile();
             Integer divisor = DetectionNotifications.getDivisor(player, false);
             boolean notifications = divisor != null,
                     found = false,
-                    stored = false,
-                    include = !SpartanBukkit.testMode || !player.isWhitelisted()
-                            && (!notifications || divisor != testingNotificationDivisor);
+                    store = false,
+                    include = !SpartanBukkit.testMode
+                            || !notifications
+                            || divisor != testingNotificationDivisor;
 
             synchronized (this.generalizations) {
                 for (PatternGeneralization generalization : this.generalizations.values()) {
                     if (notifications) {
                         found |= generalization.hasPatterns(situation);
                     }
-                    stored |= generalization.learn(
-                            player.getProfile(),
-                            time,
+                    if (generalization.learn(
+                            profile,
                             situation,
-                            pattern.doubleValue(),
-                            include && !stored
-                    );
+                            pattern.doubleValue()
+                    )) {
+                        store |= include;
+                    }
                 }
+            }
+            if (store) {
+                this.setToFile(profile, time, situation, pattern.doubleValue());
             }
 
             if (!found && notifications) {

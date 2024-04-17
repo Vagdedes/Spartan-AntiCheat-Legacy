@@ -25,6 +25,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             this.predictor = predictor;
             this.expiration = System.currentTimeMillis() + 1_000L;
         }
+
     }
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
@@ -84,58 +85,61 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     public Comparison customComparison(PlayerProfile profile, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
-        float after, now, before;
 
-        if (patternProfile.correlations.size() >= 3) {
+        if (patternProfile.correlations.size() < 3) {
+            return new Comparison();
+        } else {
+            float after, now, before;
+
             synchronized (patternProfile.correlations) {
                 after = patternProfile.correlations.get(patternProfile.correlations.size() - 1);
                 now = patternProfile.correlations.get(patternProfile.correlations.size() - 2);
                 before = patternProfile.correlations.get(patternProfile.correlations.size() - 3);
             }
-        } else {
-            return new Comparison();
-        }
-        Cache cache;
-        int hash = HashUtils.extendInt(this.initialHash, situation);
-        hash = HashUtils.extendInt(hash, Float.hashCode(now));
+            Cache cache;
+            int hash = HashUtils.extendInt(
+                    HashUtils.extendInt(this.initialHash, situation),
+                    Float.hashCode(now)
+            );
 
-        synchronized (this.correlations) {
-            cache = this.cache.get(hash);
+            synchronized (this.correlations) {
+                cache = this.cache.get(hash);
 
-            if (cache == null) {
-                Collection<Float> collection = this.correlations.get(situation);
+                if (cache == null) {
+                    Collection<Float> collection = this.correlations.get(situation);
 
-                if (collection == null) {
-                    cache = new Cache(new ProbabilityPredictor());
-                } else {
-                    cache = new Cache(new ProbabilityPredictor(collection, now));
+                    if (collection == null) {
+                        cache = new Cache(new ProbabilityPredictor());
+                    } else {
+                        cache = new Cache(new ProbabilityPredictor(collection, now));
 
-                    if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
-                        Iterator<Integer> iterator = this.cache.keySet().iterator();
-                        iterator.next();
-                        iterator.remove();
+                        if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
+                            Iterator<Integer> iterator = this.cache.keySet().iterator();
+                            iterator.next();
+                            iterator.remove();
+                        }
+                        this.cache.put(hash, cache);
                     }
-                    this.cache.put(hash, cache);
-                }
-            } else if (cache.isExpired()) {
-                Collection<Float> collection = this.correlations.get(situation);
+                } else if (cache.isExpired()) {
+                    Collection<Float> collection = this.correlations.get(situation);
 
-                if (collection == null) {
-                    cache = new Cache(new ProbabilityPredictor());
-                    this.cache.remove(hash);
-                } else {
-                    cache.refresh(new ProbabilityPredictor(collection, now));
+                    if (collection == null) {
+                        cache = new Cache(new ProbabilityPredictor());
+                        this.cache.remove(hash);
+                    } else {
+                        cache.refresh(new ProbabilityPredictor(collection, now));
+                    }
                 }
             }
+            return new Comparison(
+                    this,
+                    patternProfile,
+                    situation,
+                    new float[]{before, now, after},
+                    cache.predictor.after.getRatio(after, 1.0)
+                            * cache.predictor.before.getRatio(before, 1.0)
+            );
         }
-        return new Comparison(
-                this,
-                patternProfile,
-                situation,
-                new float[]{before, now, after},
-                cache.predictor.afterPie.getRatio(after, 0.0)
-                        * cache.predictor.beforePie.getRatio(before, 0.0)
-        );
     }
 
     @Override
@@ -154,11 +158,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected void clearProfiles() {
         this.profiles.clear();
-    }
-
-    @Override
-    protected Collection<? extends PatternProfile> getProfiles() {
-        return this.profiles.values();
     }
 
     @Override

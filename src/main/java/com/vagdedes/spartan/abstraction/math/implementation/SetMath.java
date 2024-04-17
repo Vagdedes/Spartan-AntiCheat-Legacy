@@ -30,7 +30,7 @@ public class SetMath implements AbstractKeyMath {
     }
 
     @Override
-    public Integer removeLeastSignificant() {
+    public Number removeLeastSignificant() {
         if (this.map.isEmpty()) {
             return null;
         } else {
