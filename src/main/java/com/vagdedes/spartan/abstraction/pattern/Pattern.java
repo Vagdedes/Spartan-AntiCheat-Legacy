@@ -150,7 +150,8 @@ public class Pattern {
     public final String key;
     private final String learningFolder;
     private final Map<Short, PatternGeneralization> generalizations;
-    private boolean loaded, loading;
+    private boolean loading;
+    boolean loaded;
     private short count;
     private File file;
     private YamlConfiguration configuration;
@@ -359,10 +360,6 @@ public class Pattern {
             this.loaded = true;
             this.loading = false;
         });
-    }
-
-    boolean isLoaded() {
-        return this.loaded;
     }
 
     private void deleteFromFile(YamlConfiguration configuration, String key) {

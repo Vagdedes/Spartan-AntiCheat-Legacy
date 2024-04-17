@@ -165,8 +165,8 @@ public abstract class PatternGeneralization {
 
     abstract protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern);
 
-    public Comparison comparison(PlayerProfile playerProfile, int situation) {
-        return this.parent.isLoaded()
+    public final Comparison comparison(PlayerProfile playerProfile, int situation) {
+        return this.parent.loaded
                 ? this.customComparison(playerProfile, situation)
                 : new Comparison();
     }
