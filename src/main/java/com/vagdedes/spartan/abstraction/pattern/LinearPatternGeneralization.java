@@ -11,22 +11,19 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     private static final class Cache {
 
         private ProbabilityPredictor predictor;
-        private int dataSize;
         private long expiration;
 
-        private Cache(ProbabilityPredictor predictor, int dataSize) {
-            this.refresh(predictor, dataSize);
+        private Cache(ProbabilityPredictor predictor) {
+            this.refresh(predictor);
         }
 
         private boolean isExpired() {
             return this.expiration < System.currentTimeMillis();
         }
 
-        private ProbabilityPredictor refresh(ProbabilityPredictor predictor, int dataSize) {
+        private void refresh(ProbabilityPredictor predictor) {
             this.predictor = predictor;
-            this.dataSize = dataSize;
             this.expiration = System.currentTimeMillis() + 1_000L;
-            return predictor;
         }
     }
 
@@ -46,11 +43,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected PatternProfile customDeleteProfile(PlayerProfile profile) {
         return this.profiles.remove(profile);
-    }
-
-    @Override
-    protected boolean hasPatterns() {
-        return !this.correlations.isEmpty();
     }
 
     @Override
@@ -123,9 +115,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 Collection<Float> collection = this.correlations.get(situation);
 
                 if (collection == null) {
-                    cache = new Cache(new ProbabilityPredictor(), 0);
+                    cache = new Cache(new ProbabilityPredictor());
                 } else {
-                    cache = new Cache(new ProbabilityPredictor(collection, pattern), collection.size());
+                    cache = new Cache(new ProbabilityPredictor(collection, pattern));
 
                     if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
                         Iterator<Integer> iterator = this.cache.keySet().iterator();
@@ -138,10 +130,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 Collection<Float> collection = this.correlations.get(situation);
 
                 if (collection == null) {
-                    cache = new Cache(new ProbabilityPredictor(), 0);
+                    cache = new Cache(new ProbabilityPredictor());
                     this.cache.remove(hash);
                 } else {
-                    cache.refresh(new ProbabilityPredictor(collection, pattern), collection.size());
+                    cache.refresh(new ProbabilityPredictor(collection, pattern));
                 }
             }
         }

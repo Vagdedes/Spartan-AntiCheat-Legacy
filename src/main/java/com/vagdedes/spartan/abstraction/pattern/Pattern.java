@@ -34,7 +34,7 @@ public class Pattern {
         return playerProfile.getName().hashCode();
     }
 
-    public static void deleteFromFile(PlayerProfile profile, boolean completely) {
+    public static void deleteFromFile(PlayerProfile profile) {
         synchronized (instances) {
             for (Pattern instance : instances) {
                 SpartanBukkit.dataThread.executeWithPriority(() -> {
@@ -109,11 +109,9 @@ public class Pattern {
                                         } catch (Exception ignored) {
                                         }
                                     }
-                                    if (completely) {
-                                        synchronized (instance.generalizations) {
-                                            for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
-                                                patternGeneralization.deleteProfile(profile);
-                                            }
+                                    synchronized (instance.generalizations) {
+                                        for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
+                                            patternGeneralization.deleteProfile(profile);
                                         }
                                     }
                                 }
