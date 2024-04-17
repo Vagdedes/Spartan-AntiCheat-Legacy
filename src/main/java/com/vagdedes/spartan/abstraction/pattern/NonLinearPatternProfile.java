@@ -11,7 +11,7 @@ public class NonLinearPatternProfile extends PatternProfile {
     final Map<Integer, Float> correlations;
 
     NonLinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
-        super(patternGeneralization, profile);
+        super(profile);
         this.correlations = Collections.synchronizedMap(new HashMap<>());
     }
 

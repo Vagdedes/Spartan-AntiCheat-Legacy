@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.math.implementation.MapMath;
 import com.vagdedes.spartan.abstraction.math.implementation.SetMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import org.bukkit.Bukkit;
 
 import java.util.Collection;
 
@@ -17,7 +18,7 @@ public abstract class PatternGeneralization {
                 significance,
                 outcome;
 
-        private Comparison() {
+        Comparison() {
             this.probability = 1.0;
             this.contribution = 1.0;
             this.significance = 1.0;
@@ -135,6 +136,7 @@ public abstract class PatternGeneralization {
         synchronized (this.significance) {
             patternCount = this.significance.getCount(pattern);
         }
+        Bukkit.getConsoleSender().sendMessage(patternCount + " " + this.getProfileCount() + " " + pattern);
         return patternCount / (double) this.getProfileCount();
     }
 

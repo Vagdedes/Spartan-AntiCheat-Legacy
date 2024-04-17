@@ -109,7 +109,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 pattern = list.get(list.size() - 2);
                 before = list.get(list.size() - 3);
             } else {
-                return null;
+                return new Comparison();
             }
         }
         Cache cache;

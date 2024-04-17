@@ -4,11 +4,11 @@ public interface AbstractKeyValueMath extends AbstractKeyMath {
 
     int getSpecificCount(Number number, int hash);
 
-    double getSpecificContribution();
+    double getSpecificGeneralContribution();
 
-    double getSpecificContribution(Number ignoreNumber);
+    double getSpecificGeneralContribution(Number ignoreNumber);
 
-    double getSpecificContribution(Number number, int ignoreHash);
+    double getSpecificGeneralContribution(Number number, int ignoreHash);
 
     double getSpecificPersonalContribution(Number number, int ignoreHash);
 

@@ -12,7 +12,7 @@ public class LinearPatternProfile extends PatternProfile {
     final Map<Integer, LinkedList<Float>> correlations;
 
     LinearPatternProfile(PatternGeneralization patternGeneralization, PlayerProfile profile) {
-        super(patternGeneralization, profile);
+        super(profile);
         this.correlations = Collections.synchronizedMap(new HashMap<>());
     }
 

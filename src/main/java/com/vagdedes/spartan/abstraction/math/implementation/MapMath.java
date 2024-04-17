@@ -261,12 +261,12 @@ public class MapMath implements AbstractKeyValueMath {
     }
 
     @Override
-    public double getSpecificContribution() {
+    public double getSpecificGeneralContribution() {
         return 1.0 / (this.specificTotal + 1.0);
     }
 
     @Override
-    public double getSpecificContribution(Number ignoreNumber) {
+    public double getSpecificGeneralContribution(Number ignoreNumber) {
         Map<Integer, Short> map = this.map.get(ignoreNumber.intValue());
 
         if (map != null) {
@@ -282,7 +282,7 @@ public class MapMath implements AbstractKeyValueMath {
     }
 
     @Override
-    public double getSpecificContribution(Number number, int ignoreHash) {
+    public double getSpecificGeneralContribution(Number number, int ignoreHash) {
         Map<Integer, Short> map = this.map.get(number.intValue());
 
         if (map != null) {

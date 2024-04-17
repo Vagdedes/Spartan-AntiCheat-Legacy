@@ -71,7 +71,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
             if (cache != null) {
                 pattern = cache;
             } else {
-                return null;
+                return new Comparison();
             }
         }
         synchronized (this.correlations) {
