@@ -47,11 +47,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
                         k -> new NumberMath(Pattern.individualGlobalDataLimitBase, 1.0f)
                 );
                 if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
-                    this.decreaseImportance(
-                            situation,
-                            patternProfile,
-                            pie.removeLeastSignificant()
-                    );
+                    pie.removeLeastSignificant();
                 }
                 pie.add(pattern);
             }

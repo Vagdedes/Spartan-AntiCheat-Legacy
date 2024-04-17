@@ -6,7 +6,7 @@ import java.util.*;
 
 public class NumberMath implements AbstractMath {
 
-    private final Map<Float, Short> map;
+    private final Map<Integer, Short> map;
     private float total;
 
     public NumberMath() {
@@ -29,14 +29,14 @@ public class NumberMath implements AbstractMath {
         this.total = 0.0f;
     }
 
-    public Float removeLeastSignificant() {
+    public Integer removeLeastSignificant() {
         if (this.map.isEmpty()) {
             return null;
         } else {
             int min = Integer.MAX_VALUE;
-            Float key = null;
+            Integer key = null;
 
-            for (Map.Entry<Float, Short> entry : this.map.entrySet()) {
+            for (Map.Entry<Integer, Short> entry : this.map.entrySet()) {
                 if (entry.getValue() < min) {
                     min = entry.getValue();
                     key = entry.getKey();
@@ -69,7 +69,7 @@ public class NumberMath implements AbstractMath {
 
     @Override
     public int getCount(Number number) {
-        return this.map.getOrDefault(number.floatValue(), (short) 0);
+        return this.map.getOrDefault(number.intValue(), (short) 0);
     }
 
     // Separator
@@ -83,10 +83,10 @@ public class NumberMath implements AbstractMath {
     public void addMultiple(Map<? extends Number, ? extends Number> map) {
         for (Map.Entry<? extends Number, ? extends Number> entry : map.entrySet()) {
             short newCount = (short) Math.min(
-                    this.map.getOrDefault(entry.getKey().floatValue(), (short) 0) + entry.getValue().shortValue(),
+                    this.map.getOrDefault(entry.getKey().intValue(), (short) 0) + entry.getValue().shortValue(),
                     32767
             );
-            this.map.put(entry.getKey().floatValue(), newCount);
+            this.map.put(entry.getKey().intValue(), newCount);
             this.total += entry.getValue().shortValue();
         }
     }
@@ -94,11 +94,11 @@ public class NumberMath implements AbstractMath {
     // Separator
 
     public void add(Number number) {
-        short current = this.map.getOrDefault(number.floatValue(), (short) 0);
+        short current = this.map.getOrDefault(number.intValue(), (short) 0);
 
         if (current < 32767) {
             this.map.put(
-                    number.floatValue(),
+                    number.intValue(),
                     (short) (current + 1)
             );
             this.total++;
@@ -106,16 +106,16 @@ public class NumberMath implements AbstractMath {
     }
 
     public boolean remove(Number number) {
-        Short count = this.map.get(number.floatValue());
+        Short count = this.map.get(number.intValue());
 
         if (count != null) {
             this.total--;
 
             if (count == 1) {
-                this.map.remove(number.floatValue());
+                this.map.remove(number.intValue());
                 return true;
             } else {
-                this.map.put(number.floatValue(), (short) (count - 1));
+                this.map.put(number.intValue(), (short) (count - 1));
                 return false;
             }
         } else {
@@ -132,20 +132,20 @@ public class NumberMath implements AbstractMath {
 
     @Override
     public double getContribution(Number ignoreNumber) {
-        short count = this.map.getOrDefault(ignoreNumber.floatValue(), (short) 0);
+        short count = this.map.getOrDefault(ignoreNumber.intValue(), (short) 0);
         return 1.0 / (this.total - count + 1.0);
     }
 
     @Override
     public double getRatio(Number number, double defaultValue) {
-        Short count = this.map.get(number.floatValue());
+        Short count = this.map.get(number.intValue());
         return count != null ? count / this.total : defaultValue;
     }
 
     @Override
     public double getDistance(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.floatValue());
+            Short selfCount = this.map.get(number.intValue());
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
@@ -172,7 +172,7 @@ public class NumberMath implements AbstractMath {
     @Override
     public double getSlopeProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.floatValue());
+            Short selfCount = this.map.get(number.intValue());
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
@@ -191,7 +191,7 @@ public class NumberMath implements AbstractMath {
     @Override
     public double getCurveProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.floatValue());
+            Short selfCount = this.map.get(number.intValue());
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();

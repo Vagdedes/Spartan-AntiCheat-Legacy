@@ -4,7 +4,7 @@ public interface AbstractMath {
 
     void clear();
 
-    Float removeLeastSignificant();
+    Integer removeLeastSignificant();
 
     boolean isEmpty();
 

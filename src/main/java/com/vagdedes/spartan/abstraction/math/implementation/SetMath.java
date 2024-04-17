@@ -6,7 +6,7 @@ import java.util.*;
 
 public class SetMath implements AbstractKeyMath {
 
-    private final Map<Float, Set<Integer>> map;
+    private final Map<Integer, Set<Integer>> map;
     private float total;
 
     public SetMath() {
@@ -30,14 +30,14 @@ public class SetMath implements AbstractKeyMath {
     }
 
     @Override
-    public Float removeLeastSignificant() {
+    public Integer removeLeastSignificant() {
         if (this.map.isEmpty()) {
             return null;
         } else {
             int min = Integer.MAX_VALUE;
-            Float key = null;
+            Integer key = null;
 
-            for (Map.Entry<Float, Set<Integer>> entry : this.map.entrySet()) {
+            for (Map.Entry<Integer, Set<Integer>> entry : this.map.entrySet()) {
                 if (entry.getValue().size() < min) {
                     min = entry.getValue().size();
                     key = entry.getKey();
@@ -70,7 +70,7 @@ public class SetMath implements AbstractKeyMath {
 
     @Override
     public int getCount(Number number) {
-        Set<Integer> set = this.map.get(number.floatValue());
+        Set<Integer> set = this.map.get(number.intValue());
         return set == null ? 0 : set.size();
     }
 
@@ -83,7 +83,7 @@ public class SetMath implements AbstractKeyMath {
     }
 
     public void add(Number number, int hash) {
-        Set<Integer> set = this.map.get(number.floatValue());
+        Set<Integer> set = this.map.get(number.intValue());
 
         if (set != null) {
             if (set.add(hash)) {
@@ -92,17 +92,17 @@ public class SetMath implements AbstractKeyMath {
         } else {
             set = new HashSet<>();
             set.add(hash);
-            this.map.put(number.floatValue(), set);
+            this.map.put(number.intValue(), set);
             this.total++;
         }
     }
 
     public boolean remove(Number number, int hash) {
-        Set<Integer> set = this.map.get(number.floatValue());
+        Set<Integer> set = this.map.get(number.intValue());
 
         if (set != null && set.remove(hash)) {
             if (set.isEmpty()) {
-                this.map.remove(number.floatValue());
+                this.map.remove(number.intValue());
             }
             this.total--;
             return true;
@@ -120,13 +120,13 @@ public class SetMath implements AbstractKeyMath {
 
     @Override
     public double getContribution(Number ignoreNumber) {
-        Set<Integer> set = this.map.get(ignoreNumber.floatValue());
+        Set<Integer> set = this.map.get(ignoreNumber.intValue());
         return 1.0 / (this.total - (set != null ? set.size() : 0) + 1.0);
     }
 
     @Override
     public double getContribution(Number number, int ignoreHash) {
-        Set<Integer> set = this.map.get(number.floatValue());
+        Set<Integer> set = this.map.get(number.intValue());
 
         if (set != null) {
             return 1.0 / (this.total + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0);
@@ -137,14 +137,14 @@ public class SetMath implements AbstractKeyMath {
 
     @Override
     public double getRatio(Number number, double defaultValue) {
-        Set<Integer> set = this.map.get(number.floatValue());
+        Set<Integer> set = this.map.get(number.intValue());
         return set != null ? set.size() / this.total : defaultValue;
     }
 
     @Override
     public double getDistance(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Set<Integer> selfSet = this.map.get(number.floatValue());
+            Set<Integer> selfSet = this.map.get(number.intValue());
 
             if (selfSet != null) {
                 double average = this.total / (double) this.map.size();
@@ -171,7 +171,7 @@ public class SetMath implements AbstractKeyMath {
     @Override
     public double getSlopeProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Set<Integer> selfSet = this.map.get(number.floatValue());
+            Set<Integer> selfSet = this.map.get(number.intValue());
 
             if (selfSet != null) {
                 double average = this.total / (double) this.map.size();
@@ -190,7 +190,7 @@ public class SetMath implements AbstractKeyMath {
     @Override
     public double getCurveProbability(Number number, double defaultValue) {
         if (this.map.size() > 1) {
-            Set<Integer> selfSet = this.map.get(number.floatValue());
+            Set<Integer> selfSet = this.map.get(number.intValue());
 
             if (selfSet != null) {
                 double average = this.total / (double) this.map.size();

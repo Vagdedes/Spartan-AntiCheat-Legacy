@@ -68,36 +68,20 @@ public abstract class DetectionExecutor {
 
     // Separator
 
-    protected final void machineLearningDetection(PatternGeneralization generalization, int situation,
-                                                  int repetitions, double min) {
-        if (false) {
+    protected final void machineLearningDetection(PatternGeneralization generalization, int situation) {
+        if (true) {
             PatternGeneralization.Comparison comparison = generalization.comparison(
                     player.getProfile(),
                     situation
             );
-            if (repetitions > 1) {
-                Decimals decimals = player.getDecimals(hackType);
-
-                if (decimals.getCount(generalization.parent.key) == repetitions) {
-                    player.debug(
-                            false,
-                            true,
-                            decimals.get(generalization.parent.key, 1.0, Decimals.CALCULATE_AVERAGE)
-                    );
-                    decimals.removeOldest(generalization.parent.key);
-                }
-                decimals.add(generalization.parent.key, 0.0);
-            } else {
-                player.debug(
-                        false,
-                        true,
-                        comparison.probability,
-                        comparison.significance,
-                        comparison.contribution,
-                        comparison.similarity,
-                        comparison.outcome
-                );
-            }
+            player.debug(
+                    false,
+                    true,
+                    comparison.probability,
+                    comparison.contribution,
+                    comparison.significance,
+                    comparison.outcome
+            );
         }
     }
 

@@ -75,11 +75,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         list = new LinkedList<>(list);
                         this.correlations.put(situation, list);
                     }
-                    this.decreaseImportance(
-                            situation,
-                            patternProfile,
-                            ((LinkedList<Float>) list).removeFirst()
-                    );
+                    ((LinkedList<Float>) list).removeFirst();
                 }
                 list.add(pattern);
             }

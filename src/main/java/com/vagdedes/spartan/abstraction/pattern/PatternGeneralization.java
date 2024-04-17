@@ -6,9 +6,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class PatternGeneralization {
 
@@ -18,14 +15,12 @@ public abstract class PatternGeneralization {
                 probability,
                 contribution,
                 significance,
-                similarity,
                 outcome;
 
         private Comparison() {
             this.probability = 1.0;
             this.contribution = 1.0;
             this.significance = 1.0;
-            this.similarity = 1.0;
             this.outcome = 1.0;
         }
 
@@ -36,38 +31,33 @@ public abstract class PatternGeneralization {
                    double probability) {
             this.probability = probability;
             this.contribution = patternGeneralization.contribution(situation, patternProfile);
-            this.significance = patternGeneralization.significance(situation, pattern);
-            this.similarity = patternGeneralization.similarity(situation, patternProfile, pattern);
-            this.outcome = ((this.probability * this.contribution) + (this.significance * this.similarity)) / 2.0;
+            this.significance = patternGeneralization.significance(pattern);
+            this.outcome = ((this.probability * this.contribution) + this.significance) / 2.0;
         }
 
     }
 
     public final Pattern parent;
     final short scissors;
-    private final SetMath situationSignificance, patternSignificance;
-    private final Map<Integer, MapMath> contribution;
+    private final SetMath significance;
+    private final MapMath contribution;
     protected final Object profilesSynchronizer;
 
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.situationSignificance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
-        this.patternSignificance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
-        this.contribution = Collections.synchronizedMap(new HashMap<>());
+        this.significance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
+        this.contribution = new MapMath(Pattern.globalDataLimitBase, 1.0f);
         this.profilesSynchronizer = new Object();
     }
 
     final void clear() {
         synchronized (this.profilesSynchronizer) {
             synchronized (this.contribution) {
-                synchronized (this.situationSignificance) {
-                    synchronized (this.patternSignificance) {
-                        this.clearProfiles();
-                        this.contribution.clear();
-                        this.situationSignificance.clear();
-                        this.patternSignificance.clear();
-                    }
+                synchronized (this.significance) {
+                    this.clearProfiles();
+                    this.contribution.clear();
+                    this.significance.clear();
                 }
             }
         }
@@ -111,93 +101,48 @@ public abstract class PatternGeneralization {
     // Separator
 
     private void increaseImportance(int situation, PatternProfile patternProfile, float pattern) {
-        if (this.situationSignificance.getParts() == Pattern.globalDataLimit - 1) {
-            synchronized (this.situationSignificance) {
-                this.situationSignificance.removeLeastSignificant();
-                this.situationSignificance.add(situation, patternProfile.hash);
+        if (this.significance.getParts() == Pattern.globalDataLimit - 1) {
+            synchronized (this.significance) {
+                this.significance.removeLeastSignificant();
+                this.significance.add(pattern, patternProfile.hash);
             }
         } else {
-            synchronized (this.situationSignificance) {
-                this.situationSignificance.add(situation, patternProfile.hash);
+            synchronized (this.significance) {
+                this.significance.add(pattern, patternProfile.hash);
             }
         }
-        if (this.patternSignificance.getParts() == Pattern.globalDataLimit - 1) {
-            synchronized (this.patternSignificance) {
-                this.patternSignificance.removeLeastSignificant();
-                this.patternSignificance.add(pattern, patternProfile.hash);
+        if (this.contribution.getParts() == Pattern.globalDataLimit - 1) {
+            synchronized (this.contribution) {
+                this.contribution.removeLeastSignificant();
+                this.contribution.add(situation, patternProfile.hash);
             }
         } else {
-            synchronized (this.patternSignificance) {
-                this.patternSignificance.add(pattern, patternProfile.hash);
+            synchronized (this.contribution) {
+                this.contribution.add(situation, patternProfile.hash);
             }
         }
+    }
+
+    private void decreaseImportance(int situation, int profileHash) {
         synchronized (this.contribution) {
-            MapMath math = this.contribution.computeIfAbsent(
-                    situation,
-                    k -> new MapMath(Pattern.individualGlobalDataLimitBase, 1.0f)
-            );
-
-            if (math.getParts() == Pattern.individualGlobalDataLimit - 1) {
-                math.removeLeastSignificant();
-            }
-            math.add(patternProfile.hash, Float.hashCode(pattern));
+            this.contribution.remove(situation, profileHash);
         }
     }
 
-    protected final void decreaseImportance(int situation, int profileHash, float pattern) {
-        synchronized (this.situationSignificance) {
-            this.situationSignificance.remove(pattern, profileHash);
-        }
-        synchronized (this.contribution) {
-            MapMath math = this.contribution.get(situation);
+    private double significance(float pattern) {
+        int patternCount;
 
-            if (math != null
-                    && math.remove(profileHash, Float.hashCode(pattern))
-                    && math.isEmpty()) {
-                this.contribution.remove(situation);
-            }
+        synchronized (this.significance) {
+            patternCount = this.significance.getCount(pattern);
         }
-    }
-
-    protected final void decreaseImportance(int situation, PatternProfile patternProfile, float pattern) {
-        this.decreaseImportance(situation, patternProfile.hash, pattern);
-    }
-
-    private double significance(int situation, float pattern) {
-        double profileCount = this.getProfileCount();
-        int situationCount, patternCount;
-
-        synchronized (this.situationSignificance) {
-            situationCount = this.situationSignificance.getCount(situation);
-        }
-        synchronized (this.patternSignificance) {
-            patternCount = this.patternSignificance.getCount(pattern);
-        }
-        return ((situationCount / profileCount) + (patternCount / profileCount)) / 2.0;
+        return patternCount / (double) this.getProfileCount();
     }
 
     private double contribution(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
-            MapMath math = this.contribution.get(situation);
-
-            if (math != null) {
-                return (1.0 - math.getContribution(patternProfile.hash))
-                        * (1.0 - math.getSpecificContribution(patternProfile.hash));
-            }
+            return (1.0 - this.contribution.getContribution(situation, patternProfile.hash))
+                    * (1.0 - this.contribution.getSpecificContribution(situation, patternProfile.hash));
         }
-        return 0.0;
-    }
-
-    private double similarity(int situation, PatternProfile patternProfile, float pattern) {
-        synchronized (this.contribution) {
-            MapMath math = this.contribution.get(situation);
-
-            if (math != null) {
-                return (1.0 - math.getDistance(patternProfile.hash, 0.0))
-                        * (1.0 - math.getSpecificDistance(patternProfile.hash, Float.hashCode(pattern), 0.0));
-            }
-        }
-        return 0.0;
     }
 
     // Separator
@@ -235,7 +180,7 @@ public abstract class PatternGeneralization {
 
     protected final void deletePattern(int situation, int profileHash, float pattern) {
         this.customDeletePattern(situation, pattern);
-        this.decreaseImportance(situation, profileHash, pattern);
+        this.decreaseImportance(situation, profileHash);
     }
 
     abstract protected void customDeletePattern(int situation, float pattern);

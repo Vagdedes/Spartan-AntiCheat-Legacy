@@ -47,11 +47,7 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
                         k -> new NumberRank()
                 );
                 if (rank.getParts() == Pattern.individualGlobalDataLimit) {
-                    this.decreaseImportance(
-                            situation,
-                            patternProfile,
-                            rank.removeLeastSignificant()
-                    );
+                    rank.removeLeastSignificant();
                 }
                 rank.add(pattern);
             }

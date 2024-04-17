@@ -14,6 +14,7 @@ import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
 import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Damage;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -513,6 +514,10 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
+        this.machineLearningDetection(
+                SpartanBukkit.movementPatterns.vertical.getGeneralization(GroundUtils.maxHeightLength),
+                (int) object
+        );
         return false;
     }
 
