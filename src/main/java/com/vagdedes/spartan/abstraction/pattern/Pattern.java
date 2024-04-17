@@ -392,41 +392,43 @@ public class Pattern {
     // Separator
 
     public void learn(SpartanPlayer player, int situation, Number pattern) {
-        long time = System.currentTimeMillis();
-        Integer divisor = DetectionNotifications.getDivisor(player, false);
-        boolean notifications = divisor != null,
-                found = false,
-                stored = false,
-                include = !SpartanBukkit.testMode || !player.isWhitelisted()
-                        && (!notifications || divisor != testingNotificationDivisor);
+        if (this.loaded) {
+            long time = System.currentTimeMillis();
+            Integer divisor = DetectionNotifications.getDivisor(player, false);
+            boolean notifications = divisor != null,
+                    found = false,
+                    stored = false,
+                    include = !SpartanBukkit.testMode || !player.isWhitelisted()
+                            && (!notifications || divisor != testingNotificationDivisor);
 
-        synchronized (this.generalizations) {
-            for (PatternGeneralization generalization : this.generalizations.values()) {
-                if (notifications) {
-                    found |= generalization.hasPatterns(situation);
+            synchronized (this.generalizations) {
+                for (PatternGeneralization generalization : this.generalizations.values()) {
+                    if (notifications) {
+                        found |= generalization.hasPatterns(situation);
+                    }
+                    stored |= generalization.learn(
+                            player.getProfile(),
+                            time,
+                            situation,
+                            pattern.doubleValue(),
+                            include && !stored
+                    );
                 }
-                stored |= generalization.learn(
-                        player.getProfile(),
-                        time,
-                        situation,
-                        pattern.doubleValue(),
-                        include && !stored
-                );
             }
-        }
 
-        if (!found && notifications) {
-            String message = AwarenessNotifications.getOptionalNotification(
-                    "Parts of Spartan's Machine Learning algorithm have insufficient data to check you. "
-                            + (player.getProfile().isLegitimate()
-                            ? "Continue playing LEGITIMATELY to train the algorithm and get better results."
-                            : "Since you are " + player.getProfile().evidence.getType() + ", either clear your data via '/spartan info'"
-                            + " and play LEGITIMATELY or find a legitimate player to help train the algorithm and get better results.")
-            );
+            if (!found && notifications) {
+                String message = AwarenessNotifications.getOptionalNotification(
+                        "Parts of Spartan's Machine Learning algorithm have insufficient data to check you. "
+                                + (player.getProfile().isLegitimate()
+                                ? "Continue playing LEGITIMATELY to train the algorithm and get better results."
+                                : "Since you are " + player.getProfile().evidence.getType() + ", either clear your data via '/spartan info'"
+                                + " and play LEGITIMATELY or find a legitimate player to help train the algorithm and get better results.")
+                );
 
-            if (message != null
-                    && AwarenessNotifications.canSend(player.uuid, "pattern-data", 60)) {
-                player.sendMessage(message);
+                if (message != null
+                        && AwarenessNotifications.canSend(player.uuid, "pattern-data", 60)) {
+                    player.sendMessage(message);
+                }
             }
         }
     }
