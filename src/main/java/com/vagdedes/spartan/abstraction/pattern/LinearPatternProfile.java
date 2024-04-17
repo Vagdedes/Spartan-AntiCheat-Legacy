@@ -3,17 +3,16 @@ package com.vagdedes.spartan.abstraction.pattern;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
 public class LinearPatternProfile extends PatternProfile {
 
-    final Map<Integer, LinkedList<Float>> correlations;
+    final List<Float> correlations;
 
     LinearPatternProfile(PlayerProfile profile) {
         super(profile);
-        this.correlations = Collections.synchronizedMap(new HashMap<>());
+        this.correlations = Collections.synchronizedList(new LinkedList<>());
     }
 
 }

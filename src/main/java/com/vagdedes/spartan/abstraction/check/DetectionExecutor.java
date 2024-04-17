@@ -83,6 +83,8 @@ public abstract class DetectionExecutor {
                         comparison.significance,
                         comparison.outcome
                 );
+            } else {
+                player.debug(false, false, comparison.outcome);
             }
         }
     }

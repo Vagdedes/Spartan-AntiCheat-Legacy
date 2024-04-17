@@ -37,24 +37,20 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        if (patternProfile.repetition.canUse(pattern)) {
-            synchronized (this.correlations) {
-                NumberMath pie = this.correlations.computeIfAbsent(
-                        situation,
-                        k -> new NumberMath(Pattern.individualGlobalDataLimitBase, 1.0f)
-                );
-                if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
-                    pie.removeLeastSignificant();
-                }
-                pie.add(pattern);
+        synchronized (this.correlations) {
+            NumberMath pie = this.correlations.computeIfAbsent(
+                    situation,
+                    k -> new NumberMath(Pattern.individualGlobalDataLimitBase, 1.0f)
+            );
+            if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
+                pie.removeLeastSignificant();
             }
-            synchronized (patternProfile.correlations) {
-                patternProfile.correlations.put(situation, pattern);
-            }
-            return patternProfile;
-        } else {
-            return null;
+            pie.add(pattern);
         }
+        synchronized (patternProfile.correlations) {
+            patternProfile.correlations.put(situation, pattern);
+        }
+        return patternProfile;
     }
 
     @Override

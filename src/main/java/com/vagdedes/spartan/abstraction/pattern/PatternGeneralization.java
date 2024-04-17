@@ -37,7 +37,7 @@ public abstract class PatternGeneralization {
         }
 
         public boolean isValid() {
-            return this.outcome >= 0.0;
+            return this.outcome != -1.0;
         }
 
     }

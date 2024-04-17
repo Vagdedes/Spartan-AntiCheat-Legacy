@@ -37,24 +37,20 @@ public class NonLinearRankedPatternGeneralization extends PatternGeneralization 
     protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        if (patternProfile.repetition.canUse(pattern)) {
-            synchronized (this.correlations) {
-                NumberRank rank = this.correlations.computeIfAbsent(
-                        situation,
-                        k -> new NumberRank()
-                );
-                if (rank.getParts() == Pattern.individualGlobalDataLimit) {
-                    rank.removeLeastSignificant();
-                }
-                rank.add(pattern);
+        synchronized (this.correlations) {
+            NumberRank rank = this.correlations.computeIfAbsent(
+                    situation,
+                    k -> new NumberRank()
+            );
+            if (rank.getParts() == Pattern.individualGlobalDataLimit) {
+                rank.removeLeastSignificant();
             }
-            synchronized (patternProfile.correlations) {
-                patternProfile.correlations.put(situation, pattern);
-            }
-            return patternProfile;
-        } else {
-            return null;
+            rank.add(pattern);
         }
+        synchronized (patternProfile.correlations) {
+            patternProfile.correlations.put(situation, pattern);
+        }
+        return patternProfile;
     }
 
     @Override

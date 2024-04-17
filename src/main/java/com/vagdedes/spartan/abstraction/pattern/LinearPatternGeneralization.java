@@ -58,36 +58,27 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        if (patternProfile.repetition.canUse(pattern)) {
-            synchronized (this.correlations) {
-                Collection<Float> list = this.correlations.computeIfAbsent(
-                        situation,
-                        k -> new ArrayList<>(Pattern.individualGlobalDataLimitBase)
-                );
-                if (list.size() == Pattern.individualGlobalDataLimit - 1) {
-                    if (!(list instanceof LinkedList)) {
-                        list = new LinkedList<>(list);
-                        this.correlations.put(situation, list);
-                    }
-                    ((LinkedList<Float>) list).removeFirst();
+        synchronized (this.correlations) {
+            Collection<Float> list = this.correlations.computeIfAbsent(
+                    situation,
+                    k -> new ArrayList<>(Pattern.individualGlobalDataLimitBase)
+            );
+            if (list.size() == Pattern.individualGlobalDataLimit - 1) {
+                if (!(list instanceof LinkedList)) {
+                    list = new LinkedList<>(list);
+                    this.correlations.put(situation, list);
                 }
-                list.add(pattern);
+                ((LinkedList<Float>) list).removeFirst();
             }
-
-            synchronized (patternProfile.correlations) {
-                LinkedList<Float> list = patternProfile.correlations.computeIfAbsent(
-                        situation,
-                        k -> new LinkedList<>()
-                );
-                if (list.size() == 3) {
-                    list.removeFirst();
-                }
-                list.add(pattern);
-            }
-            return patternProfile;
-        } else {
-            return null;
+            list.add(pattern);
         }
+        synchronized (patternProfile.correlations) {
+            if (patternProfile.correlations.size() == 3) {
+                patternProfile.correlations.remove(0);
+            }
+            patternProfile.correlations.add(pattern);
+        }
+        return patternProfile;
     }
 
     @Override
@@ -95,16 +86,14 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
         float after, pattern, before;
 
-        synchronized (patternProfile.correlations) {
-            LinkedList<Float> list = patternProfile.correlations.get(situation);
-
-            if (list != null && list.size() >= 3) {
-                after = list.getLast();
-                pattern = list.get(list.size() - 2);
-                before = list.get(list.size() - 3);
-            } else {
-                return new Comparison();
+        if (patternProfile.correlations.size() >= 3) {
+            synchronized (patternProfile.correlations) {
+                after = patternProfile.correlations.get(patternProfile.correlations.size() - 1);
+                pattern = patternProfile.correlations.get(patternProfile.correlations.size() - 2);
+                before = patternProfile.correlations.get(patternProfile.correlations.size() - 3);
             }
+        } else {
+            return new Comparison();
         }
         Cache cache;
         int hash = HashUtils.extendInt(this.initialHash, situation);
