@@ -16,9 +16,11 @@ public interface AbstractMath {
 
     // Separator
 
-    double getContribution();
+    double getGeneralContribution();
 
-    double getContribution(Number ignoreNumber);
+    double getUniqueContribution();
+
+    double getGeneralContribution(Number ignoreNumber);
 
     double getRatio(Number number, double defaultValue);
 

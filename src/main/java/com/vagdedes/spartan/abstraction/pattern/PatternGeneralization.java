@@ -140,8 +140,8 @@ public abstract class PatternGeneralization {
 
     private double contribution(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
-            return (1.0 - this.contribution.getContribution(situation, patternProfile.hash))
-                    * (1.0 - this.contribution.getSpecificContribution(situation, patternProfile.hash));
+            return (1.0 - this.contribution.getPersonalContribution(situation, patternProfile.hash))
+                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation, patternProfile.hash));
         }
     }
 

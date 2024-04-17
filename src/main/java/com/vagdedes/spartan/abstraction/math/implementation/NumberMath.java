@@ -126,12 +126,17 @@ public class NumberMath implements AbstractMath {
     // Separator
 
     @Override
-    public double getContribution() {
+    public double getGeneralContribution() {
         return 1.0 / (this.total + 1.0);
     }
 
     @Override
-    public double getContribution(Number ignoreNumber) {
+    public double getUniqueContribution() {
+        return 1.0 / (this.map.size() + 1.0);
+    }
+
+    @Override
+    public double getGeneralContribution(Number ignoreNumber) {
         short count = this.map.getOrDefault(ignoreNumber.intValue(), (short) 0);
         return 1.0 / (this.total - count + 1.0);
     }
