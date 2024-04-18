@@ -120,7 +120,7 @@ public class SpartanPlayerDamage {
                 : this.activeItem;
     }
 
-    public boolean isPropellingProjectile() { // todo cover fishing rods
+    public boolean isPropellingProjectile() {
         if (!this.event.isCancelled()
                 && this.ticksPassed() <= TPS.maximum
                 && this.parent.movement.getTicksOnAir() <= TPS.maximum

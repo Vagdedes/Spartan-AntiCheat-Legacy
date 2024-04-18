@@ -384,6 +384,10 @@ public class PlayerUtils {
         return gravity.getOrDefault(tick, -1.0);
     }
 
+    public static double getSignificantFallingTicks() {
+        return gravity.size();
+    }
+
     // Handled Effects
 
     public static boolean isInWaterTunnel(SpartanPlayer p, SpartanLocation location) {

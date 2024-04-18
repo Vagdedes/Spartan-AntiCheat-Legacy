@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.math.implementation.MapMath;
 import com.vagdedes.spartan.abstraction.math.implementation.SetMath;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import org.bukkit.Bukkit;
 
 public abstract class PatternGeneralization {
 
@@ -86,7 +85,7 @@ public abstract class PatternGeneralization {
     // Separator
 
     final boolean learn(PlayerProfile profile, int situation, double pattern, boolean read) {
-        if (profile.isLegitimate()) { // todo fix
+        if (profile.isLegitimate()) { // todo fix tracking
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
@@ -128,7 +127,7 @@ public abstract class PatternGeneralization {
         }
     }
 
-    private void decreaseImportance(int situation, int profileHash, float pattern) {
+    final void decreaseImportance(int situation, int profileHash, float pattern) {
         if (this.significance.getParts() == Pattern.globalDataLimit - 1) {
             synchronized (this.significance) {
                 this.significance.removeLeastSignificant();
@@ -171,6 +170,8 @@ public abstract class PatternGeneralization {
     abstract protected PatternProfile customLearn(PlayerProfile profile, int situation,
                                                   float pattern, boolean read);
 
+    // Separator
+
     public final Comparison comparison(PlayerProfile playerProfile, int situation) {
         return this.parent.loaded
                 ? this.customComparison(playerProfile, situation)
@@ -178,15 +179,6 @@ public abstract class PatternGeneralization {
     }
 
     protected abstract Comparison customComparison(PlayerProfile playerProfile, int situation);
-
-    // Separator
-
-    protected final void deletePattern(int situation, int profileHash, float pattern) {
-        this.customDeletePattern(situation, pattern);
-        this.decreaseImportance(situation, profileHash, pattern);
-    }
-
-    abstract protected void customDeletePattern(int situation, float pattern);
 
     // Separator
 

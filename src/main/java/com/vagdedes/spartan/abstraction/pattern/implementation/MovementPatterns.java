@@ -20,24 +20,21 @@ public class MovementPatterns extends PatternFamily {
                                 new short[]{
                                         horizontalGeneralization
                                 },
-                                true,
-                                false
+                                true
                         ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },
-                                true,
-                                false
+                                true
                         ),
                         this.fall = new Pattern(
                                 "movement/distance/fall",
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },
-                                true,
-                                false
+                                true
                         )
                 }
         );

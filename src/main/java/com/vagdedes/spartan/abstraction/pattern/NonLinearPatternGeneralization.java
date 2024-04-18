@@ -91,19 +91,6 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     }
 
     @Override
-    protected void customDeletePattern(int situation, float pattern) {
-        synchronized (this.correlations) {
-            NumberMath pie = this.correlations.get(situation);
-
-            if (pie != null
-                    && pie.remove(pattern)
-                    && pie.isEmpty()) {
-                this.correlations.remove(situation);
-            }
-        }
-    }
-
-    @Override
     protected void clearProfiles() {
         this.profiles.clear();
     }

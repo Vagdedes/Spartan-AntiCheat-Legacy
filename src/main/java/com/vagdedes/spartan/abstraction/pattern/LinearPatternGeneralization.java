@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
-import com.vagdedes.spartan.utils.math.ProbabilityPredictor;
 
 import java.util.*;
 
@@ -10,26 +9,27 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     private static final class Cache {
 
-        private ProbabilityPredictor predictor;
+        private double beforeProbability, afterProbability;
         private long expiration;
 
-        private Cache(ProbabilityPredictor predictor) {
-            this.refresh(predictor);
+        private Cache(double beforeProbability, double afterProbability) {
+            this.refresh(beforeProbability, afterProbability);
         }
 
         private boolean isExpired() {
             return this.expiration < System.currentTimeMillis();
         }
 
-        private void refresh(ProbabilityPredictor predictor) {
-            this.predictor = predictor;
+        private void refresh(double beforeProbability, double afterProbability) {
+            this.beforeProbability = beforeProbability;
+            this.afterProbability = afterProbability;
             this.expiration = System.currentTimeMillis() + 1_000L;
         }
 
     }
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
-    private final Map<Integer, Collection<Float>> correlations;
+    private final Map<Integer, Map<Integer, List<int[]>>> correlations;
     private final int initialHash;
     private final Map<Integer, Cache> cache;
 
@@ -43,9 +43,27 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     protected PatternProfile deleteProfile(PlayerProfile profile) {
+        LinearPatternProfile patternProfile;
+
         synchronized (this.profilesSynchronizer) {
-            return this.profiles.remove(profile);
+            patternProfile = this.profiles.remove(profile);
         }
+
+        if (patternProfile != null) {
+            synchronized (this.correlations) {
+                Iterator<Map<Integer, List<int[]>>> iterator = this.correlations.values().iterator();
+
+                while (iterator.hasNext()) {
+                    Map<Integer, List<int[]>> map = iterator.next();
+
+                    if (map.remove(patternProfile.hash) != null
+                            && map.isEmpty()) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+        return patternProfile;
     }
 
     @Override
@@ -60,27 +78,56 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                          float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        synchronized (this.correlations) {
-            Collection<Float> list = this.correlations.computeIfAbsent(
-                    situation,
-                    k -> new ArrayList<>(Pattern.individualGlobalDataLimitBase)
-            );
-            if (list.size() == Pattern.individualGlobalDataLimit - 1) {
-                if (!(list instanceof LinkedList)) {
-                    list = new LinkedList<>(list);
-                    this.correlations.put(situation, list);
-                }
-                ((LinkedList<Float>) list).removeFirst();
-            }
-            list.add(pattern);
-        }
-        if (!read) {
-            synchronized (patternProfile.correlations) {
-                if (patternProfile.correlations.size() == 3) {
-                    patternProfile.correlations.remove(0);
-                }
+        synchronized (patternProfile.correlations) {
+            if (patternProfile.correlations.size() == 3) {
+                patternProfile.correlations.remove(0);
                 patternProfile.correlations.add(pattern);
+            } else {
+                patternProfile.correlations.add(pattern);
+                return patternProfile;
             }
+        }
+        synchronized (this.correlations) {
+            Map<Integer, List<int[]>> map = this.correlations.get(situation);
+
+            if (map == null) {
+                map = new HashMap<>(Pattern.individualGlobalDataLimitBase, 1.0f);
+                this.correlations.put(situation, map);
+            } else if (map.size() == Pattern.individualGlobalDataLimit - 1) {
+                int min = Integer.MAX_VALUE;
+                Integer key = null;
+                Iterator<Map.Entry<Integer, List<int[]>>> iterator = map.entrySet().iterator();
+
+                while (iterator.hasNext()) {
+                    Map.Entry<Integer, List<int[]>> entry = iterator.next();
+                    int count = 0;
+
+                    for (List<int[]> list : map.values()) {
+                        count += list.size();
+                    }
+                    if (count < min) {
+                        min = count;
+
+                        if (min == 1) {
+                            iterator.remove();
+                            break;
+                        } else {
+                            key = entry.getKey();
+                        }
+                    }
+                }
+                if (key != null) {
+                    map.remove(key);
+                }
+            }
+            List<int[]> list = map.computeIfAbsent(
+                    patternProfile.hash,
+                    k -> new ArrayList<>(Pattern.individualGlobalDataLimit)
+            );
+            if (list.size() == 100) {
+                list.remove(0);
+            }
+            list.add(this.getHashCodes(this.getPatterns(patternProfile)));
         }
         return patternProfile;
     }
@@ -92,45 +139,75 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         if (patternProfile.correlations.size() < 3) {
             return new Comparison();
         } else {
-            float after, now, before;
-
-            synchronized (patternProfile.correlations) {
-                after = patternProfile.correlations.get(patternProfile.correlations.size() - 1);
-                now = patternProfile.correlations.get(patternProfile.correlations.size() - 2);
-                before = patternProfile.correlations.get(patternProfile.correlations.size() - 3);
-            }
             Cache cache;
+            float[] patterns = this.getPatterns(patternProfile);
             int hash = HashUtils.extendInt(
                     HashUtils.extendInt(this.initialHash, situation),
-                    Float.hashCode(now)
+                    Float.hashCode(patterns[1])
             );
 
             synchronized (this.correlations) {
                 cache = this.cache.get(hash);
 
                 if (cache == null) {
-                    Collection<Float> collection = this.correlations.get(situation);
+                    Map<Integer, List<int[]>> map = this.correlations.get(situation);
 
-                    if (collection == null) {
-                        cache = new Cache(new ProbabilityPredictor());
+                    if (map == null) {
+                        cache = new Cache(0.0, 0.0);
                     } else {
-                        cache = new Cache(new ProbabilityPredictor(collection, now));
+                        int[] hashCodes = this.getHashCodes(patterns);
+                        int beforeProbability = 0, afterProbability = 0;
+                        double count = 0;
+
+                        for (List<int[]> list : map.values()) {
+                            for (int[] array : list) {
+                                if (hashCodes[0] == array[0]) {
+                                    beforeProbability++;
+                                }
+                                if (hashCodes[1] == array[1]) {
+                                    afterProbability++;
+                                }
+                                count++;
+                            }
+                        }
+                        cache = new Cache(
+                                beforeProbability / count,
+                                afterProbability / count
+                        );
 
                         if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
-                            Iterator<Integer> iterator = this.cache.keySet().iterator();
-                            iterator.next();
-                            iterator.remove();
+                            Iterator<Integer> loop = this.cache.keySet().iterator();
+                            loop.next();
+                            loop.remove();
                         }
                         this.cache.put(hash, cache);
                     }
                 } else if (cache.isExpired()) {
-                    Collection<Float> collection = this.correlations.get(situation);
+                    Map<Integer, List<int[]>> map = this.correlations.get(situation);
 
-                    if (collection == null) {
-                        cache = new Cache(new ProbabilityPredictor());
+                    if (map == null) {
                         this.cache.remove(hash);
+                        cache.refresh(0.0, 0.0);
                     } else {
-                        cache.refresh(new ProbabilityPredictor(collection, now));
+                        int[] hashCodes = this.getHashCodes(patterns);
+                        int beforeProbability = 0, afterProbability = 0;
+                        double count = 0;
+
+                        for (List<int[]> list : map.values()) {
+                            for (int[] array : list) {
+                                if (hashCodes[0] == array[0]) {
+                                    beforeProbability++;
+                                }
+                                if (hashCodes[1] == array[1]) {
+                                    afterProbability++;
+                                }
+                                count++;
+                            }
+                        }
+                        cache.refresh(
+                                beforeProbability / count,
+                                afterProbability / count
+                        );
                     }
                 }
             }
@@ -138,23 +215,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     this,
                     patternProfile,
                     situation,
-                    new float[]{before, now, after},
-                    cache.predictor.after.getRatio(after, 0.0)
-                            * cache.predictor.before.getRatio(before, 0.0)
+                    new float[]{patterns[0], patterns[1], patterns[2]},
+                    cache.beforeProbability
+                            * cache.afterProbability
             );
-        }
-    }
-
-    @Override
-    protected void customDeletePattern(int situation, float pattern) {
-        synchronized (this.correlations) {
-            Collection<Float> list = this.correlations.get(situation);
-
-            if (list != null
-                    && list.remove(pattern)
-                    && list.isEmpty()) {
-                this.correlations.remove(situation);
-            }
         }
     }
 
@@ -177,6 +241,24 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     k -> new LinearPatternProfile(profile)
             );
         }
+    }
+
+    private float[] getPatterns(LinearPatternProfile patternProfile) {
+        synchronized (patternProfile.correlations) {
+            return new float[]{
+                    patternProfile.correlations.get(patternProfile.correlations.size() - 3),
+                    patternProfile.correlations.get(patternProfile.correlations.size() - 2),
+                    patternProfile.correlations.get(patternProfile.correlations.size() - 1)
+            };
+        }
+    }
+
+    private int[] getHashCodes(float[] patterns) {
+        int nowHash = Float.hashCode(patterns[1]);
+        return new int[]{
+                HashUtils.extendInt(nowHash, Float.hashCode(patterns[0])),
+                HashUtils.extendInt(nowHash, Float.hashCode(patterns[2]))
+        };
     }
 
 }
