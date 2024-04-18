@@ -19,7 +19,7 @@ public class Pattern {
     private static final int storageLimit = 1024 * 1024 * 1024;
     static final int
             testingNotificationDivisor = 69,
-            globalDataLimit = 320_000,
+            globalDataLimit = 20_000,
             globalDataLimitBase = 625,
             individualGlobalDataLimit = 1_024,
             individualGlobalDataLimitBase = 2;
@@ -317,15 +317,18 @@ public class Pattern {
                                     changed = true;
                                     continue;
                                 }
-                                PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                try {
+                                    PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
-                                for (PatternGeneralization generalization : generalizations.values()) {
-                                    generalization.learn(
-                                            profile,
-                                            (int) situation,
-                                            (double) pattern,
-                                            true
-                                    );
+                                    for (PatternGeneralization generalization : generalizations.values()) {
+                                        generalization.learn(
+                                                profile,
+                                                (int) situation,
+                                                (double) pattern,
+                                                true
+                                        );
+                                    }
+                                } catch (Exception ignored) {
                                 }
                             }
 
