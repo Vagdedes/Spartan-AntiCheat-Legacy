@@ -38,6 +38,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     private static final class Reference {
 
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.hashCodes[0], this.hashCodes[1], this.sum);
+        }
+
         private final int[] hashCodes;
         private final float sum;
 
