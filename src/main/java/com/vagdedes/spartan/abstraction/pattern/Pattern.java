@@ -315,25 +315,22 @@ public class Pattern {
                                     changed = true;
                                     continue;
                                 }
-                                try {
-                                    String profileName = profileObject.toString();
+                                String profileName = profileObject.toString();
 
-                                    if (profileName.isEmpty()) {
-                                        this.deleteFromFile(configuration, key);
-                                        changed = true;
-                                        continue;
-                                    }
-                                    long time = Long.parseLong(key);
-                                    PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                if (profileName.isEmpty()) {
+                                    this.deleteFromFile(configuration, key);
+                                    changed = true;
+                                    continue;
+                                }
+                                PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
 
-                                    for (PatternGeneralization generalization : generalizations.values()) {
-                                        generalization.learn(
-                                                profile,
-                                                (int) situation,
-                                                (double) pattern
-                                        );
-                                    }
-                                } catch (Exception ignored) {
+                                for (PatternGeneralization generalization : generalizations.values()) {
+                                    generalization.learn(
+                                            profile,
+                                            (int) situation,
+                                            (double) pattern,
+                                            true
+                                    );
                                 }
                             }
 
@@ -404,7 +401,8 @@ public class Pattern {
                     if (generalization.learn(
                             profile,
                             situation,
-                            pattern.doubleValue()
+                            pattern.doubleValue(),
+                            false
                     )) {
                         store |= include;
                     }

@@ -33,7 +33,8 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
     }
 
     @Override
-    protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern) {
+    protected PatternProfile customLearn(PlayerProfile profile, int situation,
+                                         float pattern, boolean read) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         synchronized (this.correlations) {

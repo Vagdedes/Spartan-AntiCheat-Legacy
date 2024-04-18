@@ -85,12 +85,19 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    final boolean learn(PlayerProfile profile, int situation, double pattern) {
+    final boolean learn(PlayerProfile profile, int situation, double pattern, boolean read) {
         if (profile.isLegitimate()) { // todo fix
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
-           return this.customLearn(profile, situation, (float) pattern) != null;
+           PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern, read);
+
+            if (patternProfile != null) {
+                this.increaseImportance(situation, patternProfile, (float) pattern);
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -121,7 +128,17 @@ public abstract class PatternGeneralization {
         }
     }
 
-    private void decreaseImportance(int situation, int profileHash) {
+    private void decreaseImportance(int situation, int profileHash, float pattern) {
+        if (this.significance.getParts() == Pattern.globalDataLimit - 1) {
+            synchronized (this.significance) {
+                this.significance.removeLeastSignificant();
+                this.significance.remove(pattern, profileHash);
+            }
+        } else {
+            synchronized (this.significance) {
+                this.significance.remove(pattern, profileHash);
+            }
+        }
         synchronized (this.contribution) {
             this.contribution.remove(situation, profileHash);
         }
@@ -151,7 +168,8 @@ public abstract class PatternGeneralization {
 
     abstract protected boolean hasPatterns(int situation);
 
-    abstract protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern);
+    abstract protected PatternProfile customLearn(PlayerProfile profile, int situation,
+                                                  float pattern, boolean read);
 
     public final Comparison comparison(PlayerProfile playerProfile, int situation) {
         return this.parent.loaded
@@ -165,7 +183,7 @@ public abstract class PatternGeneralization {
 
     protected final void deletePattern(int situation, int profileHash, float pattern) {
         this.customDeletePattern(situation, pattern);
-        this.decreaseImportance(situation, profileHash);
+        this.decreaseImportance(situation, profileHash, pattern);
     }
 
     abstract protected void customDeletePattern(int situation, float pattern);

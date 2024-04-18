@@ -56,7 +56,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected PatternProfile customLearn(PlayerProfile profile, int situation, float pattern) {
+    protected PatternProfile customLearn(PlayerProfile profile, int situation,
+                                         float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         synchronized (this.correlations) {
@@ -73,11 +74,13 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             }
             list.add(pattern);
         }
-        synchronized (patternProfile.correlations) {
-            if (patternProfile.correlations.size() == 3) {
-                patternProfile.correlations.remove(0);
+        if (!read) {
+            synchronized (patternProfile.correlations) {
+                if (patternProfile.correlations.size() == 3) {
+                    patternProfile.correlations.remove(0);
+                }
+                patternProfile.correlations.add(pattern);
             }
-            patternProfile.correlations.add(pattern);
         }
         return patternProfile;
     }
@@ -136,8 +139,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     patternProfile,
                     situation,
                     new float[]{before, now, after},
-                    cache.predictor.after.getRatio(after, 1.0)
-                            * cache.predictor.before.getRatio(before, 1.0)
+                    cache.predictor.after.getRatio(after, 0.0)
+                            * cache.predictor.before.getRatio(before, 0.0)
             );
         }
     }
