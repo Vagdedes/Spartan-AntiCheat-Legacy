@@ -20,9 +20,9 @@ public class Pattern {
     static final int
             testingNotificationDivisor = 69,
             globalDataLimit = 20_000,
-            globalDataLimitBase = 625,
-            individualGlobalDataLimit = 1_024,
-            individualGlobalDataLimitBase = 2;
+            globalDataBase = 625,
+            individualDataLimit = 8_192,
+            individualDataBase = 2;
     static final String
             profileOption = "profile",
             patternOption = "pattern",

@@ -65,8 +65,8 @@ public abstract class PatternGeneralization {
     protected PatternGeneralization(Pattern pattern, short generalization) {
         this.parent = pattern;
         this.scissors = generalization;
-        this.significance = new SetMath(Pattern.globalDataLimitBase, 1.0f);
-        this.contribution = new MapMath(Pattern.globalDataLimitBase, 1.0f);
+        this.significance = new SetMath(Pattern.globalDataBase, 1.0f);
+        this.contribution = new MapMath(Pattern.globalDataBase, 1.0f);
         this.profilesSynchronizer = new Object();
     }
 
@@ -89,7 +89,7 @@ public abstract class PatternGeneralization {
             if (this.scissors != 0) {
                 pattern = AlgebraUtils.cut(pattern, this.scissors);
             }
-           PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern, read);
+            PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern, read);
 
             if (patternProfile != null) {
                 this.increaseImportance(situation, patternProfile, (float) pattern);
@@ -128,15 +128,8 @@ public abstract class PatternGeneralization {
     }
 
     final void decreaseImportance(int situation, int profileHash, float pattern) {
-        if (this.significance.getParts() == Pattern.globalDataLimit - 1) {
-            synchronized (this.significance) {
-                this.significance.removeLeastSignificant();
-                this.significance.remove(pattern, profileHash);
-            }
-        } else {
-            synchronized (this.significance) {
-                this.significance.remove(pattern, profileHash);
-            }
+        synchronized (this.significance) {
+            this.significance.remove(pattern, profileHash);
         }
         synchronized (this.contribution) {
             this.contribution.remove(situation, profileHash);

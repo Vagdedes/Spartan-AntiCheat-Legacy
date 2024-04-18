@@ -40,9 +40,9 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
         synchronized (this.correlations) {
             NumberMath pie = this.correlations.computeIfAbsent(
                     situation,
-                    k -> new NumberMath(Pattern.individualGlobalDataLimitBase, 1.0f)
+                    k -> new NumberMath(Pattern.individualDataBase, 1.0f)
             );
-            if (pie.getParts() == Pattern.individualGlobalDataLimit - 1) {
+            if (pie.getParts() == Pattern.individualDataLimit - 1) {
                 pie.removeLeastSignificant();
             }
             pie.add(pattern);

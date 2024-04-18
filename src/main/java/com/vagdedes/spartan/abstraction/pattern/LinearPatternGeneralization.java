@@ -29,8 +29,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
-    private final Map<Integer, List<int[]>> correlations;
-    private final Map<Integer, Integer> overflow;
+    private final Map<Integer, List<Integer>> correlations;
+    private final Map<Integer, int[]> references;
+    private final Map<Integer, Short> overflow;
     private final int initialHash;
     private final Map<Integer, Cache> cache;
 
@@ -38,9 +39,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         super(pattern, generalization);
         this.profiles = new HashMap<>();
         this.correlations = Collections.synchronizedMap(new HashMap<>());
-        this.overflow = new HashMap<>(Pattern.individualGlobalDataLimitBase, 1.0f);
+        this.references = new HashMap<>(Pattern.individualDataBase, 1.0f);
+        this.overflow = new HashMap<>(Pattern.individualDataBase, 1.0f);
         this.initialHash = Objects.hash(pattern.key.hashCode(), System.currentTimeMillis());
-        this.cache = new HashMap<>(Pattern.individualGlobalDataLimitBase, 1.0f);
+        this.cache = new HashMap<>(Pattern.individualDataBase, 1.0f);
     }
 
     @Override
@@ -72,21 +74,25 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             }
         }
         synchronized (this.correlations) {
-            List<int[]> list = this.correlations.computeIfAbsent(
+            List<Integer> list = this.correlations.computeIfAbsent(
                     situation,
-                    k -> new ArrayList<>(Pattern.individualGlobalDataLimitBase)
+                    k -> new ArrayList<>(Pattern.individualDataBase)
             );
-            if (list.size() == Pattern.individualGlobalDataLimit - 1) {
-                int position = this.overflow.getOrDefault(situation, -1) + 1;
-                list.set(position, this.getHashCodes(this.getPatterns(patternProfile)));
+            int[] hashCodes = this.getHashCodes(this.getPatterns(patternProfile));
+            int reference = HashUtils.extendInt(hashCodes[0], hashCodes[1]);
+            this.references.putIfAbsent(reference, hashCodes);
 
-                if (position == Pattern.individualGlobalDataLimit - 1) {
+            if (list.size() == Pattern.individualDataLimit - 1) {
+                short position = (short) (this.overflow.getOrDefault(situation, (short) -1) + 1);
+                list.set(position, reference);
+
+                if (position == Pattern.individualDataLimit - 1) {
                     this.overflow.remove(situation);
                 } else {
                     this.overflow.put(situation, position);
                 }
             } else {
-                list.add(this.getHashCodes(this.getPatterns(patternProfile)));
+                list.add(reference);
             }
         }
         return patternProfile;
@@ -110,7 +116,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 cache = this.cache.get(hash);
 
                 if (cache == null) {
-                    Collection<int[]> collection = this.correlations.get(situation);
+                    Collection<Integer> collection = this.correlations.get(situation);
 
                     if (collection == null) {
                         cache = new Cache(0.0, 0.0);
@@ -118,7 +124,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         int[] hashCodes = this.getHashCodes(patterns);
                         int beforeProbability = 0, afterProbability = 0;
 
-                        for (int[] array : collection) {
+                        for (int reference : collection) {
+                            int[] array = this.references.get(reference);
+
                             if (hashCodes[0] == array[0]) {
                                 beforeProbability++;
                             }
@@ -132,7 +140,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                 afterProbability / count
                         );
 
-                        if (this.cache.size() == Pattern.individualGlobalDataLimit - 1) {
+                        if (this.cache.size() == Pattern.individualDataLimit - 1) {
                             Iterator<Integer> loop = this.cache.keySet().iterator();
                             loop.next();
                             loop.remove();
@@ -140,7 +148,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         this.cache.put(hash, cache);
                     }
                 } else if (cache.isExpired()) {
-                    Collection<int[]> collection = this.correlations.get(situation);
+                    Collection<Integer> collection = this.correlations.get(situation);
 
                     if (collection == null) {
                         this.cache.remove(hash);
@@ -149,7 +157,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         int[] hashCodes = this.getHashCodes(patterns);
                         int beforeProbability = 0, afterProbability = 0;
 
-                        for (int[] array : collection) {
+                        for (int reference : collection) {
+                            int[] array = this.references.get(reference);
+
                             if (hashCodes[0] == array[0]) {
                                 beforeProbability++;
                             }
