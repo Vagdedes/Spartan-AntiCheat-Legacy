@@ -28,7 +28,7 @@ public class Pattern {
             patternOption = "pattern",
             situationOption = "situation";
     private static final String[] options = {profileOption, patternOption, situationOption};
-    private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>());
+    private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>(individualDataBase));
 
     static int hash(PlayerProfile playerProfile) {
         return playerProfile.getName().hashCode();
@@ -259,7 +259,7 @@ public class Pattern {
         this.storeFiles();
 
         SpartanBukkit.dataThread.executeWithPriority(() -> {
-            Map<Short, PatternGeneralization> generalizations = new HashMap<>();
+            Map<Short, PatternGeneralization> generalizations = new HashMap<>(individualDataBase, 1.0f);
             File[] files = this.getLearningFiles();
 
             if (files != null) {

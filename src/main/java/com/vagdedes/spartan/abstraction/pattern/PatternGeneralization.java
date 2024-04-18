@@ -71,15 +71,13 @@ public abstract class PatternGeneralization {
     }
 
     final void clear() {
-        synchronized (this.profilesSynchronizer) {
-            synchronized (this.contribution) {
-                synchronized (this.significance) {
-                    this.clearProfiles();
-                    this.contribution.clear();
-                    this.significance.clear();
-                }
-            }
+        synchronized (this.contribution) {
+            this.contribution.clear();
         }
+        synchronized (this.significance) {
+            this.significance.clear();
+        }
+        this.clearProfiles();
     }
 
     // Separator

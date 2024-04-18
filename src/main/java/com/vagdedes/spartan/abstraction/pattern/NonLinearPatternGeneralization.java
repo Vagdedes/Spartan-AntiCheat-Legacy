@@ -7,15 +7,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NonLinearPatternGeneralization extends PatternGeneralization { // todo change
+public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     private final Map<PlayerProfile, NonLinearPatternProfile> profiles;
     private final Map<Integer, NumberMath> correlations;
 
     protected NonLinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
-        this.profiles = new HashMap<>();
-        this.correlations = Collections.synchronizedMap(new HashMap<>());
+        this.profiles = new HashMap<>(Pattern.individualDataBase, 1.0f);
+        this.correlations = Collections.synchronizedMap(
+                new HashMap<>(Pattern.individualDataBase, 1.0f)
+        );
     }
 
     @Override
@@ -37,6 +39,9 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
                                          float pattern, boolean read) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
+        if (!read) {
+            patternProfile.lastPattern = pattern;
+        }
         synchronized (this.correlations) {
             NumberMath pie = this.correlations.computeIfAbsent(
                     situation,
@@ -47,52 +52,45 @@ public class NonLinearPatternGeneralization extends PatternGeneralization { // t
             }
             pie.add(pattern);
         }
-        synchronized (patternProfile.correlations) {
-            patternProfile.correlations.put(situation, pattern);
-        }
         return patternProfile;
     }
 
     @Override
     public Comparison customComparison(PlayerProfile profile, int situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
-        float pattern;
 
-        synchronized (patternProfile.correlations) {
-            Float cache = patternProfile.correlations.get(situation);
+        if (patternProfile.lastPattern == Float.MIN_VALUE) {
+            return new Comparison();
+        } else {
+            synchronized (this.correlations) {
+                NumberMath math = this.correlations.get(situation);
 
-            if (cache != null) {
-                pattern = cache;
-            } else {
-                return new Comparison();
-            }
-        }
-        synchronized (this.correlations) {
-            NumberMath math = this.correlations.get(situation);
-
-            if (math == null) {
-                return new Comparison(
-                        this,
-                        patternProfile,
-                        situation,
-                        pattern,
-                        0.0
-                );
-            } else {
-                return new Comparison(
-                        this,
-                        patternProfile,
-                        situation,
-                        pattern,
-                        math.getRatio(pattern, 0.0)
-                );
+                if (math == null) {
+                    return new Comparison(
+                            this,
+                            patternProfile,
+                            situation,
+                            patternProfile.lastPattern,
+                            0.0
+                    );
+                } else {
+                    return new Comparison(
+                            this,
+                            patternProfile,
+                            situation,
+                            patternProfile.lastPattern,
+                            math.getCurveProbability(patternProfile.lastPattern, 0.0)
+                    );
+                }
             }
         }
     }
 
     @Override
     protected void clearProfiles() {
-        this.profiles.clear();
+        synchronized (this.profilesSynchronizer) {
+            this.profiles.clear();
+        }
     }
 
     @Override

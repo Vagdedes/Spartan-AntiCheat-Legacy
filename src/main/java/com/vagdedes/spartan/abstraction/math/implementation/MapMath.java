@@ -11,17 +11,17 @@ public class MapMath implements AbstractKeyValueMath {
     private float total, specificTotal;
 
     public MapMath() {
-        this(-1);
+        this(2);
     }
 
     public MapMath(int capacity) {
-        this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
+        this.map = new HashMap<>(capacity);
         this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
 
     public MapMath(int capacity, float loadFactor) {
-        this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
+        this.map = new HashMap<>(capacity, loadFactor);
         this.total = 0.0f;
         this.specificTotal = 0.0f;
     }
@@ -113,7 +113,7 @@ public class MapMath implements AbstractKeyValueMath {
                 this.specificTotal++;
             }
         } else {
-            map = new HashMap<>();
+            map = new HashMap<>(2, 1.0f);
             map.put(hash, (short) 1);
             this.map.put(number.hashCode(), map);
             this.total++;
@@ -229,7 +229,7 @@ public class MapMath implements AbstractKeyValueMath {
 
             if (selfMap != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (Map<Integer, Short> map : this.map.values()) {
                     double distance = Math.abs(map.size() - average);
@@ -248,7 +248,7 @@ public class MapMath implements AbstractKeyValueMath {
 
             if (selfMap != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (Map<Integer, Short> map : this.map.values()) {
                     double distance = map.size() - average;
@@ -363,7 +363,7 @@ public class MapMath implements AbstractKeyValueMath {
 
                 if (selfCount != null) {
                     double average = this.specificTotal / (double) selfMap.size();
-                    Map<Double, Integer> rank = new HashMap<>();
+                    Map<Double, Integer> rank = new HashMap<>(selfMap.size() + 1, 1.0f);
 
                     for (short count : selfMap.values()) {
                         double distance = Math.abs(count - average);
@@ -386,7 +386,7 @@ public class MapMath implements AbstractKeyValueMath {
 
                 if (selfCount != null) {
                     double average = this.specificTotal / (double) selfMap.size();
-                    Map<Double, Integer> rank = new HashMap<>();
+                    Map<Double, Integer> rank = new HashMap<>(selfMap.size() + 1, 1.0f);
 
                     for (short count : selfMap.values()) {
                         double distance = count - average;

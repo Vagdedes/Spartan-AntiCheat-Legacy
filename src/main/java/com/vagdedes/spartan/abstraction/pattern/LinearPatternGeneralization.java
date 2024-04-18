@@ -61,11 +61,13 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     protected LinearPatternGeneralization(Pattern pattern, short generalization) {
         super(pattern, generalization);
-        this.profiles = new HashMap<>();
-        this.correlations = Collections.synchronizedMap(new HashMap<>());
+        this.initialHash = Objects.hash(pattern.key.hashCode(), System.currentTimeMillis());
+        this.profiles = new HashMap<>(Pattern.individualDataBase, 1.0f);
+        this.correlations = Collections.synchronizedMap(
+                new HashMap<>(Pattern.individualDataBase, 1.0f)
+        );
         this.references = new HashMap<>(Pattern.individualDataBase, 1.0f);
         this.overflow = new HashMap<>(Pattern.individualDataBase, 1.0f);
-        this.initialHash = Objects.hash(pattern.key.hashCode(), System.currentTimeMillis());
         this.cache = new HashMap<>(Pattern.individualDataBase, 1.0f);
     }
 
@@ -212,7 +214,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     protected void clearProfiles() {
-        this.profiles.clear();
+        synchronized (this.profilesSynchronizer) {
+            this.profiles.clear();
+        }
     }
 
     @Override

@@ -171,7 +171,7 @@ public class NumberRank implements AbstractRank {
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (short count : this.map.values()) {
                     double distance = Math.abs(count - average);
@@ -190,7 +190,7 @@ public class NumberRank implements AbstractRank {
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (short count : this.map.values()) {
                     double distance = count - average;

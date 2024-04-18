@@ -10,16 +10,16 @@ public class SetMath implements AbstractKeyMath {
     private float total;
 
     public SetMath() {
-        this(-1);
+        this(2);
     }
 
     public SetMath(int capacity) {
-        this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
+        this.map = new HashMap<>(capacity);
         this.total = 0.0f;
     }
 
     public SetMath(int capacity, float loadFactor) {
-        this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
+        this.map = new HashMap<>(capacity, loadFactor);
         this.total = 0.0f;
     }
 
@@ -90,7 +90,7 @@ public class SetMath implements AbstractKeyMath {
                 this.total++;
             }
         } else {
-            set = new HashSet<>();
+            set = new HashSet<>(2);
             set.add(hash);
             this.map.put(number.hashCode(), set);
             this.total++;
@@ -191,7 +191,7 @@ public class SetMath implements AbstractKeyMath {
 
             if (selfSet != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (Set<Integer> set : this.map.values()) {
                     double distance = Math.abs(set.size() - average);
@@ -210,7 +210,7 @@ public class SetMath implements AbstractKeyMath {
 
             if (selfSet != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (Set<Integer> set : this.map.values()) {
                     double distance = set.size() - average;

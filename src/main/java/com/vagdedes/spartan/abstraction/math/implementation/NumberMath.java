@@ -10,16 +10,16 @@ public class NumberMath implements AbstractMath {
     private float total;
 
     public NumberMath() {
-        this(-1);
+        this(2);
     }
 
     public NumberMath(int capacity) {
-        this.map = capacity >= 0 ? new HashMap<>(capacity) : new HashMap<>();
+        this.map = new HashMap<>(capacity);
         this.total = 0.0f;
     }
 
     public NumberMath(int capacity, float loadFactor) {
-        this.map = capacity >= 0 ? new HashMap<>(capacity, loadFactor) : new HashMap<>();
+        this.map = new HashMap<>(capacity, loadFactor);
         this.total = 0.0f;
     }
 
@@ -181,7 +181,7 @@ public class NumberMath implements AbstractMath {
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (short count : this.map.values()) {
                     double distance = Math.abs(count - average);
@@ -200,7 +200,7 @@ public class NumberMath implements AbstractMath {
 
             if (selfCount != null) {
                 double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>();
+                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
 
                 for (short count : this.map.values()) {
                     double distance = count - average;
