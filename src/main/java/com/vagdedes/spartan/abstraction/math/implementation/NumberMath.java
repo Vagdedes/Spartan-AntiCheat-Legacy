@@ -2,7 +2,9 @@ package com.vagdedes.spartan.abstraction.math.implementation;
 
 import com.vagdedes.spartan.abstraction.math.AbstractMath;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NumberMath implements AbstractMath {
 
@@ -142,71 +144,30 @@ public class NumberMath implements AbstractMath {
     }
 
     @Override
-    public double getRatio(Number number, double defaultValue) {
+    public double getProbability(Number number, double defaultValue) {
         Short count = this.map.get(number.hashCode());
         return count != null ? count / this.total : defaultValue;
     }
 
     @Override
-    public double getDistance(Number number, double defaultValue) {
-        if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.hashCode());
-
-            if (selfCount != null) {
-                double average = this.total / (double) this.map.size();
-                Set<Double> rank = new TreeSet<>();
-
-                for (short count : this.map.values()) {
-                    rank.add(Math.abs(count - average));
-                }
-                average = Math.abs(selfCount - average);
-                int position = 0;
-
-                for (double distance : rank) {
-                    if (distance == average) {
-                        return position / (double) rank.size();
-                    } else {
-                        position++;
-                    }
-                }
-            }
-        }
-        return defaultValue;
+    public double getCumulativeProbability(Number number, double defaultValue) {
+        return this.getCumulativeProbability(this.getZScore(number, defaultValue));
     }
 
     @Override
-    public double getSlopeProbability(Number number, double defaultValue) {
+    public double getZScore(Number number, double defaultValue) {
         if (this.map.size() > 1) {
             Short selfCount = this.map.get(number.hashCode());
 
             if (selfCount != null) {
-                double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
+                double mean = this.total / (double) this.map.size(),
+                        sumSquaredDifferences = 0.0;
 
-                for (short count : this.map.values()) {
-                    double distance = Math.abs(count - average);
-                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                for (short loopCount : this.map.values()) {
+                    double difference = loopCount - mean;
+                    sumSquaredDifferences += difference * difference;
                 }
-                return rank.get(Math.abs(selfCount - average)) / (double) rank.size();
-            }
-        }
-        return defaultValue;
-    }
-
-    @Override
-    public double getCurveProbability(Number number, double defaultValue) {
-        if (this.map.size() > 1) {
-            Short selfCount = this.map.get(number.hashCode());
-
-            if (selfCount != null) {
-                double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
-
-                for (short count : this.map.values()) {
-                    double distance = count - average;
-                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
-                }
-                return rank.get(selfCount - average) / (double) rank.size();
+                return (selfCount - mean) / Math.sqrt(sumSquaredDifferences / (double) this.map.size());
             }
         }
         return defaultValue;

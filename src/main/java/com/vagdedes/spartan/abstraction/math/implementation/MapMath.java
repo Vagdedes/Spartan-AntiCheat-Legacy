@@ -3,7 +3,9 @@ package com.vagdedes.spartan.abstraction.math.implementation;
 
 import com.vagdedes.spartan.abstraction.math.AbstractKeyValueMath;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapMath implements AbstractKeyValueMath {
 
@@ -59,6 +61,7 @@ public class MapMath implements AbstractKeyValueMath {
             }
             this.map.remove(key);
             this.total -= min;
+            // todo specific total
             return key;
         }
     }
@@ -190,71 +193,50 @@ public class MapMath implements AbstractKeyValueMath {
     }
 
     @Override
-    public double getRatio(Number number, double defaultValue) {
+    public double getProbability(Number number, double defaultValue) {
         Map<Integer, Short> map = this.map.get(number.hashCode());
-        return map != null ? map.size() / this.total : defaultValue;
+
+        if (map != null) {
+            int total = 0;
+
+            for (short count : map.values()) {
+                total += count;
+            }
+            return total / this.specificTotal;
+        } else {
+            return defaultValue;
+        }
     }
 
     @Override
-    public double getDistance(Number number, double defaultValue) {
+    public double getCumulativeProbability(Number number, double defaultValue) {
+        return this.getCumulativeProbability(this.getZScore(number, defaultValue));
+    }
+
+    @Override
+    public double getZScore(Number number, double defaultValue) {
         if (this.map.size() > 1) {
             Map<Integer, Short> selfMap = this.map.get(number.hashCode());
 
             if (selfMap != null) {
-                double average = this.total / (double) this.map.size();
-                Set<Double> rank = new TreeSet<>();
+                int selfCount = 0;
 
-                for (Map<Integer, Short> map : this.map.values()) {
-                    rank.add(Math.abs(map.size() - average));
+                for (short count : selfMap.values()) {
+                    selfCount += count;
                 }
-                average = Math.abs(selfMap.size() - average);
-                int position = 0;
+                double mean = this.specificTotal / (double) this.map.size(),
+                        sumSquaredDifferences = 0.0;
 
-                for (double distance : rank) {
-                    if (distance == average) {
-                        return position / (double) rank.size();
-                    } else {
-                        position++;
+                for (Map<Integer, Short> loopMap : this.map.values()) {
+                    int loopCount = 0;
+
+                    for (short count : loopMap.values()) {
+                        loopCount += count;
                     }
+                    double difference = loopCount - mean;
+                    sumSquaredDifferences += difference * difference;
                 }
-            }
-        }
-        return defaultValue;
-    }
-
-    @Override
-    public double getSlopeProbability(Number number, double defaultValue) {
-        if (this.map.size() > 1) {
-            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
-
-            if (selfMap != null) {
-                double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
-
-                for (Map<Integer, Short> map : this.map.values()) {
-                    double distance = Math.abs(map.size() - average);
-                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
-                }
-                return rank.get(Math.abs(selfMap.size() - average)) / (double) rank.size();
-            }
-        }
-        return defaultValue;
-    }
-
-    @Override
-    public double getCurveProbability(Number number, double defaultValue) {
-        if (this.map.size() > 1) {
-            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
-
-            if (selfMap != null) {
-                double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
-
-                for (Map<Integer, Short> map : this.map.values()) {
-                    double distance = map.size() - average;
-                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
-                }
-                return rank.get(selfMap.size() - average) / (double) rank.size();
+                return (selfCount - mean) / Math.sqrt(sumSquaredDifferences / this.map.size());
             }
         }
         return defaultValue;
@@ -308,95 +290,6 @@ public class MapMath implements AbstractKeyValueMath {
         } else {
             return 1.0;
         }
-    }
-
-    @Override
-    public double getSpecificRatio(Number number, int hash, double defaultValue) {
-        Map<Integer, Short> map = this.map.get(number.hashCode());
-
-        if (map != null) {
-            Short count = map.get(hash);
-            return count != null ? count / this.specificTotal : defaultValue;
-        } else {
-            return defaultValue;
-        }
-    }
-
-    @Override
-    public double getSpecificDistance(Number number, int hash, double defaultValue) {
-        if (!this.map.isEmpty()) {
-            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
-
-            if (selfMap != null && selfMap.size() > 1) {
-                Short selfCount = selfMap.get(hash);
-
-                if (selfCount != null) {
-                    double average = this.specificTotal / (double) selfMap.size();
-                    Set<Double> rank = new TreeSet<>();
-
-                    for (short count : selfMap.values()) {
-                        rank.add(Math.abs(count - average));
-                    }
-                    average = Math.abs(selfCount - average);
-                    int position = 0;
-
-                    for (double distance : rank) {
-                        if (distance == average) {
-                            return position / (double) rank.size();
-                        } else {
-                            position++;
-                        }
-                    }
-                }
-            }
-        }
-        return defaultValue;
-    }
-
-    @Override
-    public double getSpecificSlopeProbability(Number number, int hash, double defaultValue) {
-        if (!this.map.isEmpty()) {
-            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
-
-            if (selfMap != null && selfMap.size() > 1) {
-                Short selfCount = selfMap.get(hash);
-
-                if (selfCount != null) {
-                    double average = this.specificTotal / (double) selfMap.size();
-                    Map<Double, Integer> rank = new HashMap<>(selfMap.size() + 1, 1.0f);
-
-                    for (short count : selfMap.values()) {
-                        double distance = Math.abs(count - average);
-                        rank.put(distance, rank.getOrDefault(distance, 0) + 1);
-                    }
-                    return rank.get(Math.abs(selfCount - average)) / (double) rank.size();
-                }
-            }
-        }
-        return defaultValue;
-    }
-
-    @Override
-    public double getSpecificCurveProbability(Number number, int hash, double defaultValue) {
-        if (!this.map.isEmpty()) {
-            Map<Integer, Short> selfMap = this.map.get(number.hashCode());
-
-            if (selfMap != null && selfMap.size() > 1) {
-                Short selfCount = selfMap.get(hash);
-
-                if (selfCount != null) {
-                    double average = this.specificTotal / (double) selfMap.size();
-                    Map<Double, Integer> rank = new HashMap<>(selfMap.size() + 1, 1.0f);
-
-                    for (short count : selfMap.values()) {
-                        double distance = count - average;
-                        rank.put(distance, rank.getOrDefault(distance, 0) + 1);
-                    }
-                    return rank.get(selfCount - average) / (double) rank.size();
-                }
-            }
-        }
-        return defaultValue;
     }
 
 }

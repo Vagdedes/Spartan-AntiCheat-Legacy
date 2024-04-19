@@ -152,71 +152,30 @@ public class SetMath implements AbstractKeyMath {
     }
 
     @Override
-    public double getRatio(Number number, double defaultValue) {
+    public double getProbability(Number number, double defaultValue) {
         Set<Integer> set = this.map.get(number.hashCode());
         return set != null ? set.size() / this.total : defaultValue;
     }
 
     @Override
-    public double getDistance(Number number, double defaultValue) {
-        if (this.map.size() > 1) {
-            Set<Integer> selfSet = this.map.get(number.hashCode());
-
-            if (selfSet != null) {
-                double average = this.total / (double) this.map.size();
-                Set<Double> rank = new TreeSet<>();
-
-                for (Set<Integer> set : this.map.values()) {
-                    rank.add(Math.abs(set.size() - average));
-                }
-                average = Math.abs(selfSet.size() - average);
-                int position = 0;
-
-                for (double distance : rank) {
-                    if (distance == average) {
-                        return position / (double) rank.size();
-                    } else {
-                        position++;
-                    }
-                }
-            }
-        }
-        return defaultValue;
+    public double getCumulativeProbability(Number number, double defaultValue) {
+        return this.getCumulativeProbability(this.getZScore(number, defaultValue));
     }
 
     @Override
-    public double getSlopeProbability(Number number, double defaultValue) {
+    public double getZScore(Number number, double defaultValue) {
         if (this.map.size() > 1) {
             Set<Integer> selfSet = this.map.get(number.hashCode());
 
             if (selfSet != null) {
-                double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
+                double mean = this.total / (double) this.map.size(),
+                        sumSquaredDifferences = 0.0;
 
-                for (Set<Integer> set : this.map.values()) {
-                    double distance = Math.abs(set.size() - average);
-                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
+                for (Set<Integer> loopSet : this.map.values()) {
+                    double difference = loopSet.size() - mean;
+                    sumSquaredDifferences += difference * difference;
                 }
-                return rank.get(Math.abs(selfSet.size() - average)) / (double) rank.size();
-            }
-        }
-        return defaultValue;
-    }
-
-    @Override
-    public double getCurveProbability(Number number, double defaultValue) {
-        if (this.map.size() > 1) {
-            Set<Integer> selfSet = this.map.get(number.hashCode());
-
-            if (selfSet != null) {
-                double average = this.total / (double) this.map.size();
-                Map<Double, Integer> rank = new HashMap<>(this.map.size() + 1, 1.0f);
-
-                for (Set<Integer> set : this.map.values()) {
-                    double distance = set.size() - average;
-                    rank.put(distance, rank.getOrDefault(distance, 0) + 1);
-                }
-                return rank.get(selfSet.size() - average) / (double) rank.size();
+                return (selfSet.size() - mean) / Math.sqrt(sumSquaredDifferences / (double) this.map.size());
             }
         }
         return defaultValue;

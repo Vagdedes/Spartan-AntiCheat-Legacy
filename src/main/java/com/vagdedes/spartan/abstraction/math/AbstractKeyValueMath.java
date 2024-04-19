@@ -11,13 +11,5 @@ public interface AbstractKeyValueMath extends AbstractKeyMath {
     double getSpecificGeneralContribution(Number number, int ignoreHash);
 
     double getSpecificPersonalContribution(Number number, int ignoreHash);
-
-    double getSpecificRatio(Number number, int hash, double defaultValue);
-
-    double getSpecificDistance(Number number, int hash, double defaultValue);
-
-    double getSpecificSlopeProbability(Number number, int hash, double defaultValue);
-
-    double getSpecificCurveProbability(Number number, int hash, double defaultValue);
 }
 
