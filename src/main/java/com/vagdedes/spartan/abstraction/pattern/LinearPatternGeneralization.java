@@ -42,17 +42,24 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     private static final class Reference {
 
+        private final float[] patterns;
+        private final int[] hashCodes;
+        private final double magnitude;
+
         @Override
         public int hashCode() {
-            return Objects.hash(this.hashCodes[0], this.hashCodes[1], this.sum);
+            return Objects.hash(this.hashCodes[0], this.hashCodes[1]);
         }
 
-        private final int[] hashCodes;
-        private final float sum;
-
         private Reference(float[] patterns) {
+            double mangitude = 0.0;
+
+            for (float pattern : patterns) {
+                mangitude += pattern * pattern;
+            }
+            this.patterns = patterns;
             this.hashCodes = getHashCodes(patterns);
-            this.sum = patterns[0] + patterns[1] + patterns[2];
+            this.magnitude = Math.sqrt(mangitude);
         }
 
     }
@@ -99,7 +106,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             );
             Reference reference = new Reference(this.getPatterns(patternProfile));
             int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
-            this.references.putIfAbsent(referenceKey, new Reference(this.getPatterns(patternProfile)));
+            this.references.putIfAbsent(referenceKey, reference);
 
             if (list.size() == Pattern.individualDataLimit - 1) {
                 short position = (short) (this.overflow.getOrDefault(situation, (short) -1) + 1);
@@ -233,7 +240,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     void loadCompleted() {
+        // todo
+    }
 
+    private void connect(int situation1, int situation2) {
+        // todo
     }
 
     // Separator
