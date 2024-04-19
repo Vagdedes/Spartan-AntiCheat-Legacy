@@ -387,9 +387,10 @@ public class Pattern {
             boolean notifications = divisor != null,
                     found = false,
                     store = false,
-                    include = !SpartanBukkit.testMode
+                    include = player.getProfile().isLegitimate()
+                            && (!SpartanBukkit.testMode
                             || !notifications
-                            || divisor != testingNotificationDivisor;
+                            || divisor != testingNotificationDivisor);
 
             synchronized (this.generalizations) {
                 for (PatternGeneralization generalization : this.generalizations.values()) {

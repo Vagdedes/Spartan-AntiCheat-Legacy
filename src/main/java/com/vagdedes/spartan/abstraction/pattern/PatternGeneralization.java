@@ -83,18 +83,14 @@ public abstract class PatternGeneralization {
     // Separator
 
     final boolean learn(PlayerProfile profile, int situation, double pattern, boolean read) {
-        if (profile.isLegitimate()) { // todo fix tracking
-            if (this.scissors != 0) {
-                pattern = AlgebraUtils.cut(pattern, this.scissors);
-            }
-            PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern, read);
+        if (this.scissors != 0) {
+            pattern = AlgebraUtils.cut(pattern, this.scissors);
+        }
+        PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern, read);
 
-            if (patternProfile != null) {
-                this.increaseImportance(situation, patternProfile, (float) pattern);
-                return true;
-            } else {
-                return false;
-            }
+        if (patternProfile != null) {
+            this.increaseImportance(situation, patternProfile, (float) pattern);
+            return true;
         } else {
             return false;
         }

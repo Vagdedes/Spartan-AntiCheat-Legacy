@@ -79,7 +79,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
                             patternProfile,
                             situation,
                             patternProfile.lastPattern,
-                            math.getZScore(patternProfile.lastPattern, 0.0)
+                            1.0 - Math.abs(math.getCumulativeProbability(patternProfile.lastPattern, 0.0))
                     );
                 }
             }
