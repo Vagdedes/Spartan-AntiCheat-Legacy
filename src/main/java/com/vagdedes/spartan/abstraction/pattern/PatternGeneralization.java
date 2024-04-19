@@ -82,22 +82,6 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    final boolean learn(PlayerProfile profile, int situation, double pattern, boolean read) {
-        if (this.scissors != 0) {
-            pattern = AlgebraUtils.cut(pattern, this.scissors);
-        }
-        PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern, read);
-
-        if (patternProfile != null) {
-            this.increaseImportance(situation, patternProfile, (float) pattern);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // Separator
-
     private void increaseImportance(int situation, PatternProfile patternProfile, float pattern) {
         if (this.significance.getParts() == Pattern.globalDataLimit - 1) {
             synchronized (this.significance) {
@@ -148,11 +132,19 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    abstract protected PatternProfile deleteProfile(PlayerProfile profile);
+    final boolean learn(PlayerProfile profile, int situation, double pattern, boolean read) {
+        if (this.scissors != 0) {
+            pattern = AlgebraUtils.cut(pattern, this.scissors);
+        }
+        PatternProfile patternProfile = this.customLearn(profile, situation, (float) pattern, read);
 
-    // Separator
-
-    abstract protected boolean hasPatterns(int situation);
+        if (patternProfile != null) {
+            this.increaseImportance(situation, patternProfile, (float) pattern);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     abstract protected PatternProfile customLearn(PlayerProfile profile, int situation,
                                                   float pattern, boolean read);
@@ -172,5 +164,11 @@ public abstract class PatternGeneralization {
     abstract protected void clearProfiles();
 
     abstract protected int getProfileCount();
+
+    abstract protected PatternProfile deleteProfile(PlayerProfile profile);
+
+    abstract protected boolean hasPatterns(int situation);
+
+    abstract void loadCompleted();
 
 }

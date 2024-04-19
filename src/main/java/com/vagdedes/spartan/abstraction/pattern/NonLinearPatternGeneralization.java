@@ -21,20 +21,6 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected PatternProfile deleteProfile(PlayerProfile profile) {
-        synchronized (this.profilesSynchronizer) {
-            return this.profiles.remove(profile);
-        }
-    }
-
-    @Override
-    protected boolean hasPatterns(int situation) {
-        synchronized (this.correlations) {
-            return this.correlations.containsKey(situation);
-        }
-    }
-
-    @Override
     protected PatternProfile customLearn(PlayerProfile profile, int situation,
                                          float pattern, boolean read) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
@@ -96,6 +82,25 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected int getProfileCount() {
         return this.profiles.size();
+    }
+
+    @Override
+    protected PatternProfile deleteProfile(PlayerProfile profile) {
+        synchronized (this.profilesSynchronizer) {
+            return this.profiles.remove(profile);
+        }
+    }
+
+    @Override
+    protected boolean hasPatterns(int situation) {
+        synchronized (this.correlations) {
+            return this.correlations.containsKey(situation);
+        }
+    }
+
+    @Override
+    void loadCompleted() {
+
     }
 
     // Separator

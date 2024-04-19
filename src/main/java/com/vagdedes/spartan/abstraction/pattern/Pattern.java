@@ -349,6 +349,9 @@ public class Pattern {
                     this.generalizations.clear();
                     this.generalizations.putAll(generalizations);
                 }
+                for (PatternGeneralization generalization : generalizations.values()) {
+                    generalization.loadCompleted();
+                }
             }
             this.loaded = true;
             this.loading = false;

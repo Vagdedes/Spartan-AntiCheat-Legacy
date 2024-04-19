@@ -15,6 +15,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         };
     }
 
+    // Separator
+
     private static final class Cache {
 
         private double beforeProbability, afterProbability;
@@ -36,6 +38,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     }
 
+    // Separator
+
     private static final class Reference {
 
         @Override
@@ -50,7 +54,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             this.hashCodes = getHashCodes(patterns);
             this.sum = patterns[0] + patterns[1] + patterns[2];
         }
+
     }
+
+    // Separator
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
     private final Map<Integer, List<Integer>> correlations;
@@ -69,20 +76,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         this.references = new HashMap<>(Pattern.individualDataBase, 1.0f);
         this.overflow = new HashMap<>(Pattern.individualDataBase, 1.0f);
         this.cache = new HashMap<>(Pattern.individualDataBase, 1.0f);
-    }
-
-    @Override
-    protected PatternProfile deleteProfile(PlayerProfile profile) {
-        synchronized (this.profilesSynchronizer) {
-            return this.profiles.remove(profile);
-        }
-    }
-
-    @Override
-    protected boolean hasPatterns(int situation) {
-        synchronized (this.correlations) {
-            return this.correlations.containsKey(situation);
-        }
     }
 
     @Override
@@ -222,6 +215,25 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     protected int getProfileCount() {
         return this.profiles.size();
+    }
+
+    @Override
+    protected PatternProfile deleteProfile(PlayerProfile profile) {
+        synchronized (this.profilesSynchronizer) {
+            return this.profiles.remove(profile);
+        }
+    }
+
+    @Override
+    protected boolean hasPatterns(int situation) {
+        synchronized (this.correlations) {
+            return this.correlations.containsKey(situation);
+        }
+    }
+
+    @Override
+    void loadCompleted() {
+
     }
 
     // Separator
