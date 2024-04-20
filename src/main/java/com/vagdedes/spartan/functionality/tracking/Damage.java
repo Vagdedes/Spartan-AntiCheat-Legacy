@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.identifiers.complex;
+package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;

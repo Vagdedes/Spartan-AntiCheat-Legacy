@@ -155,6 +155,7 @@ public class HashUtils {
                 hash = extendInt(hash, potionEffect.getAmplifier());
             }
         }
+        hash = extendInt(hash, AlgebraUtils.roundToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum));
         return hash;
     }
 

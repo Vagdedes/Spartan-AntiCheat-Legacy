@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.data.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
-import com.vagdedes.spartan.functionality.identifiers.complex.Damage;
+import com.vagdedes.spartan.functionality.tracking.Damage;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;

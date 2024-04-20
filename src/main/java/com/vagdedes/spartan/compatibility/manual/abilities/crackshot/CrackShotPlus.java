@@ -3,7 +3,7 @@ package com.vagdedes.spartan.compatibility.manual.abilities.crackshot;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.identifiers.CheckDelay;
+import com.vagdedes.spartan.functionality.tracking.CheckDelay;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.DeeCaaD.CrackShotPlus.Events.WeaponSecondScopeEvent;
 import org.bukkit.event.EventHandler;

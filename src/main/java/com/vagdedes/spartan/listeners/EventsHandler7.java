@@ -10,7 +10,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Spee
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.identifiers.CheckDelay;
+import com.vagdedes.spartan.functionality.tracking.CheckDelay;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;

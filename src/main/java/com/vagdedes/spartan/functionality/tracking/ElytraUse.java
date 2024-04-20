@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.identifiers.complex.unpredictable;
+package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;
 import com.vagdedes.spartan.abstraction.data.Handlers;

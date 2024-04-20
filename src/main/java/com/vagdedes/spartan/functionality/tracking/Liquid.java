@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.identifiers.complex;
+package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;

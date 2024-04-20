@@ -8,7 +8,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
-import com.vagdedes.spartan.functionality.identifiers.complex.Damage;
+import com.vagdedes.spartan.functionality.tracking.Damage;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 

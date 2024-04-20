@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.identifiers;
+package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
