@@ -11,10 +11,10 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
-import com.vagdedes.spartan.functionality.tracking.Damage;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
+import com.vagdedes.spartan.functionality.tracking.Damage;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -145,7 +145,7 @@ public class IrregularMovements extends CheckExecutor {
             // Final Variables
             Decimals decimals = player.getDecimals(hackType);
             boolean levitationEffect = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) && PlayerUtils.hasLevitationEffect(player),
-                    incompatibility = Compatibility.CompatibilityType.MajorIncompatibility.isFunctional() || Compatibility.CompatibilityType.ItemAttributes.isFunctional(),
+                    incompatibility = Compatibility.CompatibilityType.ItemAttributes.isFunctional(),
                     fullAirTicksOffGround = airTicks >= fullOffGroundTicks,
                     airTicksOffGround = fullAirTicksOffGround || airTicks >= (bedrockPlayer || incompatibility ? fullOffGroundTicks : offGroundTicks),
                     onGroundCustom = player.isOnGroundCustom(),
@@ -461,8 +461,7 @@ public class IrregularMovements extends CheckExecutor {
 
             if (time >= 0) { // Make buffer dynamic when time is equal or above zero
                 suspected = player.getProfile().isSuspectedOrHacker(hackType)
-                        || !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
-                        && !Compatibility.CompatibilityType.ItemAttributes.isFunctional();
+                        || !Compatibility.CompatibilityType.ItemAttributes.isFunctional();
 
                 if (suspected) {
                     buffer -= 1; // Decrease buffer limit if player is suspected and if buffer is 2 or more

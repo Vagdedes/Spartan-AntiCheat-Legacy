@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -89,7 +88,6 @@ public class InventoryClicks extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(check, true)
-                && !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional();
+        return player.canRunCheck(check, true);
     }
 }

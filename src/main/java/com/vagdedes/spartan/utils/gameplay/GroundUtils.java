@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
@@ -60,7 +59,11 @@ public class GroundUtils {
         double playerHeightCeil = Math.ceil(CombatUtils.playerWidthAndHeight[1]);
 
         for (double height : blockHeights) {
-            collisionHeights.add(playerHeightCeil + height - CombatUtils.playerWidthAndHeight[1]);
+            collisionHeights.add(
+                    playerHeightCeil
+                            + (height == 0.0 ? 1.0 : height)
+                            - CombatUtils.playerWidthAndHeight[1]
+            );
         }
 
         // Separator

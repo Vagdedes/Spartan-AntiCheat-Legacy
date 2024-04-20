@@ -3,15 +3,14 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.functionality.tracking.Damage;
 import com.vagdedes.spartan.functionality.tracking.Liquid;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -311,7 +310,6 @@ public class WaterSpeed extends DetectionExecutor {
                 || Damage.hasExplosion(player)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), premature));
         } else if (player.bedrockPlayer
-                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                 || player.getHandlers().has(Handlers.HandlerType.TowerBuilding)) {
             modifiedLimit = Math.max(modifiedLimit, instability);
         }

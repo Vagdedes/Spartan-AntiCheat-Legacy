@@ -101,7 +101,6 @@ public class SprintSpeed extends DetectionExecutor {
                 || Damage.hasExplosion(player)
                 || player.getHandlers().has(Handlers.HandlerType.Piston)
                 || CrackShot.isUsingScope(player)
-                || Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                 || Compatibility.CompatibilityType.ItemAttributes.isFunctional()) {
             return;
         }

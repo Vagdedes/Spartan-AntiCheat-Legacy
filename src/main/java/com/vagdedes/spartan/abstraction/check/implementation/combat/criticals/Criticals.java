@@ -6,9 +6,9 @@ import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -107,7 +107,7 @@ public class Criticals extends CheckExecutor {
                             cancel("type: damage, amount: " + damage
                                     + ", expected-amount: " + expectedDamage + ", additional-amount: " + additional
                                     + ", ground: " + (vanillaGround + "/" + customGround) + ", item: " + BlockUtils.materialToString(itemType)
-                                    + ", old-air-ticks: " + player.movement.getOldTicksOnAir() + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]"));
+                                    + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]"));
                         }
                     }
                 }

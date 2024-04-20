@@ -29,7 +29,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     private double getMultiplier() {
-        return player.bedrockPlayer || (Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()) ? 2 : // Building
+        return player.bedrockPlayer ? 2 : // Building
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && player.getVehicle() instanceof Strider ? 1.5 :
                         1; // Building
     }
@@ -106,7 +106,6 @@ public class BlockReach extends CheckExecutor {
 
                     if (!player.bedrockPlayer
                             && player.getVehicle() == null
-                            && !Compatibility.CompatibilityType.MajorIncompatibility.isFunctional()
                             && ypos <= 0.5
                             && distance >= 1.4 && distance > ab_distance && distance <= PlayerUtils.chunk) {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos + ", block: " + BlockUtils.blockToString(block));

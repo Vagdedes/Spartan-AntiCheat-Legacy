@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
-import com.vagdedes.spartan.functionality.tracking.Liquid;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.tracking.Liquid;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -38,7 +38,7 @@ public class SpartanPlayerMovement {
             flyingTime,
             lastLiquidTime;
     private int
-            airTicks, oldAirTicks,
+            airTicks,
             fallingTicks,
             groundTicks,
             extraPackets;
@@ -67,7 +67,6 @@ public class SpartanPlayerMovement {
         this.lastLiquidTime = 0L;
 
         this.airTicks = 0;
-        this.oldAirTicks = 0;
         this.fallingTicks = 0;
         this.groundTicks = 0;
         this.extraPackets = 0;
@@ -434,22 +433,11 @@ public class SpartanPlayerMovement {
     }
 
     public synchronized void setAirTicks(int number) {
-        if (airTicks > 0) {
-            setOldAirTicks(airTicks);
-        }
         this.airTicks = number;
 
         if (number == 0) {
             this.fallingTicks = 0;
         }
-    }
-
-    public int getOldTicksOnAir() {
-        return oldAirTicks;
-    }
-
-    public synchronized void setOldAirTicks(int number) {
-        this.oldAirTicks = number;
     }
 
     // Separator

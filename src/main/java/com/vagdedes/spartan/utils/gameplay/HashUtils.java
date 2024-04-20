@@ -18,7 +18,7 @@ import java.util.*;
 
 public class HashUtils {
 
-    public static final int loopHash = 1231;
+    public static final int loopHash = Boolean.hashCode(false);
 
     public static int extendInt(int hash, int extra) {
         return (hash * SpartanBukkit.hashCodeMultiplier) + extra;
@@ -30,22 +30,6 @@ public class HashUtils {
         int size = collection.size();
         return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
     }
-
-    public static int fastCollection(Collection<Number> collection) {
-        Iterator<Number> iterator = collection.iterator();
-        int hash = (iterator.next().hashCode() * SpartanBukkit.hashCodeMultiplier) + collection.size();
-        Number value = null;
-
-        while (iterator.hasNext()) {
-            value = iterator.next();
-        }
-        if (value != null) {
-            hash = extendInt(hash, value.hashCode());
-        }
-        return hash;
-    }
-
-    // Separator
 
     public static int collection(Collection<Float> collection) {
         int hash = 1;
@@ -172,18 +156,19 @@ public class HashUtils {
         return hash;
     }
 
-    public static int hashEnvironment(SpartanPlayer player, SpartanLocation location) {
-        int hash = 1;
-        double box = location.getY() - location.getBlockY();
+    public static int hashEnvironment(SpartanPlayer player,
+                                      SpartanLocation location,
+                                      SpartanLocation previousLocation) {
+        int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
 
-        if (GroundUtils.blockHeightExists(box)
-                || GroundUtils.collisionHeightExists(box)) {
-            hash = extendInt(hash, Double.hashCode(box));
+        if (player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0) >= 0.0) {
+            hash = extendInt(hash, Double.hashCode(
+                    AlgebraUtils.cut(location.getY() - location.getBlockY(), GroundUtils.maxHeightLength))
+            );
+            hash = extendInt(hash, Double.hashCode(
+                    AlgebraUtils.cut(previousLocation.getY() - previousLocation.getBlockY(), GroundUtils.maxHeightLength)
+            ));
         }
-        hash = extendInt(
-                hash,
-                AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum)
-        );
         return hash;
     }
 }

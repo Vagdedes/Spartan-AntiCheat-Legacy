@@ -43,7 +43,7 @@ public class Compatibility {
         RealDualWield, MythicMobs, ViaVersion, ItemAttributes, PrinterMode, Vehicles, MineTinker,
         WildTools, DragonPhases, AureliumSkills, KnockbackMaster, MyPet, CustomEnchantsPlus,
         EcoEnchants, ItemsAdder, RampenDrills, OldCombatMechanics, CustomKnockback, ProjectKorra, AcidRain,
-        MajorIncompatibility, FileGUI, Floodgate, ProtocolSupport, Authentication;
+        FileGUI, Floodgate, ProtocolSupport, Authentication;
 
         private boolean enabled, forced, functional;
 
@@ -268,14 +268,6 @@ public class Compatibility {
         CompatibilityType.MagicSpells.setFunctional(
                 () -> Register.enable(new MagicSpells(), MagicSpells.class)
         );
-        CompatibilityType.MajorIncompatibility.setFunctional(
-                new String[]{
-                        "Skript",
-                        "CMI",
-                        "SlimeFun",
-                        "EcoSkills"
-                }
-        );
         CompatibilityType.AcidRain.setFunctional(
                 new String[]{
                         CompatibilityType.AcidRain.toString(),
@@ -317,8 +309,7 @@ public class Compatibility {
                     new CompatibilityType[]{
                             CompatibilityType.MineTinker,
                             CompatibilityType.MythicMobs,
-                            CompatibilityType.ProjectKorra,
-                            CompatibilityType.MajorIncompatibility
+                            CompatibilityType.ProjectKorra
                     }
             );
             CompatibilityType.RecentPvPMechanics.setFunctional(
