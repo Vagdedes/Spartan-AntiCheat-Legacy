@@ -115,18 +115,31 @@ public class SetMath implements AbstractKeyMath {
 
     @Override
     public double getGeneralContribution() {
-        return 1.0 / (this.total + 1.0);
+        if (this.total > 0) {
+            return 1.0 / this.total;
+        } else {
+            return 1.0;
+        }
     }
 
     @Override
     public double getUniqueContribution() {
-        return 1.0 / (this.map.size() + 1.0);
+        if (!this.map.isEmpty()) {
+            return 1.0 / this.map.size();
+        } else {
+            return 1.0;
+        }
     }
 
     @Override
     public double getGeneralContribution(Number ignoreNumber) {
         Set<Integer> set = this.map.get(ignoreNumber.hashCode());
         return 1.0 / (this.total - (set != null ? set.size() : 0) + 1.0);
+    }
+
+    @Override
+    public double getPersonalContribution(Number number) {
+        return 0;
     }
 
     @Override

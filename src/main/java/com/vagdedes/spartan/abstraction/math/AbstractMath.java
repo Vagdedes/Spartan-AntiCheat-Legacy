@@ -37,6 +37,8 @@ public interface AbstractMath {
 
     double getGeneralContribution(Number ignoreNumber);
 
+    double getPersonalContribution(Number number);
+
     double getProbability(Number number, double defaultValue);
 
     double getCumulativeProbability(Number number, double defaultValue);

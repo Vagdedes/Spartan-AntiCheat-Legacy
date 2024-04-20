@@ -129,18 +129,44 @@ public class NumberMath implements AbstractMath {
 
     @Override
     public double getGeneralContribution() {
-        return 1.0 / (this.total + 1.0);
+        if (this.total > 0) {
+            return 1.0 / this.total;
+        } else {
+            return 1.0;
+        }
     }
 
     @Override
     public double getUniqueContribution() {
-        return 1.0 / (this.map.size() + 1.0);
+        if (!this.map.isEmpty()) {
+            return 1.0 / this.map.size();
+        } else {
+            return 1.0;
+        }
     }
 
     @Override
     public double getGeneralContribution(Number ignoreNumber) {
-        short count = this.map.getOrDefault(ignoreNumber.hashCode(), (short) 0);
-        return 1.0 / (this.total - count + 1.0);
+        Short count = this.map.getOrDefault(ignoreNumber.hashCode(), (short) 0);
+
+        if (this.total > count) {
+            return 1.0 / ((int) this.total - count);
+        } else if (this.total > 0) {
+            return 1.0 / this.total;
+        } else {
+            return 1.0;
+        }
+    }
+
+    @Override
+    public double getPersonalContribution(Number number) {
+        Short count = this.map.get(number.hashCode());
+
+        if (count != null) {
+            return 1.0 / count;
+        } else {
+            return 1.0;
+        }
     }
 
     @Override

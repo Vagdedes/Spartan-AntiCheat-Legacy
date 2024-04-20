@@ -156,12 +156,20 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getGeneralContribution() {
-        return 1.0 - (1.0 / (this.total + 1.0));
+        if (this.total > 0) {
+            return 1.0 / this.total;
+        } else {
+            return 1.0;
+        }
     }
 
     @Override
     public double getUniqueContribution() {
-        return 1.0 - (1.0 / (this.map.size() + 1.0));
+        if (!this.map.isEmpty()) {
+            return 1.0 / this.map.size();
+        } else {
+            return 1.0;
+        }
     }
 
     @Override
@@ -178,6 +186,17 @@ public class MapMath implements AbstractKeyValueMath {
             return 1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0);
         } else {
             return 1.0 / (this.total + 1.0);
+        }
+    }
+
+    @Override
+    public double getPersonalContribution(Number number) {
+        Map<Integer, Short> map = this.map.get(number.hashCode());
+
+        if (map != null) {
+            return 1.0 / (map.size() + 1.0);
+        } else {
+            return 1.0;
         }
     }
 
@@ -244,7 +263,11 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getSpecificGeneralContribution() {
-        return 1.0 / (this.specificTotal + 1.0);
+        if (this.specificTotal > 0) {
+            return 1.0 / this.specificTotal;
+        } else {
+            return 1.0;
+        }
     }
 
     @Override
@@ -258,8 +281,10 @@ public class MapMath implements AbstractKeyValueMath {
                 total += count;
             }
             return 1.0 / (this.specificTotal - total + 1.0);
+        } else if (this.specificTotal > 0) {
+            return 1.0 / this.specificTotal;
         } else {
-            return 1.0 / (this.specificTotal + 1.0);
+            return 1.0;
         }
     }
 
@@ -270,8 +295,26 @@ public class MapMath implements AbstractKeyValueMath {
         if (map != null) {
             Short count = map.get(ignoreHash);
             return 1.0 / (this.specificTotal + (count != null ? -count : 0.0) + 1.0);
+        } else if (this.specificTotal > 0) {
+            return 1.0 / this.specificTotal;
         } else {
-            return 1.0 / (this.specificTotal + 1.0);
+            return 1.0;
+        }
+    }
+
+    @Override
+    public double getSpecificPersonalContribution(Number number) {
+        Map<Integer, Short> map = this.map.get(number.hashCode());
+
+        if (map != null) {
+            int total = 0;
+
+            for (short count : map.values()) {
+                total += count;
+            }
+            return 1.0 / total;
+        } else {
+            return 1.0;
         }
     }
 

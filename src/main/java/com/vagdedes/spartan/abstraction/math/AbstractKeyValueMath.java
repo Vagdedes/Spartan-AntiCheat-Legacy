@@ -10,6 +10,8 @@ public interface AbstractKeyValueMath extends AbstractKeyMath {
 
     double getSpecificGeneralContribution(Number number, int ignoreHash);
 
+    double getSpecificPersonalContribution(Number number);
+
     double getSpecificPersonalContribution(Number number, int ignoreHash);
 }
 

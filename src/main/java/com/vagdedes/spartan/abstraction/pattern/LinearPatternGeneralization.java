@@ -240,10 +240,29 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     void loadCompleted() {
-        // todo
+        if (!this.correlations.isEmpty()) {
+            Collection<Integer> known = new ArrayList<>(Pattern.individualDataBase),
+                    unknown = new ArrayList<>(Pattern.individualDataBase);
+
+           for (int situation : this.correlations.keySet()) {
+                if (this.contribution(situation) > 0.8) {
+                    known.add(situation);
+                } else {
+                    unknown.add(situation);
+                }
+            }
+
+           if (!unknown.isEmpty()) {
+                for (int situation1 : known) {
+                    for (int situation2 : unknown) {
+                        this.connect(situation1, situation2, false);
+                    }
+                }
+           }
+        }
     }
 
-    private void connect(int situation1, int situation2) {
+    private void connect(int situation1, int situation2, boolean live) {
         // todo
     }
 

@@ -123,10 +123,17 @@ public abstract class PatternGeneralization {
         return patternCount / (double) this.getProfileCount();
     }
 
-    final double contribution(int situation, PatternProfile patternProfile) {
+    private double contribution(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
             return (1.0 - this.contribution.getPersonalContribution(situation, patternProfile.hash))
                     * (1.0 - this.contribution.getSpecificPersonalContribution(situation, patternProfile.hash));
+        }
+    }
+
+    final double contribution(int situation) {
+        synchronized (this.contribution) {
+            return (1.0 - this.contribution.getPersonalContribution(situation))
+                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation));
         }
     }
 
