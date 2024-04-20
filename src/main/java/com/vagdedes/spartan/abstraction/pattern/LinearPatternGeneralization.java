@@ -100,6 +100,15 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                          float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
+        synchronized (patternProfile.patterns) {
+            if (patternProfile.patterns.size() == 3) {
+                patternProfile.patterns.remove(0);
+                patternProfile.patterns.add(pattern);
+            } else {
+                patternProfile.patterns.add(pattern);
+                return patternProfile;
+            }
+        }
         synchronized (this.referenceKeys) {
             Reference reference = new Reference(this.getPatterns(patternProfile));
             int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
@@ -111,15 +120,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     situation,
                     k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
             ).add(referenceKey);
-        }
-        synchronized (patternProfile.patterns) {
-            if (patternProfile.patterns.size() == 3) {
-                patternProfile.patterns.remove(0);
-                patternProfile.patterns.add(pattern);
-            } else {
-                patternProfile.patterns.add(pattern);
-                return patternProfile;
-            }
         }
         if (!read) {
             if (!patternProfile.situations.isEmpty()) {
