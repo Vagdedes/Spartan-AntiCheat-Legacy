@@ -277,7 +277,7 @@ public class Speed extends CheckExecutor {
             } else {
                 dm = cacheLimit(decimals, dm, ypos, 0);
             }
-        } else if ((box >= 0.084 && box <= 0.15 || box >= 0.75 || GroundUtils.heightExists(box))
+        } else if ((box >= 0.084 && box <= 0.15 || box >= 0.75 || GroundUtils.blockHeightExists(box))
                 && ver == 0.0 && !BlockUtils.isGroundFree(player, to, 0.2, 0, 0.2) && (groundVanilla || groundCustom)) {
             reason = "ground";
 

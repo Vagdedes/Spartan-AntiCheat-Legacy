@@ -9,7 +9,7 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class ElytraUse {
+public class Elytra {
 
     private static final String increasedSpeedKey = "elytra=increased-speed";
     private static final Material firework = MaterialUtils.get("firework");

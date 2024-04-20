@@ -1,13 +1,11 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,11 +18,7 @@ import java.util.*;
 
 public class HashUtils {
 
-    public static final int
-            trueHash = Boolean.hashCode(true),
-            falseHash = Boolean.hashCode(false);
-    private static final int
-            bedWordHash = "BED".hashCode();
+    public static final int loopHash = 1231;
 
     public static int extendInt(int hash, int extra) {
         return (hash * SpartanBukkit.hashCodeMultiplier) + extra;
@@ -128,7 +122,7 @@ public class HashUtils {
                                 )
                         );
                     } else {
-                        hash = extendInt(hash, falseHash);
+                        hash = extendInt(hash, loopHash);
                     }
                 }
             }
@@ -143,30 +137,10 @@ public class HashUtils {
             hash = extendInt(hash, Boolean.hashCode(player.isOnGround()));
             hash = extendInt(hash, Math.min(AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal), 1000));
             potionEffects = player.getActivePotionEffects();
-        }
-        if (!potionEffects.isEmpty()) {
-            Map<Integer, PotionEffect> map = new TreeMap<>();
+            ItemStack boots = player.getInventory().getBoots();
 
-            for (PotionEffect potionEffect : potionEffects) {
-                map.put(potionEffect.getType().toString().hashCode(), potionEffect);
-            }
-            for (PotionEffect potionEffect : map.values()) {
-                hash = extendInt(hash, potionEffect.getType().toString().hashCode());
-                hash = extendInt(hash, potionEffect.getAmplifier());
-            }
-        }
-        hash = extendInt(hash, AlgebraUtils.roundToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum));
-        return hash;
-    }
-
-    public static int hashInventory(SpartanPlayer player) {
-        int hash = Boolean.hashCode(player.isUsingItem());
-        ItemStack[] armors = player.getInventory().getArmorContents();
-
-        for (ItemStack armor : armors) {
-            if (armor != null) {
-                hash = extendInt(hash, armor.getType().toString().hashCode());
-                Map<Enchantment, Integer> enchantments = armor.getEnchantments();
+            if (boots != null) {
+                Map<Enchantment, Integer> enchantments = boots.getEnchantments();
 
                 if (!enchantments.isEmpty()) {
                     Map<Integer, Integer> map = new TreeMap<>();
@@ -181,62 +155,35 @@ public class HashUtils {
                     for (int value : map.values()) {
                         hash = extendInt(hash, value);
                     }
-                } else {
-                    hash = extendInt(hash, falseHash);
                 }
-            } else {
-                hash = extendInt(hash, falseHash);
+            }
+        }
+        if (!potionEffects.isEmpty()) {
+            Map<Integer, PotionEffect> map = new TreeMap<>();
+
+            for (PotionEffect potionEffect : potionEffects) {
+                map.put(potionEffect.getType().toString().hashCode(), potionEffect);
+            }
+            for (PotionEffect potionEffect : map.values()) {
+                hash = extendInt(hash, potionEffect.getType().toString().hashCode());
+                hash = extendInt(hash, potionEffect.getAmplifier());
             }
         }
         return hash;
     }
 
-    public static int hashEnvironment(SpartanPlayer player,
-                                      SpartanLocation location) {
+    public static int hashEnvironment(SpartanPlayer player, SpartanLocation location) {
         int hash = 1;
-        boolean foundBlock = false;
+        double box = location.getY() - location.getBlockY();
 
-        for (int y = -AlgebraUtils.integerCeil(PlayerUtils.totalJumpingMotion);
-             y <= AlgebraUtils.integerCeil(player.getEyeHeight()); y++) {
-            for (SpartanLocation cloned : location.clone().getSurroundingLocations(BlockUtils.hitbox_extra, y, BlockUtils.hitbox_extra, true)) {
-                SpartanBlock block = cloned.getBlock();
-                Material material = block.material;
-
-                if (BlockUtils.isSolid(material)) {
-                    foundBlock = true;
-                    hash = extendInt(hash, GroundUtils.getHeightsHash(material, trueHash));
-                    hash = extendInt(hash, Double.hashCode(
-                            AlgebraUtils.cut(AlgebraUtils.getHorizontalDistance(location, cloned), 1))
-                    );
-
-                    if (BlockUtils.areBouncingBlocks(material)) {
-                        hash = extendInt(
-                                hash,
-                                BlockUtils.areBeds(material)
-                                        ? bedWordHash
-                                        : material.toString().hashCode()
-                        );
-                    } else if (BlockUtils.areIceBlocks(material)) {
-                        hash = extendInt(hash, material.toString().hashCode());
-                    }
-                } else if (block.isLiquidOrWaterLogged()) {
-                    foundBlock = true;
-                    hash = extendInt(hash, material.toString().hashCode());
-                }
-                hash = extendInt(hash, Boolean.hashCode(block.waterLogged));
-            }
+        if (GroundUtils.blockHeightExists(box)
+                || GroundUtils.collisionHeightExists(box)) {
+            hash = extendInt(hash, Double.hashCode(box));
         }
-
-        if (foundBlock) {
-            double box = location.getY() - location.getBlockY();
-
-            if (GroundUtils.heightExists(box)) {
-                hash = extendInt(hash, Double.hashCode(box));
-            } else {
-                hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(box, 2)));
-            }
-        }
-        hash = extendInt(hash, AlgebraUtils.roundToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum));
+        hash = extendInt(
+                hash,
+                AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum)
+        );
         return hash;
     }
 }

@@ -123,7 +123,7 @@ public class EventsHandler7 implements Listener {
         float fall = p.getFallDistance();
 
         // Detections (Always previous so it counts the previous tick and makes the current tick's prediction)
-        int situation = HashUtils.hashPlayer(p);
+        int situation = HashUtils.extendInt(HashUtils.hashPlayer(p), HashUtils.hashEnvironment(p, to));
 
         // Patterns
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);

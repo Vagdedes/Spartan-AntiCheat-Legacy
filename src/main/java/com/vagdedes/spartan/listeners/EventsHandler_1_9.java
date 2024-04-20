@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.tracking.ElytraUse;
+import com.vagdedes.spartan.functionality.tracking.Elytra;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,7 +26,7 @@ public class EventsHandler_1_9 implements Listener {
             boolean gliding = e.isCancelled() ? n.isGliding() : n.isGliding() || e.isGliding();
 
             // Objects
-            ElytraUse.judge(p, gliding, true);
+            Elytra.judge(p, gliding, true);
         }
     }
 }

@@ -240,12 +240,7 @@ public class PlayerUtils {
 
             // Separator
 
-            Entity entity = n.getVehicle();
-            p.setVehicle(entity);
-
-            if (entity != null) {
-                p.getBuffer().remove(GroundUtils.inaccuracyKey);
-            }
+            p.setVehicle(n.getVehicle());
         }
     }
 
@@ -336,7 +331,7 @@ public class PlayerUtils {
     public static boolean isJumping(double d, double diff, double offDiff) {
         if (d > (jumping[0] - offDiff)
                 && d < (0.42 + offDiff)
-                && !GroundUtils.heightExists(d)) {
+                && !GroundUtils.blockHeightExists(d)) {
             Iterator<Double> iterator = jumps.iterator();
             double value = iterator.next();
 

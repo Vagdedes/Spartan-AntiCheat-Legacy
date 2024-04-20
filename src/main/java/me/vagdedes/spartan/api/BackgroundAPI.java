@@ -470,14 +470,9 @@ public class BackgroundAPI {
         }
     }
 
+    @Deprecated
     static void setOnGround(Player p, int ticks) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanPlayer player = SpartanBukkit.getPlayer(p);
-
-            if (player != null) {
-                GroundUtils.setOnGround(player, ticks);
-            }
-        }
+        AwarenessNotifications.forcefullySend("The API method 'setOnGround' has been removed.");
     }
 
     @Deprecated

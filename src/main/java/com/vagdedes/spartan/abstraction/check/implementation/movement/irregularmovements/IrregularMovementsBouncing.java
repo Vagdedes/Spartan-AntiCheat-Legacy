@@ -56,7 +56,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
                                             && verticalRemaining != (box - GroundUtils.bedStep)) { // Bounce must always match the hitboxes of the block
                                         irregularMovements.cancel(prevention, "up-illegal-" + scenario, null, 2, -IrregularMovements.defaultBufferTime);
                                     }
-                                } else if (GroundUtils.heightExists(box)
+                                } else if (GroundUtils.blockHeightExists(box)
                                         && (canBounceLive = BouncingBlocks.isLiveBelow(player, to))) { // Block boxes can rarely be met when bouncing
                                     irregularMovements.cancel(prevention, "box-" + scenario, 2);
                                 }

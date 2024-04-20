@@ -319,6 +319,7 @@ public class API {
         BackgroundAPI.setConfiguredCheckName(hackType, name);
     }
 
+    @Deprecated
     public static void setOnGround(Player p, int ticks) {
         BackgroundAPI.setOnGround(p, ticks);
     }

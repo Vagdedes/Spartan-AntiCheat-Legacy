@@ -36,7 +36,7 @@ import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.tracking.ElytraUse;
+import com.vagdedes.spartan.functionality.tracking.Elytra;
 import com.vagdedes.spartan.functionality.tracking.Velocity;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -280,7 +280,7 @@ public class SpartanPlayer {
 
                             // Good
                             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                                ElytraUse.judge(p, n.isGliding(), false);
+                                Elytra.judge(p, n.isGliding(), false);
                             }
                             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
                                 p.movement.setSwimming(n.isSwimming(), -1);
@@ -1478,7 +1478,7 @@ public class SpartanPlayer {
                 box = startY - Math.floor(startY);
         int iterations = 0;
 
-        if (!GroundUtils.heightExists(box)) {
+        if (!GroundUtils.blockHeightExists(box)) {
             box = 0.0;
         }
 

@@ -43,7 +43,7 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
                 if (vertical == 0.0) {
                     if (horizontal >= (vehicle ? 0.2 : 0.01) && !player.isOnGround()
                             || !vehicle && !PatternUtils.isBlockPattern(locations, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Second is used in case the first method is spoofed
-                        double selectedBox = AlgebraUtils.cut(GroundUtils.heightExists(box) ? box : oldBox, 5);
+                        double selectedBox = AlgebraUtils.cut(GroundUtils.blockHeightExists(box) ? box : oldBox, 5);
                         irregularMovements.cancel(prevention,
                                 "horizontal-" + scenario + "=" + selectedBox, "selected-box: " + selectedBox,
                                 6, IrregularMovements.defaultBufferTime);

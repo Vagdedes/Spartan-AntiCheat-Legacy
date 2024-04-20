@@ -359,7 +359,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             }
                         } else if (!onGroundCustom
                                 && Math.abs(vertical - PlayerUtils.jumping[1]) < PlayerUtils.getJumpingPrecision(player)
-                                && (!GroundUtils.heightExists(Math.abs(box - vertical)) || !offGround
+                                && (!GroundUtils.blockHeightExists(Math.abs(box - vertical)) || !offGround
                                 && to.areBlocks(Material.AIR, 1, false)
                                 && to.clone().add(0, -1, 0).areBlocks(Material.AIR, 1, true)
                                 && to.clone().add(0, 1, 0).areBlocks(Material.AIR, 1, true))) { // Jumping must start from somewhere
@@ -393,7 +393,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             irregularMovements.cancel(prevention, "equilibrium-spacious", null,
                                     jumpEffectASYNC ? 2 : 1, IrregularMovements.defaultBufferTime);
                         } else if (!knownBoxes
-                                && !GroundUtils.heightExists(oldBox - oldVertical)) {
+                                && !GroundUtils.blockHeightExists(oldBox - oldVertical)) {
                             irregularMovements.cancel(prevention, "*equilibrium-abstract", null,
                                     2, IrregularMovements.defaultBufferTime);
                         } else {
