@@ -10,13 +10,13 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Spee
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.identifiers.simple.CheckDelay;
+import com.vagdedes.spartan.functionality.identifiers.CheckDelay;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.functionality.tracking.ServerFlying;
+import com.vagdedes.spartan.utils.gameplay.HashUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
-import com.vagdedes.spartan.utils.java.HashUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -123,7 +123,7 @@ public class EventsHandler7 implements Listener {
         float fall = p.getFallDistance();
 
         // Detections (Always previous so it counts the previous tick and makes the current tick's prediction)
-        int situation = HashUtils.extendInt(HashUtils.hashPlayer(p), HashUtils.hashEnvironment(p, to));
+        int situation = HashUtils.hashPlayer(p);
 
         // Patterns
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);

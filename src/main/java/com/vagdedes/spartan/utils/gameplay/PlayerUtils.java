@@ -5,11 +5,10 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.GroundCollision;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
+import com.vagdedes.spartan.functionality.identifiers.complex.BouncingBlocks;
+import com.vagdedes.spartan.functionality.identifiers.complex.GroundCollision;
+import com.vagdedes.spartan.functionality.identifiers.complex.Liquid;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.ExtremeCollision;
-import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
@@ -246,7 +245,6 @@ public class PlayerUtils {
 
             if (entity != null) {
                 p.getBuffer().remove(GroundUtils.inaccuracyKey);
-                VehicleAccess.runEnter(p, entity, false);
             }
         }
     }

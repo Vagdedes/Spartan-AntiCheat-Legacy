@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.identifiers.simple;
+package com.vagdedes.spartan.functionality.identifiers;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.utils.java;
+package com.vagdedes.spartan.utils.gameplay;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
@@ -6,9 +6,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -200,7 +197,7 @@ public class HashUtils {
 
         for (int y = -AlgebraUtils.integerCeil(PlayerUtils.totalJumpingMotion);
              y <= AlgebraUtils.integerCeil(player.getEyeHeight()); y++) {
-            for (SpartanLocation cloned : location.clone().getSurroundingLocations(1.0, y, 1.0, true)) {
+            for (SpartanLocation cloned : location.clone().getSurroundingLocations(BlockUtils.hitbox_extra, y, BlockUtils.hitbox_extra, true)) {
                 SpartanBlock block = cloned.getBlock();
                 Material material = block.material;
 

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.Liquid;
+import com.vagdedes.spartan.functionality.identifiers.complex.Liquid;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.identifiers.complex.predictable;
+package com.vagdedes.spartan.functionality.identifiers.complex;
 
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;

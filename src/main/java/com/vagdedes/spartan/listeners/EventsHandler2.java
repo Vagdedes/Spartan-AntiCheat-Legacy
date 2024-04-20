@@ -2,7 +2,6 @@ package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.identifiers.simple.VehicleAccess;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -15,7 +14,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class EventsHandler2 implements Listener {
 
@@ -104,8 +103,8 @@ public class EventsHandler2 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void VehicleExit(VehicleExitEvent e) {
-        Entity en = e.getExited();
+    private void VehicleEnter(VehicleEnterEvent e) {
+        Entity en = e.getEntered();
 
         if (en instanceof Player) {
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) en);
@@ -113,8 +112,10 @@ public class EventsHandler2 implements Listener {
             if (p == null) {
                 return;
             }
-            // Protections
-            VehicleAccess.runExit(p);
+            if (p.getViolations(Enums.HackType.Speed).prevent()
+                    || p.getViolations(Enums.HackType.IrregularMovements).prevent()) {
+                e.setCancelled(true);
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.identifiers.complex.predictable;
+package com.vagdedes.spartan.functionality.identifiers.complex;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;

@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularm
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.functionality.identifiers.complex.predictable.BouncingBlocks;
+import com.vagdedes.spartan.functionality.identifiers.complex.BouncingBlocks;
 import com.vagdedes.spartan.functionality.identifiers.complex.unpredictable.Velocity;
 import com.vagdedes.spartan.functionality.server.Permissions;
 

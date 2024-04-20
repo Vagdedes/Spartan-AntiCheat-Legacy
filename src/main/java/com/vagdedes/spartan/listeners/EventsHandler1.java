@@ -134,6 +134,8 @@ public class EventsHandler1 implements Listener {
         }
         // Compatibility
         NoHitDelay.runVelocity(p);
+        p.debug(false, false, "velocity",
+                e.getVelocity().getX(), e.getVelocity().getY(), e.getVelocity().getZ());
 
         // Handlers
         if (!e.isCancelled()) {
