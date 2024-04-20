@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.java.HashUtils;
+import com.vagdedes.spartan.utils.java.OverflowList;
 
 import java.util.*;
 
@@ -69,10 +70,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     // Separator
 
     private final Map<PlayerProfile, LinearPatternProfile> profiles;
-    private final Map<Integer, List<Integer>> referenceKeys;
+    private final Map<Integer, OverflowList<Integer>> referenceKeys;
     private final Map<Integer, Integer> connections;
     private final Map<Integer, Reference> references;
-    private final Map<Integer, Short> overflow;
     private final int initialHash;
     private final Map<Integer, Cache> cache;
 
@@ -89,7 +89,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         this.references = Collections.synchronizedMap(
                 new HashMap<>(Pattern.individualDataBase, 1.0f)
         );
-        this.overflow = new HashMap<>(Pattern.individualDataBase, 1.0f);
         this.cache = new HashMap<>(Pattern.individualDataBase, 1.0f);
     }
 
@@ -98,45 +97,42 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                          float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        synchronized (patternProfile.correlations) {
-            if (patternProfile.correlations.size() == 3) {
-                patternProfile.correlations.remove(0);
-                patternProfile.correlations.add(pattern);
+        synchronized (patternProfile.patterns) {
+            if (patternProfile.patterns.size() == 3) {
+                patternProfile.patterns.remove(0);
+                patternProfile.patterns.add(pattern);
             } else {
-                patternProfile.correlations.add(pattern);
+                patternProfile.patterns.add(pattern);
                 return patternProfile;
             }
         }
+        if (!read) {
+            boolean connected;
+
+            synchronized (this.connections) {
+                connected = this.connections.containsKey(situation);
+            }
+
+            if (!connected) {
+                for (int previousSituation : patternProfile.situations) {
+                    if (this.connect(previousSituation, situation)) {
+                        break;
+                    }
+                }
+            }
+            patternProfile.situations.add(situation);
+        }
         synchronized (this.referenceKeys) {
-            List<Integer> list = this.referenceKeys.computeIfAbsent(
-                    situation,
-                    k -> new ArrayList<>(Pattern.individualDataBase)
-            );
             Reference reference = new Reference(this.getPatterns(patternProfile));
             int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
 
             synchronized (this.references) {
                 this.references.putIfAbsent(referenceKey, reference);
             }
-
-            if (list.size() == Pattern.individualDataLimit - 1) {
-                short position = (short) (this.overflow.getOrDefault(situation, (short) -1) + 1);
-                list.set(position, referenceKey);
-
-                if (position == Pattern.individualDataLimit - 1) {
-                    this.overflow.remove(situation);
-                } else {
-                    this.overflow.put(situation, position);
-                }
-            } else {
-                list.add(referenceKey);
-            }
-        }
-        if (!read) {
-            if (patternProfile.previousSituation != 0) {
-                this.connect(patternProfile.previousSituation, situation, true);
-            }
-            patternProfile.previousSituation = situation;
+            this.referenceKeys.computeIfAbsent(
+                    situation,
+                    k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
+            ).add(referenceKey);
         }
         return patternProfile;
     }
@@ -145,7 +141,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     public Comparison customComparison(PlayerProfile profile, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        if (patternProfile.correlations.size() < 3) {
+        if (patternProfile.patterns.size() < 3) {
             return new Comparison();
         } else {
             Cache cache;
@@ -265,40 +261,27 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     void loadCompleted() {
-        if (!this.referenceKeys.isEmpty()) {
-            Collection<Integer> known = new ArrayList<>(Pattern.individualDataBase),
-                    unknown = new ArrayList<>(Pattern.individualDataBase);
 
-            for (int situation : this.referenceKeys.keySet()) {
-                if (this.contribution(situation) >= requiredRatio) {
-                    known.add(situation);
-                } else {
-                    unknown.add(situation);
-                }
-            }
-
-            if (!known.isEmpty() && !unknown.isEmpty()) {
-                for (int knownSituation : known) {
-                    for (int unknownSituation : unknown) {
-                        this.connect(knownSituation, unknownSituation, false);
-                    }
-                }
-            }
-        }
     }
 
-    private void connect(int knownSituation, int unknownSituation, boolean live) {
-        if (live && (knownSituation != unknownSituation)) {
+    private boolean connect(int knownSituation, int unknownSituation) {
+        if (knownSituation != unknownSituation) {
             if (this.contribution(knownSituation) >= requiredRatio) {
                 if (this.contribution(unknownSituation) >= requiredRatio) {
-                    return;
+                    return false;
                 }
             } else if (this.contribution(unknownSituation) < requiredRatio) {
-                return;
+                return false;
             } else {
                 int situationCopy = knownSituation;
                 knownSituation = unknownSituation;
                 unknownSituation = situationCopy;
+            }
+
+            synchronized (this.connections) {
+                if (this.connections.containsKey(unknownSituation)) {
+                    return true;
+                }
             }
         }
         double similarity = 0.0;
@@ -369,14 +352,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
 
         if (similarity >= 0.9) {
-            Integer connected = this.connections.get(unknownSituation);
-
-            if (connected == null) {
-                this.connections.put(unknownSituation, knownSituation);
-            } else if ((!live || connected != knownSituation)
-                    && this.contribution(connected) < this.contribution(knownSituation)) {
-                this.connections.put(unknownSituation, knownSituation);
-            }
+            this.connections.put(unknownSituation, knownSituation);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -392,11 +371,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     private float[] getPatterns(LinearPatternProfile patternProfile) {
-        synchronized (patternProfile.correlations) {
+        synchronized (patternProfile.patterns) {
             return new float[]{
-                    patternProfile.correlations.get(patternProfile.correlations.size() - 3),
-                    patternProfile.correlations.get(patternProfile.correlations.size() - 2),
-                    patternProfile.correlations.get(patternProfile.correlations.size() - 1)
+                    patternProfile.patterns.get(patternProfile.patterns.size() - 3),
+                    patternProfile.patterns.get(patternProfile.patterns.size() - 2),
+                    patternProfile.patterns.get(patternProfile.patterns.size() - 1)
             };
         }
     }
