@@ -9,7 +9,7 @@ import java.util.TreeMap;
 public class NumberRank implements AbstractRank {
 
     private final Map<Integer, Short> map;
-    private float total;
+    private double total;
 
     public NumberRank() {
         this.map = new TreeMap<>();
@@ -119,44 +119,37 @@ public class NumberRank implements AbstractRank {
 
     @Override
     public double getGeneralContribution() {
-        if (this.total > 0) {
-            return 1.0 / this.total;
-        } else {
-            return 1.0;
-        }
+        return this.total > 0
+                ? 1.0 / this.total
+                : 1.0;
     }
 
     @Override
     public double getUniqueContribution() {
-        if (!this.map.isEmpty()) {
-            return 1.0 / this.map.size();
-        } else {
-            return 1.0;
-        }
+        return this.map.isEmpty()
+                ? 1.0
+                : 1.0 / this.map.size();
     }
 
     @Override
     public double getGeneralContribution(Number ignoreNumber) {
-        Short count = this.map.getOrDefault(ignoreNumber.hashCode(), (short) 0);
+        Short remove = this.map.getOrDefault(ignoreNumber.hashCode(), (short) 0);
 
-        if (this.total > count) {
-            return 1.0 / ((int) this.total - count);
-        } else if (this.total > 0) {
-            return 1.0 / this.total;
+        if (this.total > remove) {
+            return 1.0 / (this.total - remove);
         } else {
-            return 1.0;
+            return this.total > 0
+                    ? 1.0 / this.total
+                    : 1.0;
         }
     }
 
     @Override
     public double getPersonalContribution(Number number) {
         Short count = this.map.get(number.hashCode());
-
-        if (count != null) {
-            return 1.0 / count;
-        } else {
-            return 1.0;
-        }
+        return count != null
+                ? 1.0 / count
+                : 1.0;
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.*;
 public class SetMath implements AbstractKeyMath {
 
     private final Map<Integer, Set<Integer>> map;
-    private float total;
+    private double total;
 
     public SetMath() {
         this(2);
@@ -115,31 +115,24 @@ public class SetMath implements AbstractKeyMath {
 
     @Override
     public double getGeneralContribution() {
-        if (this.total > 0) {
-            return 1.0 / this.total;
-        } else {
-            return 1.0;
-        }
+        return this.total > 0
+                ? 1.0 / this.total
+                : 1.0;
     }
 
     @Override
     public double getUniqueContribution() {
-        if (!this.map.isEmpty()) {
-            return 1.0 / this.map.size();
-        } else {
-            return 1.0;
-        }
+        return this.map.isEmpty()
+                ? 1.0
+                : 1.0 / this.map.size();
     }
 
     @Override
     public double getGeneralContribution(Number ignoreNumber) {
         Set<Integer> set = this.map.get(ignoreNumber.hashCode());
-        return 1.0 / (this.total - (set != null ? set.size() : 0) + 1.0);
-    }
-
-    @Override
-    public double getPersonalContribution(Number number) {
-        return 0;
+        return set != null && set.size() > this.total
+                ? 1.0 / (this.total - set.size())
+                : 1.0;
     }
 
     @Override
@@ -147,10 +140,23 @@ public class SetMath implements AbstractKeyMath {
         Set<Integer> set = this.map.get(number.hashCode());
 
         if (set != null) {
-            return 1.0 / (this.total + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0);
+            int remove = set.contains(ignoreHash) ? 1 : 0;
+            return this.total > remove
+                    ? 1.0 / (this.total - remove)
+                    : 1.0;
         } else {
-            return 1.0 / (this.total + 1.0);
+            return this.total > 0
+                    ? 1.0 / this.total
+                    : 1.0;
         }
+    }
+
+    @Override
+    public double getPersonalContribution(Number number) {
+        Set<Integer> set = this.map.get(number.hashCode());
+        return set != null
+                ? 1.0 / set.size()
+                : 1.0;
     }
 
     @Override
@@ -158,7 +164,10 @@ public class SetMath implements AbstractKeyMath {
         Set<Integer> set = this.map.get(number.hashCode());
 
         if (set != null) {
-            return 1.0 / (set.size() + (set.contains(ignoreHash) ? -1.0 : 0.0) + 1.0);
+            int remove = set.contains(ignoreHash) ? 1 : 0;
+            return set.size() > remove
+                    ? 1.0 / (set.size() - remove)
+                    : 1.0;
         } else {
             return 1.0;
         }

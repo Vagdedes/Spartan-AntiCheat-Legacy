@@ -10,7 +10,7 @@ import java.util.Map;
 public class MapMath implements AbstractKeyValueMath {
 
     private final Map<Integer, Map<Integer, Short>> map;
-    private float total, specificTotal;
+    private double total, specificTotal;
 
     public MapMath() {
         this(2);
@@ -156,26 +156,24 @@ public class MapMath implements AbstractKeyValueMath {
 
     @Override
     public double getGeneralContribution() {
-        if (this.total > 0) {
-            return 1.0 / this.total;
-        } else {
-            return 1.0;
-        }
+        return this.total > 0
+                ? 1.0 / this.total
+                : 1.0;
     }
 
     @Override
     public double getUniqueContribution() {
-        if (!this.map.isEmpty()) {
-            return 1.0 / this.map.size();
-        } else {
-            return 1.0;
-        }
+        return this.map.isEmpty()
+                ? 1.0
+                : 1.0 / this.map.size();
     }
 
     @Override
     public double getGeneralContribution(Number ignoreNumber) {
         Map<Integer, Short> map = this.map.get(ignoreNumber.hashCode());
-        return 1.0 / (this.total - (map != null ? map.size() : 0) + 1.0);
+        return map != null && map.size() > this.total
+                ? 1.0 / this.total - map.size()
+                : 1.0;
     }
 
     @Override
@@ -183,21 +181,23 @@ public class MapMath implements AbstractKeyValueMath {
         Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
-            return 1.0 / (this.total + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0);
+            int remove = map.containsKey(ignoreHash) ? 1 : 0;
+            return this.total > remove
+                    ? 1.0 / (this.total - remove)
+                    : 1.0;
         } else {
-            return 1.0 / (this.total + 1.0);
+            return this.total > 0
+                    ? 1.0 / this.total
+                    : 1.0;
         }
     }
 
     @Override
     public double getPersonalContribution(Number number) {
         Map<Integer, Short> map = this.map.get(number.hashCode());
-
-        if (map != null) {
-            return 1.0 / (map.size() + 1.0);
-        } else {
-            return 1.0;
-        }
+        return map != null
+                ? 1.0 / map.size()
+                : 1.0;
     }
 
     @Override
@@ -205,7 +205,10 @@ public class MapMath implements AbstractKeyValueMath {
         Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
-            return 1.0 / (map.size() + (map.containsKey(ignoreHash) ? -1.0 : 0.0) + 1.0);
+            int remove = map.containsKey(ignoreHash) ? 1 : 0;
+            return map.size() > remove
+                    ? 1.0 / (map.size() - remove)
+                    : 1.0;
         } else {
             return 1.0;
         }
@@ -280,11 +283,13 @@ public class MapMath implements AbstractKeyValueMath {
             for (short count : map.values()) {
                 total += count;
             }
-            return 1.0 / (this.specificTotal - total + 1.0);
-        } else if (this.specificTotal > 0) {
-            return 1.0 / this.specificTotal;
+            return total > this.specificTotal
+                    ? 1.0 / (this.specificTotal - total)
+                    : 1.0;
         } else {
-            return 1.0;
+            return this.specificTotal > 0
+                    ? 1.0 / this.specificTotal
+                    : 1.0;
         }
     }
 
@@ -293,12 +298,14 @@ public class MapMath implements AbstractKeyValueMath {
         Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
-            Short count = map.get(ignoreHash);
-            return 1.0 / (this.specificTotal + (count != null ? -count : 0.0) + 1.0);
-        } else if (this.specificTotal > 0) {
-            return 1.0 / this.specificTotal;
+            Short remove = map.get(ignoreHash);
+            return this.specificTotal > remove
+                    ? 1.0 / (this.specificTotal - remove)
+                    : 1.0;
         } else {
-            return 1.0;
+            return this.specificTotal > 0
+                    ? 1.0 / this.specificTotal
+                    : 1.0;
         }
     }
 
@@ -329,7 +336,9 @@ public class MapMath implements AbstractKeyValueMath {
                 total += count;
             }
             Short count = map.get(ignoreHash);
-            return 1.0 / (total + (count != null ? -count : 0.0) + 1.0);
+            return total > count
+                    ? 1.0 / (total - count)
+                    : 1.0;
         } else {
             return 1.0;
         }
