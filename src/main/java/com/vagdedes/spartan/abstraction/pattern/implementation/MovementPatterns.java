@@ -15,17 +15,17 @@ public class MovementPatterns extends PatternFamily {
         super(1_000L, 3);
         this.addPatterns(
                 new Pattern[]{
-                        this.horizontal = new Pattern(
-                                "movement/distance/horizontal",
-                                new short[]{
-                                        horizontalGeneralization
-                                },
-                                true
-                        ),
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
+                                },
+                                true
+                        ),
+                        this.horizontal = new Pattern(
+                                "movement/distance/horizontal",
+                                new short[]{
+                                        horizontalGeneralization
                                 },
                                 true
                         ),

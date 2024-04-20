@@ -52,8 +52,12 @@ public class OverflowList<E> implements List<E> {
     @Override
     public boolean add(E e) {
         if (list.size() == maxSize) {
-            this.list.set(overflow, e);
-            overflow++;
+            this.list.set(this.overflow, e);
+            this.overflow++;
+
+            if (this.overflow == this.maxSize) {
+                this.overflow = 0;
+            }
             return true;
         } else {
             return this.list.add(e);

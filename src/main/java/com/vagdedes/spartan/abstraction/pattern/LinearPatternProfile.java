@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.java.OverflowList;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class LinearPatternProfile extends PatternProfile {
     LinearPatternProfile(PlayerProfile profile) {
         super(profile);
         this.patterns = Collections.synchronizedList(new ArrayList<>(4));
-        this.situations = Collections.synchronizedList(new OverflowList<>(2, 20));
+        this.situations = Collections.synchronizedList(new OverflowList<>(2, (int) TPS.maximum * 2));
     }
 
 }

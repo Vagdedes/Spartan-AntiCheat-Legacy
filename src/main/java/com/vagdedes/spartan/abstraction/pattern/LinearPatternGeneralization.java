@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.utils.java.HashUtils;
 import com.vagdedes.spartan.utils.java.OverflowList;
 
@@ -8,7 +9,9 @@ import java.util.*;
 
 public class LinearPatternGeneralization extends PatternGeneralization {
 
-    private static final double requiredRatio = 0.9;
+    private static final double
+            requiredContribution = 0.9,
+            requiredSimilarity = 0.9;
 
     private static int[] getHashCodes(float[] patterns) {
         int nowHash = Float.hashCode(patterns[1]);
@@ -97,31 +100,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                          float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        synchronized (patternProfile.patterns) {
-            if (patternProfile.patterns.size() == 3) {
-                patternProfile.patterns.remove(0);
-                patternProfile.patterns.add(pattern);
-            } else {
-                patternProfile.patterns.add(pattern);
-                return patternProfile;
-            }
-        }
-        if (!read) {
-            boolean connected;
-
-            synchronized (this.connections) {
-                connected = this.connections.containsKey(situation);
-            }
-
-            if (!connected) {
-                for (int previousSituation : patternProfile.situations) {
-                    if (this.connect(previousSituation, situation)) {
-                        break;
-                    }
-                }
-            }
-            patternProfile.situations.add(situation);
-        }
         synchronized (this.referenceKeys) {
             Reference reference = new Reference(this.getPatterns(patternProfile));
             int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
@@ -134,6 +112,42 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
             ).add(referenceKey);
         }
+        synchronized (patternProfile.patterns) {
+            if (patternProfile.patterns.size() == 3) {
+                patternProfile.patterns.remove(0);
+                patternProfile.patterns.add(pattern);
+            } else {
+                patternProfile.patterns.add(pattern);
+                return patternProfile;
+            }
+        }
+        if (!read) {
+            if (!patternProfile.situations.isEmpty()) {
+                boolean connected;
+
+                synchronized (this.connections) {
+                    connected = this.connections.containsKey(situation);
+                }
+
+                if (connected) {
+                    if (this.contribution(situation) >= requiredContribution) {
+                        synchronized (this.connections) {
+                            this.connections.remove(situation);
+                        }
+                    }
+                } else {
+                    for (int previousSituation : patternProfile.situations) {
+                        if (this.connect(previousSituation, situation)) {
+                            AwarenessNotifications.forcefullySend(
+                                    situation + " -> " + previousSituation
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
+            patternProfile.situations.add(situation);
+        }
         return patternProfile;
     }
 
@@ -144,6 +158,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         if (patternProfile.patterns.size() < 3) {
             return new Comparison();
         } else {
+            situation = this.getActualSituation(situation);
             Cache cache;
             float[] patterns = this.getPatterns(patternProfile);
             int hash = HashUtils.extendInt(
@@ -155,7 +170,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 cache = this.cache.get(hash);
 
                 if (cache == null) {
-                    Collection<Integer> collection = this.getReferences(situation);
+                    Collection<Integer> collection = this.referenceKeys.get(situation);
 
                     if (collection == null) {
                         cache = new Cache(0.0, 0.0);
@@ -191,7 +206,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         this.cache.put(hash, cache);
                     }
                 } else if (cache.isExpired()) {
-                    Collection<Integer> collection = this.getReferences(situation);
+                    Collection<Integer> collection = this.referenceKeys.get(situation);
 
                     if (collection == null) {
                         this.cache.remove(hash);
@@ -266,11 +281,11 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     private boolean connect(int knownSituation, int unknownSituation) {
         if (knownSituation != unknownSituation) {
-            if (this.contribution(knownSituation) >= requiredRatio) {
-                if (this.contribution(unknownSituation) >= requiredRatio) {
+            if (this.contribution(knownSituation) >= requiredContribution) {
+                if (this.contribution(unknownSituation) >= requiredContribution) {
                     return false;
                 }
-            } else if (this.contribution(unknownSituation) < requiredRatio) {
+            } else if (this.contribution(unknownSituation) < requiredContribution) {
                 return false;
             } else {
                 int situationCopy = knownSituation;
@@ -283,6 +298,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     return true;
                 }
             }
+        } else {
+            return false;
         }
         double similarity = 0.0;
         List<Integer> knownSituationCorrelations = this.referenceKeys.get(knownSituation),
@@ -351,7 +368,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             similarity /= bigList.size();
         }
 
-        if (similarity >= 0.9) {
+        if (similarity >= requiredSimilarity) {
             this.connections.put(unknownSituation, knownSituation);
             return true;
         } else {
@@ -380,21 +397,13 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    private Collection<Integer> getReferences(int situation) {
+    private int getActualSituation(int situation) {
         Integer connected;
 
         synchronized (this.connections) {
             connected = this.connections.get(situation);
         }
-        if (connected != null) {
-            synchronized (this.referenceKeys) {
-                return this.referenceKeys.get(connected);
-            }
-        } else {
-            synchronized (this.referenceKeys) {
-                return this.referenceKeys.get(situation);
-            }
-        }
+        return connected == null ? situation : connected;
     }
 
 }
