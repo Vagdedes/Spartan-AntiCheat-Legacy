@@ -367,7 +367,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
             if (connected == null) {
                 this.connections.put(unknownSituation, knownSituation);
-            } else if (connected != knownSituation
+            } else if ((!live || connected != knownSituation)
                     && this.contribution(connected) < this.contribution(knownSituation)) {
                 this.connections.put(unknownSituation, knownSituation);
             }
@@ -401,10 +401,12 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         synchronized (this.connections) {
             connected = this.connections.get(situation);
         }
-        synchronized (this.referenceKeys) {
-            if (connected != null) {
+        if (connected != null) {
+            synchronized (this.referenceKeys) {
                 return this.referenceKeys.get(connected);
-            } else {
+            }
+        } else {
+            synchronized (this.referenceKeys) {
                 return this.referenceKeys.get(situation);
             }
         }
