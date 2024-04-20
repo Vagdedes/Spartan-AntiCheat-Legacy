@@ -168,9 +168,7 @@ public class PlayerUtils {
 
             if (ground) {
                 p.movement.setAirTicks(0);
-                p.movement.setGroundTicks(p.movement.getTicksOnGround() + 1);
             } else {
-                p.movement.setGroundTicks(0);
                 p.movement.setAirTicks(p.movement.getTicksOnAir() + 1);
                 Double nmsVerticalDistance = p.movement.getNmsVerticalDistance(),
                         old_NmsVerticalDistance = p.movement.getPreviousNmsVerticalDistance();

@@ -153,14 +153,14 @@ public class HashUtils {
                 hash = extendInt(hash, potionEffect.getAmplifier());
             }
         }
-        // todo add velocity, bouncing, all nearby entities except drops, pistons, liquid
+        // todo add velocity, bouncing, all nearby entities except drops, pistons, liquid, bubble water
         return hash;
     }
 
     public static int hashEnvironment(SpartanPlayer player,
                                       SpartanLocation location,
                                       SpartanLocation previousLocation) {
-        int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
+        int hash = 1;
 
         if (player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0) >= 0.0) {
             hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
@@ -171,6 +171,11 @@ public class HashUtils {
                     previousLocation.getY() - previousLocation.getBlockY(),
                     GroundUtils.maxHeightLength
             )));
+        } else {
+            hash = extendInt(
+                    hash,
+                    player.movement.getTicksOnAir() - player.movement.getFirstFallingAirTick()
+            );
         }
         return hash;
     }

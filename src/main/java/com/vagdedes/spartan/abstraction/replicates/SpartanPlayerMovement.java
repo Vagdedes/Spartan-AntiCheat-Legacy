@@ -39,8 +39,8 @@ public class SpartanPlayerMovement {
             lastLiquidTime;
     private int
             airTicks,
+            firstFallingAirTick,
             fallingTicks,
-            groundTicks,
             extraPackets;
     private long lastHeadMovement;
     private boolean gliding, swimming, sprinting, sneaking, flying;
@@ -67,8 +67,8 @@ public class SpartanPlayerMovement {
         this.lastLiquidTime = 0L;
 
         this.airTicks = 0;
+        this.firstFallingAirTick = 0;
         this.fallingTicks = 0;
-        this.groundTicks = 0;
         this.extraPackets = 0;
 
         this.lastHeadMovement = System.currentTimeMillis();
@@ -437,31 +437,28 @@ public class SpartanPlayerMovement {
 
         if (number == 0) {
             this.fallingTicks = 0;
-        }
-    }
-
-    // Separator
-
-    public int getTicksOnGround() {
-        return groundTicks;
-    }
-
-    public synchronized void setGroundTicks(int number) {
-        this.groundTicks = number;
-
-        if (number > 0) {
-            this.fallingTicks = 0;
+            this.firstFallingAirTick = 0;
         }
     }
 
     // Separator
 
     public int getFallingTicks() {
-        return fallingTicks;
+        return this.fallingTicks;
+    }
+
+    public int getFirstFallingAirTick() {
+        return this.firstFallingAirTick;
     }
 
     public synchronized void setFallingTicks(int number) {
         this.fallingTicks = number;
+
+        if (number == 0) {
+            this.firstFallingAirTick = 0;
+        } else if (this.firstFallingAirTick == 0) {
+            this.firstFallingAirTick = this.airTicks;
+        }
     }
 
     // Separator

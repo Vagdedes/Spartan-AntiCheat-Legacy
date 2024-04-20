@@ -36,7 +36,6 @@ public class EventsHandler2 implements Listener {
 
         // Object
         p.movement.setAirTicks(0);
-        p.movement.setGroundTicks(0);
         p.movement.setFallingTicks(0);
 
         // System

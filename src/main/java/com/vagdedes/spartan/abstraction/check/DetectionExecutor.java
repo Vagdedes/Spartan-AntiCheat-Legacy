@@ -81,7 +81,8 @@ public abstract class DetectionExecutor {
                         comparison.probability,
                         comparison.contribution,
                         comparison.significance,
-                        comparison.outcome
+                        comparison.outcome,
+                        player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0)
                 );
             }
         }

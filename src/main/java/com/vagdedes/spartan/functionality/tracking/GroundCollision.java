@@ -10,7 +10,6 @@ public class GroundCollision {
         if (player.isOnGroundCustom()
                 && player.isOnGround()
                 && player.movement.getTicksOnAir() == 0
-                && player.movement.getTicksOnGround() > 0
                 && player.getVehicle() == null) {
             Double nmsVerticalDistance = player.movement.getNmsVerticalDistance();
 

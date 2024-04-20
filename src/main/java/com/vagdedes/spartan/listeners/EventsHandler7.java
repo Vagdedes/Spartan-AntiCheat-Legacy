@@ -132,7 +132,6 @@ public class EventsHandler7 implements Listener {
 
         // Detections
         p.getExecutor(Enums.HackType.IrregularMovements).handle(false, situation);
-        p.debug(false, false, ver);
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD);
         p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
         p.getExecutor(Enums.HackType.KillAura).run(cancelled);
