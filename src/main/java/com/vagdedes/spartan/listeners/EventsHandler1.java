@@ -126,7 +126,7 @@ public class EventsHandler1 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Velocity(PlayerVelocityEvent e) {
+    private void Velocity(PlayerVelocityEvent e) { // todo add tracker to add in hasing
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         if (p == null) {
@@ -134,8 +134,6 @@ public class EventsHandler1 implements Listener {
         }
         // Compatibility
         NoHitDelay.runVelocity(p);
-        p.debug(false, false, "velocity",
-                e.getVelocity().getX(), e.getVelocity().getY(), e.getVelocity().getZ());
 
         // Handlers
         if (!e.isCancelled()) {

@@ -153,6 +153,7 @@ public class HashUtils {
                 hash = extendInt(hash, potionEffect.getAmplifier());
             }
         }
+        // todo add velocity, bouncing, all nearby entities except drops, pistons, liquid
         return hash;
     }
 
@@ -162,12 +163,14 @@ public class HashUtils {
         int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
 
         if (player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0) >= 0.0) {
-            hash = extendInt(hash, Double.hashCode(
-                    AlgebraUtils.cut(location.getY() - location.getBlockY(), GroundUtils.maxHeightLength))
-            );
-            hash = extendInt(hash, Double.hashCode(
-                    AlgebraUtils.cut(previousLocation.getY() - previousLocation.getBlockY(), GroundUtils.maxHeightLength)
-            ));
+            hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
+                    location.getY() - location.getBlockY(),
+                    GroundUtils.maxHeightLength
+            )));
+            hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
+                    previousLocation.getY() - previousLocation.getBlockY(),
+                    GroundUtils.maxHeightLength
+            )));
         }
         return hash;
     }

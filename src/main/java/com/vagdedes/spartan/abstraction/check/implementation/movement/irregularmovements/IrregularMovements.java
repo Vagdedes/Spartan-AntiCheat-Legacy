@@ -14,7 +14,7 @@ import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
-import com.vagdedes.spartan.functionality.tracking.Damage;
+import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -156,7 +156,7 @@ public class IrregularMovements extends CheckExecutor {
                     bouncingBlocks = BouncingBlocks.isBelow(player),
                     jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP),
                     threwTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
-                    explosion = Damage.hasExplosion(player),
+                    explosion = CombatProcessing.hasExplosionDamage(player),
                     falling = player.movement.isFalling(vertical),
                     oldFalling = player.movement.isFalling(oldVertical),
                     jumping = player.movement.isJumping(vertical),
@@ -201,7 +201,7 @@ public class IrregularMovements extends CheckExecutor {
                 canGoDown = !forcefulUp;
                 canFall = !forcefulUp;
             } else if (explosion
-                    || Damage.isSignificant(player)) { // Damage Or Combat
+                    || CombatProcessing.isSignificantDamage(player)) { // Damage Or Combat
                 velocityScenario = true;
 
                 scenario = "damage/explosion";

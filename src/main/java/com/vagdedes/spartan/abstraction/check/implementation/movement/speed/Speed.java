@@ -14,7 +14,7 @@ import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
-import com.vagdedes.spartan.functionality.tracking.Damage;
+import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -345,9 +345,9 @@ public class Speed extends CheckExecutor {
         boolean bedrockPlayer = player.bedrockPlayer,
                 vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
                 hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
-                explosion = !hasTrident && Damage.hasExplosion(player),
-                damage = Damage.isSignificant(player),
-                knockback = Damage.hasBigKnockBack(player),
+                explosion = !hasTrident && CombatProcessing.hasExplosionDamage(player),
+                damage = CombatProcessing.isSignificantDamage(player),
+                knockback = CombatProcessing.hasBigKnockBackDamage(player),
                 hitDelay = damage && NoHitDelay.hasCooldown(player);
         float difference = PlayerUtils.getWalkSpeedDifference(player);
         double minimumLimit = Math.max(

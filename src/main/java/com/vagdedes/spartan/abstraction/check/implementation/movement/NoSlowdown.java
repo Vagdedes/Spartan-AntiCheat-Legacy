@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.tracking.Damage;
+import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
@@ -172,7 +172,7 @@ public class NoSlowdown extends CheckExecutor {
                 && !player.movement.isSwimming()
                 && !player.movement.wasInLiquids()
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && !Damage.hasExplosion(player)
+                && !CombatProcessing.hasExplosionDamage(player)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse);
     }
 

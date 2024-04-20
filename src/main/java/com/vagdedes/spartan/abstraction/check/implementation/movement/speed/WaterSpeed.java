@@ -9,7 +9,7 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
-import com.vagdedes.spartan.functionality.tracking.Damage;
+import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.Liquid;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -307,7 +307,7 @@ public class WaterSpeed extends DetectionExecutor {
                 || horizontalBuffer < 0
                 || vehicle instanceof Horse
                 || !cooldowns.canDo("ice")
-                || Damage.hasExplosion(player)) {
+                || CombatProcessing.hasExplosionDamage(player)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), premature));
         } else if (player.bedrockPlayer
                 || player.getHandlers().has(Handlers.HandlerType.TowerBuilding)) {
@@ -353,7 +353,7 @@ public class WaterSpeed extends DetectionExecutor {
     private boolean canDo(SpartanLocation to, SpartanLocation loc1, Cooldowns cooldowns, boolean selfHit) {
         if (player.canRunCheck(hackType, true)
                 && hackType.getCheck().getBooleanOption("check_water_speed", true)
-                && (selfHit || !Damage.isSignificant(player))
+                && (selfHit || !CombatProcessing.isSignificantDamage(player))
                 && !PlayerUtils.hasNearbyCollisions(player)
                 && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                 && !PlayerUtils.hasLevitationEffect(player)

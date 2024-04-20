@@ -3,9 +3,12 @@ package com.vagdedes.spartan.functionality.tracking;
 import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import java.util.LinkedHashMap;
@@ -64,5 +67,37 @@ public class CombatProcessing {
 
     public static List<Double> getAllValues(SpartanPlayer p, String s) {
         return p.getDecimals().getOldestToNewestList(baseKey + s);
+    }
+
+    // Separator: Use for damage causes that still have an effect even after not being the last one
+
+    public static boolean hasExplosionDamage(SpartanPlayer player) {
+        for (EntityDamageEvent.DamageCause cause : new EntityDamageEvent.DamageCause[]{
+                EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,
+                EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
+        }) {
+            if (player.getDamageReceived(cause).ticksPassed() <= TPS.tickTime) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasBigKnockBackDamage(SpartanPlayer player) {
+        for (SpartanPlayerDamage damage : player.getReceivedDamages()) {
+            if (damage.hasBigKnockBack()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isSignificantDamage(SpartanPlayer player) {
+        for (SpartanPlayerDamage damage : player.getReceivedDamages()) {
+            if (damage.isSignificant()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
