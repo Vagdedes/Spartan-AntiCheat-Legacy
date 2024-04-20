@@ -9,10 +9,12 @@ import java.util.List;
 public class LinearPatternProfile extends PatternProfile {
 
     final List<Float> correlations;
+    int previousSituation;
 
     LinearPatternProfile(PlayerProfile profile) {
         super(profile);
         this.correlations = Collections.synchronizedList(new ArrayList<>(4));
+        this.previousSituation = 0;
     }
 
 }

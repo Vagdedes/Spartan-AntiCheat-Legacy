@@ -132,6 +132,12 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 list.add(referenceKey);
             }
         }
+        if (!read) {
+            if (patternProfile.previousSituation != 0) {
+                this.connect(patternProfile.previousSituation, situation, true);
+            }
+            patternProfile.previousSituation = situation;
+        }
         return patternProfile;
     }
 
@@ -282,7 +288,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     private void connect(int knownSituation, int unknownSituation, boolean live) {
-        if (live) {
+        if (live && (knownSituation != unknownSituation)) {
             if (this.contribution(knownSituation) >= requiredRatio) {
                 if (this.contribution(unknownSituation) >= requiredRatio) {
                     return;
