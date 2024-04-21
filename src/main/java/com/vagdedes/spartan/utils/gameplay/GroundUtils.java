@@ -251,6 +251,10 @@ public class GroundUtils {
 
     // Utils
 
+    public static Set<Double> getHeights() {
+        return blockHeights;
+    }
+
     public static Set<Double> getHeights(Material m) {
         double[] heights = correlatedBlockHeights.get(m);
 

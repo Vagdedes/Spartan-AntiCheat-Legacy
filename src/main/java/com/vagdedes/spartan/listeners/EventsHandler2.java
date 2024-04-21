@@ -3,6 +3,7 @@ package com.vagdedes.spartan.listeners;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -32,6 +33,30 @@ public class EventsHandler2 implements Listener {
             return;
         }
         boolean cancelled = e.isCancelled();
+
+        if (!cancelled) {
+            Location to = e.getTo();
+            int blockY = to.getBlockY();
+            double height = to.getY() - blockY;
+
+            if (!GroundUtils.blockHeightExists(height)) {
+                e.setCancelled(true);
+                cancelled = true;
+                double closest = Double.MAX_VALUE;
+
+                for (double loopHeight : GroundUtils.getHeights()) {
+                    double difference = Math.abs(loopHeight - height);
+
+                    if (difference < closest) {
+                        closest = difference;
+                        height = loopHeight;
+                    }
+                }
+                to = to.clone();
+                to.setY(blockY + height);
+                p.safeTeleport(new SpartanLocation(p, to));
+            }
+        }
         SpartanLocation to = new SpartanLocation(p, nto);
 
         // Object

@@ -159,8 +159,6 @@ public class HashUtils {
         return hash;
     }
 
-    // todo teleport to nearest hitbox
-
     public static int hashEnvironment(SpartanPlayer player,
                                       SpartanLocation location,
                                       SpartanLocation previousLocation) {
