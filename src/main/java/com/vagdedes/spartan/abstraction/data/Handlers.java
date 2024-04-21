@@ -18,10 +18,12 @@ public class Handlers {
         BridgeBuilding(HandlerFamily.Environment),
 
         AbstractVelocity(HandlerFamily.Velocity), BouncingBlocks(HandlerFamily.Velocity),
-        Piston(HandlerFamily.Velocity), WaterElevator(HandlerFamily.Velocity),
+        Piston(HandlerFamily.Velocity), BubbleWater(HandlerFamily.Velocity),
         ExtremeCollision(HandlerFamily.Velocity), Trident(HandlerFamily.Velocity),
 
-        ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part), GameMode(HandlerFamily.Part),
+        ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part),
+        GameMode(HandlerFamily.Part),
+
         ElytraUse(HandlerFamily.Motion);
 
         // Separator
@@ -142,6 +144,15 @@ public class Handlers {
                         return true;
                     }
                 }
+            }
+        }
+        return false;
+    }
+
+    public boolean has(HandlerFamily handlerFamily) {
+        for (HandlerType handlerType : HandlerType.values()) {
+            if (handlerType.family == handlerFamily && this.has(handlerType)) {
+                return true;
             }
         }
         return false;

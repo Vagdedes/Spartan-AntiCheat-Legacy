@@ -344,7 +344,7 @@ public class NoFall extends CheckExecutor {
                         && loc.getBlockY() > BlockUtils.getMinHeight(player.getWorld())
                         && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
                         && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                        && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)
+                        && !player.getHandlers().has(Handlers.HandlerType.BubbleWater, "soul-sand")
                         && !CombatProcessing.hasExplosionDamage(player)
                         && !player.getHandlers().has(Handlers.HandlerType.TowerBuilding)
                         && !NoHitDelay.hasCooldown(player)

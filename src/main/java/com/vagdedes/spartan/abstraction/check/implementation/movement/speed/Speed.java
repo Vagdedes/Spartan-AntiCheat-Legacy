@@ -372,7 +372,7 @@ public class Speed extends CheckExecutor {
                 && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
                 && !PlayerUtils.hasSpeedEffect(player, to, true) && !PlayerUtils.hasJumpEffect(player)
                 && !PlayerUtils.hasLevitationEffect(player) && !player.getLastDamageReceived().isSubtle()
-                && !player.getHandlers().has(Handlers.HandlerType.WaterElevator)) {
+                && !player.getHandlers().has(Handlers.HandlerType.BubbleWater, "soul-sand")) {
             boolean aboveBlocksCopy = aboveBlocks;
 
             runAsync(() -> {

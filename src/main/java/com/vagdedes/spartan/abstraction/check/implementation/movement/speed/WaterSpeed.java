@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.functionality.tracking.Liquid;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -264,7 +263,7 @@ public class WaterSpeed extends DetectionExecutor {
                     {1, 2 - remaining, 1}
             }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) { // Blocks above
                 cooldowns.add("ice", 20);
-            } else if (player.movement.wasInLiquids() || !Liquid.isLocation(player, to)) {
+            } else if (player.movement.wasInLiquids()) {
                 freezeBuffers(buffer, 1);
             }
         }

@@ -116,7 +116,7 @@ public class IrregularMovements extends CheckExecutor {
 
             // Early Variables
             boolean liquidBlocks,
-                    waterElevator = player.getHandlers().has(Handlers.HandlerType.WaterElevator);
+                    waterElevator = player.getHandlers().has(Handlers.HandlerType.BubbleWater, "soul-sand");
 
             if (waterElevator
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.liquid)) {
