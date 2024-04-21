@@ -8,7 +8,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -196,7 +196,7 @@ public class Criticals extends CheckExecutor {
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS)
                 && player.getBlocksOffGround(3) <= 2
                 && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                && !BouncingBlocks.isBelow(player)) {
+                && !MovementProcessing.recentlyBounced(player)) {
             SpartanLocation location = player.movement.getLocation();
             return !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid, BlockUtils.semi_solid)
                     && !PatternUtils.isBlockPattern(web, location, true, BlockUtils.web);

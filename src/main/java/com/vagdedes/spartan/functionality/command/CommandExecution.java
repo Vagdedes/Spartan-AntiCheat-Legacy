@@ -322,12 +322,16 @@ public class CommandExecution implements CommandExecutor {
                                 if (checkObj.isEnabled(null, null, null)) {
                                     checkObj.setEnabled(null, false);
                                     String message = Config.messages.getColorfulString("check_disable_message");
-                                    message = ConfigUtils.replaceWithSyntax(isPlayer ? (Player) sender : null, message, type);
+                                    message = isPlayer
+                                            ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)
+                                            : ConfigUtils.replaceWithSyntax(message, type);
                                     sender.sendMessage(message);
                                 } else {
                                     checkObj.setEnabled(null, true);
                                     String message = Config.messages.getColorfulString("check_enable_message");
-                                    message = ConfigUtils.replaceWithSyntax(isPlayer ? (Player) sender : null, message, type);
+                                    message = isPlayer
+                                            ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)
+                                            : ConfigUtils.replaceWithSyntax(message, type);
                                     sender.sendMessage(message);
                                 }
                             } else {

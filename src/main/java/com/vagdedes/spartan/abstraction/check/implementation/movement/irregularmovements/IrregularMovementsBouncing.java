@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -57,7 +56,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
                                         irregularMovements.cancel(prevention, "up-illegal-" + scenario, null, 2, -IrregularMovements.defaultBufferTime);
                                     }
                                 } else if (GroundUtils.blockHeightExists(box)
-                                        && (canBounceLive = BouncingBlocks.isLiveBelow(player, to))) { // Block boxes can rarely be met when bouncing
+                                        && (canBounceLive = this.isLiveBelow(to))) { // Block boxes can rarely be met when bouncing
                                     irregularMovements.cancel(prevention, "box-" + scenario, 2);
                                 }
                             } else {
@@ -72,7 +71,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
                             }
 
                             if (!canBounce && !heightExistsHalf && jumping
-                                    && (canBounceLive || BouncingBlocks.isLiveBelow(player, to))
+                                    && (canBounceLive || this.isLiveBelow(to))
                                     && player.getBlocksOffGround(4) >= 4) {
                                 irregularMovements.cancel(prevention, "jump-" + scenario, 2);
                             }
@@ -85,7 +84,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
                                 }
                             } else if (airTicksOffGround // Avoid low ground movements
                                     && oldVertical < 0.0 && !falling // Make sure the player "has been" and is falling
-                                    && BouncingBlocks.isLiveBelow(player, to)) {
+                                    && this.isLiveBelow(to)) {
                                 double difference = Math.abs(vertical - oldVertical); // Measure the difference and prevent abnormal movements
 
                                 if (difference >= 0.08) {
@@ -97,5 +96,10 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
                 }
             });
         }
+    }
+
+    private boolean isLiveBelow(SpartanLocation loc) {
+        return BlockUtils.isSlime(player, loc, 55)
+                || BlockUtils.isBed(player, loc, 25);
     }
 }

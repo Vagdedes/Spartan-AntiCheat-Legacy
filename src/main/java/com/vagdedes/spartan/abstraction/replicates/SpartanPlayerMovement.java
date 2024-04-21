@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.Liquid;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -36,10 +35,9 @@ public class SpartanPlayerMovement {
             lastJump,
             swimmingTime,
             flyingTime,
-            lastLiquidTime;
+            lastLiquidTicks;
     private int
             airTicks,
-            firstFallingAirTick,
             fallingTicks,
             extraPackets;
     private long lastHeadMovement;
@@ -64,10 +62,9 @@ public class SpartanPlayerMovement {
         this.lastJump = 0L;
         this.swimmingTime = 0L;
         this.flyingTime = 0L;
-        this.lastLiquidTime = 0L;
+        this.lastLiquidTicks = 0L;
 
         this.airTicks = 0;
-        this.firstFallingAirTick = 0;
         this.fallingTicks = 0;
         this.extraPackets = 0;
 
@@ -235,16 +232,19 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public boolean wasInLiquids() {
-        return System.currentTimeMillis() - lastLiquidTime <= 755L;
+    public long getLastLiquidTick() {
+        return TPS.getTick(this.parent) - this.lastLiquidTicks;
     }
 
+    public boolean wasInLiquids() {
+        return this.getLastLiquidTick() <= 10L;
+    }
     public synchronized void setLastLiquidTime() {
-        lastLiquidTime = System.currentTimeMillis();
+        lastLiquidTicks = TPS.getTick(this.parent);
     }
 
     public synchronized void removeLastLiquidTime() {
-        lastLiquidTime = 0L;
+        lastLiquidTicks = 0L;
     }
 
     // Separator
@@ -338,12 +338,7 @@ public class SpartanPlayerMovement {
 
     public synchronized void setLastJump() {
         this.lastJump = System.currentTimeMillis();
-        this.removeLastLiquidTime();
         this.parent.handlers.removeMany(Handlers.HandlerFamily.Velocity);
-
-        if (!Liquid.isLocation(this.parent, this.getLocation())) {
-            this.removeLastLiquidTime();
-        }
     }
 
     // Separator
@@ -437,7 +432,6 @@ public class SpartanPlayerMovement {
 
         if (number == 0) {
             this.fallingTicks = 0;
-            this.firstFallingAirTick = 0;
         }
     }
 
@@ -447,18 +441,8 @@ public class SpartanPlayerMovement {
         return this.fallingTicks;
     }
 
-    public int getFirstFallingAirTick() {
-        return this.firstFallingAirTick;
-    }
-
     public synchronized void setFallingTicks(int number) {
         this.fallingTicks = number;
-
-        if (number == 0) {
-            this.firstFallingAirTick = 0;
-        } else if (this.firstFallingAirTick == 0) {
-            this.firstFallingAirTick = this.airTicks;
-        }
     }
 
     // Separator

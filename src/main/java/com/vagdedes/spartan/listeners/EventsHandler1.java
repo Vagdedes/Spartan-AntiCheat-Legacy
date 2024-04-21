@@ -137,7 +137,7 @@ public class EventsHandler1 implements Listener {
 
         // Handlers
         if (!e.isCancelled()) {
-            p.getHandlers().add(Handlers.HandlerType.Velocity, 80);
+            p.getHandlers().add(Handlers.HandlerType.AbstractVelocity, 80);
         }
 
         // Detections

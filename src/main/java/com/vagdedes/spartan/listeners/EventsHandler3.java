@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CheckDelay;
-import com.vagdedes.spartan.functionality.tracking.Liquid;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
@@ -86,7 +85,7 @@ public class EventsHandler3 implements Listener {
                 }
 
                 // Handlers
-                p.getHandlers().disable(Handlers.HandlerType.Velocity, 2);
+                p.getHandlers().disable(Handlers.HandlerType.AbstractVelocity, 2);
 
                 // Detections
                 ((NoFall) p.getExecutor(Enums.HackType.NoFall)).manageRatio(dmg, e.getDamage(), false);
@@ -169,9 +168,6 @@ public class EventsHandler3 implements Listener {
 
                 if (!customBlock) {
                     p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
-
-                    // Handler
-                    Liquid.runInteract(p, action);
                 }
             } else {
                 // Detections

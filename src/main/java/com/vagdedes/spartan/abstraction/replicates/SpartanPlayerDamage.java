@@ -91,7 +91,7 @@ public class SpartanPlayerDamage {
 
             if (level > 2) {
                 this.parent.getHandlers().add(
-                        Handlers.HandlerType.Velocity,
+                        Handlers.HandlerType.AbstractVelocity,
                         AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
                 );
             }

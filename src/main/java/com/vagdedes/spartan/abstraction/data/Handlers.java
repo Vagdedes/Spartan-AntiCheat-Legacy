@@ -17,13 +17,12 @@ public class Handlers {
         SensitiveBlockBreak(HandlerFamily.Environment), TowerBuilding(HandlerFamily.Environment),
         BridgeBuilding(HandlerFamily.Environment),
 
-        Velocity(HandlerFamily.Velocity), BouncingBlocks(HandlerFamily.Velocity),
+        AbstractVelocity(HandlerFamily.Velocity), BouncingBlocks(HandlerFamily.Velocity),
         Piston(HandlerFamily.Velocity), WaterElevator(HandlerFamily.Velocity),
-        ExtremeCollision(HandlerFamily.Velocity),
+        ExtremeCollision(HandlerFamily.Velocity), Trident(HandlerFamily.Velocity),
 
         ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part), GameMode(HandlerFamily.Part),
-
-        ElytraUse(HandlerFamily.Motion), Trident(HandlerFamily.Motion);
+        ElytraUse(HandlerFamily.Motion);
 
         // Separator
 

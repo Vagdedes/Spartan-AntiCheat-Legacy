@@ -17,7 +17,7 @@ public class ServerFlying {
                 && !p.movement.isGliding()
                 && !p.isDead()
                 && !Velocity.hasCooldown(p)
-                && !BouncingBlocks.isBelow(p)
+                && !MovementProcessing.recentlyBounced(p)
                 && !p.movement.isSwimming() && !p.getHandlers().has(Handlers.HandlerType.WaterElevator)
                 && !p.getHandlers().has(Handlers.HandlerType.Trident)
                 && !p.getHandlers().has(Handlers.HandlerType.ExtremeCollision)

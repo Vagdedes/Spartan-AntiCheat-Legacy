@@ -13,8 +13,8 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -454,7 +454,7 @@ public class Speed extends CheckExecutor {
                             }
                         }
 
-                        if (hor >= 0.215 && illegal && !fairlyPushed && air <= 12 && !player.isOnFire() && !BouncingBlocks.isBelow(player) && !building) {
+                        if (hor >= 0.215 && illegal && !fairlyPushed && air <= 12 && !player.isOnFire() && !MovementProcessing.recentlyBounced(player) && !building) {
                             cancel("type: fall-distance(illegal), horizontal: " + hor + ", limit: " + dmCopy + ", fall-distance: " + fallDistance + ", a: " + air + ", box: " + box + ", vertical: " + ver, player.movement.getDetectionLocation());
                         } else if (hor > 0.335 && fallDistance > 0.0f && (!groundVanilla || !groundCustom) && !BlockUtils.isSemiSolid(locM1)) {
                             cancel("type: fall-distance(normal), horizontal: " + hor + ", limit: " + dmCopy + ", box: " + box + ", vertical: " + ver, player.movement.getDetectionLocation());

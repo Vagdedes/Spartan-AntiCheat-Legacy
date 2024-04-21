@@ -6,14 +6,9 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
-import com.vagdedes.spartan.functionality.tracking.ExtremeCollision;
-import com.vagdedes.spartan.functionality.tracking.GroundCollision;
-import com.vagdedes.spartan.functionality.tracking.Liquid;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
@@ -146,8 +141,6 @@ public class PlayerUtils {
     }
 
     public static void run(SpartanPlayer p, Player n, Collection<PotionEffect> potionEffects) {
-        update(p, n, false);
-
         if (!p.isDead() && !p.isSleeping()) {
             Buffer buffer = p.getBuffer();
             SpartanLocation to = p.movement.getLocation(),
@@ -169,7 +162,6 @@ public class PlayerUtils {
             if (ground) {
                 p.movement.setAirTicks(0);
             } else {
-                p.movement.setAirTicks(p.movement.getTicksOnAir() + 1);
                 Double nmsVerticalDistance = p.movement.getNmsVerticalDistance(),
                         old_NmsVerticalDistance = p.movement.getPreviousNmsVerticalDistance();
 
@@ -180,6 +172,7 @@ public class PlayerUtils {
                 } else {
                     p.movement.setFallingTicks(0);
                 }
+                p.movement.setAirTicks(p.movement.getTicksOnAir() + 1);
             }
 
             // Separator
@@ -199,46 +192,6 @@ public class PlayerUtils {
                     }
                 }
             }
-        }
-    }
-
-    public static void update(SpartanPlayer p, Player n, boolean heavy) {
-        if (heavy) {
-            if (!Liquid.runMove(p)) {
-                if (!GroundCollision.run(p)) {
-                    ExtremeCollision.run(p);
-                    BouncingBlocks.runMove(p);
-                }
-            } else {
-                ExtremeCollision.run(p);
-                BouncingBlocks.runMove(p);
-            }
-        } else {
-            if (n.isSprinting()) {
-                p.movement.setSprinting(true);
-                p.movement.setSneaking(false);
-            } else {
-                p.movement.setSprinting(false);
-                p.movement.setSneaking(n.isSneaking());
-            }
-            p.setFallDistance(n.getFallDistance(), false);
-            p.setWalkSpeed(n.getWalkSpeed());
-            p.setFlySpeed(n.getFlySpeed());
-            p.setEyeHeight(n.getEyeHeight());
-            p.setUsingItem(n.isBlocking());
-
-            // Separator
-
-            GameMode current = p.getGameMode();
-
-            if (current == GameMode.CREATIVE
-                    || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && current == GameMode.SPECTATOR) {
-                p.getHandlers().add(Handlers.HandlerType.GameMode, 60);
-            }
-
-            // Separator
-
-            p.setVehicle(n.getVehicle());
         }
     }
 

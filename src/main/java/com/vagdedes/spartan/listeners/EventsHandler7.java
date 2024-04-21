@@ -16,7 +16,6 @@ import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.functionality.tracking.ServerFlying;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -88,7 +87,6 @@ public class EventsHandler7 implements Listener {
         if (p == null) {
             return;
         }
-        PlayerUtils.update(p, n, false);
         boolean cancelled = e.isCancelled();
 
         if (!p.canDo(false)) {
@@ -127,7 +125,7 @@ public class EventsHandler7 implements Listener {
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);
 
         // Handlers
-        MovementProcessing.run(p, dis, hor, ver, box, fall);
+        MovementProcessing.run(n, p, dis, hor, ver, box, fall);
         CombatProcessing.runMove(p, to);
 
         // Detections

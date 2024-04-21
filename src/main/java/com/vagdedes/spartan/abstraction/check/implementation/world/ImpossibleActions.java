@@ -8,7 +8,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -210,7 +210,7 @@ public class ImpossibleActions extends CheckExecutor {
                             access = hackType.getCheck().getBooleanOption("check_scaffold", true)
                                     && blockY == (blockAgainst.y + 1) && horizontalDistance < 1.5;
                         } else if (hackType.getCheck().getBooleanOption("check_tower", true)
-                                && !BouncingBlocks.isBelow(player)) {
+                                && !MovementProcessing.recentlyBounced(player)) {
                             if (cache == null) {
                                 access = false;
                                 cache = new TowerPosition(blockY);

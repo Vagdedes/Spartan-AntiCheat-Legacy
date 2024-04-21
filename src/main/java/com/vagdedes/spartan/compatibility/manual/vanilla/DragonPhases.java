@@ -31,7 +31,7 @@ public class DragonPhases implements Listener {
 
                         if (p != null) {
                             p.getHandlers().add(
-                                    Handlers.HandlerType.Velocity,
+                                    Handlers.HandlerType.AbstractVelocity,
                                     !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60
                             );
                         }

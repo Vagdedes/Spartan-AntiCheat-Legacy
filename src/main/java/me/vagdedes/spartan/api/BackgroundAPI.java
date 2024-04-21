@@ -12,7 +12,6 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -464,8 +463,8 @@ public class BackgroundAPI {
 
             if (player != null) {
                 Handlers handlers = player.getHandlers();
-                handlers.disable(Handlers.HandlerType.Velocity, ticks);
-                handlers.remove(Handlers.HandlerType.Velocity);
+                handlers.disable(Handlers.HandlerType.AbstractVelocity, ticks);
+                handlers.remove(Handlers.HandlerType.AbstractVelocity);
             }
         }
     }

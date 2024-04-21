@@ -10,7 +10,7 @@ public class Velocity {
     static final int blocksOffGround = AlgebraUtils.integerRound(PlayerUtils.height / 4.0);
 
     public static boolean hasCooldown(SpartanPlayer p) {
-        if (p.getHandlers().has(Handlers.HandlerType.Velocity)) {
+        if (p.getHandlers().has(Handlers.HandlerType.AbstractVelocity)) {
             int blockY = p.movement.getLocation().getBlockY();
 
             if (blockY <= 0 || p.movement.getTicksOnAir() <= 20) {

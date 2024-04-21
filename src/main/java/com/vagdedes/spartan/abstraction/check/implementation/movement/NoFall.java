@@ -13,8 +13,8 @@ import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -172,7 +172,7 @@ public class NoFall extends CheckExecutor {
         if (!player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
             if (hackType.getCheck().getBooleanOption("check_ratio", true)
                     && !PlayerUtils.hasJumpEffect(player)
-                    && !BouncingBlocks.isBelow(player)
+                    && !MovementProcessing.recentlyBounced(player)
                     && buffer.get(ratioKey + "cancelled") != 1
                     && player.getCooldowns(check).canDo("ratio")) {
                 int toY = to.getBlockY(), fromY = from.getBlockY();
@@ -293,7 +293,7 @@ public class NoFall extends CheckExecutor {
                 runAsync(() -> {
                     boolean requiresSuspicion = player.getProfile().isSuspectedOrHacker(hackType),
                             offGround = player.getBlocksOffGround(4) >= 3;
-                    boolean bouncingBlocks = BouncingBlocks.isBelow(player);
+                    boolean bouncingBlocks = MovementProcessing.recentlyBounced(player);
 
                     if (!bouncingBlocks) {
                         if (requiresSuspicion) {

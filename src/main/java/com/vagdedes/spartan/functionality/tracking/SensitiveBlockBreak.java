@@ -12,4 +12,5 @@ public class SensitiveBlockBreak {
             p.getHandlers().add(Handlers.HandlerType.SensitiveBlockBreak, cancelled ? 20 : 40);
         }
     }
+
 }

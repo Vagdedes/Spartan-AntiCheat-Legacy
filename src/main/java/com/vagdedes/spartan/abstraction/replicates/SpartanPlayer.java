@@ -305,9 +305,6 @@ public class SpartanPlayer {
 
                             // External
                             p.playerProfile.playerCombat.track();
-                            if (MultiVersion.folia || !SpartanBukkit.isSynchronised()) {
-                                PlayerUtils.update(p, n, true);
-                            }
                         } else {
                             p.runChecks[0] = false;
                             p.runChecks[1] = false;
@@ -1549,7 +1546,7 @@ public class SpartanPlayer {
     // Separator
 
     public boolean applyFallDamage(double d) {
-        handlers.disable(Handlers.HandlerType.Velocity, 3);
+        handlers.disable(Handlers.HandlerType.AbstractVelocity, 3);
         return this.damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 

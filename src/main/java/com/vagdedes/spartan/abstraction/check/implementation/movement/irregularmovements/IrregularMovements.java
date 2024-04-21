@@ -13,8 +13,8 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -153,7 +153,7 @@ public class IrregularMovements extends CheckExecutor {
                     knownBoxesNew = GroundUtils.blockHeightExists(box),
                     knownBoxesOld = GroundUtils.blockHeightExists(oldBox),
                     knownBoxes = knownBoxesNew || knownBoxesOld,
-                    bouncingBlocks = BouncingBlocks.isBelow(player),
+                    bouncingBlocks = MovementProcessing.recentlyBounced(player),
                     jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP),
                     threwTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
                     explosion = CombatProcessing.hasExplosionDamage(player),

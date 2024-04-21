@@ -8,9 +8,9 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.Liquid;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -121,7 +121,7 @@ public class WaterSpeed extends DetectionExecutor {
 
                 if (PlayerUtils.getWalkSpeedDifference(player) != 0.0) {
                     limit = premature;
-                } else if (BouncingBlocks.isBelow(player)) {
+                } else if (MovementProcessing.recentlyBounced(player)) {
                     limit = bouncing;
                     limitType += 1;
                 } else if (wallsBelow && Math.abs(vertical - oldVertical) >= 0.01) {

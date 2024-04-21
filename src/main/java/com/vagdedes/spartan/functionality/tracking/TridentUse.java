@@ -20,7 +20,7 @@ public class TridentUse {
                     int ticks = Math.min(level * 30, 150);
 
                     if (level > riptideMaxSafeLevel) {
-                        p.getHandlers().add(Handlers.HandlerType.Velocity, ticks);
+                        p.getHandlers().add(Handlers.HandlerType.AbstractVelocity, ticks);
                     }
                     handlers.add(Handlers.HandlerType.Trident, ticks);
                     break;

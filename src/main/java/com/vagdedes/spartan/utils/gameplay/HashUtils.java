@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.utils.gameplay;
 
+import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
@@ -28,7 +29,9 @@ public class HashUtils {
 
     public static <E> int fastAbstractCollection(Collection<E> collection) {
         int size = collection.size();
-        return size > 0 ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode() : 1;
+        return size > 0
+                ? (size * SpartanBukkit.hashCodeMultiplier) + collection.iterator().next().hashCode()
+                : 1;
     }
 
     public static int collection(Collection<Float> collection) {
@@ -153,29 +156,33 @@ public class HashUtils {
                 hash = extendInt(hash, potionEffect.getAmplifier());
             }
         }
-        // todo add velocity, bouncing, all nearby entities except drops, pistons, liquid, bubble water
         return hash;
     }
+
+    // todo teleport to nearest hitbox
 
     public static int hashEnvironment(SpartanPlayer player,
                                       SpartanLocation location,
                                       SpartanLocation previousLocation) {
-        int hash = 1;
+        // todo add velocity, bouncing, bubble water
+        int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
 
-        if (player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0) >= 0.0) {
-            hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
-                    location.getY() - location.getBlockY(),
-                    GroundUtils.maxHeightLength
-            )));
-            hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
-                    previousLocation.getY() - previousLocation.getBlockY(),
-                    GroundUtils.maxHeightLength
-            )));
-        } else {
-            hash = extendInt(
-                    hash,
-                    player.movement.getTicksOnAir() - player.movement.getFirstFallingAirTick()
-            );
+        hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
+                location.getY() - location.getBlockY(),
+                GroundUtils.maxHeightLength
+        )));
+        hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
+                previousLocation.getY() - previousLocation.getBlockY(),
+                GroundUtils.maxHeightLength
+        )));
+        hash = HashUtils.extendInt(
+                hash,
+                player.getHandlers().getRemainingTicks(Handlers.HandlerType.Piston)
+        );
+        long lastLiquid = player.movement.getLastLiquidTick();
+
+        if (lastLiquid <= TPS.maximum) {
+            hash = extendInt(hash, Long.hashCode(lastLiquid));
         }
         return hash;
     }

@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.BouncingBlocks;
 import com.vagdedes.spartan.functionality.tracking.Building;
 import com.vagdedes.spartan.functionality.tracking.SensitiveBlockBreak;
 import me.vagdedes.spartan.system.Enums;
@@ -133,12 +132,10 @@ public class EventsHandler5 implements Listener {
         }
         Block rba = e.getBlockAgainst();
         BlockFace blockFace = nb.getFace(rba);
-        SpartanBlock ba = new SpartanBlock(p, rba);
         boolean cancelled = e.isCancelled();
 
         // Protections
         Building.runPlace(p, b, blockFace, cancelled);
-        BouncingBlocks.judge(p, p.movement.getLocation());
 
         // Detections
         if (!ItemsAdder.is(nb)) {
