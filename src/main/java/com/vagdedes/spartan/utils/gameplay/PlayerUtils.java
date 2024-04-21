@@ -464,18 +464,15 @@ public class PlayerUtils {
 
     // Collisions
 
-    public static double getNearbyCollisions(SpartanPlayer p) {
-        int max = 30;
-        List<Entity> entities = p.getNearbyEntities(1.0, 1.0, 1.0);
+    public static int getNearbyCollisions(SpartanPlayer player, SpartanLocation location) {
+        List<Entity> entities = player.getNearbyEntities(1.0, 1.0, 1.0);
 
         if (!entities.isEmpty()) {
-            SpartanLocation location = p.movement.getLocation();
             int count = 0;
 
             for (Entity entity : entities) {
                 if (entity instanceof LivingEntity) {
-                    if (CombatUtils.getWidthAndHeight(entity)[0] >=
-                            AlgebraUtils.getHorizontalDistance(location, entity.getLocation())) {
+                    if (CombatUtils.getWidthAndHeight(entity)[0] >= location.distance(entity.getLocation())) {
                         count++;
                     }
                 } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
@@ -485,22 +482,23 @@ public class PlayerUtils {
                             boundingBox.getMaxZ() - boundingBox.getMinZ()
                     );
 
-                    if (width >= AlgebraUtils.getHorizontalDistance(location, entity.getLocation())) {
+                    if (width >= location.distance(entity.getLocation())) {
                         count++;
                     }
                 } else {
                     count++;
                 }
             }
-            return count / ((double) max);
+            return count;
+        } else {
+            return 0;
         }
-        return 0.0;
     }
 
     public static boolean hasNearbyCollisions(SpartanPlayer p) {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                 && (p.getHandlers().has(Handlers.HandlerType.ExtremeCollision)
-                || getNearbyCollisions(p) > 0.0);
+                || getNearbyCollisions(p, p.movement.getLocation()) > 0);
     }
 
     // Potion Effects

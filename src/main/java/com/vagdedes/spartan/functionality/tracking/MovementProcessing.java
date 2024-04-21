@@ -13,6 +13,7 @@ import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,38 +22,15 @@ public class MovementProcessing {
 
     private static final boolean
             v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8),
-            v1_12 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12);
+            v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
     private static final int roundedFall = AlgebraUtils.integerCeil(PlayerUtils.terminalVelocity);
-
-    /*if (!Liquid.runMove(p)) {
-            if (!GroundCollision.run(p)) {
-                ExtremeCollision.run(p);
-                BouncingBlocks.runMove(p);
-            }
-        } else {
-            ExtremeCollision.run(p);
-            BouncingBlocks.runMove(p);
-        }*/
+    private static final Material MAGMA_BLOCK = MaterialUtils.get("magma");
 
     public static void run(Player n, SpartanPlayer player,
+                           SpartanLocation location,
                            double distance, double horizontal,
                            double vertical, double box,
                            float fall) {
-        if (n.isSprinting()) {
-            player.movement.setSprinting(true);
-            player.movement.setSneaking(false);
-        } else {
-            player.movement.setSprinting(false);
-            player.movement.setSneaking(n.isSneaking());
-        }
-        player.setFallDistance(n.getFallDistance(), false);
-        player.setWalkSpeed(n.getWalkSpeed());
-        player.setFlySpeed(n.getFlySpeed());
-        player.setEyeHeight(n.getEyeHeight());
-        player.setUsingItem(n.isBlocking());
-
-        // Separator
-
         GameMode current = player.getGameMode();
 
         if (current == GameMode.CREATIVE
@@ -62,18 +40,39 @@ public class MovementProcessing {
 
         // Separator
 
-        player.setVehicle(n.getVehicle());
-        player.movement.setNmsDistance(distance, horizontal, vertical, box, fall);
-
-        // Jump/Fall Identifier
-        if (Math.abs(PlayerUtils.jumping[1] - vertical) < PlayerUtils.getJumpingPrecision(player)) { // Last Jump
-            player.movement.setLastJump();
-        } else if (player.movement.isFalling(vertical)) { // Last Fall
-            player.movement.setLastFall();
+        if (n.isSprinting()) {
+            player.movement.setSprinting(true);
+            player.movement.setSneaking(false);
+        } else {
+            player.movement.setSprinting(false);
+            player.movement.setSneaking(n.isSneaking());
         }
-        extremeCollision(player);
+        player.movement.setNmsDistance(distance, horizontal, vertical, box, fall);
+        player.setFallDistance(n.getFallDistance(), false);
+        player.setWalkSpeed(n.getWalkSpeed());
+        player.setFlySpeed(n.getFlySpeed());
+        player.setEyeHeight(n.getEyeHeight());
+        player.setUsingItem(n.isBlocking());
+        player.setVehicle(n.getVehicle());
 
-        // Extra Packets
+        // Separator
+
+        if (!calculateLiquid(player, location)) {
+            if (Math.abs(PlayerUtils.jumping[1] - vertical) < PlayerUtils.getJumpingPrecision(player)) { // Last Jump
+                player.movement.setLastJump();
+            } else if (player.movement.isFalling(vertical)) { // Last Fall
+                player.movement.setLastFall();
+            }
+            if (!calculateGroundCollision(player, vertical, box)) {
+                calculateBouncing(player, location, vertical);
+            }
+        } else {
+            calculateBouncing(player, location, vertical);
+        }
+        calculateExtremeCollision(player, location);
+
+        // Separator
+
         String key = "player-data=extra-packets";
         double difference = player.movement.getCustomDistance() - distance;
         player.getDecimals().add(key, difference, AlgebraUtils.integerRound(TPS.maximum));
@@ -89,8 +88,8 @@ public class MovementProcessing {
         }
     }
 
-    private static boolean groundCollision(SpartanPlayer player,
-                                           double vertical, double box) {
+    private static boolean calculateGroundCollision(SpartanPlayer player,
+                                                    double vertical, double box) {
         if (player.isOnGroundCustom()
                 && player.isOnGround()
                 && player.movement.getTicksOnAir() == 0
@@ -107,28 +106,32 @@ public class MovementProcessing {
         }
     }
 
-    static void extremeCollision(SpartanPlayer player) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+    private static void calculateExtremeCollision(SpartanPlayer player, SpartanLocation location) {
+        if (v1_9) {
             Handlers handlers = player.getHandlers();
 
             if (!handlers.isDisabled(Handlers.HandlerType.ExtremeCollision)) {
                 handlers.disable(Handlers.HandlerType.ExtremeCollision, 2); // Disable for the next tick
+                int collisions = PlayerUtils.getNearbyCollisions(player, location);
 
-                if (PlayerUtils.getNearbyCollisions(player) >= 0.9) {
-                    handlers.add(Handlers.HandlerType.ExtremeCollision, 40);
+                if (collisions > 10) {
+                    handlers.add(Handlers.HandlerType.ExtremeCollision, Math.min((int) (TPS.maximum * 2), collisions));
                 }
             }
         }
     }
 
-    private static void calculateBouncing(SpartanPlayer player, double vertical) {
+    private static void calculateBouncing(SpartanPlayer player, SpartanLocation location,
+                                          double vertical) {
         if (v1_8 && vertical != 0.0) {
-            SpartanLocation location = player.movement.getLocation();
-
             if (BlockUtils.isSlime(player, location, roundedFall)) {
-                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, "slime", 30);
+                int time = (int) (TPS.maximum * 2);
+                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, time);
+                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, "slime", time);
             } else if (BlockUtils.isBed(player, location, roundedFall)) {
-                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, "bed", 30);
+                int time = (int) (TPS.maximum * 2);
+                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, time);
+                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, "bed", time);
             }
         }
     }
@@ -138,6 +141,8 @@ public class MovementProcessing {
     private static boolean calculateLiquid(SpartanPlayer player, SpartanLocation location) {
         if (player.movement.isSwimming()) {
             player.movement.setLastLiquidTime();
+            calculateBubbleWater(player, location);
+            return true;
         } else {
             double hitbox = player.bedrockPlayer ? BlockUtils.hitbox_max : BlockUtils.hitbox;
 
@@ -180,7 +185,7 @@ public class MovementProcessing {
                             player.getHandlers().add(Handlers.HandlerType.BubbleWater, (int) TPS.maximum);
                             player.getHandlers().add(Handlers.HandlerType.BubbleWater, "soul-sand", (int) TPS.maximum);
                             break;
-                        } else if (type == Material.MAGMA_BLOCK) {
+                        } else if (type == MAGMA_BLOCK) {
                             player.getHandlers().add(Handlers.HandlerType.BubbleWater, (int) TPS.maximum);
                             player.getHandlers().add(Handlers.HandlerType.BubbleWater, "magma-block", (int) TPS.maximum);
                             break;
@@ -193,7 +198,6 @@ public class MovementProcessing {
                         }
                     }
                 }
-                player.getHandlers().add(Handlers.HandlerType.BubbleWater, 20);
             }
         }
     }
@@ -201,8 +205,7 @@ public class MovementProcessing {
     // Separator
 
     public static boolean recentlyBounced(SpartanPlayer p) {
-        return v1_8 && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks, "slime")
-                || v1_12 && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks, "bed");
+        return v1_8 && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks);
     }
 
 }

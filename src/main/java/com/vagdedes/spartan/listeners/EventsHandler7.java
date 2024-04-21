@@ -125,7 +125,7 @@ public class EventsHandler7 implements Listener {
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);
 
         // Handlers
-        MovementProcessing.run(n, p, dis, hor, ver, box, fall);
+        MovementProcessing.run(n, p, to, dis, hor, ver, box, fall);
         CombatProcessing.runMove(p, to);
 
         // Detections
