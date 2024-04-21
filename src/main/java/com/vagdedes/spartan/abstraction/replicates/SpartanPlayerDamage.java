@@ -40,7 +40,7 @@ public class SpartanPlayerDamage {
         this.parent = player;
         this.tick = tick;
         this.event = event;
-        this.location = location;
+        this.location = location.clone();
 
         if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent actualEvent = (EntityDamageByEntityEvent) this.event;

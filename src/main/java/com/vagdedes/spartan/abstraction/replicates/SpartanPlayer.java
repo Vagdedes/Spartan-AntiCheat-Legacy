@@ -65,6 +65,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -97,6 +98,7 @@ public class SpartanPlayer {
     private SpartanOpenInventory openInventory;
     public final SpartanPlayerMovement movement;
     private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage> damageReceived, damageDealt;
+    private final List<SpartanPlayerVelocity> velocityReceived;
     private SpartanPlayerDamage lastDamageReceived, lastDamageDealt;
 
     // Data
@@ -360,6 +362,7 @@ public class SpartanPlayer {
         this.clicks = new Clicks();
         this.vehicle = p.getVehicle();
         this.movement = new SpartanPlayerMovement(this, p);
+        this.velocityReceived = Collections.synchronizedList(new LinkedList<>());
         this.damageReceived = Collections.synchronizedMap(new LinkedHashMap<>());
         this.damageDealt = Collections.synchronizedMap(new LinkedHashMap<>());
         this.lastDamageReceived = new SpartanPlayerDamage(
@@ -1146,6 +1149,50 @@ public class SpartanPlayer {
                 && (isUsingItem()
                 || getItemInHand().getType() == Material.SHIELD
                 || inventory.itemInOffHand.getType() == Material.SHIELD);
+    }
+
+    // Separator
+
+    public SpartanPlayerVelocity getLastVelocityReceived() {
+        if (velocityReceived.isEmpty()) {
+            return null;
+        } else {
+            SpartanPlayerVelocity velocity;
+
+            synchronized (this.velocityReceived) {
+                velocity = this.velocityReceived.get(this.velocityReceived.size() - 1);
+            }
+            return velocity;
+        }
+    }
+
+    public List<SpartanPlayerVelocity> getVelocitiesReceived() {
+        synchronized (this.velocityReceived) {
+            return new ArrayList<>(this.velocityReceived);
+        }
+    }
+
+    public void addReceivedVelocity(PlayerVelocityEvent event) {
+        if (this.velocityReceived.size() == TPS.maximum) {
+            synchronized (this.velocityReceived) {
+                this.velocityReceived.remove(0);
+                this.velocityReceived.add(new SpartanPlayerVelocity(
+                        this,
+                        event,
+                        this.movement.getLocation()
+                ));
+            }
+        } else {
+            synchronized (this.velocityReceived) {
+                this.velocityReceived.add(
+                        new SpartanPlayerVelocity(
+                                this,
+                                event,
+                                this.movement.getLocation()
+                        )
+                );
+            }
+        }
     }
 
     // Separator

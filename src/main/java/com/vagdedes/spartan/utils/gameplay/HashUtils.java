@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerVelocity;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -135,7 +136,6 @@ public class HashUtils {
     public static int hashEnvironment(SpartanPlayer player,
                                       SpartanLocation location,
                                       SpartanLocation previousLocation) {
-        // todo add velocity
         int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
 
         if (player.getVehicle() == null) {
@@ -157,6 +157,29 @@ public class HashUtils {
                         hash = extendInt(hash,
                                 Double.hashCode(
                                         AlgebraUtils.cut(entry.getValue().location.distance(player.movement.getLocation()),
+                                                1
+                                        )
+                                )
+                        );
+                    } else {
+                        hash = extendInt(hash, loopHash);
+                    }
+                }
+            }
+            List<SpartanPlayerVelocity> velocities = player.getVelocitiesReceived();
+
+            if (!velocities.isEmpty()) {
+                for (SpartanPlayerVelocity velocity : velocities) {
+                    long ticksPassed = velocity.ticksPassed();
+
+                    if (ticksPassed <= TPS.maximum) {
+                        hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getX()));
+                        hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getY()));
+                        hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getZ()));
+                        hash = extendInt(hash, Long.hashCode(ticksPassed));
+                        hash = extendInt(hash,
+                                Double.hashCode(
+                                        AlgebraUtils.cut(velocity.location.distance(player.movement.getLocation()),
                                                 1
                                         )
                                 )

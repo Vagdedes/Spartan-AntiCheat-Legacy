@@ -10,24 +10,18 @@ public class AbstractVelocity {
     static final int blocksOffGround = AlgebraUtils.integerRound(PlayerUtils.height / 4.0);
 
     public static boolean hasCooldown(SpartanPlayer p) {
-        return getRemainingTicks(p) > 0;
-    }
-
-    public static int getRemainingTicks(SpartanPlayer p) {
-        int remainingTicks = p.getHandlers().getRemainingTicks(Handlers.HandlerType.AbstractVelocity);
-
-        if (remainingTicks > 0) {
+        if (p.getHandlers().has(Handlers.HandlerType.AbstractVelocity)) {
             int blockY = p.movement.getLocation().getBlockY();
 
             if (blockY <= 0 || p.movement.getTicksOnAir() <= 20) {
-                return remainingTicks;
+                return true;
             }
             int offGroundBlocks = p.getBlocksOffGround(blocksOffGround + 1); // Do not use limit because of the 'blockY' comparison
 
             if (offGroundBlocks <= blocksOffGround || offGroundBlocks == blockY) {
-                return remainingTicks;
+                return true;
             }
         }
-        return 0;
+        return false;
     }
 }

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.check.implementation.inventory.ImpossibleInventory;
-import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
@@ -126,7 +125,7 @@ public class EventsHandler1 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Velocity(PlayerVelocityEvent e) { // todo add tracker to add in hashing
+    private void Velocity(PlayerVelocityEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         if (p == null) {
@@ -135,10 +134,8 @@ public class EventsHandler1 implements Listener {
         // Compatibility
         NoHitDelay.runVelocity(p);
 
-        // Handlers
-        if (!e.isCancelled()) {
-            p.getHandlers().add(Handlers.HandlerType.AbstractVelocity, 80);
-        }
+        // Object
+        p.addReceivedVelocity(e);
 
         // Detections
         if (p.getViolations(Enums.HackType.Velocity).prevent()) {
