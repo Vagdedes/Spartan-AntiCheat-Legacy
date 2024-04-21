@@ -86,33 +86,6 @@ public class HashUtils {
                 potionEffects = new ArrayList<>(0);
             }
         } else {
-            Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getRawReceivedDamages();
-
-            if (!damages.isEmpty()) {
-                for (Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage> entry : damages) {
-                    long ticksPassed = entry.getValue().ticksPassed();
-
-                    if (ticksPassed <= TPS.maximum) {
-                        EntityDamageByEntityEvent event = entry.getValue().getEntityDamageByEntityEvent();
-
-                        if (event != null) {
-                            hash = extendInt(hash, event.getDamager().getType().toString().hashCode());
-                            hash = extendInt(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
-                        }
-                        hash = extendInt(hash, entry.getKey().toString().hashCode());
-                        hash = extendInt(hash, Long.hashCode(ticksPassed));
-                        hash = extendInt(hash,
-                                Double.hashCode(
-                                        AlgebraUtils.cut(entry.getValue().location.distance(player.movement.getLocation()),
-                                                1
-                                        )
-                                )
-                        );
-                    } else {
-                        hash = extendInt(hash, loopHash);
-                    }
-                }
-            }
             hash = extendInt(hash, player.getGameMode().toString().hashCode());
             hash = extendInt(hash, Double.hashCode(player.getEyeHeight()));
             hash = extendInt(hash, Boolean.hashCode(player.movement.isGliding()));
@@ -162,9 +135,38 @@ public class HashUtils {
     public static int hashEnvironment(SpartanPlayer player,
                                       SpartanLocation location,
                                       SpartanLocation previousLocation) {
-        // todo add velocity, trident
+        // todo add velocity
         int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
 
+        if (player.getVehicle() == null) {
+            Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getRawReceivedDamages();
+
+            if (!damages.isEmpty()) {
+                for (Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage> entry : damages) {
+                    long ticksPassed = entry.getValue().ticksPassed();
+
+                    if (ticksPassed <= TPS.maximum) {
+                        EntityDamageByEntityEvent event = entry.getValue().getEntityDamageByEntityEvent();
+
+                        if (event != null) {
+                            hash = extendInt(hash, event.getDamager().getType().toString().hashCode());
+                            hash = extendInt(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
+                        }
+                        hash = extendInt(hash, entry.getKey().toString().hashCode());
+                        hash = extendInt(hash, Long.hashCode(ticksPassed));
+                        hash = extendInt(hash,
+                                Double.hashCode(
+                                        AlgebraUtils.cut(entry.getValue().location.distance(player.movement.getLocation()),
+                                                1
+                                        )
+                                )
+                        );
+                    } else {
+                        hash = extendInt(hash, loopHash);
+                    }
+                }
+            }
+        }
         hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
                 location.getY() - location.getBlockY(),
                 GroundUtils.maxHeightLength
@@ -176,6 +178,10 @@ public class HashUtils {
         hash = HashUtils.extendInt(
                 hash,
                 player.getHandlers().getRemainingTicks(Handlers.HandlerType.Piston)
+        );
+        hash = HashUtils.extendInt(
+                hash,
+                player.getHandlers().getRemainingTicks(Handlers.HandlerType.Trident)
         );
         hash = HashUtils.extendInt(
                 hash,

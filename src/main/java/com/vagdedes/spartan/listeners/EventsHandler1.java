@@ -126,7 +126,7 @@ public class EventsHandler1 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Velocity(PlayerVelocityEvent e) { // todo add tracker to add in hasing
+    private void Velocity(PlayerVelocityEvent e) { // todo add tracker to add in hashing
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         if (p == null) {
