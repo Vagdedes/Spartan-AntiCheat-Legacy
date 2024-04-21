@@ -23,7 +23,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
-    private static final class Cache {
+    private static final class Cache {  // todo make cache time vary on the amount of data
 
         private double beforeProbability, afterProbability;
         private long expiration;

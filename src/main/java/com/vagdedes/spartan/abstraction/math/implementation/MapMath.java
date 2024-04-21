@@ -49,19 +49,18 @@ public class MapMath implements AbstractKeyValueMath {
                     key = entry.getKey();
 
                     if (min == 1) {
-                        int specific = 0;
-
-                        for (short count : entry.getValue().values()) {
-                            specific += count;
-                        }
-                        this.specificTotal -= specific;
                         break;
                     }
                 }
             }
-            this.map.remove(key);
+            Map<Integer, Short> map = this.map.remove(key);
+            int specific = 0;
+
+            for (short count : map.values()) {
+                specific += count;
+            }
+            this.specificTotal -= specific;
             this.total -= min;
-            // todo specific total
             return key;
         }
     }
