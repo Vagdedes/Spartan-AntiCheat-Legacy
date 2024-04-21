@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
 import com.vagdedes.spartan.utils.java.OverflowList;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 
@@ -23,23 +24,34 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     // Separator
 
-    private static final class Cache {  // todo make cache time vary on the amount of data
+    private static final class Cache {
 
         private double beforeProbability, afterProbability;
         private long expiration;
 
-        private Cache(double beforeProbability, double afterProbability) {
-            this.refresh(beforeProbability, afterProbability);
+        private Cache() {
+            this.refresh();
+        }
+
+        private Cache(double beforeProbability, double afterProbability, int dataSize) {
+            this.refresh(beforeProbability, afterProbability, dataSize);
         }
 
         private boolean isExpired() {
             return this.expiration < System.currentTimeMillis();
         }
 
-        private void refresh(double beforeProbability, double afterProbability) {
-            this.beforeProbability = beforeProbability;
-            this.afterProbability = afterProbability;
-            this.expiration = System.currentTimeMillis() + 1_000L;
+        private void refresh(double beforeProbability, double afterProbability, int dataSize) {
+            this.beforeProbability = beforeProbability / (double) dataSize;
+            this.afterProbability = afterProbability / (double) dataSize;
+            this.expiration = System.currentTimeMillis()
+                    + AlgebraUtils.integerRound((dataSize / (double) Pattern.individualDataLimit) * 1_000);
+        }
+
+        private void refresh() {
+            this.beforeProbability = 0.0;
+            this.afterProbability = 0.0;
+            this.expiration = 0L;
         }
 
     }
@@ -173,7 +185,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     Collection<Integer> collection = this.referenceKeys.get(situation);
 
                     if (collection == null) {
-                        cache = new Cache(0.0, 0.0);
+                        cache = new Cache();
                     } else {
                         int[] hashCodes = getHashCodes(patterns);
                         int beforeProbability = 0, afterProbability = 0;
@@ -192,10 +204,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                 afterProbability++;
                             }
                         }
-                        double count = collection.size();
                         cache = new Cache(
-                                beforeProbability / count,
-                                afterProbability / count
+                                beforeProbability,
+                                afterProbability,
+                                collection.size()
                         );
 
                         if (this.cache.size() == Pattern.individualDataLimit - 1) {
@@ -210,7 +222,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
                     if (collection == null) {
                         this.cache.remove(hash);
-                        cache.refresh(0.0, 0.0);
+                        cache.refresh();
                     } else {
                         int[] hashCodes = getHashCodes(patterns);
                         int beforeProbability = 0, afterProbability = 0;
@@ -229,10 +241,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                 afterProbability++;
                             }
                         }
-                        double count = collection.size();
                         cache.refresh(
-                                beforeProbability / count,
-                                afterProbability / count
+                                beforeProbability,
+                                afterProbability,
+                                collection.size()
                         );
                     }
                 }
