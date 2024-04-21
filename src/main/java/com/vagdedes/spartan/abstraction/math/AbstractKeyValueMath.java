@@ -2,6 +2,8 @@ package com.vagdedes.spartan.abstraction.math;
 
 public interface AbstractKeyValueMath extends AbstractKeyMath {
 
+    int getSpecificTotal();
+
     int getSpecificCount(Number number, int hash);
 
     double getSpecificGeneralContribution();

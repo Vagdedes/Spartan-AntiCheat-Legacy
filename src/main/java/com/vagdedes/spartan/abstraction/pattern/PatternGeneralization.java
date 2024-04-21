@@ -28,7 +28,7 @@ public abstract class PatternGeneralization {
                    float pattern,
                    double probability) {
             this.probability = probability;
-            this.contribution = patternGeneralization.contribution(situation, patternProfile);
+            this.contribution = patternGeneralization.contributionMinusSelf(situation, patternProfile);
             this.significance = patternGeneralization.significance(pattern);
             this.outcome = ((this.probability * this.contribution) + this.significance) / 2.0;
         }
@@ -39,7 +39,7 @@ public abstract class PatternGeneralization {
                    float[] patterns,
                    double probability) {
             this.probability = probability;
-            this.contribution = patternGeneralization.contribution(situation, patternProfile);
+            this.contribution = patternGeneralization.contributionMinusSelf(situation, patternProfile);
 
             double significance = 0.0;
 
@@ -123,10 +123,19 @@ public abstract class PatternGeneralization {
         return patternCount / (double) this.getProfileCount();
     }
 
-    private double contribution(int situation, PatternProfile patternProfile) {
+    private double contributionMinusSelf(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
             return (1.0 - this.contribution.getPersonalContribution(situation, patternProfile.hash))
                     * (1.0 - this.contribution.getSpecificPersonalContribution(situation, patternProfile.hash));
+        }
+    }
+
+    final double contributionRatio(int situation, PatternProfile patternProfile) {
+        synchronized (this.contribution) {
+            return this.contribution.getPersonalContribution(situation) == 1.0
+                    ? 0.0
+                    : this.contribution.getSpecificCount(situation, patternProfile.hash)
+                    / (double) this.contribution.getSpecificTotal();
         }
     }
 

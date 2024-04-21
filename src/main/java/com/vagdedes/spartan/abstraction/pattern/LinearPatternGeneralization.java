@@ -118,47 +118,51 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 patternProfile.patterns.add(pattern);
             } else {
                 patternProfile.patterns.add(pattern);
-                return patternProfile;
+                return null;
             }
         }
-        synchronized (this.referenceKeys) {
-            Reference reference = new Reference(this.getPatterns(patternProfile));
-            int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
+        if (!read && this.contributionRatio(situation, patternProfile) >= 0.5) {
+            return null;
+        } else {
+            synchronized (this.referenceKeys) {
+                Reference reference = new Reference(this.getPatterns(patternProfile));
+                int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
 
-            synchronized (this.references) {
-                this.references.putIfAbsent(referenceKey, reference);
-            }
-            this.referenceKeys.computeIfAbsent(
-                    situation,
-                    k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
-            ).add(referenceKey);
-        }
-        if (!read) {
-            if (!patternProfile.situations.isEmpty()) {
-                boolean connected;
-
-                synchronized (this.connections) {
-                    connected = this.connections.containsKey(situation);
+                synchronized (this.references) {
+                    this.references.putIfAbsent(referenceKey, reference);
                 }
+                this.referenceKeys.computeIfAbsent(
+                        situation,
+                        k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
+                ).add(referenceKey);
+            }
+            if (!read) {
+                if (!patternProfile.situations.isEmpty()) {
+                    boolean connected;
 
-                if (connected) {
-                    if (this.contribution(situation) >= requiredContribution) {
-                        synchronized (this.connections) {
-                            this.connections.remove(situation);
+                    synchronized (this.connections) {
+                        connected = this.connections.containsKey(situation);
+                    }
+
+                    if (connected) {
+                        if (this.contribution(situation) >= requiredContribution) {
+                            synchronized (this.connections) {
+                                this.connections.remove(situation);
+                            }
+                        }
+                    } else {
+                        for (int previousSituation : patternProfile.situations) {
+                            if (this.connect(previousSituation, situation)) {
+                                AwarenessNotifications.forcefullySend(
+                                        situation + " -> " + previousSituation
+                                );
+                                break;
+                            }
                         }
                     }
-                } else {
-                    for (int previousSituation : patternProfile.situations) {
-                        if (this.connect(previousSituation, situation)) {
-                            AwarenessNotifications.forcefullySend(
-                                    situation + " -> " + previousSituation
-                            );
-                            break;
-                        }
-                    }
                 }
+                patternProfile.situations.add(situation);
             }
-            patternProfile.situations.add(situation);
         }
         return patternProfile;
     }
