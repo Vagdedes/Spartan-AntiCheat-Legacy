@@ -21,8 +21,9 @@ public class TridentUse {
 
                     if (level > riptideMaxSafeLevel) {
                         p.getHandlers().add(Handlers.HandlerType.AbstractVelocity, ticks);
+                    } else {
+                        handlers.add(Handlers.HandlerType.Trident, ticks);
                     }
-                    handlers.add(Handlers.HandlerType.Trident, ticks);
                     break;
                 }
             }

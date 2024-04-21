@@ -162,7 +162,7 @@ public class HashUtils {
     public static int hashEnvironment(SpartanPlayer player,
                                       SpartanLocation location,
                                       SpartanLocation previousLocation) {
-        // todo add velocity, bouncing, bubble water
+        // todo add velocity, trident
         int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
 
         hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
@@ -176,6 +176,22 @@ public class HashUtils {
         hash = HashUtils.extendInt(
                 hash,
                 player.getHandlers().getRemainingTicks(Handlers.HandlerType.Piston)
+        );
+        hash = HashUtils.extendInt(
+                hash,
+                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BubbleWater, "soul-sand")
+        );
+        hash = HashUtils.extendInt(
+                hash,
+                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BubbleWater, "magma-block")
+        );
+        hash = HashUtils.extendInt(
+                hash,
+                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BouncingBlocks, "slime")
+        );
+        hash = HashUtils.extendInt(
+                hash,
+                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BouncingBlocks, "bed")
         );
         long lastLiquid = player.movement.getLastLiquidTick();
 

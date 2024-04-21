@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.api;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.connection.Latency;
@@ -172,16 +171,12 @@ public class BackgroundAPI {
 
     @Deprecated
     static void reloadPermissions() {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            AwarenessNotifications.forcefullySend("The API method 'reloadPermissions' has been removed.");
-        }
+        AwarenessNotifications.forcefullySend("The API method 'reloadPermissions' has been removed.");
     }
 
     @Deprecated
     static void reloadPermissions(Player p) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            AwarenessNotifications.forcefullySend("The API method 'reloadPermissions' has been removed.");
-        }
+        AwarenessNotifications.forcefullySend("The API method 'reloadPermissions' has been removed.");
     }
 
     static void enableCheck(HackType HackType) {
@@ -313,7 +308,6 @@ public class BackgroundAPI {
     @Deprecated
     static boolean isBanned(UUID uuid) {
         AwarenessNotifications.forcefullySend("The API method 'isBanned' has been removed.");
-
         return false;
     }
 
@@ -457,16 +451,9 @@ public class BackgroundAPI {
         }
     }
 
+    @Deprecated
     static void disableVelocityProtection(Player p, int ticks) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanPlayer player = SpartanBukkit.getPlayer(p);
-
-            if (player != null) {
-                Handlers handlers = player.getHandlers();
-                handlers.disable(Handlers.HandlerType.AbstractVelocity, ticks);
-                handlers.remove(Handlers.HandlerType.AbstractVelocity);
-            }
-        }
+        AwarenessNotifications.forcefullySend("The API method 'disableVelocityProtection' has been removed.");
     }
 
     @Deprecated

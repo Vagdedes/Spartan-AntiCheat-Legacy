@@ -46,7 +46,7 @@ import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.functionality.tracking.Velocity;
+import com.vagdedes.spartan.functionality.tracking.AbstractVelocity;
 import com.vagdedes.spartan.listeners.EventsHandler7;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -1568,7 +1568,7 @@ public class SpartanPlayer {
 
     public boolean canDo(boolean bypassItemAttributes) {
         if ((bypassItemAttributes || !Attributes.has(this, Attributes.GENERIC_MOVEMENT_SPEED))
-                && !isDead() && !isSleeping() && canRunChecks(true) && !this.movement.wasFlying() && !Velocity.hasCooldown(this)) {
+                && !isDead() && !isSleeping() && canRunChecks(true) && !this.movement.wasFlying() && !AbstractVelocity.hasCooldown(this)) {
             if (Compatibility.CompatibilityType.MythicMobs.isFunctional() || Compatibility.CompatibilityType.ItemsAdder.isFunctional()) {
                 List<Entity> entities = getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
 

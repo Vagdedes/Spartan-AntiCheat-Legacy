@@ -307,6 +307,7 @@ public class API {
         return BackgroundAPI.getClientSidedBlockData(p, loc);
     }
 
+    @Deprecated
     public static void disableVelocityProtection(Player p, int ticks) {
         BackgroundAPI.disableVelocityProtection(p, ticks);
     }
