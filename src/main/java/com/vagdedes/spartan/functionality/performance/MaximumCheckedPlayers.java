@@ -145,7 +145,13 @@ public class MaximumCheckedPlayers {
         if (value <= 0) {
             return CloudBase.getDetectionSlots();
         } else {
-            return Math.min(value, CloudBase.getDetectionSlots());
+            int detectionSlots = CloudBase.getDetectionSlots();
+
+            if (detectionSlots <= 0) {
+                return value;
+            } else {
+                return Math.min(value, detectionSlots);
+            }
         }
     }
 }

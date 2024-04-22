@@ -97,7 +97,7 @@ public class SpartanEdition {
         if (Config.settings.getBoolean(Settings.showEcosystemOption)) {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            if (players.size() <= CloudConnections.getDetectionSlots()
+            if (players.size() <= CloudBase.getDetectionSlots()
                     || !sendLimitNotification(player)) {
                 Enums.DataType missingDetection = getMissingDetection();
 

@@ -4,6 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.IDs;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -45,10 +46,13 @@ public class CommandExecution implements CommandExecutor {
         if (!isPlayer || Permissions.has((Player) sender)) {
             String v = API.getVersion();
             sender.sendMessage("");
-            String command = "§2" + SpartanEdition.getProductName()
-                    + " §8[§7(§cDetection Slots: " + CloudConnections.getDetectionSlots() + "§7)§8, "
-                    + "§7(§fVersion: " + v + "§7)§8, "
-                    + "§7(§fID: " + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
+            String detectionSlots = CloudBase.getDetectionSlots() <= 0
+                    ? "Unlimited"
+                    : String.valueOf(CloudBase.getDetectionSlots()),
+                    command = "§2" + SpartanEdition.getProductName()
+                            + " §8[§7(§cDetection Slots: " + detectionSlots + "§7)§8, "
+                            + "§7(§fVersion: " + v + "§7)§8, "
+                            + "§7(§fID: " + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
 
             sender.sendMessage(command);
             sender.sendMessage("§8§l<> §7Required command argument");
