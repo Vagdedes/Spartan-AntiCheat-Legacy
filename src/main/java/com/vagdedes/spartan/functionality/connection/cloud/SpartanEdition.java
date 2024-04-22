@@ -40,7 +40,7 @@ public class SpartanEdition {
 
     public static void refresh() {
         SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
-            if (SpartanBukkit.canAdvertise && !alternativeVersion) {
+            if (!alternativeVersion) {
                 if (CloudConnections.ownsProduct(
                         getProductID(oppositeType)
                 )) {
