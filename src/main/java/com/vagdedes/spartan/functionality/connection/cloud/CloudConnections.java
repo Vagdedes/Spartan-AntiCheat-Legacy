@@ -138,8 +138,6 @@ public class CloudConnections {
 
             if (results.length == 1 && AlgebraUtils.validInteger(results[0])) {
                 return Integer.parseInt(results[0]);
-            } else {
-                return 5;
             }
         } catch (Exception e) {
             CloudBase.throwError(e, "detectionSlots:GET");

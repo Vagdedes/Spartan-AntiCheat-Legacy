@@ -139,7 +139,7 @@ public class MaximumCheckedPlayers {
         }
     }
 
-    private static  int getOptionValue() {
+    private static int getOptionValue() {
         int value = Config.settings.getInteger(option);
 
         if (value <= 0) {
