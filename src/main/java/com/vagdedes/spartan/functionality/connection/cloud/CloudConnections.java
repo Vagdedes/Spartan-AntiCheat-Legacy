@@ -131,8 +131,23 @@ public class CloudConnections {
 
     // Multiple
 
+    public static int getDetectionSlots() { // Once
+        try {
+            String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
+                    + "&action=get&data=detectionSlots&version=" + CloudBase.version);
+
+            if (results.length == 1 && AlgebraUtils.validInteger(results[0])) {
+                return Integer.parseInt(results[0]);
+            } else {
+                return 5;
+            }
+        } catch (Exception e) {
+            CloudBase.throwError(e, "detectionSlots:GET");
+        }
+        return 5;
+    }
+
     public static String[] getCrossServerInformation(String type, String name) {
-        // Doesn't need ID validation due to its validated method call
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
                             + "&action=get&data=crossServerInformation&version=" + CloudBase.version
@@ -176,7 +191,6 @@ public class CloudConnections {
     }
 
     public static void sendCrossServerInformation(String type, String name, String[] array) {
-        // Doesn't need ID validation due to its validated method call
         try {
             StringBuilder information = new StringBuilder();
 
@@ -199,7 +213,6 @@ public class CloudConnections {
     }
 
     static void punishPlayers() {
-        // Doesn't need ID validation due to its validated method call
         StringBuilder value = new StringBuilder();
 
         for (PlayerProfile playerProfile : ResearchEngine.getHackers()) {

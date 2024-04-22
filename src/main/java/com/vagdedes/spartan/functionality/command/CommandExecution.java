@@ -46,8 +46,9 @@ public class CommandExecution implements CommandExecutor {
             String v = API.getVersion();
             sender.sendMessage("");
             String command = "§4" + SpartanEdition.getProductName(false)
-                    + " §8[§7(§fVersion: " + v + "§7)§8, §7(§fID: "
-                    + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
+                    + " §8[§7(§fDetection Slots: " + CloudConnections.getDetectionSlots() + "§7)§8, "
+                    + "(§fVersion: " + v + "§7)§8, "
+                    + "§7(§fID: " + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
 
             sender.sendMessage(command);
             sender.sendMessage("§8§l<> §7Required command argument");

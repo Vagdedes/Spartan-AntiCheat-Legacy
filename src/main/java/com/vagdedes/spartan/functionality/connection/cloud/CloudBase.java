@@ -36,7 +36,8 @@ public class CloudBase {
     // Functionality
     private static long connectionFailedCooldown = 0L;
     private static final long[] connectionRefreshCooldown = new long[2];
-    private static int outdatedVersion = AutoUpdater.NOT_CHECKED;
+    private static int outdatedVersion = AutoUpdater.NOT_CHECKED,
+            detectionSlots;
 
     // Parameters
     static String identification = "", token = null;
@@ -68,6 +69,12 @@ public class CloudBase {
 
     public static String getRawToken() {
         return token;
+    }
+
+    // Separator
+
+    public static int getDetectionSlots() {
+        return detectionSlots;
     }
 
     // Separator
@@ -320,7 +327,6 @@ public class CloudBase {
                         hiddenDisabledDetections = new LinkedHashMap<>(),
                         allDisabledDetections = new LinkedHashMap<>();
 
-                // Doesn't need ID validation due to its unique anti-piracy purpose
                 Runnable runnable = () -> {
                     try {
                         String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
@@ -414,6 +420,17 @@ public class CloudBase {
                         }
                     }
                 };
+
+                if (async) {
+                    runnable.run();
+                } else {
+                    SpartanBukkit.connectionThread.execute(runnable);
+                }
+            }
+
+            // Separator
+            if (independent) {
+                Runnable runnable = () -> detectionSlots = CloudConnections.getDetectionSlots();
 
                 if (async) {
                     runnable.run();
