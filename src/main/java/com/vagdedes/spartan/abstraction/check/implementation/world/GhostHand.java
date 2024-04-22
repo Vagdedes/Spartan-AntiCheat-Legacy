@@ -79,7 +79,8 @@ public class GhostHand extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        if (player.canRunCheck(hackType, true)
+        if (!player.bedrockPlayer
+                && player.canRunCheck(hackType, true)
                 && !player.movement.wasFlying()
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.canCancel(player)

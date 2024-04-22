@@ -162,10 +162,18 @@ public class PlayerInfo extends InventoryMenu {
                 violations = isOnline ? player.getViolations(hackType).getTotalLevel() : 0;
                 boolean hasViolations = violations > 0,
                         hasData = playerProfile.evidence.has(hackType);
-
-                String state = getDetectionState(player, hackType, dataType, cancellableCompatibility, delayNumber, isOnline,
-                        tpsDropping, notChecked, detectionsNotAvailable, !SpartanEdition.supportsCheck(dataType, hackType),
-                        !hasViolations && !hasData);
+                String state = getDetectionState(
+                        player,
+                        hackType,
+                        dataType,
+                        cancellableCompatibility,
+                        delayNumber,
+                        isOnline,
+                        tpsDropping,
+                        notChecked,
+                        detectionsNotAvailable,
+                        !hasViolations && !hasData
+                );
 
                 if (hasViolations || hasData || state != null) {
                     String color = "§c";
@@ -204,7 +212,6 @@ public class PlayerInfo extends InventoryMenu {
                 isOnline && TPS.areLow(player),
                 isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
                 !SpartanEdition.hasDetectionsPurchased(dataType),
-                !SpartanEdition.supportsCheck(dataType, hackType),
                 !hasViolations && !hasData);
 
         if (hasViolations || hasData || state != null) {
@@ -228,13 +235,9 @@ public class PlayerInfo extends InventoryMenu {
                                      boolean tpsDropping,
                                      boolean notChecked,
                                      boolean detectionMissing,
-                                     boolean detectionUnsupported,
                                      boolean returnNull) {
         if (!hasPlayer) {
             return returnNull ? null : "Offline";
-        }
-        if (detectionUnsupported) {
-            return "Detection Unsupported";
         }
         if (detectionMissing) {
             return "Detection Missing";

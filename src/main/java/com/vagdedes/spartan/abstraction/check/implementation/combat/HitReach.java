@@ -106,7 +106,8 @@ public class HitReach extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
+        return !player.bedrockPlayer
+                && player.canRunCheck(hackType, true)
                 && !player.movement.wasFlying()
                 && !NoHitDelay.hasCooldown(player);
     }

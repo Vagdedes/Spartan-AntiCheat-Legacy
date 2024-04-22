@@ -21,11 +21,8 @@ public class SpartanEdition {
 
     private static long checkTime = 0L;
     public static final String[] jarNames = new String[]{
-            StringUtils.decodeBase64("U3BhcnRhbjJKYXZhRWRpdGlvbg=="), // Java 2.0
-            StringUtils.decodeBase64("U3BhcnRhbkJlZHJvY2tFZGl0aW9u"), // Bedrock 1.0
-            StringUtils.decodeBase64("U3BhcnRhbjJCZWRyb2NrRWRpdGlvbg=="), // Bedrock 2.0
-            StringUtils.decodeBase64("U3BhcnRhbkZ1bGxFZGl0aW9u"), // Full
-            "Spartan", // (Java 1.0) Last because it is contained in all previous names
+            StringUtils.decodeBase64("U3BhcnRhbkJlZHJvY2tFZGl0aW9u"),
+            "Spartan",
     };
     private static final String productLink = StringUtils.decodeBase64("aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC92aWV3UHJvZHVjdC8/aWQ9");
     private static final String
@@ -38,36 +35,16 @@ public class SpartanEdition {
     private static boolean
             notify = false,
             alternativeVersion = false;
-    private static final boolean[] secondGeneration = new boolean[2];
 
     // Verification
 
     public static void refresh() {
         SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
             if (SpartanBukkit.canAdvertise && !alternativeVersion) {
-                boolean changed = false;
-
                 if (CloudConnections.ownsProduct(
-                        get2_0_ProductID(dataType)
-                )) {
-                    secondGeneration[dataType.ordinal()] = true;
-                    changed = true;
-                }
-
-                if (CloudConnections.ownsProduct(
-                        get2_0_ProductID(oppositeType)
+                        getProductID(oppositeType)
                 )) {
                     alternativeVersion = true;
-                    secondGeneration[oppositeType.ordinal()] = true;
-                    changed = true;
-                } else if (CloudConnections.ownsProduct(
-                        get1_0_ProductID(oppositeType)
-                )) {
-                    alternativeVersion = true;
-                    changed = true;
-                }
-
-                if (changed) {
                     Config.messages.clear();
 
                     for (Enums.HackType hackType : Enums.HackType.values()) {
@@ -78,51 +55,7 @@ public class SpartanEdition {
         });
     }
 
-    // General
-
-    public static boolean is2ndGeneration() {
-        return secondGeneration[dataType.ordinal()]
-                || secondGeneration[oppositeType.ordinal()];
-    }
-
     // Detections
-
-    public static boolean supportsCheck(Enums.DataType dataType, Enums.HackType hackType) {
-        switch (dataType) {
-            case Java:
-                return true;
-            case Bedrock:
-                switch (hackType) {
-                    case IrregularMovements:
-                    case NoFall:
-                    case Speed:
-                    case NoSlowdown:
-                    case XRay:
-                    case KillAura:
-                    case Exploits:
-                    case NoSwing:
-                    case FastEat:
-                    case FastClicks:
-                    case Velocity:
-                    case Criticals:
-                    case FastBreak:
-                    case BlockReach:
-                    case ImpossibleActions:
-                    case FastPlace:
-                    case FastBow:
-                    case FastHeal:
-                    case ItemDrops:
-                    case AutoRespawn:
-                    case ImpossibleInventory:
-                    case MorePackets:
-                        return true;
-                    default: // HitReach, GhostHand, InventoryClicks
-                        return false;
-                }
-            default:
-                return false;
-        }
-    }
 
     public static boolean hasDetectionsPurchased(Enums.DataType dataType) {
         return SpartanEdition.dataType == dataType || alternativeVersion;
@@ -134,7 +67,7 @@ public class SpartanEdition {
 
     // Product
 
-    private static String get1_0_ProductID(Enums.DataType dataType) {
+    private static String getProductID(Enums.DataType dataType) {
         switch (dataType) {
             case Bedrock:
                 return "16";
@@ -143,32 +76,13 @@ public class SpartanEdition {
         }
     }
 
-    private static String get2_0_ProductID(Enums.DataType dataType) {
-        switch (dataType) {
-            case Bedrock:
-                return "22";
-            default:
-                return "21";
-        }
-    }
-
     public static String getProductName(boolean cloudFeature) {
-        if (alternativeVersion) {
-            if (secondGeneration[dataType.ordinal()]) {
-                if (secondGeneration[oppositeType.ordinal()]) {
-                    return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: Java & Bedrock Edition";
-                } else {
-                    return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: " + dataType + " Edition | Spartan AntiCheat 1.0: " + oppositeType + " Edition";
-                }
-            } else if (secondGeneration[oppositeType.ordinal()]) {
-                return cloudFeature ? get2_0_ProductID(oppositeType) : "Spartan AntiCheat 1.0: " + dataType + " Edition | Spartan AntiCheat 2.0: " + oppositeType + " Edition";
-            } else {
-                return cloudFeature ? get1_0_ProductID(dataType) : "Spartan AntiCheat 1.0: Java & Bedrock Edition";
-            }
-        } else if (secondGeneration[dataType.ordinal()]) {
-            return cloudFeature ? get2_0_ProductID(dataType) : "Spartan AntiCheat 2.0: " + dataType + " Edition";
+        if (cloudFeature) {
+            return getProductID(dataType);
+        } else if (alternativeVersion) {
+            return "Spartan AntiCheat: Java & Bedrock Edition";
         } else {
-            return cloudFeature ? get1_0_ProductID(dataType) : "Spartan AntiCheat 1.0: " + dataType + " Edition";
+            return "Spartan AntiCheat: " + dataType + " Edition";
         }
     }
 
@@ -240,7 +154,7 @@ public class SpartanEdition {
     private static void sendNotification(SpartanPlayer player, Enums.DataType dataType) {
         if (Permissions.isStaff(player)) {
             String message = AwarenessNotifications.getNotification(
-                    notificationMessage.replace(type, dataType.toString()).replace(productID, get1_0_ProductID(dataType)) // Keep 1.0 here as it is the base product
+                    notificationMessage.replace(type, dataType.toString()).replace(productID, getProductID(dataType)) // Keep 1.0 here as it is the base product
             );
 
             if (AwarenessNotifications.canSend(player.uuid, notificationKey)) {
