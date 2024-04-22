@@ -3,6 +3,7 @@ package com.vagdedes.spartan.functionality.connection.cloud;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -24,16 +25,18 @@ public class SpartanEdition {
             StringUtils.decodeBase64("U3BhcnRhbkJlZHJvY2tFZGl0aW9u"),
             "Spartan",
     };
-    private static final String productLink = StringUtils.decodeBase64("aHR0cHM6Ly92YWdkZWRlcy5jb20vYWNjb3VudC92aWV3UHJvZHVjdC8/aWQ9");
     private static final String
             type = "{type}",
-            productID = "{product-id}",
-            notificationKey = "alternative-version",
-            notificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat."
-                    + (SpartanBukkit.canAdvertise ? "\nClick §n" + productLink + productID + " §r§cto fix this." : "")
-                    + "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Config.settings.getFile().getName() + "' to disable this notification.";
+            product = "{product}",
+            disableMessage = "\nSet '" + Settings.showEcosystemOption.replace(".", " -> ") + "' to 'false' via '" + Config.settings.getFile().getName() + "' to disable this notification.",
+            versionNotificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections."
+                    + (SpartanBukkit.canAdvertise ? "\nClick §n" + product + " §rto §lfix this§r." : "")
+                    + disableMessage,
+            limitNotificationMessage = "\nHey, just a heads up! You have more online players than the anti-cheat can check at once."
+                    + "\nClick §nhttps://www.idealistic.ai/patreon§r to learn how §lDetection Slots §rwork."
+                    + disableMessage;
     private static boolean
-            notify = false,
+            notifyCache = false,
             alternativeVersion = false;
 
     // Verification
@@ -76,10 +79,12 @@ public class SpartanEdition {
         }
     }
 
-    public static String getProductName(boolean cloudFeature) {
-        if (cloudFeature) {
-            return getProductID(dataType);
-        } else if (alternativeVersion) {
+    public static String getProductID() {
+        return getProductID(dataType);
+    }
+
+    public static String getProductName() {
+        if (alternativeVersion) {
             return "Spartan AntiCheat: Java & Bedrock Edition";
         } else {
             return "Spartan AntiCheat: " + dataType + " Edition";
@@ -89,58 +94,63 @@ public class SpartanEdition {
     // Notifications
 
     public static void attemptNotification(SpartanPlayer player) {
-        Enums.DataType missingDetection = getMissingDetection();
+        if (Config.settings.getBoolean(Settings.showEcosystemOption)) {
+            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-        if (missingDetection != null
-                && Config.settings.getBoolean(Settings.showEcosystemOption)) {
-            if (notify) {
-                sendNotification(player, missingDetection);
-            } else {
-                long time = System.currentTimeMillis();
+            if (players.size() <= CloudConnections.getDetectionSlots()
+                    || !sendLimitNotification(player)) {
+                Enums.DataType missingDetection = getMissingDetection();
 
-                if ((time - checkTime) >= 60_000L) {
-                    checkTime = time;
-                    boolean bedrockIsMissingDetection = missingDetection == Enums.DataType.Bedrock;
-
-                    if (bedrockIsMissingDetection == player.bedrockPlayer) {
-                        notify = true;
-                        sendNotification(player, missingDetection);
+                if (missingDetection != null) {
+                    if (notifyCache) {
+                        sendVersionNotification(player, missingDetection);
                     } else {
-                        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-                        players.remove(player);
-                        int size = players.size();
-                        List<PlayerProfile> checkedProfiles;
+                        long time = System.currentTimeMillis();
 
-                        if (size > 0) {
-                            checkedProfiles = new ArrayList<>(size);
+                        if ((time - checkTime) >= 60_000L) {
+                            checkTime = time;
+                            boolean bedrockIsMissingDetection = missingDetection == Enums.DataType.Bedrock;
 
-                            for (SpartanPlayer otherPlayer : players) {
-                                if (bedrockIsMissingDetection == otherPlayer.bedrockPlayer) {
-                                    notify = true;
-                                    sendNotification(player, missingDetection);
-                                    return;
+                            if (bedrockIsMissingDetection == player.bedrockPlayer) {
+                                notifyCache = true;
+                                sendVersionNotification(player, missingDetection);
+                            } else {
+                                players.remove(player);
+                                int size = players.size();
+                                List<PlayerProfile> checkedProfiles;
+
+                                if (size > 0) {
+                                    checkedProfiles = new ArrayList<>(size);
+
+                                    for (SpartanPlayer otherPlayer : players) {
+                                        if (bedrockIsMissingDetection == otherPlayer.bedrockPlayer) {
+                                            notifyCache = true;
+                                            sendVersionNotification(player, missingDetection);
+                                            return;
+                                        } else {
+                                            checkedProfiles.add(player.getProfile());
+                                        }
+                                    }
                                 } else {
-                                    checkedProfiles.add(player.getProfile());
+                                    checkedProfiles = new ArrayList<>(0);
                                 }
-                            }
-                        } else {
-                            checkedProfiles = new ArrayList<>(0);
-                        }
 
-                        // Separator
+                                // Separator
 
-                        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+                                List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
-                        if (!playerProfiles.isEmpty()) {
-                            playerProfiles.remove(player.getProfile());
-                            playerProfiles.removeAll(checkedProfiles);
+                                if (!playerProfiles.isEmpty()) {
+                                    playerProfiles.remove(player.getProfile());
+                                    playerProfiles.removeAll(checkedProfiles);
 
-                            if (!playerProfiles.isEmpty()) {
-                                for (PlayerProfile profile : playerProfiles) {
-                                    if (bedrockIsMissingDetection == profile.isBedrockPlayer()) {
-                                        notify = true;
-                                        sendNotification(player, missingDetection);
-                                        return;
+                                    if (!playerProfiles.isEmpty()) {
+                                        for (PlayerProfile profile : playerProfiles) {
+                                            if (bedrockIsMissingDetection == profile.isBedrockPlayer()) {
+                                                notifyCache = true;
+                                                sendVersionNotification(player, missingDetection);
+                                                return;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -151,16 +161,39 @@ public class SpartanEdition {
         }
     }
 
-    private static void sendNotification(SpartanPlayer player, Enums.DataType dataType) {
+    private static void sendVersionNotification(SpartanPlayer player, Enums.DataType dataType) {
         if (Permissions.isStaff(player)) {
             String message = AwarenessNotifications.getNotification(
-                    notificationMessage.replace(type, dataType.toString()).replace(productID, getProductID(dataType)) // Keep 1.0 here as it is the base product
+                    versionNotificationMessage
+                            .replace(type, dataType.toString())
+                            .replace(
+                                    product,
+                                    IDs.isBuiltByBit()
+                                            ? (dataType == Enums.DataType.Java
+                                            ? "https://builtbybit.com/resources/12832"
+                                            : "https://builtbybit.com/resources/11196")
+                                            : (dataType == Enums.DataType.Java
+                                            ? "https://polymart.org/resource/3600"
+                                            : "https://polymart.org/resource/350")
+                            )
             );
 
-            if (AwarenessNotifications.canSend(player.uuid, notificationKey)) {
+            if (AwarenessNotifications.canSend(player.uuid, "alternative-version")) {
                 player.sendImportantMessage(message);
             }
         }
+    }
+
+    private static boolean sendLimitNotification(SpartanPlayer player) {
+        if (Permissions.isStaff(player)) {
+            String message = AwarenessNotifications.getNotification(limitNotificationMessage);
+
+            if (AwarenessNotifications.canSend(player.uuid, "limit-notification")) {
+                player.sendImportantMessage(message);
+                return true;
+            }
+        }
+        return false;
     }
 
 }

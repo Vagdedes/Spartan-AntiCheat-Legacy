@@ -45,7 +45,7 @@ public class CommandExecution implements CommandExecutor {
         if (!isPlayer || Permissions.has((Player) sender)) {
             String v = API.getVersion();
             sender.sendMessage("");
-            String command = "§2" + SpartanEdition.getProductName(false)
+            String command = "§2" + SpartanEdition.getProductName()
                     + " §8[§7(§cDetection Slots: " + CloudConnections.getDetectionSlots() + "§7)§8, "
                     + "§7(§fVersion: " + v + "§7)§8, "
                     + "§7(§fID: " + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
