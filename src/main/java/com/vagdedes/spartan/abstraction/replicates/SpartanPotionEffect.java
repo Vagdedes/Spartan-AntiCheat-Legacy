@@ -42,10 +42,10 @@ public class SpartanPotionEffect {
 
     public long ticksPassed() {
         long remaining = this.expiration - TPS.getTick(this.parent);
-        return remaining <= 0 ? 0 : Math.abs(remaining);
+        return remaining >= 0 ? 0 : Math.abs(remaining);
     }
 
     public boolean isActive() {
-        return this.expiration - TPS.getTick(this.parent) <= 0;
+        return this.expiration - TPS.getTick(this.parent) >= 0;
     }
 }
