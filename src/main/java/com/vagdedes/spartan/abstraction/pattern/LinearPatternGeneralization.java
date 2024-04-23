@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
 import com.vagdedes.spartan.utils.java.OverflowList;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -153,9 +152,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     } else {
                         for (int previousSituation : patternProfile.situations) {
                             if (this.connect(previousSituation, situation)) {
-                                AwarenessNotifications.forcefullySend(
-                                        situation + " -> " + previousSituation
-                                );
                                 break;
                             }
                         }
