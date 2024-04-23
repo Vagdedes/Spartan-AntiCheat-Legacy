@@ -72,7 +72,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-public class SpartanPlayer { // todo add handler for potions
+public class SpartanPlayer {
 
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
@@ -89,7 +89,7 @@ public class SpartanPlayer { // todo add handler for potions
     public final String name;
     public final UUID uuid;
     public final String ipAddress;
-    private final Collection<PotionEffect> potionEffects;
+    private final Map<PotionEffectType, SpartanPotionEffect> potionEffects;
     public final Enums.DataType dataType;
     private SpartanInventory inventory;
     private SpartanOpenInventory openInventory;
@@ -240,7 +240,7 @@ public class SpartanPlayer { // todo add handler for potions
 
                         if (n != null) {
                             Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
-                            p.setActivePotionEffects(potionEffects); // Bad
+                            p.setStoredPotionEffects(potionEffects); // Bad
                             PlayerUtils.run(p, potionEffects);
                         }
 
@@ -346,7 +346,9 @@ public class SpartanPlayer { // todo add handler for potions
         this.maximumNoDamageTicks = p.getMaximumNoDamageTicks();
         this.fallDistance = p.getFallDistance();
         this.foodLevel = p.getFoodLevel();
-        this.potionEffects = Collections.synchronizedList(new ArrayList<>(p.getActivePotionEffects()));
+        this.potionEffects = Collections.synchronizedMap(
+                SpartanPotionEffect.mapFromBukkit(this, p.getActivePotionEffects())
+        );
         this.ping = Latency.ping(p);
         this.frozen = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && p.isFrozen();
         this.lastPlayed = p.getLastPlayed();
@@ -746,7 +748,7 @@ public class SpartanPlayer { // todo add handler for potions
     }
 
     public boolean isOnFire() {
-        return !this.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)
+        return !this.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE, 0)
                 && (this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE).ticksPassed() <= 5
                 || this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE_TICK).ticksPassed() <= 5);
     }
@@ -1261,46 +1263,60 @@ public class SpartanPlayer { // todo add handler for potions
 
     // Separator
 
-    private Collection<PotionEffect> getLocalActivePotionEffects() {
+    private Collection<SpartanPotionEffect> getLocalActivePotionEffects() {
         Entity vehicle = getVehicle();
-        return new ArrayList<>(
-                vehicle != null ?
-                        (vehicle instanceof LivingEntity ? ((LivingEntity) vehicle).getActivePotionEffects() : new ArrayList<>(0))
-                        : potionEffects
-        );
-    }
 
-    public Collection<PotionEffect> getActivePotionEffects() {
-        synchronized (potionEffects) {
-            return getLocalActivePotionEffects();
+        if (vehicle != null) {
+            if (vehicle instanceof LivingEntity) {
+                return SpartanPotionEffect.listFromBukkit(this, ((LivingEntity) vehicle).getActivePotionEffects());
+            } else {
+                return new ArrayList<>(0);
+            }
+        } else {
+            return potionEffects.values();
         }
     }
 
-    public void setActivePotionEffects(Collection<PotionEffect> effects) {
-        synchronized (potionEffects) {
-            this.potionEffects.clear();
-            this.potionEffects.addAll(effects);
+    public boolean hasActivePotionEffects() {
+        synchronized (this.potionEffects) {
+            Collection<SpartanPotionEffect> collection = this.getLocalActivePotionEffects();
+            return !collection.isEmpty() && collection.stream().anyMatch(SpartanPotionEffect::isActive);
         }
     }
 
-    public void removePotionEffect(PotionEffectType potionEffectType) {
-        if (hasPotionEffect(potionEffectType)) {
-            Player p = getPlayer();
+    public Collection<SpartanPotionEffect> getStoredPotionEffects() {
+        synchronized (this.potionEffects) {
+            return this.getLocalActivePotionEffects();
+        }
+    }
 
-            if (p != null && p.isOnline()) {
-                p.removePotionEffect(potionEffectType);
-                setActivePotionEffects(p.getActivePotionEffects());
+    public void setStoredPotionEffects(Collection<PotionEffect> effects) {
+        synchronized (this.potionEffects) {
+            for (PotionEffect effect : effects) {
+                this.potionEffects.put(effect.getType(), new SpartanPotionEffect(this, effect));
             }
         }
     }
 
-    public PotionEffect getPotionEffect(PotionEffectType type) {
-        synchronized (potionEffects) {
-            Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
+    public void removePotionEffect(PotionEffectType potionEffectType) {
+        if (this.hasPotionEffect(potionEffectType, 0)) {
+            Player p = getPlayer();
+
+            if (p != null && p.isOnline()) {
+                p.removePotionEffect(potionEffectType);
+                setStoredPotionEffects(p.getActivePotionEffects());
+            }
+        }
+    }
+
+    public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
+        synchronized (this.potionEffects) {
+            Collection<SpartanPotionEffect> potionEffects = getLocalActivePotionEffects();
 
             if (!potionEffects.isEmpty()) {
-                for (PotionEffect potionEffect : potionEffects) {
-                    if (potionEffect != null && potionEffect.getType().equals(type)) {
+                for (SpartanPotionEffect potionEffect : potionEffects) {
+                    if (potionEffect.ticksPassed() <= lastActive
+                            && potionEffect.bukkitEffect.getType().equals(type)) {
                         return potionEffect;
                     }
                 }
@@ -1309,30 +1325,14 @@ public class SpartanPlayer { // todo add handler for potions
         return null;
     }
 
-    public boolean hasPotionEffect(PotionEffectType[] potionEffectTypes) {
-        synchronized (potionEffects) {
-            Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
+    public boolean hasPotionEffect(PotionEffectType potionEffectType, long lastActive) {
+        synchronized (this.potionEffects) {
+            Collection<SpartanPotionEffect> potionEffects = getLocalActivePotionEffects();
 
             if (!potionEffects.isEmpty()) {
-                for (PotionEffect potionEffect : potionEffects) {
-                    for (PotionEffectType potionEffectType : potionEffectTypes) {
-                        if (potionEffect.getType().equals(potionEffectType)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean hasPotionEffect(PotionEffectType potionEffectType) {
-        synchronized (potionEffects) {
-            Collection<PotionEffect> potionEffects = getLocalActivePotionEffects();
-
-            if (!potionEffects.isEmpty()) {
-                for (PotionEffect potionEffect : potionEffects) {
-                    if (potionEffect.getType().equals(potionEffectType)) {
+                for (SpartanPotionEffect potionEffect : potionEffects) {
+                    if (potionEffect.ticksPassed() <= lastActive
+                            && potionEffect.bukkitEffect.getType().equals(potionEffectType)) {
                         return true;
                     }
                 }

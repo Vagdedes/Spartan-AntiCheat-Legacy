@@ -27,16 +27,16 @@ public class FastHeal extends CheckExecutor {
     }
 
     private long calculate() {
-        boolean regeneration = player.hasPotionEffect(PotionEffectType.REGENERATION);
+        int level = PlayerUtils.getPotionLevel(player, PotionEffectType.REGENERATION);
         long i = 0L;
 
-        if (regeneration && !player.isOnFire()) {
-            int level = PlayerUtils.getPotionLevel(player, PotionEffectType.REGENERATION);
-
-            if (level <= 10) {
-                i = level == 0 ? 300L : 45L;
+        if (level > -1) {
+            if (!player.isOnFire()) {
+                if (level <= 10) {
+                    i = level == 0 ? 300L : 45L;
+                }
             }
-        } else if (!regeneration) {
+        } else {
             i = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? 3700L : 450L;
         }
         return i;

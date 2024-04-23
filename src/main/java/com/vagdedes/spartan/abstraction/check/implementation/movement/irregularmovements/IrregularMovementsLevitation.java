@@ -54,7 +54,7 @@ public class IrregularMovementsLevitation extends DetectionExecutor {
                                     || modifiedOldBox == 0.2,
                             "modified-height-exists", 10);
 
-                    if (canGoUp && vertical >= (0.1 * PlayerUtils.getPotionLevel(player, PotionEffectType.LEVITATION))) {
+                    if (canGoUp && vertical >= (0.1 * (PlayerUtils.getPotionLevel(player, PotionEffectType.LEVITATION) + 1))) {
                         irregularMovements.cancel(prevention, "up-" + scenario, 3);
                     } else if (vertical == 0.0
                             && (!modifiedHeightExists

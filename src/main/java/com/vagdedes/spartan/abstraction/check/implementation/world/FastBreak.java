@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
@@ -23,7 +24,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 
@@ -57,7 +57,7 @@ public class FastBreak extends CheckExecutor {
 
                         if (limit > 100L && time < limit) { // Do not check blocks that take equal or less than 1/10th of a second to break
                             boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
-                            Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
+                            Collection<SpartanPotionEffect> potionEffects = player.getStoredPotionEffects();
                             Set<Map.Entry<Enchantment, Integer>> enchantments =
                                     !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants() ?
                                             itemStack.getEnchantments().entrySet() : new HashSet<>();
@@ -74,9 +74,11 @@ public class FastBreak extends CheckExecutor {
                                 enchantmentsString = new StringBuilder(enchantmentsString.substring(0, enchantmentsString.length() - 2));
                             }
                             if (hasEffects) {
-                                for (PotionEffect effect : potionEffects) {
-                                    String name = effect.getType().getName().toLowerCase().replace("_", "/");
-                                    effectsString.append(name).append("-").append(effect.getAmplifier() + 1).append(", ");
+                                for (SpartanPotionEffect effect : potionEffects) {
+                                    if (effect.isActive()) {
+                                        String name = effect.bukkitEffect.getType().getName().toLowerCase().replace("_", "/");
+                                        effectsString.append(name).append("-").append(effect.bukkitEffect.getAmplifier() + 1).append(", ");
+                                    }
                                 }
                             }
                             int length = effectsString.length();

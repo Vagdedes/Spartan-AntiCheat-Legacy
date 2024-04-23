@@ -321,7 +321,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public double getExtraMovementFromJumpEffect() {
-        return PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) * 0.1;
+        return (PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1) * 0.1;
     }
 
     public boolean isJumping(double d) {

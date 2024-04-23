@@ -66,7 +66,7 @@ public class NoSlowdown extends CheckExecutor {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
                     || !canDo() || !hackType.getCheck().getBooleanOption("check_food_eating", true)
                     || player.getWorld().getDifficulty() == Difficulty.PEACEFUL
-                    || player.hasPotionEffect(PotionEffectType.SATURATION)
+                    || player.hasPotionEffect(PotionEffectType.SATURATION, 0)
                     || !player.getCooldowns(hackType).canDo("food-eating")
                     || ((FoodLevelChangeEvent) object).getFoodLevel() <= player.getFoodLevel()) { // Item
                 return false;

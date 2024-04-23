@@ -53,7 +53,7 @@ public class Criticals extends CheckExecutor {
     private void checkDamage(double damage, LivingEntity entity) {
         if (hackType.getCheck().getBooleanOption("check_damage", true)
                 && !player.bedrockPlayer
-                && !player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+                && !player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE, 0)) {
             double[] widthAndHeight = CombatUtils.getWidthAndHeight(entity);
 
             if (!CombatUtils.isEntityTall(widthAndHeight[1]) && !CombatUtils.isEntityWide(widthAndHeight[0])) { // Non-player like entities seem to be problematic
@@ -194,7 +194,7 @@ public class Criticals extends CheckExecutor {
                 && !player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !player.movement.wasInLiquids()
-                && !player.hasPotionEffect(PotionEffectType.BLINDNESS)
+                && !player.hasPotionEffect(PotionEffectType.BLINDNESS, 0)
                 && player.getBlocksOffGround(3) <= 2
                 && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
                 && !MovementProcessing.recentlyBounced(player)) {

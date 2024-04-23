@@ -729,7 +729,7 @@ public class SpartanLocation {
                 || player.bedrockPlayer
                 || player.getVehicle() != null
                 || player.getTrackers().has()
-                || !player.getActivePotionEffects().isEmpty()
+                || !player.hasActivePotionEffects()
                 || BlockUtils.isSolid(player.getItemInHand().getType())) {
             return getSurroundingLocations(x, y, z, true);
         } else {

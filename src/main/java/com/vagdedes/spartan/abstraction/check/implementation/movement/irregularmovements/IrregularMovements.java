@@ -154,7 +154,7 @@ public class IrregularMovements extends CheckExecutor {
                     knownBoxesOld = GroundUtils.blockHeightExists(oldBox),
                     knownBoxes = knownBoxesNew || knownBoxesOld,
                     bouncingBlocks = MovementProcessing.recentlyBounced(player),
-                    jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP),
+                    jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP, 0),
                     threwTrident = player.getTrackers().has(Trackers.TrackerType.Trident),
                     explosion = CombatProcessing.hasExplosionDamage(player),
                     falling = player.movement.isFalling(vertical),
@@ -271,7 +271,6 @@ public class IrregularMovements extends CheckExecutor {
             } else if (player.isOnFire()
                     || player.isFrozen()
                     || player.getLastDamageReceived().isSubtle()
-                    || PlayerUtils.hasBadPotionEffects(player)
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.interactive_and_passable)) { // Small damage by effects, circumstances or fire
                 groundInteractionScenario = true;
 

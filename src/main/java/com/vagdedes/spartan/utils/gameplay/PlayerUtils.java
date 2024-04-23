@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
@@ -180,17 +181,6 @@ public class PlayerUtils {
             } else {
                 buffer.remove("player-data=inventory-use");
             }
-
-            // Separator
-            if (!potionEffects.isEmpty()) {
-                for (PotionEffect potionEffect : potionEffects) {
-                    PotionEffectType type = potionEffect.getType();
-
-                    if (handledPotionEffects.containsKey(type)) {
-                        getPotionLevel(p, type);
-                    }
-                }
-            }
         }
     }
 
@@ -244,14 +234,14 @@ public class PlayerUtils {
 
     public static boolean hasSpeedEffect(SpartanPlayer p, SpartanLocation location, boolean soulSpeed) {
         return p.getVehicle() == null
-                && (getPotionLevel(p, PotionEffectType.SPEED) > 0
+                && (p.hasPotionEffect(PotionEffectType.SPEED, getPotionEffectExtraTime(PotionEffectType.SPEED))
                 || soulSpeed && hasSoulSpeedEnchantment(p, location));
     }
 
     // Jumping
 
     public static boolean hasJumpEffect(SpartanPlayer p) {
-        return getPotionLevel(p, JUMP) > 0;
+        return p.hasPotionEffect(JUMP, getPotionEffectExtraTime(JUMP));
     }
 
     public static boolean hasLowJumpEffect(SpartanPlayer p) {
@@ -342,25 +332,27 @@ public class PlayerUtils {
     public static boolean hasDolphinsGraceEffect(SpartanPlayer p) {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 && p.getVehicle() == null
-                && getPotionLevel(p, PotionEffectType.DOLPHINS_GRACE) > 0;
+                && p.hasPotionEffect(
+                PotionEffectType.DOLPHINS_GRACE,
+                getPotionEffectExtraTime(PotionEffectType.DOLPHINS_GRACE)
+        );
     }
 
     public static boolean hasSlowFallingEffect(SpartanPlayer p) {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 && p.getVehicle() == null
-                && getPotionLevel(p, PotionEffectType.SLOW_FALLING) > 0;
+                && p.hasPotionEffect(
+                PotionEffectType.SLOW_FALLING,
+                getPotionEffectExtraTime(PotionEffectType.SLOW_FALLING)
+        );
     }
 
     public static boolean hasLevitationEffect(SpartanPlayer p) {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                && getPotionLevel(p, PotionEffectType.LEVITATION) > 0;
-    }
-
-    public static boolean hasBadPotionEffects(SpartanPlayer p) {
-        return p.hasPotionEffect(new PotionEffectType[]{
-                PotionEffectType.POISON,
-                PotionEffectType.HARM
-        });
+                && p.hasPotionEffect(
+                PotionEffectType.LEVITATION,
+                PlayerUtils.getPotionEffectExtraTime(PotionEffectType.LEVITATION)
+        );
     }
 
     // Inventory
@@ -411,7 +403,7 @@ public class PlayerUtils {
         int level;
 
         if (potionEffectType == PotionEffectType.SPEED) {
-            level = getPotionLevel(entity, potionEffectType);
+            level = getPotionLevel(entity, potionEffectType) + 1;
 
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
                     && !entity.movement.isGliding()
@@ -431,19 +423,16 @@ public class PlayerUtils {
                     }
 
                     if (!entity.getCooldowns().canDo("move-utils=soul-speed-blocks")) {
-                        if (level < 0) {
-                            level = 0;
-                        }
                         level += boots.getEnchantmentLevel(enchantment);
                     }
                 }
             }
         } else {
-            level = getPotionLevel(entity, potionEffectType);
+            level = getPotionLevel(entity, potionEffectType) + 1;
         }
 
-        if (level > -1) {
-            value += (level + 1.0) * (value / divide);
+        if (level > 0) {
+            value += level * (value / divide);
         }
         return value;
     }
@@ -502,30 +491,21 @@ public class PlayerUtils {
 
     // Potion Effects
 
+    public static int getPotionEffectExtraTime(PotionEffectType potionEffectType) {
+        return handledPotionEffects.getOrDefault(potionEffectType, 0);
+    }
+
     public static int getPotionLevel(SpartanPlayer entity, PotionEffectType potionEffectType) {
-        Entity vehicle = entity.getVehicle();
-        String key = "player-data=potion-effect=" + potionEffectType.getName() + (vehicle != null ? "=" + vehicle.getEntityId() : "");
-        int extraTicks = handledPotionEffects.getOrDefault(potionEffectType, 0);
-        PotionEffect potionEffect = entity.getPotionEffect(potionEffectType);
+        SpartanPotionEffect potionEffect = entity.getPotionEffect(
+                potionEffectType,
+                getPotionEffectExtraTime(potionEffectType)
+        );
 
         if (potionEffect != null) {
-            int amplifier = potionEffect.getAmplifier();
-
-            if (amplifier < 0) {
-                return 0;
-            }
-            amplifier += 1;
-
-            if (extraTicks > 0) {
-                entity.getDecimals().set(key, amplifier);
-                entity.getCooldowns().add(key, extraTicks);
-            }
-            return amplifier;
+            return potionEffect.bukkitEffect.getAmplifier();
+        } else {
+            return -1;
         }
-        if (extraTicks > 0) {
-            return !entity.getCooldowns().canDo(key) ? (int) entity.getDecimals().get(key, 0.0) : 0;
-        }
-        return 0;
     }
 
     // Ground

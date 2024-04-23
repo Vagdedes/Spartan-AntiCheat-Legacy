@@ -19,8 +19,9 @@ public class FastEat extends CheckExecutor {
     private static final HackType check = HackType.FastEat;
     private static final Material cake = MaterialUtils.get("cake");
 
-    private static final long delay = 1000L;
-    private static final long driedKelp = 550L;
+    private static final long
+            delay = 1000L,
+            driedKelp = 550L;
     private static final int ticks = 25;
 
     public FastEat(SpartanPlayer player) {
@@ -75,13 +76,13 @@ public class FastEat extends CheckExecutor {
 
         if (item != null
                 && item.getType() == Material.GOLDEN_APPLE) {
-            if (!p.hasPotionEffect(PotionEffectType.REGENERATION)) {
+            if (!p.hasPotionEffect(PotionEffectType.REGENERATION, 0)) {
                 p.getCooldowns(hackType).add("regeneration", ticks);
             }
-            if (!p.hasPotionEffect(PotionEffectType.ABSORPTION)) {
+            if (!p.hasPotionEffect(PotionEffectType.ABSORPTION, 0)) {
                 p.getCooldowns(hackType).add("absorption", ticks);
             }
-            if (!p.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+            if (!p.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0)) {
                 p.getCooldowns(hackType).add("resistance", ticks);
             }
         }
@@ -140,6 +141,6 @@ public class FastEat extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && player.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && !player.hasPotionEffect(PotionEffectType.SATURATION);
+                && !player.hasPotionEffect(PotionEffectType.SATURATION, 0);
     }
 }

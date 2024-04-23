@@ -61,7 +61,7 @@ public class EventsHandler_1_13 implements Listener {
                     return;
                 }
                 // Objects
-                p.setActivePotionEffects(n.getActivePotionEffects());
+                p.setStoredPotionEffects(n.getActivePotionEffects());
 
                 // Detections
                 if (!e.isCancelled()) {

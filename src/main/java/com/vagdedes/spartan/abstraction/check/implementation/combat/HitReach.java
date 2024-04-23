@@ -35,7 +35,7 @@ public class HitReach extends CheckExecutor {
                 && CombatUtils.getWidthAndHeight(entity)[1] > 2.0) {
             preferred = 5.0;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_7)
-                || PlayerUtils.getPotionLevel(player, PotionEffectType.SPEED) > 0
+                || player.hasPotionEffect(PotionEffectType.SPEED, PlayerUtils.getPotionEffectExtraTime(PotionEffectType.SPEED))
                 && player.movement.getValueOrDefault(player.movement.getNmsHorizontalDistance(), 0.0) >= Speed.ground) {
             preferred = 4.25;
         } else {
