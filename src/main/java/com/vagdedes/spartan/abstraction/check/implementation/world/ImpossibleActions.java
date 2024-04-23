@@ -179,7 +179,7 @@ public class ImpossibleActions extends CheckExecutor {
                     + ", block-against: " + BlockUtils.materialToString(blockAgainstType));
         } else if (blockType != Material.FIRE
                 && blockType.isBlock()
-                && !player.movement.wasFlying()
+                && !player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !blockType.equals(soil)) {
             GameMode gameMode = player.getGameMode();

@@ -87,6 +87,8 @@ public class HashUtils {
                 potionEffects = new ArrayList<>(0);
             }
         } else {
+            hash = extendInt(hash, Boolean.hashCode(player.movement.getLastFlight() <= TPS.maximum));
+            hash = extendInt(hash, Boolean.hashCode(player.movement.isFlying()));
             hash = extendInt(hash, player.getGameMode().toString().hashCode());
             hash = extendInt(hash, Double.hashCode(player.getEyeHeight()));
             hash = extendInt(hash, Boolean.hashCode(player.movement.isGliding()));
@@ -94,7 +96,6 @@ public class HashUtils {
             hash = extendInt(hash, Boolean.hashCode(player.movement.isCrawling()));
             hash = extendInt(hash, Boolean.hashCode(player.isFrozen()));
             hash = extendInt(hash, Boolean.hashCode(player.movement.isSneaking()));
-            hash = extendInt(hash, Boolean.hashCode(player.movement.isFlying()));
             hash = extendInt(hash, Boolean.hashCode(player.isOnGround()));
             hash = extendInt(hash, Math.min(AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal), 1000));
             potionEffects = player.getActivePotionEffects();
@@ -228,7 +229,7 @@ public class HashUtils {
                 hash,
                 player.getTrackers().getRemainingTicks(Trackers.TrackerType.BouncingBlocks, "bed")
         );
-        long lastLiquid = player.movement.getLastLiquidTick();
+        long lastLiquid = player.movement.getLastLiquid();
 
         if (lastLiquid <= TPS.maximum) {
             hash = extendInt(hash, Long.hashCode(lastLiquid));

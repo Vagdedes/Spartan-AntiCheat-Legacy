@@ -214,7 +214,7 @@ public class MovementProcessing {
     public static boolean canCheck(SpartanPlayer player) {
         if (!Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)
                 && player.canRunChecks(true)
-                && !player.movement.wasFlying()
+                && player.movement.getLastFlight() > (TPS.maximum * 2)
                 && !AbstractVelocity.hasCooldown(player)) {
             if (Compatibility.CompatibilityType.MythicMobs.isFunctional()
                     || Compatibility.CompatibilityType.ItemsAdder.isFunctional()) {

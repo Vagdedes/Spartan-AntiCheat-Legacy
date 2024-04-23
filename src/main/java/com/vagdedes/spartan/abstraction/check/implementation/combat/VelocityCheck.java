@@ -44,7 +44,7 @@ public class VelocityCheck extends CheckExecutor {
                 && !player.isUsingItem()
                 && !player.isDead()
                 && !player.isOutsideOfTheBorder(-1.0)
-                && !player.movement.wasFlying()
+                && !player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !player.hasShield()
                 && !player.movement.wasInLiquids()

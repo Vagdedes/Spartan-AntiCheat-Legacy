@@ -115,7 +115,7 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     private int getActionCase() {
-        if (player.movement.wasFlying()) {
+        if (player.movement.isFlying()) {
             return 0;
         } else {
             Check check = ImpossibleInventory.check.getCheck();

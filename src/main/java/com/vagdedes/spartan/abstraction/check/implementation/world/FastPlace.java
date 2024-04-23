@@ -85,7 +85,7 @@ public class FastPlace extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.movement.wasFlying()
+                && !player.movement.isFlying()
                 && !PrinterMode.canCancel(player)
                 && !Vehicles.has(player, new String[]{"drill", "tractor"});
     }

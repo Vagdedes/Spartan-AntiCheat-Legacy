@@ -42,7 +42,7 @@ public class BlockReach extends CheckExecutor {
     private double getLimit() {
         return Math.max(
                 hackType.getCheck().getDecimalOption("overall_distance", 7.5),
-                player.movement.wasFlying() ? PlayerUtils.chunk : minimumLimit
+                player.movement.isFlying() ? PlayerUtils.chunk : minimumLimit
         );
     }
 

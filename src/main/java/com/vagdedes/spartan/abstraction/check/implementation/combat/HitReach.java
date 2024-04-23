@@ -109,7 +109,7 @@ public class HitReach extends CheckExecutor {
     protected boolean canDo() {
         return !player.bedrockPlayer
                 && player.canRunCheck(hackType, true)
-                && !player.movement.wasFlying()
+                && !player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !NoHitDelay.hasCooldown(player);
     }

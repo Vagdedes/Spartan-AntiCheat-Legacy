@@ -191,7 +191,7 @@ public class Criticals extends CheckExecutor {
     @Override
     protected boolean canDo() {
         if (player.canRunCheck(hackType, true)
-                && !player.movement.wasFlying()
+                && !player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !player.movement.wasInLiquids()
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS)

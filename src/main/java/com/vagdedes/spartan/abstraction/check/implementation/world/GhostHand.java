@@ -82,7 +82,7 @@ public class GhostHand extends CheckExecutor {
     protected boolean canDo() {
         if (!player.bedrockPlayer
                 && player.canRunCheck(hackType, true)
-                && !player.movement.wasFlying()
+                && !player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.canCancel(player)

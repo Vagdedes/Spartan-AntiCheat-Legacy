@@ -34,7 +34,7 @@ public class SpartanPlayerMovement {
             lastFall,
             lastJump,
             swimmingTime,
-            flyingTime,
+            flyingTick,
             lastLiquidTicks;
     private int
             airTicks,
@@ -61,7 +61,7 @@ public class SpartanPlayerMovement {
         this.lastFall = 0L;
         this.lastJump = 0L;
         this.swimmingTime = 0L;
-        this.flyingTime = 0L;
+        this.flyingTick = 0L;
         this.lastLiquidTicks = 0L;
 
         this.airTicks = 0;
@@ -232,13 +232,14 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public long getLastLiquidTick() {
+    public long getLastLiquid() {
         return TPS.getTick(this.parent) - this.lastLiquidTicks;
     }
 
     public boolean wasInLiquids() {
-        return this.getLastLiquidTick() <= 10L;
+        return this.getLastLiquid() <= 10L;
     }
+
     public synchronized void setLastLiquidTime() {
         lastLiquidTicks = TPS.getTick(this.parent);
     }
@@ -395,8 +396,8 @@ public class SpartanPlayerMovement {
         return vehicle != null ? vehicle instanceof Player && ((Player) vehicle).isFlying() : flying;
     }
 
-    public boolean wasFlying() {
-        return isFlying() || this.flyingTime >= System.currentTimeMillis();
+    public long getLastFlight() {
+        return TPS.getTick(this.parent) - this.flyingTick;
     }
 
     public synchronized void setFlying(boolean flying) {
@@ -407,7 +408,7 @@ public class SpartanPlayerMovement {
         this.flying = flying;
 
         if (flying) {
-            this.flyingTime = System.currentTimeMillis() + 3_000L;
+            this.flyingTick = TPS.getTick(this.parent);
         }
     }
 
