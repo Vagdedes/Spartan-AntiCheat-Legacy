@@ -236,14 +236,16 @@ public class MaterialUtils {
             // Separator
             SpartanPotionEffect hasteEffect = player.getPotionEffect(PotionEffectType.FAST_DIGGING, 0);
 
-            if (hasteEffect.isActive()) {
+            if (hasteEffect != null
+                    && hasteEffect.isActive()) {
                 multiplier *= (0.2 * hasteEffect.bukkitEffect.getAmplifier()) + 1.0;
             }
 
             // Separator
             SpartanPotionEffect miningFatigueEffect = player.getPotionEffect(PotionEffectType.SLOW_DIGGING, 0);
 
-            if (miningFatigueEffect.isActive()) {
+            if (miningFatigueEffect != null
+                    && miningFatigueEffect.isActive()) {
                 multiplier *= Math.pow(miningFatigueEffect.bukkitEffect.getAmplifier(), 0.3);
             }
 
