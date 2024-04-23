@@ -20,7 +20,7 @@ public class SpartanPotionEffect {
 
     static List<SpartanPotionEffect> listFromBukkit(SpartanPlayer player,
                                                     Collection<PotionEffect> collection) {
-        List<SpartanPotionEffect> list = new ArrayList<>();
+        List<SpartanPotionEffect> list = new ArrayList<>(collection.size());
 
         for (PotionEffect effect : collection) {
             list.add(new SpartanPotionEffect(player, effect));
@@ -32,19 +32,20 @@ public class SpartanPotionEffect {
 
     private final SpartanPlayer parent;
     public final PotionEffect bukkitEffect;
-    private final long tick;
+    private final long expiration;
 
     public SpartanPotionEffect(SpartanPlayer player, PotionEffect effect) {
         this.parent = player;
         this.bukkitEffect = effect;
-        this.tick = TPS.getTick(player);
+        this.expiration = TPS.getTick(player) + effect.getDuration();
     }
 
     public long ticksPassed() {
-        return 0;
+        long remaining = this.expiration - TPS.getTick(this.parent);
+        return remaining <= 0 ? 0 : Math.abs(remaining);
     }
 
     public boolean isActive() {
-        return this.ticksPassed() == 0;
+        return this.expiration - TPS.getTick(this.parent) <= 0;
     }
 }
