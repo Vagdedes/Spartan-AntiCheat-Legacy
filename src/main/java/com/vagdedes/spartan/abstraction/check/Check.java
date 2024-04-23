@@ -440,9 +440,7 @@ public class Check {
                 if (event == null || !event.isCancelled()) {
                     this.enabled[ordinal] = b;
 
-                    if (b) {
-                        CloudBase.refresh(true);
-                    } else {
+                    if (!b) {
                         clearConfigurationCache();
 
                         for (SpartanPlayer player : SpartanBukkit.getPlayers()) {

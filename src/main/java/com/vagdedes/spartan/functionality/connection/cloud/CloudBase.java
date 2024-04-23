@@ -34,7 +34,9 @@ public class CloudBase {
             allDisabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
 
     // Functionality
-    private static long connectionFailedCooldown = 0L;
+    private static long
+            connectionFailedCooldown = 0L,
+            refreshTime = 60_000L;
     private static final long[] connectionRefreshCooldown = new long[2];
     private static int outdatedVersion = AutoUpdater.NOT_CHECKED,
             detectionSlots;
@@ -48,12 +50,10 @@ public class CloudBase {
         clear(false);
 
         if (Register.isPluginLoaded()) {
-            SpartanBukkit.runRepeatingTask(() -> {
-                SpartanBukkit.connectionThread.execute(() -> {
-                    refresh(true);
-                    refresh(false);
-                });
-            }, 1L, 1L);
+            SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.execute(() -> {
+                refresh(true);
+                refresh(false);
+            }), 1L, refreshTime);
         }
     }
 
@@ -138,7 +138,7 @@ public class CloudBase {
         long ms = System.currentTimeMillis();
 
         if (connectionFailedCooldown >= ms) {
-            connectionFailedCooldown = ms + 60_000L;
+            connectionFailedCooldown = ms + refreshTime;
 
             if (AwarenessNotifications.areEnabled()) {
                 AwarenessNotifications.forcefullySend("(" + function + ") Failed to connect to the Game Cloud.");
@@ -162,7 +162,7 @@ public class CloudBase {
         long ms = System.currentTimeMillis();
 
         if (connectionRefreshCooldown[independent ? 0 : 1] <= ms) {
-            connectionRefreshCooldown[independent ? 0 : 1] = ms + 60_000L;
+            connectionRefreshCooldown[independent ? 0 : 1] = ms + refreshTime;
 
             // Separator
             if (independent) {
