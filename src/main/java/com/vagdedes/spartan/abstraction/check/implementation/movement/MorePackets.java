@@ -108,8 +108,8 @@ public class MorePackets extends CheckExecutor {
                                 && !player.isUsingItem()
                                 && !CombatProcessing.isSignificantDamage(player)
                                 && !CombatProcessing.hasExplosionDamage(player)
-                                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                                && !player.getHandlers().has(Handlers.HandlerType.Trident)
+                                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
+                                && !player.getTrackers().has(Trackers.TrackerType.Trident)
                                 && zeroTickBuffer > (tickBuffer / 2)) {
                             cases = 2; // Alternatively, allow them to pass if more than half of the recorded ticks have been instant in relative to the previous tick
                             decreasedRequirement = true;
@@ -229,8 +229,8 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.getHandlers().has(Handlers.HandlerType.BubbleWater, "soul-sand")
-                && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
+                && !player.getTrackers().has(Trackers.TrackerType.BubbleWater, "soul-sand")
+                && !player.getTrackers().has(Trackers.TrackerType.SensitiveBlockBreak)
                 && !CrackShot.isUsingScope(player);
     }
 }

@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Decimals;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
@@ -67,7 +67,7 @@ public class NoFall extends CheckExecutor {
             String cooldownKey = "air=cooldown";
             int cooldownTicks = 10;
 
-            if (airTicks > 0 && vertical > -3.5 && !player.getHandlers().has(Handlers.HandlerType.ElytraWear) && !PlayerUtils.hasJumpEffect(player)) {
+            if (airTicks > 0 && vertical > -3.5 && !player.getTrackers().has(Trackers.TrackerType.ElytraWear) && !PlayerUtils.hasJumpEffect(player)) {
                 if (PatternUtils.isBlockPattern(air, to, true, BlockUtils.semi_solid)) {
                     player.getCooldowns(hackType).add(cooldownKey, cooldownTicks);
                     return;
@@ -156,7 +156,7 @@ public class NoFall extends CheckExecutor {
                 && player.isOnGround()
                 && !player.isOnGroundCustom()
                 && player.isGroundSpoofing()
-                && !player.getHandlers().has(Handlers.HandlerType.ElytraWear)
+                && !player.getTrackers().has(Trackers.TrackerType.ElytraWear)
                 && !PatternUtils.isBlockPattern(spoof, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
             cancel("type: spoof, air: " + airTicks + ", vertical: " + vertical, from, 10, true, 0.0);
         }
@@ -169,7 +169,7 @@ public class NoFall extends CheckExecutor {
                              int airTicks,
                              boolean requiresSuspicion,
                              Buffer buffer, Decimals decimals) {
-        if (!player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
+        if (!player.getTrackers().has(Trackers.TrackerType.SensitiveBlockBreak)) {
             if (hackType.getCheck().getBooleanOption("check_ratio", true)
                     && !PlayerUtils.hasJumpEffect(player)
                     && !MovementProcessing.recentlyBounced(player)
@@ -342,11 +342,11 @@ public class NoFall extends CheckExecutor {
                         && !player.isInvulnerable()
                         && !player.movement.wasInLiquids()
                         && loc.getBlockY() > BlockUtils.getMinHeight(player.getWorld())
-                        && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
-                        && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
-                        && !player.getHandlers().has(Handlers.HandlerType.BubbleWater, "soul-sand")
+                        && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
+                        && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
+                        && !player.getTrackers().has(Trackers.TrackerType.BubbleWater, "soul-sand")
                         && !CombatProcessing.hasExplosionDamage(player)
-                        && !player.getHandlers().has(Handlers.HandlerType.TowerBuilding)
+                        && !player.getTrackers().has(Trackers.TrackerType.TowerBuilding)
                         && !NoHitDelay.hasCooldown(player)
                         && !PlayerUtils.hasLevitationEffect(player)
                         && !PlayerUtils.hasSlowFallingEffect(player)

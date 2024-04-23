@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
@@ -92,7 +92,7 @@ public class WaterSpeed extends DetectionExecutor {
                     locM2 = to.clone().add(0, -2, 0);
             boolean suspicion,
                     clearMovement,
-                    isSwimming = !player.getHandlers().has(Handlers.HandlerType.Vehicle, "non-boat") && player.movement.isSwimming();
+                    isSwimming = !player.getTrackers().has(Trackers.TrackerType.Vehicle, "non-boat") && player.movement.isSwimming();
 
             if (player.movement.isJumping(vertical)) {
                 suspicion = false;
@@ -297,9 +297,9 @@ public class WaterSpeed extends DetectionExecutor {
         double modifiedLimit = limit;
 
         // Separator
-        if (player.getHandlers().has(Handlers.HandlerType.Trident)) {
+        if (player.getTrackers().has(Trackers.TrackerType.Trident)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), 4.5));
-        } else if (player.getHandlers().has(Handlers.HandlerType.Piston)) {
+        } else if (player.getTrackers().has(Trackers.TrackerType.Piston)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), Speed.piston));
         } else if (boatStepping
                 || selfHit
@@ -309,7 +309,7 @@ public class WaterSpeed extends DetectionExecutor {
                 || CombatProcessing.hasExplosionDamage(player)) {
             modifiedLimit = Math.max(modifiedLimit, Math.max(PlayerUtils.getWalkSpeedDifference(player), premature));
         } else if (player.bedrockPlayer
-                || player.getHandlers().has(Handlers.HandlerType.TowerBuilding)) {
+                || player.getTrackers().has(Trackers.TrackerType.TowerBuilding)) {
             modifiedLimit = Math.max(modifiedLimit, instability);
         }
 
@@ -354,9 +354,9 @@ public class WaterSpeed extends DetectionExecutor {
                 && hackType.getCheck().getBooleanOption("check_water_speed", true)
                 && (selfHit || !CombatProcessing.isSignificantDamage(player))
                 && !PlayerUtils.hasNearbyCollisions(player)
-                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
                 && !PlayerUtils.hasLevitationEffect(player)
-                && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)) {
+                && !player.getTrackers().has(Trackers.TrackerType.SensitiveBlockBreak)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                 Entity vehicle = player.getVehicle();
 

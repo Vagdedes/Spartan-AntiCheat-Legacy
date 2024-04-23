@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
@@ -45,10 +45,11 @@ public class VelocityCheck extends CheckExecutor {
                 && !player.isDead()
                 && !player.isOutsideOfTheBorder(-1.0)
                 && !player.movement.wasFlying()
+                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !player.hasShield()
                 && !player.movement.wasInLiquids()
                 && player.getBlocksOffGround(3) <= 2
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
                 && player.getEnemiesNumber(CombatUtils.maxHitDistance, false) <= 5
                 && !NoHitDelay.hasCooldown(player)
                 && !Attributes.has(player, Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {

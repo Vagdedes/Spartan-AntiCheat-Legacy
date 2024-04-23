@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Decimals;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
@@ -116,7 +116,7 @@ public class IrregularMovements extends CheckExecutor {
 
             // Early Variables
             boolean liquidBlocks,
-                    waterElevator = player.getHandlers().has(Handlers.HandlerType.BubbleWater, "soul-sand");
+                    waterElevator = player.getTrackers().has(Trackers.TrackerType.BubbleWater, "soul-sand");
 
             if (waterElevator
                     || PatternUtils.collides(to, true, true, 0.0, BlockUtils.liquid)) {
@@ -155,7 +155,7 @@ public class IrregularMovements extends CheckExecutor {
                     knownBoxes = knownBoxesNew || knownBoxesOld,
                     bouncingBlocks = MovementProcessing.recentlyBounced(player),
                     jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP),
-                    threwTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
+                    threwTrident = player.getTrackers().has(Trackers.TrackerType.Trident),
                     explosion = CombatProcessing.hasExplosionDamage(player),
                     falling = player.movement.isFalling(vertical),
                     oldFalling = player.movement.isFalling(oldVertical),
@@ -167,7 +167,7 @@ public class IrregularMovements extends CheckExecutor {
             Cooldowns cooldowns = player.getCooldowns(hackType);
             boolean heightExists = cacheBoolean(cooldowns, knownBoxes, "height-exists=half", 10),
                     building = cacheBoolean(cooldowns,
-                            player.getHandlers().has(Handlers.HandlerType.TowerBuilding), "building", 20),
+                            player.getTrackers().has(Trackers.TrackerType.TowerBuilding), "building", 20),
                     pastFalling = cacheBoolean(cooldowns, falling || oldFalling, "past-falling", 20);
 
             // Combination Variables
@@ -178,7 +178,7 @@ public class IrregularMovements extends CheckExecutor {
             if (threwTrident
                     || PlayerUtils.hasNearbyCollisions(player)
                     || NoHitDelay.hasCooldown(player)
-                    || player.getHandlers().has(Handlers.HandlerType.Piston)) { // Extreme circumstances
+                    || player.getTrackers().has(Trackers.TrackerType.Piston)) { // Extreme circumstances
                 velocityScenario = true;
 
                 scenario = "abstract";
@@ -523,7 +523,7 @@ public class IrregularMovements extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
                 && (!player.bedrockPlayer || player.movement.getEventToLocation().getBlockY() > BlockUtils.getMinHeight(player.getWorld()));
     }
 }

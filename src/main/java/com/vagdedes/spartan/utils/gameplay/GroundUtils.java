@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -195,7 +195,7 @@ public class GroundUtils {
                     && p.movement.isFalling(oldVertical)) {
                 return false;
             }
-            if (p.getHandlers().has(Handlers.HandlerType.Piston)
+            if (p.getTrackers().has(Trackers.TrackerType.Piston)
                     || stepsOnBoats(p)
                     || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
                 p.movement.setAirTicks(0);

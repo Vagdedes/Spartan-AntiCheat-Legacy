@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.data.Timer;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -20,7 +20,7 @@ public class Building {
         if (p.movement.isFlying() || Permissions.isBypassing(p, null)) {
             return;
         }
-        Handlers handlers = p.getHandlers();
+        Trackers handlers = p.getTrackers();
 
         if (cancelled) {
             Timer timer = p.getTimer();
@@ -31,7 +31,7 @@ public class Building {
                     || blockFace == BlockFace.SELF)
                     && (p.getViolations(Enums.HackType.FastPlace).hasLevel()
                     || p.getBuffer().start("building=protection=attempts", 20, Check.detectionMeasurementTicks) >= 0.25)) {
-                handlers.disable(Handlers.HandlerType.TowerBuilding, 10);
+                handlers.disable(Trackers.TrackerType.TowerBuilding, 10);
 
                 if (Config.settings.getBoolean("Protections.disallowed_building")) {
                     teleport(p, p.movement.getLocation());
@@ -51,7 +51,7 @@ public class Building {
             if (cancelled) {
                 if (Config.settings.getBoolean("Protections.disallowed_building")) {
                     handlers.add(
-                            offGround ? Handlers.HandlerType.TowerBuilding : Handlers.HandlerType.BridgeBuilding,
+                            offGround ? Trackers.TrackerType.TowerBuilding : Trackers.TrackerType.BridgeBuilding,
                             10
                     );
 
@@ -60,13 +60,13 @@ public class Building {
                     }
                 } else {
                     handlers.add(
-                            offGround ? Handlers.HandlerType.TowerBuilding : Handlers.HandlerType.BridgeBuilding,
+                            offGround ? Trackers.TrackerType.TowerBuilding : Trackers.TrackerType.BridgeBuilding,
                             10
                     );
                 }
             } else {
                 handlers.add(
-                        offGround ? Handlers.HandlerType.TowerBuilding : Handlers.HandlerType.BridgeBuilding,
+                        offGround ? Trackers.TrackerType.TowerBuilding : Trackers.TrackerType.BridgeBuilding,
                         10
                 );
             }

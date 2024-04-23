@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -23,7 +23,7 @@ public class IrregularMovementsClimb extends DetectionExecutor {
              boolean canJump, boolean bouncingBlocks, boolean jumping,
              String prevention, String scenario) {
         if (hackType.getCheck().getBooleanOption("check_climbing", true)
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
+                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)) {
             Double vertical = player.movement.getNmsVerticalDistance(),
                     oldVertical = player.movement.getPreviousNmsVerticalDistance(),
                     box = player.movement.getNmsBox();

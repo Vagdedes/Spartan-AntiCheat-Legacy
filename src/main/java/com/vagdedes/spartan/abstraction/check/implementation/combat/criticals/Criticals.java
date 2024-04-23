@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.criticals;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Decimals;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -192,10 +192,11 @@ public class Criticals extends CheckExecutor {
     protected boolean canDo() {
         if (player.canRunCheck(hackType, true)
                 && !player.movement.wasFlying()
+                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !player.movement.wasInLiquids()
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS)
                 && player.getBlocksOffGround(3) <= 2
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
                 && !MovementProcessing.recentlyBounced(player)) {
             SpartanLocation location = player.movement.getLocation();
             return !PatternUtils.isBlockPattern(aboveBlock, location, true, BlockUtils.solid, BlockUtils.semi_solid)

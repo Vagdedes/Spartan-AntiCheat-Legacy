@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -62,7 +62,7 @@ public class ImpossibleInventory extends CheckExecutor {
     public boolean runInternal(boolean cancelled) {
         if (canDo()
                 && !player.movement.isSwimming()
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
                 && player.getOpenInventory().isUsingTheCursor()) {
             int cases = getActionCase();
 
@@ -95,7 +95,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !click.isCreativeAction()
                 && !click.isKeyboardClick()
                 && !player.movement.isSwimming()
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
                 && PlayerUtils.isUsingAnInventory(player, 0)
                 && !PatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)
                 && (cases != jumping || player.getBuffer(check).start("closed-inventory", 20, Check.detectionMeasurementTicks) >= (requiredJumpingMotions / 20.0))) {

@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.tracking;
 
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -21,9 +21,9 @@ public class TridentUse {
                     int ticks = AlgebraUtils.integerRound(Math.log(level) * TPS.maximum);
 
                     if (level > riptideMaxSafeLevel) {
-                        p.getHandlers().add(Handlers.HandlerType.AbstractVelocity, ticks);
+                        p.getTrackers().add(Trackers.TrackerType.AbstractVelocity, ticks);
                     } else {
-                        p.getHandlers().add(Handlers.HandlerType.Trident, ticks);
+                        p.getTrackers().add(Trackers.TrackerType.Trident, ticks);
                     }
                     break;
                 }

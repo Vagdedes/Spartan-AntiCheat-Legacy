@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
@@ -82,6 +83,7 @@ public class GhostHand extends CheckExecutor {
         if (!player.bedrockPlayer
                 && player.canRunCheck(hackType, true)
                 && !player.movement.wasFlying()
+                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.canCancel(player)
                 && !mcMMO.hasGeneralAbility(player)) {

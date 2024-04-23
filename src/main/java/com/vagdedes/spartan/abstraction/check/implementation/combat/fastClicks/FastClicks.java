@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.fastClicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -30,7 +30,7 @@ public class FastClicks extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
+                && !player.getTrackers().has(Trackers.TrackerType.SensitiveBlockBreak)
                 && !PlayerUtils.isPickaxeItem(player.getItemInHand().getType())
                 && !PrinterMode.canCancel(player);
     }

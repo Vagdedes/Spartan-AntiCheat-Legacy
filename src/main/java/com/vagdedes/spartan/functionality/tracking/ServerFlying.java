@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -18,8 +18,8 @@ public class ServerFlying {
                 && !p.isSleeping()
                 && !p.isDead()
                 && !MovementProcessing.recentlyBounced(p)
-                && !p.getHandlers().has(Handlers.HandlerFamily.Velocity)
-                && !p.getHandlers().has(Handlers.HandlerFamily.Motion)
+                && !p.getTrackers().has(Trackers.TrackerFamily.Velocity)
+                && !p.getTrackers().has(Trackers.TrackerFamily.Motion)
                 && !Attributes.has(p, Attributes.GENERIC_FLYING_SPEED)) {
             double limit = (p.getFlySpeed() * 10.0) + 1.0;
             Double nmsDistance = p.movement.getNmsDistance();

@@ -82,8 +82,8 @@ public class XRay extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, false)
-                && player.canDo(true)
                 && player.getWorld().getWorldType() != WorldType.FLAT
                 && !player.getViolations(hackType).hasLevel();
     }
+
 }

@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
@@ -59,7 +59,7 @@ public class SprintSpeed extends DetectionExecutor {
     // Separator
 
     void run() {
-        if (!player.getHandlers().has(Handlers.HandlerType.Vehicle)
+        if (!player.getTrackers().has(Trackers.TrackerType.Vehicle)
                 && !player.movement.wasInLiquids()
                 && !player.movement.isCrawling()
                 && PlayerUtils.getWalkSpeedDifference(player) != 0.0f) {
@@ -99,7 +99,7 @@ public class SprintSpeed extends DetectionExecutor {
         if (!hackType.getCheck().getBooleanOption("check_omnidirectional_sprinting", true)
                 || CombatProcessing.isSignificantDamage(player)
                 || CombatProcessing.hasExplosionDamage(player)
-                || player.getHandlers().has(Handlers.HandlerType.Piston)
+                || player.getTrackers().has(Trackers.TrackerType.Piston)
                 || CrackShot.isUsingScope(player)
                 || Compatibility.CompatibilityType.ItemAttributes.isFunctional()) {
             return;

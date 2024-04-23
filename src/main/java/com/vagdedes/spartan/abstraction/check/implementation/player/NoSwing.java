@@ -3,8 +3,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.data.Timer;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
@@ -82,7 +82,7 @@ public class NoSwing extends CheckExecutor {
         if (!canDo()
                 || !hackType.getCheck().getBooleanOption("check_damage", true)
                 || player.hasAttackCooldown()
-                || player.getHandlers().has(Handlers.HandlerType.Trident)) {
+                || player.getTrackers().has(Trackers.TrackerType.Trident)) {
             return;
         }
         Cooldowns cooldowns = player.getCooldowns(hackType);

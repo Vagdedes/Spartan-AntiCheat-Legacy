@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
@@ -171,9 +171,9 @@ public class NoSlowdown extends CheckExecutor {
         return player.canRunCheck(hackType, true)
                 && !player.movement.isSwimming()
                 && !player.movement.wasInLiquids()
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)
+                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
                 && !CombatProcessing.hasExplosionDamage(player)
-                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse);
+                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse);
     }
 
     private int getMovementCase(SpartanPlayer p) {

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.utils.gameplay;
 
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -14,7 +14,6 @@ import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -140,7 +139,7 @@ public class PlayerUtils {
         }
     }
 
-    public static void run(SpartanPlayer p, Player n, Collection<PotionEffect> potionEffects) {
+    public static void run(SpartanPlayer p, Collection<PotionEffect> potionEffects) {
         if (!p.isDead() && !p.isSleeping()) {
             Buffer buffer = p.getBuffer();
             SpartanLocation to = p.movement.getLocation(),
@@ -497,7 +496,7 @@ public class PlayerUtils {
 
     public static boolean hasNearbyCollisions(SpartanPlayer p) {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                && (p.getHandlers().has(Handlers.HandlerType.ExtremeCollision)
+                && (p.getTrackers().has(Trackers.TrackerType.ExtremeCollision)
                 || getNearbyCollisions(p, p.movement.getLocation()) > 0);
     }
 

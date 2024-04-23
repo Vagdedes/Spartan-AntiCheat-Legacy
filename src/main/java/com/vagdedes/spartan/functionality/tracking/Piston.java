@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.tracking;
 
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -53,7 +53,7 @@ public class Piston {
     private static boolean run(SpartanPlayer player, double preX, double diffY, double preZ) {
         if (Math.sqrt(preX + preZ) <= horizontalDistance
                 && Math.abs(diffY) <= verticalDistance) {
-            player.getHandlers().add(Handlers.HandlerType.Piston, (int) TPS.maximum);
+            player.getTrackers().add(Trackers.TrackerType.Piston, (int) TPS.maximum);
             return true;
         }
         return false;

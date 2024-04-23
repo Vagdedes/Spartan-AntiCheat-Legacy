@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -90,8 +90,8 @@ public class SpartanPlayerDamage {
             int level = this.activeItem.getEnchantmentLevel(Enchantment.KNOCKBACK);
 
             if (level > 2) {
-                this.parent.getHandlers().add(
-                        Handlers.HandlerType.AbstractVelocity,
+                this.parent.getTrackers().add(
+                        Trackers.TrackerType.AbstractVelocity,
                         AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
                 );
             }

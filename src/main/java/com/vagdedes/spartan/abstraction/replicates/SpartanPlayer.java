@@ -31,7 +31,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
-import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
@@ -44,7 +43,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.AbstractVelocity;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
 import com.vagdedes.spartan.listeners.EventsHandler7;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -74,7 +72,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-public class SpartanPlayer {
+public class SpartanPlayer { // todo add handler for potions
 
     private static final int tickFrequency = 5 * 1200;
     private static int syncTicks = 0;
@@ -105,11 +103,10 @@ public class SpartanPlayer {
     private final Buffer[] buffer;
     private final Timer[] timer;
     private final Decimals[] decimals;
-    private final Tracker[] tracker;
     private final Cooldowns[] cooldowns;
     private final CheckExecutor[] executors;
     private final LiveViolation[] violations;
-    final Handlers handlers;
+    final Trackers trackers;
     private LiveViolation lastViolation;
 
     // Cache
@@ -157,9 +154,6 @@ public class SpartanPlayer {
                 }
                 for (Decimals decimals : p.decimals) {
                     decimals.clear();
-                }
-                for (Tracker tracker : p.tracker) {
-                    tracker.clear();
                 }
                 for (Cooldowns cooldowns : p.cooldowns) {
                     cooldowns.clear();
@@ -233,7 +227,6 @@ public class SpartanPlayer {
                                 p.getTimer(hackType).clear();
                                 p.getDecimals(hackType).clear();
                                 p.getCooldowns(hackType).clear();
-                                p.getTracker(hackType).clear();
                             }
                         }
                     }
@@ -248,7 +241,7 @@ public class SpartanPlayer {
                         if (n != null) {
                             Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
                             p.setActivePotionEffects(potionEffects); // Bad
-                            PlayerUtils.run(p, n, potionEffects);
+                            PlayerUtils.run(p, potionEffects);
                         }
 
                         // Preventions
@@ -337,7 +330,7 @@ public class SpartanPlayer {
         this.runCheckAccountLag = new LinkedHashMap<>(hackTypes.length);
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? Enums.DataType.Bedrock : Enums.DataType.Java;
-        this.handlers = new Handlers(this);
+        this.trackers = new Trackers(this);
 
         this.ipAddress = PlayerLimitPerIP.get(p);
         this.name = p.getName();
@@ -395,7 +388,6 @@ public class SpartanPlayer {
         this.buffer = new Buffer[hackTypes.length + 1];
         this.timer = new Timer[hackTypes.length + 1];
         this.decimals = new Decimals[hackTypes.length + 1];
-        this.tracker = new Tracker[hackTypes.length + 1];
         this.cooldowns = new Cooldowns[hackTypes.length + 1];
         this.executors = new CheckExecutor[hackTypes.length];
         this.violations = new LiveViolation[hackTypes.length];
@@ -405,7 +397,6 @@ public class SpartanPlayer {
             this.buffer[id] = new Buffer(this);
             this.timer[id] = new Timer();
             this.decimals[id] = new Decimals();
-            this.tracker[id] = new Tracker();
             this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
 
@@ -493,7 +484,6 @@ public class SpartanPlayer {
         this.buffer[hackTypes.length] = new Buffer(this);
         this.timer[hackTypes.length] = new Timer();
         this.decimals[hackTypes.length] = new Decimals();
-        this.tracker[hackTypes.length] = new Tracker();
         this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
@@ -565,10 +555,6 @@ public class SpartanPlayer {
         return decimals[Enums.HackType.values().length];
     }
 
-    public Tracker getTracker() {
-        return tracker[Enums.HackType.values().length];
-    }
-
     public Cooldowns getCooldowns() {
         return cooldowns[Enums.HackType.values().length];
     }
@@ -585,10 +571,6 @@ public class SpartanPlayer {
         return decimals[hackType.ordinal()];
     }
 
-    public Tracker getTracker(Enums.HackType hackType) {
-        return tracker[hackType.ordinal()];
-    }
-
     public Cooldowns getCooldowns(Enums.HackType hackType) {
         return cooldowns[hackType.ordinal()];
     }
@@ -599,13 +581,13 @@ public class SpartanPlayer {
 
     // Separator
 
-    public Handlers getHandlers() {
-        return handlers;
+    public Trackers getTrackers() {
+        return trackers;
     }
 
     public void resetHandlers() {
-        for (Handlers.HandlerType handlerType : Handlers.HandlerType.values()) {
-            handlers.remove(handlerType);
+        for (Trackers.TrackerType handlerType : Trackers.TrackerType.values()) {
+            trackers.remove(handlerType);
         }
     }
 
@@ -743,9 +725,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    // Separator
-
-    private boolean canRunChecks(boolean accountLag) {
+    public boolean canRunChecks(boolean accountLag) {
         return runChecks[accountLag ? 0 : 1];
     }
 
@@ -995,7 +975,7 @@ public class SpartanPlayer {
                     if (targetBlock != null && BlockUtils.isSolid(targetBlock.material)) {
                         SpartanLocation targetBlockLocation = targetBlock.getLocation();
 
-                        if (clickedBlockLocation.distance(targetBlockLocation) >= (handlers.has(Handlers.HandlerType.ElytraUse) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
+                        if (clickedBlockLocation.distance(targetBlockLocation) >= (trackers.has(Trackers.TrackerType.ElytraUse) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
 
                                 && (targetBlock.x != clickedBlock.x
                                 || targetBlock.y != clickedBlock.y
@@ -1591,7 +1571,7 @@ public class SpartanPlayer {
     // Separator
 
     public boolean applyFallDamage(double d) {
-        handlers.disable(Handlers.HandlerType.AbstractVelocity, 3);
+        trackers.disable(Trackers.TrackerType.AbstractVelocity, 3);
         return this.damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 
@@ -1610,25 +1590,6 @@ public class SpartanPlayer {
     }
 
     // Separator
-
-    public boolean canDo(boolean bypassItemAttributes) {
-        if ((bypassItemAttributes || !Attributes.has(this, Attributes.GENERIC_MOVEMENT_SPEED))
-                && !isDead() && !isSleeping() && canRunChecks(true) && !this.movement.wasFlying() && !AbstractVelocity.hasCooldown(this)) {
-            if (Compatibility.CompatibilityType.MythicMobs.isFunctional() || Compatibility.CompatibilityType.ItemsAdder.isFunctional()) {
-                List<Entity> entities = getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance);
-
-                if (!entities.isEmpty()) {
-                    for (Entity entity : entities) {
-                        if (MythicMobs.is(entity) || ItemsAdder.is(entity)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
-    }
 
     public String getCancellableCompatibility() {
         return MythicMobs.is(this) ? Compatibility.CompatibilityType.MythicMobs.toString() :

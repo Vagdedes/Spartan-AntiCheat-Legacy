@@ -7,47 +7,47 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Handlers {
+public class Trackers {
 
-    public enum HandlerFamily {
+    public enum TrackerFamily {
         Velocity, Constant, Environment, Motion, Part
     }
 
-    public enum HandlerType {
-        SensitiveBlockBreak(HandlerFamily.Environment), TowerBuilding(HandlerFamily.Environment),
-        BridgeBuilding(HandlerFamily.Environment),
+    public enum TrackerType {
+        SensitiveBlockBreak(TrackerFamily.Environment), TowerBuilding(TrackerFamily.Environment),
+        BridgeBuilding(TrackerFamily.Environment),
 
-        AbstractVelocity(HandlerFamily.Velocity), BouncingBlocks(HandlerFamily.Velocity),
-        Piston(HandlerFamily.Velocity), BubbleWater(HandlerFamily.Velocity),
-        ExtremeCollision(HandlerFamily.Velocity), Trident(HandlerFamily.Velocity),
+        AbstractVelocity(TrackerFamily.Velocity), BouncingBlocks(TrackerFamily.Velocity),
+        Piston(TrackerFamily.Velocity), BubbleWater(TrackerFamily.Velocity),
+        ExtremeCollision(TrackerFamily.Velocity), Trident(TrackerFamily.Velocity),
 
-        ElytraWear(HandlerFamily.Part), Vehicle(HandlerFamily.Part),
-        GameMode(HandlerFamily.Part),
+        ElytraWear(TrackerFamily.Part), Vehicle(TrackerFamily.Part),
+        GameMode(TrackerFamily.Part),
 
-        ElytraUse(HandlerFamily.Motion);
+        ElytraUse(TrackerFamily.Motion);
 
         // Separator
 
-        public final HandlerFamily family;
+        public final TrackerFamily family;
 
-        HandlerType(HandlerFamily family) {
+        TrackerType(TrackerFamily family) {
             this.family = family;
         }
     }
 
-    private final Map<HandlerType, Long> enable, disable;
-    private final Map<HandlerType, Map<String, Long>> child;
+    private final Map<TrackerType, Long> enable, disable;
+    private final Map<TrackerType, Map<String, Long>> child;
     private final SpartanPlayer player;
 
-    public Handlers(SpartanPlayer player) {
-        int length = HandlerType.values().length;
+    public Trackers(SpartanPlayer player) {
+        int length = TrackerType.values().length;
         this.player = player;
         this.enable = Collections.synchronizedMap(new LinkedHashMap<>(length));
         this.disable = Collections.synchronizedMap(new LinkedHashMap<>(length));
         this.child = Collections.synchronizedMap(new LinkedHashMap<>(length));
     }
 
-    public void add(HandlerType handlerType) {
+    public void add(TrackerType handlerType) {
         if (!isDisabled(handlerType)) {
             synchronized (enable) {
                 enable.put(handlerType, -1L);
@@ -55,7 +55,7 @@ public class Handlers {
         }
     }
 
-    public void add(HandlerType handlerType, int ticks) {
+    public void add(TrackerType handlerType, int ticks) {
         if (!isDisabled(handlerType)) {
             synchronized (enable) {
                 enable.put(
@@ -69,7 +69,7 @@ public class Handlers {
         }
     }
 
-    public void add(HandlerType handlerType, String key) {
+    public void add(TrackerType handlerType, String key) {
         if (!isDisabled(handlerType)) {
             synchronized (child) {
                 child.computeIfAbsent(handlerType, k -> new LinkedHashMap<>()).put(key, -1L);
@@ -77,7 +77,7 @@ public class Handlers {
         }
     }
 
-    public void add(HandlerType handlerType, String key, int ticks) {
+    public void add(TrackerType handlerType, String key, int ticks) {
         if (!isDisabled(handlerType)) {
             synchronized (child) {
                 Map<String, Long> map = child.computeIfAbsent(handlerType, k -> new LinkedHashMap<>());
@@ -92,7 +92,7 @@ public class Handlers {
         }
     }
 
-    public void disable(HandlerType handlerType, int ticks) {
+    public void disable(TrackerType handlerType, int ticks) {
         synchronized (disable) {
             disable.put(handlerType,
                     Math.max(
@@ -103,15 +103,15 @@ public class Handlers {
         }
     }
 
-    public void removeMany(HandlerFamily handlerFamily) {
-        for (HandlerType handlerType : HandlerType.values()) {
+    public void removeMany(TrackerFamily handlerFamily) {
+        for (TrackerType handlerType : TrackerType.values()) {
             if (handlerType.family == handlerFamily) {
                 remove(handlerType);
             }
         }
     }
 
-    public void remove(HandlerType handlerType) {
+    public void remove(TrackerType handlerType) {
         synchronized (enable) {
             synchronized (child) {
                 enable.remove(handlerType);
@@ -120,7 +120,7 @@ public class Handlers {
         }
     }
 
-    public void remove(HandlerType handlerType, String key) {
+    public void remove(TrackerType handlerType, String key) {
         synchronized (child) {
             Map<String, Long> map = child.get(handlerType);
 
@@ -149,8 +149,8 @@ public class Handlers {
         return false;
     }
 
-    public boolean has(HandlerFamily handlerFamily) {
-        for (HandlerType handlerType : HandlerType.values()) {
+    public boolean has(TrackerFamily handlerFamily) {
+        for (TrackerType handlerType : TrackerType.values()) {
             if (handlerType.family == handlerFamily && this.has(handlerType)) {
                 return true;
             }
@@ -158,7 +158,7 @@ public class Handlers {
         return false;
     }
 
-    public boolean has(HandlerType handlerType) {
+    public boolean has(TrackerType handlerType) {
         Long ticks;
 
         synchronized (enable) {
@@ -167,7 +167,7 @@ public class Handlers {
         return ticks != null && has(ticks);
     }
 
-    public boolean has(HandlerType handlerType, String key) {
+    public boolean has(TrackerType handlerType, String key) {
         synchronized (child) {
             Map<String, Long> map = child.get(handlerType);
 
@@ -180,7 +180,7 @@ public class Handlers {
         }
     }
 
-    public boolean isDisabled(HandlerType handlerType) {
+    public boolean isDisabled(TrackerType handlerType) {
         Long ticks;
 
         synchronized (disable) {
@@ -189,14 +189,14 @@ public class Handlers {
         return ticks != null && ticks >= TPS.getTick(player);
     }
 
-    public int getRemainingTicks(HandlerType handlerType, String key) {
+    public int getRemainingTicks(TrackerType handlerType, String key) {
         synchronized (child) {
             Map<String, Long> map = child.get(handlerType);
             return map == null ? 0 : getRemainingTicks(map.get(key));
         }
     }
 
-    public int getRemainingTicks(HandlerType handlerType) {
+    public int getRemainingTicks(TrackerType handlerType) {
         Long ticks;
 
         synchronized (enable) {
@@ -213,4 +213,5 @@ public class Handlers {
             return ticks < 0 ? 0 : ticks.intValue();
         }
     }
+
 }

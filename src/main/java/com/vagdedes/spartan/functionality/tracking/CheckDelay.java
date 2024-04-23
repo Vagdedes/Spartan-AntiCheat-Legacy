@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
@@ -52,7 +51,6 @@ public class CheckDelay {
 
     public static boolean hasCooldown(SpartanPlayer player) {
         return cooldown >= System.currentTimeMillis()
-                || player.getHandlers().has(Handlers.HandlerType.GameMode)
                 || !cooldowns.canDo(player.uuid.toString());
     }
 

@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -44,7 +44,7 @@ public class IrregularMovementsLevitation extends DetectionExecutor {
             SpartanLocation to = player.movement.getEventToLocation();
 
             runAsync(() -> {
-                if (!player.getHandlers().has(Handlers.HandlerType.ElytraWear)) {
+                if (!player.getTrackers().has(Trackers.TrackerType.ElytraWear)) {
                     double modifiedBox = AlgebraUtils.cut(box, 5),
                             modifiedOldBox = AlgebraUtils.cut(oldBox, 5);
                     boolean modifiedHeightExists = irregularMovements.cacheBoolean(cooldowns,

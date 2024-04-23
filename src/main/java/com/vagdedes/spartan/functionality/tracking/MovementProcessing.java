@@ -2,21 +2,24 @@ package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Decimals;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
+import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.gameplay.*;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class MovementProcessing {
 
@@ -35,7 +38,7 @@ public class MovementProcessing {
 
         if (current == GameMode.CREATIVE
                 || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && current == GameMode.SPECTATOR) {
-            player.getHandlers().add(Handlers.HandlerType.GameMode, 60);
+            player.getTrackers().add(Trackers.TrackerType.GameMode, (int) TPS.maximum);
         }
 
         // Separator
@@ -96,9 +99,9 @@ public class MovementProcessing {
                 && player.getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
-            Handlers handlers = player.getHandlers();
-            handlers.removeMany(Handlers.HandlerFamily.Motion);
-            handlers.removeMany(Handlers.HandlerFamily.Velocity);
+            Trackers handlers = player.getTrackers();
+            handlers.removeMany(Trackers.TrackerFamily.Motion);
+            handlers.removeMany(Trackers.TrackerFamily.Velocity);
             player.movement.removeLastLiquidTime();
             return true;
         } else {
@@ -108,14 +111,14 @@ public class MovementProcessing {
 
     private static void calculateExtremeCollision(SpartanPlayer player, SpartanLocation location) {
         if (v1_9) {
-            Handlers handlers = player.getHandlers();
+            Trackers handlers = player.getTrackers();
 
-            if (!handlers.isDisabled(Handlers.HandlerType.ExtremeCollision)) {
-                handlers.disable(Handlers.HandlerType.ExtremeCollision, 2); // Disable for the next tick
+            if (!handlers.isDisabled(Trackers.TrackerType.ExtremeCollision)) {
+                handlers.disable(Trackers.TrackerType.ExtremeCollision, 2); // Disable for the next tick
                 int collisions = PlayerUtils.getNearbyCollisions(player, location);
 
                 if (collisions > 10) {
-                    handlers.add(Handlers.HandlerType.ExtremeCollision, Math.min((int) (TPS.maximum * 2), collisions));
+                    handlers.add(Trackers.TrackerType.ExtremeCollision, Math.min((int) (TPS.maximum * 2), collisions));
                 }
             }
         }
@@ -126,12 +129,12 @@ public class MovementProcessing {
         if (v1_8 && vertical != 0.0) {
             if (BlockUtils.isSlime(player, location, roundedFall)) {
                 int time = (int) (TPS.maximum * 2);
-                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, time);
-                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, "slime", time);
+                player.getTrackers().add(Trackers.TrackerType.BouncingBlocks, time);
+                player.getTrackers().add(Trackers.TrackerType.BouncingBlocks, "slime", time);
             } else if (BlockUtils.isBed(player, location, roundedFall)) {
                 int time = (int) (TPS.maximum * 2);
-                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, time);
-                player.getHandlers().add(Handlers.HandlerType.BouncingBlocks, "bed", time);
+                player.getTrackers().add(Trackers.TrackerType.BouncingBlocks, time);
+                player.getTrackers().add(Trackers.TrackerType.BouncingBlocks, "bed", time);
             }
         }
     }
@@ -182,12 +185,12 @@ public class MovementProcessing {
                         Material type = block.material;
 
                         if (type == Material.SOUL_SAND) {
-                            player.getHandlers().add(Handlers.HandlerType.BubbleWater, (int) TPS.maximum);
-                            player.getHandlers().add(Handlers.HandlerType.BubbleWater, "soul-sand", (int) TPS.maximum);
+                            player.getTrackers().add(Trackers.TrackerType.BubbleWater, (int) TPS.maximum);
+                            player.getTrackers().add(Trackers.TrackerType.BubbleWater, "soul-sand", (int) TPS.maximum);
                             break;
                         } else if (type == MAGMA_BLOCK) {
-                            player.getHandlers().add(Handlers.HandlerType.BubbleWater, (int) TPS.maximum);
-                            player.getHandlers().add(Handlers.HandlerType.BubbleWater, "magma-block", (int) TPS.maximum);
+                            player.getTrackers().add(Trackers.TrackerType.BubbleWater, (int) TPS.maximum);
+                            player.getTrackers().add(Trackers.TrackerType.BubbleWater, "magma-block", (int) TPS.maximum);
                             break;
                         } else if (BlockUtils.isSolid(type) && !block.waterLogged) {
                             nonLiquid++;
@@ -205,7 +208,33 @@ public class MovementProcessing {
     // Separator
 
     public static boolean recentlyBounced(SpartanPlayer p) {
-        return v1_8 && p.getHandlers().has(Handlers.HandlerType.BouncingBlocks);
+        return v1_8 && p.getTrackers().has(Trackers.TrackerType.BouncingBlocks);
+    }
+
+    public static boolean canCheck(SpartanPlayer player) {
+        if (!Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)
+                && player.canRunChecks(true)
+                && !player.movement.wasFlying()
+                && !AbstractVelocity.hasCooldown(player)) {
+            if (Compatibility.CompatibilityType.MythicMobs.isFunctional()
+                    || Compatibility.CompatibilityType.ItemsAdder.isFunctional()) {
+                List<Entity> entities = player.getNearbyEntities(
+                        CombatUtils.maxHitDistance,
+                        CombatUtils.maxHitDistance,
+                        CombatUtils.maxHitDistance
+                );
+
+                if (!entities.isEmpty()) {
+                    for (Entity entity : entities) {
+                        if (MythicMobs.is(entity) || ItemsAdder.is(entity)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 }

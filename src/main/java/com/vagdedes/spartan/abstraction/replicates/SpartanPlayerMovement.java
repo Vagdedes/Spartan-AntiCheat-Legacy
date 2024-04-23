@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -338,7 +338,7 @@ public class SpartanPlayerMovement {
 
     public synchronized void setLastJump() {
         this.lastJump = System.currentTimeMillis();
-        this.parent.handlers.removeMany(Handlers.HandlerFamily.Velocity);
+        this.parent.trackers.removeMany(Trackers.TrackerFamily.Velocity);
     }
 
     // Separator

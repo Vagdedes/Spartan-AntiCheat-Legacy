@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Decimals;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -103,7 +103,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
         int airTicks = player.movement.getTicksOnAir();
-        boolean hasVehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
+        boolean hasVehicle = player.getTrackers().has(Trackers.TrackerType.Vehicle);
 
         Check check = hackType.getCheck();
         double stepLimit;
@@ -215,7 +215,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             if (predictedExpectedTick != -1) {
                                 int inaccuracy = AlgebraUtils.integerRound(
                                         Math.abs(expectedTick - predictedExpectedTick)
-                                ), limit = player.getHandlers().has(Handlers.HandlerType.Vehicle) ? 12 : 3;
+                                ), limit = player.getTrackers().has(Trackers.TrackerType.Vehicle) ? 12 : 3;
 
                                 if (inaccuracy >= limit) {
                                     irregularMovements.cancel(
@@ -327,7 +327,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             && !onGround
                             && !climbScenario
                             && player.movement.isJumping(oldVertical)
-                            && !player.getHandlers().has(Handlers.HandlerType.ElytraWear)
+                            && !player.getTrackers().has(Trackers.TrackerType.ElytraWear)
                             && (vertical != 0.0 || !PlayerUtils.isUsable(player.getItemInHand().getType()))) {
                         double jumpingPrecision = PlayerUtils.getJumpingPrecision(player);
 
@@ -384,10 +384,10 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     irregularMovements.cancel(prevention, "equilibrium-levitation", null,
                             PlayerUtils.jumpingMotions, IrregularMovements.defaultBufferTime);
                 } else {
-                    Handlers handlers = player.getHandlers();
+                    Trackers handlers = player.getTrackers();
 
-                    if (!handlers.has(Handlers.HandlerType.TowerBuilding)
-                            && !handlers.has(Handlers.HandlerType.BridgeBuilding)) {
+                    if (!handlers.has(Trackers.TrackerType.TowerBuilding)
+                            && !handlers.has(Trackers.TrackerType.BridgeBuilding)) {
                         if (!PatternUtils.isBlockPattern(positions, to, true, BlockUtils.solid, BlockUtils.semi_solid)
                                 && !PatternUtils.isBlockPattern(positions, from, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                             irregularMovements.cancel(prevention, "equilibrium-spacious", null,

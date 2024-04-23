@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.compatibility.manual.vanilla;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -30,8 +30,8 @@ public class DragonPhases implements Listener {
                         SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
 
                         if (p != null) {
-                            p.getHandlers().add(
-                                    Handlers.HandlerType.AbstractVelocity,
+                            p.getTrackers().add(
+                                    Trackers.TrackerType.AbstractVelocity,
                                     !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60
                             );
                         }

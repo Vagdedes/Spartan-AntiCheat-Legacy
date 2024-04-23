@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
@@ -20,8 +20,8 @@ public class SpartanPlayerVelocity {
         this.location = location.clone();
 
         if (!event.isCancelled()) {
-            player.getHandlers().add(
-                    Handlers.HandlerType.AbstractVelocity,
+            player.getTrackers().add(
+                    Trackers.TrackerType.AbstractVelocity,
                     (int) (Math.ceil(event.getVelocity().length()) * TPS.maximum)
             );
         }

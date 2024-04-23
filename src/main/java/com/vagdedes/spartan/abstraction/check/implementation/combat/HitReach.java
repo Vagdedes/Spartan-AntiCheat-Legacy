@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
 import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
@@ -109,6 +110,7 @@ public class HitReach extends CheckExecutor {
         return !player.bedrockPlayer
                 && player.canRunCheck(hackType, true)
                 && !player.movement.wasFlying()
+                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !NoHitDelay.hasCooldown(player);
     }
 }

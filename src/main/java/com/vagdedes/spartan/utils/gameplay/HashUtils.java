@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayerDamage;
@@ -138,6 +138,20 @@ public class HashUtils {
                                       SpartanLocation previousLocation) {
         int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
 
+        hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
+                location.getY() - location.getBlockY(),
+                GroundUtils.maxHeightLength
+        )));
+        hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
+                previousLocation.getY() - previousLocation.getBlockY(),
+                GroundUtils.maxHeightLength
+        )));
+        return hash;
+    }
+
+    public static int hashTrackers(SpartanPlayer player) {
+        int hash = 1;
+
         if (player.getVehicle() == null) {
             Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getRawReceivedDamages();
 
@@ -190,37 +204,29 @@ public class HashUtils {
                 }
             }
         }
-        hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
-                location.getY() - location.getBlockY(),
-                GroundUtils.maxHeightLength
-        )));
-        hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
-                previousLocation.getY() - previousLocation.getBlockY(),
-                GroundUtils.maxHeightLength
-        )));
         hash = HashUtils.extendInt(
                 hash,
-                player.getHandlers().getRemainingTicks(Handlers.HandlerType.Piston)
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.Piston)
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getHandlers().getRemainingTicks(Handlers.HandlerType.Trident)
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.Trident)
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BubbleWater, "soul-sand")
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BubbleWater, "soul-sand")
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BubbleWater, "magma-block")
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BubbleWater, "magma-block")
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BouncingBlocks, "slime")
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BouncingBlocks, "slime")
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getHandlers().getRemainingTicks(Handlers.HandlerType.BouncingBlocks, "bed")
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BouncingBlocks, "bed")
         );
         long lastLiquid = player.movement.getLastLiquidTick();
 

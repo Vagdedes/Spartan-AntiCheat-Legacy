@@ -4,7 +4,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killAura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
@@ -42,7 +42,7 @@ public class Raytrace extends DetectionExecutor {
 
                 if (nearbyEntitiesSize <= maxEntities) {
                     PlayerProfile playerProfile = player.getProfile();
-                    Handlers handlers = player.getHandlers();
+                    Trackers handlers = player.getTrackers();
                     boolean hasNearbyEntities = nearbyEntitiesSize > 0, fullSolid = false;
 
                     SpartanLocation playerEyeHeightLocation = location.clone().add(0.0, player.getEyeHeight(), 0.0);
@@ -68,7 +68,7 @@ public class Raytrace extends DetectionExecutor {
                                     || raytracedLocationZ != block.z) {
                                 block = raytracedLocation.getBlock();
                                 distanceToBlock = raytracedLocation.distance(block.getLocation());
-                                fullSolid = (!handlers.has(Handlers.HandlerType.SensitiveBlockBreak) || !BlockUtils.isSensitive(player, block.material))
+                                fullSolid = (!handlers.has(Trackers.TrackerType.SensitiveBlockBreak) || !BlockUtils.isSensitive(player, block.material))
                                         && BlockUtils.isFullSolid(block.material);
                                 //(playerProfile.isSuspectedOrHacker(hackType) || distanceToBlock <= 1.0) Attention: recently removed
                             } else {

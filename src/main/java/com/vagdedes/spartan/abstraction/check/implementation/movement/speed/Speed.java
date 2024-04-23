@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Decimals;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
@@ -197,9 +197,9 @@ public class Speed extends CheckExecutor {
                 groundVanilla = player.isOnGround(),
                 groundCustom = player.isOnGroundCustom(),
                 jumping = player.movement.isJumping(ver),
-                extremelyPushed = player.getHandlers().has(Handlers.HandlerType.ExtremeCollision),
+                extremelyPushed = player.getTrackers().has(Trackers.TrackerType.ExtremeCollision),
                 fairlyPushed = extremelyPushed || PlayerUtils.hasNearbyCollisions(player),
-                piston = player.getHandlers().has(Handlers.HandlerType.Piston),
+                piston = player.getTrackers().has(Trackers.TrackerType.Piston),
                 honey = PatternUtils.isBlockPattern(Speed.honey, to, true, BlockUtils.honey_block);
         SpartanLocation loc1 = to.clone().add(0, 1, 0),
                 locM1 = to.clone().add(0, -1, 0);
@@ -213,7 +213,7 @@ public class Speed extends CheckExecutor {
 
             if (piston) {
                 dm = cacheLimit(decimals, dm, blocks_ice, 15);
-            } else if (player.getHandlers().has(Handlers.HandlerType.SensitiveBlockBreak)
+            } else if (player.getTrackers().has(Trackers.TrackerType.SensitiveBlockBreak)
                     || BlockUtils.isSlime(player, to, 2)) {
                 dm = cacheLimit(decimals, dm, blocks_slime, 15);
             } else {
@@ -343,8 +343,8 @@ public class Speed extends CheckExecutor {
         }
         String reasonCopy = reason;
         boolean bedrockPlayer = player.bedrockPlayer,
-                vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle),
-                hasTrident = player.getHandlers().has(Handlers.HandlerType.Trident),
+                vehicle = player.getTrackers().has(Trackers.TrackerType.Vehicle),
+                hasTrident = player.getTrackers().has(Trackers.TrackerType.Trident),
                 explosion = !hasTrident && CombatProcessing.hasExplosionDamage(player),
                 damage = CombatProcessing.isSignificantDamage(player),
                 knockback = CombatProcessing.hasBigKnockBackDamage(player),
@@ -352,7 +352,7 @@ public class Speed extends CheckExecutor {
         float difference = PlayerUtils.getWalkSpeedDifference(player);
         double minimumLimit = Math.max(
                 bedrockPlayer ? incompatibility :
-                        player.getHandlers().has(Handlers.HandlerType.ElytraWear)
+                        player.getTrackers().has(Trackers.TrackerType.ElytraWear)
                                 || Compatibility.CompatibilityType.MythicMobs.isFunctional()
                                 || Compatibility.CompatibilityType.mcMMO.isFunctional() ? 0.6 :
                                 0.0,
@@ -372,11 +372,11 @@ public class Speed extends CheckExecutor {
                 && !hasTrident && !hitDelay && !piston && difference == 0.0f && minimumLimit <= 0.0
                 && !PlayerUtils.hasSpeedEffect(player, to, true) && !PlayerUtils.hasJumpEffect(player)
                 && !PlayerUtils.hasLevitationEffect(player) && !player.getLastDamageReceived().isSubtle()
-                && !player.getHandlers().has(Handlers.HandlerType.BubbleWater, "soul-sand")) {
+                && !player.getTrackers().has(Trackers.TrackerType.BubbleWater, "soul-sand")) {
             boolean aboveBlocksCopy = aboveBlocks;
 
             runAsync(() -> {
-                boolean building = player.getHandlers().has(Handlers.HandlerType.TowerBuilding);
+                boolean building = player.getTrackers().has(Trackers.TrackerType.TowerBuilding);
 
                 // Separator
                 if (modifiedLimit == Speed.air && !honey && !explosion && hor >= air_decreased
@@ -828,7 +828,7 @@ public class Speed extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
                 && !PlayerUtils.isInWaterTunnel(player, player.movement.getEventToLocation());
     }
 

@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Handlers;
 import com.vagdedes.spartan.abstraction.data.Timer;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
@@ -29,7 +29,7 @@ public class IrregularMovementsLiquids extends DetectionExecutor {
              boolean building, boolean jumping, boolean oldJumping, boolean changedScenario,
              String detection, String prevention) {
         if (hackType.getCheck().getBooleanOption("check_liquids", true)
-                && !player.getHandlers().has(Handlers.HandlerType.Vehicle)) {
+                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)) {
             Double vertical = player.movement.getNmsVerticalDistance(),
                     horizontal = player.movement.getNmsHorizontalDistance();
 

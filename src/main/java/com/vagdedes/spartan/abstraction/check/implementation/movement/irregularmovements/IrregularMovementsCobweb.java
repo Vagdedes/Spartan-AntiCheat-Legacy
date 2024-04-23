@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -37,7 +37,7 @@ public class IrregularMovementsCobweb extends DetectionExecutor {
                 return;
             }
             SpartanLocation to = player.movement.getEventToLocation();
-            boolean vehicle = player.getHandlers().has(Handlers.HandlerType.Vehicle);
+            boolean vehicle = player.getTrackers().has(Trackers.TrackerType.Vehicle);
 
             runAsync(() -> {
                 if (vertical == 0.0) {

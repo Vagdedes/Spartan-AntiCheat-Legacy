@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
@@ -85,7 +85,7 @@ public class EventsHandler3 implements Listener {
                 }
 
                 // Handlers
-                p.getHandlers().disable(Handlers.HandlerType.AbstractVelocity, 2);
+                p.getTrackers().disable(Trackers.TrackerType.AbstractVelocity, 2);
 
                 // Detections
                 ((NoFall) p.getExecutor(Enums.HackType.NoFall)).manageRatio(dmg, e.getDamage(), false);

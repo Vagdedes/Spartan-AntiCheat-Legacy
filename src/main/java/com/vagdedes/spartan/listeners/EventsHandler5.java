@@ -100,7 +100,7 @@ public class EventsHandler5 implements Listener {
         }
 
         // Protections
-        SensitiveBlockBreak.run(p, cancelled, b);
+        SensitiveBlockBreak.run(p, b);
 
         // Detections
         p.getExecutor(Enums.HackType.MorePackets).handle(false, e);

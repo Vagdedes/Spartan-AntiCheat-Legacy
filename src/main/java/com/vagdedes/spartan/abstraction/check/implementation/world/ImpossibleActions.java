@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -176,7 +177,11 @@ public class ImpossibleActions extends CheckExecutor {
                 && bloc.areBlocks(Material.AIR, 1, false)) {
             cancel("type: air-placement, block: " + BlockUtils.materialToString(blockType)
                     + ", block-against: " + BlockUtils.materialToString(blockAgainstType));
-        } else if (blockType != Material.FIRE && blockType.isBlock() && !player.movement.wasFlying() && !blockType.equals(soil)) {
+        } else if (blockType != Material.FIRE
+                && blockType.isBlock()
+                && !player.movement.wasFlying()
+                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
+                && !blockType.equals(soil)) {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode != GameMode.SURVIVAL && gameMode != GameMode.ADVENTURE) {

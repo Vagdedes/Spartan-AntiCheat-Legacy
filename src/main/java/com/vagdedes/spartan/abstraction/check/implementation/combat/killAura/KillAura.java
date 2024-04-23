@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killAura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Handlers;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -221,7 +221,8 @@ public class KillAura extends CheckExecutor {
         return player.canRunCheck(hackType, true)
                 && !player.movement.isCrawling()
                 && !player.movement.wasFlying()
-                && !player.getHandlers().has(Handlers.HandlerType.ElytraUse)
+                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
+                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
                 && !mcMMO.hasGeneralAbility(player)
                 && !Attributes.has(player, Attributes.GENERIC_ARMOR);
     }
