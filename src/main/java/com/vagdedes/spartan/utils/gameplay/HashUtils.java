@@ -120,6 +120,7 @@ public class HashUtils {
             for (SpartanPotionEffect potionEffect : map.values()) {
                 hash = extendInt(hash, potionEffect.bukkitEffect.getType().toString().hashCode());
                 hash = extendInt(hash, potionEffect.bukkitEffect.getAmplifier());
+                hash = extendInt(hash, Long.hashCode(potionEffect.ticksPassed()));
             }
         }
         return hash;

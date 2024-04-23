@@ -1263,7 +1263,24 @@ public class SpartanPlayer {
 
     // Separator
 
-    private Collection<SpartanPotionEffect> getLocalActivePotionEffects() {
+    public boolean hasActivePotionEffects() {
+        Entity vehicle = getVehicle();
+
+        if (vehicle != null) {
+            if (vehicle instanceof LivingEntity) {
+                return !((LivingEntity) vehicle).getActivePotionEffects().isEmpty();
+            } else {
+                return false;
+            }
+        } else {
+            synchronized (this.potionEffects) {
+                return !this.potionEffects.isEmpty()
+                        && this.potionEffects.values().stream().anyMatch(SpartanPotionEffect::isActive);
+            }
+        }
+    }
+
+    public Collection<SpartanPotionEffect> getStoredPotionEffects() {
         Entity vehicle = getVehicle();
 
         if (vehicle != null) {
@@ -1273,20 +1290,9 @@ public class SpartanPlayer {
                 return new ArrayList<>(0);
             }
         } else {
-            return potionEffects.values();
-        }
-    }
-
-    public boolean hasActivePotionEffects() {
-        synchronized (this.potionEffects) {
-            Collection<SpartanPotionEffect> collection = this.getLocalActivePotionEffects();
-            return !collection.isEmpty() && collection.stream().anyMatch(SpartanPotionEffect::isActive);
-        }
-    }
-
-    public Collection<SpartanPotionEffect> getStoredPotionEffects() {
-        synchronized (this.potionEffects) {
-            return this.getLocalActivePotionEffects();
+            synchronized (this.potionEffects) {
+                return this.potionEffects.values();
+            }
         }
     }
 
@@ -1310,35 +1316,29 @@ public class SpartanPlayer {
     }
 
     public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
-        synchronized (this.potionEffects) {
-            Collection<SpartanPotionEffect> potionEffects = getLocalActivePotionEffects();
+        SpartanPotionEffect potionEffect;
 
-            if (!potionEffects.isEmpty()) {
-                for (SpartanPotionEffect potionEffect : potionEffects) {
-                    if (potionEffect.ticksPassed() <= lastActive
-                            && potionEffect.bukkitEffect.getType().equals(type)) {
-                        return potionEffect;
-                    }
-                }
-            }
+        synchronized (this.potionEffects) {
+            potionEffect = this.potionEffects.get(type);
         }
-        return null;
+        if (potionEffect != null
+                && potionEffect.ticksPassed() <= lastActive
+                && potionEffect.bukkitEffect.getType().equals(type)) {
+            return potionEffect;
+        } else {
+            return null;
+        }
     }
 
-    public boolean hasPotionEffect(PotionEffectType potionEffectType, long lastActive) {
-        synchronized (this.potionEffects) {
-            Collection<SpartanPotionEffect> potionEffects = getLocalActivePotionEffects();
+    public boolean hasPotionEffect(PotionEffectType type, long lastActive) {
+        SpartanPotionEffect potionEffect;
 
-            if (!potionEffects.isEmpty()) {
-                for (SpartanPotionEffect potionEffect : potionEffects) {
-                    if (potionEffect.ticksPassed() <= lastActive
-                            && potionEffect.bukkitEffect.getType().equals(potionEffectType)) {
-                        return true;
-                    }
-                }
-            }
+        synchronized (this.potionEffects) {
+            potionEffect = this.potionEffects.get(type);
         }
-        return false;
+        return potionEffect != null
+                && potionEffect.ticksPassed() <= lastActive
+                && potionEffect.bukkitEffect.getType().equals(type);
     }
 
     // Separator

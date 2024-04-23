@@ -8,8 +8,8 @@ import java.util.*;
 
 public class SpartanPotionEffect {
 
-    public static Map<PotionEffectType, SpartanPotionEffect> mapFromBukkit(SpartanPlayer player,
-                                                                           Collection<PotionEffect> collection) {
+    static Map<PotionEffectType, SpartanPotionEffect> mapFromBukkit(SpartanPlayer player,
+                                                                    Collection<PotionEffect> collection) {
         Map<PotionEffectType, SpartanPotionEffect> map = new LinkedHashMap<>(collection.size() + 1, 1.0f);
 
         for (PotionEffect effect : collection) {
@@ -18,8 +18,8 @@ public class SpartanPotionEffect {
         return map;
     }
 
-    public static List<SpartanPotionEffect> listFromBukkit(SpartanPlayer player,
-                                                           Collection<PotionEffect> collection) {
+    static List<SpartanPotionEffect> listFromBukkit(SpartanPlayer player,
+                                                    Collection<PotionEffect> collection) {
         List<SpartanPotionEffect> list = new ArrayList<>();
 
         for (PotionEffect effect : collection) {

@@ -20,7 +20,6 @@ import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.Objects;
 
@@ -154,7 +153,7 @@ public class IrregularMovements extends CheckExecutor {
                     knownBoxesOld = GroundUtils.blockHeightExists(oldBox),
                     knownBoxes = knownBoxesNew || knownBoxesOld,
                     bouncingBlocks = MovementProcessing.recentlyBounced(player),
-                    jumpEffect = player.hasPotionEffect(PotionEffectType.JUMP, 0),
+                    jumpEffect = PlayerUtils.hasJumpEffect(player),
                     threwTrident = player.getTrackers().has(Trackers.TrackerType.Trident),
                     explosion = CombatProcessing.hasExplosionDamage(player),
                     falling = player.movement.isFalling(vertical),
