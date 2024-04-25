@@ -22,14 +22,21 @@ public class Pattern {
             globalDataLimit = 20_000,
             globalDataBase = 625,
             individualDataLimit = 8_192,
-            individualDataBase = 2;
-    static final double requiredPlayerContributionAverage = 10.0;
+            individualDataBase = 2,
+            requiredPlayerContributionAverage = 10;
+    static final PlayerProfile[] artificialProfiles = new PlayerProfile[requiredPlayerContributionAverage];
     static final String
             profileOption = "profile",
             patternOption = "pattern",
             situationOption = "situation";
     private static final String[] options = {profileOption, patternOption, situationOption};
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>(individualDataBase));
+
+    static {
+        for (int i = 0; i < requiredPlayerContributionAverage; i++) {
+            artificialProfiles[i] = new PlayerProfile();
+        }
+    }
 
     static int hash(PlayerProfile playerProfile) {
         return playerProfile.getName().hashCode();

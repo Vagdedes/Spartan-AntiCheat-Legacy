@@ -295,41 +295,48 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     void loadStarting() {
         if (this.parent.key.equals(MovementPatterns.verticalKey)) {
             for (double height : GroundUtils.getHeights()) {
-                for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
-                    for (int jump = 0; jump < 2; jump++) {
-                        for (int sneak = 0; sneak < 2; sneak++) {
-                            boolean sneaking = sneak == 1;
+                for (int jump = 0; jump < 2; jump++) {
+                    boolean jumping = jump == 1;
 
-                            for (int fall = 0; fall < 2; fall++) {
-                                int airTicks = 0;
-                                double previousHeight;
+                    for (int sneak = 0; sneak < 2; sneak++) {
+                        boolean sneaking = sneak == 1;
 
-                                if (jump == 1) {
-                                    for (double jumpMotion : PlayerUtils.getJumpMotions()) {
-                                        previousHeight = height;
-                                        height += jumpMotion;
+                        for (int fall = 0; fall < 2; fall++) {
+                            boolean falling = fall == 1;
+                            int airTicks = 0;
+                            double previousPosition;
+
+                            if (jumping) {
+                                for (double jumpMotion : PlayerUtils.getJumpMotions()) {
+                                    previousPosition = height;
+                                    height += jumpMotion;
+
+                                    for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
                                         this.preTrain(
                                                 sneaking,
                                                 airTicks,
                                                 ping,
                                                 height,
-                                                previousHeight,
+                                                previousPosition,
                                                 jumpMotion
                                         );
-                                        airTicks++; // After
                                     }
+                                    airTicks++; // After
                                 }
-                                if (fall == 1) {
-                                    for (double fallMotion : PlayerUtils.getFallMotions()) {
-                                        previousHeight = height;
-                                        height -= fallMotion;
-                                        airTicks++; // Before
+                            }
+                            if (falling) {
+                                for (double fallMotion : PlayerUtils.getFallMotions()) {
+                                    previousPosition = height;
+                                    height -= fallMotion;
+                                    airTicks++; // Before
+
+                                    for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
                                         this.preTrain(
                                                 sneaking,
                                                 airTicks,
                                                 ping,
                                                 height,
-                                                previousHeight,
+                                                previousPosition,
                                                 fallMotion
                                         );
                                     }

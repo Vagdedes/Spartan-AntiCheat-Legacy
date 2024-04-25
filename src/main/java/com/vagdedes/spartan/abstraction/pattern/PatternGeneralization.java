@@ -171,8 +171,8 @@ public abstract class PatternGeneralization {
     final boolean selfLearn(int situation, double pattern) {
         boolean learn = false;
 
-        for (int i = 0; i < Pattern.requiredPlayerContributionAverage; i++) {
-            learn |= this.learn(new PlayerProfile(), situation, pattern, true);
+        for (PlayerProfile playerProfile : Pattern.artificialProfiles) {
+            learn |= this.learn(playerProfile, situation, pattern, true);
         }
         return learn;
     }
