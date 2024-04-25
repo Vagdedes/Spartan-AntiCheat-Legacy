@@ -168,17 +168,13 @@ public abstract class PatternGeneralization {
         }
     }
 
-    final boolean selfLearn(int situation, double pattern, int times) {
-        if (times == 1) {
-            return this.learn(new PlayerProfile(), situation, pattern, true);
-        } else {
-            boolean learn = false;
+    final boolean selfLearn(int situation, double pattern) {
+        boolean learn = false;
 
-            for (int i = 0; i < times; i++) {
-                learn |= this.learn(new PlayerProfile(), situation, pattern, true);
-            }
-            return learn;
+        for (int i = 0; i < Pattern.requiredPlayerContributionAverage; i++) {
+            learn |= this.learn(new PlayerProfile(), situation, pattern, true);
         }
+        return learn;
     }
 
     abstract protected PatternProfile customLearn(PlayerProfile profile, int situation,

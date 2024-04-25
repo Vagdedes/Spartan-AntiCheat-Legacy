@@ -23,6 +23,7 @@ public class Pattern {
             globalDataBase = 625,
             individualDataLimit = 8_192,
             individualDataBase = 2;
+    static final double requiredPlayerContributionAverage = 10.0;
     static final String
             profileOption = "profile",
             patternOption = "pattern",

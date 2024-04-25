@@ -16,7 +16,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 
@@ -42,12 +41,10 @@ public class PlayerUtils {
             climbingMax = 0.15444,
             climbingDefault = 0.11760;
     public static final double
-            postJumpPreFall = 0.00301,
             gravityAcceleration = 0.0784,
             terminalVelocity = 3.92,
             drag = gravityAcceleration / terminalVelocity,
             dragComplement = 1.0 - drag,
-            actualTerminalVelocity = terminalVelocity * dragComplement,
             highPrecision = 0.0019,
             lowPrecision = highPrecision * 2.0,
             chunk = 16.0,
@@ -56,16 +53,16 @@ public class PlayerUtils {
             maxJumpingMotionDifference;
 
     public static final double[]
-            jumping = new double[]{0.08307, 0.42f, 0.0001}, // Last one is jump value precision
+            jumping = new double[]{0.003015, 0.42f, 0.0001}, // Last one is jump value precision
             climbing = new double[]{climbingMin, 0.07531, 0.11215, climbingDefault, 0.12529, 0.15, climbingMax},
             climbingMinMax = new double[]{climbingMin, climbingMax};
 
     public static final int
             height,
             fallDamageBlocks = 4,
-            jumpingMotions = 5;
+            jumpingMotions = 6;
 
-    private static final Set<Double> jumps = new HashSet<>(jumpingMotions);
+    private static final List<Double> jumps = new ArrayList<>(jumpingMotions);
     private static final Map<Integer, Double> gravity = new LinkedHashMap<>();
     private static final Map<PotionEffectType, Integer> handledPotionEffects = new LinkedHashMap<>();
 
@@ -87,6 +84,7 @@ public class PlayerUtils {
         jumps.add(0.33319);
         jumps.add(0.24813);
         jumps.add(0.16477);
+        jumps.add(0.08307);
         jumps.add(jumping[0]);
         Iterator<Double> iterator = jumps.iterator();
         double maxJumpingMotionDifferenceLocal = Double.MIN_VALUE,
@@ -140,7 +138,7 @@ public class PlayerUtils {
         }
     }
 
-    public static void run(SpartanPlayer p, Collection<PotionEffect> potionEffects) {
+    public static void run(SpartanPlayer p) {
         if (!p.isDead() && !p.isSleeping()) {
             Buffer buffer = p.getBuffer();
             SpartanLocation to = p.movement.getLocation(),
@@ -289,6 +287,10 @@ public class PlayerUtils {
         return false;
     }
 
+    public static Collection<Double> getJumpMotions() {
+        return jumps;
+    }
+
     // Falling
 
     public static int getFallingTick(double d) {
@@ -313,8 +315,12 @@ public class PlayerUtils {
         return -1;
     }
 
-    public static double getFallingMotion(int tick) {
+    public static double getFallMotion(int tick) {
         return gravity.getOrDefault(tick, -1.0);
+    }
+
+    public static Collection<Double> getFallMotions() {
+        return gravity.values();
     }
 
     public static double getSignificantFallingTicks() {

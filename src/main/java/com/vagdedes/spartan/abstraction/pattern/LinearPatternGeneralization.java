@@ -2,7 +2,11 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.java.OverflowList;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
@@ -290,8 +294,76 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     void loadStarting() {
         if (this.parent.key.equals(MovementPatterns.verticalKey)) {
-            // todo pre training
+            for (double height : GroundUtils.getHeights()) {
+                for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
+                    for (int jump = 0; jump < 2; jump++) {
+                        for (int sneak = 0; sneak < 2; sneak++) {
+                            boolean sneaking = sneak == 1;
+
+                            for (int fall = 0; fall < 2; fall++) {
+                                int airTicks = 0;
+                                double previousHeight;
+
+                                if (jump == 1) {
+                                    for (double jumpMotion : PlayerUtils.getJumpMotions()) {
+                                        previousHeight = height;
+                                        height += jumpMotion;
+                                        this.preTrain(
+                                                sneaking,
+                                                airTicks,
+                                                ping,
+                                                height,
+                                                previousHeight,
+                                                jumpMotion
+                                        );
+                                        airTicks++; // After
+                                    }
+                                }
+                                if (fall == 1) {
+                                    for (double fallMotion : PlayerUtils.getFallMotions()) {
+                                        previousHeight = height;
+                                        height -= fallMotion;
+                                        airTicks++; // Before
+                                        this.preTrain(
+                                                sneaking,
+                                                airTicks,
+                                                ping,
+                                                height,
+                                                previousHeight,
+                                                fallMotion
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private void preTrain(boolean sneaking,
+                          int airTicks,
+                          int ping,
+                          double height,
+                          double previousHeight,
+                          double pattern) {
+        this.selfLearn(
+                MovementProcessing.hashTotal(
+                        MovementProcessing.artificialPlayerHash(
+                                sneaking,
+                                airTicks == 0,
+                                ping
+                        ),
+                        HashUtils.hashEnvironment(
+                                airTicks,
+                                AlgebraUtils.removeBase(height),
+                                AlgebraUtils.removeBase(previousHeight)
+                        ),
+                        1
+                ),
+                pattern
+        );
     }
 
     @Override

@@ -241,7 +241,7 @@ public class SpartanPlayer {
                         if (n != null) {
                             Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
                             p.setStoredPotionEffects(potionEffects); // Bad
-                            PlayerUtils.run(p, potionEffects);
+                            PlayerUtils.run(p);
                         }
 
                         // Preventions
@@ -1550,7 +1550,9 @@ public class SpartanPlayer {
         Player p = getPlayer();
 
         if (p != null && p.isOnline()) {
-            p.leaveVehicle();
+            if (SpartanBukkit.isSynchronised()) {
+                p.leaveVehicle();
+            }
             this.movement.setSprinting(false);
             this.movement.setSneaking(false);
             this.movement.setSwimming(false, 0);

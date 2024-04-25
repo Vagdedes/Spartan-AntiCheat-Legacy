@@ -119,8 +119,11 @@ public class EventsHandler7 implements Listener {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
         float fall = p.getFallDistance();
-        int situation = HashUtils.extendInt(HashUtils.hashPlayer(p), HashUtils.hashEnvironment(p, to, from));
-        situation = HashUtils.extendInt(situation, HashUtils.hashTrackers(p));
+        int situation = MovementProcessing.hashTotal(
+                HashUtils.hashPlayer(p),
+                HashUtils.hashEnvironment(p, to, from),
+                HashUtils.hashTrackers(p)
+        );
 
         // Patterns
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);

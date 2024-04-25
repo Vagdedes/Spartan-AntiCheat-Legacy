@@ -41,6 +41,14 @@ public class AlgebraUtils {
 
     // Separator
 
+    public static double removeBase(double d) {
+        return d < 1.0
+                ? d
+                : d - Math.floor(d);
+    }
+
+    // Separator
+
     public static double roundToHalf(double dbl) {
         return Math.floor(dbl * 2.0) / 2.0;
     }

@@ -26,7 +26,6 @@ public class IrregularMovementsMotion extends DetectionExecutor {
     private static final double
             criticalDecelerationLimit = -0.1,
             criticalUpwardsLimit = Math.sqrt(PlayerUtils.chunk), // 4.0
-            postJumpPreFallPrecision = PlayerUtils.jumping[2] * 7, // 0.0007
             criticalStepLimit = GroundUtils.maxPlayerStep * 2.0, // 1.325
             vehicleStep = 2.0;
     private static final int
@@ -147,8 +146,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                 if (vertical > 0.0) {
                     if (checkUpASYNC
                             && !knownBoxesNew
-                            && !player.movement.isJumping(vertical)
-                            && Math.abs(vertical - PlayerUtils.postJumpPreFall) >= postJumpPreFallPrecision) {
+                            && !player.movement.isJumping(vertical)) {
                         boolean abstractScenario = groundInteractionScenario || velocityScenarioASYNC;
 
                         if (stepLimit > 0.0) {
