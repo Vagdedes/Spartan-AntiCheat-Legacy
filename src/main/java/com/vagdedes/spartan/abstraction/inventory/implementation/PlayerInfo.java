@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
@@ -20,7 +19,6 @@ import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.java.StringUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -149,9 +147,8 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        double delayNumber = isOnline ? AlgebraUtils.roundToHalf(Latency.getDelay(player)) : 0.0; // Base
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
-        boolean tpsDropping = isOnline && TPS.areLow(player),
+        boolean serverLag = isOnline && TPS.areLow(player),
                 notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
                 detectionsNotAvailable = !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
@@ -167,9 +164,8 @@ public class PlayerInfo extends InventoryMenu {
                         hackType,
                         dataType,
                         cancellableCompatibility,
-                        delayNumber,
                         isOnline,
-                        tpsDropping,
+                        serverLag,
                         notChecked,
                         detectionsNotAvailable,
                         !hasViolations && !hasData
@@ -207,7 +203,6 @@ public class PlayerInfo extends InventoryMenu {
                 hackType,
                 dataType,
                 isOnline ? player.getCancellableCompatibility() : null,
-                isOnline ? AlgebraUtils.roundToHalf(Latency.getDelay(player)) : 0.0,
                 isOnline,
                 isOnline && TPS.areLow(player),
                 isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
@@ -230,9 +225,8 @@ public class PlayerInfo extends InventoryMenu {
 
     private String getDetectionState(SpartanPlayer player, HackType hackType, Enums.DataType dataType,
                                      String cancellableCompatibility,
-                                     double delayNumber,
                                      boolean hasPlayer,
-                                     boolean tpsDropping,
+                                     boolean serverLag,
                                      boolean notChecked,
                                      boolean detectionMissing,
                                      boolean returnNull) {
@@ -248,14 +242,13 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName, null)) { // Do not put player because we calculate it below
             return returnNull ? null : "Disabled";
         }
-        String delay = delayNumber == 0.0 ? "" : " (" + (Math.floor(delayNumber) == delayNumber ? String.valueOf((int) delayNumber) : String.valueOf(delayNumber)) + ")";
         CancelCause disabledCause = player.getViolations(hackType).getDisableCause();
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
                 cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
                         notChecked ? "Temporarily Not Checked" :
-                                tpsDropping ? "Server Lag" + delay :
+                                serverLag ? "Server Lag" :
                                         disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                                                (returnNull ? null : (check.isSilent(worldName) ? "Silent " : "") + "Checking" + delay);
+                                                (returnNull ? null : (check.isSilent(worldName) ? "Silent " : "") + "Checking");
     }
 
     public void refresh(String targetName) {
