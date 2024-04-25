@@ -53,7 +53,7 @@ public class PlayerUtils {
             maxJumpingMotionDifference;
 
     public static final double[]
-            jumping = new double[]{0.003015, 0.42f},
+            jumping = new double[]{0.003016, 0.42f},
             climbing = new double[]{climbingMin, 0.07531, 0.11215, climbingDefault, 0.12529, 0.15, climbingMax},
             climbingMinMax = new double[]{climbingMin, climbingMax};
 
