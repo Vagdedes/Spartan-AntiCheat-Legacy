@@ -334,15 +334,20 @@ public class MapMath implements AbstractKeyValueMath {
         Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
-            int total = 0;
-
-            for (short count : map.values()) {
-                total += count;
-            }
             Short count = map.get(ignoreHash);
-            return total > count
-                    ? 1.0 / (total - count)
-                    : 1.0;
+
+            if (count > 0) {
+                int total = 0;
+
+                for (short loopCount : map.values()) {
+                    total += loopCount;
+                }
+                return total > count
+                        ? 1.0 / (total - count)
+                        : 1.0;
+            } else {
+                return 1.0;
+            }
         } else {
             return 1.0;
         }
