@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SpartanPlayerMovement {
+public class SpartanPlayerMovement { // todo introduce default air ticks for the hashing but debug default on-ground first
 
     private final SpartanPlayer parent;
     private double
