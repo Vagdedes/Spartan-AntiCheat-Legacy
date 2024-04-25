@@ -130,7 +130,7 @@ public abstract class PatternGeneralization {
         }
     }
 
-    final double contributionRatio(int situation, PatternProfile patternProfile) {
+    final double contributionAgainstRest(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
             return this.contribution.getPersonalContribution(situation) == 1.0
                     ? 0.0
@@ -139,9 +139,9 @@ public abstract class PatternGeneralization {
         }
     }
 
-    final double contributionAverage() {
+    final double playerContributionAverage() {
         synchronized (this.contribution) {
-            return this.contribution.getSpecificTotal() / (double) this.contribution.getParts();
+            return this.contribution.getTotal() / (double) this.contribution.getParts();
         }
     }
 
@@ -190,6 +190,8 @@ public abstract class PatternGeneralization {
     abstract protected PatternProfile deleteProfile(PlayerProfile profile);
 
     abstract protected boolean hasPatterns(int situation);
+
+    abstract void loadStarting();
 
     abstract void loadCompleted();
 

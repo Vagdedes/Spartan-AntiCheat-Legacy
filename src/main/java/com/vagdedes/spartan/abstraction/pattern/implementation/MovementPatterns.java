@@ -8,6 +8,7 @@ import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 public class MovementPatterns extends PatternFamily {
 
     public static final short horizontalGeneralization = (short) (GroundUtils.maxHeightLength / 2);
+    public static final String verticalKey = "movement/distance/vertical";
 
     public final Pattern horizontal, vertical, fall;
 
@@ -16,7 +17,7 @@ public class MovementPatterns extends PatternFamily {
         this.addPatterns(
                 new Pattern[]{
                         this.vertical = new Pattern(
-                                "movement/distance/vertical",
+                                verticalKey,
                                 new short[]{
                                         (short) GroundUtils.maxHeightLength
                                 },

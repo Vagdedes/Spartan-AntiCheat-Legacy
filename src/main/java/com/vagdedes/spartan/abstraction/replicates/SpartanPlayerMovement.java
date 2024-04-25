@@ -397,7 +397,7 @@ public class SpartanPlayerMovement {
     }
 
     public long getLastFlight() {
-        return TPS.getTick(this.parent) - this.flyingTick;
+        return isFlying() ? 0L : TPS.getTick(this.parent) - this.flyingTick;
     }
 
     public synchronized void setFlying(boolean flying) {

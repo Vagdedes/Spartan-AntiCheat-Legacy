@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Random;
 import java.util.UUID;
 
 public class PlayerProfile {
@@ -26,6 +27,10 @@ public class PlayerProfile {
     public final PlayerCombat playerCombat;
 
     // Separator
+
+    public PlayerProfile() {
+        this(Double.toString(new Random().nextDouble()));
+    }
 
     public PlayerProfile(String name) {
         Enums.HackType[] hackTypes = Enums.HackType.values();

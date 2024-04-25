@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
+import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
 import com.vagdedes.spartan.utils.java.OverflowList;
@@ -120,7 +121,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 return null;
             }
         }
-        if (!read && this.contributionRatio(situation, patternProfile) >= 0.5) {
+        if (!read && this.contributionAgainstRest(situation, patternProfile) >= 0.5) {
             return null;
         } else {
             synchronized (this.referenceKeys) {
@@ -283,6 +284,13 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     protected boolean hasPatterns(int situation) {
         synchronized (this.referenceKeys) {
             return this.referenceKeys.containsKey(situation);
+        }
+    }
+
+    @Override
+    void loadStarting() {
+        if (this.parent.key.equals(MovementPatterns.verticalKey)) {
+            // todo pre training
         }
     }
 

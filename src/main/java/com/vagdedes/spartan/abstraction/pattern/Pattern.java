@@ -260,24 +260,24 @@ public class Pattern {
 
         SpartanBukkit.dataThread.executeWithPriority(() -> {
             Map<Short, PatternGeneralization> generalizations = new HashMap<>(individualDataBase, 1.0f);
+            Set<Map.Entry<Short, PatternGeneralization>> entries;
             File[] files = this.getLearningFiles();
 
+            synchronized (this.generalizations) {
+                entries = new HashSet<>(this.generalizations.entrySet());
+            }
+            for (Map.Entry<Short, PatternGeneralization> entry : entries) {
+                generalizations.put(
+                        entry.getKey(),
+                        entry.getValue() instanceof LinearPatternGeneralization
+                                ? new LinearPatternGeneralization(this, entry.getValue().scissors)
+                                : new NonLinearPatternGeneralization(this, entry.getValue().scissors)
+                );
+                entry.getValue().loadStarting();
+            }
             if (files != null) {
                 Arrays.sort(files, Comparator.comparingLong(File::lastModified));
-                Set<Map.Entry<Short, PatternGeneralization>> entries;
 
-                synchronized (this.generalizations) {
-                    entries = new HashSet<>(this.generalizations.entrySet());
-                }
-
-                for (Map.Entry<Short, PatternGeneralization> entry : entries) {
-                    generalizations.put(
-                            entry.getKey(),
-                            entry.getValue() instanceof LinearPatternGeneralization
-                                    ? new LinearPatternGeneralization(this, entry.getValue().scissors)
-                                    : new NonLinearPatternGeneralization(this, entry.getValue().scissors)
-                    );
-                }
                 for (File file : files) {
                     if (file.isFile() && file.getName().endsWith(".yml")) {
                         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -344,14 +344,12 @@ public class Pattern {
                 }
             }
 
-            if (!generalizations.isEmpty()) {
-                synchronized (this.generalizations) {
-                    this.generalizations.clear();
-                    this.generalizations.putAll(generalizations);
-                }
-                for (PatternGeneralization generalization : generalizations.values()) {
-                    generalization.loadCompleted();
-                }
+            synchronized (this.generalizations) {
+                this.generalizations.clear();
+                this.generalizations.putAll(generalizations);
+            }
+            for (PatternGeneralization generalization : generalizations.values()) {
+                generalization.loadCompleted();
             }
             this.loaded = true;
             this.loading = false;

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.replicates.*;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import org.bukkit.GameMode;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -66,25 +67,37 @@ public class HashUtils {
 
     // Separator
 
-    public static int hashPlayer(SpartanPlayer player) {
-        int hash = Boolean.hashCode(player.bedrockPlayer);
-        Entity vehicle = player.getVehicle();
+    public static int hashPlayer(Entity vehicle,
+                                 GameMode gameMode,
+                                 ItemStack boots,
+                                 Collection<SpartanPotionEffect> potionEffects,
+                                 double eyeHeight,
+                                 int ping,
+                                 long lastFlight,
+                                 boolean bedrockPlayer,
+                                 boolean flying,
+                                 boolean gliding,
+                                 boolean swimming,
+                                 boolean crawling,
+                                 boolean frozen,
+                                 boolean sneaking,
+                                 boolean onGround) {
+        int hash = Boolean.hashCode(bedrockPlayer);
 
         if (vehicle != null) {
             hash = extendInt(hash, vehicle.getType().toString().hashCode());
         } else {
-            hash = extendInt(hash, Boolean.hashCode(player.movement.getLastFlight() <= TPS.maximum));
-            hash = extendInt(hash, Boolean.hashCode(player.movement.isFlying()));
-            hash = extendInt(hash, player.getGameMode().toString().hashCode());
-            hash = extendInt(hash, Double.hashCode(player.getEyeHeight()));
-            hash = extendInt(hash, Boolean.hashCode(player.movement.isGliding()));
-            hash = extendInt(hash, Boolean.hashCode(player.movement.isSwimming()));
-            hash = extendInt(hash, Boolean.hashCode(player.movement.isCrawling()));
-            hash = extendInt(hash, Boolean.hashCode(player.isFrozen()));
-            hash = extendInt(hash, Boolean.hashCode(player.movement.isSneaking()));
-            hash = extendInt(hash, Boolean.hashCode(player.isOnGround()));
-            hash = extendInt(hash, Math.min(AlgebraUtils.integerFloor(player.getPing() / TPS.tickTimeDecimal), 1000));
-            ItemStack boots = player.getInventory().getBoots();
+            hash = extendInt(hash, Boolean.hashCode(lastFlight <= TPS.maximum));
+            hash = extendInt(hash, Boolean.hashCode(flying));
+            hash = extendInt(hash, gameMode.toString().hashCode());
+            hash = extendInt(hash, Double.hashCode(eyeHeight));
+            hash = extendInt(hash, Boolean.hashCode(gliding));
+            hash = extendInt(hash, Boolean.hashCode(swimming));
+            hash = extendInt(hash, Boolean.hashCode(crawling));
+            hash = extendInt(hash, Boolean.hashCode(frozen));
+            hash = extendInt(hash, Boolean.hashCode(sneaking));
+            hash = extendInt(hash, Boolean.hashCode(onGround));
+            hash = extendInt(hash, Math.min(AlgebraUtils.integerFloor(ping / TPS.tickTimeDecimal), 1_000));
 
             if (boots != null) {
                 Map<Enchantment, Integer> enchantments = boots.getEnchantments();
@@ -105,7 +118,6 @@ public class HashUtils {
                 }
             }
         }
-        Collection<SpartanPotionEffect> potionEffects = player.getStoredPotionEffects();
 
         if (!potionEffects.isEmpty()) {
             Map<Integer, SpartanPotionEffect> map = new TreeMap<>();
@@ -124,21 +136,53 @@ public class HashUtils {
         return hash;
     }
 
-    public static int hashEnvironment(SpartanPlayer player,
-                                      SpartanLocation location,
-                                      SpartanLocation previousLocation) {
-        int hash = AlgebraUtils.floorToNearest(player.movement.getTicksOnAir(), (int) TPS.maximum);
+    public static int hashPlayer(SpartanPlayer player) {
+        return hashPlayer(
+                player.getVehicle(),
+                player.getGameMode(),
+                player.getInventory().getBoots(),
+                player.getStoredPotionEffects(),
+                player.getEyeHeight(),
+                player.getPing(),
+                player.movement.getLastFlight(),
+                player.bedrockPlayer,
+                player.movement.isFlying(),
+                player.movement.isGliding(),
+                player.movement.isSwimming(),
+                player.movement.isCrawling(),
+                player.isFrozen(),
+                player.movement.isSneaking(),
+                player.isOnGround()
+        );
+    }
+
+    // Separator
+
+    public static int hashEnvironment(int airTicks, double height, double previousHeight) {
+        int hash = AlgebraUtils.floorToNearest(airTicks, (int) TPS.maximum);
 
         hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
-                location.getY() - location.getBlockY(),
+                height,
                 GroundUtils.maxHeightLength
         )));
         hash = extendInt(hash, Double.hashCode(AlgebraUtils.cut(
-                previousLocation.getY() - previousLocation.getBlockY(),
+                previousHeight,
                 GroundUtils.maxHeightLength
         )));
         return hash;
     }
+
+    public static int hashEnvironment(SpartanPlayer player,
+                                      SpartanLocation location,
+                                      SpartanLocation previousLocation) {
+        return hashEnvironment(
+                player.movement.getTicksOnAir(),
+                location.getY() - location.getBlockY(),
+                previousLocation.getY() - previousLocation.getBlockY()
+        );
+    }
+
+    // Separator
 
     public static int hashTrackers(SpartanPlayer player) {
         int hash = 1;
