@@ -15,8 +15,6 @@ import java.util.*;
 
 public class HashUtils {
 
-    public static final int loopHash = Boolean.hashCode(false);
-
     public static int extendInt(int hash, int extra) {
         return (hash * SpartanBukkit.hashCodeMultiplier) + extra;
     }
@@ -149,7 +147,14 @@ public class HashUtils {
             Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getRawReceivedDamages();
 
             if (!damages.isEmpty()) {
+                Map<Integer, SpartanPlayerDamage> map = new TreeMap<>();
+
                 for (Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage> entry : damages) {
+                    if (entry.getValue().ticksPassed() <= TPS.maximum) {
+                        map.put(entry.getKey().toString().hashCode(), entry.getValue());
+                    }
+                }
+                for (Map.Entry<Integer, SpartanPlayerDamage> entry : map.entrySet()) {
                     long ticksPassed = entry.getValue().ticksPassed();
 
                     if (ticksPassed <= TPS.maximum) {
@@ -159,7 +164,7 @@ public class HashUtils {
                             hash = extendInt(hash, event.getDamager().getType().toString().hashCode());
                             hash = extendInt(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
                         }
-                        hash = extendInt(hash, entry.getKey().toString().hashCode());
+                        hash = extendInt(hash, entry.getKey());
                         hash = extendInt(hash, Long.hashCode(ticksPassed));
                         hash = extendInt(hash,
                                 Double.hashCode(
@@ -168,8 +173,6 @@ public class HashUtils {
                                         )
                                 )
                         );
-                    } else {
-                        hash = extendInt(hash, loopHash);
                     }
                 }
             }
@@ -191,8 +194,6 @@ public class HashUtils {
                                         )
                                 )
                         );
-                    } else {
-                        hash = extendInt(hash, loopHash);
                     }
                 }
             }
