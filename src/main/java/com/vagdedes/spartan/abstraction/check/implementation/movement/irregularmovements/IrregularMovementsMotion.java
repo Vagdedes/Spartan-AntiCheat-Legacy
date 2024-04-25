@@ -329,12 +329,13 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             && (vertical != 0.0 || !PlayerUtils.isUsable(player.getItemInHand().getType()))) {
                         double jumpingPrecision = PlayerUtils.getJumpingPrecision(player);
 
-                        if (Math.abs(oldVertical - PlayerUtils.jumping[0]) >= jumpingPrecision // Jumping must end somewhere
+                        if (Math.abs(oldVertical - PlayerUtils.jumping[0]) >= jumpingPrecision
+                                && Math.abs(oldVertical - PlayerUtils.jumping[1]) >= jumpingPrecision // Jumping must end somewhere
                                 && !PatternUtils.isBlockPattern(new double[][]{
                                 {1, 3, 1},
                                 {1, 2, 1},
                                 {1, 2 - box, 1},
-                                {1, 2 - oldBox, 1, oldBox != box ? 1 : 0},
+                                {1, 2 - oldBox, 1, !oldBox.equals(box) ? 1 : 0},
                                 {1, 1, 1},
                         }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                             irregularMovements.cancel(prevention, "jump-end",

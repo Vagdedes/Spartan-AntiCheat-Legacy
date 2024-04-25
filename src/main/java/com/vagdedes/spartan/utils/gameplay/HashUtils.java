@@ -75,7 +75,6 @@ public class HashUtils {
                                  GameMode gameMode,
                                  ItemStack boots,
                                  Collection<SpartanPotionEffect> potionEffects,
-                                 double eyeHeight,
                                  int ping,
                                  long lastFlight,
                                  boolean bedrockPlayer,
@@ -94,7 +93,6 @@ public class HashUtils {
             hash = extendInt(hash, Boolean.hashCode(lastFlight <= TPS.maximum));
             hash = extendInt(hash, Boolean.hashCode(flying));
             hash = extendInt(hash, gameMode.toString().hashCode());
-            hash = extendInt(hash, Double.hashCode(eyeHeight));
             hash = extendInt(hash, Boolean.hashCode(gliding));
             hash = extendInt(hash, Boolean.hashCode(swimming));
             hash = extendInt(hash, Boolean.hashCode(crawling));
@@ -146,7 +144,6 @@ public class HashUtils {
                 player.getGameMode(),
                 player.getInventory().getBoots(),
                 player.getStoredPotionEffects(),
-                player.getEyeHeight(),
                 player.getPing(),
                 player.movement.getLastFlight(),
                 player.bedrockPlayer,

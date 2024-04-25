@@ -124,6 +124,15 @@ public class EventsHandler7 implements Listener {
                 HashUtils.hashEnvironment(p, to, from),
                 HashUtils.hashTrackers(p)
         );
+        p.debug(false, false,
+                p.getEyeHeight(),
+                HashUtils.hashPlayer(p),
+                MovementProcessing.artificialPlayerHash(
+                        p.movement.isSneaking(),
+                        p.isOnGround(),
+                        p.getPing()
+                )
+        );
 
         // Patterns
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);

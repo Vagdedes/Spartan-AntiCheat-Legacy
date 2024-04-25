@@ -53,7 +53,7 @@ public class PlayerUtils {
             maxJumpingMotionDifference;
 
     public static final double[]
-            jumping = new double[]{0.003015, 0.42f, 0.0001}, // Last one is jump value precision
+            jumping = new double[]{0.003015, 0.42f},
             climbing = new double[]{climbingMin, 0.07531, 0.11215, climbingDefault, 0.12529, 0.15, climbingMax},
             climbingMinMax = new double[]{climbingMin, climbingMax};
 
@@ -263,7 +263,7 @@ public class PlayerUtils {
     public static double getJumpingPrecision(SpartanPlayer p) {
         return p.bedrockPlayer || hasJumpEffect(p)
                 ? highPrecision
-                : jumping[2];
+                : 0.0001;
     }
 
     public static boolean isJumping(double d, double diff, double offDiff) {

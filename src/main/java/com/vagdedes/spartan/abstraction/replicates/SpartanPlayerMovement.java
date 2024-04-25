@@ -279,7 +279,7 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isCrawling() {
-        return this.parent.getEyeHeight() <= 1.2 && !isGliding() && !this.isSwimming();
+        return this.parent.getEyeHeight() < 1.0 && !isGliding() && !this.isSwimming();
     }
 
     public boolean isWalkJumping() {
