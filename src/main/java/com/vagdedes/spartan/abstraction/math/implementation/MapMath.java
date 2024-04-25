@@ -336,7 +336,7 @@ public class MapMath implements AbstractKeyValueMath {
         if (map != null) {
             Short count = map.get(ignoreHash);
 
-            if (count > 0) {
+            if (count != null) {
                 int total = 0;
 
                 for (short loopCount : map.values()) {
