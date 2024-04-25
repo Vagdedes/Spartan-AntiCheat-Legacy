@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
@@ -20,8 +19,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class MovementProcessing {
@@ -31,7 +28,6 @@ public class MovementProcessing {
             v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
     private static final int roundedFall = AlgebraUtils.integerCeil(PlayerUtils.terminalVelocity);
     private static final Material MAGMA_BLOCK = MaterialUtils.get("magma");
-    private static final Collection<SpartanPotionEffect> artificialEffects = new ArrayList<>(0);
 
     public static void run(Player n, SpartanPlayer player,
                            SpartanLocation location,
@@ -242,11 +238,10 @@ public class MovementProcessing {
     }
 
     public static int hashTotal(int player, int environment, int trackers) {
-        int situation = HashUtils.extendInt(player, environment);
-        return HashUtils.extendInt(situation, trackers);
+        return HashUtils.extendInt(HashUtils.extendInt(player, environment), trackers);
     }
 
-    public static int artificialPlayerHash( // todo sneak height
+    public static int artificialPlayerHash(
             boolean sneak,
             boolean ground,
             int ping
@@ -255,7 +250,7 @@ public class MovementProcessing {
                 null,
                 GameMode.SURVIVAL,
                 null,
-                artificialEffects,
+                HashUtils.emptyEffects,
                 sneak ? CombatUtils.playerSneakingHeight : CombatUtils.playerWidthAndHeight[1],
                 ping,
                 Long.MAX_VALUE,

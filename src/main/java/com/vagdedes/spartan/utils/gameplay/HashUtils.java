@@ -16,6 +16,10 @@ import java.util.*;
 
 public class HashUtils {
 
+    public static final Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> emptyDamages = new HashSet<>(0);
+    public static final List<SpartanPlayerVelocity> emptyVelocities = new ArrayList<>(0);
+    public static final Collection<SpartanPotionEffect> emptyEffects = new ArrayList<>(0);
+
     public static int extendInt(int hash, int extra) {
         return (hash * SpartanBukkit.hashCodeMultiplier) + extra;
     }
@@ -184,93 +188,111 @@ public class HashUtils {
 
     // Separator
 
-    public static int hashTrackers(SpartanPlayer player) {
+    public static int hashTrackers(Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages,
+                                   List<SpartanPlayerVelocity> velocities,
+                                   SpartanLocation location,
+                                   long lastLiquid,
+                                   int pistonTicks,
+                                   int tridentTicks,
+                                   int bubbleWaterSoulSandTicks,
+                                   int bubbleWaterMagmaBlockTicks,
+                                   int bouncingBlocksSlimeTicks,
+                                   int bouncingBlocksBedTicks) {
         int hash = 1;
 
-        if (player.getVehicle() == null) {
-            Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> damages = player.getRawReceivedDamages();
+        if (!damages.isEmpty()) {
+            Map<Integer, SpartanPlayerDamage> map = new TreeMap<>();
 
-            if (!damages.isEmpty()) {
-                Map<Integer, SpartanPlayerDamage> map = new TreeMap<>();
-
-                for (Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage> entry : damages) {
-                    if (entry.getValue().ticksPassed() <= TPS.maximum) {
-                        map.put(entry.getKey().toString().hashCode(), entry.getValue());
-                    }
-                }
-                for (Map.Entry<Integer, SpartanPlayerDamage> entry : map.entrySet()) {
-                    long ticksPassed = entry.getValue().ticksPassed();
-
-                    if (ticksPassed <= TPS.maximum) {
-                        EntityDamageByEntityEvent event = entry.getValue().getEntityDamageByEntityEvent();
-
-                        if (event != null) {
-                            hash = extendInt(hash, event.getDamager().getType().toString().hashCode());
-                            hash = extendInt(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
-                        }
-                        hash = extendInt(hash, entry.getKey());
-                        hash = extendInt(hash, Long.hashCode(ticksPassed));
-                        hash = extendInt(hash,
-                                Double.hashCode(
-                                        AlgebraUtils.cut(entry.getValue().location.distance(player.movement.getLocation()),
-                                                1
-                                        )
-                                )
-                        );
-                    }
+            for (Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage> entry : damages) {
+                if (entry.getValue().ticksPassed() <= TPS.maximum) {
+                    map.put(entry.getKey().toString().hashCode(), entry.getValue());
                 }
             }
-            List<SpartanPlayerVelocity> velocities = player.getVelocitiesReceived();
+            for (Map.Entry<Integer, SpartanPlayerDamage> entry : map.entrySet()) {
+                long ticksPassed = entry.getValue().ticksPassed();
 
-            if (!velocities.isEmpty()) {
-                for (SpartanPlayerVelocity velocity : velocities) {
-                    long ticksPassed = velocity.ticksPassed();
+                if (ticksPassed <= TPS.maximum) {
+                    EntityDamageByEntityEvent event = entry.getValue().getEntityDamageByEntityEvent();
 
-                    if (ticksPassed <= TPS.maximum) {
-                        hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getX()));
-                        hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getY()));
-                        hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getZ()));
-                        hash = extendInt(hash, Long.hashCode(ticksPassed));
-                        hash = extendInt(hash,
-                                Double.hashCode(
-                                        AlgebraUtils.cut(velocity.location.distance(player.movement.getLocation()),
-                                                1
-                                        )
-                                )
-                        );
+                    if (event != null) {
+                        hash = extendInt(hash, event.getDamager().getType().toString().hashCode());
+                        hash = extendInt(hash, entry.getValue().getActiveItem().getType().toString().hashCode());
                     }
+                    hash = extendInt(hash, entry.getKey());
+                    hash = extendInt(hash, Long.hashCode(ticksPassed));
+                    hash = extendInt(hash,
+                            Double.hashCode(
+                                    AlgebraUtils.cut(entry.getValue().location.distance(location),
+                                            1
+                                    )
+                            )
+                    );
+                }
+            }
+        }
+        if (!velocities.isEmpty()) {
+            for (SpartanPlayerVelocity velocity : velocities) {
+                long ticksPassed = velocity.ticksPassed();
+
+                if (ticksPassed <= TPS.maximum) {
+                    hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getX()));
+                    hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getY()));
+                    hash = extendInt(hash, Double.hashCode(velocity.event.getVelocity().getZ()));
+                    hash = extendInt(hash, Long.hashCode(ticksPassed));
+                    hash = extendInt(hash,
+                            Double.hashCode(
+                                    AlgebraUtils.cut(velocity.location.distance(location),
+                                            1
+                                    )
+                            )
+                    );
                 }
             }
         }
         hash = HashUtils.extendInt(
                 hash,
-                player.getTrackers().getRemainingTicks(Trackers.TrackerType.Piston)
+                pistonTicks
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getTrackers().getRemainingTicks(Trackers.TrackerType.Trident)
+                tridentTicks
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BubbleWater, "soul-sand")
+                bubbleWaterSoulSandTicks
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BubbleWater, "magma-block")
+                bubbleWaterMagmaBlockTicks
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BouncingBlocks, "slime")
+                bouncingBlocksSlimeTicks
         );
         hash = HashUtils.extendInt(
                 hash,
-                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BouncingBlocks, "bed")
+                bouncingBlocksBedTicks
         );
-        long lastLiquid = player.movement.getLastLiquid();
-
         if (lastLiquid <= TPS.maximum) {
             hash = extendInt(hash, Long.hashCode(lastLiquid));
         }
         return hash;
     }
+
+    public static int hashTrackers(SpartanPlayer player) {
+        boolean vehicle = player.getVehicle() != null;
+        return hashTrackers(
+                vehicle ? emptyDamages : player.getRawReceivedDamages(),
+                vehicle ? emptyVelocities : player.getVelocitiesReceived(),
+                player.movement.getLocation(),
+                player.movement.getLastLiquid(),
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.Piston),
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.Trident),
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BubbleWater, "soul-sand"),
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BubbleWater, "magma-block"),
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BouncingBlocks, "slime"),
+                player.getTrackers().getRemainingTicks(Trackers.TrackerType.BouncingBlocks, "bed")
+        );
+    }
+
 }

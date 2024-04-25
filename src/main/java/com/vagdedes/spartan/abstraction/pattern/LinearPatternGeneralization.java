@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -366,7 +365,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                           double height,
                           double previousHeight,
                           double pattern) {
-        AwarenessNotifications.forcefullySend(pattern + "");
         this.selfLearn(
                 MovementProcessing.hashTotal(
                         MovementProcessing.artificialPlayerHash(
@@ -379,7 +377,18 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                 AlgebraUtils.removeBase(height),
                                 AlgebraUtils.removeBase(previousHeight)
                         ),
-                        1
+                        HashUtils.hashTrackers(
+                                HashUtils.emptyDamages,
+                                HashUtils.emptyVelocities,
+                                null,
+                                Long.MAX_VALUE,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
+                        )
                 ),
                 pattern
         );
