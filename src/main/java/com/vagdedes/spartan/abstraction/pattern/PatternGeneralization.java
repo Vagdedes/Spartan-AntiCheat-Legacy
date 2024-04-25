@@ -139,6 +139,12 @@ public abstract class PatternGeneralization {
         }
     }
 
+    final double contributionAverage() {
+        synchronized (this.contribution) {
+            return this.contribution.getSpecificTotal() / (double) this.contribution.getParts();
+        }
+    }
+
     final double contribution(int situation) {
         synchronized (this.contribution) {
             return (1.0 - this.contribution.getPersonalContribution(situation))
