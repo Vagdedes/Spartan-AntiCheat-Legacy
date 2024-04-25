@@ -107,7 +107,7 @@ public class KillAura extends CheckExecutor {
 
             runDetection(
                     "check_aim",
-                    () -> aim.runMove(to, from, buffer, pattern),
+                    () -> aim.runMove(from, pattern),
                     false
             );
             runDetection(
@@ -201,11 +201,6 @@ public class KillAura extends CheckExecutor {
                             runDetection(
                                     "check_pattern",
                                     () -> pattern.run(entity, location),
-                                    true
-                            );
-                            runDetection(
-                                    "check_aim",
-                                    () -> aim.run(entity, location, width, height),
                                     true
                             );
                         }
