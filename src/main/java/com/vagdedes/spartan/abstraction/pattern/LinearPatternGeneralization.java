@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -304,11 +305,22 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         for (int fall = 0; fall < 2; fall++) {
                             boolean falling = fall == 1;
                             int airTicks = 0;
-                            double previousPosition;
+                            double previousHeight = height;
+
+                            for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
+                                this.preTrain(
+                                        sneaking,
+                                        airTicks,
+                                        ping,
+                                        height,
+                                        previousHeight,
+                                        0.0
+                                );
+                            }
 
                             if (jumping) {
                                 for (double jumpMotion : PlayerUtils.getJumpMotions()) {
-                                    previousPosition = height;
+                                    previousHeight = height;
                                     height += jumpMotion;
 
                                     for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
@@ -317,7 +329,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                                 airTicks,
                                                 ping,
                                                 height,
-                                                previousPosition,
+                                                previousHeight,
                                                 jumpMotion
                                         );
                                     }
@@ -326,7 +338,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                             }
                             if (falling) {
                                 for (double fallMotion : PlayerUtils.getFallMotions()) {
-                                    previousPosition = height;
+                                    previousHeight = height;
                                     height -= fallMotion;
                                     airTicks++; // Before
 
@@ -336,7 +348,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                                 airTicks,
                                                 ping,
                                                 height,
-                                                previousPosition,
+                                                previousHeight,
                                                 fallMotion
                                         );
                                     }
@@ -355,6 +367,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                           double height,
                           double previousHeight,
                           double pattern) {
+        AwarenessNotifications.forcefullySend(pattern + "");
         this.selfLearn(
                 MovementProcessing.hashTotal(
                         MovementProcessing.artificialPlayerHash(

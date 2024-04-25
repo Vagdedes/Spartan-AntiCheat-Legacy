@@ -256,7 +256,7 @@ public class MovementProcessing {
                 GameMode.SURVIVAL,
                 null,
                 artificialEffects,
-                sneak ? 0 : CombatUtils.playerWidthAndHeight[1],
+                sneak ? CombatUtils.playerSneakingHeight : CombatUtils.playerWidthAndHeight[1],
                 ping,
                 Long.MAX_VALUE,
                 false,

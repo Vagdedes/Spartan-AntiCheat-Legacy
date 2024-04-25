@@ -28,10 +28,6 @@ public class PlayerProfile {
 
     // Separator
 
-    public PlayerProfile() {
-        this(Double.toString(new Random().nextDouble()));
-    }
-
     public PlayerProfile(String name) {
         Enums.HackType[] hackTypes = Enums.HackType.values();
 

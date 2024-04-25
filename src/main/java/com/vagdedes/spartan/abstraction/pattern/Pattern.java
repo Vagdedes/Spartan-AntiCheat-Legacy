@@ -34,7 +34,7 @@ public class Pattern {
 
     static {
         for (int i = 0; i < requiredPlayerContributionAverage; i++) {
-            artificialProfiles[i] = new PlayerProfile();
+            artificialProfiles[i] = new PlayerProfile(Double.toString(new Random().nextDouble()));
         }
     }
 
@@ -275,13 +275,12 @@ public class Pattern {
                 entries = new HashSet<>(this.generalizations.entrySet());
             }
             for (Map.Entry<Short, PatternGeneralization> entry : entries) {
-                generalizations.put(
-                        entry.getKey(),
+                PatternGeneralization patternGeneralization =
                         entry.getValue() instanceof LinearPatternGeneralization
                                 ? new LinearPatternGeneralization(this, entry.getValue().scissors)
-                                : new NonLinearPatternGeneralization(this, entry.getValue().scissors)
-                );
-                entry.getValue().loadStarting();
+                                : new NonLinearPatternGeneralization(this, entry.getValue().scissors);
+                generalizations.put(entry.getKey(), patternGeneralization);
+                patternGeneralization.loadStarting();
             }
             if (files != null) {
                 Arrays.sort(files, Comparator.comparingLong(File::lastModified));
@@ -333,6 +332,7 @@ public class Pattern {
                                                 profile,
                                                 (int) situation,
                                                 (double) pattern,
+                                                true,
                                                 true
                                         );
                                     }
@@ -410,7 +410,8 @@ public class Pattern {
                             profile,
                             situation,
                             pattern.doubleValue(),
-                            false
+                            false,
+                            true
                     )) {
                         store |= include;
                     }
