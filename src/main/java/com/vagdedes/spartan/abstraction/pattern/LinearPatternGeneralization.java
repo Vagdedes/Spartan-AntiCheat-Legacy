@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
-import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -294,7 +293,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     void loadStarting() {
-        if (this.parent.key.equals(MovementPatterns.verticalKey)) {
+        if (this.parent.key.endsWith("/vertical")) {
             for (double height : GroundUtils.getHeights()) {
                 for (int jump = 0; jump < 2; jump++) {
                     boolean jumping = jump == 1;

@@ -34,7 +34,7 @@ public class Pattern {
 
     static {
         for (int i = 0; i < requiredPlayerContributionAverage; i++) {
-            artificialProfiles[i] = new PlayerProfile(Double.toString(new Random().nextDouble()));
+            artificialProfiles[i] = new PlayerProfile();
         }
     }
 
@@ -441,6 +441,12 @@ public class Pattern {
     public PatternGeneralization getGeneralization(Number generalization) {
         synchronized (this.generalizations) {
             return this.generalizations.get(generalization.shortValue());
+        }
+    }
+
+    public PatternGeneralization getGeneralization() {
+        synchronized (this.generalizations) {
+            return this.generalizations.values().iterator().next();
         }
     }
 

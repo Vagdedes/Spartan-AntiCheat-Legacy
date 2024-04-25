@@ -28,6 +28,20 @@ public class PlayerProfile {
 
     // Separator
 
+    public PlayerProfile() {
+        this.uuid = null;
+        this.name = Double.toString(new Random().nextDouble());
+        this.punishmentHistory = null;
+        this.playerCombat = null;
+        this.evidence = null;
+        this.skull = null;
+        this.offlinePlayer = null;
+        this.bedrockPlayer = false;
+        this.bedrockPlayerCheck = true;
+        this.violationHistory = new ViolationHistory[0];
+        this.miningHistory = new MiningHistory[0];
+    }
+
     public PlayerProfile(String name) {
         Enums.HackType[] hackTypes = Enums.HackType.values();
 
