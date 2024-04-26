@@ -75,7 +75,6 @@ public class HashUtils {
                                  GameMode gameMode,
                                  ItemStack boots,
                                  Collection<SpartanPotionEffect> potionEffects,
-                                 int ping,
                                  long lastFlight,
                                  boolean bedrockPlayer,
                                  boolean flying,
@@ -99,7 +98,6 @@ public class HashUtils {
             hash = extendInt(hash, Boolean.hashCode(frozen));
             hash = extendInt(hash, Boolean.hashCode(sneaking));
             hash = extendInt(hash, Boolean.hashCode(onGround));
-            hash = extendInt(hash, Math.min(AlgebraUtils.integerFloor(ping / TPS.tickTimeDecimal), 1_000));
 
             if (boots != null) {
                 Map<Enchantment, Integer> enchantments = boots.getEnchantments();
@@ -144,7 +142,6 @@ public class HashUtils {
                 player.getGameMode(),
                 player.getInventory().getBoots(),
                 player.getStoredPotionEffects(),
-                player.getPing(),
                 player.movement.getLastFlight(),
                 player.bedrockPlayer,
                 player.movement.isFlying(),

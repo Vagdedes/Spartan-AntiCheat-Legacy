@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
@@ -304,33 +303,26 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                             boolean falling = fall == 1;
                             int airTicks = 0;
                             double previousHeight = height;
-
-                            for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
-                                this.preTrain(
-                                        sneaking,
-                                        airTicks,
-                                        ping,
-                                        height,
-                                        previousHeight,
-                                        0.0
-                                );
-                            }
+                            this.preTrain(
+                                    sneaking,
+                                    airTicks,
+                                    height,
+                                    previousHeight,
+                                    0.0
+                            );
 
                             if (jumping) {
                                 for (double jumpMotion : PlayerUtils.getJumpMotions()) {
                                     previousHeight = height;
                                     height += jumpMotion;
 
-                                    for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
-                                        this.preTrain(
-                                                sneaking,
-                                                airTicks,
-                                                ping,
-                                                height,
-                                                previousHeight,
-                                                jumpMotion
-                                        );
-                                    }
+                                    this.preTrain(
+                                            sneaking,
+                                            airTicks,
+                                            height,
+                                            previousHeight,
+                                            jumpMotion
+                                    );
                                     airTicks++; // After
                                 }
                             }
@@ -340,16 +332,13 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                     height -= fallMotion;
                                     airTicks++; // Before
 
-                                    for (int ping = 0; ping < (TPS.tickTimeInteger * 4); ping += TPS.tickTimeInteger) {
-                                        this.preTrain(
-                                                sneaking,
-                                                airTicks,
-                                                ping,
-                                                height,
-                                                previousHeight,
-                                                fallMotion
-                                        );
-                                    }
+                                    this.preTrain(
+                                            sneaking,
+                                            airTicks,
+                                            height,
+                                            previousHeight,
+                                            fallMotion
+                                    );
                                 }
                             }
                         }
@@ -361,7 +350,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     private void preTrain(boolean sneaking,
                           int airTicks,
-                          int ping,
                           double height,
                           double previousHeight,
                           double pattern) {
@@ -369,8 +357,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 MovementProcessing.hashTotal(
                         MovementProcessing.artificialPlayerHash(
                                 sneaking,
-                                airTicks == 0,
-                                ping
+                                airTicks == 0
                         ),
                         HashUtils.hashEnvironment(
                                 airTicks,

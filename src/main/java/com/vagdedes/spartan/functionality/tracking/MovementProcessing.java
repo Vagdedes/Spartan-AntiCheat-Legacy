@@ -292,15 +292,13 @@ public class MovementProcessing {
 
     public static int artificialPlayerHash(
             boolean sneak,
-            boolean ground,
-            int ping
+            boolean ground
     ) {
         return HashUtils.hashPlayer(
                 null,
                 GameMode.SURVIVAL,
                 null,
                 HashUtils.emptyEffects,
-                ping,
                 Long.MAX_VALUE,
                 false,
                 false,
