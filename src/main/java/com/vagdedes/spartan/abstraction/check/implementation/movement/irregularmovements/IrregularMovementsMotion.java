@@ -31,7 +31,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
             vehicleStep = 2.0;
     private static final int
             criticalHoppingBuffer = AlgebraUtils.integerRound(PlayerUtils.jumpingMotions / 2.0), // 3.0
-            extendedDefaultBufferTime = AlgebraUtils.pow2(IrregularMovements.defaultBufferTime), // 400
+            extendedDefaultBufferTime = IrregularMovements.defaultBufferTime * IrregularMovements.defaultBufferTime, // 400
             decreasedDefaultBufferTime = AlgebraUtils.integerRound(IrregularMovements.defaultBufferTime / 2.0), // 10
             criticalTickDifference = PlayerUtils.jumpingMotions * 4; // 20
 

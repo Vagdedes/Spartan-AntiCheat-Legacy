@@ -102,36 +102,6 @@ public class AlgebraUtils {
 
     // Separator
 
-    public static int pow2(int i) {
-        return i * i;
-    }
-
-    public static double pow2(double i) {
-        return i * i;
-    }
-
-    public static double sqrt(double number) {
-        if (number == 0) {
-            return 0;
-        }
-        double t;
-        double squareRoot = number / 2;
-
-        do {
-            t = squareRoot;
-            squareRoot = (t + (number / t)) / 2;
-        } while ((t - squareRoot) != 0);
-        return squareRoot;
-    }
-
-    public static double roundLocation(double d) {
-        return d == 0.0 ? 0.0 :
-                d < 0.0 ? Math.round((0.0 - d) * 10.0) / 10.0 :
-                        Math.round(d * 10.0) / 10.0;
-    }
-
-    // Separator
-
     public static double getPreDistance(double d1, double d2) {
         double d = d1 - d2;
         return d * d;
@@ -252,20 +222,6 @@ public class AlgebraUtils {
     }
 
     // Separator
-
-    public static boolean validIntegerHeavy(String s) {
-        if (s == null) {
-            return false;
-        }
-        for (int i = 0; i < s.length(); ++i) {
-            char c = s.charAt(i);
-
-            if (!Character.isDigit(c) && c != '-') {
-                return false;
-            }
-        }
-        return true;
-    }
 
     public static Integer returnValidInteger(String str) {
         try {
@@ -414,19 +370,6 @@ public class AlgebraUtils {
                 return !allowSigns && foundDigit;
             }
         }
-    }
-
-    public static boolean validDecimalHeavy(String s) {
-        if (s == null) {
-            return false;
-        }
-        int length = s.length();
-
-        if (length < 3) {
-            return false;
-        }
-        int index = s.indexOf(".");
-        return index > 0 && index != (length - 1) && validInteger(new StringBuilder(s).deleteCharAt(index).toString());
     }
 
     public static boolean isExponentVisible(double value) {

@@ -162,16 +162,16 @@ public class HashUtils {
     public static int hashEnvironment(int airTicks, double height, double previousHeight) {
         return extendInt(
                 AlgebraUtils.ceilToNearest(airTicks, (int) TPS.maximum),
-                AlgebraUtils.integerFloor(Math.abs(height - previousHeight) / 0.001)
+                AlgebraUtils.integerFloor((height - previousHeight) / 0.0001)
         );
     }
 
     public static int hashEnvironment(SpartanPlayer player,
-                                      SpartanLocation location,
+                                      double box,
                                       SpartanLocation previousLocation) {
         return hashEnvironment(
                 player.movement.getVanillaTicksOnAir(),
-                location.getY() - location.getBlockY(),
+                box,
                 previousLocation.getY() - previousLocation.getBlockY()
         );
     }

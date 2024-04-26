@@ -112,7 +112,7 @@ public class EventsHandler7 implements Listener {
         float fall = p.getFallDistance();
         int situation = MovementProcessing.hashTotal(
                 HashUtils.hashPlayer(p),
-                HashUtils.hashEnvironment(p, to, from),
+                HashUtils.hashEnvironment(p, box, from),
                 HashUtils.hashTrackers(p)
         );
 

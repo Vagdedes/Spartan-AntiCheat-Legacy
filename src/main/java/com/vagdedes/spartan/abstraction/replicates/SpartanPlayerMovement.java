@@ -65,7 +65,9 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
         this.lastLiquidTicks = 0L;
 
         this.airTicks = 0;
+        this.vanillaAirTicks = 0;
         this.fallingTicks = 0;
+        this.vanillaFallingTicks = 0;
         this.extraPackets = 0;
 
         this.lastHeadMovement = System.currentTimeMillis();
