@@ -49,44 +49,30 @@ public class AlgebraUtils {
 
     // Separator
 
-    public static double roundToHalf(double dbl) {
-        return Math.floor(dbl * 2.0) / 2.0;
+    public static double roundToPortion(double dbl, double portion) {
+        return Math.floor(dbl * portion) / portion;
     }
 
-    public static double ceilToHalf(double dbl) {
-        return Math.ceil(dbl * 2.0) / 2.0;
+    public static double ceilToPortion(double dbl, double portion) {
+        return Math.ceil(dbl * portion) / portion;
     }
 
-    public static double floorToHalf(double dbl) {
-        return Math.floor(dbl * 2.0) / 2.0;
-    }
-
-    // Separator
-
-    public static int roundToNearest(double number, int nearest) {
-        return (int) (nearest * Math.round(number / (double) nearest));
-    }
-
-    public static int roundToNearest(int number, int nearest) {
-        return (int) (nearest * Math.round(number / (double) nearest));
-    }
-
-    public static long roundToNearest(long number, int nearest) {
-        return nearest * Math.round(number / (double) nearest);
+    public static double floorToPortion(double dbl, double portion) {
+        return Math.floor(dbl * portion) / portion;
     }
 
     // Separator
 
-    public static int floorToNearest(double number, int nearest) {
-        return (int) (nearest * Math.floor(number / (double) nearest));
+    public static int roundToNearest(Number number, int nearest) {
+        return (int) (nearest * Math.round(number.doubleValue() / (double) nearest));
     }
 
-    public static int floorToNearest(int number, int nearest) {
-        return (int) (nearest * Math.floor(number / (double) nearest));
+    public static int floorToNearest(Number number, int nearest) {
+        return (int) (nearest * Math.floor(number.doubleValue() / (double) nearest));
     }
 
-    public static long floorToNearest(long number, int nearest) {
-        return nearest * Math.round(Math.floor(number / (double) nearest));
+    public static int ceilToNearest(Number number, int nearest) {
+        return (int) (nearest * Math.ceil(number.doubleValue() / (double) nearest));
     }
 
     // Separator
