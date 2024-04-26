@@ -1,13 +1,11 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -135,50 +133,6 @@ public class PlayerUtils {
             }
         } else {
             height = 256;
-        }
-    }
-
-    public static void run(SpartanPlayer p) {
-        if (!p.isDead() && !p.isSleeping()) {
-            Buffer buffer = p.getBuffer();
-            SpartanLocation to = p.movement.getLocation(),
-                    from = p.movement.getFromLocation();
-
-            // Separator
-            if (from != null) {
-                p.movement.setCustomDistance(
-                        to.distance(from),
-                        AlgebraUtils.getHorizontalDistance(to, from),
-                        to.getY() - from.getY()
-                );
-            }
-            p.movement.setFromLocation(to);
-
-            // Separator
-            boolean ground = p.refreshOnGroundCustom(from);
-
-            if (ground) {
-                p.movement.setAirTicks(0);
-            } else {
-                Double nmsVerticalDistance = p.movement.getNmsVerticalDistance(),
-                        old_NmsVerticalDistance = p.movement.getPreviousNmsVerticalDistance();
-
-                if (nmsVerticalDistance != null
-                        && old_NmsVerticalDistance != null
-                        && nmsVerticalDistance < old_NmsVerticalDistance) {
-                    p.movement.setFallingTicks(p.movement.getFallingTicks() + 1);
-                } else {
-                    p.movement.setFallingTicks(0);
-                }
-                p.movement.setAirTicks(p.movement.getTicksOnAir() + 1);
-            }
-
-            // Separator
-            if (isUsingAnInventory(p, 0)) {
-                buffer.increase("player-data=inventory-use", 1);
-            } else {
-                buffer.remove("player-data=inventory-use");
-            }
         }
     }
 
@@ -362,11 +316,6 @@ public class PlayerUtils {
     }
 
     // Inventory
-
-    public static boolean isUsingAnInventory(SpartanPlayer p, int limit) {
-        return (limit == 0 || p.getBuffer().get("player-data=inventory-use") >= limit)
-                && p.getOpenInventory().slots > 46;
-    }
 
     public static boolean isUsable(Material type) {
         return CombatUtils.isSword(type)

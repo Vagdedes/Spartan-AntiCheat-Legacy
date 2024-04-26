@@ -41,7 +41,7 @@ public class IrregularMovementsLevitation extends DetectionExecutor {
                     || oldBox == null) {
                 return;
             }
-            SpartanLocation to = player.movement.getEventToLocation();
+            SpartanLocation to = player.movement.getNmsToLocation();
 
             runAsync(() -> {
                 if (!player.getTrackers().has(Trackers.TrackerType.ElytraWear)) {

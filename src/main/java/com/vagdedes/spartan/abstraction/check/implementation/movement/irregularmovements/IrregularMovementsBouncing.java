@@ -35,7 +35,7 @@ public class IrregularMovementsBouncing extends DetectionExecutor {
                     || box == null) {
                 return;
             }
-            SpartanLocation to = player.movement.getEventToLocation();
+            SpartanLocation to = player.movement.getNmsToLocation();
             int airTicks = player.movement.getTicksOnAir();
 
             runAsync(() -> {

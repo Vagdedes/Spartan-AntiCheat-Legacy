@@ -30,10 +30,55 @@ public class MovementProcessing {
     private static final Material MAGMA_BLOCK = MaterialUtils.get("magma");
 
     public static void run(Player n, SpartanPlayer player,
-                           SpartanLocation location,
+                           SpartanLocation to,
+                           SpartanLocation from,
                            double distance, double horizontal,
                            double vertical, double box,
                            float fall) {
+        player.movement.processLastMoveEvent(to, from);
+
+        // Separator
+
+        if (player.refreshOnGroundCustom(to)) {
+            player.movement.setAirTicks(0);
+            player.movement.setFallingTicks(0);
+        } else {
+            Double old_NmsVerticalDistance = player.movement.getPreviousNmsVerticalDistance();
+
+            if (old_NmsVerticalDistance != null
+                    && vertical < old_NmsVerticalDistance) {
+                player.movement.setFallingTicks(player.movement.getFallingTicks() + 1);
+            } else {
+                player.movement.setFallingTicks(0);
+            }
+            player.movement.setAirTicks(player.movement.getTicksOnAir() + 1);
+        }
+
+        // Separator
+
+        if (player.isOnGround()) {
+            player.movement.setVanillaAirTicks(0);
+            player.movement.setVanillaFallingTicks(0);
+        } else {
+            Double old_NmsVerticalDistance = player.movement.getPreviousNmsVerticalDistance();
+
+            if (old_NmsVerticalDistance != null
+                    && vertical < old_NmsVerticalDistance) {
+                player.movement.setVanillaFallingTicks(player.movement.getFallingTicks() + 1);
+            } else {
+                player.movement.setVanillaFallingTicks(0);
+            }
+            player.movement.setVanillaAirTicks(player.movement.getTicksOnAir() + 1);
+        }
+
+        // Separator
+
+        if (to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
+            player.movement.setLastHeadMovement();
+        }
+
+        // Separator
+
         GameMode current = player.getGameMode();
 
         if (current == GameMode.CREATIVE
@@ -60,19 +105,19 @@ public class MovementProcessing {
 
         // Separator
 
-        if (!calculateLiquid(player, location)) {
+        if (!calculateLiquid(player, to)) {
             if (Math.abs(PlayerUtils.jumping[1] - vertical) < PlayerUtils.getJumpingPrecision(player)) { // Last Jump
                 player.movement.setLastJump();
             } else if (player.movement.isFalling(vertical)) { // Last Fall
                 player.movement.setLastFall();
             }
             if (!calculateGroundCollision(player, vertical, box)) {
-                calculateBouncing(player, location, vertical);
+                calculateBouncing(player, to, vertical);
             }
         } else {
-            calculateBouncing(player, location, vertical);
+            calculateBouncing(player, to, vertical);
         }
-        calculateExtremeCollision(player, location);
+        calculateExtremeCollision(player, to);
 
         // Separator
 
@@ -89,6 +134,10 @@ public class MovementProcessing {
                 player.movement.setExtraPackets(0);
             }
         }
+
+        // Separator
+
+        ServerFlying.run(player);
     }
 
     private static boolean calculateGroundCollision(SpartanPlayer player,

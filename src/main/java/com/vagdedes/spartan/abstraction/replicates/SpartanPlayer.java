@@ -241,7 +241,20 @@ public class SpartanPlayer {
                         if (n != null) {
                             Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
                             p.setStoredPotionEffects(potionEffects); // Bad
-                            PlayerUtils.run(p);
+
+                            if (!p.isDead() && !p.isSleeping()) {
+                                SpartanLocation to = p.movement.getLocation(),
+                                        from = p.movement.getCustomFromLocation();
+
+                                if (from != null) {
+                                    p.movement.setCustomDistance(
+                                            to.distance(from),
+                                            AlgebraUtils.getHorizontalDistance(to, from),
+                                            to.getY() - from.getY()
+                                    );
+                                }
+                                p.movement.customFromLocation = to;
+                            }
                         }
 
                         // Preventions
@@ -837,36 +850,9 @@ public class SpartanPlayer {
         return isOnGroundCustom() != isOnGround();
     }
 
-    public boolean refreshOnGroundCustom(SpartanLocation from) {
-        if (GroundUtils.isOnGround(this, this.movement.getLocation(), 0.0, true, true)) {
-            this.onGroundCustom = true; // Server Current Location
-        } else if (from != null && GroundUtils.isOnGround(this, from, 0.0, true, true)) {
-            this.onGroundCustom = true; // Server Previous Location
-        } else {
-            SpartanLocation eventFrom = this.movement.getEventFromLocation();
-
-            Runnable runnable = () -> {
-                if (GroundUtils.isOnGround(this, eventFrom, 0.0, true, true)) {
-                    this.onGroundCustom = true; // Event Previous Location
-                } else {
-                    SpartanLocation eventLocation = this.movement.getEventToLocation();
-                    this.onGroundCustom = eventLocation != null
-                            && GroundUtils.isOnGround(this, eventLocation, 0.0, true, true); // Event Current Location
-                }
-            };
-
-            if (MultiVersion.folia) {
-                SpartanBukkit.runTask(
-                        eventFrom.world,
-                        eventFrom.getBlockX() >> 4,
-                        eventFrom.getBlockZ() >> 4,
-                        runnable
-                );
-            } else {
-                runnable.run();
-            }
-        }
-        return this.onGroundCustom;
+    public boolean refreshOnGroundCustom(SpartanLocation movementTo) {
+        return this.onGroundCustom = GroundUtils.isOnGround(this, movementTo, 0.0, true, true)
+                || GroundUtils.isOnGround(this, this.movement.getLocation(), 0.0, true, true);
     }
 
     // Separator

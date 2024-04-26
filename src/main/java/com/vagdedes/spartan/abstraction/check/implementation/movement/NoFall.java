@@ -284,8 +284,8 @@ public class NoFall extends CheckExecutor {
                 || horizontal >= 0.1
                 || vertical != 0.0
                 || oldVertical != 0.0) {
-            SpartanLocation to = player.movement.getEventToLocation();
-            SpartanLocation from = player.movement.getEventFromLocation();
+            SpartanLocation to = player.movement.getNmsToLocation();
+            SpartanLocation from = player.movement.getNmsFromLocation();
             Buffer buffer = player.getBuffer(hackType);
             Decimals decimals = player.getDecimals(hackType);
 
@@ -334,7 +334,7 @@ public class NoFall extends CheckExecutor {
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 SpartanPlayerDamage damage = player.getLastDamageReceived();
-                SpartanLocation loc = player.movement.getEventToLocation();
+                SpartanLocation loc = player.movement.getNmsToLocation();
 
                 if ((damage == null
                         || damage.ticksPassed() > TPS.maximum

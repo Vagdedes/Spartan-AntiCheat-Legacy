@@ -32,7 +32,7 @@ public class Pattern extends DetectionExecutor {
     Pattern(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
-        selfLocations = new SpartanLocation[]{executor.player.movement.getFromLocation()};
+        selfLocations = new SpartanLocation[]{executor.player.movement.getCustomFromLocation()};
     }
 
     private final Map<Integer, Location> entityLocations = Cache.store(new LinkedHashMap<>(Config.getMaxPlayers()));

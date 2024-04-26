@@ -85,8 +85,8 @@ public class IrregularMovements extends CheckExecutor {
                 || oldBox == null) {
             return false;
         }
-        SpartanLocation to = player.movement.getEventToLocation(),
-                from = player.movement.getEventFromLocation();
+        SpartanLocation to = player.movement.getNmsToLocation(),
+                from = player.movement.getNmsFromLocation();
         int airTicks = player.movement.getTicksOnAir();
         boolean bedrockPlayer = player.bedrockPlayer;
 
@@ -522,6 +522,6 @@ public class IrregularMovements extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
-                && (!player.bedrockPlayer || player.movement.getEventToLocation().getBlockY() > BlockUtils.getMinHeight(player.getWorld()));
+                && (!player.bedrockPlayer || player.movement.getNmsToLocation().getBlockY() > BlockUtils.getMinHeight(player.getWorld()));
     }
 }

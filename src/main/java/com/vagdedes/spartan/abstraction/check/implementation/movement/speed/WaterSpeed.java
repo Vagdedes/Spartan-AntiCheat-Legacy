@@ -60,8 +60,8 @@ public class WaterSpeed extends DetectionExecutor {
                 || horizontal < minDs && Math.abs(vertical) < minDs) {
             return;
         }
-        SpartanLocation to = player.movement.getEventToLocation(),
-                from = player.movement.getEventFromLocation();
+        SpartanLocation to = player.movement.getNmsToLocation(),
+                from = player.movement.getNmsFromLocation();
         int airTicks = player.movement.getTicksOnAir();
         boolean selfHit = player.getLastDamageReceived().isPropellingProjectile();
         Buffer buffer = player.getBuffer(hackType);

@@ -153,7 +153,6 @@ public class NoSlowdown extends CheckExecutor {
                         String verbose = "type: " + reason
                                 + ", holding: " + items
                                 + ", case: " + cases
-                                + ", last-sprint: " + player.movement.getLastOffSprint()
                                 + ", horizontal: " + horizontal
                                 + ", vertical: " + vertical;
                         cancel(verbose, player.movement.getDetectionLocation(),

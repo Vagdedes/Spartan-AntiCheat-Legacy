@@ -8,7 +8,7 @@ import com.vagdedes.spartan.functionality.server.Permissions;
 
 public class ServerFlying {
 
-    public static void run(SpartanPlayer p) {
+    static void run(SpartanPlayer p) {
         if (IrregularMovements.check.getCheck().getBooleanOption("limit_server_flying", false)
                 && !Permissions.isBypassing(p, IrregularMovements.check)
                 && p.movement.isFlying()

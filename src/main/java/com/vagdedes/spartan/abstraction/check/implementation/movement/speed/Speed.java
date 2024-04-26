@@ -188,7 +188,7 @@ public class Speed extends CheckExecutor {
             return false;
         }
         int air = this.player.movement.getTicksOnAir();
-        SpartanLocation to = player.movement.getEventToLocation();
+        SpartanLocation to = player.movement.getNmsToLocation();
         Cooldowns cooldowns = player.getCooldowns(hackType);
         Decimals decimals = player.getDecimals(hackType);
         double dm = getGreaterRepetitiveLimit(decimals);
@@ -771,7 +771,7 @@ public class Speed extends CheckExecutor {
     }
 
     private boolean isSolid(double box) {
-        SpartanLocation to = player.movement.getEventToLocation();
+        SpartanLocation to = player.movement.getNmsToLocation();
         Boolean pattern = PatternUtils.getCached(to, hackType, "solid");
 
         if (pattern != null) {
@@ -829,7 +829,7 @@ public class Speed extends CheckExecutor {
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
-                && !PlayerUtils.isInWaterTunnel(player, player.movement.getEventToLocation());
+                && !PlayerUtils.isInWaterTunnel(player, player.movement.getNmsToLocation());
     }
 
     private double cacheLimit(Decimals decimals, double existingLimit, double newLimit, int ticks) {

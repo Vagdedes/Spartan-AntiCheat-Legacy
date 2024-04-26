@@ -30,7 +30,6 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
             nmsBox;
     private final List<Float> nmsFall;
     private long
-            lastOffSprint,
             lastFall,
             lastJump,
             swimmingTime,
@@ -39,10 +38,13 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
     private int
             airTicks,
             fallingTicks,
+            vanillaAirTicks,
+            vanillaFallingTicks,
             extraPackets;
     private long lastHeadMovement;
     private boolean gliding, swimming, sprinting, sneaking, flying;
-    private SpartanLocation location, fromLocation, eventTo, eventFrom, detectionLocation;
+    private SpartanLocation location, nmsTo, nmsFrom, detectionLocation;
+     SpartanLocation customFromLocation;
 
     SpartanPlayerMovement(SpartanPlayer parent, Player p) {
         this.parent = parent;
@@ -57,7 +59,6 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
 
         this.nmsFall = Collections.synchronizedList(new LinkedList<>());
 
-        this.lastOffSprint = 0L;
         this.lastFall = 0L;
         this.lastJump = 0L;
         this.swimmingTime = 0L;
@@ -82,9 +83,9 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
         this.flying = p.isFlying();
 
         this.location = new SpartanLocation(this.parent, p.getLocation());
-        this.fromLocation = this.location;
-        this.eventTo = this.location;
-        this.eventFrom = this.location;
+        this.customFromLocation = this.location;
+        this.nmsTo = this.location;
+        this.nmsFrom = this.location;
         this.detectionLocation = this.location;
     }
 
@@ -306,16 +307,8 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
         return sprinting && this.getLastJump() <= (TPS.tickTime * 2L);
     }
 
-    public long getLastOffSprint() {
-        return System.currentTimeMillis() - lastOffSprint;
-    }
-
     public synchronized void setSprinting(boolean sprinting) {
         this.sprinting = sprinting;
-    }
-
-    public synchronized void setLastOffSprint() {
-        this.lastOffSprint = System.currentTimeMillis();
     }
 
     // Separator
@@ -428,11 +421,23 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
         return airTicks;
     }
 
+    public int getVanillaTicksOnAir() {
+        return vanillaAirTicks;
+    }
+
     public synchronized void setAirTicks(int number) {
         this.airTicks = number;
 
         if (number == 0) {
             this.fallingTicks = 0;
+        }
+    }
+
+    public synchronized void setVanillaAirTicks(int number) {
+        this.vanillaAirTicks = number;
+
+        if (number == 0) {
+            this.vanillaFallingTicks = 0;
         }
     }
 
@@ -442,8 +447,16 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
         return this.fallingTicks;
     }
 
+    public int getVanillaFallingTicks() {
+        return this.vanillaFallingTicks;
+    }
+
     public synchronized void setFallingTicks(int number) {
         this.fallingTicks = number;
+    }
+
+    public synchronized void setVanillaFallingTicks(int number) {
+        this.vanillaFallingTicks = number;
     }
 
     // Separator
@@ -467,23 +480,23 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
         }
     }
 
-    public SpartanLocation getFromLocation() {
-        return fromLocation;
+    public SpartanLocation getCustomFromLocation() {
+        return customFromLocation;
     }
 
-    public SpartanLocation getEventToLocation() {
-        return eventTo;
+    public SpartanLocation getNmsToLocation() {
+        return nmsTo;
     }
 
-    public SpartanLocation getEventFromLocation() {
-        return eventFrom;
+    public SpartanLocation getNmsFromLocation() {
+        return nmsFrom;
     }
 
     public SpartanLocation getDetectionLocation() {
         return detectionLocation;
     }
 
-    private SpartanLocation getVehicleLocation() {
+    public SpartanLocation getVehicleLocation() {
         Entity vehicle = this.parent.getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
@@ -514,17 +527,8 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
     }
 
     public void processLastMoveEvent(SpartanLocation to, SpartanLocation from) {
-        this.eventTo = to;
-        this.eventFrom = from;
-    }
-
-    public SpartanLocation setEventLocation(Location to) {
-        SpartanLocation vehicle = getVehicleLocation();
-        return vehicle != null ? vehicle : new SpartanLocation(this.parent, to);
-    }
-
-    public void setFromLocation(SpartanLocation loc) {
-        this.fromLocation = loc;
+        this.nmsTo = to;
+        this.nmsFrom = from;
     }
 
     // Separator

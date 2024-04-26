@@ -68,7 +68,7 @@ public class HitReach extends CheckExecutor {
                     SpartanPlayer damaged = entity instanceof Player ? SpartanBukkit.getPlayer((Player) entity) : null;
                     boolean isPlayer = damaged != null;
                     SpartanLocation entityLocation = new SpartanLocation(null, entity.getLocation());
-                    double distance = AlgebraUtils.getVerticalDistance(player.movement.getEventToLocation(), entityLocation),
+                    double distance = AlgebraUtils.getVerticalDistance(player.movement.getNmsToLocation(), entityLocation),
                             limit = filter(hackType.getCheck().getDecimalOption("vertical_distance", 4.6), 4.6, 0.0);
 
                     if (distance >= limit && distance <= CombatUtils.maxHitDistance && !BlockUtils.canClimb(entityLocation)) {

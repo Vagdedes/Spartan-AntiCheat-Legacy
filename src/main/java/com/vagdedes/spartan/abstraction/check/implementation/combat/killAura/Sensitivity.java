@@ -24,7 +24,7 @@ public class Sensitivity extends DetectionExecutor {
     Sensitivity(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
-        previousPitch = executor.player.movement.getFromLocation().getPitch();
+        previousPitch = executor.player.movement.getCustomFromLocation().getPitch();
         previousPitchDifference = 0.0f;
     }
 
