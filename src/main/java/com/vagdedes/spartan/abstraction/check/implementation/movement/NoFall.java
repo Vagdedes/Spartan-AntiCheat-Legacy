@@ -79,7 +79,7 @@ public class NoFall extends CheckExecutor {
                 if (fallDistanceDifference <= 0.0f
                         && fallDistanceRemaining == 0.0
                         && (requiresSuspicion || airTicks >= 8 || vertical <= -0.5)) {
-                    int differenceInFall = Math.abs(PlayerUtils.getFallingTick(vertical) - player.movement.getTicksOnAir());
+                    int differenceInFall = Math.abs(PlayerUtils.getFallTick(vertical) - player.movement.getTicksOnAir());
 
                     if (differenceInFall <= 7) {
                         cancel("type: air, fall-distance: " + fallDistanceDifference + ", air: " + airTicks + ", distance: " + vertical + ", difference: " + differenceInFall, from, 5, true, 2.0);
@@ -152,7 +152,7 @@ public class NoFall extends CheckExecutor {
                             int airTicks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                 && hackType.getCheck().getBooleanOption("check_spoof", true)
-                && (airTicks >= 20 || airTicks >= 12 && player.movement.isFalling(vertical))
+                && (airTicks >= 20 || airTicks >= 12 && PlayerUtils.isFalling(vertical))
                 && player.isOnGround()
                 && !player.isOnGroundCustom()
                 && player.isGroundSpoofing()

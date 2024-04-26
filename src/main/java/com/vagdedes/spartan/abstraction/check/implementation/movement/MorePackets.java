@@ -215,7 +215,7 @@ public class MorePackets extends CheckExecutor {
                     decimals.set(horizontalKey, decimals.get(horizontalKey, 0.0) + horizontalMotionDifference);
                     decimals.set(lastTickKey, decimals.get(lastTickKey, 0.0) + lastTick);
 
-                    if (!player.movement.isFalling(vertical)) { // Do not collect data when falling, it can introduce instabilities and is handled by other checks
+                    if (!PlayerUtils.isFalling(vertical)) { // Do not collect data when falling, it can introduce instabilities and is handled by other checks
                         decimals.set(verticalKey, decimals.get(verticalKey, 0.0) + verticalMotionDifference);
                     }
                 }

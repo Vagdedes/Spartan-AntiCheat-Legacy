@@ -35,7 +35,7 @@ import java.util.*;
 
 public class LiveViolation {
 
-    private static final long violationTimeWorth = 1_000L;
+    private static final long violationTimeWorth = 2_000L;
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;

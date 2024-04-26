@@ -241,20 +241,17 @@ public class SpartanPlayer {
                         if (n != null) {
                             Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
                             p.setStoredPotionEffects(potionEffects); // Bad
+                            SpartanLocation to = p.movement.getLocation(),
+                                    from = p.movement.getCustomFromLocation();
 
-                            if (!p.isDead() && !p.isSleeping()) {
-                                SpartanLocation to = p.movement.getLocation(),
-                                        from = p.movement.getCustomFromLocation();
-
-                                if (from != null) {
-                                    p.movement.setCustomDistance(
-                                            to.distance(from),
-                                            AlgebraUtils.getHorizontalDistance(to, from),
-                                            to.getY() - from.getY()
-                                    );
-                                }
-                                p.movement.customFromLocation = to;
+                            if (from != null) {
+                                p.movement.setCustomDistance(
+                                        to.distance(from),
+                                        AlgebraUtils.getHorizontalDistance(to, from),
+                                        to.getY() - from.getY()
+                                );
                             }
+                            p.movement.customFromLocation = to;
                         }
 
                         // Preventions

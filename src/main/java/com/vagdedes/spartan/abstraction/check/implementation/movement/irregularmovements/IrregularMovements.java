@@ -156,8 +156,8 @@ public class IrregularMovements extends CheckExecutor {
                     jumpEffect = PlayerUtils.hasJumpEffect(player),
                     threwTrident = player.getTrackers().has(Trackers.TrackerType.Trident),
                     explosion = CombatProcessing.hasExplosionDamage(player),
-                    falling = player.movement.isFalling(vertical),
-                    oldFalling = player.movement.isFalling(oldVertical),
+                    falling = PlayerUtils.isFalling(vertical),
+                    oldFalling = PlayerUtils.isFalling(oldVertical),
                     jumping = player.movement.isJumping(vertical),
                     oldJumping = player.movement.isJumping(oldVertical),
                     wasInLiquids = player.movement.wasInLiquids();

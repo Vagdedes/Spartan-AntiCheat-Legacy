@@ -40,7 +40,7 @@ public class HitReach extends CheckExecutor {
             preferred = 4.25;
         } else {
             Double y = player.movement.getNmsVerticalDistance();
-            preferred = y != null && (player.movement.isJumping(y) || player.movement.isFalling(y)) ? 4.25 : defaultHorizontalReach;
+            preferred = y != null && (player.movement.isJumping(y) || PlayerUtils.isFalling(y)) ? 4.25 : defaultHorizontalReach;
         }
         return preferred;
     }

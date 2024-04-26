@@ -62,19 +62,12 @@ public class EventsHandler8 implements Listener {
         if (p == null) {
             return;
         }
+
+        // Objects
         if (e.isCancelled()) {
-            // Objects
             p.movement.setSprinting(n.isSprinting());
         } else {
-            boolean sprinting = e.isSprinting();
-
-            // Utils
-            if (!sprinting) {
-                p.movement.setLastOffSprint();
-            }
-
-            // Objects
-            p.movement.setSprinting(sprinting);
+            p.movement.setSprinting(e.isSprinting());
         }
     }
 

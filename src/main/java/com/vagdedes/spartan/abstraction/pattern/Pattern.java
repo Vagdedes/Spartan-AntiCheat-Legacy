@@ -403,7 +403,7 @@ public class Pattern {
 
             synchronized (this.generalizations) {
                 for (PatternGeneralization generalization : this.generalizations.values()) {
-                    if (notifications) {
+                    if (notifications && this.loaded) {
                         found |= generalization.hasPatterns(situation);
                     }
                     if (generalization.learn(

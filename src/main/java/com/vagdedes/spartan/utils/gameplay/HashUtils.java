@@ -177,7 +177,7 @@ public class HashUtils {
                                       SpartanLocation location,
                                       SpartanLocation previousLocation) {
         return hashEnvironment(
-                player.movement.getTicksOnAir(),
+                player.movement.getVanillaTicksOnAir(),
                 location.getY() - location.getBlockY(),
                 previousLocation.getY() - previousLocation.getBlockY()
         );

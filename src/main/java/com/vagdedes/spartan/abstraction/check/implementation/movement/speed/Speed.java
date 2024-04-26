@@ -228,14 +228,14 @@ public class Speed extends CheckExecutor {
             if (PatternUtils.isBlockPattern(new double[][]{
                     {BlockUtils.hitbox, 0, BlockUtils.hitbox},
                     {BlockUtils.hitbox, 1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, player.getEyeHeight(), BlockUtils.hitbox},
             }, to, true, BlockUtils.web)) {
                 reason = "cobweb";
                 dm = cacheLimit(decimals, dm, cobweb, 5);
             } else if (PatternUtils.isBlockPattern(new double[][]{
                     {BlockUtils.hitbox, 0, BlockUtils.hitbox},
                     {BlockUtils.hitbox, 1, BlockUtils.hitbox},
-                    {BlockUtils.hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.hitbox},
+                    {BlockUtils.hitbox, player.getEyeHeight(), BlockUtils.hitbox},
             }, to, true, BlockUtils.interactive_bushes)) {
                 reason = "interactive-bush";
                 dm = cacheLimit(decimals, dm, interactiveBush, 5);
@@ -269,8 +269,8 @@ public class Speed extends CheckExecutor {
                     dm = cacheLimit(decimals, dm, dm, 10);
                 }
             }
-        } else if (Math.abs(PlayerUtils.jumping[1] - ver) < PlayerUtils.getJumpingPrecision(player)
-                || Math.abs(PlayerUtils.jumping[1] - box) < PlayerUtils.getJumpingPrecision(player)) {
+        } else if (Math.abs(PlayerUtils.getJumpMotion(0) - ver) < PlayerUtils.getJumpingPrecision(player)
+                || Math.abs(PlayerUtils.getJumpMotion(0) - box) < PlayerUtils.getJumpingPrecision(player)) {
             reason = "ypos";
             if (!cooldowns.canDo("ice=reminder")) {
                 dm = cacheLimit(decimals, dm, ypos_advanced, 0);

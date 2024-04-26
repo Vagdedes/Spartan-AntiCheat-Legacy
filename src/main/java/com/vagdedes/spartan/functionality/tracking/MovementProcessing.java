@@ -106,9 +106,9 @@ public class MovementProcessing {
         // Separator
 
         if (!calculateLiquid(player, to)) {
-            if (Math.abs(PlayerUtils.jumping[1] - vertical) < PlayerUtils.getJumpingPrecision(player)) { // Last Jump
+            if (Math.abs(PlayerUtils.getJumpMotion(0) - vertical) < PlayerUtils.getJumpingPrecision(player)) { // Last Jump
                 player.movement.setLastJump();
-            } else if (player.movement.isFalling(vertical)) { // Last Fall
+            } else if (PlayerUtils.isFalling(vertical)) { // Last Fall
                 player.movement.setLastFall();
             }
             if (!calculateGroundCollision(player, vertical, box)) {

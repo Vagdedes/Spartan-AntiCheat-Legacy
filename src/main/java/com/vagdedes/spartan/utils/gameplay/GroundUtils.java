@@ -191,8 +191,8 @@ public class GroundUtils {
             if (vertical == null
                     || oldVertical == null
                     || (vertical - oldVertical) < 0.0
-                    && p.movement.isFalling(vertical)
-                    && p.movement.isFalling(oldVertical)) {
+                    && PlayerUtils.isFalling(vertical)
+                    && PlayerUtils.isFalling(oldVertical)) {
                 return false;
             }
             if (p.getTrackers().has(Trackers.TrackerType.Piston)

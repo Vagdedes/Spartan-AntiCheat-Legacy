@@ -40,7 +40,7 @@ public class IrregularMovementsClimb extends DetectionExecutor {
                     if (canJump && !knownBoxes && player.movement.isClimbing(oldVertical)
 
                             // Attention, added recently
-                            && (Math.abs(vertical - PlayerUtils.jumping[1]) >= PlayerUtils.getJumpingPrecision(player) // Not first jump motion
+                            && (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) >= PlayerUtils.getJumpingPrecision(player) // Not first jump motion
                             || Math.abs(vertical - box) >= PlayerUtils.highPrecision)) { // Vertical & box are not correlated
                         irregularMovements.cancel(prevention, "jump-" + scenario, 1);
                     }
@@ -52,7 +52,7 @@ public class IrregularMovementsClimb extends DetectionExecutor {
                     if (canGoUp && vertical >= max) {
                         irregularMovements.cancel(prevention, "up-" + scenario, "scaffolding: " + scaffolding + ", limit: " + max, bouncingBlocks || knownBoxes ? 8 : 3, IrregularMovements.defaultBufferTime);
                     } else if (canGoDown && vertical <= -max
-                            && !player.movement.isFalling(vertical) && player.movement.getLastFall() >= 1_000L) {
+                            && !PlayerUtils.isFalling(vertical) && player.movement.getLastFall() >= 1_000L) {
                         boolean nonClimbable = irregularMovements.cacheBoolean(cooldowns,
                                 !BlockUtils.canClimb(to)
                                         || !BlockUtils.canClimb(to.clone().add(0, 1, 0))

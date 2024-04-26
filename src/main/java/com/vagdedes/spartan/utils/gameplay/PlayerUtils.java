@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -47,11 +48,9 @@ public class PlayerUtils {
             lowPrecision = highPrecision * 2.0,
             chunk = 16.0,
             climbingScaffoldingMax = climbingDefault + 0.2,
-            totalJumpingMotion,
             maxJumpingMotionDifference;
 
     public static final double[]
-            jumping = new double[]{0.003016, 0.42f},
             climbing = new double[]{climbingMin, 0.07531, 0.11215, climbingDefault, 0.12529, 0.15, climbingMax},
             climbingMinMax = new double[]{climbingMin, climbingMax};
 
@@ -60,8 +59,12 @@ public class PlayerUtils {
             fallDamageBlocks = 4,
             jumpingMotions = 6;
 
-    private static final List<Double> jumps = new ArrayList<>(jumpingMotions);
-    private static final Map<Integer, Double> gravity = new LinkedHashMap<>();
+    private static final Map<Integer, Double>
+            jumpsValues = new LinkedHashMap<>(jumpingMotions),
+            gravityValues = new LinkedHashMap<>();
+    private static final Map<Double, Integer>
+            jumpTicks = new LinkedHashMap<>(jumpingMotions),
+            gravityTicks = new LinkedHashMap<>();
     private static final Map<PotionEffectType, Integer> handledPotionEffects = new LinkedHashMap<>();
 
     static {
@@ -78,20 +81,24 @@ public class PlayerUtils {
 
         // Separator
 
-        jumps.add(jumping[1]);
-        jumps.add(0.33319);
-        jumps.add(0.24813);
-        jumps.add(0.16477);
-        jumps.add(0.08307);
-        jumps.add(jumping[0]);
-        Iterator<Double> iterator = jumps.iterator();
+        jumpsValues.put(0, 0.419999);
+        jumpTicks.put(0.419999, 0);
+        jumpsValues.put(1, 0.333199);
+        jumpTicks.put(0.333199, 1);
+        jumpsValues.put(2, 0.248135);
+        jumpTicks.put(0.248135, 2);
+        jumpsValues.put(3, 0.164773);
+        jumpTicks.put(0.164773, 3);
+        jumpsValues.put(4, 0.083077);
+        jumpTicks.put(0.083077, 4);
+        jumpsValues.put(5, 0.003016);
+        jumpTicks.put(0.003016, 5);
+        Iterator<Double> iterator = jumpsValues.values().iterator();
         double maxJumpingMotionDifferenceLocal = Double.MIN_VALUE,
-                previousJumpingMotion = iterator.next(),
-                totalJumpingMotionLocal = 0.0;
+                previousJumpingMotion = iterator.next();
 
         while (iterator.hasNext()) {
             double currentMotion = iterator.next();
-            totalJumpingMotionLocal += currentMotion;
             maxJumpingMotionDifferenceLocal = Math.max(
                     previousJumpingMotion - currentMotion,
                     maxJumpingMotionDifferenceLocal
@@ -99,7 +106,6 @@ public class PlayerUtils {
             previousJumpingMotion = currentMotion;
         }
         maxJumpingMotionDifference = maxJumpingMotionDifferenceLocal;
-        totalJumpingMotion = totalJumpingMotionLocal;
 
         // Separator
 
@@ -112,7 +118,9 @@ public class PlayerUtils {
             if ((terminalVelocity - fall) < highPrecision) {
                 break;
             }
-            gravity.put(counter, fall);
+            double value = AlgebraUtils.cut(fall, GroundUtils.maxHeightLength);
+            gravityValues.put(counter, value);
+            gravityTicks.put(value, counter);
             counter++;
         }
 
@@ -214,71 +222,69 @@ public class PlayerUtils {
                 && potionLevel < 250;
     }
 
-    public static double getJumpingPrecision(SpartanPlayer p) {
-        return p.bedrockPlayer || hasJumpEffect(p)
-                ? highPrecision
-                : 0.0001;
+    public static double getJumpingPrecision(SpartanPlayer p, double def) {
+        return p.bedrockPlayer || hasJumpEffect(p) ? highPrecision : def;
     }
 
-    public static boolean isJumping(double d, double diff, double offDiff) {
-        if (d > (jumping[0] - offDiff)
-                && d < (0.42 + offDiff)
-                && !GroundUtils.blockHeightExists(d)) {
-            Iterator<Double> iterator = jumps.iterator();
-            double value = iterator.next();
+    public static double getJumpingPrecision(SpartanPlayer p) {
+        return getJumpingPrecision(p, 0.0001);
+    }
 
-            if (Math.abs(value - d) < (diff / 2.0)) { // More strict with the first motion
-                return true;
-            }
-            while (iterator.hasNext()) {
-                value = iterator.next();
-
-                if (Math.abs(value - d) < diff) {
-                    return true;
+    public static boolean isJumping(double d, double diff) {
+        if (d > 0.0
+                && !GroundUtils.blockHeightExists(d)
+                && !GroundUtils.collisionHeightExists(d)) {
+            if (diff == 0.0) {
+                return jumpTicks.containsKey(AlgebraUtils.cut(d, GroundUtils.maxHeightLength));
+            } else {
+                for (double value : jumpsValues.values()) {
+                    if (Math.abs(value - d) < diff) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
     }
 
+    public static double getJumpMotion(int tick) {
+        return jumpsValues.get(tick);
+    }
+
     public static Collection<Double> getJumpMotions() {
-        return jumps;
+        return jumpsValues.values();
     }
 
     // Falling
 
-    public static int getFallingTick(double d) {
+    public static int getFallTick(double d) {
         if (d < 0.0) {
             d = (0.0 - d);
-            double min = Double.MAX_VALUE;
-
-            for (Map.Entry<Integer, Double> entry : gravity.entrySet()) {
-                double newMin = Math.abs(entry.getValue() - d);
-
-                if (newMin < min) {
-                    min = newMin;
-                } else {
-                    if (min < gravityAcceleration) {
-                        return entry.getKey();
-                    } else {
-                        return -1;
-                    }
-                }
-            }
+            return gravityTicks.getOrDefault(AlgebraUtils.cut(d, GroundUtils.maxHeightLength), -1);
+        } else {
+            return -1;
         }
-        return -1;
     }
 
     public static double getFallMotion(int tick) {
-        return gravity.getOrDefault(tick, -1.0);
+        return gravityValues.getOrDefault(tick, -1.0);
+    }
+
+    public static boolean isFalling(double d) {
+        if (d < 0.0) {
+            d = (0.0 - d);
+            return gravityTicks.containsKey(AlgebraUtils.cut(d, GroundUtils.maxHeightLength));
+        } else {
+            return false;
+        }
     }
 
     public static Collection<Double> getFallMotions() {
-        return gravity.values();
+        return gravityValues.values();
     }
 
     public static double getSignificantFallingTicks() {
-        return gravity.size();
+        return gravityValues.size();
     }
 
     // Handled Effects

@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -44,7 +43,7 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
     private long lastHeadMovement;
     private boolean gliding, swimming, sprinting, sneaking, flying;
     private SpartanLocation location, nmsTo, nmsFrom, detectionLocation;
-     SpartanLocation customFromLocation;
+    SpartanLocation customFromLocation;
 
     SpartanPlayerMovement(SpartanPlayer parent, Player p) {
         this.parent = parent;
@@ -318,11 +317,10 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
     }
 
     public boolean isJumping(double d) {
-        double precision = PlayerUtils.getJumpingPrecision(this.parent);
+        double precision = PlayerUtils.getJumpingPrecision(this.parent, 0.0);
         return PlayerUtils.isJumping(
                 d - this.getExtraMovementFromJumpEffect(),
-                precision,
-                this.parent.bedrockPlayer ? precision : 0.0
+                precision
         );
     }
 
@@ -356,9 +354,7 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
     // Separator
 
     public boolean isClimbing(double d) {
-        double v5 = AlgebraUtils.cut(d, 5);
-
-        if (v5 != PlayerUtils.gravityAcceleration && v5 != 0.07544) {
+        if (!PlayerUtils.isFalling(d)) {
             for (double value : PlayerUtils.climbing) {
                 if (Math.abs(value - Math.abs(d)) < PlayerUtils.lowPrecision) {
                     return true;
@@ -369,10 +365,6 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
     }
 
     // Separator
-
-    public boolean isFalling(double dy) {
-        return PlayerUtils.getFallingTick(dy) != -1;
-    }
 
     public long getLastFall() {
         return System.currentTimeMillis() - this.lastFall;

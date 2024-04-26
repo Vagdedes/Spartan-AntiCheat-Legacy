@@ -204,7 +204,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                 decimals.remove(downwardsDifferenceKey);
                             }
                         }
-                        int expectedTick = PlayerUtils.getFallingTick(vertical);
+                        int expectedTick = PlayerUtils.getFallTick(vertical);
 
                         if (expectedTick != -1) {
                             int predictedExpectedTick = AlgebraUtils.integerRound(
@@ -224,7 +224,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             }
                             decimals.set(
                                     downwardsPredictionKey,
-                                    PlayerUtils.getFallingTick((vertical * PlayerUtils.dragComplement) - PlayerUtils.gravityAcceleration)
+                                    PlayerUtils.getFallTick((vertical * PlayerUtils.dragComplement) - PlayerUtils.gravityAcceleration)
                             );
                         } else {
                             decimals.remove(downwardsPredictionKey);
@@ -246,7 +246,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     && !jumpEffectASYNC
                     && isJumping(player, vertical)) {
                 if (player.movement.isSprinting()) {
-                    if (Math.abs(vertical - PlayerUtils.jumping[1]) < PlayerUtils.getJumpingPrecision(player)) {
+                    if (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(
                                     prevention, "hopping-sprinting-deceleration", null,
@@ -258,7 +258,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                 criticalHoppingBuffer, decreasedDefaultBufferTime);
                     }
                 } else {
-                    if (Math.abs(vertical - PlayerUtils.jumping[1]) < PlayerUtils.getJumpingPrecision(player)) {
+                    if (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpingPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(
                                     prevention, "hopping-casual-deceleration", null,
@@ -329,7 +329,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             && !isLastJumpMotion(oldVertical)
                             && !player.getTrackers().has(Trackers.TrackerType.ElytraWear)
                             && (vertical != 0.0 || !PlayerUtils.isUsable(player.getItemInHand().getType()))
-                            && Math.abs(oldVertical - 0.08307) >= PlayerUtils.getJumpingPrecision(player) // Jumping must end somewhere
+                            && Math.abs(oldVertical - PlayerUtils.getJumpMotion(4)) >= PlayerUtils.getJumpingPrecision(player) // Jumping must end somewhere
                             && !PatternUtils.isBlockPattern(new double[][]{
                             {1, 3, 1},
                             {1, 2, 1},
@@ -355,7 +355,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                         groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.jumpingMotions : 1);
                             }
                         } else if (!onGroundCustom
-                                && Math.abs(vertical - PlayerUtils.jumping[1]) < PlayerUtils.getJumpingPrecision(player)
+                                && Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpingPrecision(player)
                                 && (!GroundUtils.blockHeightExists(Math.abs(box - vertical)) || !offGround
                                 && to.areBlocks(Material.AIR, 1, false)
                                 && to.clone().add(0, -1, 0).areBlocks(Material.AIR, 1, true)
@@ -408,6 +408,6 @@ public class IrregularMovementsMotion extends DetectionExecutor {
     }
 
     private boolean isLastJumpMotion(double vertical) {
-        return AlgebraUtils.cut(vertical, GroundUtils.maxHeightLength) == PlayerUtils.jumping[0];
+        return AlgebraUtils.cut(vertical, GroundUtils.maxHeightLength) == PlayerUtils.getJumpMotion(PlayerUtils.jumpingMotions - 1);
     }
 }

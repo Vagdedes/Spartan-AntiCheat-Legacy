@@ -334,7 +334,7 @@ public class WaterSpeed extends DetectionExecutor {
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     && limit != in_water && limit != bouncing && limit != walls
                     && (horizontalBuffer <= 5 || vertical != 0.0)
-                    && !player.movement.isJumping(vertical) && !player.movement.isFalling(vertical)) {
+                    && !player.movement.isJumping(vertical) && !PlayerUtils.isFalling(vertical)) {
                 modifiedLimit = Math.max(modifiedLimit, instability);
             }
         }
