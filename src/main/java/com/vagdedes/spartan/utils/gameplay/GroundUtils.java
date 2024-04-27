@@ -16,9 +16,9 @@ import java.util.*;
 
 public class GroundUtils {
 
-    private static final Set<Double>
-            blockHeights = new HashSet<>(),
-            collisionHeights = new HashSet<>();
+    private static final List<Double>
+            blockHeights = new ArrayList<>(),
+            collisionHeights = new ArrayList<>();
     private static final Map<Material, double[]> correlatedBlockHeights = new LinkedHashMap<>();
 
     private static final boolean
@@ -30,11 +30,13 @@ public class GroundUtils {
             bedStep = 0.5625,
             maxPossibleStep = 0.9375, // Attention, serious usage
             minPossibleStep = 0.015625,  // Attention, serious usage
-            maxPlayerStep = bedStep + 0.1;
+            maxPlayerStep = bedStep,
+            maxPlayerStepExtended = bedStep + 0.1;
     public static final int maxHeightLength;
 
     static {
-        blockHeights.add(maxPlayerStep);
+        blockHeights.add(0.0);
+        blockHeights.add(maxPlayerStepExtended);
         blockHeights.add(bedStep);
         blockHeights.add(maxPossibleStep);
         blockHeights.add(minPossibleStep);
@@ -49,7 +51,6 @@ public class GroundUtils {
         blockHeights.add(0.09375);
         blockHeights.add(0.3125);
         blockHeights.add(0.625);
-        blockHeights.add(0.0);
         blockHeights.add(0.25);
         blockHeights.add(0.75);
         blockHeights.add(0.5);
@@ -69,7 +70,6 @@ public class GroundUtils {
         // Separator
 
         for (Material m : Material.values()) {
-
             if (BlockUtils.areSlabs(m) || BlockUtils.areStairs(m) || BlockUtils.areCobbleWalls(m) || BlockUtils.areDoors(m)
                     || BlockUtils.areFences(m) || BlockUtils.areFenceGates(m) || m == MaterialUtils.get("cake")
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && (m == Material.AZALEA || m == Material.FLOWERING_AZALEA)) {
@@ -110,9 +110,9 @@ public class GroundUtils {
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) && m == Material.MUD) {
                 correlatedBlockHeights.put(m, new double[]{-1.0});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.STONECUTTER) {
-                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, maxPlayerStep});
+                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, maxPlayerStepExtended});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.LANTERN || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.SOUL_LANTERN) {
-                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, 0.4375, 0.625, maxPlayerStep});
+                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, 0.4375, 0.625, maxPlayerStepExtended});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.CAMPFIRE || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.SOUL_CAMPFIRE) {
                 correlatedBlockHeights.put(m, new double[]{0.4375});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.BELL) {
@@ -122,7 +122,7 @@ public class GroundUtils {
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.LECTERN) {
                 correlatedBlockHeights.put(m, new double[]{0.0, 0.125, 0.875});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.GRINDSTONE) {
-                correlatedBlockHeights.put(m, new double[]{0.0, 0.8125, 0.875, 0.6875, 0.625, 0.5625, 0.75, maxPlayerStep});
+                correlatedBlockHeights.put(m, new double[]{0.0, 0.8125, 0.875, 0.6875, 0.625, 0.5625, 0.75, maxPlayerStepExtended});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && m == Material.TURTLE_EGG) {
                 correlatedBlockHeights.put(m, new double[]{0.0, 0.4375});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.AMETHYST_CLUSTER) {
@@ -251,11 +251,11 @@ public class GroundUtils {
 
     // Utils
 
-    public static Set<Double> getHeights() {
+    public static Collection<Double> getHeights() {
         return blockHeights;
     }
 
-    public static Set<Double> getHeights(Material m) {
+    public static Collection<Double> getHeights(Material m) {
         double[] heights = correlatedBlockHeights.get(m);
 
         if (heights != null) {

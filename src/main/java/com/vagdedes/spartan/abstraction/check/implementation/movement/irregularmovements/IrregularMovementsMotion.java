@@ -27,7 +27,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
     private static final double
             criticalDecelerationLimit = -0.1,
             criticalUpwardsLimit = Math.sqrt(PlayerUtils.chunk), // 4.0
-            criticalStepLimit = GroundUtils.maxPlayerStep * 2.0, // 1.325
+            criticalStepLimit = GroundUtils.maxPlayerStepExtended * 2.0, // 1.325
             vehicleStep = 2.0;
     private static final int
             criticalHoppingBuffer = AlgebraUtils.integerRound(PlayerUtils.jumpingMotions / 2.0), // 3.0
@@ -109,10 +109,10 @@ public class IrregularMovementsMotion extends DetectionExecutor {
         double stepLimit;
 
         if (hasVehicle) {
-            double def = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
+            double def = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStepExtended);
             stepLimit = def <= 0.0 ? def : Math.max(def, vehicleStep);
         } else {
-            stepLimit = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStep);
+            stepLimit = check.getDecimalOption("step_limit_in_blocks", GroundUtils.maxPlayerStepExtended);
         }
         boolean jumpEffect = PlayerUtils.hasJumpEffect(player),
                 checkHoppingASYNC = (checkUp || checkJump) && check.getBooleanOption("check_hopping", true),
@@ -151,7 +151,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                         boolean abstractScenario = groundInteractionScenario || velocityScenarioASYNC;
 
                         if (stepLimit > 0.0) {
-                            double upwardsLimit = Math.max(GroundUtils.maxPlayerStep, stepLimit);
+                            double upwardsLimit = Math.max(GroundUtils.maxPlayerStepExtended, stepLimit);
 
                             if (jumpEffect) {
                                 upwardsLimit += player.movement.getExtraMovementFromJumpEffect();
@@ -272,7 +272,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
 
             if (stepLimit > 0.0
                     && (checkUpASYNC || checkJumpASYNC)) { // Step
-                double stepLimitModified = Math.max(GroundUtils.maxPlayerStep, stepLimit);
+                double stepLimitModified = Math.max(GroundUtils.maxPlayerStepExtended, stepLimit);
 
                 if (knownBoxesNew
                         && knownBoxesOld) { // Step

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
@@ -292,53 +293,76 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     @Override
     void loadStarting() {
         if (this.parent.key.endsWith("/vertical")) {
-            for (double height : GroundUtils.getHeights()) {
-                for (int jump = 0; jump < 2; jump++) {
-                    boolean jumping = jump == 1;
+            Collection<Double>
+                    heights = GroundUtils.getHeights(),
+                    jumps = PlayerUtils.getJumpMotions(),
+                    falls = PlayerUtils.getFallMotions();
 
-                    for (int sneak = 0; sneak < 2; sneak++) {
-                        boolean sneaking = sneak == 1;
+            for (int jump = 0; jump < 2; jump++) {
+                boolean jumping = jump == 1;
 
-                        for (int fall = 0; fall < 2; fall++) {
-                            boolean falling = fall == 1;
-                            int airTicks = 0;
+                for (int sneak = 0; sneak < 2; sneak++) {
+                    boolean sneaking = sneak == 1;
+
+                    for (int fall = 0; fall < 2; fall++) {
+                        boolean falling = fall == 1;
+                        int airTicks = 0;
+
+                        for (double height : heights) {
                             double previousHeight = height;
-                            this.preTrain(
-                                    sneaking,
-                                    airTicks,
-                                    height,
-                                    previousHeight,
-                                    0.0
-                            );
 
-                            if (jumping) {
-                                for (double jumpMotion : PlayerUtils.getJumpMotions()) {
-                                    previousHeight = height;
-                                    height += jumpMotion;
+                            if (!jumping && !falling) {
+                                this.preTrain(
+                                        sneaking,
+                                        airTicks,
+                                        height,
+                                        previousHeight,
+                                        0.0
+                                );
 
-                                    this.preTrain(
-                                            sneaking,
-                                            airTicks,
-                                            height,
-                                            previousHeight,
-                                            jumpMotion
-                                    );
-                                    airTicks++; // After
+                                for (double biggerHeight : heights) {
+                                    if (biggerHeight > height) {
+                                        double step = biggerHeight - height;
+
+                                        if (step <= GroundUtils.maxPlayerStep) {
+                                            this.preTrain(
+                                                    sneaking,
+                                                    airTicks,
+                                                    biggerHeight,
+                                                    height,
+                                                    step
+                                            );
+                                        }
+                                    }
                                 }
-                            }
-                            if (falling) {
-                                for (double fallMotion : PlayerUtils.getFallMotions()) {
-                                    previousHeight = height;
-                                    height -= fallMotion;
-                                    airTicks++; // Before
-
-                                    this.preTrain(
-                                            sneaking,
-                                            airTicks,
-                                            height,
-                                            previousHeight,
-                                            fallMotion
-                                    );
+                            } else {
+                                if (jumping) {
+                                    for (double jumpMotion : jumps) {
+                                        previousHeight = height;
+                                        height += jumpMotion;
+                                        this.preTrain(
+                                                sneaking,
+                                                airTicks,
+                                                height,
+                                                previousHeight,
+                                                jumpMotion
+                                        );
+                                        airTicks++; // After
+                                    }
+                                }
+                                if (falling) {
+                                    for (double fallMotion : falls) {
+                                        previousHeight = height;
+                                        height -= fallMotion;
+                                        airTicks++; // Before
+                                        this.preTrain(
+                                                sneaking,
+                                                airTicks,
+                                                height,
+                                                previousHeight,
+                                                -fallMotion
+                                        );
+                                    }
                                 }
                             }
                         }

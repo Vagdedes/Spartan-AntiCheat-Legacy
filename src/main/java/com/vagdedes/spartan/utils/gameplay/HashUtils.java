@@ -157,10 +157,20 @@ public class HashUtils {
     // Separator
 
     public static int hashEnvironment(int airTicks, double height, double previousHeight) {
-        return extendInt(
-                AlgebraUtils.ceilToNearest(airTicks, (int) TPS.maximum),
-                AlgebraUtils.integerFloor((height - previousHeight) / 0.0001)
-        );
+        if (airTicks == 0) {
+            return extendInt(
+                    Double.hashCode(AlgebraUtils.cut(height, GroundUtils.maxHeightLength)),
+                    Double.hashCode(AlgebraUtils.cut(previousHeight, GroundUtils.maxHeightLength))
+            );
+        } else {
+            return extendInt(
+                    extendInt(
+                            airTicks,
+                            Double.hashCode(AlgebraUtils.cut(height, GroundUtils.maxHeightLength / 3))
+                    ),
+                    Double.hashCode(AlgebraUtils.cut(previousHeight, GroundUtils.maxHeightLength / 3))
+            );
+        }
     }
 
     public static int hashEnvironment(SpartanPlayer player,

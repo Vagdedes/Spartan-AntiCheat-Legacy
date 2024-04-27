@@ -42,9 +42,7 @@ public class AlgebraUtils {
     // Separator
 
     public static double removeBase(double d) {
-        return d < 1.0
-                ? d
-                : d - Math.floor(d);
+        return d - Math.floor(d);
     }
 
     // Separator
