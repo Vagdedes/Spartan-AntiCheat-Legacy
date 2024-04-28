@@ -27,7 +27,7 @@ public class ImpossibleInventory extends CheckExecutor {
                     : null; // Do not change, material changes mid-version
     private static final int
             jumping = 8,
-            requiredJumpingMotions = AlgebraUtils.integerRound(PlayerUtils.jumpingMotions / 2.0);
+            requiredJumpingMotions = AlgebraUtils.integerRound(PlayerUtils.getJumpTicks() / 2.0);
     public static final byte DEATH = 0;
 
     private static final double[] belowBlocks = new double[]{

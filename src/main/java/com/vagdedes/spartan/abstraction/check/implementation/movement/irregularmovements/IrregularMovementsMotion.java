@@ -30,10 +30,10 @@ public class IrregularMovementsMotion extends DetectionExecutor {
             criticalStepLimit = GroundUtils.maxPlayerStepExtended * 2.0, // 1.325
             vehicleStep = 2.0;
     private static final int
-            criticalHoppingBuffer = AlgebraUtils.integerRound(PlayerUtils.jumpingMotions / 2.0), // 3.0
+            criticalHoppingBuffer = AlgebraUtils.integerRound(PlayerUtils.getJumpTicks() / 2.0), // 3.0
             extendedDefaultBufferTime = IrregularMovements.defaultBufferTime * IrregularMovements.defaultBufferTime, // 400
             decreasedDefaultBufferTime = AlgebraUtils.integerRound(IrregularMovements.defaultBufferTime / 2.0), // 10
-            criticalTickDifference = PlayerUtils.jumpingMotions * 4; // 20
+            criticalTickDifference = PlayerUtils.getJumpTicks() * 4; // 20
 
     private static final String
             motionJumpKey = "motion-jump-effect",
@@ -319,7 +319,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                 irregularMovements.cancel(prevention, "jump-up-skip", 1);
                             } else if (difference < PlayerUtils.highPrecision) { // Jumping motions must not be the same
                                 irregularMovements.cancel(prevention, "jump-up-equilibrium",
-                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.getJumpTicks() : 1);
                             }
                         }
                     } else if (!jumpEffect
@@ -338,7 +338,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             {1, 1, 1},
                     }, to, true, BlockUtils.solid, BlockUtils.semi_solid)) {
                         irregularMovements.cancel(prevention, "jump-end",
-                                groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.jumpingMotions : 1);
+                                groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.getJumpTicks() : 1);
                     }
                 }
             } else if (vertical > oldVertical) { // Ascension
@@ -349,10 +349,10 @@ public class IrregularMovementsMotion extends DetectionExecutor {
 
                             if (difference >= (PlayerUtils.maxJumpingMotionDifference + PlayerUtils.highPrecision)) { // Jumping motions must not skip each other
                                 irregularMovements.cancel(prevention, "jump-down-skip",
-                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.getJumpTicks() : 1);
                             } else if (difference < PlayerUtils.highPrecision) { // Jumping motions must not be the same
                                 irregularMovements.cancel(prevention, "jump-down-equilibrium",
-                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.jumpingMotions : 1);
+                                        groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.getJumpTicks() : 1);
                             }
                         } else if (!onGroundCustom
                                 && Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpingPrecision(player)
@@ -376,10 +376,10 @@ public class IrregularMovementsMotion extends DetectionExecutor {
 
                 if (velocityScenarioASYNC) {
                     irregularMovements.cancel(prevention, "equilibrium-velocity", null,
-                            PlayerUtils.jumpingMotions, IrregularMovements.defaultBufferTime);
+                            PlayerUtils.getJumpTicks(), IrregularMovements.defaultBufferTime);
                 } else if (levitationEffect) {
                     irregularMovements.cancel(prevention, "equilibrium-levitation", null,
-                            PlayerUtils.jumpingMotions, IrregularMovements.defaultBufferTime);
+                            PlayerUtils.getJumpTicks(), IrregularMovements.defaultBufferTime);
                 } else {
                     Trackers handlers = player.getTrackers();
 
@@ -408,6 +408,6 @@ public class IrregularMovementsMotion extends DetectionExecutor {
     }
 
     private boolean isLastJumpMotion(double vertical) {
-        return AlgebraUtils.cut(vertical, GroundUtils.maxHeightLength) == PlayerUtils.getJumpMotion(PlayerUtils.jumpingMotions - 1);
+        return AlgebraUtils.cut(vertical, GroundUtils.maxHeightLength) == PlayerUtils.getJumpMotion(PlayerUtils.getJumpTicks() - 1);
     }
 }

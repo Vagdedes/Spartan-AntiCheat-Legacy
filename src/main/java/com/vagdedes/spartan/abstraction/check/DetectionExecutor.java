@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 public abstract class DetectionExecutor {
@@ -77,11 +78,13 @@ public abstract class DetectionExecutor {
             if (comparison.isValid()) {
                 player.debug(
                         false,
-                        true,
-                        comparison.probability,
-                        comparison.contribution,
-                        comparison.significance,
-                        comparison.outcome
+                        false,
+                        AlgebraUtils.cut(comparison.probability * 100.0, 2),
+                        AlgebraUtils.cut(comparison.contribution * 100.0, 2),
+                        AlgebraUtils.cut(comparison.outcome * 100.0, 2),
+                        player.movement.getNmsToLocation().getY() - player.movement.getNmsToLocation().getBlockY(),
+                        player.movement.getNmsVerticalDistance(),
+                        player.movement.getTicksOnAir()
                 );
             }
         }

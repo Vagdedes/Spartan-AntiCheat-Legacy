@@ -296,7 +296,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             Collection<Double>
                     heights = GroundUtils.getHeights(),
                     jumps = PlayerUtils.getJumpMotions(),
-                    falls = PlayerUtils.getFallMotions();
+                    falls = PlayerUtils.getFallMotions(),
+                    fallsAfterJump = PlayerUtils.getFallAfterJumpMotions();
 
             for (int jump = 0; jump < 2; jump++) {
                 boolean jumping = jump == 1;
@@ -306,10 +307,10 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
                     for (int fall = 0; fall < 2; fall++) {
                         boolean falling = fall == 1;
-                        int airTicks = 0;
 
                         for (double height : heights) {
                             double previousHeight = height;
+                            int airTicks = 0;
 
                             if (!jumping && !falling) {
                                 this.preTrain(
@@ -349,9 +350,12 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                         );
                                         airTicks++; // After
                                     }
+                                    if (falling) {
+                                        airTicks--;
+                                    }
                                 }
                                 if (falling) {
-                                    for (double fallMotion : falls) {
+                                    for (double fallMotion : (jumping ? fallsAfterJump : falls)) {
                                         previousHeight = height;
                                         height -= fallMotion;
                                         airTicks++; // Before
@@ -377,6 +381,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                           double height,
                           double previousHeight,
                           double pattern) {
+        AwarenessNotifications.forcefullySend(AlgebraUtils.removeBase(height) + " -|- " + pattern + " | " + airTicks);
         this.selfLearn(
                 MovementProcessing.hashTotal(
                         MovementProcessing.artificialPlayerHash(

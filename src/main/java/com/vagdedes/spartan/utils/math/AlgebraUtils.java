@@ -373,4 +373,10 @@ public class AlgebraUtils {
     public static boolean isExponentVisible(double value) {
         return value < 1e-04;
     }
+
+    // Separator
+
+    public static double floatDouble(double d) {
+        return (float) d;
+    }
 }
