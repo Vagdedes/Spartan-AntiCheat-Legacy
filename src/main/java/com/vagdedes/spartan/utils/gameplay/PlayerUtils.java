@@ -40,10 +40,10 @@ public class PlayerUtils {
             climbingMax = 0.15444,
             climbingDefault = 0.11760;
     public static final double
-            gravityAcceleration = AlgebraUtils.floatDouble(0.0784),
-            terminalVelocity = 3.92,
-            drag = gravityAcceleration / terminalVelocity,
+            drag = 0.02,
             dragComplement = 1.0 - drag,
+            terminalVelocity = AlgebraUtils.floatDouble(3.92),
+            gravityAcceleration = terminalVelocity * drag,
             highPrecision = 0.0019,
             lowPrecision = highPrecision * 2.0,
             chunk = 16.0,

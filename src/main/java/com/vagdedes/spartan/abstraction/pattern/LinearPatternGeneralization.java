@@ -124,8 +124,12 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 return null;
             }
         }
-        if (!read && this.contributionAgainstRest(situation, patternProfile) >= 0.5) {
-            return null;
+        if (!read) {
+            double pieces = this.contributionInPieces(situation);
+
+            if (this.contributionAgainstRest(situation, patternProfile) >= Math.max(pieces, 0.1)) {
+                return null; // todo move elsewhere with tracking method probably
+            }
         } else {
             synchronized (this.referenceKeys) {
                 Reference reference = new Reference(this.getPatterns(patternProfile));

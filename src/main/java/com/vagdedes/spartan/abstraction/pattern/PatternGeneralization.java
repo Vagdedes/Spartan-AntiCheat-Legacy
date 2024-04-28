@@ -123,10 +123,23 @@ public abstract class PatternGeneralization {
         return patternCount / (double) this.getProfileCount();
     }
 
+    final double contribution(int situation) {
+        synchronized (this.contribution) {
+            return (1.0 - this.contribution.getPersonalContribution(situation))
+                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation));
+        }
+    }
+
     private double contributionMinusSelf(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
             return (1.0 - this.contribution.getPersonalContribution(situation, patternProfile.hash))
                     * (1.0 - this.contribution.getSpecificPersonalContribution(situation, patternProfile.hash));
+        }
+    }
+
+    final double contributionInPieces(int situation) {
+        synchronized (this.contribution) {
+            return this.contribution.getPersonalContribution(situation);
         }
     }
 
@@ -139,16 +152,9 @@ public abstract class PatternGeneralization {
         }
     }
 
-    final double playerContributionAverage() {
+    final double contributionAverage() { // todo use for detections
         synchronized (this.contribution) {
             return this.contribution.getTotal() / (double) this.contribution.getParts();
-        }
-    }
-
-    final double contribution(int situation) {
-        synchronized (this.contribution) {
-            return (1.0 - this.contribution.getPersonalContribution(situation))
-                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation));
         }
     }
 
