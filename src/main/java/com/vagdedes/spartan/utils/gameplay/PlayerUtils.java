@@ -58,14 +58,11 @@ public class PlayerUtils {
             height,
             fallDamageBlocks = 4;
 
-    private static final Map<Integer, Double>
-            jumpsValues = new LinkedHashMap<>(),
-            gravityValues = new LinkedHashMap<>(),
-            gravityValuesAfterJump = new LinkedHashMap<>();
+    private static final Map<Integer, Double> jumpsValues = new LinkedHashMap<>();
     private static final Map<Double, Integer>
             jumpTicks = new LinkedHashMap<>(),
-            gravityTicks = new LinkedHashMap<>(),
-            gravityTicksAfterJump = new LinkedHashMap<>();
+            fallTicks = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Double, Collection<Double>> fallMotions = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<PotionEffectType, Integer> handledPotionEffects = new LinkedHashMap<>();
 
     static {
@@ -108,34 +105,6 @@ public class PlayerUtils {
             previousJumpingMotion = currentMotion;
         }
         maxJumpingMotionDifference = maxJumpingMotionDifferenceLocal;
-
-        // Separator
-
-        double fall = 0.0,
-                fallAfterJump = -jumpsValues.get(counter - 1);
-        counter = 0;
-
-        while (true) {
-            fall = (fall * dragComplement) + gravityAcceleration;
-            fallAfterJump = (fallAfterJump * dragComplement) + gravityAcceleration;
-            boolean end = false;
-
-            if ((terminalVelocity - fall) > highPrecision) {
-                double value = AlgebraUtils.cut(fall, GroundUtils.maxHeightLength);
-                gravityValues.put(counter, value);
-                gravityTicks.put(value, counter);
-            } else {
-                end = true;
-            }
-            if ((terminalVelocity - fallAfterJump) > highPrecision) {
-                double valueAfterJump = AlgebraUtils.cut(fallAfterJump, GroundUtils.maxHeightLength);
-                gravityValuesAfterJump.put(counter, valueAfterJump);
-                gravityTicksAfterJump.put(valueAfterJump, counter);
-            } else if (end) {
-                break;
-            }
-            counter++;
-        }
 
         // Separator
 
@@ -275,38 +244,80 @@ public class PlayerUtils {
     // Falling
 
     public static int getFallTick(double d) {
-        if (d < 0.0) {
-            d = AlgebraUtils.cut((0.0 - d), GroundUtils.maxHeightLength);
-            return gravityTicks.getOrDefault(
-                    d,
-                    gravityTicksAfterJump.getOrDefault(d, -1)
-            );
+        if (d > 0.0) {
+            double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
+            Integer ticks;
+
+            synchronized (fallTicks) {
+                ticks = fallTicks.get(key);
+            }
+            if (ticks == null) {
+                ticks = -1;
+
+                while (d > 0.0) {
+                    d = (d * dragComplement) - gravityAcceleration;
+                    ticks++;
+                }
+                synchronized (fallTicks) {
+                    fallTicks.put(key, ticks);
+                }
+            }
+            return ticks;
+        } else if (d < 0.0) {
+            double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
+            Integer ticks;
+
+            synchronized (fallTicks) {
+                ticks = fallTicks.get(key);
+            }
+            if (ticks == null) {
+                ticks = -1;
+
+                while (d < 0.0) {
+                    d = (d + gravityAcceleration) / dragComplement;
+                    ticks++;
+                }
+                synchronized (fallTicks) {
+                    fallTicks.put(key, ticks);
+                }
+            }
+            return ticks;
         } else {
             return -1;
         }
-    }
-
-    public static double getFallMotion(int tick) {
-        return gravityValues.getOrDefault(
-                tick,
-                gravityValuesAfterJump.getOrDefault(tick, -1.0)
-        );
     }
 
     public static boolean isFalling(double d) {
         return getFallTick(d) != -1;
     }
 
-    public static Collection<Double> getFallMotions() {
-        return gravityValues.values();
-    }
+    public static Collection<Double> calculateFallMotions(double d) {
+        double terminal = terminalVelocity - (1.0 / GroundUtils.heightPowerDivision);
 
-    public static Collection<Double> getFallAfterJumpMotions() {
-        return gravityValuesAfterJump.values();
-    }
+        if (d > -terminal) {
+            double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
+            Collection<Double> data;
 
-    public static double getSignificantFallTicks() {
-        return gravityValues.size();
+            synchronized (fallMotions) {
+                data = fallMotions.get(key);
+            }
+            if (data != null) {
+                return data;
+            } else {
+                data = new ArrayList<>();
+
+                while (d > -terminal) {
+                    data.add(d);
+                    d = (d * dragComplement) - gravityAcceleration;
+                }
+                synchronized (fallMotions) {
+                    fallMotions.put(key, data);
+                }
+                return data;
+            }
+        } else {
+            return new ArrayList<>(0);
+        }
     }
 
     // Handled Effects

@@ -299,9 +299,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         if (this.parent.key.endsWith("/vertical")) {
             Collection<Double>
                     heights = GroundUtils.getHeights(),
-                    jumps = PlayerUtils.getJumpMotions(),
-                    falls = PlayerUtils.getFallMotions(),
-                    fallsAfterJump = PlayerUtils.getFallAfterJumpMotions();
+                    jumps = PlayerUtils.getJumpMotions();
 
             for (int jump = 0; jump < 2; jump++) {
                 boolean jumping = jump == 1;
@@ -313,6 +311,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         boolean falling = fall == 1;
 
                         for (double height : heights) {
+                            System.out.println(height);
                             double previousHeight = height;
                             int airTicks = 0;
 
@@ -359,16 +358,20 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                     }
                                 }
                                 if (falling) {
-                                    for (double fallMotion : (jumping ? fallsAfterJump : falls)) {
+                                    for (double fallMotion : PlayerUtils.calculateFallMotions(
+                                            jumping
+                                                    ? PlayerUtils.getJumpMotion(PlayerUtils.getJumpTicks() - 1)
+                                                    : -PlayerUtils.gravityAcceleration
+                                    )) {
                                         previousHeight = height;
-                                        height -= fallMotion;
+                                        height += fallMotion;
                                         airTicks++; // Before
                                         this.preTrain(
                                                 sneaking,
                                                 airTicks,
                                                 height,
                                                 previousHeight,
-                                                -fallMotion
+                                                fallMotion
                                         );
                                     }
                                 }

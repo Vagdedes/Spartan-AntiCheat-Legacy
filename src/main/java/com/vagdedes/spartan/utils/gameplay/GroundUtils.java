@@ -32,7 +32,8 @@ public class GroundUtils {
             minPossibleStep = 0.015625,  // Attention, serious usage
             maxPlayerStep = bedStep,
             maxPlayerStepExtended = bedStep + 0.1;
-    public static final int maxHeightLength;
+    public static final int maxHeightLength,
+    heightPowerDivision;
 
     static {
         blockHeights.add(0.0);
@@ -177,6 +178,7 @@ public class GroundUtils {
             }
         }
         maxHeightLength = maxHeightLengthLocal;
+        heightPowerDivision = (int) Math.pow(10, maxHeightLength);
     }
 
     // Method
