@@ -32,31 +32,6 @@ public class EventsHandler2 implements Listener {
         if (p == null) {
             return;
         }
-        boolean cancelled = e.isCancelled();
-
-        if (!cancelled) {
-            Location to = e.getTo();
-            int blockY = to.getBlockY();
-            double height = to.getY() - blockY;
-
-            if (!GroundUtils.blockHeightExists(height)) {
-                e.setCancelled(true);
-                cancelled = true;
-                double closest = Double.MAX_VALUE;
-
-                for (double loopHeight : GroundUtils.getHeights()) {
-                    double difference = Math.abs(loopHeight - height);
-
-                    if (difference < closest) {
-                        closest = difference;
-                        height = loopHeight;
-                    }
-                }
-                to = to.clone();
-                to.setY(blockY + height);
-                p.safeTeleport(new SpartanLocation(p, to));
-            }
-        }
         SpartanLocation to = new SpartanLocation(p, nto);
 
         // Object
@@ -65,7 +40,7 @@ public class EventsHandler2 implements Listener {
         p.movement.setFallingTicks(0);
 
         // System
-        p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, to);
+        p.getExecutor(Enums.HackType.MorePackets).handle(e.isCancelled(), to);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

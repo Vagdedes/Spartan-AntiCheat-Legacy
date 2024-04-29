@@ -111,7 +111,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     protected PatternProfile customLearn(PlayerProfile profile, int situation,
-                                 float pattern, boolean read) {
+                                         float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         synchronized (patternProfile.patterns) {
@@ -298,75 +298,66 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             for (int jump = 0; jump < 2; jump++) {
                 boolean jumping = jump == 1;
 
-                for (int sneak = 0; sneak < 2; sneak++) {
-                    boolean sneaking = sneak == 1;
+                for (int fall = 0; fall < 2; fall++) {
+                    boolean falling = fall == 1;
 
-                    for (int fall = 0; fall < 2; fall++) {
-                        boolean falling = fall == 1;
+                    for (double height : heights) {
+                        int airTicks = 0;
 
-                        for (double height : heights) {
-                            double previousHeight = height;
-                            int airTicks = 0;
+                        if (!jumping && !falling) {
+                            this.preTrain(
+                                    airTicks,
+                                    height,
+                                    height,
+                                    0.0
+                            );
 
-                            if (!jumping && !falling) {
-                                this.preTrain(
-                                        sneaking,
-                                        airTicks,
-                                        height,
-                                        previousHeight,
-                                        0.0
-                                );
+                            for (double biggerHeight : heights) {
+                                if (biggerHeight > height) {
+                                    double step = biggerHeight - height;
 
-                                for (double biggerHeight : heights) {
-                                    if (biggerHeight > height) {
-                                        double step = biggerHeight - height;
-
-                                        if (step <= GroundUtils.maxPlayerStep) {
-                                            this.preTrain(
-                                                    sneaking,
-                                                    airTicks,
-                                                    biggerHeight,
-                                                    height,
-                                                    step
-                                            );
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (jumping) {
-                                    for (double jumpMotion : jumps) {
-                                        previousHeight = height;
-                                        height += jumpMotion;
+                                    if (step <= GroundUtils.maxPlayerStep) {
                                         this.preTrain(
-                                                sneaking,
                                                 airTicks,
+                                                biggerHeight,
                                                 height,
-                                                previousHeight,
-                                                jumpMotion
-                                        );
-                                        airTicks++; // After
-                                    }
-                                    if (falling) {
-                                        airTicks--;
-                                    }
-                                }
-                                if (falling) {
-                                    for (double fallMotion : PlayerUtils.calculateFallMotions(
-                                            jumping
-                                                    ? PlayerUtils.getJumpMotion(PlayerUtils.getJumpTicks() - 1)
-                                                    : -PlayerUtils.gravityAcceleration
-                                    )) {
-                                        previousHeight = height;
-                                        height += fallMotion;
-                                        airTicks++; // Before
-                                        this.preTrain(
-                                                sneaking,
-                                                airTicks,
-                                                height,
-                                                previousHeight,
-                                                fallMotion
+                                                step
                                         );
                                     }
+                                }
+                            }
+                        } else {
+                            double previousHeight;
+
+                            if (jumping) {
+                                for (double jumpMotion : jumps) {
+                                    previousHeight = height;
+                                    height += jumpMotion;
+                                    airTicks++;
+                                    this.preTrain(
+                                            airTicks,
+                                            height,
+                                            previousHeight,
+                                            jumpMotion
+                                    );
+                                }
+                            }
+                            if (falling) {
+                                for (double fallMotion : PlayerUtils.calculateFallMotions(
+                                        jumping
+                                                ? PlayerUtils.getJumpMotion(PlayerUtils.getJumpTicks() - 1)
+                                                : 0.0,
+                                        MovementProcessing.motionLearningDecimals
+                                )) {
+                                    previousHeight = height;
+                                    height += fallMotion;
+                                    airTicks++;
+                                    this.preTrain(
+                                            airTicks,
+                                            height,
+                                            previousHeight,
+                                            fallMotion
+                                    );
                                 }
                             }
                         }
@@ -376,37 +367,40 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    private void preTrain(boolean sneaking,
-                          int airTicks,
+    private void preTrain(int airTicks,
                           double height,
                           double previousHeight,
                           double pattern) {
-        this.selfLearn(
-                MovementProcessing.hashTotal(
-                        MovementProcessing.artificialPlayerHash(
-                                sneaking,
-                                airTicks == 0
-                        ),
-                        HashUtils.hashEnvironment(
-                                airTicks,
-                                AlgebraUtils.removeBase(height),
-                                AlgebraUtils.removeBase(previousHeight)
-                        ),
-                        HashUtils.hashTrackers(
-                                HashUtils.emptyDamages,
-                                HashUtils.emptyVelocities,
-                                null,
-                                Long.MAX_VALUE,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0
-                        )
-                ),
-                pattern
-        );
+        boolean ground = airTicks == 0;
+
+        for (int sneak = 0; sneak < 2; sneak++) {
+            this.selfLearn(
+                    MovementProcessing.hashTotal(
+                            MovementProcessing.artificialPlayerHash(
+                                    sneak == 0,
+                                    ground
+                            ),
+                            HashUtils.hashEnvironment(
+                                    airTicks,
+                                    AlgebraUtils.removeBase(height),
+                                    AlgebraUtils.removeBase(previousHeight)
+                            ),
+                            HashUtils.hashTrackers(
+                                    HashUtils.emptyDamages,
+                                    HashUtils.emptyVelocities,
+                                    null,
+                                    Long.MAX_VALUE,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                            )
+                    ),
+                    pattern
+            );
+        }
     }
 
     @Override

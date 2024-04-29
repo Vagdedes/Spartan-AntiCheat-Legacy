@@ -280,8 +280,8 @@ public class PlayerUtils {
         return getFallTick(d) != -1;
     }
 
-    public static Collection<Double> calculateFallMotions(double d) {
-        double terminal = terminalVelocity - GroundUtils.maxHeightLengthRatio;
+    public static Collection<Double> calculateFallMotions(double d, double decimalPlaces) {
+        double terminal = terminalVelocity - decimalPlaces;
 
         if (d > -terminal) {
             double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
@@ -296,8 +296,8 @@ public class PlayerUtils {
                 data = new ArrayList<>();
 
                 while (d > -terminal) {
-                    data.add(d);
                     d = (d * dragComplement) - gravityAcceleration;
+                    data.add(d);
                 }
                 synchronized (fallMotions) {
                     fallMotions.put(key, data);

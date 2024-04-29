@@ -94,7 +94,8 @@ public class EventsHandler7 implements Listener {
             return;
         }
         SpartanLocation vehicle = p.movement.getVehicleLocation();
-        SpartanLocation to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
+        SpartanLocation
+                to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
                 from = new SpartanLocation(p, e.getFrom());
 
         // Objects
@@ -110,18 +111,16 @@ public class EventsHandler7 implements Listener {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
         float fall = p.getFallDistance();
+        MovementProcessing.run(n, p, to, from, dis, hor, ver, box, fall);
+        CombatProcessing.runMove(p, to);
+
+        // Patterns
         int situation = MovementProcessing.hashTotal(
                 HashUtils.hashPlayer(p),
                 HashUtils.hashEnvironment(p, box, from),
                 HashUtils.hashTrackers(p)
         );
-
-        // Patterns
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);
-
-        // Handlers
-        MovementProcessing.run(n, p, to, from, dis, hor, ver, box, fall);
-        CombatProcessing.runMove(p, to);
 
         for (Enums.HackType hackType : handledChecks) {
             if (p.getViolations(hackType).prevent()) {

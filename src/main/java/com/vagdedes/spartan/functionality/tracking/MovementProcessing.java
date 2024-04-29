@@ -31,6 +31,7 @@ public class MovementProcessing {
     public static final int
             boxLearningLength = 3,
             motionLearningLength = 4;
+    public static final double motionLearningDecimals = 1.0 / Math.pow(10, motionLearningLength);
 
     public static void run(Player n, SpartanPlayer player,
                            SpartanLocation to,

@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SpartanPlayerMovement { // todo introduce default air ticks for the hashing but debug default on-ground first
+public class SpartanPlayerMovement {
 
     private final SpartanPlayer parent;
     private double
@@ -465,9 +465,17 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
                 Player p = this.parent.getPlayer();
 
                 if (p != null) {
-                    SpartanLocation from = this.location.clone();
-                    this.location = new SpartanLocation(this.parent, p.getLocation());
-                    this.location.retrieveDataFrom(from);
+                    Location bukkitLocation = p.getLocation();
+
+                    if (this.location.getX() != bukkitLocation.getX()
+                            || this.location.getY() != bukkitLocation.getY()
+                            || this.location.getZ() != bukkitLocation.getZ()
+                            || this.location.getYaw() != bukkitLocation.getYaw()
+                            || this.location.getPitch() != bukkitLocation.getPitch()) {
+                        SpartanLocation from = this.location.clone();
+                        this.location = new SpartanLocation(this.parent, bukkitLocation);
+                        this.location.retrieveDataFrom(from);
+                    }
                 }
             }
             return this.location;

@@ -84,7 +84,7 @@ public abstract class DetectionExecutor {
                         AlgebraUtils.cut(comparison.outcome * 100.0, 2),
                         player.movement.getNmsToLocation().getY() - player.movement.getNmsToLocation().getBlockY(),
                         player.movement.getNmsVerticalDistance(),
-                        player.movement.getTicksOnAir()
+                        player.movement.getVanillaTicksOnAir()
                 );
             }
         }
