@@ -201,14 +201,14 @@ public class CommandExecution implements CommandExecutor {
                     completeMessage(sender, args[0].toLowerCase());
 
                 } else if (args[0].equalsIgnoreCase("Reload") || args[0].equalsIgnoreCase("Rl")) {
-                    if (isPlayer && !Permissions.has((Player) sender, Permission.RELOAD)) {
+                    if (isPlayer && !Permissions.has(player, Permission.RELOAD)) {
                         sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                         return true;
                     }
                     Config.reload(sender);
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                    if (!Permissions.has((Player) sender, Permission.INFO)) {
+                    if (!Permissions.has(player, Permission.INFO)) {
                         sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                         return true;
                     }
@@ -226,7 +226,7 @@ public class CommandExecution implements CommandExecutor {
                 }
             } else {
                 if (args[0].equalsIgnoreCase("AI-Assistance")) {
-                    if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
+                    if (isPlayer && !Permissions.has(player, Permission.ADMIN)) {
                         sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                         return true;
                     }
@@ -251,7 +251,7 @@ public class CommandExecution implements CommandExecutor {
                         }
                     });
                 } else if (args[0].equalsIgnoreCase("Proxy-Command")) {
-                    if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
+                    if (isPlayer && !Permissions.has(player, Permission.ADMIN)) {
                         sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                         return true;
                     }
@@ -275,7 +275,7 @@ public class CommandExecution implements CommandExecutor {
                         if (args[0].equalsIgnoreCase("Wave")) {
                             String command = args[1];
 
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.WAVE)) {
+                            if (isPlayer && !Permissions.has(player, Permission.WAVE)) {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
@@ -298,7 +298,7 @@ public class CommandExecution implements CommandExecutor {
                             }
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                            if (!Permissions.has((Player) sender, Permission.INFO)) {
+                            if (!Permissions.has(player, Permission.INFO)) {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
@@ -307,7 +307,7 @@ public class CommandExecution implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("Toggle")) {
                             String check = args[1];
 
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.MANAGE)) {
+                            if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
@@ -379,7 +379,7 @@ public class CommandExecution implements CommandExecutor {
                         String argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                         if (args[0].equalsIgnoreCase("Kick")) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.KICK)) {
+                            if (isPlayer && !Permissions.has(player, Permission.KICK)) {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
@@ -396,7 +396,7 @@ public class CommandExecution implements CommandExecutor {
                             t.kick(sender, argumentsToString);
 
                         } else if (args[0].equalsIgnoreCase("Warn")) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.WARN)) {
+                            if (isPlayer && !Permissions.has(player, Permission.WARN)) {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
@@ -421,7 +421,7 @@ public class CommandExecution implements CommandExecutor {
                                 String[] checks = args[2].split(",", maxHackTypes);
                                 String sec = noSeconds ? null : args[3];
 
-                                if (isPlayer && !Permissions.has((Player) sender, Permission.USE_BYPASS)) {
+                                if (isPlayer && !Permissions.has(player, Permission.USE_BYPASS)) {
                                     sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                     return true;
                                 }
@@ -468,7 +468,7 @@ public class CommandExecution implements CommandExecutor {
                             String command = args[1];
                             OfflinePlayer t = Bukkit.getOfflinePlayer(args[2]);
 
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.WAVE)) {
+                            if (isPlayer && !Permissions.has(player, Permission.WAVE)) {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
@@ -509,7 +509,7 @@ public class CommandExecution implements CommandExecutor {
                             }
 
                         } else if (args.length == 3 && args[0].equalsIgnoreCase("Customer-Support")) {
-                            if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
+                            if (isPlayer && !Permissions.has(player, Permission.ADMIN)) {
                                 sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                 return true;
                             }
@@ -528,7 +528,7 @@ public class CommandExecution implements CommandExecutor {
                             argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                             if (args[0].equalsIgnoreCase("Customer-Support")) {
-                                if (isPlayer && !Permissions.has((Player) sender, Permission.ADMIN)) {
+                                if (isPlayer && !Permissions.has(player, Permission.ADMIN)) {
                                     sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                     return true;
                                 }
@@ -546,7 +546,7 @@ public class CommandExecution implements CommandExecutor {
                                 });
 
                             } else if (args.length >= 7) {
-                                if (isPlayer && !Permissions.has((Player) sender, Permission.CONDITION)) {
+                                if (isPlayer && !Permissions.has(player, Permission.CONDITION)) {
                                     sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                                     return true;
                                 }
