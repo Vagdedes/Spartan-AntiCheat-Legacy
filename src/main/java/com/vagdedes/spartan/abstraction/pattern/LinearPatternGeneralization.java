@@ -12,6 +12,7 @@ import java.util.*;
 
 public class LinearPatternGeneralization extends PatternGeneralization {
 
+    private static final int requiredPatterns = 3;
     private static final double
             requiredContribution = 0.9,
             requiredSimilarity = 0.9;
@@ -115,7 +116,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         synchronized (patternProfile.patterns) {
-            if (patternProfile.patterns.size() == 3) {
+            if (patternProfile.patterns.size() == requiredPatterns) {
                 patternProfile.patterns.remove(0);
                 patternProfile.patterns.add(pattern);
             } else {
@@ -169,7 +170,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     public Comparison customComparison(PlayerProfile profile, int situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
-        if (patternProfile.patterns.size() < 3) {
+        if (patternProfile.patterns.size() < requiredPatterns) {
             return new Comparison();
         } else {
             situation = this.getActualSituation(situation);
@@ -304,14 +305,16 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                     for (double height : heights) {
                         int airTicks = 0;
 
-                        if (!jumping && !falling) {
-                            this.preTrain(
-                                    airTicks,
-                                    height,
-                                    height,
-                                    0.0
-                            );
+                        for (PlayerProfile profile : Pattern.artificialProfiles) {
+                            LinearPatternProfile patternProfile = this.getLocalProfile(profile);
+                            patternProfile.patterns.clear();
 
+                            for (int i = 0; i < requiredPatterns; i++) {
+                                patternProfile.patterns.add(0.0f);
+                            }
+                        }
+
+                        if (!jumping && !falling) {
                             for (double biggerHeight : heights) {
                                 if (biggerHeight > height) {
                                     double step = biggerHeight - height;
@@ -519,7 +522,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     private float[] getPatterns(LinearPatternProfile patternProfile) {
         synchronized (patternProfile.patterns) {
             return new float[]{
-                    patternProfile.patterns.get(patternProfile.patterns.size() - 3),
+                    patternProfile.patterns.get(patternProfile.patterns.size() - requiredPatterns),
                     patternProfile.patterns.get(patternProfile.patterns.size() - 2),
                     patternProfile.patterns.get(patternProfile.patterns.size() - 1)
             };

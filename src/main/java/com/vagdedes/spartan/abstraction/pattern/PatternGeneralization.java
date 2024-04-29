@@ -139,7 +139,7 @@ public abstract class PatternGeneralization {
 
     final boolean canContribute(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
-            return (this.contribution.getSpecificCount(situation, patternProfile.hash) / (double) this.contribution.getSpecificCount(situation))
+            return this.contribution.getPersonalProbability(situation, patternProfile.hash, 0.0)
                     <= Math.max(this.contribution.getPersonalContribution(situation), Pattern.individualPotentialContribution);
         }
     }

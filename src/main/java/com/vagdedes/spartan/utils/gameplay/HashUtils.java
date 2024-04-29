@@ -151,7 +151,7 @@ public class HashUtils {
                 player.movement.isCrawling(),
                 player.isFrozen(),
                 player.movement.isSneaking(),
-                player.isOnGround()
+                player.movement.getVanillaTicksOnAir() == 0
         );
     }
 

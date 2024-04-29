@@ -8,6 +8,10 @@ public interface AbstractKeyValueMath extends AbstractKeyMath {
 
     int getSpecificCount(Number number, int hash);
 
+    double getSpecificProbability(Number number, double defaultValue);
+
+    double getPersonalProbability(Number number, int hash, double defaultValue);
+
     double getSpecificGeneralContribution();
 
     double getSpecificGeneralContribution(Number ignoreNumber);

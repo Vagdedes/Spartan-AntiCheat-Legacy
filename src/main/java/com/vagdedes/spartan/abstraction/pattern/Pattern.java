@@ -22,10 +22,9 @@ public class Pattern {
             globalDataLimit = 20_000,
             globalDataBase = 625,
             individualDataLimit = 8_192,
-            individualDataBase = 2,
-            requiredPlayerContributionAverage = 10;
+            individualDataBase = 2;
     static final double individualPotentialContribution = 0.1;
-    static final PlayerProfile[] artificialProfiles = new PlayerProfile[requiredPlayerContributionAverage];
+    static final PlayerProfile[] artificialProfiles = new PlayerProfile[10];
     static final String
             profileOption = "profile",
             patternOption = "pattern",
@@ -34,7 +33,7 @@ public class Pattern {
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>(individualDataBase));
 
     static {
-        for (int i = 0; i < requiredPlayerContributionAverage; i++) {
+        for (int i = 0; i < artificialProfiles.length; i++) {
             artificialProfiles[i] = new PlayerProfile();
         }
     }

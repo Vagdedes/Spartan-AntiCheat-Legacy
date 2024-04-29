@@ -38,8 +38,8 @@ public class PlayerProfile {
         this.offlinePlayer = null;
         this.bedrockPlayer = false;
         this.bedrockPlayerCheck = true;
-        this.violationHistory = new ViolationHistory[0];
-        this.miningHistory = new MiningHistory[0];
+        this.violationHistory = null;
+        this.miningHistory = null;
     }
 
     public PlayerProfile(String name) {

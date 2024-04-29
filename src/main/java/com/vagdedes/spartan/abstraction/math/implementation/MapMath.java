@@ -239,12 +239,47 @@ public class MapMath implements AbstractKeyValueMath {
         Map<Integer, Short> map = this.map.get(number.hashCode());
 
         if (map != null) {
+            return map.size() / this.total;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    @Override
+    public double getSpecificProbability(Number number, double defaultValue) {
+        Map<Integer, Short> map = this.map.get(number.hashCode());
+
+        if (map != null) {
             int total = 0;
 
             for (short count : map.values()) {
                 total += count;
             }
             return total / this.specificTotal;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    @Override
+    public double getPersonalProbability(Number number, int hash, double defaultValue) {
+        Map<Integer, Short> map = this.map.get(number.hashCode());
+
+        if (map != null) {
+            Short selfCount = map.get(hash);
+
+            if (selfCount != null) {
+                int total = 0;
+
+                for (short count : map.values()) {
+                    total += count;
+                }
+                return total > 0
+                        ? selfCount / (double) total
+                        : defaultValue;
+            } else {
+                return defaultValue;
+            }
         } else {
             return defaultValue;
         }
