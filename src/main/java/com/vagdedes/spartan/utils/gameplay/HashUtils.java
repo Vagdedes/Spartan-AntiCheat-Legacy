@@ -166,9 +166,9 @@ public class HashUtils {
             return extendInt(
                     extendInt(
                             airTicks,
-                            Double.hashCode(AlgebraUtils.cut(height, GroundUtils.maxHeightLength / 2))
+                            Double.hashCode(AlgebraUtils.cut(height, GroundUtils.maxHeightLength - 2))
                     ),
-                    Double.hashCode(AlgebraUtils.cut(previousHeight, GroundUtils.maxHeightLength / 2))
+                    Double.hashCode(AlgebraUtils.cut(previousHeight, GroundUtils.maxHeightLength - 2))
             );
         }
     }

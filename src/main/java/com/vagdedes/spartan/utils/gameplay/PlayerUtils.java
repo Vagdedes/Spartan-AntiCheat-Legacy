@@ -81,16 +81,11 @@ public class PlayerUtils {
         int counter = 0;
         double jump = AlgebraUtils.floatDouble(0.42);
 
-        while (true) {
-            if (jump > 0.0) {
-                double value = AlgebraUtils.cut(jump, GroundUtils.maxHeightLength);
-                jumpsValues.put(counter, value);
-                jumpTicks.put(value, counter);
-                jump = (jump * dragComplement) - gravityAcceleration;
-                counter++;
-            } else {
-                break;
-            }
+        while (jump > 0.0) {
+            jumpsValues.put(counter, jump);
+            jumpTicks.put(jump, counter);
+            jump = (jump * dragComplement) - gravityAcceleration;
+            counter++;
         }
         Iterator<Double> iterator = jumpsValues.values().iterator();
         double maxJumpingMotionDifferenceLocal = Double.MIN_VALUE,
@@ -204,25 +199,19 @@ public class PlayerUtils {
                 && potionLevel < 250;
     }
 
-    public static double getJumpingPrecision(SpartanPlayer p, double def) {
-        return p.bedrockPlayer || hasJumpEffect(p) ? highPrecision : def;
-    }
-
-    public static double getJumpingPrecision(SpartanPlayer p) {
-        return getJumpingPrecision(p, 0.0001);
+    public static double getJumpPrecision(SpartanPlayer p) {
+        return p.bedrockPlayer || hasJumpEffect(p)
+                ? highPrecision
+                : 1.0 / GroundUtils.heightPowerDivision;
     }
 
     public static boolean isJumping(double d, double diff) {
         if (d > 0.0
                 && !GroundUtils.blockHeightExists(d)
                 && !GroundUtils.collisionHeightExists(d)) {
-            if (diff == 0.0) {
-                return jumpTicks.containsKey(AlgebraUtils.cut(d, GroundUtils.maxHeightLength));
-            } else {
-                for (double value : jumpsValues.values()) {
-                    if (Math.abs(value - d) < diff) {
-                        return true;
-                    }
+            for (double value : jumpsValues.values()) {
+                if (Math.abs(value - d) < diff) {
+                    return true;
                 }
             }
         }

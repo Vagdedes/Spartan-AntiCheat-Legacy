@@ -137,18 +137,10 @@ public abstract class PatternGeneralization {
         }
     }
 
-    final double contributionInPieces(int situation) {
+    final boolean canContribute(int situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
-            return this.contribution.getPersonalContribution(situation);
-        }
-    }
-
-    final double contributionAgainstRest(int situation, PatternProfile patternProfile) {
-        synchronized (this.contribution) {
-            return this.contribution.getPersonalContribution(situation) == 1.0
-                    ? 0.0
-                    : this.contribution.getSpecificCount(situation, patternProfile.hash)
-                    / (double) this.contribution.getSpecificTotal();
+            return (this.contribution.getSpecificCount(situation, patternProfile.hash) / (double) this.contribution.getSpecificCount(situation))
+                    <= Math.max(this.contribution.getPersonalContribution(situation), Pattern.individualPotentialContribution);
         }
     }
 

@@ -17,7 +17,7 @@ public class MovementPatterns extends PatternFamily {
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
                                 new short[]{
-                                        (short) (GroundUtils.maxHeightLength - 1)
+                                        (short) GroundUtils.maxHeightLength
                                 },
                                 true
                         ),

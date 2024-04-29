@@ -112,7 +112,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     protected PatternProfile customLearn(PlayerProfile profile, int situation,
-                                         float pattern, boolean read) {
+                                 float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         synchronized (patternProfile.patterns) {
@@ -124,49 +124,44 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 return null;
             }
         }
+        if (!read && !this.canContribute(situation, patternProfile)) {
+            return null;
+        }
+        synchronized (this.referenceKeys) {
+            Reference reference = new Reference(this.getPatterns(patternProfile));
+            int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
+
+            synchronized (this.references) {
+                this.references.putIfAbsent(referenceKey, reference);
+            }
+            this.referenceKeys.computeIfAbsent(
+                    situation,
+                    k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
+            ).add(referenceKey);
+        }
         if (!read) {
-            double pieces = this.contributionInPieces(situation);
+            if (!patternProfile.situations.isEmpty()) {
+                boolean connected;
 
-            if (this.contributionAgainstRest(situation, patternProfile) >= Math.max(pieces, 0.1)) {
-                return null; // todo move elsewhere with tracking method probably
-            }
-        } else {
-            synchronized (this.referenceKeys) {
-                Reference reference = new Reference(this.getPatterns(patternProfile));
-                int referenceKey = HashUtils.extendInt(reference.hashCodes[0], reference.hashCodes[1]);
-
-                synchronized (this.references) {
-                    this.references.putIfAbsent(referenceKey, reference);
+                synchronized (this.connections) {
+                    connected = this.connections.containsKey(situation);
                 }
-                this.referenceKeys.computeIfAbsent(
-                        situation,
-                        k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
-                ).add(referenceKey);
-            }
-            if (!read) {
-                if (!patternProfile.situations.isEmpty()) {
-                    boolean connected;
 
-                    synchronized (this.connections) {
-                        connected = this.connections.containsKey(situation);
-                    }
-
-                    if (connected) {
-                        if (this.contribution(situation) >= requiredContribution) {
-                            synchronized (this.connections) {
-                                this.connections.remove(situation);
-                            }
+                if (connected) {
+                    if (this.contribution(situation) >= requiredContribution) {
+                        synchronized (this.connections) {
+                            this.connections.remove(situation);
                         }
-                    } else {
-                        for (int previousSituation : patternProfile.situations) {
-                            if (this.connect(previousSituation, situation)) {
-                                break;
-                            }
+                    }
+                } else {
+                    for (int previousSituation : patternProfile.situations) {
+                        if (this.connect(previousSituation, situation)) {
+                            break;
                         }
                     }
                 }
-                patternProfile.situations.add(situation);
             }
+            patternProfile.situations.add(situation);
         }
         return patternProfile;
     }

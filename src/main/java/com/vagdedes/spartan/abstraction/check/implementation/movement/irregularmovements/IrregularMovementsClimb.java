@@ -40,7 +40,7 @@ public class IrregularMovementsClimb extends DetectionExecutor {
                     if (canJump && !knownBoxes && player.movement.isClimbing(oldVertical)
 
                             // Attention, added recently
-                            && (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) >= PlayerUtils.getJumpingPrecision(player) // Not first jump motion
+                            && (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) >= PlayerUtils.getJumpPrecision(player) // Not first jump motion
                             || Math.abs(vertical - box) >= PlayerUtils.highPrecision)) { // Vertical & box are not correlated
                         irregularMovements.cancel(prevention, "jump-" + scenario, 1);
                     }

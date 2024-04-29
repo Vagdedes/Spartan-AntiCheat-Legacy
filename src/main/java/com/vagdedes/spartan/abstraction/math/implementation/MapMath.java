@@ -92,6 +92,22 @@ public class MapMath implements AbstractKeyValueMath {
     }
 
     @Override
+    public int getSpecificCount(Number number) {
+        Map<Integer, Short> map = this.map.get(number.hashCode());
+
+        if (map != null) {
+            int total = 0;
+
+            for (short count : map.values()) {
+                total += count;
+            }
+            return total;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
     public int getSpecificCount(Number number, int hash) {
         Map<Integer, Short> map = this.map.get(number.hashCode());
         return map == null ? 0 : map.getOrDefault(hash, (short) 0);

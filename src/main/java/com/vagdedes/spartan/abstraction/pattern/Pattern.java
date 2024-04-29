@@ -24,6 +24,7 @@ public class Pattern {
             individualDataLimit = 8_192,
             individualDataBase = 2,
             requiredPlayerContributionAverage = 10;
+    static final double individualPotentialContribution = 0.1;
     static final PlayerProfile[] artificialProfiles = new PlayerProfile[requiredPlayerContributionAverage];
     static final String
             profileOption = "profile",

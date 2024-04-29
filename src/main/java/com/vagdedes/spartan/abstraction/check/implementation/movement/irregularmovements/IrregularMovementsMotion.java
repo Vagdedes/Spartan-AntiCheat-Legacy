@@ -246,7 +246,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                     && !jumpEffectASYNC
                     && isJumping(player, vertical)) {
                 if (player.movement.isSprinting()) {
-                    if (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpingPrecision(player)) {
+                    if (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(
                                     prevention, "hopping-sprinting-deceleration", null,
@@ -258,7 +258,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                 criticalHoppingBuffer, decreasedDefaultBufferTime);
                     }
                 } else {
-                    if (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpingPrecision(player)) {
+                    if (Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpPrecision(player)) {
                         if (horizontalDifference < 0.0) {
                             irregularMovements.cancel(
                                     prevention, "hopping-casual-deceleration", null,
@@ -329,7 +329,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                             && !isLastJumpMotion(oldVertical)
                             && !player.getTrackers().has(Trackers.TrackerType.ElytraWear)
                             && (vertical != 0.0 || !PlayerUtils.isUsable(player.getItemInHand().getType()))
-                            && Math.abs(oldVertical - PlayerUtils.getJumpMotion(4)) >= PlayerUtils.getJumpingPrecision(player) // Jumping must end somewhere
+                            && Math.abs(oldVertical - PlayerUtils.getJumpMotion(4)) >= PlayerUtils.getJumpPrecision(player) // Jumping must end somewhere
                             && !PatternUtils.isBlockPattern(new double[][]{
                             {1, 3, 1},
                             {1, 2, 1},
@@ -355,7 +355,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
                                         groundInteractionScenario || velocityScenarioASYNC ? PlayerUtils.getJumpTicks() : 1);
                             }
                         } else if (!onGroundCustom
-                                && Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpingPrecision(player)
+                                && Math.abs(vertical - PlayerUtils.getJumpMotion(0)) < PlayerUtils.getJumpPrecision(player)
                                 && (!GroundUtils.blockHeightExists(Math.abs(box - vertical)) || !offGround
                                 && to.areBlocks(Material.AIR, 1, false)
                                 && to.clone().add(0, -1, 0).areBlocks(Material.AIR, 1, true)

@@ -319,7 +319,7 @@ public class SpartanPlayerMovement { // todo introduce default air ticks for the
     }
 
     public boolean isJumping(double d) {
-        double precision = PlayerUtils.getJumpingPrecision(this.parent, 0.0);
+        double precision = PlayerUtils.getJumpPrecision(this.parent);
         return PlayerUtils.isJumping(
                 d - this.getExtraMovementFromJumpEffect(),
                 precision

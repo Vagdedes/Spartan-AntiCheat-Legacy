@@ -269,8 +269,8 @@ public class Speed extends CheckExecutor {
                     dm = cacheLimit(decimals, dm, dm, 10);
                 }
             }
-        } else if (Math.abs(PlayerUtils.getJumpMotion(0) - ver) < PlayerUtils.getJumpingPrecision(player)
-                || Math.abs(PlayerUtils.getJumpMotion(0) - box) < PlayerUtils.getJumpingPrecision(player)) {
+        } else if (Math.abs(PlayerUtils.getJumpMotion(0) - ver) < PlayerUtils.getJumpPrecision(player)
+                || Math.abs(PlayerUtils.getJumpMotion(0) - box) < PlayerUtils.getJumpPrecision(player)) {
             reason = "ypos";
             if (!cooldowns.canDo("ice=reminder")) {
                 dm = cacheLimit(decimals, dm, ypos_advanced, 0);

@@ -22,7 +22,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
 
     @Override
     protected PatternProfile customLearn(PlayerProfile profile, int situation,
-                                         float pattern, boolean read) {
+                                 float pattern, boolean read) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (!read) {
