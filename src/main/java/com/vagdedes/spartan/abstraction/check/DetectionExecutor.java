@@ -78,7 +78,7 @@ public abstract class DetectionExecutor {
             if (comparison.isValid()) {
                 player.debug(
                         false,
-                        false,
+                        true,
                         AlgebraUtils.cut(comparison.probability * 100.0, 2),
                         AlgebraUtils.cut(comparison.contribution * 100.0, 2),
                         AlgebraUtils.cut(comparison.outcome * 100.0, 2),

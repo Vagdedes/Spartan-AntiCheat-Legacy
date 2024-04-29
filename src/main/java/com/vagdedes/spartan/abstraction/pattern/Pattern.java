@@ -19,7 +19,7 @@ public class Pattern {
     private static final int storageLimit = 1024 * 1024 * 1024;
     static final int
             testingNotificationDivisor = 69,
-            globalDataLimit = 20_000,
+            globalDataLimit = 160_000,
             globalDataBase = 625,
             individualDataLimit = 8_192,
             individualDataBase = 2;
