@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.pattern;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.HashUtils;
@@ -306,7 +305,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         boolean falling = fall == 1;
 
                         for (double height : heights) {
-                            System.out.println(height);
                             double previousHeight = height;
                             int airTicks = 0;
 
@@ -383,7 +381,6 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                           double height,
                           double previousHeight,
                           double pattern) {
-        AwarenessNotifications.forcefullySend(AlgebraUtils.removeBase(height) + " -|- " + pattern + " | " + airTicks);
         this.selfLearn(
                 MovementProcessing.hashTotal(
                         MovementProcessing.artificialPlayerHash(

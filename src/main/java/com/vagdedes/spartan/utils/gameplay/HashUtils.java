@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.*;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.GameMode;
 import org.bukkit.enchantments.Enchantment;
@@ -166,9 +167,9 @@ public class HashUtils {
             return extendInt(
                     extendInt(
                             airTicks,
-                            Double.hashCode(AlgebraUtils.cut(height, GroundUtils.maxHeightLength - 2))
+                            Double.hashCode(AlgebraUtils.cut(height, MovementProcessing.boxLearningLength))
                     ),
-                    Double.hashCode(AlgebraUtils.cut(previousHeight, GroundUtils.maxHeightLength - 2))
+                    Double.hashCode(AlgebraUtils.cut(previousHeight, MovementProcessing.boxLearningLength))
             );
         }
     }

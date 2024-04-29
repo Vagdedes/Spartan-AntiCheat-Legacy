@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.pattern.implementation;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.pattern.PatternFamily;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 
 public class MovementPatterns extends PatternFamily {
@@ -17,14 +18,14 @@ public class MovementPatterns extends PatternFamily {
                         this.vertical = new Pattern(
                                 "movement/distance/vertical",
                                 new short[]{
-                                        (short) GroundUtils.maxHeightLength
+                                        (short) MovementProcessing.motionLearningLength
                                 },
                                 true
                         ),
                         this.horizontal = new Pattern(
                                 "movement/distance/horizontal",
                                 new short[]{
-                                        (short) (GroundUtils.maxHeightLength / 2)
+                                        (short) MovementProcessing.motionLearningLength
                                 },
                                 true
                         ),

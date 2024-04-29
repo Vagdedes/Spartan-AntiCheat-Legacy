@@ -202,7 +202,7 @@ public class PlayerUtils {
     public static double getJumpPrecision(SpartanPlayer p) {
         return p.bedrockPlayer || hasJumpEffect(p)
                 ? highPrecision
-                : 1.0 / GroundUtils.heightPowerDivision;
+                : GroundUtils.maxHeightLengthRatio;
     }
 
     public static boolean isJumping(double d, double diff) {
@@ -281,7 +281,7 @@ public class PlayerUtils {
     }
 
     public static Collection<Double> calculateFallMotions(double d) {
-        double terminal = terminalVelocity - (1.0 / GroundUtils.heightPowerDivision);
+        double terminal = terminalVelocity - GroundUtils.maxHeightLengthRatio;
 
         if (d > -terminal) {
             double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);

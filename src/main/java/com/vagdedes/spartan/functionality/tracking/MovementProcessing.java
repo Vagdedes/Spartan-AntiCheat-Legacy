@@ -28,6 +28,9 @@ public class MovementProcessing {
             v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
     private static final int roundedFall = AlgebraUtils.integerCeil(PlayerUtils.terminalVelocity);
     private static final Material MAGMA_BLOCK = MaterialUtils.get("magma");
+    public static final int
+            boxLearningLength = 3,
+            motionLearningLength = 4;
 
     public static void run(Player n, SpartanPlayer player,
                            SpartanLocation to,

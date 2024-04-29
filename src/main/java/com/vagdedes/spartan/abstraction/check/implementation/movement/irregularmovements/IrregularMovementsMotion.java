@@ -408,6 +408,7 @@ public class IrregularMovementsMotion extends DetectionExecutor {
     }
 
     private boolean isLastJumpMotion(double vertical) {
-        return AlgebraUtils.cut(vertical, GroundUtils.maxHeightLength) == PlayerUtils.getJumpMotion(PlayerUtils.getJumpTicks() - 1);
+        return Math.abs(PlayerUtils.getJumpMotion(PlayerUtils.getJumpTicks() - 1) - vertical)
+                < GroundUtils.maxHeightLengthRatio;
     }
 }
