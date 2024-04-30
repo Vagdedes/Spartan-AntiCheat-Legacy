@@ -19,7 +19,7 @@ public class Pattern {
     private static final int storageLimit = 1024 * 1024 * 1024;
     static final int
             testingNotificationDivisor = 69,
-            globalDataLimit = 160_000,
+            globalDataLimit = 320_000,
             globalDataBase = 625,
             individualDataLimit = 8_192,
             individualDataBase = 2;
@@ -38,8 +38,18 @@ public class Pattern {
         }
     }
 
-    static int hash(PlayerProfile playerProfile) {
+    static int hashProfile(PlayerProfile playerProfile) {
         return playerProfile.getName().hashCode();
+    }
+
+    public static int[] hashSituation(int[] situation) {
+        int[] copy = new int[situation.length + 1];
+        copy[0] = Arrays.hashCode(situation);
+
+        for (int i = 0; i < situation.length; i++) {
+            copy[i + 1] = situation[i];
+        }
+        return copy;
     }
 
     public static void deleteFromFile(PlayerProfile profile) {
@@ -56,7 +66,7 @@ public class Pattern {
                                 Set<String> keys = configuration.getKeys(false);
 
                                 if (!keys.isEmpty()) {
-                                    int profileHash = hash(profile);
+                                    int profileHash = hashProfile(profile);
                                     boolean changed = false;
 
                                     for (String key : keys) {
@@ -91,13 +101,13 @@ public class Pattern {
                                                     for (PatternGeneralization patternGeneralization : instance.generalizations.values()) {
                                                         if (patternGeneralization.scissors != 0) {
                                                             patternGeneralization.decreaseImportance(
-                                                                    (int) situation,
+                                                                    new int[]{(int) situation},
                                                                     profileHash,
                                                                     (float) AlgebraUtils.cut(pattern, patternGeneralization.scissors)
                                                             );
                                                         } else {
                                                             patternGeneralization.decreaseImportance(
-                                                                    (int) situation,
+                                                                    new int[]{(int) situation},
                                                                     profileHash,
                                                                     (float) pattern
                                                             );
@@ -235,11 +245,11 @@ public class Pattern {
         }
     }
 
-    private void setToFile(PlayerProfile profile, long time, int situation, double pattern) {
+    private void setToFile(PlayerProfile profile, long time, int[] situation, double pattern) {
         SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
             this.count++;
             this.configuration.set(time + "." + profileOption, profile.getName());
-            this.configuration.set(time + "." + situationOption, situation);
+            this.configuration.set(time + "." + situationOption, situation[0]);
             this.configuration.set(time + "." + patternOption, pattern);
         });
     }
@@ -330,7 +340,7 @@ public class Pattern {
                                     for (PatternGeneralization generalization : generalizations.values()) {
                                         generalization.learn(
                                                 profile,
-                                                (int) situation,
+                                                new int[]{(int) situation},
                                                 (double) pattern,
                                                 true,
                                                 true
@@ -388,7 +398,7 @@ public class Pattern {
 
     // Separator
 
-    public void learn(SpartanPlayer player, int situation, Number pattern) {
+    public void learn(SpartanPlayer player, int[] situation, Number pattern) {
         if (this.loaded) {
             long time = System.currentTimeMillis();
             PlayerProfile profile = player.getProfile();

@@ -24,7 +24,7 @@ public abstract class PatternGeneralization {
 
         Comparison(PatternGeneralization patternGeneralization,
                    PatternProfile patternProfile,
-                   int situation,
+                   int[] situation,
                    float pattern,
                    double probability) {
             this.probability = probability;
@@ -35,7 +35,7 @@ public abstract class PatternGeneralization {
 
         Comparison(PatternGeneralization patternGeneralization,
                    PatternProfile patternProfile,
-                   int situation,
+                   int[] situation,
                    float[] patterns,
                    double probability) {
             this.probability = probability;
@@ -82,7 +82,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    private void increaseImportance(int situation, PatternProfile patternProfile, float pattern) {
+    private void increaseImportance(int[] situation, PatternProfile patternProfile, float pattern) {
         if (this.significance.getParts() == Pattern.globalDataLimit - 1) {
             synchronized (this.significance) {
                 this.significance.removeLeastSignificant();
@@ -96,21 +96,21 @@ public abstract class PatternGeneralization {
         if (this.contribution.getParts() == Pattern.globalDataLimit - 1) {
             synchronized (this.contribution) {
                 this.contribution.removeLeastSignificant();
-                this.contribution.add(situation, patternProfile.hash);
+                this.contribution.add(situation[0], patternProfile.hash);
             }
         } else {
             synchronized (this.contribution) {
-                this.contribution.add(situation, patternProfile.hash);
+                this.contribution.add(situation[0], patternProfile.hash);
             }
         }
     }
 
-    final void decreaseImportance(int situation, int profileHash, float pattern) {
+    final void decreaseImportance(int[] situation, int profileHash, float pattern) {
         synchronized (this.significance) {
             this.significance.remove(pattern, profileHash);
         }
         synchronized (this.contribution) {
-            this.contribution.remove(situation, profileHash);
+            this.contribution.remove(situation[0], profileHash);
         }
     }
 
@@ -123,24 +123,24 @@ public abstract class PatternGeneralization {
         return patternCount / (double) this.getProfileCount();
     }
 
-    final double contribution(int situation) {
+    final double contribution(int[] situation) {
         synchronized (this.contribution) {
-            return (1.0 - this.contribution.getPersonalContribution(situation))
-                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation));
+            return (1.0 - this.contribution.getPersonalContribution(situation[0]))
+                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation[0]));
         }
     }
 
-    private double contributionMinusSelf(int situation, PatternProfile patternProfile) {
+    private double contributionMinusSelf(int[] situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
-            return (1.0 - this.contribution.getPersonalContribution(situation, patternProfile.hash))
-                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation, patternProfile.hash));
+            return (1.0 - this.contribution.getPersonalContribution(situation[0], patternProfile.hash))
+                    * (1.0 - this.contribution.getSpecificPersonalContribution(situation[0], patternProfile.hash));
         }
     }
 
-    final boolean canContribute(int situation, PatternProfile patternProfile) {
+    final boolean canContribute(int[] situation, PatternProfile patternProfile) {
         synchronized (this.contribution) {
-            return this.contribution.getPersonalProbability(situation, patternProfile.hash, 0.0)
-                    <= Math.max(this.contribution.getPersonalContribution(situation), Pattern.individualPotentialContribution);
+            return this.contribution.getPersonalProbability(situation[0], patternProfile.hash, 0.0)
+                    <= Math.max(this.contribution.getPersonalContribution(situation[0]), Pattern.individualPotentialContribution);
         }
     }
 
@@ -152,7 +152,7 @@ public abstract class PatternGeneralization {
 
     // Separator
 
-    final boolean learn(PlayerProfile profile, int situation, double pattern,
+    final boolean learn(PlayerProfile profile, int[] situation, double pattern,
                         boolean read,
                         boolean generalize) {
         if (generalize && this.scissors != 0) {
@@ -168,7 +168,7 @@ public abstract class PatternGeneralization {
         }
     }
 
-    final void selfLearn(int situation, double pattern) {
+    final void selfLearn(int[] situation, double pattern) {
         if (this.scissors != 0) {
             pattern = AlgebraUtils.cut(pattern, this.scissors);
         }
@@ -177,18 +177,18 @@ public abstract class PatternGeneralization {
         }
     }
 
-    abstract protected PatternProfile customLearn(PlayerProfile profile, int situation,
+    abstract protected PatternProfile customLearn(PlayerProfile profile, int[] situation,
                                                   float pattern, boolean read);
 
     // Separator
 
-    public final Comparison comparison(PlayerProfile playerProfile, int situation) {
+    public final Comparison comparison(PlayerProfile playerProfile, int[] situation) {
         return this.parent.loaded
                 ? this.customComparison(playerProfile, situation)
                 : new Comparison();
     }
 
-    protected abstract Comparison customComparison(PlayerProfile playerProfile, int situation);
+    protected abstract Comparison customComparison(PlayerProfile playerProfile, int[] situation);
 
     // Separator
 
@@ -198,7 +198,7 @@ public abstract class PatternGeneralization {
 
     abstract protected PatternProfile deleteProfile(PlayerProfile profile);
 
-    abstract protected boolean hasPatterns(int situation);
+    abstract protected boolean hasPatterns(int[] situation);
 
     abstract void loadStarting();
 

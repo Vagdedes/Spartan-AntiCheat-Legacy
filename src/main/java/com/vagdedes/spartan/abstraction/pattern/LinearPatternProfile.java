@@ -11,7 +11,7 @@ import java.util.List;
 public class LinearPatternProfile extends PatternProfile {
 
     final List<Float> patterns;
-    final List<Integer> situations;
+    final List<int[]> situations;
 
     LinearPatternProfile(PlayerProfile profile) {
         super(profile);

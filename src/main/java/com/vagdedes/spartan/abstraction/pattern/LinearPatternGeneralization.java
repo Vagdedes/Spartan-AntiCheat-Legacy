@@ -111,7 +111,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected PatternProfile customLearn(PlayerProfile profile, int situation,
+    protected PatternProfile customLearn(PlayerProfile profile, int[] situation,
                                          float pattern, boolean read) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
@@ -135,7 +135,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 this.references.putIfAbsent(referenceKey, reference);
             }
             this.referenceKeys.computeIfAbsent(
-                    situation,
+                    situation[0],
                     k -> new OverflowList<>(Pattern.individualDataBase, Pattern.individualDataLimit)
             ).add(referenceKey);
         }
@@ -144,17 +144,17 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 boolean connected;
 
                 synchronized (this.connections) {
-                    connected = this.connections.containsKey(situation);
+                    connected = this.connections.containsKey(situation[0]);
                 }
 
                 if (connected) {
                     if (this.contribution(situation) >= requiredContribution) {
                         synchronized (this.connections) {
-                            this.connections.remove(situation);
+                            this.connections.remove(situation[0]);
                         }
                     }
                 } else {
-                    for (int previousSituation : patternProfile.situations) {
+                    for (int[] previousSituation : patternProfile.situations) {
                         if (this.connect(previousSituation, situation)) {
                             break;
                         }
@@ -167,7 +167,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    public Comparison customComparison(PlayerProfile profile, int situation) {
+    public Comparison customComparison(PlayerProfile profile, int[] situation) {
         LinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.patterns.size() < requiredPatterns) {
@@ -177,7 +177,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             Cache cache;
             float[] patterns = this.getPatterns(patternProfile);
             int hash = HashUtils.extendInt(
-                    HashUtils.extendInt(this.initialHash, situation),
+                    HashUtils.extendInt(this.initialHash, situation[0]),
                     Float.hashCode(patterns[1])
             );
 
@@ -185,7 +185,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 cache = this.cache.get(hash);
 
                 if (cache == null) {
-                    Collection<Integer> collection = this.referenceKeys.get(situation);
+                    Collection<Integer> collection = this.referenceKeys.get(situation[0]);
 
                     if (collection == null) {
                         cache = new Cache();
@@ -221,7 +221,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                         this.cache.put(hash, cache);
                     }
                 } else if (cache.isExpired()) {
-                    Collection<Integer> collection = this.referenceKeys.get(situation);
+                    Collection<Integer> collection = this.referenceKeys.get(situation[0]);
 
                     if (collection == null) {
                         this.cache.remove(hash);
@@ -283,9 +283,9 @@ public class LinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean hasPatterns(int situation) {
+    protected boolean hasPatterns(int[] situation) {
         synchronized (this.referenceKeys) {
-            return this.referenceKeys.containsKey(situation);
+            return this.referenceKeys.containsKey(situation[0]);
         }
     }
 
@@ -378,7 +378,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
         for (int sneak = 0; sneak < 2; sneak++) {
             this.selfLearn(
-                    MovementProcessing.hashTotal(
+                    Pattern.hashSituation(new int[]{
                             MovementProcessing.artificialPlayerHash(
                                     sneak == 0,
                                     ground
@@ -388,19 +388,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                                     AlgebraUtils.removeBase(height),
                                     AlgebraUtils.removeBase(previousHeight)
                             ),
-                            HashUtils.hashTrackers(
-                                    HashUtils.emptyDamages,
-                                    HashUtils.emptyVelocities,
-                                    null,
-                                    Long.MAX_VALUE,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                            )
-                    ),
+                            MovementProcessing.defaultHashTrackers()
+                    }),
                     pattern
             );
         }
@@ -411,8 +400,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
 
     }
 
-    private boolean connect(int knownSituation, int unknownSituation) {
-        if (knownSituation != unknownSituation) {
+    private boolean connect(int[] knownSituation, int[] unknownSituation) {
+        if (knownSituation[0] != unknownSituation[0]) {
             if (this.contribution(knownSituation) >= requiredContribution) {
                 if (this.contribution(unknownSituation) >= requiredContribution) {
                     return false;
@@ -420,13 +409,13 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             } else if (this.contribution(unknownSituation) < requiredContribution) {
                 return false;
             } else {
-                int situationCopy = knownSituation;
+                int[] situationCopy = knownSituation;
                 knownSituation = unknownSituation;
                 unknownSituation = situationCopy;
             }
 
             synchronized (this.connections) {
-                if (this.connections.containsKey(unknownSituation)) {
+                if (this.connections.containsKey(unknownSituation[0])) {
                     return true;
                 }
             }
@@ -434,8 +423,8 @@ public class LinearPatternGeneralization extends PatternGeneralization {
             return false;
         }
         double similarity = 0.0;
-        List<Integer> knownSituationCorrelations = this.referenceKeys.get(knownSituation),
-                unknownSituationCorrelations = this.referenceKeys.get(unknownSituation);
+        List<Integer> knownSituationCorrelations = this.referenceKeys.get(knownSituation[0]),
+                unknownSituationCorrelations = this.referenceKeys.get(unknownSituation[0]);
 
         if (knownSituationCorrelations.size() == unknownSituationCorrelations.size()) {
             for (int i = 0; i < knownSituationCorrelations.size(); i++) {
@@ -501,7 +490,7 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
 
         if (similarity >= requiredSimilarity) {
-            this.connections.put(unknownSituation, knownSituation);
+            this.connections.put(unknownSituation[0], knownSituation[0]);
             return true;
         } else {
             return false;
@@ -529,13 +518,13 @@ public class LinearPatternGeneralization extends PatternGeneralization {
         }
     }
 
-    private int getActualSituation(int situation) {
+    private int[] getActualSituation(int[] situation) {
         Integer connected;
 
         synchronized (this.connections) {
-            connected = this.connections.get(situation);
+            connected = this.connections.get(situation[0]);
         }
-        return connected == null ? situation : connected;
+        return connected == null ? situation : new int[]{connected};
     }
 
 }

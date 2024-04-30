@@ -21,7 +21,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected PatternProfile customLearn(PlayerProfile profile, int situation,
+    protected PatternProfile customLearn(PlayerProfile profile, int[] situation,
                                  float pattern, boolean read) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
@@ -30,7 +30,7 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
         }
         synchronized (this.correlations) {
             NumberMath pie = this.correlations.computeIfAbsent(
-                    situation,
+                    situation[0],
                     k -> new NumberMath(Pattern.individualDataBase, 1.0f)
             );
             if (pie.getParts() == Pattern.individualDataLimit - 1) {
@@ -42,14 +42,14 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    public Comparison customComparison(PlayerProfile profile, int situation) {
+    public Comparison customComparison(PlayerProfile profile, int[] situation) {
         NonLinearPatternProfile patternProfile = this.getLocalProfile(profile);
 
         if (patternProfile.lastPattern == Float.MIN_VALUE) {
             return new Comparison();
         } else {
             synchronized (this.correlations) {
-                NumberMath math = this.correlations.get(situation);
+                NumberMath math = this.correlations.get(situation[0]);
 
                 if (math == null) {
                     return new Comparison(
@@ -92,9 +92,9 @@ public class NonLinearPatternGeneralization extends PatternGeneralization {
     }
 
     @Override
-    protected boolean hasPatterns(int situation) {
+    protected boolean hasPatterns(int[] situation) {
         synchronized (this.correlations) {
-            return this.correlations.containsKey(situation);
+            return this.correlations.containsKey(situation[0]);
         }
     }
 

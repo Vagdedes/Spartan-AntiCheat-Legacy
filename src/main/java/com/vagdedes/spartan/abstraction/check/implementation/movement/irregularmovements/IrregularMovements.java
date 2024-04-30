@@ -513,7 +513,7 @@ public class IrregularMovements extends CheckExecutor {
     public boolean handleInternal(boolean cancelled, Object object) {
         this.machineLearningDetection(
                 SpartanBukkit.movementPatterns.vertical.getGeneralization(),
-                (int) object
+                (int[]) object
         );
         return false;
     }

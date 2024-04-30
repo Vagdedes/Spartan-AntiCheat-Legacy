@@ -314,4 +314,19 @@ public class MovementProcessing {
                 ground
         );
     }
+
+    public static int defaultHashTrackers() {
+        return HashUtils.hashTrackers(
+                HashUtils.emptyDamages,
+                HashUtils.emptyVelocities,
+                null,
+                Long.MAX_VALUE,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+        );
+    }
 }

@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.NoSlowdown;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
+import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
@@ -115,11 +116,11 @@ public class EventsHandler7 implements Listener {
         CombatProcessing.runMove(p, to);
 
         // Patterns
-        int situation = MovementProcessing.hashTotal(
+        int[] situation = Pattern.hashSituation(new int[]{
                 HashUtils.hashPlayer(p),
                 HashUtils.hashEnvironment(p, box, from),
                 HashUtils.hashTrackers(p)
-        );
+        });
         SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);
 
         for (Enums.HackType hackType : handledChecks) {

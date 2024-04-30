@@ -7,7 +7,7 @@ public abstract class PatternProfile {
     final int hash;
 
     PatternProfile(PlayerProfile profile) {
-        this.hash = Pattern.hash(profile);
+        this.hash = Pattern.hashProfile(profile);
     }
 
 }
