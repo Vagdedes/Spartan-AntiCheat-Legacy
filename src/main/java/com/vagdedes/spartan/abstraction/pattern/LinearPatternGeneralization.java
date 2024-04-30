@@ -156,8 +156,20 @@ public class LinearPatternGeneralization extends PatternGeneralization {
                 } else {
                     for (int[] previousSituation : patternProfile.situations) {
                         if (this.connect(previousSituation, situation)) {
+                            connected = true;
                             break;
                         }
+                    }
+
+                    if (!connected) {
+                        this.connect(
+                                Pattern.hashSituation(new int[]{
+                                        situation[1],
+                                        situation[2],
+                                        MovementProcessing.defaultHashTrackers(),
+                                }),
+                                situation
+                        );
                     }
                 }
             }

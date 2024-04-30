@@ -43,8 +43,13 @@ public class Pattern {
     }
 
     public static int[] hashSituation(int[] situation) {
+        int result = 1;
+
+        for (int i : situation) {
+            result = (SpartanBukkit.hashCodeMultiplier * result) + i;
+        }
         int[] copy = new int[situation.length + 1];
-        copy[0] = Arrays.hashCode(situation);
+        copy[0] = result;
 
         for (int i = 0; i < situation.length; i++) {
             copy[i + 1] = situation[i];

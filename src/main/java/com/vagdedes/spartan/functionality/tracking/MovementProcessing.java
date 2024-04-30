@@ -290,10 +290,6 @@ public class MovementProcessing {
         return false;
     }
 
-    public static int hashTotal(int player, int environment, int trackers) {
-        return HashUtils.extendInt(HashUtils.extendInt(player, environment), trackers);
-    }
-
     public static int artificialPlayerHash(
             boolean sneak,
             boolean ground
