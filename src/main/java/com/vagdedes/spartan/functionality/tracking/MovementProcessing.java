@@ -30,7 +30,19 @@ public class MovementProcessing {
     private static final Material MAGMA_BLOCK = MaterialUtils.get("magma");
     public static final int
             boxLearningLength = 3,
-            motionLearningLength = 4;
+            motionLearningLength = 4,
+            defaultTrackersHash = HashUtils.hashTrackers(
+                    HashUtils.emptyDamages,
+                    HashUtils.emptyVelocities,
+                    null,
+                    Long.MAX_VALUE,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+            );
     public static final double motionLearningDecimals = 1.0 / Math.pow(10, motionLearningLength);
 
     public static void run(Player n, SpartanPlayer player,
@@ -39,10 +51,6 @@ public class MovementProcessing {
                            double distance, double horizontal,
                            double vertical, double box,
                            float fall) {
-        player.movement.processLastMoveEvent(to, from);
-
-        // Separator
-
         if (player.refreshOnGroundCustom(to)) {
             player.movement.setAirTicks(0);
             player.movement.setFallingTicks(0);
@@ -311,18 +319,4 @@ public class MovementProcessing {
         );
     }
 
-    public static int defaultHashTrackers() {
-        return HashUtils.hashTrackers(
-                HashUtils.emptyDamages,
-                HashUtils.emptyVelocities,
-                null,
-                Long.MAX_VALUE,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0
-        );
-    }
 }

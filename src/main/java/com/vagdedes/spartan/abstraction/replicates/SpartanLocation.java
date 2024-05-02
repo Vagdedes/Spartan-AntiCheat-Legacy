@@ -502,6 +502,11 @@ public class SpartanLocation {
         return AlgebraUtils.getDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
     }
 
+    public double distanceSquared(SpartanLocation loc) {
+        this.retrieveDataFrom(loc);
+        return AlgebraUtils.getSquaredDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
+    }
+
     public double distance(Location loc) {
         return AlgebraUtils.getDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
     }
@@ -601,8 +606,8 @@ public class SpartanLocation {
                     {this.x - x, this.z + z}
             }) {
                 distances.put(Math.sqrt(
-                        AlgebraUtils.getPreDistance(this.x, Math.floor(positions[0]))
-                                + AlgebraUtils.getPreDistance(this.z, Math.floor(positions[1]))
+                        AlgebraUtils.getSquare(this.x, Math.floor(positions[0]))
+                                + AlgebraUtils.getSquare(this.z, Math.floor(positions[1]))
                 ), positions);
             }
             y += this.y;

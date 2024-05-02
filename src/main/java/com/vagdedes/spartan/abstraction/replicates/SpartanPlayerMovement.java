@@ -14,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -44,6 +45,7 @@ public class SpartanPlayerMovement {
     private boolean gliding, swimming, sprinting, sneaking, flying;
     private SpartanLocation location, nmsTo, nmsFrom, detectionLocation;
     SpartanLocation customFromLocation;
+    private Vector clampVector;
 
     SpartanPlayerMovement(SpartanPlayer parent, Player p) {
         this.parent = parent;
@@ -88,6 +90,8 @@ public class SpartanPlayerMovement {
         this.nmsTo = this.location;
         this.nmsFrom = this.location;
         this.detectionLocation = this.location;
+
+        this.clampVector = new Vector();
     }
 
     public double getCustomDistance() {
@@ -537,5 +541,46 @@ public class SpartanPlayerMovement {
 
     public boolean stepsOnBoats() {
         return GroundUtils.stepsOnBoats(this.parent);
+    }
+
+    // Separator
+
+    public boolean positionChanged() {
+        return this.nmsTo.getX() != this.nmsFrom.getX()
+                || this.nmsTo.getY() != this.nmsFrom.getY()
+                || this.nmsTo.getZ() != this.nmsFrom.getZ();
+    }
+
+    public boolean directionChanged() {
+        return this.nmsTo.getYaw() != this.nmsFrom.getYaw()
+                || this.nmsTo.getPitch() != this.nmsFrom.getPitch();
+    }
+
+    // Separator
+
+    public boolean isUnnecessaryPacket() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+            double x = clampMin(this.nmsTo.getX(), -3.0E7D, 3.0E7D),
+                    y = clampMin(this.nmsTo.getY(), -2.0E7D, 2.0E7D),
+                    z = clampMin(this.nmsTo.getZ(), -3.0E7D, 3.0E7D);
+            Vector vector = new Vector(x, y, z);
+            double d = this.clampVector.distanceSquared(vector);
+            this.clampVector = vector;
+            this.parent.debug(true, false, false,
+                    d,
+                    this.clampVector.distance(vector),
+                    positionChanged(),
+                    directionChanged()
+            );
+            return d < 4e-8;
+        }
+        return false;
+    }
+
+    private double clampMin(double d, double d2, double d3) {
+        if (d < d2) {
+            return d2;
+        }
+        return Math.min(d, d3);
     }
 }

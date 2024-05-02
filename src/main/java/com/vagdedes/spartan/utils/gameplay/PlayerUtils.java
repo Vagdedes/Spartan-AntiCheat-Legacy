@@ -280,6 +280,16 @@ public class PlayerUtils {
         return getFallTick(d) != -1;
     }
 
+    public static double calculateNextFallMotion(double d, double decimalPlaces) {
+        double terminal = terminalVelocity - decimalPlaces;
+
+        if (d > -terminal) {
+            return (d * dragComplement) - gravityAcceleration;
+        } else {
+            return Double.MIN_VALUE;
+        }
+    }
+
     public static Collection<Double> calculateFallMotions(double d, double decimalPlaces) {
         double terminal = terminalVelocity - decimalPlaces;
 

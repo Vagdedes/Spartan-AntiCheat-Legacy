@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.implementation.combat.criticals.Cr
 import com.vagdedes.spartan.abstraction.check.implementation.combat.criticals.CriticalsUtils;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
-import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -359,8 +358,6 @@ public class ResearchEngine {
 
         if (isStorageMode()) {
             // Clear Files/Database
-            Pattern.deleteFromFile(profile);
-
             SpartanBukkit.analysisThread.executeWithPriority(() -> {
                 synchronized (playerProfiles) {
                     playerProfiles.remove(playerName);
@@ -392,8 +389,6 @@ public class ResearchEngine {
                 }
             });
         } else {
-            Pattern.deleteFromFile(profile);
-
             synchronized (playerProfiles) {
                 playerProfiles.remove(playerName);
             }
@@ -547,11 +542,9 @@ public class ResearchEngine {
             if (enabledPlugin) {
                 CloudBase.refresh(true);
                 buildCache();
-                Pattern.reload();
                 CloudBase.refresh(false);
             } else {
                 CloudBase.clear(true);
-                Pattern.clear();
                 ViolationAnalysis.clear();
             }
         };

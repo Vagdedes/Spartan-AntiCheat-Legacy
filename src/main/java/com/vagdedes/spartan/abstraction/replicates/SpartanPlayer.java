@@ -499,8 +499,8 @@ public class SpartanPlayer {
         this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
-    public boolean debug(boolean broadcast, boolean cutDecimals, Object... message) {
-        if (SpartanBukkit.testMode) {
+    public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
+        if (function && SpartanBukkit.testMode) {
             Player p = getPlayer();
 
             if (p != null && p.isWhitelisted()) {

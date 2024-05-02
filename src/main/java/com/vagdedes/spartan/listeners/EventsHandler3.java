@@ -147,6 +147,9 @@ public class EventsHandler3 implements Listener {
             if (p == null) {
                 return;
             }
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+                p.debug(true, false, false, "interact");
+            }
             Block nb = e.getClickedBlock();
             Action action = e.getAction();
             boolean notNull = nb != null,

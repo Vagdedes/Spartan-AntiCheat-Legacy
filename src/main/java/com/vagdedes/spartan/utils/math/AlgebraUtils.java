@@ -100,13 +100,17 @@ public class AlgebraUtils {
 
     // Separator
 
-    public static double getPreDistance(double d1, double d2) {
+    public static double getSquare(double d1, double d2) {
         double d = d1 - d2;
         return d * d;
     }
 
+    public static double getSquaredDistance(double x1, double x2, double y1, double y2, double z1, double z2) {
+        return getSquare(x1, x2) + getSquare(y1, y2) + getSquare(z1, z2);
+    }
+
     public static double getDistance(double x1, double x2, double y1, double y2, double z1, double z2) {
-        return Math.sqrt(getPreDistance(x1, x2) + getPreDistance(y1, y2) + getPreDistance(z1, z2));
+        return Math.sqrt(getSquaredDistance(x1, x2, y1, y2, z1, z2));
     }
 
     // Separator
@@ -124,7 +128,7 @@ public class AlgebraUtils {
     // Separator
 
     public static double getHorizontalDistance(Location loc, Vector vec) {
-        return Math.sqrt(getPreDistance(loc.getX(), vec.getX()) + getPreDistance(loc.getZ(), vec.getZ()));
+        return Math.sqrt(getSquare(loc.getX(), vec.getX()) + getSquare(loc.getZ(), vec.getZ()));
     }
 
     public static double getHorizontalDistance(Vector vec, Location loc) {
@@ -132,7 +136,7 @@ public class AlgebraUtils {
     }
 
     public static double getHorizontalDistance(SpartanLocation loc, Vector vec) {
-        return Math.sqrt(getPreDistance(loc.getX(), vec.getX()) + getPreDistance(loc.getZ(), vec.getZ()));
+        return Math.sqrt(getSquare(loc.getX(), vec.getX()) + getSquare(loc.getZ(), vec.getZ()));
     }
 
     public static double getHorizontalDistance(Vector vec, SpartanLocation loc) {
@@ -140,7 +144,7 @@ public class AlgebraUtils {
     }
 
     public static double getHorizontalDistance(Location loc1, SpartanLocation loc2) {
-        return Math.sqrt(getPreDistance(loc1.getX(), loc2.getX()) + getPreDistance(loc1.getZ(), loc2.getZ()));
+        return Math.sqrt(getSquare(loc1.getX(), loc2.getX()) + getSquare(loc1.getZ(), loc2.getZ()));
     }
 
     public static double getHorizontalDistance(SpartanLocation loc1, Location loc2) {
@@ -148,22 +152,22 @@ public class AlgebraUtils {
     }
 
     public static double getHorizontalDistance(Vector vec1, Vector vec2) {
-        return Math.sqrt(getPreDistance(vec1.getX(), vec2.getX()) + getPreDistance(vec1.getZ(), vec2.getZ()));
+        return Math.sqrt(getSquare(vec1.getX(), vec2.getX()) + getSquare(vec1.getZ(), vec2.getZ()));
     }
 
     public static double getHorizontalDistance(Location loc1, Location loc2) {
-        return Math.sqrt(getPreDistance(loc1.getX(), loc2.getX()) + getPreDistance(loc1.getZ(), loc2.getZ()));
+        return Math.sqrt(getSquare(loc1.getX(), loc2.getX()) + getSquare(loc1.getZ(), loc2.getZ()));
     }
 
     public static double getHorizontalDistance(SpartanLocation loc1, SpartanLocation loc2) {
         loc1.retrieveDataFrom(loc2);
-        return Math.sqrt(getPreDistance(loc1.getX(), loc2.getX()) + getPreDistance(loc1.getZ(), loc2.getZ()));
+        return Math.sqrt(getSquare(loc1.getX(), loc2.getX()) + getSquare(loc1.getZ(), loc2.getZ()));
     }
 
     // Separator
 
     public static double getVerticalDistance(Location loc1, SpartanLocation loc2) {
-        return Math.sqrt(getPreDistance(loc1.getY(), loc2.getY()));
+        return Math.sqrt(getSquare(loc1.getY(), loc2.getY()));
     }
 
     public static double getVerticalDistance(SpartanLocation loc1, Location loc2) {
@@ -171,12 +175,12 @@ public class AlgebraUtils {
     }
 
     public static double getVerticalDistance(Location loc1, Location loc2) {
-        return Math.sqrt(getPreDistance(loc1.getY(), loc2.getY()));
+        return Math.sqrt(getSquare(loc1.getY(), loc2.getY()));
     }
 
     public static double getVerticalDistance(SpartanLocation loc1, SpartanLocation loc2) {
         loc1.retrieveDataFrom(loc2);
-        return Math.sqrt(getPreDistance(loc1.getY(), loc2.getY()));
+        return Math.sqrt(getSquare(loc1.getY(), loc2.getY()));
     }
 
     // Separator

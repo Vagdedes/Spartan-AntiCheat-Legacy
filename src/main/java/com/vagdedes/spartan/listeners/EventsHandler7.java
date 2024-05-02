@@ -7,15 +7,14 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.NoSlowdown;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
-import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CheckDelay;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.utils.gameplay.HashUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -102,12 +101,17 @@ public class EventsHandler7 implements Listener {
         // Objects
         to.retrieveDataFrom(p.movement.getLocation());
         from.retrieveDataFrom(to);
+        p.movement.processLastMoveEvent(to, from);
+
+        if (p.movement.isUnnecessaryPacket()) {
+            return;
+        }
 
         // Values
-        double preXZ = AlgebraUtils.getPreDistance(to.getX(), from.getX()) + AlgebraUtils.getPreDistance(to.getZ(), from.getZ()),
+        double preXZ = AlgebraUtils.getSquare(to.getX(), from.getX()) + AlgebraUtils.getSquare(to.getZ(), from.getZ()),
                 toY = to.getY(),
                 fromY = from.getY(),
-                dis = Math.sqrt(preXZ + AlgebraUtils.getPreDistance(toY, fromY)),
+                dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
                 box = toY - to.getBlockY(),
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
@@ -116,13 +120,6 @@ public class EventsHandler7 implements Listener {
         CombatProcessing.runMove(p, to);
 
         // Patterns
-        int[] situation = Pattern.hashSituation(new int[]{
-                HashUtils.hashPlayer(p),
-                HashUtils.hashEnvironment(p, box, from),
-                HashUtils.hashTrackers(p)
-        });
-        SpartanBukkit.movementPatterns.learn(p, situation, hor, ver, fall);
-
         for (Enums.HackType hackType : handledChecks) {
             if (p.getViolations(hackType).prevent()) {
                 break;
@@ -131,7 +128,6 @@ public class EventsHandler7 implements Listener {
 
         // Detections
         if (MovementProcessing.canCheck(p)) {
-            p.getExecutor(Enums.HackType.IrregularMovements).handle(false, situation);
             p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD);
             p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
             p.getExecutor(Enums.HackType.KillAura).run(cancelled);

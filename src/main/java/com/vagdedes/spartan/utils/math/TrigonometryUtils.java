@@ -95,9 +95,9 @@ public class TrigonometryUtils {
 
         public double distance(Triangle triangle) {
             return Math.sqrt(
-                    AlgebraUtils.getPreDistance(this.side1, triangle.side1)
-                            + AlgebraUtils.getPreDistance(this.side2, triangle.side2)
-                            + AlgebraUtils.getPreDistance(this.side3, triangle.side3)
+                    AlgebraUtils.getSquare(this.side1, triangle.side1)
+                            + AlgebraUtils.getSquare(this.side2, triangle.side2)
+                            + AlgebraUtils.getSquare(this.side3, triangle.side3)
             );
         }
     }

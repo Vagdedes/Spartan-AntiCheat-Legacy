@@ -12,7 +12,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.damage.NoHitDelay;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -34,9 +33,10 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsLevitation levitation;
     private final IrregularMovementsLiquids liquids;
     private final IrregularMovementsMotion motion;
+    private final IrregularMovementsGravity gravity;
 
     public IrregularMovements(SpartanPlayer player) {
-        super(check, player, 7);
+        super(check, player, 8);
         this.addDetections(new DetectionExecutor[]{
                 new IrregularMovementsBouncing(this),
                 new IrregularMovementsClimb(this),
@@ -44,7 +44,8 @@ public class IrregularMovements extends CheckExecutor {
                 new IrregularMovementsInsideBlocks(this),
                 new IrregularMovementsLevitation(this),
                 new IrregularMovementsLiquids(this),
-                new IrregularMovementsMotion(this)
+                new IrregularMovementsMotion(this),
+                new IrregularMovementsGravity(this)
         });
         bouncing = (IrregularMovementsBouncing) detections[0];
         climb = (IrregularMovementsClimb) detections[1];
@@ -53,6 +54,7 @@ public class IrregularMovements extends CheckExecutor {
         levitation = (IrregularMovementsLevitation) detections[4];
         liquids = (IrregularMovementsLiquids) detections[5];
         motion = (IrregularMovementsMotion) detections[6];
+        gravity = (IrregularMovementsGravity) detections[7];
     }
 
     // Keys
@@ -85,8 +87,8 @@ public class IrregularMovements extends CheckExecutor {
                 || oldBox == null) {
             return false;
         }
-        SpartanLocation to = player.movement.getNmsToLocation(),
-                from = player.movement.getNmsFromLocation();
+        gravity.run(vertical, oldVertical, box, oldBox);
+        SpartanLocation to = player.movement.getNmsToLocation();
         int airTicks = player.movement.getTicksOnAir();
         boolean bedrockPlayer = player.bedrockPlayer;
 
@@ -511,10 +513,6 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        this.machineLearningDetection(
-                SpartanBukkit.movementPatterns.vertical.getGeneralization(),
-                (int[]) object
-        );
         return false;
     }
 

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
-import com.vagdedes.spartan.abstraction.pattern.implementation.MovementPatterns;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.IDs;
@@ -30,9 +29,6 @@ public class SpartanBukkit {
             playerThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L),
             chunkThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L),
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
-
-    public static final MovementPatterns
-            movementPatterns = new MovementPatterns();
 
     public static final int hashCodeMultiplier = 31;
     private static final Map<UUID, SpartanPlayer> players =
