@@ -2,12 +2,17 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.potion.PotionEffectType;
-import org.mozilla.javascript.ast.Jump;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class IrregularMovementsJump extends DetectionExecutor {
 
@@ -20,7 +25,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
 
             for (double motion : PlayerUtils.getJumpMotions(jumpEffect)) {
                 height += motion;
-                collection.add(AlgebraUtils.removeBase(height));
+                collection.add(AlgebraUtils.cut(AlgebraUtils.removeBase(height), MovementProcessing.heightPrecision));
             }
             heights.put(jumpEffect, collection);
         }
@@ -33,10 +38,38 @@ public class IrregularMovementsJump extends DetectionExecutor {
     void run(double vertical, double box) {
         if (hackType.getCheck().getBooleanOption("check_jump", true)) {
             runAsync(() -> {
-                player.debug(true, false, true,
-                        2,
-                        heights.get(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP)).contains(box)
-                );
+                if (player.getTrackers().has(Trackers.TrackerFamily.Velocity)
+                        ? player.movement.justJumped(vertical)
+                        : player.movement.isJumping(vertical)) {
+                    int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;
+
+                    if (!heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision))) {
+                        cancel("type: jump(height)"
+                                        + ", box: " + box
+                                        + ", vertical: " + vertical
+                                        + ", jump-effect: " + jumpEffect
+                                        + ", air-ticks: " + player.movement.getTicksOnAir(),
+                                player.movement.getDetectionLocation(),
+                                0,
+                                true
+                        );
+                    } else {
+                        int limit = Math.max(PlayerUtils.getJumpTicks(jumpEffect), (int) TPS.maximum);
+
+                        if (!player.isOnGround() && player.movement.getTicksOnAir() > limit) {
+                            cancel("type: jump(ticks)"
+                                            + ", box: " + box
+                                            + ", vertical: " + vertical
+                                            + ", jump-effect: " + jumpEffect
+                                            + ", air-ticks: " + player.movement.getTicksOnAir()
+                                            + ", limit: " + limit,
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
+                        }
+                    }
+                }
             });
         }
     }

@@ -15,7 +15,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
-            runAsync(() -> { // todo ladder, levitation, slow-fall
+            runAsync(() -> { // todo ladder, levitation, slow-fall, damage
                 boolean liquid = player.movement.getLastLiquid() == 0L;
                 double prediction = PlayerUtils.calculateNextFallMotion(
                         oldVertical,

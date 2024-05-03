@@ -839,7 +839,8 @@ public class SpartanPlayer {
     }
 
     public boolean refreshOnGround(SpartanLocation movementTo) {
-        return this.onGroundCustom = GroundUtils.isOnGround(this, movementTo, 0.0, false, true);
+        return this.onGroundCustom = GroundUtils.isOnGround(this, movementTo, 0.0, false, true)
+                || GroundUtils.isOnGround(this, this.movement.getLocation(), 0.0, false, true);
     }
 
     // Separator

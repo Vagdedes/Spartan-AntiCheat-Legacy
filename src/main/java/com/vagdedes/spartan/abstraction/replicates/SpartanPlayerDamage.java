@@ -37,6 +37,7 @@ public class SpartanPlayerDamage {
                         EntityDamageEvent event,
                         SpartanLocation location,
                         long tick) {
+        player.getTrackers().add(Trackers.TrackerType.Damage, (int) TPS.maximum);
         this.parent = player;
         this.tick = tick;
         this.event = event;

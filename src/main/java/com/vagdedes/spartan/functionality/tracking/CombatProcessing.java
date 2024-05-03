@@ -47,7 +47,7 @@ public class CombatProcessing {
                 && !player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GameMode)
                 && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
-                && !player.getTrackers().has(Trackers.TrackerType.Vehicle)
+                && player.getVehicle() == null
                 && !mcMMO.hasGeneralAbility(player)
                 && !Attributes.has(player, Attributes.GENERIC_ARMOR);
     }

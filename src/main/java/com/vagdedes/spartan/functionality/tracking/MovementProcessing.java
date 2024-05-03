@@ -31,6 +31,9 @@ public class MovementProcessing {
             MAGMA_BLOCK = MaterialUtils.get("magma"),
             WATER = MaterialUtils.get("water"),
             LAVA = MaterialUtils.get("lava");
+    public static final int
+            motionPrecision = 4,
+            heightPrecision = 3;
 
     public static void run(Player n, SpartanPlayer player,
                            SpartanLocation to,

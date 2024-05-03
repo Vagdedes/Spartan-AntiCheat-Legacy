@@ -10,17 +10,16 @@ import java.util.Map;
 public class Trackers {
 
     public enum TrackerFamily {
-        Velocity, Motion, Part
+        Velocity, Motion
     }
 
     public enum TrackerType {
         AbstractVelocity(TrackerFamily.Velocity), BouncingBlocks(TrackerFamily.Velocity),
         Piston(TrackerFamily.Velocity), BubbleWater(TrackerFamily.Velocity),
         ExtremeCollision(TrackerFamily.Velocity), Trident(TrackerFamily.Velocity),
+        Damage(TrackerFamily.Velocity),
 
-        Vehicle(TrackerFamily.Part), GameMode(TrackerFamily.Part),
-
-        ElytraUse(TrackerFamily.Motion);
+        GameMode(TrackerFamily.Motion), ElytraUse(TrackerFamily.Motion);
 
         public final TrackerFamily family;
 

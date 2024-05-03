@@ -322,7 +322,7 @@ public class SpartanPlayerMovement {
     public boolean isJumping(double d) {
         return PlayerUtils.isJumping(
                 d,
-                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP),
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
                 this.getJumpPrecision()
         );
     }
@@ -330,7 +330,7 @@ public class SpartanPlayerMovement {
     public boolean justJumped(double d) {
         return PlayerUtils.justJumped(
                 d,
-                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP),
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
                 this.getJumpPrecision()
         );
     }
