@@ -800,6 +800,10 @@ public class SpartanPlayer {
         return onGroundCustom;
     }
 
+    public boolean isOnGround(SpartanLocation location) {
+        return GroundUtils.isOnGround(this, location, 0.0, false, true);
+    }
+
     public boolean isOnGroundDefault() {
         Entity vehicle = getVehicle();
 

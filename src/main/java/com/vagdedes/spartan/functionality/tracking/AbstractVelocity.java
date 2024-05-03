@@ -17,10 +17,7 @@ public class AbstractVelocity {
                 return true;
             }
             int offGroundBlocks = p.getBlocksOffGround(blocksOffGround + 1); // Do not use limit because of the 'blockY' comparison
-
-            if (offGroundBlocks <= blocksOffGround || offGroundBlocks == blockY) {
-                return true;
-            }
+            return offGroundBlocks <= blocksOffGround || offGroundBlocks == blockY;
         }
         return false;
     }
