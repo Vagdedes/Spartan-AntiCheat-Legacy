@@ -37,6 +37,11 @@ public class Velocity extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return !player.canRunCheck(hackType, true)
                 && CombatProcessing.canCheck(player)

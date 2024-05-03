@@ -42,6 +42,11 @@ public class ItemDrops extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 && player.canRunCheck(check, true)

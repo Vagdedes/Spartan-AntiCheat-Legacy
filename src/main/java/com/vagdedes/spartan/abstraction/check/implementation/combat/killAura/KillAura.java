@@ -102,6 +102,11 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     public boolean handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerFight) {
             if (canDo()) {

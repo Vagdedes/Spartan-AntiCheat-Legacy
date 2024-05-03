@@ -29,6 +29,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     protected abstract boolean runInternal(boolean cancelled);
 
+    public abstract void scheduler();
+
     // Run handlers or detections when parameters are needed
     public boolean handle(boolean cancelled, Object object) {
         return (!cancelled || hackType.getCheck().handleCancelledEvents) && handleInternal(cancelled, object);

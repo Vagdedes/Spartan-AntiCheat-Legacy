@@ -129,6 +129,11 @@ public class BlockReach extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return !Compatibility.CompatibilityType.mcMMO.isFunctional()
                 && player.canRunCheck(hackType, true)

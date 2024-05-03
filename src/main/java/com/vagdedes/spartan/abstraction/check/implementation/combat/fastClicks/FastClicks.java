@@ -39,6 +39,11 @@ public class FastClicks extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     public boolean handleInternal(boolean cancelled, Object object) {
         return false;
     }

@@ -75,6 +75,11 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return player.canRunCheck(check, true)
                 && !player.movement.isCrawling();

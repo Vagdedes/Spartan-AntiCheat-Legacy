@@ -17,6 +17,11 @@ public class HitReach extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     public boolean handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
             // todo

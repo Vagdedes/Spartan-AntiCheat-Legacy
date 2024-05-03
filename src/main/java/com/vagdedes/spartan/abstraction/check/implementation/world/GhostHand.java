@@ -74,6 +74,11 @@ public class GhostHand extends CheckExecutor {
         return false;
     }
 
+    @Override
+    public void scheduler() {
+
+    }
+
     private boolean canDo(SpartanBlock b) {
         return b.world == player.getWorld() && !BlockUtils.areWires(b.material);
     }

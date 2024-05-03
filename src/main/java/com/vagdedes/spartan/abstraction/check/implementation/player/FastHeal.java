@@ -88,6 +88,11 @@ public class FastHeal extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         if (player.canRunCheck(hackType, true)
                 && player.getWorld().getDifficulty() != Difficulty.PEACEFUL) {

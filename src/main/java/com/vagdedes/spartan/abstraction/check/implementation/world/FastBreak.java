@@ -201,6 +201,11 @@ public class FastBreak extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         if (player.canRunCheck(hackType, true)) {
             GameMode gameMode = player.getGameMode();

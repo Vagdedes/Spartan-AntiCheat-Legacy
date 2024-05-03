@@ -78,6 +78,11 @@ public class NoSwing extends CheckExecutor {
         return false;
     }
 
+    @Override
+    public void scheduler() {
+
+    }
+
     private void runDamage(LivingEntity entity) {
         if (!canDo()
                 || !hackType.getCheck().getBooleanOption("check_damage", true)

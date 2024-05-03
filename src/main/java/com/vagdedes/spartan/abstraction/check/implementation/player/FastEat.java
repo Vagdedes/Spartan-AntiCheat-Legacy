@@ -138,6 +138,11 @@ public class FastEat extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && player.getWorld().getDifficulty() != Difficulty.PEACEFUL

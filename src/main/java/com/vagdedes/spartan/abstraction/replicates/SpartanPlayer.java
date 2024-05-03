@@ -251,6 +251,10 @@ public class SpartanPlayer {
                                 );
                             }
                             p.movement.customFromLocation = to;
+
+                            for (CheckExecutor executor : p.executors) {
+                                executor.scheduler();
+                            }
                         }
 
                         // Preventions

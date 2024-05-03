@@ -73,6 +73,11 @@ public class AutoRespawn extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, false)
                 && !PluginUtils.contains("respawn")

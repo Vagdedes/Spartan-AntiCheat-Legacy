@@ -80,6 +80,11 @@ public class XRay extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, false)
                 && player.getWorld().getWorldType() != WorldType.FLAT

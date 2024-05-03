@@ -83,6 +83,11 @@ public class FastPlace extends CheckExecutor {
     }
 
     @Override
+    public void scheduler() {
+
+    }
+
+    @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
                 && !player.movement.isFlying()
