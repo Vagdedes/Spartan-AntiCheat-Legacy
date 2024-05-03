@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.Building;
-import com.vagdedes.spartan.functionality.tracking.SensitiveBlockBreak;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -95,9 +94,6 @@ public class EventsHandler5 implements Listener {
             p.getExecutor(Enums.HackType.FastBreak).handle(cancelled, e);
             p.getExecutor(Enums.HackType.GhostHand).handle(cancelled, e);
         }
-
-        // Protections
-        SensitiveBlockBreak.run(p, b);
 
         // Detections
         DetectionNotifications.runMining(p, b, cancelled);

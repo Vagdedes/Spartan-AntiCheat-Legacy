@@ -12,9 +12,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
     void run() {
         if (hackType.getCheck().getBooleanOption("check_step", true)) {
             runAsync(() -> {
-                player.debug(false, false, true,
-                        1
-                );
+                // todo
             });
         }
     }

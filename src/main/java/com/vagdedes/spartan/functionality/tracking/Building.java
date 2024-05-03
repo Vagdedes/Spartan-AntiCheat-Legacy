@@ -31,8 +31,6 @@ public class Building {
                     || blockFace == BlockFace.SELF)
                     && (p.getViolations(Enums.HackType.FastPlace).hasLevel()
                     || p.getBuffer().start("building=protection=attempts", 20, Check.detectionMeasurementTicks) >= 0.25)) {
-                handlers.disable(Trackers.TrackerType.TowerBuilding, 10);
-
                 if (Config.settings.getBoolean("Protections.disallowed_building")) {
                     teleport(p, p.movement.getLocation());
                     p.groundTeleport(false);
@@ -46,29 +44,13 @@ public class Building {
         if (Math.abs(loc.getBlockX() - bloc.getBlockX()) <= 1
                 && bloc.getBlockY() <= loc.getBlockY()
                 && Math.abs(loc.getBlockZ() - bloc.getBlockZ()) <= 1) {
-            boolean offGround = !p.isOnGround() || !p.isOnGroundCustom() || p.movement.getTicksOnAir() > 0;
+            boolean offGround = !p.isOnGround() || p.movement.getTicksOnAir() > 0;
 
             if (cancelled) {
-                if (Config.settings.getBoolean("Protections.disallowed_building")) {
-                    handlers.add(
-                            offGround ? Trackers.TrackerType.TowerBuilding : Trackers.TrackerType.BridgeBuilding,
-                            10
-                    );
-
-                    if (offGround) {
-                        teleport(p, loc);
-                    }
-                } else {
-                    handlers.add(
-                            offGround ? Trackers.TrackerType.TowerBuilding : Trackers.TrackerType.BridgeBuilding,
-                            10
-                    );
+                if (offGround
+                        && Config.settings.getBoolean("Protections.disallowed_building")) {
+                    teleport(p, loc);
                 }
-            } else {
-                handlers.add(
-                        offGround ? Trackers.TrackerType.TowerBuilding : Trackers.TrackerType.BridgeBuilding,
-                        10
-                );
             }
         }
     }

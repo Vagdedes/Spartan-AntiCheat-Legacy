@@ -19,12 +19,11 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 boolean liquid = player.movement.getLastLiquid() == 0L;
                 double prediction = PlayerUtils.calculateNextFallMotion(
                         oldVertical,
-                        GroundUtils.maxHeightLengthRatio,
                         liquid && player.movement.getLastLiquidMaterial() == Material.WATER ? PlayerUtils.waterDrag :
                                 liquid && player.movement.getLastLiquidMaterial() == Material.LAVA ? PlayerUtils.lavaDrag :
                                         PlayerUtils.airDrag,
                         liquid ? PlayerUtils.liquidAcceleration : PlayerUtils.airAcceleration,
-                        PlayerUtils.terminalVelocity
+                        PlayerUtils.terminalVelocity - GroundUtils.maxHeightLengthRatio
                 );
 
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
@@ -45,7 +44,9 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                         + ", difference: " + difference
                                         + ", prediction: " + prediction
                                         + ", vertical: " + vertical
-                                        + ", old-vertical: " + oldVertical,
+                                        + ", old-vertical: " + oldVertical
+                                        + ", box: " + box
+                                        + ", old-box: " + oldBox,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

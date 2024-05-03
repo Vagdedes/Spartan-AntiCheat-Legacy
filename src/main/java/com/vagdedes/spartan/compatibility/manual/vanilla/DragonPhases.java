@@ -32,7 +32,7 @@ public class DragonPhases implements Listener {
                         if (p != null) {
                             p.getTrackers().add(
                                     Trackers.TrackerType.AbstractVelocity,
-                                    !p.isOnGround() || !p.isOnGroundCustom() ? 120 : 60
+                                    !p.isOnGround() ? 120 : 60
                             );
                         }
                     }

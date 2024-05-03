@@ -14,12 +14,14 @@ public class IrregularMovements extends CheckExecutor {
     public static final HackType check = HackType.IrregularMovements;
     private final IrregularMovementsStep step;
     private final IrregularMovementsGravity gravity;
+    private final IrregularMovementsJump jump;
 
     public IrregularMovements(SpartanPlayer player) {
-        super(check, player, 2);
+        super(check, player, 3);
         this.addDetections(new DetectionExecutor[]{
                 step = new IrregularMovementsStep(this),
-                gravity = new IrregularMovementsGravity(this)
+                gravity = new IrregularMovementsGravity(this),
+                jump = new IrregularMovementsJump(this)
         });
     }
 
@@ -46,6 +48,7 @@ public class IrregularMovements extends CheckExecutor {
             } else {
                 gravity.run(vertical, oldVertical, box, oldBox);
             }
+            jump.run();
         }
         return false;
     }

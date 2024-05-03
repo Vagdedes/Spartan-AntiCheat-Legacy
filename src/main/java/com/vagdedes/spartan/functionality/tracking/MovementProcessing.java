@@ -34,46 +34,21 @@ public class MovementProcessing {
 
     public static void run(Player n, SpartanPlayer player,
                            SpartanLocation to,
-                           SpartanLocation from,
                            double distance, double horizontal,
                            double vertical, double box,
                            float fall) {
         if (player.refreshOnGroundCustom(to)) {
-            player.movement.setAirTicks(0);
-            player.movement.setFallingTicks(0);
+            player.movement.increaseAirTicks(-1);
         } else {
-            Double old_NmsVerticalDistance = player.movement.getPreviousNmsVerticalDistance();
-
-            if (old_NmsVerticalDistance != null
-                    && vertical < old_NmsVerticalDistance) {
-                player.movement.setFallingTicks(player.movement.getFallingTicks() + 1);
-            } else {
-                player.movement.setFallingTicks(0);
-            }
-            player.movement.setAirTicks(player.movement.getTicksOnAir() + 1);
+            player.movement.increaseAirTicks(1);
         }
 
         // Separator
 
-        if (player.isOnGround()) {
-            player.movement.setVanillaAirTicks(0);
-            player.movement.setVanillaFallingTicks(0);
+        if (player.isOnGroundDefault()) {
+            player.movement.increaseVanillaAirTicks(-1);
         } else {
-            Double old_NmsVerticalDistance = player.movement.getPreviousNmsVerticalDistance();
-
-            if (old_NmsVerticalDistance != null
-                    && vertical < old_NmsVerticalDistance) {
-                player.movement.setVanillaFallingTicks(player.movement.getFallingTicks() + 1);
-            } else {
-                player.movement.setVanillaFallingTicks(0);
-            }
-            player.movement.setVanillaAirTicks(player.movement.getTicksOnAir() + 1);
-        }
-
-        // Separator
-
-        if (to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
-            player.movement.setLastHeadMovement();
+            player.movement.increaseVanillaAirTicks(1);
         }
 
         // Separator
@@ -141,8 +116,8 @@ public class MovementProcessing {
 
     private static boolean calculateGroundCollision(SpartanPlayer player,
                                                     double vertical, double box) {
-        if (player.isOnGroundCustom()
-                && player.isOnGround()
+        if (player.isOnGround()
+                && player.isOnGroundDefault()
                 && player.movement.getTicksOnAir() == 0
                 && player.getVehicle() == null
                 && vertical == 0.0

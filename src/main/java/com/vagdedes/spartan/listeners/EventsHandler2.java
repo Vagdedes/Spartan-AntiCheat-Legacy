@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.listeners;
 
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -31,12 +30,9 @@ public class EventsHandler2 implements Listener {
         if (p == null) {
             return;
         }
-        SpartanLocation to = new SpartanLocation(p, nto);
 
         // Object
-        p.movement.setAirTicks(0);
-        p.movement.setVanillaAirTicks(0);
-        p.movement.setFallingTicks(0);
+        p.movement.increaseAirTicks(-1);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

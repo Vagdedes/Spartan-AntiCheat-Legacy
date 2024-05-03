@@ -27,7 +27,6 @@ public class CombatUtils {
     public static final double
             playerSneakingHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) ? 1.5 : 1.65,
             maxHitDistance = 6.0,
-            maxLegitimateHitDistance = 3.5,
             fightTicksRatio = defaultFightTicks / ((double) maximumNoDamageTicks); // 11 is the recorded fight ticks when the maximum-no-damage-ticks is at its default 20
     public static final double[] playerWidthAndHeight = new double[]{0.6, 1.8};
 
@@ -245,10 +244,6 @@ public class CombatUtils {
             }
         }
         return false;
-    }
-
-    public static boolean areFacingEachOther(SpartanPlayer p, LivingEntity entity) {
-        return p.movement.getLocation().getDirection().distance(entity.getLocation().getDirection()) >= 1.5;
     }
 
     public static boolean newPvPMechanicsEnabled() {

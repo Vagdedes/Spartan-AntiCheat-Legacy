@@ -66,7 +66,7 @@ public class PlayerUtils {
     private static final Map<Double, Integer>
             jumpTicks = new LinkedHashMap<>(),
             fallTicks = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<Double, Collection<Double>> fallMotions = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<Integer, Collection<Double>> fallMotions = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<PotionEffectType, Integer> handledPotionEffects = new LinkedHashMap<>();
 
     static {
@@ -284,23 +284,26 @@ public class PlayerUtils {
         return getFallTick(d) != -1;
     }
 
-    public static double calculateNextFallMotion(double motion, double decimalPlaces,
+    public static double calculateNextFallMotion(double motion,
                                                  double drag, double acceleration,
                                                  double terminalVelocity) {
-        double terminal = terminalVelocity - decimalPlaces;
-
-        if (motion > -terminal) {
+        if (motion > terminalVelocity) {
             return (motion * drag) - acceleration;
         } else {
             return Double.MIN_VALUE;
         }
     }
 
-    public static Collection<Double> calculateFallMotions(double d, double decimalPlaces) {
-        double terminal = terminalVelocity - decimalPlaces;
-
-        if (d > -terminal) {
-            double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
+    public static Collection<Double> calculateFallMotions(double motion,
+                                                          double drag, double acceleration,
+                                                          double terminalVelocity) {
+        if (motion > terminalVelocity) {
+            int key = Objects.hash(
+                    AlgebraUtils.cut(motion, GroundUtils.maxHeightLength),
+                    drag,
+                    acceleration,
+                    terminalVelocity
+            );
             Collection<Double> data;
 
             synchronized (fallMotions) {
@@ -311,9 +314,9 @@ public class PlayerUtils {
             } else {
                 data = new ArrayList<>();
 
-                while (d > -terminal) {
-                    d = (d * airDrag) - airAcceleration;
-                    data.add(d);
+                while (motion > terminalVelocity) {
+                    motion = (motion * drag) - acceleration;
+                    data.add(motion);
                 }
                 synchronized (fallMotions) {
                     fallMotions.put(key, data);
@@ -511,7 +514,7 @@ public class PlayerUtils {
 
     public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double x, double y, double z) {
         return x == 0.0 && y == 0.0 && z == 0.0 && loc.player != null
-                ? loc.player.isOnGroundCustom()
+                ? loc.player.isOnGround()
                 : GroundUtils.isOnGround(p, loc.clone().add(x, y, z), y, true, true);
     }
 

@@ -1671,18 +1671,6 @@ public class BlockUtils {
         return loc.getBlock().isLiquidOrWaterLogged();
     }
 
-    public static boolean isGroundFree(SpartanPlayer p, SpartanLocation loc, double x, double y, double z) {
-        if (p.isOnGroundCustom()) {
-            return false;
-        }
-        for (SpartanLocation locs : loc.getSurroundingLocations(x, y, z)) {
-            if (GroundUtils.isOnGround(p, locs, 0.0, true, true)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static boolean hasNonSolidSide(SpartanLocation loc, double x, double y, double z, boolean center) {
         if (center && !isSolid(loc.clone().add(0, y, 0))) {
             return true;
@@ -1717,7 +1705,7 @@ public class BlockUtils {
 
     public static boolean isSlime(SpartanPlayer p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            if (p.isOnGroundCustom()) {
+            if (p.isOnGround()) {
                 return loc.getBlock().material == Material.SLIME_BLOCK;
             } else {
                 SpartanLocation loopLocation = loc.clone();
@@ -1748,7 +1736,7 @@ public class BlockUtils {
 
     public static boolean isBed(SpartanPlayer p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12)) {
-            if (p.isOnGroundCustom()) {
+            if (p.isOnGround()) {
                 return areBeds(loc.getBlock().material);
             } else {
                 SpartanLocation loopLocation = loc.clone();

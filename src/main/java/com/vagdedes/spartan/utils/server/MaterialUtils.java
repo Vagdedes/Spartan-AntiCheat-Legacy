@@ -281,7 +281,7 @@ public class MaterialUtils {
                     multiplier /= 5.0;
                 }
             }
-            if (!player.isOnGround()) {
+            if (!player.isOnGroundDefault()) {
                 multiplier /= 5.0;
             }
 

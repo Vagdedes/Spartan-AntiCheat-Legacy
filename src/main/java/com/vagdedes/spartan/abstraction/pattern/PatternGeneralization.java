@@ -154,7 +154,7 @@ public abstract class PatternGeneralization {
         }
     }
 
-    final double contributionAverage() { // todo use for detections
+    final double contributionAverage() {
         synchronized (this.contribution) {
             return this.contribution.getTotal() / (double) this.contribution.getParts();
         }

@@ -84,7 +84,7 @@ public class SpartanPlayer {
     private double eyeHeight, health;
     private GameMode gameMode;
     public final boolean bedrockPlayer;
-    public final long creationTime, lastPlayed;
+    public final long creationTime;
     public final String name;
     public final UUID uuid;
     public final String ipAddress;
@@ -360,7 +360,6 @@ public class SpartanPlayer {
         );
         this.ping = Latency.ping(p);
         this.frozen = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && p.isFrozen();
-        this.lastPlayed = p.getLastPlayed();
         this.playerProfile = ResearchEngine.getPlayerProfile(this);
         this.clicks = new Clicks();
         this.vehicle = p.getVehicle();
@@ -797,11 +796,11 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean isOnGroundCustom() {
+    public boolean isOnGround() {
         return onGroundCustom;
     }
 
-    public boolean isOnGround() {
+    public boolean isOnGroundDefault() {
         Entity vehicle = getVehicle();
 
         if (vehicle != null) {
@@ -837,10 +836,6 @@ public class SpartanPlayer {
         decimals.set(key, blocksOffGround);
         cooldowns.add(key, 4);
         return blocksOffGround;
-    }
-
-    public boolean isGroundSpoofing() {
-        return isOnGroundCustom() != isOnGround();
     }
 
     public boolean refreshOnGroundCustom(SpartanLocation movementTo) {
