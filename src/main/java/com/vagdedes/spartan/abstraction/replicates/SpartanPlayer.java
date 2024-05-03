@@ -823,7 +823,7 @@ public class SpartanPlayer {
         int blocksOffGround = 0;
 
         for (double i = 0.0; i <= ploc.getY(); i++) {
-            if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, true, true)) {
+            if (!GroundUtils.isOnGround(this, ploc.clone().add(0, -i, 0), -i, false, true)) {
                 blocksOffGround++;
 
                 if (blocksOffGround == limit) {
@@ -838,9 +838,8 @@ public class SpartanPlayer {
         return blocksOffGround;
     }
 
-    public boolean refreshOnGroundCustom(SpartanLocation movementTo) {
-        return this.onGroundCustom = GroundUtils.isOnGround(this, movementTo, 0.0, true, true)
-                || GroundUtils.isOnGround(this, this.movement.getLocation(), 0.0, true, true);
+    public boolean refreshOnGround(SpartanLocation movementTo) {
+        return this.onGroundCustom = GroundUtils.isOnGround(this, movementTo, 0.0, false, true);
     }
 
     // Separator

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.GameMode;
@@ -314,14 +315,23 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public double getExtraMovementFromJumpEffect() {
-        return (PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1) * 0.1;
+    private double getJumpPrecision() {
+        return this.parent.bedrockPlayer ? PlayerUtils.highPrecision : GroundUtils.maxHeightLengthRatio;
     }
 
     public boolean isJumping(double d) {
         return PlayerUtils.isJumping(
-                d - this.getExtraMovementFromJumpEffect(),
-                PlayerUtils.getJumpPrecision(this.parent)
+                d,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP),
+                this.getJumpPrecision()
+        );
+    }
+
+    public boolean justJumped(double d) {
+        return PlayerUtils.justJumped(
+                d,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP),
+                this.getJumpPrecision()
         );
     }
 

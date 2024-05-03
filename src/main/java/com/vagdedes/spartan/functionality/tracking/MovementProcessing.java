@@ -37,7 +37,7 @@ public class MovementProcessing {
                            double distance, double horizontal,
                            double vertical, double box,
                            float fall) {
-        if (player.refreshOnGroundCustom(to)) {
+        if (player.refreshOnGround(to)) {
             player.movement.increaseAirTicks(-1);
         } else {
             player.movement.increaseAirTicks(1);
@@ -80,7 +80,7 @@ public class MovementProcessing {
         // Separator
 
         if (!calculateLiquid(player, to)) {
-            if (Math.abs(PlayerUtils.getJumpMotion(0) - vertical) < PlayerUtils.getJumpPrecision(player)) { // Last Jump
+            if (player.movement.justJumped(vertical)) { // Last Jump
                 player.movement.setLastJump();
             } else if (PlayerUtils.isFalling(vertical)) { // Last Fall
                 player.movement.setLastFall();

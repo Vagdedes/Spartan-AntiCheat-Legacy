@@ -48,7 +48,7 @@ public class IrregularMovements extends CheckExecutor {
             } else {
                 gravity.run(vertical, oldVertical, box, oldBox);
             }
-            jump.run();
+            jump.run(vertical, box);
         }
         return false;
     }

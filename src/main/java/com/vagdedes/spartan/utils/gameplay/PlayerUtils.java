@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.utils.gameplay;
 
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
@@ -24,6 +22,11 @@ import static org.bukkit.potion.PotionEffectType.*;
 
 public class PlayerUtils {
 
+    public static final boolean
+            slowFall = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
+            dolphinsGrace = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
+            soulSpeed = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16),
+            levitation = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
     private static final Material
             gold_axe = MaterialUtils.get("gold_axe"),
             wood_axe = MaterialUtils.get("wood_axe"),
@@ -62,9 +65,8 @@ public class PlayerUtils {
             height,
             fallDamageBlocks = 4;
 
-    private static final Map<Integer, Double> jumpsValues = new LinkedHashMap<>();
+    private static final Map<Byte, List<Double>> jumpsValues = new LinkedHashMap<>();
     private static final Map<Double, Integer>
-            jumpTicks = new LinkedHashMap<>(),
             fallTicks = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<Integer, Collection<Double>> fallMotions = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<PotionEffectType, Integer> handledPotionEffects = new LinkedHashMap<>();
@@ -82,16 +84,18 @@ public class PlayerUtils {
         }
 
         // Separator
-        int counter = 0;
-        double jump = jumpAcceleration;
 
-        while (jump > 0.0) {
-            jumpsValues.put(counter, jump);
-            jumpTicks.put(jump, counter);
-            jump = (jump * airDrag) - airAcceleration;
-            counter++;
+        for (int jumpEffect = 0; jumpEffect < 255; jumpEffect++) {
+            List<Double> jumps = new ArrayList<>();
+            double jump = jumpAcceleration + (jumpEffect * 0.1);
+
+            while (jump > 0.0) {
+                jumps.add(jump);
+                jump = (jump * airDrag) - airAcceleration;
+            }
+            jumpsValues.put((byte) jumpEffect, jumps);
         }
-        Iterator<Double> iterator = jumpsValues.values().iterator();
+        Iterator<Double> iterator = jumpsValues.get((byte) 0).iterator();
         double maxJumpingMotionDifferenceLocal = Double.MIN_VALUE,
                 previousJumpingMotion = iterator.next();
 
@@ -135,85 +139,13 @@ public class PlayerUtils {
         return b != null ? b.getEnchantmentLevel(Enchantment.DEPTH_STRIDER) : 0;
     }
 
-    // Speed
-
-    public static boolean hasSoulSpeedEnchantment(SpartanPlayer p, SpartanLocation location) {
-        if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
-            return false;
-        }
-        String key = "player-data=soul-speed-enchantment";
-        Cooldowns cooldowns = p.getCooldowns();
-        boolean b = false;
-
-        if (!cooldowns.canDo(key)) {
-            if (cooldowns.get(key) > 5) {
-                return true;
-            } else {
-                b = true;
-            }
-        }
-        if (location != null) {
-            ItemStack boots = p.getInventory().getBoots();
-
-            if (boots != null && boots.containsEnchantment(Enchantment.SOUL_SPEED)) {
-                SpartanLocation locationM1;
-
-                if (location.isBlock(Material.SOUL_SAND, BlockUtils.hitbox)
-                        || location.isBlock(Material.SOUL_SOIL, BlockUtils.hitbox)
-                        || (locationM1 = location.clone().add(0, -1, 0)).isBlock(Material.SOUL_SAND, BlockUtils.hitbox)
-                        || locationM1.isBlock(Material.SOUL_SOIL, BlockUtils.hitbox)) {
-                    b = true;
-                }
-            }
-
-            if (b) {
-                p.getCooldowns().add(key, 20);
-            }
-        }
-        return b;
-    }
-
-    public static boolean hasSpeedEffect(SpartanPlayer p, SpartanLocation location, boolean soulSpeed) {
-        return p.getVehicle() == null
-                && (p.hasPotionEffect(PotionEffectType.SPEED, getPotionEffectExtraTime(PotionEffectType.SPEED))
-                || soulSpeed && hasSoulSpeedEnchantment(p, location));
-    }
-
     // Jumping
 
-    public static boolean hasJumpEffect(SpartanPlayer p) {
-        return p.hasPotionEffect(JUMP, getPotionEffectExtraTime(JUMP));
-    }
-
-    public static boolean hasLowJumpEffect(SpartanPlayer p) {
-        if (p.getVehicle() != null) {
-            return false;
-        }
-        int potionLevel = getPotionLevel(p, JUMP);
-        return potionLevel > 0 && potionLevel <= 128
-                || potionLevel >= 250;
-    }
-
-    public static boolean hasHighJumpEffect(SpartanPlayer p) {
-        if (p.getVehicle() != null) {
-            return false;
-        }
-        int potionLevel = getPotionLevel(p, JUMP);
-        return potionLevel > 128
-                && potionLevel < 250;
-    }
-
-    public static double getJumpPrecision(SpartanPlayer p) {
-        return p.bedrockPlayer || hasJumpEffect(p)
-                ? highPrecision
-                : GroundUtils.maxHeightLengthRatio;
-    }
-
-    public static boolean isJumping(double d, double diff) {
+    public static boolean isJumping(double d, int jump, double diff) {
         if (d > 0.0
                 && !GroundUtils.blockHeightExists(d)
                 && !GroundUtils.collisionHeightExists(d)) {
-            for (double value : jumpsValues.values()) {
+            for (double value : jumpsValues.get((byte) jump)) {
                 if (Math.abs(value - d) < diff) {
                     return true;
                 }
@@ -222,16 +154,29 @@ public class PlayerUtils {
         return false;
     }
 
-    public static double getJumpMotion(int tick) {
-        return jumpsValues.get(tick);
+    public static boolean justJumped(double d, int jump, double diff) {
+        if (d > 0.0
+                && !GroundUtils.blockHeightExists(d)
+                && !GroundUtils.collisionHeightExists(d)) {
+            for (double value : jumpsValues.get((byte) jump)) {
+                if (Math.abs(value - d) < diff) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public static Collection<Double> getJumpMotions() {
-        return jumpsValues.values();
+    public static List<Double> getJumpMotions(int jump) {
+        return jumpsValues.get((byte) jump);
     }
 
-    public static int getJumpTicks() {
-        return jumpsValues.size();
+    public static double getJumpMotion(int jump, int tick) {
+        return jumpsValues.get((byte) jump).get(tick);
+    }
+
+    public static int getJumpTicks(int jump) {
+        return jumpsValues.get((byte) jump).size();
     }
 
     // Falling
@@ -328,49 +273,7 @@ public class PlayerUtils {
         }
     }
 
-    // Handled Effects
-
-    public static boolean isInWaterTunnel(SpartanPlayer p, SpartanLocation location) {
-        return p.movement.wasInLiquids()
-                && hasDolphinsGraceEffect(p)
-                && hasSoulSpeedEnchantment(p, location);
-    }
-
-    public static boolean hasDolphinsGraceEffect(SpartanPlayer p) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                && p.getVehicle() == null
-                && p.hasPotionEffect(
-                PotionEffectType.DOLPHINS_GRACE,
-                getPotionEffectExtraTime(PotionEffectType.DOLPHINS_GRACE)
-        );
-    }
-
-    public static boolean hasSlowFallingEffect(SpartanPlayer p) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                && p.getVehicle() == null
-                && p.hasPotionEffect(
-                PotionEffectType.SLOW_FALLING,
-                getPotionEffectExtraTime(PotionEffectType.SLOW_FALLING)
-        );
-    }
-
-    public static boolean hasLevitationEffect(SpartanPlayer p) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                && p.hasPotionEffect(
-                PotionEffectType.LEVITATION,
-                PlayerUtils.getPotionEffectExtraTime(PotionEffectType.LEVITATION)
-        );
-    }
-
     // Inventory
-
-    public static boolean isUsable(Material type) {
-        return CombatUtils.isSword(type)
-                || CombatUtils.isBow(type)
-                || type.isEdible()
-                || type == Material.FISHING_ROD
-                || type == Material.POTION;
-    }
 
     public static boolean isSpadeItem(Material m) {
         return m == diamond_spade
@@ -397,59 +300,6 @@ public class PlayerUtils {
                 || m == gold_axe
                 || m == wood_axe
                 || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.NETHERITE_AXE;
-    }
-
-    // Movement
-
-    public static double calculateLimit(SpartanPlayer entity, SpartanLocation location, double value, double divide, PotionEffectType potionEffectType) {
-        int level;
-
-        if (potionEffectType == PotionEffectType.SPEED) {
-            level = getPotionLevel(entity, potionEffectType) + 1;
-
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
-                    && !entity.movement.isGliding()
-                    && !entity.movement.isSwimming()
-                    && !entity.movement.isCrawling()) {
-                ItemStack boots = entity.getInventory().getBoots();
-                Enchantment enchantment;
-
-                if (boots != null && boots.containsEnchantment(enchantment = Enchantment.SOUL_SPEED)) {
-                    SpartanLocation locationM1;
-
-                    if (location.isBlock(Material.SOUL_SAND, BlockUtils.hitbox_max)
-                            || location.isBlock(Material.SOUL_SOIL, BlockUtils.hitbox_max)
-                            || (locationM1 = location.clone().add(0, -1, 0)).isBlock(Material.SOUL_SAND, BlockUtils.hitbox_max)
-                            || locationM1.isBlock(Material.SOUL_SOIL, BlockUtils.hitbox_max)) {
-                        entity.getCooldowns().add("move-utils=soul-speed-blocks", 20);
-                    }
-
-                    if (!entity.getCooldowns().canDo("move-utils=soul-speed-blocks")) {
-                        level += boots.getEnchantmentLevel(enchantment);
-                    }
-                }
-            }
-        } else {
-            level = getPotionLevel(entity, potionEffectType) + 1;
-        }
-
-        if (level > 0) {
-            value += level * (value / divide);
-        }
-        return value;
-    }
-
-    public static float getWalkSpeedDifference(SpartanPlayer p) {
-        String key = "player-data=walk-difference";
-        float difference = Math.max(p.getWalkSpeed() - 0.2f, !p.movement.isFlying() ? 0.0f : (p.getFlySpeed() - 0.1f));
-
-        if (difference > 0.0f) {
-            p.getCooldowns().add(key, 2 * 20);
-            p.getDecimals().set(key, difference);
-        } else if (!p.getCooldowns().canDo(key)) {
-            return (float) p.getDecimals().get(key, 1.0);
-        }
-        return Math.max(difference, 0.0f);
     }
 
     // Collisions
@@ -485,12 +335,6 @@ public class PlayerUtils {
         }
     }
 
-    public static boolean hasNearbyCollisions(SpartanPlayer p) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                && (p.getTrackers().has(Trackers.TrackerType.ExtremeCollision)
-                || getNearbyCollisions(p, p.movement.getLocation()) > 0);
-    }
-
     // Potion Effects
 
     public static int getPotionEffectExtraTime(PotionEffectType potionEffectType) {
@@ -508,14 +352,6 @@ public class PlayerUtils {
         } else {
             return -1;
         }
-    }
-
-    // Ground
-
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double x, double y, double z) {
-        return x == 0.0 && y == 0.0 && z == 0.0 && loc.player != null
-                ? loc.player.isOnGround()
-                : GroundUtils.isOnGround(p, loc.clone().add(x, y, z), y, true, true);
     }
 
 }

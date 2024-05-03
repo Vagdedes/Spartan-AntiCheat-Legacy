@@ -3,31 +3,26 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import org.bukkit.potion.PotionEffectType;
+import org.mozilla.javascript.ast.Jump;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class IrregularMovementsJump extends DetectionExecutor {
 
-    private static final Map<Short, Collection<Double>> heights = new LinkedHashMap<>();
+    private static final Map<Integer, Set<Double>> heights = new LinkedHashMap<>();
 
     static {
-        Collection<Double> motions = PlayerUtils.calculateFallMotions(
-                PlayerUtils.jumpAcceleration,
-                PlayerUtils.airDrag,
-                PlayerUtils.airAcceleration,
-                PlayerUtils.terminalVelocity
-        );
+        for (int jumpEffect = 0; jumpEffect < 255; jumpEffect++) {
+            Set<Double> collection = new HashSet<>();
+            double height = 0.0;
 
-
-        for (short i = Short.MIN_VALUE; i < Short.MAX_VALUE; i++) {
-            Collection<Double> heights = new ArrayList<>();
-
-            for (double motion : motions) {
-                System.out.println(motion);
+            for (double motion : PlayerUtils.getJumpMotions(jumpEffect)) {
+                height += motion;
+                collection.add(AlgebraUtils.removeBase(height));
             }
+            heights.put(jumpEffect, collection);
         }
     }
 
@@ -35,11 +30,12 @@ public class IrregularMovementsJump extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void run() {
+    void run(double vertical, double box) {
         if (hackType.getCheck().getBooleanOption("check_jump", true)) {
             runAsync(() -> {
-                player.debug(false, false, true,
-                        1
+                player.debug(true, false, true,
+                        2,
+                        heights.get(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP)).contains(box)
                 );
             });
         }
