@@ -37,19 +37,6 @@ public class FastClicks extends CheckExecutor {
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        if (canDo()) {
-            int limit = hackType.getCheck().getNumericalOption("clicks_per_second_limit", defaultClicksPerSecondLimit);
-            int count = player.getClicks().getCount();
-
-            if (count >= limit) {
-                cancel(
-                        "type: clicks-per-second"
-                                + ", count: " + count
-                                + ", limit: " + limit
-                );
-                return true;
-            }
-        }
         return canDo() && (this.clicksPerSecond.run() || this.clickPattern.run());
     }
 

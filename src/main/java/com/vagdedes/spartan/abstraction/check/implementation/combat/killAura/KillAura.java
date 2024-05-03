@@ -3,14 +3,12 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killAura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
-import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
@@ -20,49 +18,28 @@ import java.util.UUID;
 public class KillAura extends CheckExecutor {
 
     private final Irregular irregular;
-    private final Raytrace raytrace;
-    private final Distance distance;
-    private final Time time;
-    private final Rotations rotations;
-    private final Direction direction;
-    private final Movement movement;
-    private final Response response;
-    private final Pattern pattern;
-    private final Aim aim;
-    private final Sensitivity sensitivity;
-    private final Strafe strafe;
-    private final Analysis analysis;
+    private final EntityRaytrace entityRaytrace;
+    private final BlockRaytrace blockRaytrace;
+    private final HitTime hitTime;
+    private final HitDirection hitDirection;
+    private final ResponseTime responseTime;
+    private final MoveDirection moveDirection;
+    private final MoveLength moveLength;
+    private final FightAnalysis analysis;
 
     public KillAura(SpartanPlayer player) {
-        super(Enums.HackType.KillAura, player, 13);
+        super(Enums.HackType.KillAura, player, 9);
         this.addDetections(new DetectionExecutor[]{
-                new Irregular(this),
-                new Raytrace(this),
-                new Distance(this),
-                new Time(this),
-                new Rotations(this),
-                new Direction(this),
-                new Movement(this),
-                new Response(this),
-                new Pattern(this),
-                new Aim(this),
-                new Sensitivity(this),
-                new Strafe(this),
-                new Analysis(this)
+                irregular = new Irregular(this),
+                entityRaytrace = new EntityRaytrace(this),
+                blockRaytrace = new BlockRaytrace(this),
+                analysis = new FightAnalysis(this),
+                hitTime = new HitTime(this),
+                hitDirection = new HitDirection(this),
+                responseTime = new ResponseTime(this),
+                moveDirection = new MoveDirection(this),
+                moveLength = new MoveLength(this)
         });
-        irregular = (Irregular) detections[0];
-        raytrace = (Raytrace) detections[1];
-        distance = (Distance) detections[2];
-        time = (Time) detections[3];
-        rotations = (Rotations) detections[4];
-        direction = (Direction) detections[5];
-        movement = (Movement) detections[6];
-        response = (Response) detections[7];
-        pattern = (Pattern) detections[8];
-        aim = (Aim) detections[9];
-        sensitivity = (Sensitivity) detections[10];
-        strafe = (Strafe) detections[11];
-        analysis = (Analysis) detections[12];
     }
 
     static final double
@@ -107,27 +84,17 @@ public class KillAura extends CheckExecutor {
 
             runDetection(
                     "check_aim",
-                    () -> aim.runMove(from, pattern),
+                    () -> moveDirection.runMove(),
                     false
             );
             runDetection(
                     "check_sensitivity",
-                    () -> sensitivity.run(to, buffer),
+                    () -> moveLength.run(to, buffer),
                     false
             );
             runDetection(
                     "check_response",
-                    () -> response.runMove(buffer),
-                    false
-            );
-            runDetection(
-                    "check_strafe",
-                    () -> strafe.run(to, buffer),
-                    false
-            );
-            runDetection(
-                    "check_pattern",
-                    () -> pattern.runMove(from),
+                    () -> responseTime.runMove(),
                     false
             );
         }
@@ -156,7 +123,6 @@ public class KillAura extends CheckExecutor {
                         if (width != 0.0
                                 && height != 0.0) {
                             SpartanLocation location = player.movement.getLocation();
-                            boolean isFightParticipant = player.getProfile().playerCombat.isFighting();
 
                             runDetection(
                                     "check_irregular",
@@ -164,43 +130,28 @@ public class KillAura extends CheckExecutor {
                                     true
                             );
                             runDetection(
-                                    "check_raytrace",
-                                    () -> raytrace.run(location, entity, distance),
+                                    "check_block_raytrace",
+                                    () -> blockRaytrace.run(),
                                     true
                             );
                             runDetection(
-                                    "check_distance",
-                                    () -> this.distance.run(location, entity, distance, isFightParticipant),
+                                    "check_entity_raytrace",
+                                    () -> entityRaytrace.run(),
                                     true
                             );
                             runDetection(
                                     "check_time",
-                                    () -> time.run(entity, width, distance),
-                                    true
-                            );
-                            runDetection(
-                                    "check_rotations",
-                                    () -> rotations.run(entity, width),
+                                    () -> hitTime.run(),
                                     true
                             );
                             runDetection(
                                     "check_direction",
-                                    () -> direction.run(entity, width, height, distance),
-                                    true
-                            );
-                            runDetection(
-                                    "check_movement",
-                                    () -> movement.run(entity, distance, width),
+                                    () -> hitDirection.run(),
                                     true
                             );
                             runDetection(
                                     "check_response",
-                                    () -> response.run(entity, width, distance),
-                                    true
-                            );
-                            runDetection(
-                                    "check_pattern",
-                                    () -> pattern.run(entity, location),
+                                    () -> responseTime.run(),
                                     true
                             );
                         }
@@ -214,11 +165,6 @@ public class KillAura extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.movement.isCrawling()
-                && !player.movement.isFlying()
-                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
-                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
-                && !mcMMO.hasGeneralAbility(player)
-                && !Attributes.has(player, Attributes.GENERIC_ARMOR);
+                && CombatProcessing.canCheck(player);
     }
 }

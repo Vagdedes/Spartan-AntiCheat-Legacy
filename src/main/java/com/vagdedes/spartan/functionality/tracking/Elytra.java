@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -20,11 +21,11 @@ public class Elytra {
                         if (!event
                                 || !p.getExecutor(Enums.HackType.Exploits).handle(false, Exploits.ELYTRA_GLIDE_SPAM)) {
                             p.movement.setGliding(gliding, false);
-                            Trackers handlers = p.getTrackers();
-                            handlers.add(Trackers.TrackerType.ElytraWear, 2);
+                            Cooldowns cooldowns = p.getCooldowns();
+                            cooldowns.add("elytra-wear", 2);
 
                             if (gliding) {
-                                handlers.add(Trackers.TrackerType.ElytraUse, (int) (TPS.maximum / 2));
+                                p.getTrackers().add(Trackers.TrackerType.ElytraUse, (int) (TPS.maximum / 2));
                             }
                         }
                     } else {
@@ -40,7 +41,7 @@ public class Elytra {
             } else {
                 p.movement.setGliding(false, gliding);
 
-                if (gliding && !p.getTrackers().has(Trackers.TrackerType.ElytraWear)) {
+                if (gliding && !p.getCooldowns().canDo("elytra-wear")) {
                     p.getExecutor(Enums.HackType.Exploits).handle(false, new int[]{3, 2});
                 }
             }

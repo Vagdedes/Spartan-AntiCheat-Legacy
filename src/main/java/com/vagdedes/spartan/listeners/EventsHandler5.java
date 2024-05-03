@@ -42,11 +42,9 @@ public class EventsHandler5 implements Listener {
 
             // Detections
             p.getExecutor(Enums.HackType.FastEat).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.NoSlowdown).handle(cancelled, e);
             p.getExecutor(Enums.HackType.FastHeal).handle(cancelled, e);
 
-            if (p.getViolations(Enums.HackType.FastEat).prevent()
-                    || p.getViolations(Enums.HackType.NoSlowdown).prevent()) {
+            if (p.getViolations(Enums.HackType.FastEat).prevent()) {
                 e.setCancelled(true);
                 p.setFoodLevel(n.getFoodLevel(), false);
             } else {
@@ -96,19 +94,16 @@ public class EventsHandler5 implements Listener {
             p.getExecutor(Enums.HackType.BlockReach).handle(cancelled, e);
             p.getExecutor(Enums.HackType.FastBreak).handle(cancelled, e);
             p.getExecutor(Enums.HackType.GhostHand).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.ImpossibleActions).handle(cancelled, e);
         }
 
         // Protections
         SensitiveBlockBreak.run(p, b);
 
         // Detections
-        p.getExecutor(Enums.HackType.MorePackets).handle(false, e);
         DetectionNotifications.runMining(p, b, cancelled);
 
         if (p.getViolations(Enums.HackType.NoSwing).prevent()
                 || p.getViolations(Enums.HackType.BlockReach).prevent()
-                || p.getViolations(Enums.HackType.ImpossibleActions).prevent()
                 || p.getViolations(Enums.HackType.FastBreak).prevent()
                 || p.getViolations(Enums.HackType.GhostHand).prevent()
                 || p.getViolations(Enums.HackType.XRay).prevent()) {

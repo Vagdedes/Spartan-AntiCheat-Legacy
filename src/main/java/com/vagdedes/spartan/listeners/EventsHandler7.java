@@ -4,16 +4,13 @@ import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;
 import com.vagdedes.spartan.abstraction.check.implementation.inventory.ImpossibleInventory;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.NoSlowdown;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.Speed;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CheckDelay;
-import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -34,7 +31,6 @@ public class EventsHandler7 implements Listener {
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
             NoFall.check,
             IrregularMovements.check,
-            NoSlowdown.check,
             Speed.check,
             MorePackets.check,
             ImpossibleInventory.check,
@@ -101,11 +97,6 @@ public class EventsHandler7 implements Listener {
         // Objects
         to.retrieveDataFrom(p.movement.getLocation());
         from.retrieveDataFrom(to);
-        p.movement.processLastMoveEvent(to, from);
-
-        if (p.movement.isUnnecessaryPacket()) {
-            return;
-        }
 
         // Values
         double preXZ = AlgebraUtils.getSquare(to.getX(), from.getX()) + AlgebraUtils.getSquare(to.getZ(), from.getZ()),
@@ -116,8 +107,11 @@ public class EventsHandler7 implements Listener {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
         float fall = p.getFallDistance();
+
+        if (!p.movement.processLastMoveEvent(to, from)) {
+            return;
+        }
         MovementProcessing.run(n, p, to, from, dis, hor, ver, box, fall);
-        CombatProcessing.runMove(p, to);
 
         // Patterns
         for (Enums.HackType hackType : handledChecks) {
@@ -134,12 +128,9 @@ public class EventsHandler7 implements Listener {
             p.getExecutor(Enums.HackType.Exploits).handle(cancelled, dis);
 
             if (dis > 0.0) {
-                p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.SPRINT);
                 p.getExecutor(Enums.HackType.NoFall).run(cancelled);
-                p.getExecutor(Enums.HackType.NoSlowdown).run(cancelled);
                 p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
                 p.getExecutor(Enums.HackType.Speed).run(cancelled);
-                p.getExecutor(Enums.HackType.Speed).handle(cancelled, Speed.WATER);
                 p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
             }
         }
@@ -158,8 +149,5 @@ public class EventsHandler7 implements Listener {
 
         // Detections
         CheckDelay.cancel(p.uuid, 20);
-
-        // System
-        p.getExecutor(Enums.HackType.MorePackets).handle(false, p.movement.getLocation());
     }
 }

@@ -78,6 +78,18 @@ public class SpartanBlock {
         return liquid && !waterLogged;
     }
 
+    public boolean isLiquid(Material material) {
+        return liquid && this.material == material;
+    }
+
+    public boolean isLiquidOrWaterLogged(Material material) {
+        return liquid && this.material == material || waterLogged;
+    }
+
+    public boolean isNonWaterLoggedLiquid(Material material) {
+        return liquid && !waterLogged && this.material == material;
+    }
+
     public SpartanLocation getLocation() {
         return new SpartanLocation(this.player, this.world, this.chunk, this.x, this.y, this.z, 0.0f, 0.0f, this);
     }

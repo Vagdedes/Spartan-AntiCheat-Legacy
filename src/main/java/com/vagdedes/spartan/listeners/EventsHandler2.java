@@ -37,9 +37,6 @@ public class EventsHandler2 implements Listener {
         p.movement.setAirTicks(0);
         p.movement.setVanillaAirTicks(0);
         p.movement.setFallingTicks(0);
-
-        // System
-        p.getExecutor(Enums.HackType.MorePackets).handle(e.isCancelled(), to);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -58,7 +55,6 @@ public class EventsHandler2 implements Listener {
         }
 
         // Detections
-        p.getExecutor(Enums.HackType.NoSlowdown).handle(cancelled, e);
         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
     }
 
@@ -72,19 +68,11 @@ public class EventsHandler2 implements Listener {
             if (p == null) {
                 return;
             }
-            boolean cancelled = e.isCancelled();
-            Entity projectile = e.getProjectile();
-
             // Detections
-            if (p.getExecutor(Enums.HackType.NoSlowdown).handle(cancelled, e)) {
-                e.setCancelled(true);
-            } else {
-                // Detections
-                p.getExecutor(Enums.HackType.FastBow).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.FastBow).handle(e.isCancelled(), e);
 
-                if (p.getViolations(Enums.HackType.FastBow).prevent()) {
-                    e.setCancelled(true);
-                }
+            if (p.getViolations(Enums.HackType.FastBow).prevent()) {
+                e.setCancelled(true);
             }
         }
     }

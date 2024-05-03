@@ -11,7 +11,7 @@ public class ClickPattern extends DetectionExecutor {
 
     boolean run() {
         if (hackType.getCheck().getBooleanOption("check_click_pattern", true)) {
-
+            // todo
         }
         return false;
     }

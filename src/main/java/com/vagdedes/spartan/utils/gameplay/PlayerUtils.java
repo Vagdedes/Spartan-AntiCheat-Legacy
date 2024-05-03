@@ -40,10 +40,14 @@ public class PlayerUtils {
             climbingMax = 0.15444,
             climbingDefault = 0.11760;
     public static final double
-            drag = 0.02,
-            dragComplement = 1.0 - drag,
+            optimizationY = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? 0.005 : 0.003,
+            airDrag = AlgebraUtils.floatDouble(0.98),
+            waterDrag = AlgebraUtils.floatDouble(0.8),
+            lavaDrag = 0.5,
             terminalVelocity = AlgebraUtils.floatDouble(3.92),
-            gravityAcceleration = terminalVelocity * drag,
+            jumpAcceleration = AlgebraUtils.floatDouble(0.42),
+            airAcceleration = terminalVelocity * 0.02,
+            liquidAcceleration = 0.02,
             highPrecision = 0.0019,
             lowPrecision = highPrecision * 2.0,
             chunk = 16.0,
@@ -79,12 +83,12 @@ public class PlayerUtils {
 
         // Separator
         int counter = 0;
-        double jump = AlgebraUtils.floatDouble(0.42);
+        double jump = jumpAcceleration;
 
         while (jump > 0.0) {
             jumpsValues.put(counter, jump);
             jumpTicks.put(jump, counter);
-            jump = (jump * dragComplement) - gravityAcceleration;
+            jump = (jump * airDrag) - airAcceleration;
             counter++;
         }
         Iterator<Double> iterator = jumpsValues.values().iterator();
@@ -244,7 +248,7 @@ public class PlayerUtils {
                 ticks = -1;
 
                 while (d > 0.0) {
-                    d = (d * dragComplement) - gravityAcceleration;
+                    d = (d * airDrag) - airAcceleration;
                     ticks++;
                 }
                 synchronized (fallTicks) {
@@ -263,7 +267,7 @@ public class PlayerUtils {
                 ticks = -1;
 
                 while (d < 0.0) {
-                    d = (d + gravityAcceleration) / dragComplement;
+                    d = (d + airAcceleration) / airDrag;
                     ticks++;
                 }
                 synchronized (fallTicks) {
@@ -280,11 +284,13 @@ public class PlayerUtils {
         return getFallTick(d) != -1;
     }
 
-    public static double calculateNextFallMotion(double d, double decimalPlaces) {
+    public static double calculateNextFallMotion(double motion, double decimalPlaces,
+                                                 double drag, double acceleration,
+                                                 double terminalVelocity) {
         double terminal = terminalVelocity - decimalPlaces;
 
-        if (d > -terminal) {
-            return (d * dragComplement) - gravityAcceleration;
+        if (motion > -terminal) {
+            return (motion * drag) - acceleration;
         } else {
             return Double.MIN_VALUE;
         }
@@ -306,7 +312,7 @@ public class PlayerUtils {
                 data = new ArrayList<>();
 
                 while (d > -terminal) {
-                    d = (d * dragComplement) - gravityAcceleration;
+                    d = (d * airDrag) - airAcceleration;
                     data.add(d);
                 }
                 synchronized (fallMotions) {

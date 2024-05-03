@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killAura;
 
-// Study of hits that couldn't have been dealt
-
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 
@@ -13,13 +11,13 @@ public class Irregular extends DetectionExecutor {
 
     void run() {
         if (player.isDead()) {
-            cancel("type: irregular(death)");
+            cancel("type: irregular, scenario: death");
         } else if (player.isSleeping()) {
-            cancel("type: irregular(sleeping)");
+            cancel("type: irregular, scenario: sleeping");
         } else if (player.getOpenInventory().isUsingTheCursor()) {
-            cancel("type: irregular(cursor)");
+            cancel("type: irregular, scenario: cursor");
         } else if (player.getOpenInventory().isUsingAnotherInventory()) {
-            cancel("type: irregular(inventory)");
+            cancel("type: irregular, scenario: inventory");
         }
     }
 }

@@ -3,10 +3,10 @@ package com.vagdedes.spartan.abstraction.replicates;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.Criticals;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.FastBow;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.HitReach;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.VelocityCheck;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.criticals.Criticals;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.Velocity;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.fastClicks.FastClicks;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.killAura.KillAura;
 import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;
@@ -15,9 +15,8 @@ import com.vagdedes.spartan.abstraction.check.implementation.inventory.Inventory
 import com.vagdedes.spartan.abstraction.check.implementation.inventory.ItemDrops;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.NoSlowdown;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.Speed;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
 import com.vagdedes.spartan.abstraction.check.implementation.player.AutoRespawn;
 import com.vagdedes.spartan.abstraction.check.implementation.player.FastEat;
 import com.vagdedes.spartan.abstraction.check.implementation.player.FastHeal;
@@ -423,7 +422,7 @@ public class SpartanPlayer {
                     this.executors[id] = new HitReach(this);
                     break;
                 case Velocity:
-                    this.executors[id] = new VelocityCheck(this);
+                    this.executors[id] = new Velocity(this);
                     break;
                 case Speed:
                     this.executors[id] = new Speed(this);
@@ -460,9 +459,6 @@ public class SpartanPlayer {
                     break;
                 case FastPlace:
                     this.executors[id] = new FastPlace(this);
-                    break;
-                case NoSlowdown:
-                    this.executors[id] = new NoSlowdown(this);
                     break;
                 case AutoRespawn:
                     this.executors[id] = new AutoRespawn(this);

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.listeners;
 
-import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -75,20 +74,9 @@ public class EventsHandler3 implements Listener {
             p.setHealth(n.getHealth());
             p.addReceivedDamage(e);
 
-            if (cancelled) {
-                // Detections
-                p.getExecutor(Enums.HackType.NoFall).handle(false, e);
-            } else {
-                // Detections
-                if (dmg == EntityDamageEvent.DamageCause.FALL) {
-                    p.getExecutor(Enums.HackType.NoFall).handle(false, e);
-                }
-
-                // Handlers
+            // Handlers
+            if (!cancelled) {
                 p.getTrackers().disable(Trackers.TrackerType.AbstractVelocity, 2);
-
-                // Detections
-                ((NoFall) p.getExecutor(Enums.HackType.NoFall)).manageRatio(dmg, e.getDamage(), false);
             }
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
@@ -147,9 +135,6 @@ public class EventsHandler3 implements Listener {
             if (p == null) {
                 return;
             }
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-                p.debug(true, false, false, "interact");
-            }
             Block nb = e.getClickedBlock();
             Action action = e.getAction();
             boolean notNull = nb != null,
@@ -166,7 +151,6 @@ public class EventsHandler3 implements Listener {
                     p.getExecutor(Enums.HackType.ImpossibleActions).handle(false, e);
                 }
                 p.getExecutor(Enums.HackType.FastEat).handle(false, e);
-                p.getExecutor(Enums.HackType.NoSlowdown).handle(false, e);
                 p.getExecutor(Enums.HackType.ItemDrops).handle(false, e);
 
                 if (!customBlock) {

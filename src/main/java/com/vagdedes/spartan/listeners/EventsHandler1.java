@@ -66,9 +66,6 @@ public class EventsHandler1 implements Listener {
 
         // Features
         ChatProtection.remove(p);
-
-        // Detections
-        p.getExecutor(Enums.HackType.Criticals).handle(false, null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -80,7 +77,6 @@ public class EventsHandler1 implements Listener {
             return;
         }
         // Detections
-        p.getExecutor(Enums.HackType.ImpossibleActions).run(false);
         p.getExecutor(Enums.HackType.AutoRespawn).run(false);
         p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, ImpossibleInventory.DEATH);
 

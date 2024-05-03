@@ -27,23 +27,10 @@ public class MovementProcessing {
             v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8),
             v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
     private static final int roundedFall = AlgebraUtils.integerCeil(PlayerUtils.terminalVelocity);
-    private static final Material MAGMA_BLOCK = MaterialUtils.get("magma");
-    public static final int
-            boxLearningLength = 3,
-            motionLearningLength = 4,
-            defaultTrackersHash = HashUtils.hashTrackers(
-                    HashUtils.emptyDamages,
-                    HashUtils.emptyVelocities,
-                    null,
-                    Long.MAX_VALUE,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-            );
-    public static final double motionLearningDecimals = 1.0 / Math.pow(10, motionLearningLength);
+    private static final Material
+            MAGMA_BLOCK = MaterialUtils.get("magma"),
+            WATER = MaterialUtils.get("water"),
+            LAVA = MaterialUtils.get("lava");
 
     public static void run(Player n, SpartanPlayer player,
                            SpartanLocation to,
@@ -204,19 +191,19 @@ public class MovementProcessing {
 
     private static boolean calculateLiquid(SpartanPlayer player, SpartanLocation location) {
         if (player.movement.isSwimming()) {
-            player.movement.setLastLiquidTime();
+            player.movement.setLastLiquidTime(WATER);
             calculateBubbleWater(player, location);
             return true;
         } else {
             double hitbox = player.bedrockPlayer ? BlockUtils.hitbox_max : BlockUtils.hitbox;
 
-            if (location.getBlock().isLiquidOrWaterLogged()
-                    || PatternUtils.isLiquidPattern(new double[][]{
+            if (location.getBlock().isLiquidOrWaterLogged(WATER)
+                    || PatternUtils.isWaterPattern(new double[][]{
                     {hitbox, 0, hitbox},
                     {hitbox, 1, hitbox},
                     {hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, hitbox}
             }, location, true)) {
-                player.movement.setLastLiquidTime();
+                player.movement.setLastLiquidTime(WATER);
 
                 if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                         && Compatibility.CompatibilityType.ViaVersion.isFunctional()
@@ -225,6 +212,13 @@ public class MovementProcessing {
                 }
                 calculateBubbleWater(player, location);
                 return true;
+            } else if (location.getBlock().isLiquid(LAVA)
+                    || PatternUtils.isLavaPattern(new double[][]{
+                    {hitbox, 0, hitbox},
+                    {hitbox, 1, hitbox},
+                    {hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, hitbox}
+            }, location, true)) {
+                player.movement.setLastLiquidTime(LAVA);
             }
         }
         return false;
@@ -273,7 +267,8 @@ public class MovementProcessing {
     }
 
     public static boolean canCheck(SpartanPlayer player) {
-        if (!Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)
+        if (!player.getTrackers().has(Trackers.TrackerType.ElytraUse)
+                && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)
                 && player.canRunChecks(true)
                 && player.movement.getLastFlight() > (TPS.maximum * 2)
                 && !AbstractVelocity.hasCooldown(player)) {
@@ -296,27 +291,6 @@ public class MovementProcessing {
             return true;
         }
         return false;
-    }
-
-    public static int artificialPlayerHash(
-            boolean sneak,
-            boolean ground
-    ) {
-        return HashUtils.hashPlayer(
-                null,
-                GameMode.SURVIVAL,
-                null,
-                HashUtils.emptyEffects,
-                Long.MAX_VALUE,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                sneak,
-                ground
-        );
     }
 
 }

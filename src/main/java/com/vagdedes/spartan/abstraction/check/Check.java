@@ -133,12 +133,6 @@ public class Check {
                         "that allow a player to place blocks",
                         "in abnormally fast rates."};
                 break;
-            case NoSlowdown:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to travel normally",
-                        "while executing eating animations, or",
-                        "passing through cobweb blocks."};
-                break;
             case AutoRespawn:
                 this.description = new String[]{"This check will prevent client modules",
                         "that allow a player to respawn faster",
@@ -214,7 +208,6 @@ public class Check {
             case Speed:
             case IrregularMovements:
             case MorePackets:
-            case NoSlowdown:
             case NoFall:
                 this.type = Enums.CheckType.MOVEMENT;
                 break;

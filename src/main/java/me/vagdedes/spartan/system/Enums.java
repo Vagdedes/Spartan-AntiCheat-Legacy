@@ -8,7 +8,7 @@ public class Enums {
     // Should have used capital letters but won't change them now so to not break the dozen APIs who use these enums
     public enum HackType {
         XRay, Exploits, NoSwing, IrregularMovements, ImpossibleActions, ItemDrops, AutoRespawn, InventoryClicks,
-        NoSlowdown, Criticals, GhostHand, BlockReach, FastBow, FastClicks, FastHeal, ImpossibleInventory, HitReach, FastBreak,
+        Criticals, GhostHand, BlockReach, FastBow, FastClicks, FastHeal, ImpossibleInventory, HitReach, FastBreak,
         Speed, FastPlace, MorePackets, NoFall, FastEat, Velocity, KillAura;
 
         private Check check;

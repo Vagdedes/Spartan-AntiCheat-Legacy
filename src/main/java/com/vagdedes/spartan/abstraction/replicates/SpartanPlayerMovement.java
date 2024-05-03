@@ -7,8 +7,10 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -35,6 +37,8 @@ public class SpartanPlayerMovement {
             swimmingTime,
             flyingTick,
             lastLiquidTicks;
+    private Material
+            lastLiquidMaterial;
     private int
             airTicks,
             fallingTicks,
@@ -65,6 +69,7 @@ public class SpartanPlayerMovement {
         this.swimmingTime = 0L;
         this.flyingTick = 0L;
         this.lastLiquidTicks = 0L;
+        this.lastLiquidMaterial = Material.AIR;
 
         this.airTicks = 0;
         this.vanillaAirTicks = 0;
@@ -72,7 +77,7 @@ public class SpartanPlayerMovement {
         this.vanillaFallingTicks = 0;
         this.extraPackets = 0;
 
-        this.lastHeadMovement = System.currentTimeMillis();
+        this.lastHeadMovement = 0L;
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             this.gliding = p.isGliding();
@@ -233,7 +238,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public synchronized void setLastHeadMovement() {
-        this.lastHeadMovement = System.currentTimeMillis();
+        this.lastHeadMovement = TPS.getTick(this.parent);
     }
 
     // Separator
@@ -242,12 +247,17 @@ public class SpartanPlayerMovement {
         return TPS.getTick(this.parent) - this.lastLiquidTicks;
     }
 
+    public Material getLastLiquidMaterial() {
+        return lastLiquidMaterial;
+    }
+
     public boolean wasInLiquids() {
         return this.getLastLiquid() <= 10L;
     }
 
-    public synchronized void setLastLiquidTime() {
+    public synchronized void setLastLiquidTime(Material material) {
         lastLiquidTicks = TPS.getTick(this.parent);
+        lastLiquidMaterial = material;
     }
 
     public synchronized void removeLastLiquidTime() {
@@ -257,21 +267,21 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isSwimming() {
-        return swimming || swimmingTime >= System.currentTimeMillis();
+        return swimming || swimmingTime >= TPS.getTick(this.parent);
     }
 
     public synchronized void setSwimming(boolean swimming, int ticks) {
         this.swimming = swimming;
 
         if (ticks != -1L) {
-            this.swimmingTime = (ticks > 0 ? System.currentTimeMillis() + (ticks * 50L) : 0L);
+            this.swimmingTime = (ticks > 0 ? TPS.getTick(this.parent) + ticks : 0L);
         }
     }
 
     // Separator
 
     public boolean isMoving(boolean head) {
-        if (!head || (System.currentTimeMillis() - this.lastHeadMovement) <= 2_500L) {
+        if (!head || (TPS.getTick(this.parent) - this.lastHeadMovement) <= 50L) {
             Double nmsDistance = this.getNmsDistance();
             return nmsDistance != null && nmsDistance >= 0.1
                     || this.getCustomDistance() >= 0.1
@@ -289,7 +299,7 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isWalkJumping() {
-        return !sprinting && this.getLastJump() <= (TPS.tickTime * 2L);
+        return !sprinting && this.getLastJump() <= 2L;
     }
 
     // Separator
@@ -309,7 +319,7 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isSprintJumping() {
-        return sprinting && this.getLastJump() <= (TPS.tickTime * 2L);
+        return sprinting && this.getLastJump() <= 2L;
     }
 
     public synchronized void setSprinting(boolean sprinting) {
@@ -331,11 +341,11 @@ public class SpartanPlayerMovement {
     }
 
     public long getLastJump() {
-        return System.currentTimeMillis() - this.lastJump;
+        return TPS.getTick(this.parent) - this.lastJump;
     }
 
     public synchronized void setLastJump() {
-        this.lastJump = System.currentTimeMillis();
+        this.lastJump = TPS.getTick(this.parent);
         this.parent.trackers.removeMany(Trackers.TrackerFamily.Velocity);
     }
 
@@ -373,11 +383,11 @@ public class SpartanPlayerMovement {
     // Separator
 
     public long getLastFall() {
-        return System.currentTimeMillis() - this.lastFall;
+        return TPS.getTick(this.parent) - this.lastFall;
     }
 
     public synchronized void setLastFall() {
-        this.lastFall = System.currentTimeMillis();
+        this.lastFall = TPS.getTick(this.parent);
     }
 
     // Separator
@@ -416,11 +426,9 @@ public class SpartanPlayerMovement {
     // Separator
 
     public int getTicksOnAir() {
-        return airTicks;
-    }
-
-    public int getVanillaTicksOnAir() {
-        return vanillaAirTicks;
+        return AlgebraUtils.integerRound(
+                Math.sqrt(((this.airTicks * this.airTicks) + (this.vanillaAirTicks * this.vanillaAirTicks)) / 2.0)
+        );
     }
 
     public synchronized void setAirTicks(int number) {
@@ -532,11 +540,6 @@ public class SpartanPlayerMovement {
         }
     }
 
-    public void processLastMoveEvent(SpartanLocation to, SpartanLocation from) {
-        this.nmsTo = to;
-        this.nmsFrom = from;
-    }
-
     // Separator
 
     public boolean stepsOnBoats() {
@@ -558,23 +561,22 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public boolean isUnnecessaryPacket() {
+    public boolean processLastMoveEvent(SpartanLocation to, SpartanLocation from) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            double x = clampMin(this.nmsTo.getX(), -3.0E7D, 3.0E7D),
-                    y = clampMin(this.nmsTo.getY(), -2.0E7D, 2.0E7D),
-                    z = clampMin(this.nmsTo.getZ(), -3.0E7D, 3.0E7D);
+            double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
+                    y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
+                    z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
             Vector vector = new Vector(x, y, z);
             double d = this.clampVector.distanceSquared(vector);
             this.clampVector = vector;
-            this.parent.debug(true, false, false,
-                    d,
-                    this.clampVector.distance(vector),
-                    positionChanged(),
-                    directionChanged()
-            );
-            return d < 4e-8;
+
+            if (d < 4e-8) {
+                return false;
+            }
         }
-        return false;
+        this.nmsTo = to;
+        this.nmsFrom = from;
+        return true;
     }
 
     private double clampMin(double d, double d2, double d3) {

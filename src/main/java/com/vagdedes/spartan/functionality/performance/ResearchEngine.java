@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.criticals.Criticals;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.criticals.CriticalsUtils;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
@@ -537,7 +536,6 @@ public class ResearchEngine {
             // Complete Storage
             AntiCheatLogs.refresh();
             Config.sql.refreshDatabase();
-            Criticals.clear();
 
             if (enabledPlugin) {
                 CloudBase.refresh(true);
