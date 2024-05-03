@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.criticals.CriticalsUtils;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
+import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -354,6 +354,7 @@ public class ResearchEngine {
         } else {
             profile = getPlayerProfile(playerName);
         }
+        Pattern.deleteFromFile(profile);
 
         if (isStorageMode()) {
             // Clear Files/Database
@@ -540,9 +541,11 @@ public class ResearchEngine {
             if (enabledPlugin) {
                 CloudBase.refresh(true);
                 buildCache();
+                Pattern.reload();
                 CloudBase.refresh(false);
             } else {
                 CloudBase.clear(true);
+                Pattern.clear();
                 ViolationAnalysis.clear();
             }
         };
@@ -583,19 +586,7 @@ public class ResearchEngine {
                             int greatestSplitPosition = 10; // Attention
                             String[] split = data.split(" ", greatestSplitPosition + 1);
 
-                            if (data.contains(CriticalsUtils.criticalHitMessage)) {
-                                if (split.length >= greatestSplitPosition) {
-                                    Material material = Material.getMaterial(split[6].replace("-", "_").toUpperCase());
-
-                                    if (material != null) {
-                                        Double decimal = AlgebraUtils.returnValidDecimal(split[8]);
-
-                                        if (decimal != null) {
-                                            CriticalsUtils.cache(split[0], material, decimal);
-                                        }
-                                    }
-                                }
-                            } else if (data.contains(PunishmentHistory.warningMessage)) {
+                            if (data.contains(PunishmentHistory.warningMessage)) {
                                 getPlayerProfile(split[0]).punishmentHistory.increaseWarnings(null, null);
                             } else if (data.contains(PunishmentHistory.kickMessage)) {
                                 getPlayerProfile(split[0]).punishmentHistory.increaseKicks(null, null);

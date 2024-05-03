@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killAura;
 
-// Study of amount of entities hit in a given time
-
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 
