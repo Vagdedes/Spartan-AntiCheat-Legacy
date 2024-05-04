@@ -5,27 +5,36 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class IrregularMovementsStep extends DetectionExecutor {
 
-    private static final Map<Integer, Boolean> combination = new LinkedHashMap<>();
+    private static final Map<Integer, Boolean> stepCombination = new LinkedHashMap<>();
+    private static final Set<Double> firstFallingBox = new HashSet<>();
 
     static {
         for (double before : GroundUtils.getHeights()) {
+            firstFallingBox.add(AlgebraUtils.cut(
+                    AlgebraUtils.removeBase(before - PlayerUtils.airAcceleration),
+                    GroundUtils.maxHeightLength
+            ));
+
             for (double after : GroundUtils.getHeights()) {
                 int hash = hash(before, after);
 
                 if (after == before) {
-                    combination.put(hash, true);
+                    stepCombination.put(hash, true);
                 } else if (after > before) {
-                    combination.put(hash, after - before <= GroundUtils.maxPlayerStep);
+                    stepCombination.put(hash, after - before <= GroundUtils.maxPlayerStep);
                 } else {
-                    combination.put(hash, before - after <= GroundUtils.minPossibleStep);
+                    stepCombination.put(hash, before - after <= GroundUtils.minPossibleStep);
                 }
             }
         }
@@ -48,25 +57,23 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     Entity vehicle = player.getVehicle();
 
                     if (vehicle == null) {
-                        if (combination.get(hash)) {
+                        if (stepCombination.get(hash)) {
                             if (vertical > GroundUtils.maxPlayerStep) {
                                 cancel(
                                         "type: step(high)"
-                                                + ", old-box: " + oldBox
                                                 + ", box: " + box
+                                                + ", old-box: " + oldBox
                                                 + ", vertical: " + vertical,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
                                 );
                             }
-                        } else if (vertical < 0.0
-                                || vertical != Math.abs(box - oldBox)
-                                || vertical > GroundUtils.maxPlayerStep) {
+                        } else if (vertical < 0.0 || vertical > GroundUtils.maxPlayerStep) {
                             cancel(
                                     "type: step(combination)"
-                                            + ", old-box: " + oldBox
                                             + ", box: " + box
+                                            + ", old-box: " + oldBox
                                             + ", vertical: " + vertical,
                                     player.movement.getDetectionLocation(),
                                     0,
@@ -76,8 +83,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     } else if (vertical > 1.0) {
                         cancel(
                                 "type: step(entity)"
-                                        + ", old-box: " + oldBox
                                         + ", box: " + box
+                                        + ", old-box: " + oldBox
                                         + ", vertical: " + vertical,
                                 player.movement.getDetectionLocation(),
                                 0,
@@ -94,17 +101,58 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         if (vertical > limit)
                             cancel(
                                     "type: step(abstract-up)"
-                                            + ", old-box: " + oldBox
                                             + ", box: " + box
+                                            + ", old-box: " + oldBox
                                             + ", vertical: " + vertical,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true
                             );
                     } else {
-                        player.debug(true, false, false,
-                                "down", box, oldBox, vertical, PlayerUtils.isFalling(vertical)
-                        );
+                        if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
+                            if (vertical <= -(PlayerUtils.airAcceleration + GroundUtils.maxHeightLengthRatio)) {
+                                cancel(
+                                        "type: step(high-first-fall)"
+                                                + ", box: " + box
+                                                + ", old-box: " + oldBox
+                                                + ", vertical: " + vertical,
+                                        player.movement.getDetectionLocation(),
+                                        0,
+                                        true
+                                );
+                            }
+                        } else if (knownBox) {
+                            double verticalPrediction = box + oldBox,
+                                    motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
+
+                            if (verticalPrediction > 0.0) {
+                                verticalPrediction = Math.abs(box - oldBox);
+                            }
+                            if (verticalPrediction != motionRemainder) {
+                                cancel(
+                                        "type: step(landing)"
+                                                + ", box: " + box
+                                                + ", old-box: " + oldBox
+                                                + ", vertical: " + vertical
+                                                + ", vertical-prediction: " + verticalPrediction
+                                                + ", motion-remainder: " + motionRemainder,
+                                        player.movement.getDetectionLocation(),
+                                        0,
+                                        true
+                                );
+                                player.debug(true, false, false, PlayerUtils.isFalling(vertical));
+                            }
+                        } else {
+                            cancel(
+                                    "type: step(abstract-down)"
+                                            + ", box: " + box
+                                            + ", old-box: " + oldBox
+                                            + ", vertical: " + vertical,
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
+                        }
                     }
                 }
             });

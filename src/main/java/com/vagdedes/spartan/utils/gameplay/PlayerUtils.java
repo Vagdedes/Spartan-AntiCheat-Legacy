@@ -3,6 +3,7 @@ package com.vagdedes.spartan.utils.gameplay;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
@@ -181,20 +182,42 @@ public class PlayerUtils {
                 ticks = fallTicks.get(key);
             }
             if (ticks == null) {
-                ticks = -1;
+                ticks = 0;
+                double preD = 0;
 
                 while (d < 0.0) {
+                    preD = d;
                     d = (d + airAcceleration) / airDrag;
                     ticks++;
+                }
+
+                if (ticks > 0) {
+                    if (Math.abs(preD - airAcceleration) >= GroundUtils.maxHeightLengthRatio) {
+                        boolean found = false;
+
+                        for (List<Double> jumps : jumpsValues.values()) {
+                            double last = jumps.get(jumps.size() - 1);
+
+                            if (Math.abs(last - d) < GroundUtils.maxHeightLengthRatio) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            ticks = -1;
+                        }
+                    }
+                } else {
+                    ticks = -1;
                 }
                 synchronized (fallTicks) {
                     fallTicks.put(key, ticks);
                 }
             }
-            return d < GroundUtils.maxHeightLengthRatio ? ticks : -1;
-        } else {
-            return -1;
+            return ticks;
         }
+        return -1;
     }
 
     public static boolean isFalling(double d) {
