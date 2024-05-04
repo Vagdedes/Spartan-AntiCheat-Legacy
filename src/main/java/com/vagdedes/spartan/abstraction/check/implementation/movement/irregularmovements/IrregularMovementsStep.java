@@ -4,7 +4,9 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.entity.Entity;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -84,11 +86,25 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     }
                 } else if (!player.movement.isJumping(vertical)) { // todo velocity
                     if (vertical > 0.0) {
-                        player.debug(true, false, false,
-                                "up", box, oldBox, vertical);
+                        double limit = PlayerUtils.getJumpMotion(
+                                PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+                                0
+                        );
+
+                        if (vertical > limit)
+                            cancel(
+                                    "type: step(abstract-up)"
+                                            + ", old-box: " + oldBox
+                                            + ", box: " + box
+                                            + ", vertical: " + vertical,
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
                     } else {
                         player.debug(true, false, false,
-                                "down", box, oldBox, vertical);
+                                "down", box, oldBox, vertical, PlayerUtils.isFalling(vertical)
+                        );
                     }
                 }
             });

@@ -133,9 +133,7 @@ public class PlayerUtils {
     // Jumping
 
     public static boolean isJumping(double d, int jump, double diff) {
-        if (d > 0.0
-                && !GroundUtils.blockHeightExists(d)
-                && !GroundUtils.collisionHeightExists(d)) {
+        if (d > 0.0) {
             for (double value : jumpsValues.get((byte) jump)) {
                 if (Math.abs(value - d) < diff) {
                     return true;
@@ -146,9 +144,7 @@ public class PlayerUtils {
     }
 
     public static boolean justJumped(double d, int jump, double diff) {
-        if (d > 0.0
-                && !GroundUtils.blockHeightExists(d)
-                && !GroundUtils.collisionHeightExists(d)) {
+        if (d > 0.0) {
             for (double value : jumpsValues.get((byte) jump)) {
                 if (Math.abs(value - d) < diff) {
                     return true;
@@ -177,26 +173,7 @@ public class PlayerUtils {
     // Falling
 
     public static int getFallTick(double d) {
-        if (d > 0.0) {
-            double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
-            Integer ticks;
-
-            synchronized (fallTicks) {
-                ticks = fallTicks.get(key);
-            }
-            if (ticks == null) {
-                ticks = -1;
-
-                while (d > 0.0) {
-                    d = (d * airDrag) - airAcceleration;
-                    ticks++;
-                }
-                synchronized (fallTicks) {
-                    fallTicks.put(key, ticks);
-                }
-            }
-            return ticks;
-        } else if (d < 0.0) {
+        if (d < 0.0) {
             double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
             Integer ticks;
 
@@ -214,7 +191,7 @@ public class PlayerUtils {
                     fallTicks.put(key, ticks);
                 }
             }
-            return ticks;
+            return d < GroundUtils.maxHeightLengthRatio ? ticks : -1;
         } else {
             return -1;
         }

@@ -33,6 +33,7 @@ public class EventsHandler2 implements Listener {
 
         // Object
         p.movement.increaseAirTicks(-1);
+        p.movement.increaseVanillaAirTicks(-1);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

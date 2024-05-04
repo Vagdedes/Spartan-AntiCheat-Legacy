@@ -48,19 +48,8 @@ public class MovementProcessing {
                            double distance, double horizontal,
                            double vertical, double box,
                            float fall) {
-        if (player.refreshOnGround(to)) {
-            player.movement.increaseAirTicks(-1);
-        } else {
-            player.movement.increaseAirTicks(1);
-        }
-
-        // Separator
-
-        if (player.isOnGroundDefault()) {
-            player.movement.increaseVanillaAirTicks(-1);
-        } else {
-            player.movement.increaseVanillaAirTicks(1);
-        }
+        player.movement.increaseAirTicks(player.refreshOnGround(to) ? -1 : 1);
+        player.movement.increaseVanillaAirTicks(player.isOnGroundDefault() ? -1 : 1);
 
         // Separator
 

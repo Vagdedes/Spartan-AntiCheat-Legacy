@@ -184,20 +184,9 @@ public class GroundUtils {
         boolean original = y == 0;
 
         if (original) {
-            Double vertical = p.movement.getNmsVerticalDistance(),
-                    oldVertical = p.movement.getPreviousNmsVerticalDistance();
-
-            if (vertical == null
-                    || oldVertical == null
-                    || (vertical - oldVertical) < 0.0
-                    && PlayerUtils.isFalling(vertical)
-                    && PlayerUtils.isFalling(oldVertical)) {
-                return false;
-            }
             if (p.getTrackers().has(Trackers.TrackerType.Piston)
                     || stepsOnBoats(p)
                     || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
-                p.movement.increaseAirTicks(-1);
                 return true;
             }
         }
@@ -206,7 +195,6 @@ public class GroundUtils {
         if (liquid && block.isLiquidOrWaterLogged(true)
                 || climbable && BlockUtils.canClimb(block.material)) {
             if (original) {
-                p.movement.increaseAirTicks(-1);
                 return true;
             }
             return true;
@@ -225,19 +213,16 @@ public class GroundUtils {
                         if (heights != null) {
                             if (heights.length == 1) {
                                 if (heights[0] == -1.0 || heights[0] == box) {
-                                    p.movement.increaseAirTicks(-1);
                                     return true;
                                 }
                             } else {
                                 for (double height : heights) {
                                     if (height == box) {
-                                        p.movement.increaseAirTicks(-1);
                                         return true;
                                     }
                                 }
                             }
                         } else if (box == 0.0) {
-                            p.movement.increaseAirTicks(-1);
                             return true;
                         }
                     } else {
@@ -255,27 +240,8 @@ public class GroundUtils {
         return blockHeights;
     }
 
-    public static Collection<Double> getHeights(Material m) {
-        double[] heights = correlatedBlockHeights.get(m);
-
-        if (heights != null) {
-            HashSet<Double> set = new HashSet<>(heights.length);
-
-            for (double height : heights) {
-                set.add(height);
-            }
-            return set;
-        } else {
-            return new HashSet<>(0);
-        }
-    }
-
-    public static double[] getHeightsRaw(Material m) {
-        return correlatedBlockHeights.getOrDefault(m, new double[]{0.0});
-    }
-
     public static double getMaxHeight(Material m) {
-        double[] heights = getHeightsRaw(m);
+        double[] heights = correlatedBlockHeights.getOrDefault(m, new double[]{0.0});
 
         if (heights.length == 1) {
             return heights[0];
@@ -307,7 +273,6 @@ public class GroundUtils {
         if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Boat) {
-                    p.movement.increaseAirTicks(-1);
                     return true;
                 }
             }
@@ -321,7 +286,6 @@ public class GroundUtils {
         if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Shulker) {
-                    p.movement.increaseAirTicks(-1);
                     return true;
                 }
             }
@@ -335,7 +299,6 @@ public class GroundUtils {
         if (!entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity instanceof Sniffer && ((Sniffer) entity).getState() == Sniffer.State.IDLING) {
-                    p.movement.increaseAirTicks(-1);
                     return true;
                 }
             }
