@@ -58,7 +58,9 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (vertical < 0.0 || vertical == Math.abs(box - oldBox)) {
+                        } else if (vertical < 0.0
+                                || vertical != Math.abs(box - oldBox)
+                                || vertical > GroundUtils.maxPlayerStep) {
                             cancel(
                                     "type: step(combination)"
                                             + ", old-box: " + oldBox
@@ -80,8 +82,14 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 true
                         );
                     }
-                } else {
-
+                } else if (!player.movement.isJumping(vertical)) { // todo velocity
+                    if (vertical > 0.0) {
+                        player.debug(true, false, false,
+                                "up", box, oldBox, vertical);
+                    } else {
+                        player.debug(true, false, false,
+                                "down", box, oldBox, vertical);
+                    }
                 }
             });
         }

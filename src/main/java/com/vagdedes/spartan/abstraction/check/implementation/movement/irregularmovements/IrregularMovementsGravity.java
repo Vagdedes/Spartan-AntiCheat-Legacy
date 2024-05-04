@@ -21,7 +21,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
             SpartanLocation location = player.movement.getNmsToLocation();
 
-            runAsync(() -> { // todo ladder, levitation, slow-fall, damage, slow-timer-bypass
+            runAsync(() -> { // todo ladder-drag/acceleration, levitation effect, slow-fall effect, velocity, slow-timer-bypass
                 boolean liquid = player.movement.wasInLiquids();
                 double prediction = PlayerUtils.calculateNextFallMotion(
                         oldVertical,
@@ -33,7 +33,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 );
 
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
-                    boolean collision = PatternUtils.isBlockPattern( // todo
+                    boolean collision = PatternUtils.isBlockPattern( // todo fix
                             new double[][]{
                                     {
                                             BlockUtils.boundingBox,
