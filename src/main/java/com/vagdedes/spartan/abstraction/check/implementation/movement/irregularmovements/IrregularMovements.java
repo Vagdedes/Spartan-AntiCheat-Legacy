@@ -15,6 +15,7 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsStep step;
     private final IrregularMovementsGravity gravity;
     private final IrregularMovementsJump jump;
+    private final IrregularMovementsHorizontal horizontal;
 
     public IrregularMovements(SpartanPlayer player) {
         super(check, player, 3);
@@ -44,7 +45,11 @@ public class IrregularMovements extends CheckExecutor {
         }
         if (canDo()) {
             if (GroundUtils.blockHeightExists(box) || GroundUtils.blockHeightExists(oldBox)) {
-                step.run();
+                if (vertical == 0.0) {
+                    this.horizontal.run();
+                } else {
+                    step.run();
+                }
             } else {
                 gravity.run(vertical, oldVertical, box, oldBox);
             }
