@@ -30,9 +30,9 @@ public class Latency {
 
     public static double getDelay(SpartanPlayer player) {
         double pingDelay;
+        int max = Config.settings.getInteger(Settings.maxSupportedLatencyOption);
 
-        if (Config.settings.getInteger(Settings.maxSupportedLatencyOption) <= 0
-                || player.getProfile().isSuspectedOrHacker()) {
+        if (max <= 0 || player.getProfile().isSuspectedOrHacker()) {
             pingDelay = 0.0;
         } else {
             int latency = player.getPing();
@@ -40,13 +40,7 @@ public class Latency {
             if (latency <= TPS.tickTimeInteger) {
                 pingDelay = 0.0;
             } else {
-                pingDelay = Math.min(
-                        latency,
-                        Math.min(
-                                Config.settings.getInteger("Protections.max_supported_player_latency"),
-                                1000
-                        )
-                );
+                pingDelay = Math.min(latency, max);
             }
         }
 

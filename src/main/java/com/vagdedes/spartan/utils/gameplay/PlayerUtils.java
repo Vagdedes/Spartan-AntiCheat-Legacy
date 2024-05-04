@@ -38,10 +38,6 @@ public class PlayerUtils {
             stone_spade = MaterialUtils.get("stone_spade"),
             wood_spade = MaterialUtils.get("wood_spade");
 
-    private static final double
-            climbingMin = 0.03684,
-            climbingMax = 0.15444,
-            climbingDefault = 0.11760;
     public static final double
             optimizationY = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? 0.005 : 0.003,
             airDrag = AlgebraUtils.floatDouble(0.98),
@@ -51,19 +47,14 @@ public class PlayerUtils {
             jumpAcceleration = AlgebraUtils.floatDouble(0.42),
             airAcceleration = terminalVelocity * 0.02,
             liquidAcceleration = 0.02,
-            highPrecision = 0.0019,
-            lowPrecision = highPrecision * 2.0,
             chunk = 16.0,
+            climbingDefault = 0.11760,
             climbingScaffoldingMax = climbingDefault + 0.2,
             maxJumpingMotionDifference;
 
-    public static final double[]
-            climbing = new double[]{climbingMin, 0.07531, 0.11215, climbingDefault, 0.12529, 0.15, climbingMax},
-            climbingMinMax = new double[]{climbingMin, climbingMax};
-
     public static final int
             height,
-            fallDamageBlocks = 4;
+            fallDamageAboveBlocks = 3;
 
     private static final Map<Byte, List<Double>> jumpsValues = new LinkedHashMap<>();
     private static final Map<Double, Integer>

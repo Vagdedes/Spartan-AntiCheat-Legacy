@@ -33,7 +33,11 @@ public class MovementProcessing {
             LAVA = MaterialUtils.get("lava");
     public static final int
             motionPrecision = 4,
-            heightPrecision = 3;
+            heightPrecision = 3,
+            quantumPrecision = AlgebraUtils.integerRound(
+                    Math.sqrt(((motionPrecision * motionPrecision) + (heightPrecision * heightPrecision)) / 2.0)
+            );
+    public static final double maxPrecisionHeightLengthRatio = 1.0 / Math.pow(10, heightPrecision);
 
     public static void run(Player n, SpartanPlayer player,
                            SpartanLocation to,
@@ -167,13 +171,13 @@ public class MovementProcessing {
                 || PatternUtils.isWaterPattern(new double[][]{
                 {BlockUtils.boundingBox, 0, BlockUtils.boundingBox},
                 {BlockUtils.boundingBox, 1, BlockUtils.boundingBox},
-                {BlockUtils.boundingBox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.boundingBox}
+                {BlockUtils.boundingBox, player.getEyeHeight(), BlockUtils.boundingBox}
         }, location, true)) {
-            player.movement.setLastLiquidTime(WATER);
+            player.movement.setLastLiquid(WATER);
 
             if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     && player.movement.isLowEyeHeight()) {
-                player.movement.setSwimming(false, 10);
+                player.movement.setSwimming(false, (int) (TPS.maximum / 2.0));
             }
             calculateBubbleWater(player, location);
             return true;
@@ -181,9 +185,9 @@ public class MovementProcessing {
                 || PatternUtils.isLavaPattern(new double[][]{
                 {BlockUtils.boundingBox, 0, BlockUtils.boundingBox},
                 {BlockUtils.boundingBox, 1, BlockUtils.boundingBox},
-                {BlockUtils.boundingBox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.boundingBox}
+                {BlockUtils.boundingBox, player.getEyeHeight(), BlockUtils.boundingBox}
         }, location, true)) {
-            player.movement.setLastLiquidTime(LAVA);
+            player.movement.setLastLiquid(LAVA);
             return true;
         }
         return false;

@@ -133,9 +133,20 @@ public class Trackers {
     public boolean has() {
         if (!enable.isEmpty()) {
             synchronized (enable) {
-                for (Long ticks : enable.values()) {
+                for (long ticks : enable.values()) {
                     if (has(ticks)) {
                         return true;
+                    }
+                }
+            }
+        }
+        if (!child.isEmpty()) {
+            synchronized (child) {
+                for (Map<String, Long> sub : child.values()) {
+                    for (long ticks : sub.values()) {
+                        if (has(ticks)) {
+                            return true;
+                        }
                     }
                 }
             }

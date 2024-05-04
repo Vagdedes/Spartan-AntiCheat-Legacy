@@ -44,11 +44,14 @@ public class IrregularMovements extends CheckExecutor {
             return false;
         }
         if (canDo()) {
-            if (GroundUtils.blockHeightExists(box) || GroundUtils.blockHeightExists(oldBox)) {
+            boolean knownBox = GroundUtils.blockHeightExists(box),
+                    knownOldBox = GroundUtils.blockHeightExists(oldBox);
+
+            if (knownBox || knownOldBox) {
                 if (vertical == 0.0) {
                     this.horizontal.run();
                 } else {
-                    step.run();
+                    step.run(knownBox, knownOldBox);
                 }
             } else {
                 gravity.run(vertical, oldVertical, box, oldBox);

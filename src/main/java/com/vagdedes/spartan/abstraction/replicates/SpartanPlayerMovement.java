@@ -233,7 +233,7 @@ public class SpartanPlayerMovement {
         return lastLiquidMaterial;
     }
 
-    public synchronized void setLastLiquidTime(Material material) {
+    public synchronized void setLastLiquid(Material material) {
         lastLiquidTicks = TPS.getTick(this.parent);
         lastLiquidMaterial = material;
     }
@@ -294,15 +294,11 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    private double getJumpPrecision() {
-        return this.parent.bedrockPlayer ? PlayerUtils.highPrecision : GroundUtils.maxHeightLengthRatio;
-    }
-
     public boolean isJumping(double d) {
         return PlayerUtils.isJumping(
                 d,
                 PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
-                this.getJumpPrecision()
+                GroundUtils.maxHeightLengthRatio
         );
     }
 
@@ -310,7 +306,7 @@ public class SpartanPlayerMovement {
         return PlayerUtils.justJumped(
                 d,
                 PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
-                this.getJumpPrecision()
+                GroundUtils.maxHeightLengthRatio
         );
     }
 
@@ -330,19 +326,6 @@ public class SpartanPlayerMovement {
                 p.setGliding(gliding);
             }
         }
-    }
-
-    // Separator
-
-    public boolean isClimbing(double d) {
-        if (!PlayerUtils.isFalling(d)) {
-            for (double value : PlayerUtils.climbing) {
-                if (Math.abs(value - Math.abs(d)) < PlayerUtils.lowPrecision) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     // Separator

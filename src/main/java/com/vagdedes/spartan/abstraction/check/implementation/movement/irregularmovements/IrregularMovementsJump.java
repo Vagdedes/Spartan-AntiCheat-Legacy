@@ -60,6 +60,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                             int limit = Math.max(PlayerUtils.getJumpTicks(i), (int) TPS.maximum);
 
                             if (!player.isOnGround()
+                                    && !player.movement.wasInLiquids()
                                     && player.movement.getTicksOnAir() > limit
                                     && !player.isOnGround(player.movement.getNmsFromLocation())) {
                                 cancel("type: jump(ticks)"

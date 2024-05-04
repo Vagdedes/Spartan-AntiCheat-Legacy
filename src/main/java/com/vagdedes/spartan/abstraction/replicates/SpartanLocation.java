@@ -732,7 +732,9 @@ public class SpartanLocation {
     public SpartanLocation[] getSurroundingLocations(double x, double y, double z) {
         if (player == null
                 || player.bedrockPlayer
+                || player.isUsingItem()
                 || player.getVehicle() != null
+                || player.movement.wasInLiquids()
                 || player.getTrackers().has()
                 || !player.hasActivePotionEffects()
                 || BlockUtils.isSolid(player.getItemInHand().getType())) {
@@ -746,6 +748,7 @@ public class SpartanLocation {
                 return getSurroundingLocations(
                         x, y, z,
                         player.getLastViolation().hasLevel()
+                                || TPS.get(player, false) >= TPS.excellent
                 );
             }
         }

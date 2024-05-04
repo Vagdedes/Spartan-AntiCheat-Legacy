@@ -104,7 +104,7 @@ public class InformationAnalysis {
             for (Number number : this.numbers) {
                 if (number instanceof Double) {
                     identity = (identity * SpartanBukkit.hashCodeMultiplier)
-                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), MovementProcessing.heightPrecision));
+                            + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), MovementProcessing.quantumPrecision));
                 } else {
                     identity = (identity * SpartanBukkit.hashCodeMultiplier) + number.intValue();
                 }

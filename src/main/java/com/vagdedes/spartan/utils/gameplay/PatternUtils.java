@@ -120,10 +120,8 @@ public class PatternUtils {
                         result = childMap.get(positionIdentifier);
                     }
 
-                    if (result != null) {
-                        if (result) {
-                            return true;
-                        }
+                    if (result != null && result) {
+                        return true;
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
@@ -154,6 +152,7 @@ public class PatternUtils {
                 }
             }
         } else {
+            boolean result = false;
             childMap = new LinkedHashMap<>();
 
             for (int position = 0; position < positions.length; position++) {
@@ -169,9 +168,14 @@ public class PatternUtils {
                             for (Set<Material> set : sets) {
                                 if (set.contains(material)) {
                                     childMap.put(positionIdentifiers[position], true);
-                                    return true;
+                                    result = true;
+                                    break;
                                 }
                             }
+                        }
+
+                        if (result) {
+                            break;
                         }
                     } else {
                         Material material = location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().material;
@@ -179,7 +183,8 @@ public class PatternUtils {
                         for (Set<Material> set : sets) {
                             if (set.contains(material)) {
                                 childMap.put(positionIdentifiers[position], true);
-                                return true;
+                                result = true;
+                                break;
                             }
                         }
                     }
@@ -188,6 +193,7 @@ public class PatternUtils {
             synchronized (memory) {
                 memory.put(locationIdentifier, childMap);
             }
+            return result;
         }
         return false;
     }
@@ -279,10 +285,8 @@ public class PatternUtils {
                     synchronized (memory) {
                         result = childMap.get(positionIdentifier);
                     }
-                    if (result != null) {
-                        if (result) {
-                            return true;
-                        }
+                    if (result != null && result) {
+                        return true;
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
@@ -303,6 +307,7 @@ public class PatternUtils {
                 }
             }
         } else {
+            boolean result = false;
             childMap = new LinkedHashMap<>();
 
             for (int position = 0; position < positions.length; position++) {
@@ -315,13 +320,19 @@ public class PatternUtils {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                             if (surroundingLocation.getBlock().waterLogged) {
                                 childMap.put(positionIdentifiers[position], true);
-                                return true;
+                                result = true;
+                                break;
                             }
+                        }
+
+                        if (result) {
+                            break;
                         }
                     } else {
                         if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().waterLogged) {
                             childMap.put(positionIdentifiers[position], true);
-                            return true;
+                            result = true;
+                            break;
                         }
                     }
                 }
@@ -329,6 +340,7 @@ public class PatternUtils {
             synchronized (memory) {
                 memory.put(locationIdentifier, childMap);
             }
+            return result;
         }
         return false;
     }
@@ -406,10 +418,8 @@ public class PatternUtils {
                     synchronized (memory) {
                         result = childMap.get(positionIdentifier);
                     }
-                    if (result != null) {
-                        if (result) {
-                            return true;
-                        }
+                    if (result != null && result) {
+                        return true;
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
@@ -430,6 +440,7 @@ public class PatternUtils {
                 }
             }
         } else {
+            boolean result = false;
             childMap = new LinkedHashMap<>();
 
             for (int position = 0; position < positions.length; position++) {
@@ -442,20 +453,28 @@ public class PatternUtils {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                             if (surroundingLocation.getBlock().isLiquidOrWaterLogged(false)) {
                                 childMap.put(positionIdentifiers[position], true);
-                                return true;
+                                result = true;
+                                break;
                             }
+                        }
+
+                        if (result) {
+                            break;
                         }
                     } else {
                         if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(false)) {
                             childMap.put(positionIdentifiers[position], true);
-                            return true;
+                            result = true;
+                            break;
                         }
                     }
                 }
             }
+
             synchronized (memory) {
                 memory.put(locationIdentifier, childMap);
             }
+            return result;
         }
         return false;
     }
@@ -533,10 +552,8 @@ public class PatternUtils {
                     synchronized (memory) {
                         result = childMap.get(positionIdentifier);
                     }
-                    if (result != null) {
-                        if (result) {
-                            return true;
-                        }
+                    if (result != null && result) {
+                        return true;
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
@@ -557,6 +574,7 @@ public class PatternUtils {
                 }
             }
         } else {
+            boolean result = false;
             childMap = new LinkedHashMap<>();
 
             for (int position = 0; position < positions.length; position++) {
@@ -569,13 +587,19 @@ public class PatternUtils {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                             if (surroundingLocation.getBlock().isLiquid(MaterialUtils.get("lava"))) {
                                 childMap.put(positionIdentifiers[position], true);
-                                return true;
+                                result = true;
+                                break;
                             }
+                        }
+
+                        if (result) {
+                            break;
                         }
                     } else {
                         if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquid(MaterialUtils.get("lava"))) {
                             childMap.put(positionIdentifiers[position], true);
-                            return true;
+                            result = true;
+                            break;
                         }
                     }
                 }
@@ -583,6 +607,7 @@ public class PatternUtils {
             synchronized (memory) {
                 memory.put(locationIdentifier, childMap);
             }
+            return result;
         }
         return false;
     }
@@ -660,10 +685,8 @@ public class PatternUtils {
                     synchronized (memory) {
                         result = childMap.get(positionIdentifier);
                     }
-                    if (result != null) {
-                        if (result) {
-                            return true;
-                        }
+                    if (result != null && result) {
+                        return true;
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
@@ -684,6 +707,7 @@ public class PatternUtils {
                 }
             }
         } else {
+            boolean result = false;
             childMap = new LinkedHashMap<>();
 
             for (int position = 0; position < positions.length; position++) {
@@ -696,13 +720,19 @@ public class PatternUtils {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                             if (surroundingLocation.getBlock().isLiquidOrWaterLogged(true)) {
                                 childMap.put(positionIdentifiers[position], true);
-                                return true;
+                                result = true;
+                                break;
                             }
+                        }
+
+                        if (result) {
+                            break;
                         }
                     } else {
                         if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(true)) {
                             childMap.put(positionIdentifiers[position], true);
-                            return true;
+                            result = true;
+                            break;
                         }
                     }
                 }
@@ -710,6 +740,7 @@ public class PatternUtils {
             synchronized (memory) {
                 memory.put(locationIdentifier, childMap);
             }
+            return result;
         }
         return false;
     }
@@ -787,10 +818,8 @@ public class PatternUtils {
                     synchronized (memory) {
                         result = childMap.get(positionIdentifier);
                     }
-                    if (result != null) {
-                        if (result) {
-                            return true;
-                        }
+                    if (result != null && result) {
+                        return true;
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
@@ -811,6 +840,7 @@ public class PatternUtils {
                 }
             }
         } else {
+            boolean result = false;
             childMap = new LinkedHashMap<>();
 
             for (int position = 0; position < positions.length; position++) {
@@ -823,13 +853,19 @@ public class PatternUtils {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
                             if (surroundingLocation.getBlock().isNonWaterLoggedLiquid(true)) {
                                 childMap.put(positionIdentifiers[position], true);
-                                return true;
+                                result = true;
+                                break;
                             }
+                        }
+
+                        if (result) {
+                            break;
                         }
                     } else {
                         if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid(true)) {
                             childMap.put(positionIdentifiers[position], true);
-                            return true;
+                            result = true;
+                            break;
                         }
                     }
                 }
@@ -837,6 +873,7 @@ public class PatternUtils {
             synchronized (memory) {
                 memory.put(locationIdentifier, childMap);
             }
+            return result;
         }
         return false;
     }

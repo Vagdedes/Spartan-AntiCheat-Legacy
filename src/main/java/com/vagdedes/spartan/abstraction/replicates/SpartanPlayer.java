@@ -15,8 +15,8 @@ import com.vagdedes.spartan.abstraction.check.implementation.inventory.Inventory
 import com.vagdedes.spartan.abstraction.check.implementation.inventory.ItemDrops;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.Speed;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
 import com.vagdedes.spartan.abstraction.check.implementation.player.AutoRespawn;
 import com.vagdedes.spartan.abstraction.check.implementation.player.FastEat;
 import com.vagdedes.spartan.abstraction.check.implementation.player.FastHeal;
