@@ -3,7 +3,10 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PatternUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
@@ -16,6 +19,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
+            SpartanLocation location = player.movement.getNmsToLocation();
+
             runAsync(() -> { // todo ladder, levitation, slow-fall, damage, slow-timer-bypass
                 boolean liquid = player.movement.wasInLiquids();
                 double prediction = PlayerUtils.calculateNextFallMotion(
@@ -28,15 +33,37 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 );
 
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
+                    boolean collision = PatternUtils.isBlockPattern( // todo
+                            new double[][]{
+                                    {
+                                            BlockUtils.boundingBox,
+                                            prediction > 0.0
+                                                    ? Math.ceil(player.getEyeHeight())
+                                                    : prediction,
+                                            BlockUtils.boundingBox
+                                    },
+                                    {
+                                            BlockUtils.boundingBox,
+                                            prediction > 0.0
+                                                    ? Math.ceil(player.getEyeHeight()) + Math.ceil(prediction)
+                                                    : prediction,
+                                            BlockUtils.boundingBox
+                                    }
+                            },
+                            location,
+                            true,
+                            BlockUtils.solid, BlockUtils.semi_solid
+                    );
                     double difference = Math.abs(vertical - prediction),
                             limit = Math.max(
                                     PlayerUtils.getJumpMotionSum(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1)
                                             / (double) player.movement.getTicksOnAir(),
-                                    liquid || player.getTrackers().has(Trackers.TrackerFamily.Velocity)
-                                            || player.getTrackers().has(Trackers.TrackerFamily.Motion)
-                                            ? GroundUtils.maxPlayerStep :
-                                            player.bedrockPlayer ? PlayerUtils.jumpAcceleration :
-                                                    GroundUtils.maxHeightLengthRatio
+                                    player.getTrackers().has(Trackers.TrackerFamily.Velocity)
+                                            ? GroundUtils.maxPossibleStep :
+                                            liquid || collision || player.getTrackers().has(Trackers.TrackerFamily.Motion)
+                                                    ? GroundUtils.maxPlayerStep :
+                                                    player.bedrockPlayer ? PlayerUtils.jumpAcceleration :
+                                                            GroundUtils.maxHeightLengthRatio
                             );
 
                     if (difference >= limit) {

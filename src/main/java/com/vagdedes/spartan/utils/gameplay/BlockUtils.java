@@ -11,7 +11,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class BlockUtils {
@@ -32,7 +34,7 @@ public class BlockUtils {
             semi_solid, changeable, walls, interactive_bushes, scaffolding, interactive_snow, interactive_and_passable,
             honey_block, slime_block, web;
 
-    public static final double boundingBox = 0.3 + GroundUtils.maxHeightLengthRatio;
+    public static final double boundingBox = 0.305;
 
     public static boolean endsWith(String s, String ending) {
         return s.endsWith(ending) && !s.contains("LEGACY_");
@@ -1659,13 +1661,14 @@ public class BlockUtils {
         if (center && !isSolid(loc.clone().add(0, y, 0))) {
             return true;
         }
-        SpartanLocation[] locations = loc.getSurroundingLocations(x, y, z, true);
+        Collection<SpartanLocation> locations = loc.getSurroundingLocations(x, y, z);
 
-        if (locations.length > 1) {
-            locations[0] = null;
+        if (locations.size() > 1) { // Ignore 0
+            Iterator<SpartanLocation> iterator = locations.iterator();
+            iterator.next();
 
-            for (int i = 1; i < locations.length; i++) {
-                if (!isSolid(locations[i])) {
+            while (iterator.hasNext()) {
+                if (!isSolid(iterator.next())) {
                     return true;
                 }
             }

@@ -51,7 +51,7 @@ public class IrregularMovements extends CheckExecutor {
                 if (vertical == 0.0) {
                     this.horizontal.run();
                 } else {
-                    step.run(knownBox, knownOldBox);
+                    step.run(knownBox, knownOldBox, box, oldBox, vertical);
                 }
             } else {
                 gravity.run(vertical, oldVertical, box, oldBox);

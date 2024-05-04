@@ -11,7 +11,10 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.*;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.CombatUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.GameMode;
@@ -19,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.List;
 
 public class MovementProcessing {
@@ -167,12 +171,7 @@ public class MovementProcessing {
     // Separator
 
     private static boolean calculateLiquid(SpartanPlayer player, SpartanLocation location) {
-        if (location.getBlock().isLiquidOrWaterLogged(false)
-                || PatternUtils.isWaterPattern(new double[][]{
-                {BlockUtils.boundingBox, 0, BlockUtils.boundingBox},
-                {BlockUtils.boundingBox, 1, BlockUtils.boundingBox},
-                {BlockUtils.boundingBox, player.getEyeHeight(), BlockUtils.boundingBox}
-        }, location, true)) {
+        if (location.getBlock().isLiquidOrWaterLogged(false)) {
             player.movement.setLastLiquid(WATER);
 
             if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
@@ -181,14 +180,27 @@ public class MovementProcessing {
             }
             calculateBubbleWater(player, location);
             return true;
-        } else if (location.getBlock().isLiquid(LAVA)
-                || PatternUtils.isLavaPattern(new double[][]{
-                {BlockUtils.boundingBox, 0, BlockUtils.boundingBox},
-                {BlockUtils.boundingBox, 1, BlockUtils.boundingBox},
-                {BlockUtils.boundingBox, player.getEyeHeight(), BlockUtils.boundingBox}
-        }, location, true)) {
+        } else if (location.getBlock().isLiquid(LAVA)) {
             player.movement.setLastLiquid(LAVA);
             return true;
+        } else {
+            for (double i = 0.0; i < player.getEyeHeight(); i++) {
+                for (SpartanLocation locationModified : location.getSurroundingLocations(BlockUtils.boundingBox, i, BlockUtils.boundingBox)) {
+                    if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
+                        player.movement.setLastLiquid(WATER);
+
+                        if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                                && player.movement.isLowEyeHeight()) {
+                            player.movement.setSwimming(false, (int) (TPS.maximum / 2.0));
+                        }
+                        calculateBubbleWater(player, locationModified);
+                        return true;
+                    } else if (locationModified.getBlock().isLiquid(LAVA)) {
+                        player.movement.setLastLiquid(LAVA);
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
@@ -202,7 +214,7 @@ public class MovementProcessing {
 
                 for (int i = 0; i <= (blockY - minY); i++) {
                     int nonLiquid = 0;
-                    SpartanLocation[] locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(BlockUtils.boundingBox, 0, BlockUtils.boundingBox);
+                    Collection<SpartanLocation> locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(BlockUtils.boundingBox, 0, BlockUtils.boundingBox);
 
                     for (SpartanLocation loc : locations) {
                         SpartanBlock block = loc.getBlock();
@@ -219,7 +231,7 @@ public class MovementProcessing {
                         } else if (BlockUtils.isSolid(type) && !block.waterLogged) {
                             nonLiquid++;
 
-                            if (nonLiquid == locations.length) {
+                            if (nonLiquid == locations.size()) {
                                 break;
                             }
                         }

@@ -226,7 +226,8 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean wasInLiquids() {
-        return TPS.getTick(this.parent) - this.lastLiquidTicks <= Latency.getRoundedDelay(this.parent);
+        return TPS.getTick(this.parent) - this.lastLiquidTicks <=
+                Math.max(Latency.getRoundedDelay(this.parent), 5L);
     }
 
     public Material getLastLiquidMaterial() {

@@ -26,21 +26,18 @@ public class GroundUtils {
             v1_15 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15),
             v1_20 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20);
     public static final double
-            hitbox = 0.305,
-            bedStep = 0.5625,
             maxPossibleStep = 0.9375, // Attention, serious usage
             minPossibleStep = 0.015625,  // Attention, serious usage
-            maxPlayerStep = bedStep,
-            maxPlayerStepExtended = bedStep + 0.1,
+            maxPlayerStep = 0.5625,
             maxHeightLengthRatio;
     public static final int maxHeightLength;
 
     static {
-        blockHeights.add(0.0);
-        blockHeights.add(maxPlayerStepExtended);
-        blockHeights.add(bedStep);
         blockHeights.add(maxPossibleStep);
         blockHeights.add(minPossibleStep);
+        blockHeights.add(maxPlayerStep);
+        blockHeights.add(0.0);
+        blockHeights.add(0.6625);
         blockHeights.add(0.1875);
         blockHeights.add(0.8125);
         blockHeights.add(0.375);
@@ -94,7 +91,7 @@ public class GroundUtils {
             } else if (m == MaterialUtils.get("repeater_on") || m == MaterialUtils.get("repeater_off") || m == MaterialUtils.get("comparator_on") || m == MaterialUtils.get("comparator_off")) {
                 correlatedBlockHeights.put(m, new double[]{0.125});
             } else if (BlockUtils.areBeds(m)) {
-                correlatedBlockHeights.put(m, new double[]{bedStep});
+                correlatedBlockHeights.put(m, new double[]{0.5625});
             } else if (BlockUtils.areAnvils(m)) {
                 correlatedBlockHeights.put(m, new double[]{0.0, 0.25});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.MEDIUM_AMETHYST_BUD) {
@@ -111,9 +108,9 @@ public class GroundUtils {
                     || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) && m == Material.MUD) {
                 correlatedBlockHeights.put(m, new double[]{-1.0});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.STONECUTTER) {
-                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, maxPlayerStepExtended});
+                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, 0.6625});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.LANTERN || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.SOUL_LANTERN) {
-                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, 0.4375, 0.625, maxPlayerStepExtended});
+                correlatedBlockHeights.put(m, new double[]{0.0, 0.5, 0.5625, 0.4375, 0.625, 0.6625});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.CAMPFIRE || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && m == Material.SOUL_CAMPFIRE) {
                 correlatedBlockHeights.put(m, new double[]{0.4375});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.BELL) {
@@ -123,7 +120,7 @@ public class GroundUtils {
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.LECTERN) {
                 correlatedBlockHeights.put(m, new double[]{0.0, 0.125, 0.875});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14) && m == Material.GRINDSTONE) {
-                correlatedBlockHeights.put(m, new double[]{0.0, 0.8125, 0.875, 0.6875, 0.625, 0.5625, 0.75, maxPlayerStepExtended});
+                correlatedBlockHeights.put(m, new double[]{0.0, 0.8125, 0.875, 0.6875, 0.625, 0.5625, 0.75, 0.6625});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && m == Material.TURTLE_EGG) {
                 correlatedBlockHeights.put(m, new double[]{0.0, 0.4375});
             } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) && m == Material.AMETHYST_CLUSTER) {
@@ -178,7 +175,7 @@ public class GroundUtils {
             }
         }
         maxHeightLength = maxHeightLengthLocal;
-        maxHeightLengthRatio = 1.0 /  Math.pow(10, maxHeightLength);
+        maxHeightLengthRatio = 1.0 / Math.pow(10, maxHeightLength);
     }
 
     // Method
@@ -210,13 +207,14 @@ public class GroundUtils {
                 || climbable && BlockUtils.canClimb(block.material)) {
             if (original) {
                 p.movement.increaseAirTicks(-1);
+                return true;
             }
             return true;
         }
         original &= p.getVehicle() == null && !p.bedrockPlayer;
         double box = loc.getY() - loc.getBlockY();
 
-        for (SpartanLocation loopLocation : loc.getSurroundingLocations(hitbox, 0, hitbox)) {
+        for (SpartanLocation loopLocation : loc.getSurroundingLocations(BlockUtils.boundingBox, 0, BlockUtils.boundingBox)) {
             for (double position : new double[]{-(box + minPossibleStep), 0.0}) {
                 Material type = loopLocation.clone().add(0.0, position, 0.0).getBlock().material;
 
