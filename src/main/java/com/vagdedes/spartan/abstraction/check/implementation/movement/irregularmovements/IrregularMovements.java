@@ -2,9 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 
@@ -18,11 +17,12 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsHorizontal horizontal;
 
     public IrregularMovements(SpartanPlayer player) {
-        super(check, player, 3);
+        super(check, player, 4);
         this.addDetections(new DetectionExecutor[]{
                 step = new IrregularMovementsStep(this),
                 gravity = new IrregularMovementsGravity(this),
-                jump = new IrregularMovementsJump(this)
+                jump = new IrregularMovementsJump(this),
+                horizontal = new IrregularMovementsHorizontal(this)
         });
     }
 
@@ -71,7 +71,6 @@ public class IrregularMovements extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && !player.getTrackers().has(Trackers.TrackerType.ElytraUse)
-                && (!player.bedrockPlayer || player.movement.getNmsToLocation().getBlockY() > BlockUtils.getMinHeight(player.getWorld()));
+                && MovementProcessing.canCheck(player, false, true, false);
     }
 }

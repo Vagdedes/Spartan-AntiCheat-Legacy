@@ -171,6 +171,10 @@ public class PlayerUtils {
         return jumpsValues.get((byte) jump);
     }
 
+    public static double getJumpMotionSum(int jump) {
+        return jumpsValues.get((byte) jump).stream().mapToDouble(Double::doubleValue).sum();
+    }
+
     public static double getJumpMotion(int jump, int tick) {
         return jumpsValues.get((byte) jump).get(tick);
     }

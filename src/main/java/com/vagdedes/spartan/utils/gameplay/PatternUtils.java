@@ -23,10 +23,6 @@ public class PatternUtils {
             lavaHash = "lava".hashCode(),
             nonWaterLoggedLiquidHash = "non-water-logged-liquid".hashCode();
 
-    private static final Material
-            lava = MaterialUtils.get("lava"),
-            water = MaterialUtils.get("water");
-
     // Separator
 
     public static void synchronizeClearance(SpartanBlock block) {
@@ -417,14 +413,14 @@ public class PatternUtils {
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                                if (surroundingLocation.getBlock().isLiquidOrWaterLogged(water)) {
+                                if (surroundingLocation.getBlock().isLiquidOrWaterLogged(false)) {
                                     synchronized (memory) {
                                         childMap.put(positionIdentifiers[position], true);
                                     }
                                     return true;
                                 }
                             }
-                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(water)) {
+                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(false)) {
                             synchronized (memory) {
                                 childMap.put(positionIdentifiers[position], true);
                             }
@@ -444,13 +440,13 @@ public class PatternUtils {
 
                     if (surroundings) {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                            if (surroundingLocation.getBlock().isLiquidOrWaterLogged(water)) {
+                            if (surroundingLocation.getBlock().isLiquidOrWaterLogged(false)) {
                                 childMap.put(positionIdentifiers[position], true);
                                 return true;
                             }
                         }
                     } else {
-                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(water)) {
+                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(false)) {
                             childMap.put(positionIdentifiers[position], true);
                             return true;
                         }
@@ -495,14 +491,14 @@ public class PatternUtils {
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
-                    if (surroundingLocation.getBlock().isLiquidOrWaterLogged(water)) {
+                    if (surroundingLocation.getBlock().isLiquidOrWaterLogged(false)) {
                         synchronized (memory) {
                             childMap.put(positionIdentifier, true);
                         }
                         return true;
                     }
                 }
-            } else if (location.clone().add(x, y, z).getBlock().isLiquidOrWaterLogged(water)) {
+            } else if (location.clone().add(x, y, z).getBlock().isLiquidOrWaterLogged(false)) {
                 synchronized (memory) {
                     childMap.put(positionIdentifier, true);
                 }
@@ -544,14 +540,14 @@ public class PatternUtils {
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                                if (surroundingLocation.getBlock().material == lava) {
+                                if (surroundingLocation.getBlock().isLiquid(MaterialUtils.get("lava"))) {
                                     synchronized (memory) {
                                         childMap.put(positionIdentifiers[position], true);
                                     }
                                     return true;
                                 }
                             }
-                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().material == lava) {
+                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquid(MaterialUtils.get("lava"))) {
                             synchronized (memory) {
                                 childMap.put(positionIdentifiers[position], true);
                             }
@@ -571,13 +567,13 @@ public class PatternUtils {
 
                     if (surroundings) {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                            if (surroundingLocation.getBlock().material == lava) {
+                            if (surroundingLocation.getBlock().isLiquid(MaterialUtils.get("lava"))) {
                                 childMap.put(positionIdentifiers[position], true);
                                 return true;
                             }
                         }
                     } else {
-                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().material == lava) {
+                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquid(MaterialUtils.get("lava"))) {
                             childMap.put(positionIdentifiers[position], true);
                             return true;
                         }
@@ -622,14 +618,14 @@ public class PatternUtils {
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
-                    if (surroundingLocation.getBlock().material == lava) {
+                    if (surroundingLocation.getBlock().isLiquid(MaterialUtils.get("lava"))) {
                         synchronized (memory) {
                             childMap.put(positionIdentifier, true);
                         }
                         return true;
                     }
                 }
-            } else if (location.clone().add(x, y, z).getBlock().material == lava) {
+            } else if (location.clone().add(x, y, z).getBlock().isLiquid(MaterialUtils.get("lava"))) {
                 synchronized (memory) {
                     childMap.put(positionIdentifier, true);
                 }
@@ -671,14 +667,14 @@ public class PatternUtils {
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                                if (surroundingLocation.getBlock().isLiquidOrWaterLogged()) {
+                                if (surroundingLocation.getBlock().isLiquidOrWaterLogged(true)) {
                                     synchronized (memory) {
                                         childMap.put(positionIdentifiers[position], true);
                                     }
                                     return true;
                                 }
                             }
-                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged()) {
+                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(true)) {
                             synchronized (memory) {
                                 childMap.put(positionIdentifiers[position], true);
                             }
@@ -698,13 +694,13 @@ public class PatternUtils {
 
                     if (surroundings) {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                            if (surroundingLocation.getBlock().isLiquidOrWaterLogged()) {
+                            if (surroundingLocation.getBlock().isLiquidOrWaterLogged(true)) {
                                 childMap.put(positionIdentifiers[position], true);
                                 return true;
                             }
                         }
                     } else {
-                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged()) {
+                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isLiquidOrWaterLogged(true)) {
                             childMap.put(positionIdentifiers[position], true);
                             return true;
                         }
@@ -749,14 +745,14 @@ public class PatternUtils {
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
-                    if (surroundingLocation.getBlock().isLiquidOrWaterLogged()) {
+                    if (surroundingLocation.getBlock().isLiquidOrWaterLogged(true)) {
                         synchronized (memory) {
                             childMap.put(positionIdentifier, true);
                         }
                         return true;
                     }
                 }
-            } else if (location.clone().add(x, y, z).getBlock().isLiquidOrWaterLogged()) {
+            } else if (location.clone().add(x, y, z).getBlock().isLiquidOrWaterLogged(true)) {
                 synchronized (memory) {
                     childMap.put(positionIdentifier, true);
                 }
@@ -798,14 +794,14 @@ public class PatternUtils {
                     } else {
                         if (surroundings) {
                             for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                                if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
+                                if (surroundingLocation.getBlock().isNonWaterLoggedLiquid(true)) {
                                     synchronized (memory) {
                                         childMap.put(positionIdentifiers[position], true);
                                     }
                                     return true;
                                 }
                             }
-                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid()) {
+                        } else if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid(true)) {
                             synchronized (memory) {
                                 childMap.put(positionIdentifiers[position], true);
                             }
@@ -825,13 +821,13 @@ public class PatternUtils {
 
                     if (surroundings) {
                         for (SpartanLocation surroundingLocation : location.getSurroundingLocations(coordinates[0], coordinates[1], coordinates[2])) {
-                            if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
+                            if (surroundingLocation.getBlock().isNonWaterLoggedLiquid(true)) {
                                 childMap.put(positionIdentifiers[position], true);
                                 return true;
                             }
                         }
                     } else {
-                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid()) {
+                        if (location.clone().add(coordinates[0], coordinates[1], coordinates[2]).getBlock().isNonWaterLoggedLiquid(true)) {
                             childMap.put(positionIdentifiers[position], true);
                             return true;
                         }
@@ -876,14 +872,14 @@ public class PatternUtils {
             // Calculate and add them in cache
             if (surroundings) {
                 for (SpartanLocation surroundingLocation : location.getSurroundingLocations(x, y, z)) {
-                    if (surroundingLocation.getBlock().isNonWaterLoggedLiquid()) {
+                    if (surroundingLocation.getBlock().isNonWaterLoggedLiquid(true)) {
                         synchronized (memory) {
                             childMap.put(positionIdentifier, true);
                         }
                         return true;
                     }
                 }
-            } else if (location.clone().add(x, y, z).getBlock().isNonWaterLoggedLiquid()) {
+            } else if (location.clone().add(x, y, z).getBlock().isNonWaterLoggedLiquid(true)) {
                 synchronized (memory) {
                     childMap.put(positionIdentifier, true);
                 }

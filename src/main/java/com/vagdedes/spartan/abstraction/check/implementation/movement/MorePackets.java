@@ -156,6 +156,6 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return player.canRunCheck(hackType, true)
-                && MovementProcessing.canCheck(player, true, true);
+                && MovementProcessing.canCheck(player, true, true, true);
     }
 }

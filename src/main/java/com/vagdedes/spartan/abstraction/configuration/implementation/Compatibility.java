@@ -39,7 +39,7 @@ public class Compatibility {
     public enum CompatibilityType {
         AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, MagicSpells, ProtocolLib, mcMMO, NoHitDelay,
         TreeFeller, VeinMiner, GrapplingHook, RecentPvPMechanics, MineBomb, SuperPickaxe,
-        RealDualWield, MythicMobs, ViaVersion, ItemAttributes, PrinterMode, Vehicles, MineTinker,
+        RealDualWield, MythicMobs, ItemAttributes, PrinterMode, Vehicles, MineTinker,
         WildTools, DragonPhases, AureliumSkills, KnockbackMaster, MyPet, CustomEnchantsPlus,
         EcoEnchants, ItemsAdder, RampenDrills, OldCombatMechanics, CustomKnockback, ProjectKorra, AcidRain,
         FileGUI, Floodgate, ProtocolSupport, Authentication;
@@ -286,7 +286,6 @@ public class Compatibility {
                 () -> Register.enable(new DragonPhases(), DragonPhases.class)
         );
         CompatibilityType.VeinMiner.setFunctional(VeinMiner::reload);
-        CompatibilityType.ViaVersion.setFunctional();
         CompatibilityType.ProjectKorra.setFunctional(
                 () -> Register.enable(new ProjectKorra(), ProjectKorra.class)
         );

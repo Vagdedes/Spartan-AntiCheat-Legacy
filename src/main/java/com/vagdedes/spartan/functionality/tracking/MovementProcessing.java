@@ -83,11 +83,6 @@ public class MovementProcessing {
         // Separator
 
         if (!calculateLiquid(player, to)) {
-            if (player.movement.justJumped(vertical)) { // Last Jump
-                player.movement.setLastJump();
-            } else if (PlayerUtils.isFalling(vertical)) { // Last Fall
-                player.movement.setLastFall();
-            }
             if (!calculateGroundCollision(player, vertical, box)) {
                 calculateBouncing(player, to, vertical);
             }
@@ -168,36 +163,28 @@ public class MovementProcessing {
     // Separator
 
     private static boolean calculateLiquid(SpartanPlayer player, SpartanLocation location) {
-        if (player.movement.isSwimming()) {
+        if (location.getBlock().isLiquidOrWaterLogged(false)
+                || PatternUtils.isWaterPattern(new double[][]{
+                {BlockUtils.boundingBox, 0, BlockUtils.boundingBox},
+                {BlockUtils.boundingBox, 1, BlockUtils.boundingBox},
+                {BlockUtils.boundingBox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.boundingBox}
+        }, location, true)) {
             player.movement.setLastLiquidTime(WATER);
+
+            if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    && player.movement.isLowEyeHeight()) {
+                player.movement.setSwimming(false, 10);
+            }
             calculateBubbleWater(player, location);
             return true;
-        } else {
-            double hitbox = player.bedrockPlayer ? BlockUtils.hitbox_max : BlockUtils.hitbox;
-
-            if (location.getBlock().isLiquidOrWaterLogged(WATER)
-                    || PatternUtils.isWaterPattern(new double[][]{
-                    {hitbox, 0, hitbox},
-                    {hitbox, 1, hitbox},
-                    {hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, hitbox}
-            }, location, true)) {
-                player.movement.setLastLiquidTime(WATER);
-
-                if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                        && Compatibility.CompatibilityType.ViaVersion.isFunctional()
-                        && Math.round(player.getEyeHeight() * 10.0) == 4.0) {
-                    player.movement.setSwimming(false, 10);
-                }
-                calculateBubbleWater(player, location);
-                return true;
-            } else if (location.getBlock().isLiquid(LAVA)
-                    || PatternUtils.isLavaPattern(new double[][]{
-                    {hitbox, 0, hitbox},
-                    {hitbox, 1, hitbox},
-                    {hitbox, player.getEyeHeight() + PlayerUtils.lowPrecision, hitbox}
-            }, location, true)) {
-                player.movement.setLastLiquidTime(LAVA);
-            }
+        } else if (location.getBlock().isLiquid(LAVA)
+                || PatternUtils.isLavaPattern(new double[][]{
+                {BlockUtils.boundingBox, 0, BlockUtils.boundingBox},
+                {BlockUtils.boundingBox, 1, BlockUtils.boundingBox},
+                {BlockUtils.boundingBox, player.getEyeHeight() + PlayerUtils.lowPrecision, BlockUtils.boundingBox}
+        }, location, true)) {
+            player.movement.setLastLiquidTime(LAVA);
+            return true;
         }
         return false;
     }
@@ -211,7 +198,7 @@ public class MovementProcessing {
 
                 for (int i = 0; i <= (blockY - minY); i++) {
                     int nonLiquid = 0;
-                    SpartanLocation[] locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(BlockUtils.hitbox, 0, BlockUtils.hitbox);
+                    SpartanLocation[] locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(BlockUtils.boundingBox, 0, BlockUtils.boundingBox);
 
                     for (SpartanLocation loc : locations) {
                         SpartanBlock block = loc.getBlock();
@@ -240,12 +227,13 @@ public class MovementProcessing {
 
     // Separator
 
-    public static boolean canCheck(SpartanPlayer player, boolean elytra, boolean velocity) {
+    public static boolean canCheck(SpartanPlayer player,
+                                   boolean elytra, boolean velocity, boolean flight) {
         if ((elytra || !player.getTrackers().has(Trackers.TrackerType.ElytraUse))
+                && (flight || !player.getTrackers().has(Trackers.TrackerType.Flight))
+                && (velocity || !AbstractVelocity.hasCooldown(player))
                 && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)
-                && player.canRunChecks(true)
-                && player.movement.getLastFlight() > (TPS.maximum * 2)
-                && (velocity || !AbstractVelocity.hasCooldown(player))) {
+                && player.canRunChecks(true)) {
             if (Compatibility.CompatibilityType.MythicMobs.isFunctional()
                     || Compatibility.CompatibilityType.ItemsAdder.isFunctional()) {
                 List<Entity> entities = player.getNearbyEntities(

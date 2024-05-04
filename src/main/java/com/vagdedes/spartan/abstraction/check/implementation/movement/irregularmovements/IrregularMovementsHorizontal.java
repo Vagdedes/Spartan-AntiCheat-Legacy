@@ -10,7 +10,7 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
     }
 
     void run() {
-        if (hackType.getCheck().getBooleanOption("check_step", true)) {
+        if (hackType.getCheck().getBooleanOption("check_horizontal", true)) {
             runAsync(() -> {
                 // todo
             });

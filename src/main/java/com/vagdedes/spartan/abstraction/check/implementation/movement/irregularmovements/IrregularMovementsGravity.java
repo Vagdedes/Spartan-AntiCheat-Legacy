@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.Material;
+import org.bukkit.potion.PotionEffectType;
 
 public class IrregularMovementsGravity extends DetectionExecutor {
 
@@ -16,12 +17,12 @@ public class IrregularMovementsGravity extends DetectionExecutor {
     void run(double vertical, double oldVertical, double box, double oldBox) {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
             runAsync(() -> { // todo ladder, levitation, slow-fall, damage, slow-timer-bypass
-                boolean liquid = player.movement.getLastLiquid() == 0L;
+                boolean liquid = player.movement.wasInLiquids();
                 double prediction = PlayerUtils.calculateNextFallMotion(
                         oldVertical,
-                        liquid && player.movement.getLastLiquidMaterial() == Material.WATER ? PlayerUtils.waterDrag :
-                                liquid && player.movement.getLastLiquidMaterial() == Material.LAVA ? PlayerUtils.lavaDrag :
-                                        PlayerUtils.airDrag,
+                        liquid ? (player.movement.getLastLiquidMaterial() == Material.LAVA
+                                ? PlayerUtils.lavaDrag : PlayerUtils.waterDrag)
+                                : PlayerUtils.airDrag,
                         liquid ? PlayerUtils.liquidAcceleration : PlayerUtils.airAcceleration,
                         -(PlayerUtils.terminalVelocity - GroundUtils.maxHeightLengthRatio)
                 );
@@ -29,7 +30,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
                     double difference = Math.abs(vertical - prediction),
                             limit = Math.max(
-                                    (PlayerUtils.getJumpTicks(0) - 1) / (double) player.movement.getTicksOnAir(),
+                                    PlayerUtils.getJumpMotionSum(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1)
+                                            / (double) player.movement.getTicksOnAir(),
                                     liquid || player.getTrackers().has(Trackers.TrackerFamily.Velocity)
                                             || player.getTrackers().has(Trackers.TrackerFamily.Motion)
                                             ? GroundUtils.maxPlayerStep :
@@ -46,7 +48,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                         + ", vertical: " + vertical
                                         + ", old-vertical: " + oldVertical
                                         + ", box: " + box
-                                        + ", old-box: " + oldBox,
+                                        + ", old-box: " + oldBox
+                                        + ", air-ticks: " + player.movement.getTicksOnAir(),
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

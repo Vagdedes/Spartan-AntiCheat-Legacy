@@ -19,7 +19,8 @@ public class Trackers {
         ExtremeCollision(TrackerFamily.Velocity), Trident(TrackerFamily.Velocity),
         Damage(TrackerFamily.Velocity),
 
-        GameMode(TrackerFamily.Motion), ElytraUse(TrackerFamily.Motion);
+        GameMode(TrackerFamily.Motion), ElytraUse(TrackerFamily.Motion),
+        Flight(TrackerFamily.Motion);
 
         public final TrackerFamily family;
 

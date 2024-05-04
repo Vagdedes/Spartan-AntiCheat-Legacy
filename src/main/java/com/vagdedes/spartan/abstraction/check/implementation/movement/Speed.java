@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import me.vagdedes.spartan.system.Enums.HackType;
 
 public class Speed extends CheckExecutor {
@@ -32,6 +33,7 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true);
+        return player.canRunCheck(hackType, true)
+                && MovementProcessing.canCheck(player, false, true, false);
     }
 }

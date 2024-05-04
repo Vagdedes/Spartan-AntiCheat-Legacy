@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -32,10 +33,7 @@ public class SpartanPlayerMovement {
             nmsBox;
     private final List<Float> nmsFall;
     private long
-            lastFall,
-            lastJump,
             swimmingTime,
-            flyingTick,
             lastLiquidTicks;
     private Material
             lastLiquidMaterial;
@@ -61,10 +59,7 @@ public class SpartanPlayerMovement {
 
         this.nmsFall = Collections.synchronizedList(new LinkedList<>());
 
-        this.lastFall = 0L;
-        this.lastJump = 0L;
         this.swimmingTime = 0L;
-        this.flyingTick = 0L;
         this.lastLiquidTicks = 0L;
         this.lastLiquidMaterial = Material.AIR;
 
@@ -230,16 +225,12 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public long getLastLiquid() {
-        return TPS.getTick(this.parent) - this.lastLiquidTicks;
+    public boolean wasInLiquids() {
+        return TPS.getTick(this.parent) - this.lastLiquidTicks <= Latency.getRoundedDelay(this.parent);
     }
 
     public Material getLastLiquidMaterial() {
         return lastLiquidMaterial;
-    }
-
-    public boolean wasInLiquids() {
-        return this.getLastLiquid() <= 10L;
     }
 
     public synchronized void setLastLiquidTime(Material material) {
@@ -260,33 +251,21 @@ public class SpartanPlayerMovement {
     public synchronized void setSwimming(boolean swimming, int ticks) {
         this.swimming = swimming;
 
-        if (ticks != -1L) {
-            this.swimmingTime = (ticks > 0 ? TPS.getTick(this.parent) + ticks : 0L);
+        if (ticks > 0) {
+            this.swimmingTime = TPS.getTick(this.parent) + ticks;
         }
     }
 
-    // Separator
-
-    public boolean isMoving(boolean head) {
-        if (!head || this.directionChanged()) {
-            Double nmsDistance = this.getNmsDistance();
-            return nmsDistance != null && nmsDistance >= 0.1
-                    || this.getCustomDistance() >= 0.1
-                    || this.isSprinting()
-                    || this.isSprintJumping()
-                    || this.isWalkJumping()
-                    || this.parent.getLastDamageReceived().ticksPassed() <= 2;
-        } else {
-            return false;
-        }
+    public boolean isLowEyeHeight() {
+        return this.parent.getEyeHeight() < 1.0;
     }
 
     public boolean isCrawling() {
-        return this.parent.getEyeHeight() < 1.0 && !isGliding() && !this.isSwimming();
+        return this.isLowEyeHeight() && !isGliding() && !this.isSwimming();
     }
 
-    public boolean isWalkJumping() {
-        return !sprinting && this.getLastJump() <= 2L;
+    public boolean isWalkJumping(double vertical) {
+        return !sprinting && this.isJumping(vertical);
     }
 
     // Separator
@@ -305,8 +284,8 @@ public class SpartanPlayerMovement {
         return sprinting;
     }
 
-    public boolean isSprintJumping() {
-        return sprinting && this.getLastJump() <= 2L;
+    public boolean isSprintJumping(double vertical) {
+        return sprinting && this.isJumping(vertical);
     }
 
     public synchronized void setSprinting(boolean sprinting) {
@@ -333,15 +312,6 @@ public class SpartanPlayerMovement {
                 PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
                 this.getJumpPrecision()
         );
-    }
-
-    public long getLastJump() {
-        return TPS.getTick(this.parent) - this.lastJump;
-    }
-
-    public synchronized void setLastJump() {
-        this.lastJump = TPS.getTick(this.parent);
-        this.parent.trackers.removeMany(Trackers.TrackerFamily.Velocity);
     }
 
     // Separator
@@ -377,23 +347,9 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public long getLastFall() {
-        return TPS.getTick(this.parent) - this.lastFall;
-    }
-
-    public synchronized void setLastFall() {
-        this.lastFall = TPS.getTick(this.parent);
-    }
-
-    // Separator
-
     public boolean isFlying() {
         Entity vehicle = this.parent.getVehicle();
         return vehicle != null ? vehicle instanceof Player && ((Player) vehicle).isFlying() : flying;
-    }
-
-    public long getLastFlight() {
-        return isFlying() ? 0L : TPS.getTick(this.parent) - this.flyingTick;
     }
 
     public synchronized void setFlying(boolean flying) {
@@ -404,7 +360,7 @@ public class SpartanPlayerMovement {
         this.flying = flying;
 
         if (flying) {
-            this.flyingTick = TPS.getTick(this.parent);
+            this.parent.getTrackers().add(Trackers.TrackerType.Flight, (int) TPS.maximum);
         }
     }
 

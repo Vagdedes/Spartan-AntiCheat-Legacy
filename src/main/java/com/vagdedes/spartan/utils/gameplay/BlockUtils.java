@@ -32,10 +32,7 @@ public class BlockUtils {
             semi_solid, changeable, walls, interactive_bushes, scaffolding, interactive_snow, interactive_and_passable,
             honey_block, slime_block, web;
 
-    public static final double
-            hitbox_extra = 0.35,
-            hitbox_max = 0.3,
-            hitbox = 0.298;
+    public static final double boundingBox = 0.3;
 
     public static boolean endsWith(String s, String ending) {
         return s.endsWith(ending) && !s.contains("LEGACY_");
@@ -1654,21 +1651,8 @@ public class BlockUtils {
         return isChangeable(loc.getBlock().material);
     }
 
-    public static boolean isAnvilBugged(SpartanLocation loc) {
-        for (Material m : anvil) {
-            if (loc.isBlock(m, hitbox)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean canClimb(SpartanLocation loc) {
         return canClimb(loc.getBlock().material);
-    }
-
-    public static boolean isLiquid(SpartanLocation loc) {
-        return loc.getBlock().isLiquidOrWaterLogged();
     }
 
     public static boolean hasNonSolidSide(SpartanLocation loc, double x, double y, double z, boolean center) {

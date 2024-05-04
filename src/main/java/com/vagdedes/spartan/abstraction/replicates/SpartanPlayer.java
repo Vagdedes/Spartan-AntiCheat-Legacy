@@ -290,7 +290,7 @@ public class SpartanPlayer {
                                 Elytra.judge(p, n.isGliding(), false);
                             }
                             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                                p.movement.setSwimming(n.isSwimming(), -1);
+                                p.movement.setSwimming(n.isSwimming(), 0);
                             }
                             p.setGameMode(n.getGameMode());
                             p.movement.setFlying(n.isFlying());
@@ -965,7 +965,7 @@ public class SpartanPlayer {
                                 || targetBlock.y != clickedBlock.y
                                 || targetBlock.z != clickedBlock.z)
 
-                                && (editableClickedBlock && !BlockUtils.isLiquid(targetBlockLocation)
+                                && (editableClickedBlock && !targetBlockLocation.getBlock().isLiquidOrWaterLogged(true)
                                 || BlockUtils.isFullSolid(targetBlockLocation))) {
                             return targetBlock;
                         }
@@ -1540,6 +1540,7 @@ public class SpartanPlayer {
             this.movement.setSwimming(false, 0);
             this.movement.setGliding(false, false);
             this.movement.removeLastLiquidTime();
+            this.trackers.removeMany(Trackers.TrackerFamily.Velocity);
 
             if (MultiVersion.folia) {
                 p.teleportAsync(location.getBukkitLocation());
