@@ -7,19 +7,18 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MorePackets extends CheckExecutor {
 
     public static final HackType check = HackType.MorePackets;
     private final Map<Long, Integer> nmsMap;
+    private int buffer;
 
     public MorePackets(SpartanPlayer player) {
         super(check, player);
         this.nmsMap = Collections.synchronizedMap(new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f));
+        this.buffer = 0;
     }
 
     @Override
@@ -32,6 +31,12 @@ public class MorePackets extends CheckExecutor {
         if (canDo()) {
             synchronized (nmsMap) {
                 nmsMap.put(TPS.getTick(player), nmsMap.getOrDefault(TPS.getTick(player), 0) + 1);
+
+                if (nmsMap.size() > configuredTicks()) {
+                    Iterator<Long> iterator = nmsMap.keySet().iterator();
+                    iterator.next();
+                    iterator.remove();
+                }
             }
         }
         return false;
@@ -40,18 +45,9 @@ public class MorePackets extends CheckExecutor {
     @Override
     public void scheduler() {
         if (!nmsMap.isEmpty() && canDo()) {
-            int minimumTicks = (int) (TPS.maximum * 5),
-                    configuredTicks = Math.max(
-                            AlgebraUtils.integerRound(hackType.getCheck().getNumericalOption(
-                                    "max_player_latency_until_disconnect",
-                                    minimumTicks * TPS.tickTimeInteger
-                            ) / TPS.tickTimeDecimal),
-                            minimumTicks
-                    );
-
             runAsync(() -> {
                 long currentTick = TPS.getTick(player),
-                        oldestTick = currentTick - configuredTicks;
+                        oldestTick = currentTick - configuredTicks();
                 int period = 0, collections = 0;
                 Map<Integer, Integer> positives = new HashMap<>(),
                         negatives = new HashMap<>();
@@ -77,7 +73,7 @@ public class MorePackets extends CheckExecutor {
                         }
                         positives.put(period, positives.getOrDefault(period, 0) + calls);
                         collections++;
-                    } else if (period != -1) {
+                    } else {
                         int positiveCount = positives.getOrDefault(period, 0);
 
                         if (positiveCount > 0) {
@@ -107,11 +103,9 @@ public class MorePackets extends CheckExecutor {
                             positiveCount / (double) negatives.getOrDefault(period, 1)
                     );
                 }
-                synchronized (nmsMap) {
-                    nmsMap.remove(oldestTick);
-                }
 
-                if (!ratio.isEmpty()) {
+                if (!ratio.isEmpty()
+                        && collections > 2) {
                     double ratioSum = 0.0;
 
                     for (double ratioValue : ratio.values()) {
@@ -120,15 +114,43 @@ public class MorePackets extends CheckExecutor {
                     double sum = ratioSum;
                     ratioSum /= collections;
 
-                    if (true || ratioSum > 1.0) {
-                        player.debug(true, false, true,
-                                ratioSum,
-                                sum,
-                                collections);
+                    if (ratioSum >= 1.1) {
+                        buffer++;
+
+                        if (buffer > 2) {
+                            buffer = 0;
+                            cancel(
+                                    "type: timer"
+                                            + ", sum: " + sum
+                                            + ", collections: " + collections
+                                            + ", ratio: " + ratioSum,
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
+                        }
+                    } else {
+                        buffer = 0;
                     }
+                } else {
+                    buffer = 0;
                 }
             });
+        } else {
+            buffer = 0;
         }
+    }
+
+    private int configuredTicks() {
+        int minimumTicks = (int) (TPS.maximum * 5);
+        return Math.max(
+                AlgebraUtils.integerRound(hackType.getCheck().getNumericalOption(
+                        "max_player_latency_until_disconnect",
+                        minimumTicks * TPS.tickTimeInteger
+                ) / TPS.tickTimeDecimal),
+                minimumTicks
+        );
+
     }
 
     @Override
