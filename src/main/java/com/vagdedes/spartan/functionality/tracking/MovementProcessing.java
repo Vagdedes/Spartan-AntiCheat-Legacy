@@ -240,16 +240,12 @@ public class MovementProcessing {
 
     // Separator
 
-    public static boolean recentlyBounced(SpartanPlayer p) {
-        return v1_8 && p.getTrackers().has(Trackers.TrackerType.BouncingBlocks);
-    }
-
-    public static boolean canCheck(SpartanPlayer player) {
-        if (!player.getTrackers().has(Trackers.TrackerType.ElytraUse)
+    public static boolean canCheck(SpartanPlayer player, boolean elytra, boolean velocity) {
+        if ((elytra || !player.getTrackers().has(Trackers.TrackerType.ElytraUse))
                 && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)
                 && player.canRunChecks(true)
                 && player.movement.getLastFlight() > (TPS.maximum * 2)
-                && !AbstractVelocity.hasCooldown(player)) {
+                && (velocity || !AbstractVelocity.hasCooldown(player))) {
             if (Compatibility.CompatibilityType.MythicMobs.isFunctional()
                     || Compatibility.CompatibilityType.ItemsAdder.isFunctional()) {
                 List<Entity> entities = player.getNearbyEntities(

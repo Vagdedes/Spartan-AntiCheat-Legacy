@@ -121,18 +121,16 @@ public class EventsHandler7 implements Listener {
         }
 
         // Detections
-        if (MovementProcessing.canCheck(p)) {
-            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD);
-            p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
-            p.getExecutor(Enums.HackType.KillAura).run(cancelled);
-            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, dis);
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, Exploits.HEAD);
+        p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
+        p.getExecutor(Enums.HackType.KillAura).run(cancelled);
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, dis);
 
-            if (dis > 0.0) {
-                p.getExecutor(Enums.HackType.NoFall).run(cancelled);
-                p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
-                p.getExecutor(Enums.HackType.Speed).run(cancelled);
-                p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
-            }
+        if (dis > 0.0) {
+            p.getExecutor(Enums.HackType.NoFall).run(cancelled);
+            p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
+            p.getExecutor(Enums.HackType.Speed).run(cancelled);
+            p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
         }
     }
 

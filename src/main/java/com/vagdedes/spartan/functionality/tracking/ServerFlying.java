@@ -17,7 +17,6 @@ public class ServerFlying {
                 && p.getVehicle() == null
                 && !p.isSleeping()
                 && !p.isDead()
-                && !MovementProcessing.recentlyBounced(p)
                 && !p.getTrackers().has(Trackers.TrackerFamily.Velocity)
                 && !p.getTrackers().has(Trackers.TrackerFamily.Motion)
                 && !Attributes.has(p, Attributes.GENERIC_FLYING_SPEED)) {
