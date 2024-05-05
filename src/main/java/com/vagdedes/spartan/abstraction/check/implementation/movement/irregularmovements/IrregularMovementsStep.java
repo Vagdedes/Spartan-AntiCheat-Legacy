@@ -99,7 +99,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 0
                         );
 
-                        if (vertical > limit) { // todo fix
+                        if (vertical > limit && vertical != (box - oldBox)) {
                             cancel(
                                     "type: step(abstract-up)"
                                             + ", box: " + box
@@ -130,7 +130,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             if (verticalPrediction < 0.0) {
                                 verticalPrediction += 1.0;
                             }
-                            if ( verticalPrediction != motionRemainder) {
+                            if (verticalPrediction != motionRemainder) {
                                 cancel(
                                         "type: step(landing)"
                                                 + ", box: " + box
