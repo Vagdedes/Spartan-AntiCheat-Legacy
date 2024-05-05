@@ -481,22 +481,6 @@ public class SpartanPlayerMovement {
                 return false;
             }
         }
-        for (double[] combination : PlayerUtils.motionCombinations) {
-            double prediction = PlayerUtils.calculateNextFallMotion(
-                    vertical,
-                    combination[0],
-                    combination[1],
-                    -(PlayerUtils.terminalVelocity - GroundUtils.maxHeightLengthRatio)
-            );
-
-            if (Math.abs(prediction) <= PlayerUtils.optimizationY) {
-                this.parent.debug(
-                        true, false, false,
-                        vertical, prediction
-                );
-                break;
-            }
-        }
         this.nmsTo = to;
         this.nmsFrom = from;
         return true;

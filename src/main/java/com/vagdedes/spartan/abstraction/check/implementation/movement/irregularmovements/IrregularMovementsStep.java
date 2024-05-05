@@ -34,7 +34,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 } else if (after > before) {
                     stepCombination.put(hash, after - before <= GroundUtils.maxPlayerStep);
                 } else {
-                    stepCombination.put(hash, before - after <= GroundUtils.minPossibleStep);
+                    stepCombination.put(hash, before - after <= PlayerUtils.airAcceleration);
                 }
             }
         }
@@ -69,7 +69,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (vertical < 0.0 || vertical > GroundUtils.maxPlayerStep) {
+                        } else if (vertical <= -(PlayerUtils.airAcceleration + GroundUtils.maxHeightLengthRatio)
+                                || vertical > GroundUtils.maxPlayerStep) {
                             cancel(
                                     "type: step(combination)"
                                             + ", box: " + box
@@ -123,13 +124,13 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 );
                             }
                         } else if (knownBox) {
-                            double verticalPrediction = box + oldBox,
+                            double verticalPrediction = oldBox - box,
                                     motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
 
-                            if (verticalPrediction > 0.0) {
-                                verticalPrediction = Math.abs(box - oldBox);
+                            if (verticalPrediction < 0.0) {
+                                verticalPrediction += 1.0;
                             }
-                            if (verticalPrediction != motionRemainder) { // todo fix
+                            if ( verticalPrediction != motionRemainder) {
                                 cancel(
                                         "type: step(landing)"
                                                 + ", box: " + box
@@ -141,7 +142,6 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         0,
                                         true
                                 );
-                                player.debug(true, false, false, PlayerUtils.isFalling(vertical));
                             }
                         } else {
                             cancel(

@@ -31,8 +31,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     double difference = Math.abs(vertical - prediction),
                             product = !player.movement.isJumping(vertical) && !PlayerUtils.isFalling(vertical)
                                     && !player.movement.isJumping(oldVertical) && !PlayerUtils.isFalling(oldVertical)
-                                    ? PlayerUtils.getJumpMotionSum(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1)
-                                    : 1.0,
+                                    ? 1.0
+                                    : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1),
                             limit = Math.max(
                                     product / (double) player.movement.getTicksOnAir(),
                                     player.getTrackers().has(Trackers.TrackerFamily.Velocity)

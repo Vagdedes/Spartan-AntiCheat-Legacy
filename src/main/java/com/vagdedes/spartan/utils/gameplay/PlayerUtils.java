@@ -51,11 +51,6 @@ public class PlayerUtils {
             climbingDefault = 0.11760,
             climbingScaffoldingMax = climbingDefault + 0.2,
             maxJumpingMotionDifference;
-    public static double[][] motionCombinations = {
-            {airDrag, airAcceleration},
-            {waterDrag, liquidAcceleration},
-            {lavaDrag, liquidAcceleration}
-    };
 
     public static final int
             height,
