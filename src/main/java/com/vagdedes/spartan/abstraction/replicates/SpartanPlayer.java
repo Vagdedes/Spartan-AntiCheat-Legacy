@@ -229,6 +229,12 @@ public class SpartanPlayer {
                             }
                         }
                     }
+                    if (p.refreshOnGround(new SpartanLocation[]{p.movement.getLocation()})) {
+                        p.movement.resetAirTicks();
+                    }
+                    if (p.isOnGroundDefault()) {
+                        p.movement.resetVanillaAirTicks();
+                    }
                     p.nearbyEntitiesDistance = 0;
                     p.runCheck.clear();
                     p.runCheckAccountLag.clear();
@@ -846,9 +852,13 @@ public class SpartanPlayer {
         return blocksOffGround;
     }
 
-    public boolean refreshOnGround(SpartanLocation movementTo) {
-        return this.onGroundCustom = GroundUtils.isOnGround(this, movementTo, 0.0, false, true)
-                || GroundUtils.isOnGround(this, this.movement.getLocation(), 0.0, false, true);
+    public boolean refreshOnGround(SpartanLocation[] locations) {
+        for (SpartanLocation location : locations) {
+            if (GroundUtils.isOnGround(this, location, 0.0, false, true)) {
+                return this.onGroundCustom = true;
+            }
+        }
+        return this.onGroundCustom = false;
     }
 
     // Separator

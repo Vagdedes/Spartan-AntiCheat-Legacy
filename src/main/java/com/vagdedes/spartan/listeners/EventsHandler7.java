@@ -108,7 +108,7 @@ public class EventsHandler7 implements Listener {
                 hor = Math.sqrt(preXZ);
         float fall = p.getFallDistance();
 
-        if (!p.movement.processLastMoveEvent(to, from)) {
+        if (!p.movement.processLastMoveEvent(to, from, ver)) {
             return;
         }
         MovementProcessing.run(n, p, to, dis, hor, ver, box, fall);

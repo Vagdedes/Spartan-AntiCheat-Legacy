@@ -3,7 +3,6 @@ package com.vagdedes.spartan.utils.gameplay;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
@@ -52,6 +51,11 @@ public class PlayerUtils {
             climbingDefault = 0.11760,
             climbingScaffoldingMax = climbingDefault + 0.2,
             maxJumpingMotionDifference;
+    public static double[][] motionCombinations = {
+            {airDrag, airAcceleration},
+            {waterDrag, liquidAcceleration},
+            {lavaDrag, liquidAcceleration}
+    };
 
     public static final int
             height,
@@ -168,7 +172,7 @@ public class PlayerUtils {
     }
 
     public static int getJumpTicks(int jump) {
-        return jumpsValues.get((byte) jump).size();
+        return getJumpMotions(jump).size();
     }
 
     // Falling

@@ -91,14 +91,14 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 true
                         );
                     }
-                } else if (!player.movement.isJumping(vertical)) { // todo velocity
+                } else if (!player.movement.isJumping(vertical)) { // todo velocity/trackers
                     if (vertical > 0.0) {
                         double limit = PlayerUtils.getJumpMotion(
                                 PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
                                 0
                         );
 
-                        if (vertical > limit)
+                        if (vertical > limit) { // todo fix
                             cancel(
                                     "type: step(abstract-up)"
                                             + ", box: " + box
@@ -108,6 +108,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                     0,
                                     true
                             );
+                        }
                     } else {
                         if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
                             if (vertical <= -(PlayerUtils.airAcceleration + GroundUtils.maxHeightLengthRatio)) {
@@ -128,7 +129,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             if (verticalPrediction > 0.0) {
                                 verticalPrediction = Math.abs(box - oldBox);
                             }
-                            if (verticalPrediction != motionRemainder) {
+                            if (verticalPrediction != motionRemainder) { // todo fix
                                 cancel(
                                         "type: step(landing)"
                                                 + ", box: " + box

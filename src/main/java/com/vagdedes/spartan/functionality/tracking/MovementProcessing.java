@@ -48,9 +48,12 @@ public class MovementProcessing {
                            double distance, double horizontal,
                            double vertical, double box,
                            float fall) {
-        player.movement.increaseAirTicks(player.refreshOnGround(to) ? -1 : 1);
-        player.movement.increaseVanillaAirTicks(player.isOnGroundDefault() ? -1 : 1);
-
+        if (player.refreshOnGround(new SpartanLocation[]{to, player.movement.getLocation()})) {
+            player.movement.resetAirTicks();
+        }
+        if (player.isOnGroundDefault()) {
+            player.movement.resetVanillaAirTicks();
+        }
         // Separator
 
         GameMode current = player.getGameMode();
