@@ -9,10 +9,29 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void run() {
+    void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         if (hackType.getCheck().getBooleanOption("check_horizontal", true)) {
+            int airTicks = player.movement.getTicksOnAir();
+
             runAsync(() -> {
-                // todo
+                if (airTicks > 0) {
+                    if (knownBox || knownOldBox) {
+                        player.debug(true, false, false,
+                                player.movement.getTicksOnAir(), box, oldBox
+                        );
+                    } else {
+                        cancel(
+                                "type: horizontal(abstract)"
+                                        + ", box: " + box
+                                        + ", old-box: " + oldBox
+                                        + ", vertical: " + vertical
+                                        + ", air-ticks: " + airTicks,
+                                player.movement.getDetectionLocation(),
+                                0,
+                                true
+                        );
+                    }
+                }
             });
         }
     }

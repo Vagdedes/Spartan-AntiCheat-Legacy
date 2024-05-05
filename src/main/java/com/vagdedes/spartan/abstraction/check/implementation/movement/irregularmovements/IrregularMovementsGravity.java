@@ -16,6 +16,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
+            int airTicks = player.movement.getTicksOnAir();
+
             runAsync(() -> { // todo ladder-drag/acceleration, levitation effect, slow-fall effect, velocity, slow-timer-bypass
                 boolean liquid = player.movement.wasInLiquids();
                 double prediction = PlayerUtils.calculateNextFallMotion(
@@ -34,7 +36,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                     ? 1.0
                                     : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1),
                             limit = Math.max(
-                                    product / (double) player.movement.getTicksOnAir(),
+                                    product / (double) airTicks,
                                     player.getTrackers().has(Trackers.TrackerFamily.Velocity)
                                             ? GroundUtils.maxPossibleStep :
                                             liquid || player.getTrackers().has(Trackers.TrackerFamily.Motion)
@@ -54,7 +56,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                         + ", old-vertical: " + oldVertical
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
-                                        + ", air-ticks: " + player.movement.getTicksOnAir(),
+                                        + ", air-ticks: " + airTicks,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

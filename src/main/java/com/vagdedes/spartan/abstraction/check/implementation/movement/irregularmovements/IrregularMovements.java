@@ -49,7 +49,7 @@ public class IrregularMovements extends CheckExecutor {
 
             if (knownBox || knownOldBox) {
                 if (vertical == 0.0) {
-                    this.horizontal.run();
+                    this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
                 } else {
                     step.run(knownBox, knownOldBox, box, oldBox, vertical);
                 }

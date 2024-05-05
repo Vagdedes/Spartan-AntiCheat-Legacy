@@ -39,6 +39,8 @@ public class IrregularMovementsJump extends DetectionExecutor {
 
     void run(double vertical, double box) {
         if (hackType.getCheck().getBooleanOption("check_jump", true)) {
+            int airTicks = player.movement.getTicksOnAir();
+
             runAsync(() -> {
                 if (player.getTrackers().has(Trackers.TrackerFamily.Velocity)
                         ? player.movement.justJumped(vertical)
@@ -51,7 +53,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                             + ", box: " + box
                                             + ", vertical: " + vertical
                                             + ", jump-effect: " + jumpEffect
-                                            + ", air-ticks: " + player.movement.getTicksOnAir(),
+                                            + ", air-ticks: " + airTicks,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true
@@ -61,13 +63,13 @@ public class IrregularMovementsJump extends DetectionExecutor {
 
                             if (!player.isOnGround()
                                     && !player.movement.wasInLiquids()
-                                    && player.movement.getTicksOnAir() > limit
+                                    && airTicks > limit
                                     && !player.isOnGround(player.movement.getNmsFromLocation())) {
                                 cancel("type: jump(ticks)"
                                                 + ", box: " + box
                                                 + ", vertical: " + vertical
                                                 + ", jump-effect: " + jumpEffect
-                                                + ", air-ticks: " + player.movement.getTicksOnAir()
+                                                + ", air-ticks: " + airTicks
                                                 + ", limit: " + limit,
                                         player.movement.getDetectionLocation(),
                                         0,
