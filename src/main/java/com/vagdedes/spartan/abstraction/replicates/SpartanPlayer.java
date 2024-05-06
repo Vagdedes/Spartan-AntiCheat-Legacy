@@ -1469,18 +1469,12 @@ public class SpartanPlayer {
         }
     }
 
-    public boolean groundTeleport(boolean checkGround) {
-        if (!Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
+    public boolean groundTeleport() {
+        if (!Config.settings.getBoolean("Detections.ground_teleport_on_detection") || this.onGroundCustom) {
             return false;
         }
-        SpartanLocation location = this.movement.getLocation();
-
-        if (checkGround
-                && this.onGroundCustom
-                && GroundUtils.isOnGround(this, location, 0.0, false, false)) {
-            return false;
-        }
-        SpartanLocation locationP1 = location.clone().add(0, 1, 0);
+        SpartanLocation location = this.movement.getLocation(),
+                locationP1 = location.clone().add(0, 1, 0);
 
         if (BlockUtils.isSolid(locationP1)
                 && !(BlockUtils.areWalls(locationP1) || BlockUtils.canClimb(locationP1))) {

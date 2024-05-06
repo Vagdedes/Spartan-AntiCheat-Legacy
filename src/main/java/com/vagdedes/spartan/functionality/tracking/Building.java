@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.data.Timer;
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -20,8 +19,6 @@ public class Building {
         if (p.movement.isFlying() || Permissions.isBypassing(p, null)) {
             return;
         }
-        Trackers handlers = p.getTrackers();
-
         if (cancelled) {
             Timer timer = p.getTimer();
             long ms = timer.get(key);
@@ -33,7 +30,7 @@ public class Building {
                     || p.getBuffer().start("building=protection=attempts", 20, Check.detectionMeasurementTicks) >= 0.25)) {
                 if (Config.settings.getBoolean("Protections.disallowed_building")) {
                     teleport(p, p.movement.getLocation());
-                    p.groundTeleport(false);
+                    p.groundTeleport();
                 }
                 return;
             }

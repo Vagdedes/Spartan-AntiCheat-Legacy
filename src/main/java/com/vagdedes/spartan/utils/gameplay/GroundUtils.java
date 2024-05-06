@@ -180,7 +180,7 @@ public class GroundUtils {
 
     // Method
 
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y, boolean liquid, boolean climbable) {
+    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y, boolean liquid, boolean climbable) { // todo fix
         boolean original = y == 0;
 
         if (original) {

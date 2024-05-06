@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
 public class IrregularMovementsHorizontal extends DetectionExecutor {
 
@@ -16,9 +17,21 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
             runAsync(() -> {
                 if (airTicks > 0) {
                     if (knownBox || knownOldBox) {
-                        player.debug(true, false, false,
-                                player.movement.getTicksOnAir(), box, oldBox
-                        );
+                        int limit = PlayerUtils.getJumpTicks(0);
+
+                        if (airTicks > limit) {
+                            cancel(
+                                    "type: horizontal(known)"
+                                            + ", box: " + box
+                                            + ", old-box: " + oldBox
+                                            + ", vertical: " + vertical
+                                            + ", air-ticks: " + airTicks
+                                            + ", limit: " + limit,
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
+                        }
                     } else {
                         cancel(
                                 "type: horizontal(abstract)"

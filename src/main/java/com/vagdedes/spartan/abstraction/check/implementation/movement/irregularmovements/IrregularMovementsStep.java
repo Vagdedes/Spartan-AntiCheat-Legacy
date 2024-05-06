@@ -99,16 +99,23 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 0
                         );
 
-                        if (vertical > limit && vertical != (box - oldBox)) {
-                            cancel(
-                                    "type: step(abstract-up)"
-                                            + ", box: " + box
-                                            + ", old-box: " + oldBox
-                                            + ", vertical: " + vertical,
-                                    player.movement.getDetectionLocation(),
-                                    0,
-                                    true
-                            );
+                        if (vertical > limit) {
+                            double predictedHeight = box - oldBox;
+
+                            if (predictedHeight < 0.0) {
+                                predictedHeight += 1.0;
+                            }
+                            if (predictedHeight != vertical) {
+                                cancel(
+                                        "type: step(abstract-up)"
+                                                + ", box: " + box
+                                                + ", old-box: " + oldBox
+                                                + ", vertical: " + vertical,
+                                        player.movement.getDetectionLocation(),
+                                        0,
+                                        true
+                                );
+                            }
                         }
                     } else {
                         if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
