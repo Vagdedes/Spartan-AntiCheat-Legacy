@@ -10,13 +10,13 @@ public class Speed extends CheckExecutor {
 
     public static final HackType check = HackType.Speed;
     private final SpeedMotion motion;
-    private final SpeedSprint sprint;
+    private final SpeedFoodSprint sprint;
 
     public Speed(SpartanPlayer player) {
         super(check, player, 2);
         this.addDetections(new DetectionExecutor[]{
                 motion = new SpeedMotion(this),
-                sprint = new SpeedSprint(this)
+                sprint = new SpeedFoodSprint(this)
         });
     }
 
