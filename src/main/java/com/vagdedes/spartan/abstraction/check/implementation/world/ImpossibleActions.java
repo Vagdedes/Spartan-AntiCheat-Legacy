@@ -23,7 +23,7 @@ public class ImpossibleActions extends CheckExecutor {
     public boolean handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
             if (object instanceof BlockPlaceEvent) {
-                // todo
+                // todo tower, scaffold
             } else {
                 PlayerInteractEvent event = (PlayerInteractEvent) object;
                 Action action = event.getAction();

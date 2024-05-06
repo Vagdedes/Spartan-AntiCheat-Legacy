@@ -105,7 +105,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             if (predictedHeight < 0.0) {
                                 predictedHeight += 1.0;
                             }
-                            if (predictedHeight != vertical) {
+                            if (predictedHeight != vertical
+                                    || vertical > GroundUtils.maxPlayerStep) {
                                 cancel(
                                         "type: step(abstract-up)"
                                                 + ", box: " + box
