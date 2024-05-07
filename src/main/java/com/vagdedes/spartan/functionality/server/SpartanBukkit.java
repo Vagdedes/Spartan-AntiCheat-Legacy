@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.IDs;
-import com.vagdedes.spartan.functionality.connection.Piracy;
+import com.vagdedes.spartan.functionality.connection.JarVerification;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.utils.server.ReflectionUtils;
 import org.bukkit.Bukkit;
@@ -17,10 +17,10 @@ import java.util.*;
 public class SpartanBukkit {
 
     public static final boolean
-            testMode = !Piracy.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart()
+            testMode = !JarVerification.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart()
             && Bukkit.getMotd().contains(Register.plugin.getName()),
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
-            canAdvertise = !Piracy.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
+            canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),

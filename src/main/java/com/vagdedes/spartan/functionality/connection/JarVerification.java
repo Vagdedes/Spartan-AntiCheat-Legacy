@@ -11,14 +11,13 @@ import com.vagdedes.spartan.utils.java.RequestUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Piracy implements Listener {
+public class JarVerification {
 
     private static final Set<String> administrators = new HashSet<>(20);
 
@@ -49,7 +48,7 @@ public class Piracy implements Listener {
 
         // Separator
         long delay = 1200L;
-        Object scheduledTask = SpartanBukkit.runRepeatingTask(Piracy::collectAdministrators, 1L, 20L);
+        Object scheduledTask = SpartanBukkit.runRepeatingTask(JarVerification::collectAdministrators, 1L, 20L);
 
         SpartanBukkit.runDelayedTask(() -> SpartanBukkit.connectionThread.execute(() -> {
             boolean b = isValid(IDs.site(), IDs.user(), IDs.nonce());
@@ -70,7 +69,7 @@ public class Piracy implements Listener {
         }, delay * (two + 1L));
     }
 
-    static boolean isSupplied() {
+    private static boolean isSupplied() {
         return enabled || CloudBase.hasToken();
     }
 
@@ -153,4 +152,5 @@ public class Piracy implements Listener {
             }
         }
     }
+
 }

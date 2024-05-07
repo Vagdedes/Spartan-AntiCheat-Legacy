@@ -4,7 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.IDs;
-import com.vagdedes.spartan.functionality.connection.Piracy;
+import com.vagdedes.spartan.functionality.connection.JarVerification;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -43,7 +43,7 @@ public class CloudBase {
 
     // Parameters
     static String identification = "", token = null;
-    static final double version = Math.abs(Piracy.version);
+    static final double version = Math.abs(JarVerification.version);
     public static final String separator = ">@#&!%<;=";
 
     static {
