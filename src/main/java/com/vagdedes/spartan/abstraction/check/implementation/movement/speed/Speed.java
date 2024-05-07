@@ -10,13 +10,13 @@ public class Speed extends CheckExecutor {
 
     public static final HackType check = HackType.Speed;
     private final SpeedMotion motion;
-    private final SpeedFoodSprint sprint;
+    private final SpeedFoodSprint foodSprint;
 
     public Speed(SpartanPlayer player) {
         super(check, player, 2);
         this.addDetections(new DetectionExecutor[]{
                 motion = new SpeedMotion(this),
-                sprint = new SpeedFoodSprint(this)
+                foodSprint = new SpeedFoodSprint(this)
         });
     }
 
@@ -28,7 +28,8 @@ public class Speed extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
-            // todo
+            motion.run();
+            foodSprint.run();
         }
         return false;
     }

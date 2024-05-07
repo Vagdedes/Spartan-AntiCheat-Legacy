@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat.fastClicks;
+package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;

@@ -10,6 +10,10 @@ public abstract class CheckExecutor extends DetectionExecutor {
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections) {
         super(null, hackType, player);
         this.detections = new DetectionExecutor[detections];
+
+        if (player != null) {
+            player.setExecutor(hackType, this);
+        }
     }
 
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player) {

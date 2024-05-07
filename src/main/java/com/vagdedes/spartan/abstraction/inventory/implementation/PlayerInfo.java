@@ -57,8 +57,8 @@ public class PlayerInfo extends InventoryMenu {
 
             int i = 10;
 
-            for (Enums.CheckType checkType : Enums.CheckType.values()) {
-                if (checkType == Enums.CheckType.EXPLOITS) {
+            for (Enums.HackCategoryType checkType : Enums.HackCategoryType.values()) {
+                if (checkType == Enums.HackCategoryType.EXPLOITS) {
                     addCheck(HackType.Exploits, 15, isOnline, target, playerProfile, lore);
                 } else {
                     addChecks(i, isOnline, target, playerProfile, lore, checkType);
@@ -125,7 +125,7 @@ public class PlayerInfo extends InventoryMenu {
 
     private void addChecks(int slot, boolean isOnline,
                            SpartanPlayer player, PlayerProfile playerProfile,
-                           List<String> lore, Enums.CheckType checkType) {
+                           List<String> lore, Enums.HackCategoryType checkType) {
         lore.clear();
         lore.add("");
         int violations = 0;
@@ -133,7 +133,7 @@ public class PlayerInfo extends InventoryMenu {
 
         if (isOnline) {
             for (HackType hackType : hackTypes) {
-                if (hackType.getCheck().type == checkType) {
+                if (hackType.category == checkType) {
                     violations += player.getViolations(hackType).getTotalLevel();
                 }
             }
@@ -155,7 +155,7 @@ public class PlayerInfo extends InventoryMenu {
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
 
         for (HackType hackType : hackTypes) {
-            if (hackType.getCheck().type == checkType) {
+            if (hackType.category == checkType) {
                 violations = isOnline ? player.getViolations(hackType).getTotalLevel() : 0;
                 boolean hasViolations = violations > 0,
                         hasData = playerProfile.evidence.has(hackType);

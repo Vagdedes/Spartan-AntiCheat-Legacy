@@ -29,7 +29,6 @@ public class Check {
 
     public final Enums.HackType hackType;
     private String name;
-    public final Enums.CheckType type;
     private final Map<String, Object> options;
     private boolean silent;
     public final boolean handleCancelledEvents;
@@ -40,8 +39,8 @@ public class Check {
             supportsLiveEvidence,
             supportsSilent;
     private final String[]
-            disabledWorlds, silentWorlds,
-            description;
+            disabledWorlds,
+            silentWorlds;
 
     // Object Methods
 
@@ -52,180 +51,6 @@ public class Check {
     public Check(Enums.HackType hackType,
                  Map<Enums.DataType, Map<Integer, Integer>> ignoredViolations,
                  boolean copy) {
-        switch (hackType) {
-            case KillAura:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to have an 'apparent'",
-                        "combat advantage against any entity."};
-                break;
-            case Exploits:
-                this.description = new String[]{"This check will prevent client",
-                        "modules that may potentially hurt",
-                        "a server's functional performance."};
-                break;
-            case HitReach:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to hit entities",
-                        "from an abnormally long distance"};
-                break;
-            case Velocity:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to receive abnormal",
-                        "amounts of knockback, or none at all."};
-                break;
-            case Speed:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to travel faster",
-                        "than what is physically allowed."};
-                break;
-            case NoSwing:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that manipulate packets and prevent",
-                        "interaction animations from being shown."};
-                break;
-            case IrregularMovements:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to move abnormally,",
-                        "such as stepping blocks or climbing walls."};
-                break;
-            case NoFall:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to decrease or",
-                        "eliminate falling damage."};
-                break;
-            case GhostHand:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to interact or break",
-                        "blocks through walls of blocks."};
-                break;
-            case BlockReach:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to build or break",
-                        "blocks within an abnormally long distance."};
-                break;
-            case FastBreak:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to break one or multiple",
-                        "blocks irregularly fast."};
-                break;
-            case FastClicks:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to click abnormally fast",
-                        "or have an irregular clicking consistency."};
-                break;
-            case Criticals:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to critical damage",
-                        "an entity without properly moving."};
-                break;
-            case MorePackets:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to send abnormally",
-                        "high amounts of movement packets."};
-                break;
-            case ImpossibleActions:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to execute actions",
-                        "in abnormal cases, such as when sleeping."};
-                break;
-            case FastPlace:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to place blocks",
-                        "in abnormally fast rates."};
-                break;
-            case AutoRespawn:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to respawn faster",
-                        "than what is physically expected."};
-                break;
-            case FastBow:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to shoot arrows",
-                        "in abnormally fast rates."};
-                break;
-            case FastEat:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to consume an amount",
-                        "of food in an abnormal amount of time."};
-                break;
-            case FastHeal:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to heal faster",
-                        "than what is physically allowed."};
-                break;
-            case ItemDrops:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to drop an amount",
-                        "of items in abnormally fast rates."};
-                break;
-            case InventoryClicks:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to interact with an",
-                        "amount of items, in abnormally fast rates."};
-                break;
-            case ImpossibleInventory:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to interact with",
-                        "an inventory in abnormal cases, such",
-                        "as when sprinting or walking."};
-                break;
-            case XRay:
-                this.description = new String[]{"This check will prevent client modules",
-                        "that allow a player to see through blocks",
-                        "in order to find rare ores, such as diamonds,",
-                        "gold, and even emerald. (Logs must be enabled)"};
-                break;
-            default:
-                this.description = new String[]{};
-                break;
-        }
-
-        // Separator
-
-        switch (hackType) {
-            case KillAura:
-            case Criticals:
-            case FastBow:
-            case FastClicks:
-            case HitReach:
-            case Velocity:
-                this.type = Enums.CheckType.COMBAT;
-                break;
-            case Exploits:
-                this.type = Enums.CheckType.EXPLOITS;
-                break;
-            case ImpossibleInventory:
-            case InventoryClicks:
-            case ItemDrops:
-                this.type = Enums.CheckType.INVENTORY;
-                break;
-            case AutoRespawn:
-            case FastEat:
-            case FastHeal:
-            case NoSwing:
-                this.type = Enums.CheckType.PLAYER;
-                break;
-            case Speed:
-            case IrregularMovements:
-            case MorePackets:
-            case NoFall:
-                this.type = Enums.CheckType.MOVEMENT;
-                break;
-            case FastPlace:
-            case FastBreak:
-            case BlockReach:
-            case GhostHand:
-            case XRay:
-            case ImpossibleActions:
-                this.type = Enums.CheckType.WORLD;
-                break;
-            default:
-                this.type = null;
-                break;
-        }
-
-        // Separator
-
         this.options = Collections.synchronizedMap(new LinkedHashMap<>());
         this.hackType = hackType;
         this.ignoredViolations = copy ? ignoredViolations : Collections.synchronizedMap(ignoredViolations);
@@ -460,12 +285,6 @@ public class Check {
 
     public String[] getDisabledWorlds() {
         return disabledWorlds;
-    }
-
-    // Separator
-
-    public String[] getDescription() {
-        return description;
     }
 
     // Separator

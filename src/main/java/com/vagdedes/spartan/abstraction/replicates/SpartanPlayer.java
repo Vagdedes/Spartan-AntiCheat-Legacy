@@ -2,26 +2,8 @@ package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.EmptyCheckExecutor;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.Criticals;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.FastBow;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.HitReach;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.Velocity;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.fastClicks.FastClicks;
-import com.vagdedes.spartan.abstraction.check.implementation.combat.killAura.KillAura;
-import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;
-import com.vagdedes.spartan.abstraction.check.implementation.inventory.ImpossibleInventory;
-import com.vagdedes.spartan.abstraction.check.implementation.inventory.InventoryClicks;
-import com.vagdedes.spartan.abstraction.check.implementation.inventory.ItemDrops;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
-import com.vagdedes.spartan.abstraction.check.implementation.player.AutoRespawn;
-import com.vagdedes.spartan.abstraction.check.implementation.player.FastEat;
-import com.vagdedes.spartan.abstraction.check.implementation.player.FastHeal;
-import com.vagdedes.spartan.abstraction.check.implementation.player.NoSwing;
-import com.vagdedes.spartan.abstraction.check.implementation.world.*;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.data.*;
@@ -419,82 +401,16 @@ public class SpartanPlayer {
             this.decimals[id] = new Decimals();
             this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
-
-            switch (hackType) {
-                case KillAura:
-                    this.executors[id] = new KillAura(this);
-                    break;
-                case Exploits:
-                    this.executors[id] = new Exploits(this);
-                    break;
-                case HitReach:
-                    this.executors[id] = new HitReach(this);
-                    break;
-                case Velocity:
-                    this.executors[id] = new Velocity(this);
-                    break;
-                case Speed:
-                    this.executors[id] = new Speed(this);
-                    break;
-                case NoSwing:
-                    this.executors[id] = new NoSwing(this);
-                    break;
-                case IrregularMovements:
-                    this.executors[id] = new IrregularMovements(this);
-                    break;
-                case NoFall:
-                    this.executors[id] = new NoFall(this);
-                    break;
-                case GhostHand:
-                    this.executors[id] = new GhostHand(this);
-                    break;
-                case BlockReach:
-                    this.executors[id] = new BlockReach(this);
-                    break;
-                case FastBreak:
-                    this.executors[id] = new FastBreak(this);
-                    break;
-                case FastClicks:
-                    this.executors[id] = new FastClicks(this);
-                    break;
-                case Criticals:
-                    this.executors[id] = new Criticals(this);
-                    break;
-                case MorePackets:
-                    this.executors[id] = new MorePackets(this);
-                    break;
-                case ImpossibleActions:
-                    this.executors[id] = new ImpossibleActions(this);
-                    break;
-                case FastPlace:
-                    this.executors[id] = new FastPlace(this);
-                    break;
-                case AutoRespawn:
-                    this.executors[id] = new AutoRespawn(this);
-                    break;
-                case FastBow:
-                    this.executors[id] = new FastBow(this);
-                    break;
-                case FastEat:
-                    this.executors[id] = new FastEat(this);
-                    break;
-                case FastHeal:
-                    this.executors[id] = new FastHeal(this);
-                    break;
-                case ItemDrops:
-                    this.executors[id] = new ItemDrops(this);
-                    break;
-                case InventoryClicks:
-                    this.executors[id] = new InventoryClicks(this);
-                    break;
-                case ImpossibleInventory:
-                    this.executors[id] = new ImpossibleInventory(this);
-                    break;
-                case XRay:
-                    this.executors[id] = new XRay(this);
-                    break;
-                default:
-                    break;
+            this.executors[id] = new EmptyCheckExecutor();
+        }
+        if (EmptyCheckExecutor.executors.length > 0) {
+            for (String executorClass : EmptyCheckExecutor.executors) {
+                try {
+                    CheckExecutor executor = (CheckExecutor) Class.forName(executorClass).getConstructor(SpartanPlayer.class).newInstance(this);
+                    this.executors[executor.hackType.ordinal()] = executor;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
         this.lastViolation = this.violations[0];
@@ -594,6 +510,10 @@ public class SpartanPlayer {
 
     public CheckExecutor getExecutor(Enums.HackType hackType) {
         return executors[hackType.ordinal()];
+    }
+
+    public void setExecutor(Enums.HackType hackType, CheckExecutor executor) {
+        executors[hackType.ordinal()] = executor;
     }
 
     // Separator

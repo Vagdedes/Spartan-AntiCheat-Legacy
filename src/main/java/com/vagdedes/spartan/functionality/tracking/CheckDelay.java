@@ -21,7 +21,7 @@ public class CheckDelay {
         List<Enums.HackType> checksAffectedByCombatArray = new ArrayList<>(hackTypes.length);
 
         for (Enums.HackType hackType : hackTypes) {
-            switch (hackType.getCheck().type) {
+            switch (hackType.category) {
                 case MOVEMENT:
                 case COMBAT:
                 case EXPLOITS:

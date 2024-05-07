@@ -1,15 +1,16 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat.killAura;
+package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 
-public class HitTime extends DetectionExecutor {
+public class HitDirection extends DetectionExecutor {
 
-    HitTime(CheckExecutor executor) {
+    HitDirection(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
     }
 
     void run() {
         // todo
     }
+
 }
