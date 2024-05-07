@@ -330,7 +330,7 @@ public class SpartanPlayer {
         this.runCheck = new LinkedHashMap<>(hackTypes.length);
         this.runCheckAccountLag = new LinkedHashMap<>(hackTypes.length);
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
-        this.dataType = bedrockPlayer ? Enums.DataType.Bedrock : Enums.DataType.Java;
+        this.dataType = bedrockPlayer ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
         this.trackers = new Trackers(this);
 
         this.ipAddress = PlayerLimitPerIP.get(p);
@@ -889,7 +889,7 @@ public class SpartanPlayer {
                     if (targetBlock != null && BlockUtils.isSolid(targetBlock.material)) {
                         SpartanLocation targetBlockLocation = targetBlock.getLocation();
 
-                        if (clickedBlockLocation.distance(targetBlockLocation) >= (trackers.has(Trackers.TrackerType.ElytraUse) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
+                        if (clickedBlockLocation.distance(targetBlockLocation) >= (trackers.has(Trackers.TrackerType.ELYTRA_USE) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
 
                                 && (targetBlock.x != clickedBlock.x
                                 || targetBlock.y != clickedBlock.y
@@ -1037,7 +1037,7 @@ public class SpartanPlayer {
 
     public boolean hasShield() {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                && !Compatibility.CompatibilityType.OldCombatMechanics.isFunctional()
+                && !Compatibility.CompatibilityType.OLD_COMBAT_MECHANICS.isFunctional()
                 && (isUsingItem()
                 || getItemInHand().getType() == Material.SHIELD
                 || inventory.itemInOffHand.getType() == Material.SHIELD);
@@ -1464,7 +1464,7 @@ public class SpartanPlayer {
             this.movement.setSwimming(false, 0);
             this.movement.setGliding(false, false);
             this.movement.removeLastLiquidTime();
-            this.trackers.removeMany(Trackers.TrackerFamily.Velocity);
+            this.trackers.removeMany(Trackers.TrackerFamily.VELOCITY);
 
             if (MultiVersion.folia) {
                 p.teleportAsync(location.getBukkitLocation());
@@ -1480,7 +1480,7 @@ public class SpartanPlayer {
     // Separator
 
     public boolean applyFallDamage(double d) {
-        trackers.disable(Trackers.TrackerType.AbstractVelocity, 3);
+        trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 3);
         return this.damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 
@@ -1501,10 +1501,10 @@ public class SpartanPlayer {
     // Separator
 
     public String getCancellableCompatibility() {
-        return MythicMobs.is(this) ? Compatibility.CompatibilityType.MythicMobs.toString() :
-                ItemsAdder.is(this) ? Compatibility.CompatibilityType.ItemsAdder.toString() :
-                        CustomEnchantsPlus.has(this) ? Compatibility.CompatibilityType.CustomEnchantsPlus.toString() :
-                                EcoEnchants.has(this) ? Compatibility.CompatibilityType.EcoEnchants.toString() : null;
+        return MythicMobs.is(this) ? Compatibility.CompatibilityType.MYTHIC_MOBS.toString() :
+                ItemsAdder.is(this) ? Compatibility.CompatibilityType.ITEMS_ADDER.toString() :
+                        CustomEnchantsPlus.has(this) ? Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS.toString() :
+                                EcoEnchants.has(this) ? Compatibility.CompatibilityType.ECO_ENCHANTS.toString() : null;
     }
 
     // Separator

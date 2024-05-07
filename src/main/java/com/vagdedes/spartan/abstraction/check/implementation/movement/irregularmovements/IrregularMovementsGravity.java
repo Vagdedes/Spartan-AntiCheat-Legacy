@@ -37,9 +37,9 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                     : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1),
                             limit = Math.max(
                                     product / (double) airTicks,
-                                    player.getTrackers().has(Trackers.TrackerFamily.Velocity)
+                                    player.getTrackers().has(Trackers.TrackerFamily.VELOCITY)
                                             ? GroundUtils.maxPossibleStep :
-                                            liquid || player.getTrackers().has(Trackers.TrackerFamily.Motion)
+                                            liquid || player.getTrackers().has(Trackers.TrackerFamily.MOTION)
                                                     ? GroundUtils.maxPlayerStep :
                                                     player.bedrockPlayer ? PlayerUtils.jumpAcceleration :
                                                             GroundUtils.maxHeightLengthRatio

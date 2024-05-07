@@ -19,7 +19,7 @@ public class RampenDrills implements Listener {
         if (p == null) {
             return;
         }
-        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.RampenDrills;
+        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.RAMPEN_DRILLS;
 
         if (compatibilityType.isFunctional()) {
             CheckDelay.evadeCommonFalsePositives(p, compatibilityType,

@@ -13,7 +13,7 @@ import org.bukkit.entity.Wolf;
 public class mcMMO {
 
     public static boolean hasGeneralAbility(SpartanPlayer p) {
-        if (Compatibility.CompatibilityType.mcMMO.isFunctional()) {
+        if (Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
             Player n = p.getPlayer();
             return n != null && n.isOnline() && AbilityAPI.isAnyAbilityEnabled(n)
 
@@ -27,7 +27,7 @@ public class mcMMO {
     }
 
     public static boolean hasTreeFeller(SpartanPlayer p) {
-        if (Compatibility.CompatibilityType.mcMMO.isFunctional()) {
+        if (Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
             Player n = p.getPlayer();
             return n != null && n.isOnline() && AbilityAPI.treeFellerEnabled(n);
         } else {

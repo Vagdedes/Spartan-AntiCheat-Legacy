@@ -21,9 +21,9 @@ public class TridentUse {
                     int ticks = AlgebraUtils.integerRound(Math.log(level) * TPS.maximum);
 
                     if (level > riptideMaxSafeLevel) {
-                        p.getTrackers().add(Trackers.TrackerType.AbstractVelocity, ticks);
+                        p.getTrackers().add(Trackers.TrackerType.ABSTRACT_VELOCITY, ticks);
                     } else {
-                        p.getTrackers().add(Trackers.TrackerType.Trident, ticks);
+                        p.getTrackers().add(Trackers.TrackerType.TRIDENT, ticks);
                     }
                     break;
                 }

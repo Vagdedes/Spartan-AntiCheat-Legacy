@@ -17,8 +17,8 @@ import java.util.List;
 
 public class SpartanEdition {
 
-    private static final Enums.DataType dataType = Enums.DataType.Java,
-            oppositeType = dataType == Enums.DataType.Java ? Enums.DataType.Bedrock : Enums.DataType.Java;
+    private static final Enums.DataType dataType = Enums.DataType.JAVA,
+            oppositeType = dataType == Enums.DataType.JAVA ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
 
     private static long checkTime = 0L;
     public static final String[] jarNames = new String[]{
@@ -72,7 +72,7 @@ public class SpartanEdition {
 
     private static String getProductID(Enums.DataType dataType) {
         switch (dataType) {
-            case Bedrock:
+            case BEDROCK:
                 return "16";
             default:
                 return "1";
@@ -109,7 +109,7 @@ public class SpartanEdition {
 
                         if ((time - checkTime) >= 60_000L) {
                             checkTime = time;
-                            boolean bedrockIsMissingDetection = missingDetection == Enums.DataType.Bedrock;
+                            boolean bedrockIsMissingDetection = missingDetection == Enums.DataType.BEDROCK;
 
                             if (bedrockIsMissingDetection == player.bedrockPlayer) {
                                 notifyCache = true;
@@ -169,10 +169,10 @@ public class SpartanEdition {
                             .replace(
                                     product,
                                     IDs.isBuiltByBit()
-                                            ? (dataType == Enums.DataType.Java
+                                            ? (dataType == Enums.DataType.JAVA
                                             ? "https://builtbybit.com/resources/12832"
                                             : "https://builtbybit.com/resources/11196")
-                                            : (dataType == Enums.DataType.Java
+                                            : (dataType == Enums.DataType.JAVA
                                             ? "https://polymart.org/resource/3600"
                                             : "https://polymart.org/resource/350")
                             )

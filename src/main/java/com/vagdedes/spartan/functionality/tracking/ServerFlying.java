@@ -17,8 +17,8 @@ public class ServerFlying {
                 && p.getVehicle() == null
                 && !p.isSleeping()
                 && !p.isDead()
-                && !p.getTrackers().has(Trackers.TrackerFamily.Velocity)
-                && !p.getTrackers().has(Trackers.TrackerFamily.Motion)
+                && !p.getTrackers().has(Trackers.TrackerFamily.VELOCITY)
+                && !p.getTrackers().has(Trackers.TrackerFamily.MOTION)
                 && !Attributes.has(p, Attributes.GENERIC_FLYING_SPEED)) {
             double limit = (p.getFlySpeed() * 10.0) + 1.0;
             Double nmsDistance = p.movement.getNmsDistance();

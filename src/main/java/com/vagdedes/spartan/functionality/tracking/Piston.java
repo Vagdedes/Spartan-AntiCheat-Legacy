@@ -53,7 +53,7 @@ public class Piston {
     private static boolean run(SpartanPlayer player, double preX, double diffY, double preZ) {
         if (Math.sqrt(preX + preZ) <= horizontalDistance
                 && Math.abs(diffY) <= verticalDistance) {
-            player.getTrackers().add(Trackers.TrackerType.Piston, (int) TPS.maximum);
+            player.getTrackers().add(Trackers.TrackerType.PISTON, (int) TPS.maximum);
             return true;
         }
         return false;

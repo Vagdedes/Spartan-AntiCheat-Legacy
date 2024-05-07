@@ -25,7 +25,7 @@ public class Elytra {
                             cooldowns.add("elytra-wear", 2);
 
                             if (gliding) {
-                                p.getTrackers().add(Trackers.TrackerType.ElytraUse, (int) (TPS.maximum / 2));
+                                p.getTrackers().add(Trackers.TrackerType.ELYTRA_USE, (int) (TPS.maximum / 2));
                             }
                         }
                     } else {

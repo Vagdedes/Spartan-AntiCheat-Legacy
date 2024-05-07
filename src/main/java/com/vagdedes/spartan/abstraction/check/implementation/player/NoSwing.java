@@ -87,7 +87,7 @@ public class NoSwing extends CheckExecutor {
         if (!canDo()
                 || !hackType.getCheck().getBooleanOption("check_damage", true)
                 || player.hasAttackCooldown()
-                || player.getTrackers().has(Trackers.TrackerType.Trident)) {
+                || player.getTrackers().has(Trackers.TrackerType.TRIDENT)) {
             return;
         }
         Cooldowns cooldowns = player.getCooldowns(hackType);

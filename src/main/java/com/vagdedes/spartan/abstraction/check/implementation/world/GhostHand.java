@@ -88,7 +88,7 @@ public class GhostHand extends CheckExecutor {
         if (!player.bedrockPlayer
                 && player.canRunCheck(hackType, true)
                 && !player.movement.isFlying()
-                && !player.getTrackers().has(Trackers.TrackerType.GameMode)
+                && !player.getTrackers().has(Trackers.TrackerType.GAME_MODE)
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.canCancel(player)
                 && !mcMMO.hasGeneralAbility(player)) {

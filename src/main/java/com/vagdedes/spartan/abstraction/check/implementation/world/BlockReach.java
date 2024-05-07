@@ -135,12 +135,12 @@ public class BlockReach extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return !Compatibility.CompatibilityType.mcMMO.isFunctional()
+        return !Compatibility.CompatibilityType.MC_MMO.isFunctional()
                 && player.canRunCheck(hackType, true)
                 && !PrinterMode.canCancel(player)
                 && !MineBomb.canUse(player)
                 && !AureliumSkills.canCancel(player)
                 && !MineBomb.canUse(player)
-                && !Compatibility.CompatibilityType.CraftBook.isFunctional();
+                && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
     }
 }

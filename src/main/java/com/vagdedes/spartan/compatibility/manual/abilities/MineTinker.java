@@ -19,7 +19,7 @@ public class MineTinker implements Listener {
         if (p == null) {
             return;
         }
-        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.MineTinker;
+        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.MINE_TINKER;
 
         if (compatibilityType.isFunctional()) {
             CheckDelay.evadeCommonFalsePositives(p, compatibilityType,

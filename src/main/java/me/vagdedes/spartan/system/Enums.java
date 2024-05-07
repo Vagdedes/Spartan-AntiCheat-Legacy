@@ -263,31 +263,6 @@ public class Enums {
         ENABLE, DISABLE
     }
 
-    public enum Debug {
-        COMBAT, MOVEMENT, MISC;
-
-        private final String string;
-
-        Debug() {
-            switch (this.ordinal()) {
-                case 0:
-                    string = "Combat";
-                    break;
-                case 1:
-                    string = "Movement";
-                    break;
-                default:
-                    string = "Misc";
-                    break;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return string;
-        }
-    }
-
     public enum HackCategoryType {
         COMBAT, MOVEMENT, EXPLOITS, PLAYER, WORLD, INVENTORY;
 
@@ -324,7 +299,7 @@ public class Enums {
     }
 
     public enum DataType {
-        Java, Bedrock, Universal;
+        JAVA, BEDROCK, UNIVERSAL;
 
         public final String lowerCase;
 

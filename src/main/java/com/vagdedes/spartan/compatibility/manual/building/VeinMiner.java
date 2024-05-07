@@ -19,13 +19,13 @@ public class VeinMiner implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Event(PlayerVeinMineEvent e) {
-        if (Compatibility.CompatibilityType.VeinMiner.isFunctional()) {
+        if (Compatibility.CompatibilityType.VEIN_MINER.isFunctional()) {
             SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
             if (p == null) {
                 return;
             }
-            CheckDelay.evadeCommonFalsePositives(p, Compatibility.CompatibilityType.VeinMiner,
+            CheckDelay.evadeCommonFalsePositives(p, Compatibility.CompatibilityType.VEIN_MINER,
                     new Enums.HackType[]{
                             Enums.HackType.NoSwing,
                             Enums.HackType.FastBreak,

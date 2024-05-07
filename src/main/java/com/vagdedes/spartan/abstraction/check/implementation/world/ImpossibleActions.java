@@ -34,7 +34,7 @@ public class ImpossibleActions extends CheckExecutor {
                         || action == Action.RIGHT_CLICK_BLOCK)
                         && player.canRunCheck(hackType, true)
                         && hackType.getCheck().getBooleanOption("check_actions", true)
-                        && !Compatibility.CompatibilityType.mcMMO.isFunctional()) {
+                        && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
                     int cases;
 
                     if (player.isSleeping()) {

@@ -42,7 +42,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
             int airTicks = player.movement.getTicksOnAir();
 
             runAsync(() -> {
-                if (player.getTrackers().has(Trackers.TrackerFamily.Velocity)
+                if (player.getTrackers().has(Trackers.TrackerFamily.VELOCITY)
                         ? player.movement.justJumped(vertical)
                         : player.movement.isJumping(vertical)) {
                     int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;

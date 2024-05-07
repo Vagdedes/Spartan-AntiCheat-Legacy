@@ -17,8 +17,7 @@ public class SpeedFoodSprint extends DetectionExecutor {
             int food = player.getFoodLevel();
 
             runAsync(() -> {
-                if (sprinting
-                        && food <= 6
+                if (sprinting && food <= 6
                         && (gameMode == GameMode.SURVIVAL
                         || gameMode == GameMode.ADVENTURE)) {
                     player.debug(

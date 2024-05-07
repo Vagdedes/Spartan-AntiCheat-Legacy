@@ -19,7 +19,7 @@ public class RealDualWield implements Listener {
         if (p == null) {
             return;
         }
-        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.RealDualWield;
+        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.REAL_DUAL_WIELD;
 
         if (compatibilityType.isFunctional()) {
             CheckDelay.evadeCommonFalsePositives(p, compatibilityType,

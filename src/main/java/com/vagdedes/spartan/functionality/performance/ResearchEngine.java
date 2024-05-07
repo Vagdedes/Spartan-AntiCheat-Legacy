@@ -42,7 +42,7 @@ public class ResearchEngine {
 
     private static boolean enoughData = false;
 
-    public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.Java, Enums.DataType.Bedrock};
+    public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.JAVA, Enums.DataType.BEDROCK};
     private static StatisticalProgress statisticalProgress = new StatisticalProgress();
 
     private static final Map<String, PlayerProfile> playerProfiles
@@ -102,8 +102,8 @@ public class ResearchEngine {
     public static Enums.DataType[] getDynamicUsableDataTypes(boolean universal) {
         Enums.DataType dataType = SpartanEdition.getMissingDetection();
         return dataType == null ? (universal ? Enums.DataType.values() : usableDataTypes) :
-                dataType == Enums.DataType.Bedrock ? (universal ? new Enums.DataType[]{Enums.DataType.Universal, Enums.DataType.Java} : new Enums.DataType[]{Enums.DataType.Java}) :
-                        (universal ? new Enums.DataType[]{Enums.DataType.Universal, Enums.DataType.Bedrock} : new Enums.DataType[]{Enums.DataType.Bedrock});
+                dataType == Enums.DataType.BEDROCK ? (universal ? new Enums.DataType[]{Enums.DataType.UNIVERSAL, Enums.DataType.JAVA} : new Enums.DataType[]{Enums.DataType.JAVA}) :
+                        (universal ? new Enums.DataType[]{Enums.DataType.UNIVERSAL, Enums.DataType.BEDROCK} : new Enums.DataType[]{Enums.DataType.BEDROCK});
     }
 
     // Separator
@@ -268,11 +268,11 @@ public class ResearchEngine {
             return null;
         }
         Collection<PlayerViolation> list = new ArrayList<>(size);
-        boolean universal = dataType == Enums.DataType.Universal;
+        boolean universal = dataType == Enums.DataType.UNIVERSAL;
 
         // Separator
         for (PlayerProfile playerProfile : profiles) {
-            if (universal || ((dataType == Enums.DataType.Bedrock) == playerProfile.isBedrockPlayer())) {
+            if (universal || ((dataType == Enums.DataType.BEDROCK) == playerProfile.isBedrockPlayer())) {
                 list.addAll(playerProfile.getViolationHistory(hackType).getRawCollection());
             }
         }
@@ -705,7 +705,7 @@ public class ResearchEngine {
 
                     for (Enums.DataType dataType : dataTypes) {
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
-                            boolean bedrock = dataType == Enums.DataType.Bedrock;
+                            boolean bedrock = dataType == Enums.DataType.BEDROCK;
                             Map<Integer, ViolationAnalysis.TimePeriod> averages = new LinkedHashMap<>();
 
                             for (PlayerProfile playerProfile : playerProfiles) {

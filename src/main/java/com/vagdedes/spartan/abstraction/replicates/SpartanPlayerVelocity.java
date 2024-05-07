@@ -21,7 +21,7 @@ public class SpartanPlayerVelocity {
 
         if (!event.isCancelled()) {
             player.getTrackers().add(
-                    Trackers.TrackerType.AbstractVelocity,
+                    Trackers.TrackerType.ABSTRACT_VELOCITY,
                     (int) (Math.ceil(event.getVelocity().length()) * TPS.maximum)
             );
         }

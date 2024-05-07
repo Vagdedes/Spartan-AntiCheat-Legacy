@@ -19,7 +19,7 @@ public class WildTools implements Listener {
         if (p == null) {
             return;
         }
-        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.WildTools;
+        Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.WILD_TOOLS;
 
         if (compatibilityType.isFunctional()) {
             CheckDelay.evadeCommonFalsePositives(p, compatibilityType,

@@ -17,7 +17,7 @@ public class DragonPhases implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Event(EnderDragonChangePhaseEvent e) {
-        if (Compatibility.CompatibilityType.DragonPhases.isFunctional()) {
+        if (Compatibility.CompatibilityType.DRAGON_PHASES.isFunctional()) {
             EnderDragon.Phase phase = e.getNewPhase();
 
             if (phase == EnderDragon.Phase.BREATH_ATTACK || phase == EnderDragon.Phase.ROAR_BEFORE_ATTACK || phase == EnderDragon.Phase.CHARGE_PLAYER
@@ -31,7 +31,7 @@ public class DragonPhases implements Listener {
 
                         if (p != null) {
                             p.getTrackers().add(
-                                    Trackers.TrackerType.AbstractVelocity,
+                                    Trackers.TrackerType.ABSTRACT_VELOCITY,
                                     !p.isOnGround() ? 120 : 60
                             );
                         }

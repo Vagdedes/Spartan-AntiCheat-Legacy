@@ -14,22 +14,22 @@ public class MagicSpells implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void SpellCast(SpellCastEvent e) {
-        if (Compatibility.CompatibilityType.MagicSpells.isFunctional()) {
+        if (Compatibility.CompatibilityType.MAGIC_SPELLS.isFunctional()) {
             SpartanPlayer p = SpartanBukkit.getPlayer(e.getCaster().getUniqueId());
 
             if (p != null) {
-                CheckDelay.evadeStandardCombatFPs(p, Compatibility.CompatibilityType.MagicSpells, 40);
+                CheckDelay.evadeStandardCombatFPs(p, Compatibility.CompatibilityType.MAGIC_SPELLS, 40);
             }
         }
     }
 
     @EventHandler
     private void SpellCasted(SpellCastedEvent e) {
-        if (Compatibility.CompatibilityType.MagicSpells.isFunctional()) {
+        if (Compatibility.CompatibilityType.MAGIC_SPELLS.isFunctional()) {
             SpartanPlayer p = SpartanBukkit.getPlayer(e.getCaster().getUniqueId());
 
             if (p != null) {
-                CheckDelay.evadeStandardCombatFPs(p, Compatibility.CompatibilityType.MagicSpells, 40);
+                CheckDelay.evadeStandardCombatFPs(p, Compatibility.CompatibilityType.MAGIC_SPELLS, 40);
             }
         }
     }

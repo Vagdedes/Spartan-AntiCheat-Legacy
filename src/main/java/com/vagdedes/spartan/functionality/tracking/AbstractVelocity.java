@@ -10,7 +10,7 @@ public class AbstractVelocity {
     static final int blocksOffGround = AlgebraUtils.integerRound(PlayerUtils.height / 4.0);
 
     public static boolean hasCooldown(SpartanPlayer p) {
-        if (p.getTrackers().has(Trackers.TrackerType.AbstractVelocity)) {
+        if (p.getTrackers().has(Trackers.TrackerType.ABSTRACT_VELOCITY)) {
             int blockY = p.movement.getLocation().getBlockY();
 
             if (blockY <= 0 || p.movement.getTicksOnAir() <= 20) {

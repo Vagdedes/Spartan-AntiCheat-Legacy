@@ -217,7 +217,7 @@ public class FastBreak extends CheckExecutor {
                     && !SuperPickaxe.canCancel(player)
                     && !AureliumSkills.canCancel(player)
                     && !mcMMO.hasGeneralAbility(player)
-                    && !Compatibility.CompatibilityType.CraftBook.isFunctional();
+                    && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
         } else {
             return false;
         }

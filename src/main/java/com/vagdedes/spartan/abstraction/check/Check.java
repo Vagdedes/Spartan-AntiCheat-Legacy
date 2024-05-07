@@ -561,7 +561,7 @@ public class Check {
                 for (Map.Entry<Integer, Double> entry : map.entrySet()) {
                     for (Enums.DataType data : new Enums.DataType[]{
                             dataType,
-                            Enums.DataType.Universal
+                            Enums.DataType.UNIVERSAL
                     }) {
                         ignoredViolations.computeIfAbsent(
                                 data,

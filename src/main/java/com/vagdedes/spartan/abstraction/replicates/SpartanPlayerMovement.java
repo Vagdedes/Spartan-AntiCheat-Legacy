@@ -346,7 +346,7 @@ public class SpartanPlayerMovement {
         this.flying = flying;
 
         if (flying) {
-            this.parent.getTrackers().add(Trackers.TrackerType.Flight, (int) TPS.maximum);
+            this.parent.getTrackers().add(Trackers.TrackerType.FLIGHT, (int) TPS.maximum);
         }
     }
 

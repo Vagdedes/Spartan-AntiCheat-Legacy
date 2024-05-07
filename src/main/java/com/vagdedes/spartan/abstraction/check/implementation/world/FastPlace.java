@@ -61,7 +61,7 @@ public class FastPlace extends CheckExecutor {
                                     if (!CloudBase.isInformationCancelled(hackType, detection)
                                             && !player.bedrockPlayer
                                             && hackType.getCheck().getBooleanOption("check_fast", true)
-                                            && !Compatibility.CompatibilityType.VeinMiner.isFunctional()
+                                            && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
                                             && buffer.start("fast", ticks, Check.detectionMeasurementTicks) >= 0.2) {
                                         cancel(detection + ", ms: " + time + ", block: " + BlockUtils.materialToString(material),
                                                 null, ticks);

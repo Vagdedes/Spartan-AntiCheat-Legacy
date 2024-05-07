@@ -247,8 +247,8 @@ public class CombatUtils {
     }
 
     public static boolean newPvPMechanicsEnabled() {
-        return Compatibility.CompatibilityType.RecentPvPMechanics.isFunctional()
-                && !Compatibility.CompatibilityType.OldCombatMechanics.isFunctional();
+        return Compatibility.CompatibilityType.RECENT_PVP_MECHANICS.isFunctional()
+                && !Compatibility.CompatibilityType.OLD_COMBAT_MECHANICS.isFunctional();
     }
 
     public static boolean isSword(Material type) {
