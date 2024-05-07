@@ -37,11 +37,6 @@
         </repository>
 
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-
-        <repository>
             <id>nexus</id>
             <name>Lumine Releases</name>
             <url>https://mvn.lumine.io/repository/maven-public/</url>
