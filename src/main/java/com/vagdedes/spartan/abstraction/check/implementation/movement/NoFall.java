@@ -22,7 +22,7 @@ public class NoFall extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
-            // todo
+            player.debug(true, false, false, player.getFallDistance());
         }
         return false;
     }
