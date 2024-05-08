@@ -14,7 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class GhostHand extends CheckExecutor {
+public class GhostHand extends CheckExecutor { // todo improve
 
     private static final HackType check = HackType.GhostHand;
 

@@ -868,7 +868,7 @@ public class SpartanPlayer {
         return null;
     }
 
-    public SpartanBlock getIllegalTargetBlock(SpartanBlock clickedBlock) {
+    public SpartanBlock getIllegalTargetBlock(SpartanBlock clickedBlock) { // todo improve
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             SpartanLocation clickedBlockLocation = clickedBlock.getLocation();
             boolean editableClickedBlock = BlockUtils.isChangeable(clickedBlockLocation.getBlock().material);
