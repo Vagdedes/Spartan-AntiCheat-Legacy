@@ -10,14 +10,13 @@ import me.vagdedes.spartan.system.Enums.HackType;
 public class IrregularMovements extends CheckExecutor {
 
     // Base
-    public static final HackType check = HackType.IrregularMovements;
     private final IrregularMovementsStep step;
     private final IrregularMovementsGravity gravity;
     private final IrregularMovementsJump jump;
     private final IrregularMovementsHorizontal horizontal;
 
     public IrregularMovements(SpartanPlayer player) {
-        super(check, player, 4);
+        super(HackType.IrregularMovements, player, 4);
         this.addDetections(new DetectionExecutor[]{
                 step = new IrregularMovementsStep(this),
                 gravity = new IrregularMovementsGravity(this),

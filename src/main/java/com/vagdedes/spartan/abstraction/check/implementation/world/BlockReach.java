@@ -19,7 +19,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class BlockReach extends CheckExecutor {
+public class BlockReach extends CheckExecutor { // todo improve
 
     private static final HackType check = HackType.BlockReach;
     private static final double minimumLimit = 6.0;

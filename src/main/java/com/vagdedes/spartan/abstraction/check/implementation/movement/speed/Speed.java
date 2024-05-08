@@ -8,12 +8,11 @@ import me.vagdedes.spartan.system.Enums.HackType;
 
 public class Speed extends CheckExecutor {
 
-    public static final HackType check = HackType.Speed;
     private final SpeedMotion motion;
     private final SpeedFoodSprint foodSprint;
 
     public Speed(SpartanPlayer player) {
-        super(check, player, 2);
+        super(HackType.Speed, player, 2);
         this.addDetections(new DetectionExecutor[]{
                 motion = new SpeedMotion(this),
                 foodSprint = new SpeedFoodSprint(this)

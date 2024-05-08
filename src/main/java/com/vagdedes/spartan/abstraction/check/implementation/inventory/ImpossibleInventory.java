@@ -27,7 +27,6 @@ public class ImpossibleInventory extends CheckExecutor {
     private static final int
             jumping = 8,
             requiredJumpingMotions = AlgebraUtils.integerRound(PlayerUtils.getJumpTicks(0) / 2.0);
-    public static final byte DEATH = 0;
 
     private static final double[] belowBlocks = new double[]{
             1, -1, 1
@@ -40,7 +39,7 @@ public class ImpossibleInventory extends CheckExecutor {
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
-            if (object.equals(DEATH)) {
+            if (object == null) {
                 int ticks = player.getCooldowns(check).get("auto-totem");
 
                 if (ticks > 0) {

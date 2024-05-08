@@ -9,25 +9,23 @@ import me.vagdedes.spartan.system.Enums.HackType;
 
 public class NoFall extends CheckExecutor {
 
-    public static final HackType check = HackType.NoFall;
     private static final double precision = 0.001;
 
     private float previousFall;
 
     public NoFall(SpartanPlayer player) {
-        super(check, player);
+        super(HackType.NoFall, player);
         this.previousFall = Float.MIN_VALUE;
     }
 
     @Override
     public boolean handleInternal(boolean cancelled, Object object) {
-        player.getCooldowns(hackType).add(new String[]{"land", "ratio"}, 10);
         return false;
     }
 
     @Override
     public boolean runInternal(boolean cancelled) {
-        if (canDo()) {
+        if (canDo() && false) {
             float fallDistance = player.getFallDistance();
 
             if (previousFall != Float.MIN_VALUE) {
@@ -37,7 +35,7 @@ public class NoFall extends CheckExecutor {
                         fallDistance,
                         player.movement.getTicksOnAir(),
                         airTick - previousAirTick,
-                        (precision * PlayerUtils.airDrag) + (PlayerUtils.airAcceleration * (airTick - previousAirTick))
+                        (previousFall * PlayerUtils.airDrag) + (PlayerUtils.airAcceleration * (airTick - previousAirTick))
                 );
             }
             previousFall = fallDistance;

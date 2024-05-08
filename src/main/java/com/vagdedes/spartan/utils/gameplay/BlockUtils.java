@@ -8,9 +8,7 @@ import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
