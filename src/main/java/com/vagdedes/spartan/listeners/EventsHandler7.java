@@ -106,12 +106,11 @@ public class EventsHandler7 implements Listener {
                 box = toY - to.getBlockY(),
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
-        float fall = p.getFallDistance();
 
         if (!p.movement.processLastMoveEvent(to, from, ver)) {
             return;
         }
-        MovementProcessing.run(n, p, to, dis, hor, ver, box, fall);
+        MovementProcessing.run(n, p, to, dis, hor, ver, box);
 
         // Patterns
         for (Enums.HackType hackType : handledChecks) {

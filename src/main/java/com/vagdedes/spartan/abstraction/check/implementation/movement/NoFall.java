@@ -4,11 +4,13 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 
 public class NoFall extends CheckExecutor {
 
     public static final HackType check = HackType.NoFall;
+    private static final double precision = 0.001;
 
     public NoFall(SpartanPlayer player) {
         super(check, player);
@@ -23,7 +25,11 @@ public class NoFall extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
-            player.debug(true, false, false, player.getFallDistance());
+            player.debug(true, false, false,
+                    player.getFallDistance(),
+                    player.movement.getTicksOnAir(),
+                    PlayerUtils.getFallTick(-player.getFallDistance(), precision)
+            );
         }
         return false;
     }

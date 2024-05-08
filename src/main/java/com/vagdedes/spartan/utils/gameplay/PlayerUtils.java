@@ -172,7 +172,7 @@ public class PlayerUtils {
 
     // Falling
 
-    public static int getFallTick(double d) {
+    public static int getFallTick(double d, double precision) {
         if (d < 0.0) {
             double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
             Integer ticks;
@@ -191,13 +191,13 @@ public class PlayerUtils {
                 }
 
                 if (ticks > 0) {
-                    if (Math.abs(preD - airAcceleration) >= GroundUtils.maxHeightLengthRatio) {
+                    if (Math.abs(preD - airAcceleration) >= precision) {
                         boolean found = false;
 
                         for (List<Double> jumps : jumpsValues.values()) {
                             double last = jumps.get(jumps.size() - 1);
 
-                            if (Math.abs(last - d) < GroundUtils.maxHeightLengthRatio) {
+                            if (Math.abs(last - d) < precision) {
                                 found = true;
                                 break;
                             }
@@ -219,8 +219,8 @@ public class PlayerUtils {
         return -1;
     }
 
-    public static boolean isFalling(double d) {
-        return getFallTick(d) != -1;
+    public static boolean isFalling(double d, double precision) {
+        return getFallTick(d, precision) != -1;
     }
 
     public static double calculateNextFallMotion(double motion,
