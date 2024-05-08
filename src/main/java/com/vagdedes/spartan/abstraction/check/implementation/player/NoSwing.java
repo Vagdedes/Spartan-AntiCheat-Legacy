@@ -52,7 +52,7 @@ public class NoSwing extends CheckExecutor {
             }
             SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
-            if (!BlockUtils.isSensitive(player, block.getLocation())
+            if (!BlockUtils.isSensitive(player, block.getLocation().getBlock().material)
                     && !TreeFeller.canCancel(player, block)) {
                 Timer timer = player.getTimer(hackType);
 

@@ -76,7 +76,7 @@ public class BlockReach extends CheckExecutor {
                 if (canDo(block)) {
                     SpartanLocation bloc = block.getLocation();
 
-                    if (BlockUtils.isChangeable(bloc)) {
+                    if (BlockUtils.isChangeable(bloc.getBlock().material)) {
                         SpartanLocation to = player.movement.getLocation();
                         double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
                                 limit = getLimit(),
@@ -93,7 +93,7 @@ public class BlockReach extends CheckExecutor {
             SpartanBlock blockAgainst = new SpartanBlock(player, event.getBlockAgainst());
             SpartanLocation baLoc = blockAgainst.getLocation();
 
-            if (BlockUtils.isFullSolid(baLoc)
+            if (BlockUtils.isFullSolid(baLoc.getBlock().material)
                     && player.getItemInHand().getType() != (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))) {
                 SpartanBlock block = new SpartanBlock(player, event.getBlock());
 

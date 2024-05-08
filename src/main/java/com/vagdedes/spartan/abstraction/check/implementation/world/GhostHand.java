@@ -53,7 +53,7 @@ public class GhostHand extends CheckExecutor {
 
                 if (canDo(b)
                         || !hackType.getCheck().getBooleanOption("check_player_interactions", true)
-                        || !BlockUtils.isChangeable(b.getLocation())
+                        || !BlockUtils.isChangeable(b.getLocation().getBlock().material)
                         && !BlockUtils.areEggs(player.getItemInHand().getType())) {
                     SpartanBlock itb = player.getIllegalTargetBlock(b);
 
