@@ -172,7 +172,7 @@ public class PlayerUtils {
 
     // Falling
 
-    public static int getFallTick(double d, double precision) {
+    public static int getFallTick(double d, double precision, int jump) {
         if (d < 0.0) {
             double key = AlgebraUtils.cut(d, GroundUtils.maxHeightLength);
             Integer ticks;
@@ -182,7 +182,7 @@ public class PlayerUtils {
             }
             if (ticks == null) {
                 ticks = 0;
-                double preD = 0;
+                double preD = 0.0;
 
                 while (d < 0.0) {
                     preD = d;
@@ -194,12 +194,22 @@ public class PlayerUtils {
                     if (Math.abs(preD - airAcceleration) >= precision) {
                         boolean found = false;
 
-                        for (List<Double> jumps : jumpsValues.values()) {
-                            double last = jumps.get(jumps.size() - 1);
+                        if (jump == 0) {
+                            List<Double> motions = getJumpMotions(0);
+                            double last = motions.get(motions.size() - 1);
 
                             if (Math.abs(last - d) < precision) {
                                 found = true;
-                                break;
+                            }
+                        } else {
+                            for (int i : new int[]{jump, 0}) {
+                                List<Double> motions = getJumpMotions(i);
+                                double last = motions.get(motions.size() - 1);
+
+                                if (Math.abs(last - d) < precision) {
+                                    found = true;
+                                    break;
+                                }
                             }
                         }
 
@@ -217,10 +227,6 @@ public class PlayerUtils {
             return ticks;
         }
         return -1;
-    }
-
-    public static boolean isFalling(double d, double precision) {
-        return getFallTick(d, precision) != -1;
     }
 
     public static double calculateNextFallMotion(double motion,

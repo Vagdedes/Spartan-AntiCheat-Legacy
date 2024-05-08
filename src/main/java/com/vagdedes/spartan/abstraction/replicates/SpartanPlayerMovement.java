@@ -287,6 +287,20 @@ public class SpartanPlayerMovement {
 
     // Separator
 
+    public int getFallTick(double d, double precision) {
+        return PlayerUtils.getFallTick(
+                d,
+                precision,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1
+        );
+    }
+
+    public boolean isFalling(double d, double precision) {
+        return getFallTick(d, precision) != -1;
+    }
+
+    // Separator
+
     public boolean isGliding() {
         return gliding;
     }

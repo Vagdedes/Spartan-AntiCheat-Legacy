@@ -12,8 +12,11 @@ public class NoFall extends CheckExecutor {
     public static final HackType check = HackType.NoFall;
     private static final double precision = 0.001;
 
+    private float previousFall;
+
     public NoFall(SpartanPlayer player) {
         super(check, player);
+        this.previousFall = Float.MIN_VALUE;
     }
 
     @Override
@@ -25,13 +28,27 @@ public class NoFall extends CheckExecutor {
     @Override
     public boolean runInternal(boolean cancelled) {
         if (canDo()) {
-            player.debug(true, false, false,
-                    player.getFallDistance(),
-                    player.movement.getTicksOnAir(),
-                    PlayerUtils.getFallTick(-player.getFallDistance(), precision)
-            );
+            float fallDistance = player.getFallDistance();
+
+            if (previousFall != Float.MIN_VALUE) {
+                int airTick = getAirTick(fallDistance),
+                        previousAirTick = getAirTick(previousFall);
+                player.debug(true, false, false,
+                        fallDistance,
+                        player.movement.getTicksOnAir(),
+                        airTick - previousAirTick,
+                        (precision * PlayerUtils.airDrag) + (PlayerUtils.airAcceleration * (airTick - previousAirTick))
+                );
+            }
+            previousFall = fallDistance;
+        } else {
+            previousFall = Float.MIN_VALUE;
         }
         return false;
+    }
+
+    private int getAirTick(float fallDistance) {
+        return Math.max(player.movement.getFallTick(-fallDistance, precision) - 1, 0);
     }
 
     @Override

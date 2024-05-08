@@ -31,8 +31,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
                     double difference = Math.abs(vertical - prediction),
-                            product = !player.movement.isJumping(vertical) && !PlayerUtils.isFalling(vertical, GroundUtils.maxHeightLengthRatio)
-                                    && !player.movement.isJumping(oldVertical) && !PlayerUtils.isFalling(oldVertical, GroundUtils.maxHeightLengthRatio)
+                            product = !player.movement.isJumping(vertical) && !player.movement.isFalling(vertical, GroundUtils.maxHeightLengthRatio)
+                                    && !player.movement.isJumping(oldVertical) && !player.movement.isFalling(oldVertical, GroundUtils.maxHeightLengthRatio)
                                     ? 1.0
                                     : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1),
                             limit = Math.max(
