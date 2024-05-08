@@ -48,7 +48,7 @@ public class XRay extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
             Object[] objects = (Object[]) object;
             MiningHistory miningHistory = (MiningHistory) objects[1];
@@ -71,12 +71,11 @@ public class XRay extends CheckExecutor {
                 }
             }
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

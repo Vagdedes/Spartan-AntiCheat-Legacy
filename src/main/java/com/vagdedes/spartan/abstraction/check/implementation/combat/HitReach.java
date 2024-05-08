@@ -12,8 +12,8 @@ public class HitReach extends CheckExecutor {
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override
@@ -22,11 +22,10 @@ public class HitReach extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
             // todo
         }
-        return false;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class IrregularMovements extends CheckExecutor {
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         Double vertical = player.movement.getNmsVerticalDistance(),
                 oldVertical = player.movement.getPreviousNmsVerticalDistance(),
                 horizontal = player.movement.getNmsHorizontalDistance(),
@@ -40,7 +40,7 @@ public class IrregularMovements extends CheckExecutor {
                 || oldHorizontal == null
                 || box == null
                 || oldBox == null) {
-            return false;
+            return;
         }
         if (canDo()) {
             boolean knownBox = GroundUtils.blockHeightExists(box),
@@ -57,7 +57,6 @@ public class IrregularMovements extends CheckExecutor {
             }
             jump.run(vertical, box);
         }
-        return false;
     }
 
     @Override
@@ -66,8 +65,8 @@ public class IrregularMovements extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
-        return false;
+    public void handleInternal(boolean cancelled, Object object) {
+
     }
 
     @Override

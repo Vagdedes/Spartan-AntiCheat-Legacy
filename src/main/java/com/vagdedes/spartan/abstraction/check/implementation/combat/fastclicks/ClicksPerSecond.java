@@ -9,7 +9,7 @@ public class ClicksPerSecond extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    boolean run() {
+    void run() {
         int count = player.getClicks().getCount(),
                 limit = hackType.getCheck().getNumericalOption(
                         "clicks_per_second_limit",
@@ -22,9 +22,6 @@ public class ClicksPerSecond extends DetectionExecutor {
                             + ", count: " + count
                             + ", limit: " + limit
             );
-            return true;
-        } else {
-            return false;
         }
     }
 }

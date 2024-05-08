@@ -14,11 +14,10 @@ public class Velocity extends CheckExecutor {
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         if (canDo()) {
             // todo
         }
-        return false;
     }
 
     @Override
@@ -34,7 +33,7 @@ public class Velocity extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
-        return false;
+    public void handleInternal(boolean cancelled, Object object) {
+
     }
 }

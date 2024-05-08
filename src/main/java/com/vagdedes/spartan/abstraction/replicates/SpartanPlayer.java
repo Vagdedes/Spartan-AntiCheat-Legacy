@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.EmptyCheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckExecutorExample;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Timer;
@@ -401,10 +401,10 @@ public class SpartanPlayer {
             this.decimals[id] = new Decimals();
             this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
-            this.executors[id] = new EmptyCheckExecutor();
+            this.executors[id] = new CheckExecutorExample(this);
         }
-        if (EmptyCheckExecutor.executors.length > 0) {
-            for (String executorClass : EmptyCheckExecutor.executors) {
+        if (CheckExecutorExample.executors.length > 0) {
+            for (String executorClass : CheckExecutorExample.executors) {
                 try {
                     CheckExecutor executor = (CheckExecutor) Class.forName(executorClass).getConstructor(SpartanPlayer.class).newInstance(this);
                     this.executors[executor.hackType.ordinal()] = executor;

@@ -47,7 +47,7 @@ public class BlockReach extends CheckExecutor { // todo improve
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
             if (canDo()) {
                 SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
@@ -120,12 +120,11 @@ public class BlockReach extends CheckExecutor { // todo improve
                 }
             }
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

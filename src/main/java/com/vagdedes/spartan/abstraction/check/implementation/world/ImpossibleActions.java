@@ -20,7 +20,7 @@ public class ImpossibleActions extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
             if (object instanceof BlockPlaceEvent) {
                 // todo tower, scaffold
@@ -60,13 +60,11 @@ public class ImpossibleActions extends CheckExecutor {
                 }
             }
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         player.getViolations(hackType).addDisableCause(hackType.toString(), "actions", 10);
-        return false;
     }
 
     @Override

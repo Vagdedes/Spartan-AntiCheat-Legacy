@@ -23,7 +23,7 @@ public class GhostHand extends CheckExecutor { // todo improve
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
             BlockBreakEvent event = (BlockBreakEvent) object;
 
@@ -66,12 +66,11 @@ public class GhostHand extends CheckExecutor { // todo improve
                 }
             }
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

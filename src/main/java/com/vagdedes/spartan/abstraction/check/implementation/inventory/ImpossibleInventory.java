@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ImpossibleInventory extends CheckExecutor {
+public class ImpossibleInventory extends CheckExecutor { // todo improve
 
     public static final Enums.HackType check = Enums.HackType.ImpossibleInventory;
     private static final Material
@@ -37,7 +37,7 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (canDo()) {
             if (object == null) {
                 int ticks = player.getCooldowns(check).get("auto-totem");
@@ -53,11 +53,10 @@ public class ImpossibleInventory extends CheckExecutor {
                 trackAutoTotem(player, item);
             }
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         if (canDo()
                 && !player.movement.isSwimming()
                 && player.getVehicle() == null
@@ -70,7 +69,6 @@ public class ImpossibleInventory extends CheckExecutor {
                 cancel("type: cursor-usage, case: " + cases, player.movement.getNmsFromLocation(), 0, false);
             }
         }
-        return false;
     }
 
     @Override

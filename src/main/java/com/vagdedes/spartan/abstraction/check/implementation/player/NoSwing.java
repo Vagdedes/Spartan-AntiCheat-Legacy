@@ -33,7 +33,7 @@ public class NoSwing extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
@@ -48,7 +48,7 @@ public class NoSwing extends CheckExecutor {
                     || !hackType.getCheck().getBooleanOption("check_breaking", true)
                     || MineBomb.canUse(player)
                     || AureliumSkills.canCancel(player)) {
-                return false;
+                return;
             }
             SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
@@ -70,12 +70,11 @@ public class NoSwing extends CheckExecutor {
         } else if (object instanceof EntityDamageByEntityEvent) {
             runDamage((LivingEntity) ((EntityDamageByEntityEvent) object).getEntity());
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

@@ -76,7 +76,7 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         if (canDo()) {
             SpartanLocation to = player.movement.getNmsToLocation(),
                     from = player.movement.getNmsFromLocation();
@@ -98,16 +98,14 @@ public class KillAura extends CheckExecutor {
                     false
             );
         }
-        return false;
     }
 
     @Override
     public void scheduler() {
-
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerFight) {
             if (canDo()) {
                 analysis.run((PlayerFight) object);
@@ -164,7 +162,6 @@ public class KillAura extends CheckExecutor {
                 }
             }
         }
-        return false;
     }
 
     @Override

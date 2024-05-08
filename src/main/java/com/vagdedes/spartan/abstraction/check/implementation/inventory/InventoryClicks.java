@@ -21,7 +21,7 @@ public class InventoryClicks extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         InventoryClickEvent event = (InventoryClickEvent) object;
         ItemStack item = event.getCurrentItem();
         ClickType click = event.getClick();
@@ -77,12 +77,11 @@ public class InventoryClicks extends CheckExecutor {
                 player.getTimer(check).set(key + "time");
             }
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

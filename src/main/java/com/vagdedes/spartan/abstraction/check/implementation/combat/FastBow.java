@@ -18,7 +18,7 @@ public class FastBow extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityShootBowEvent) {
             if (canDo()
                     && player.getItemInHand().getType() == Material.BOW) {
@@ -34,7 +34,6 @@ public class FastBow extends CheckExecutor {
                 player.getTimer(hackType).set("interact");
             }
         }
-        return false;
     }
 
     private void checkBowForce(float force) {
@@ -64,8 +63,8 @@ public class FastBow extends CheckExecutor {
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

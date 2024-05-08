@@ -34,8 +34,11 @@ public class FastClicks extends CheckExecutor {
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return canDo() && (this.clicksPerSecond.run() || this.clickPattern.run());
+    public void runInternal(boolean cancelled) {
+        if (canDo()) {
+            this.clicksPerSecond.run();
+            this.clickPattern.run();
+        }
     }
 
     @Override
@@ -44,7 +47,7 @@ public class FastClicks extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
-        return false;
+    public void handleInternal(boolean cancelled, Object object) {
+
     }
 }

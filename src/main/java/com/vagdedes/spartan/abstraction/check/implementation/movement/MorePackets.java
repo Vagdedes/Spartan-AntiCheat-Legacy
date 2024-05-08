@@ -21,12 +21,12 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
-        return false;
+    public void handleInternal(boolean cancelled, Object object) {
+
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         if (canDo()) {
             synchronized (nmsMap) {
                 nmsMap.put(TPS.getTick(player), nmsMap.getOrDefault(TPS.getTick(player), 0) + 1);
@@ -38,7 +38,6 @@ public class MorePackets extends CheckExecutor {
                 }
             }
         }
-        return false;
     }
 
     @Override
@@ -149,7 +148,6 @@ public class MorePackets extends CheckExecutor {
                 ) / TPS.tickTimeDecimal),
                 minimumTicks
         );
-
     }
 
     @Override

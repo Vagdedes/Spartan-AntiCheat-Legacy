@@ -23,7 +23,7 @@ public class ItemDrops extends CheckExecutor {
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         if (canDo()) {
             Timer timer = player.getTimer(check);
             long time = timer.get("");
@@ -38,7 +38,6 @@ public class ItemDrops extends CheckExecutor {
             }
             timer.set("");
         }
-        return false;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class ItemDrops extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof String) {
             String[] args = object.toString().split(" ");
 
@@ -77,6 +76,5 @@ public class ItemDrops extends CheckExecutor {
                 player.getViolations(hackType).addDisableCause(check.toString(), null, 10);
             }
         }
-        return false;
     }
 }

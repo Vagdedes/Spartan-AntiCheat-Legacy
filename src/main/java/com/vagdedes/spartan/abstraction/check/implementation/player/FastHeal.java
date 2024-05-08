@@ -43,7 +43,7 @@ public class FastHeal extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityRegainHealthEvent) {
             if (canDo()) {
                 RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
@@ -79,12 +79,11 @@ public class FastHeal extends CheckExecutor {
                 || player.getItemInHand().getType() != Material.DRIED_KELP)) {
             player.getViolations(hackType).addDisableCause(hackType.toString(), null, 10);
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

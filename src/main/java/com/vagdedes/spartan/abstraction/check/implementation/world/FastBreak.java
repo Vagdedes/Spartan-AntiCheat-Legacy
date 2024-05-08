@@ -171,7 +171,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
+    public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
@@ -192,12 +192,11 @@ public class FastBreak extends CheckExecutor {
                 checkIndirectSurroundingsPerSecond(seconds, b);
             }
         }
-        return false;
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
-        return false;
+    public void runInternal(boolean cancelled) {
+
     }
 
     @Override

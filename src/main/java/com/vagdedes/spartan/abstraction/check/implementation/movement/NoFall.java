@@ -19,12 +19,12 @@ public class NoFall extends CheckExecutor {
     }
 
     @Override
-    public boolean handleInternal(boolean cancelled, Object object) {
-        return false;
+    public void handleInternal(boolean cancelled, Object object) {
+
     }
 
     @Override
-    public boolean runInternal(boolean cancelled) {
+    public void runInternal(boolean cancelled) {
         if (canDo() && false) {
             float fallDistance = player.getFallDistance();
 
@@ -42,7 +42,6 @@ public class NoFall extends CheckExecutor {
         } else {
             previousFall = Float.MIN_VALUE;
         }
-        return false;
     }
 
     private int getAirTick(float fallDistance) {
