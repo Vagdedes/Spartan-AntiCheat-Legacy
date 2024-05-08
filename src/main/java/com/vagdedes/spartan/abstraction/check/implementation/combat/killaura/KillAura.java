@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -59,7 +60,7 @@ public class KillAura extends CheckExecutor {
     }
 
     void violateLive(String information) {
-        cancel(information, null, CombatUtils.getFightTicks(player));
+        cancel(information, null, (int) TPS.maximum);
         player.getViolations(hackType).prevent();
     }
 

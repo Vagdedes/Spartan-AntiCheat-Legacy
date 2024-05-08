@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -16,16 +15,14 @@ import org.bukkit.potion.PotionEffectType;
 
 public class FastEat extends CheckExecutor {
 
-    private static final HackType check = HackType.FastEat;
     private static final Material cake = MaterialUtils.get("cake");
 
     private static final long
-            delay = 1000L,
+            delay = 1_000L,
             driedKelp = 550L;
-    private static final int ticks = 25;
 
     public FastEat(SpartanPlayer player) {
-        super(check, player);
+        super(HackType.FastEat, player);
     }
 
     private long getDelay() {
@@ -71,23 +68,6 @@ public class FastEat extends CheckExecutor {
         return false;
     }
 
-    private void goldenAppleEffects(SpartanPlayer p) {
-        ItemStack item = p.getItemInHand();
-
-        if (item != null
-                && item.getType() == Material.GOLDEN_APPLE) {
-            if (!p.hasPotionEffect(PotionEffectType.REGENERATION, 0)) {
-                this.getCooldowns().add("regeneration", ticks);
-            }
-            if (!p.hasPotionEffect(PotionEffectType.ABSORPTION, 0)) {
-                this.getCooldowns().add("absorption", ticks);
-            }
-            if (!p.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0)) {
-                this.getCooldowns().add("resistance", ticks);
-            }
-        }
-    }
-
     @Override
     public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof FoodLevelChangeEvent) {
@@ -96,18 +76,7 @@ public class FastEat extends CheckExecutor {
 
                 if (lvl > player.getFoodLevel()
                         && (checkDelay() || checkEating())) {
-                    Cooldowns cooldowns = this.getCooldowns();
                     player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()), true);
-
-                    if (!cooldowns.canDo("regeneration")) {
-                        player.removePotionEffect(PotionEffectType.REGENERATION);
-                    }
-                    if (!cooldowns.canDo("absorption")) {
-                        player.removePotionEffect(PotionEffectType.ABSORPTION);
-                    }
-                    if (!cooldowns.canDo("resistance")) {
-                        player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-                    }
                 }
             }
         } else if (!player.bedrockPlayer && canDo()) {
@@ -121,7 +90,6 @@ public class FastEat extends CheckExecutor {
                     break;
                 case RIGHT_CLICK_AIR:
                     if (player.getItemInHand().getType().isEdible()) {
-                        goldenAppleEffects(player);
                         this.getTimer().set("food");
                     }
                     break;
