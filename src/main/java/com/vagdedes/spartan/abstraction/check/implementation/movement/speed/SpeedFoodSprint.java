@@ -20,9 +20,13 @@ public class SpeedFoodSprint extends DetectionExecutor {
                 if (sprinting && food <= 6
                         && (gameMode == GameMode.SURVIVAL
                         || gameMode == GameMode.ADVENTURE)) {
-                    player.debug(
-                            true, false, false,
-                            food
+                    cancel(
+                            "type: food-sprint"
+                                    + ", game-mode: " + gameMode
+                                    + ", food: " + food,
+                            player.movement.getDetectionLocation(),
+                            0,
+                            true
                     );
                 }
             });
