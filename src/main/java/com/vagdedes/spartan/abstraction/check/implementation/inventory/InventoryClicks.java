@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClicks extends CheckExecutor {
+public class InventoryClicks extends CheckExecutor { // todo improve
 
     private static final Enums.HackType check = Enums.HackType.InventoryClicks;
 
@@ -34,14 +34,14 @@ public class InventoryClicks extends CheckExecutor {
             Material material = item.getType();
 
             if (!BlockUtils.isSensitive(player, material)) {
-                Buffer buffer = player.getBuffer(check);
+                Buffer buffer = this.getBuffer();
                 String key = "";
                 boolean quick = !player.getOpenInventory().isUsingAnotherInventory();
                 boolean shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);
 
                 int newHash = type.hashCode();
-                int oldHash = player.getBuffer(check).get(key + "hash");
+                int oldHash = this.getBuffer().get(key + "hash");
                 buffer.set(key + "hash", newHash);
 
                 if (shift
@@ -51,7 +51,7 @@ public class InventoryClicks extends CheckExecutor {
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);
                 } else {
-                    Timer timer = player.getTimer(check);
+                    Timer timer = this.getTimer();
                     long time = timer.get(key + "time");
 
                     if (timer.has(time)
@@ -74,7 +74,7 @@ public class InventoryClicks extends CheckExecutor {
                         }
                     }
                 }
-                player.getTimer(check).set(key + "time");
+                this.getTimer().set(key + "time");
             }
         }
     }
@@ -85,12 +85,12 @@ public class InventoryClicks extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return !player.bedrockPlayer && player.canRunCheck(check, true);
+        return !player.bedrockPlayer;
     }
 }

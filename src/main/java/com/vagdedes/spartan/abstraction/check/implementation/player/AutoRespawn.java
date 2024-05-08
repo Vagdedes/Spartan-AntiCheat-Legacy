@@ -30,7 +30,7 @@ public class AutoRespawn extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
         long time = System.currentTimeMillis() - memory;
 
         if (time <= 750L && !player.isDead()) {
@@ -41,8 +41,7 @@ public class AutoRespawn extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, false)
-                && !PluginUtils.contains("respawn")
+        return !PluginUtils.contains("respawn")
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                 || !player.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true);
     }

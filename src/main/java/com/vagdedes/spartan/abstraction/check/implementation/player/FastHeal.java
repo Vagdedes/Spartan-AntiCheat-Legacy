@@ -50,19 +50,19 @@ public class FastHeal extends CheckExecutor {
 
                 if (reason != RegainReason.CUSTOM
                         && reason != RegainReason.MAGIC) {
-                    Timer timer = player.getTimer(hackType);
-                    Decimals decimals = player.getDecimals(hackType);
+                    Timer timer = this.getTimer();
+                    Decimals decimals = this.getDecimals();
                     double health = player.getHealth();
 
-                    double previousHealth = player.getDecimals(hackType).get(checkID);
-                    long time = player.getTimer(hackType).get(checkID);
+                    double previousHealth = this.getDecimals().get(checkID);
+                    long time = this.getTimer().get(checkID);
 
                     if (timer.has(time) && decimals.has(previousHealth)
                             && previousHealth != health) {
                         long limit = calculate();
 
                         if (limit > 0L) {
-                            Buffer buffer = player.getBuffer(hackType);
+                            Buffer buffer = this.getBuffer();
 
                             if (time < limit && buffer.start(checkID, 10, Check.detectionMeasurementTicks) >= 0.3) {
                                 buffer.remove(checkID);
@@ -87,17 +87,17 @@ public class FastHeal extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        if (player.canRunCheck(hackType, true)
-                && player.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
+        if (player.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
             GameMode gameMode = player.getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
+        } else {
+            return false;
         }
-        return false;
     }
 }

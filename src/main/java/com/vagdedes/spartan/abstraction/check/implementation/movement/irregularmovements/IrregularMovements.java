@@ -60,7 +60,7 @@ public class IrregularMovements extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
@@ -71,7 +71,6 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && MovementProcessing.canCheck(player, false, true, false);
+        return MovementProcessing.canCheck(player, false, true, false);
     }
 }

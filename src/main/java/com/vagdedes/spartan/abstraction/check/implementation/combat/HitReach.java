@@ -17,7 +17,7 @@ public class HitReach extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
@@ -30,7 +30,6 @@ public class HitReach extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && CombatProcessing.canCheck(player);
+        return CombatProcessing.canCheck(player);
     }
 }

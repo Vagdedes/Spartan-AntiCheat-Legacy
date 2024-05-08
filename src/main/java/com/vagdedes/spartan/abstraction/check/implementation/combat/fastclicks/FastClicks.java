@@ -28,8 +28,7 @@ public class FastClicks extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && !PlayerUtils.isPickaxeItem(player.getItemInHand().getType())
+        return !PlayerUtils.isPickaxeItem(player.getItemInHand().getType())
                 && !PrinterMode.canCancel(player);
     }
 
@@ -42,7 +41,7 @@ public class FastClicks extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 

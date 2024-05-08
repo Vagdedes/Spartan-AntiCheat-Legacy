@@ -18,10 +18,8 @@ import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
@@ -39,7 +37,10 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -99,10 +100,6 @@ public class SpartanPlayer {
     private final List<Entity> nearbyEntities;
     private double nearbyEntitiesDistance;
 
-    private final boolean[] runChecks;
-    private final Map<Enums.HackType, Boolean> runCheck;
-    private final Map<Enums.HackType, Boolean> runCheckAccountLag;
-
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
@@ -139,8 +136,6 @@ public class SpartanPlayer {
                 for (Cooldowns cooldowns : p.cooldowns) {
                     cooldowns.clear();
                 }
-                p.runCheck.clear();
-                p.runCheckAccountLag.clear();
             }
         }
     }
@@ -218,8 +213,6 @@ public class SpartanPlayer {
                         p.movement.resetVanillaAirTicks();
                     }
                     p.nearbyEntitiesDistance = 0;
-                    p.runCheck.clear();
-                    p.runCheckAccountLag.clear();
 
                     // Separator
                     SpartanBukkit.runTask(p, () -> {
@@ -285,24 +278,7 @@ public class SpartanPlayer {
                             p.setFoodLevel(n.getFoodLevel(), false);
                             p.setDead(n.isDead());
                             p.maximumNoDamageTicks = n.getMaximumNoDamageTicks();
-
-                            // Check Allowance Cache
-                            if (TPS.getTick(p) <= 100
-                                    || !MaximumCheckedPlayers.isChecked(p.uuid)
-                                    || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && p.getGameMode() == GameMode.SPECTATOR
-                                    || p.getCancellableCompatibility() != null) {
-                                p.runChecks[0] = false;
-                                p.runChecks[1] = false;
-                            } else {
-                                p.runChecks[0] = !TPS.areLow(p);
-                                p.runChecks[1] = true;
-                            }
-
-                            // External
                             p.playerProfile.playerCombat.track();
-                        } else {
-                            p.runChecks[0] = false;
-                            p.runChecks[1] = false;
                         }
                     }
                 });
@@ -326,9 +302,6 @@ public class SpartanPlayer {
         this.uuid = uuid;
         this.nearbyEntities = Collections.synchronizedList(new ArrayList<>());
         this.nearbyEntitiesDistance = 0;
-        this.runChecks = new boolean[]{false, false};
-        this.runCheck = new LinkedHashMap<>(hackTypes.length);
-        this.runCheckAccountLag = new LinkedHashMap<>(hackTypes.length);
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
         this.trackers = new Trackers(this);
@@ -657,26 +630,6 @@ public class SpartanPlayer {
     }
 
     // Separator
-
-    public boolean canRunChecks(boolean accountLag) {
-        return runChecks[accountLag ? 0 : 1];
-    }
-
-    public boolean canRunCheck(Enums.HackType hackType, boolean accountLag) {
-        if (canRunChecks(accountLag)) {
-            Map<Enums.HackType, Boolean> map = accountLag ? runCheckAccountLag : runCheck;
-            Boolean bool = map.get(hackType);
-
-            if (bool != null) {
-                return bool;
-            }
-            bool = hackType.getCheck().isEnabled(dataType, this.getWorld().getName(), this)
-                    && !Permissions.isBypassing(this, hackType);
-            map.put(hackType, bool);
-            return bool;
-        }
-        return false;
-    }
 
     public boolean isOnFire() {
         return !this.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE, 0)
@@ -1338,44 +1291,6 @@ public class SpartanPlayer {
         }
     }
 
-    public int getEnemiesNumber(double distance, boolean includeRest) {
-        Player n = getPlayer();
-
-        if (n != null) {
-            List<Entity> entities = getNearbyEntities(distance, distance, distance);
-
-            if (!entities.isEmpty()) {
-                int count = 0;
-
-                for (Entity e : getNearbyEntities(distance, distance, distance)) {
-                    if (e instanceof Monster) {
-                        LivingEntity target = ((Monster) e).getTarget();
-
-                        if (target != null && target.equals(n)) {
-                            count++;
-                        }
-                    } else if (e instanceof Player) {
-                        SpartanPlayer target = SpartanBukkit.getPlayer((Player) e);
-
-                        if (target != null
-                                && playerProfile.playerCombat.isActivelyFighting(
-                                target,
-                                true,
-                                true,
-                                false)
-                        ) {
-                            count++;
-                        }
-                    } else if (includeRest && e instanceof LivingEntity) {
-                        count++;
-                    }
-                }
-                return count;
-            }
-        }
-        return 0;
-    }
-
     // Teleport
 
     public boolean safeTeleport(SpartanLocation loc) {
@@ -1482,7 +1397,7 @@ public class SpartanPlayer {
         return this.damage(d, EntityDamageEvent.DamageCause.FALL);
     }
 
-    public boolean damage(double amount, EntityDamageEvent.DamageCause damageCause) {
+    private boolean damage(double amount, EntityDamageEvent.DamageCause damageCause) {
         Player p = getPlayer();
 
         if (p != null && p.isOnline()) {

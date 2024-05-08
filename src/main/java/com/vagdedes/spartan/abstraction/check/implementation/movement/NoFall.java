@@ -49,14 +49,13 @@ public class NoFall extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && MovementProcessing.canCheck(player, false, false, false)
+        return MovementProcessing.canCheck(player, false, false, false)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()
                 && !BlockUtils.canClimb(player.movement.getLocation().getBlock().material);

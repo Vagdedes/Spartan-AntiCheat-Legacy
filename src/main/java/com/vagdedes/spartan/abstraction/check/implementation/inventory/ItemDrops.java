@@ -14,7 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class ItemDrops extends CheckExecutor {
+public class ItemDrops extends CheckExecutor { // todo improve
 
     private static final Enums.HackType check = Enums.HackType.ItemDrops;
 
@@ -25,11 +25,11 @@ public class ItemDrops extends CheckExecutor {
     @Override
     public void runInternal(boolean cancelled) {
         if (canDo()) {
-            Timer timer = player.getTimer(check);
+            Timer timer = this.getTimer();
             long time = timer.get("");
 
             if (time <= 50L) {
-                Buffer buffer = player.getBuffer(check);
+                Buffer buffer = this.getBuffer();
 
                 if (buffer.start("", 10, Check.detectionMeasurementTicks) >= 0.7) {
                     buffer.remove("");
@@ -41,14 +41,13 @@ public class ItemDrops extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
         return !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                && player.canRunCheck(check, true)
                 && !player.isDead();
     }
 

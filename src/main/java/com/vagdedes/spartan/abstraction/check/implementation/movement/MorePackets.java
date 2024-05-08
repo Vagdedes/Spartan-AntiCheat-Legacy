@@ -41,7 +41,7 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
         if (!nmsMap.isEmpty() && canDo()) {
             runAsync(() -> {
                 long currentTick = TPS.getTick(player),
@@ -152,7 +152,6 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && MovementProcessing.canCheck(player, true, true, true);
+        return MovementProcessing.canCheck(player, true, true, true);
     }
 }

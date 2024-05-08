@@ -21,41 +21,38 @@ public class ImpossibleActions extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        if (canDo()) {
-            if (object instanceof BlockPlaceEvent) {
-                // todo tower, scaffold
-            } else {
-                PlayerInteractEvent event = (PlayerInteractEvent) object;
-                Action action = event.getAction();
+        if (object instanceof BlockPlaceEvent) {
+            // todo tower, scaffold
+        } else {
+            PlayerInteractEvent event = (PlayerInteractEvent) object;
+            Action action = event.getAction();
 
-                if ((action == Action.LEFT_CLICK_AIR
-                        || action == Action.LEFT_CLICK_BLOCK
-                        || action == Action.RIGHT_CLICK_AIR
-                        || action == Action.RIGHT_CLICK_BLOCK)
-                        && player.canRunCheck(hackType, true)
-                        && hackType.getCheck().getBooleanOption("check_actions", true)
-                        && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
-                    int cases;
+            if ((action == Action.LEFT_CLICK_AIR
+                    || action == Action.LEFT_CLICK_BLOCK
+                    || action == Action.RIGHT_CLICK_AIR
+                    || action == Action.RIGHT_CLICK_BLOCK)
+                    && hackType.getCheck().getBooleanOption("check_actions", true)
+                    && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
+                int cases;
 
-                    if (player.isSleeping()) {
-                        cases = 1;
-                    } else if (player.isDead()) {
-                        cases = 2;
-                    } else if (player.getOpenInventory().isUsingTheCursor()) {
-                        cases = 3;
+                if (player.isSleeping()) {
+                    cases = 1;
+                } else if (player.isDead()) {
+                    cases = 2;
+                } else if (player.getOpenInventory().isUsingTheCursor()) {
+                    cases = 3;
+                } else {
+                    cases = 0;
+                }
+
+                if (cases != 0) {
+                    String action_string = action.toString().toLowerCase().replace("_", "-");
+                    Block b = event.getClickedBlock();
+
+                    if (b == null) {
+                        cancel("type: actions, action: " + action_string + ", case: " + cases);
                     } else {
-                        cases = 0;
-                    }
-
-                    if (cases != 0) {
-                        String action_string = action.toString().toLowerCase().replace("_", "-");
-                        Block b = event.getClickedBlock();
-
-                        if (b == null) {
-                            cancel("type: actions, action: " + action_string + ", case: " + cases);
-                        } else {
-                            cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(new SpartanBlock(player, b)));
-                        }
+                        cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(new SpartanBlock(player, b)));
                     }
                 }
             }
@@ -64,17 +61,17 @@ public class ImpossibleActions extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        player.getViolations(hackType).addDisableCause(hackType.toString(), "actions", 10);
+
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true);
+        return false;
     }
 
 }

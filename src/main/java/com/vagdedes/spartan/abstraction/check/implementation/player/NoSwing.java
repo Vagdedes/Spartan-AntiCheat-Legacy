@@ -37,12 +37,11 @@ public class NoSwing extends CheckExecutor {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
-            if (e.getAction() == Action.LEFT_CLICK_BLOCK
-                    && player.canRunCheck(hackType, false)) {
-                player.getTimer(hackType).set("break");
+            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                this.getTimer().set("break");
             }
         } else if (object instanceof PlayerAnimationEvent) {
-            player.getTimer(hackType).set("animation");
+            this.getTimer().set("animation");
         } else if (object instanceof BlockBreakEvent) {
             if (!canDo()
                     || !hackType.getCheck().getBooleanOption("check_breaking", true)
@@ -54,7 +53,7 @@ public class NoSwing extends CheckExecutor {
 
             if (!BlockUtils.isSensitive(player, block.getLocation().getBlock().material)
                     && !TreeFeller.canCancel(player, block)) {
-                Timer timer = player.getTimer(hackType);
+                Timer timer = this.getTimer();
 
                 if (timer.get("break") > TPS.tickTime) {
                     if (!timer.has("animation")) {
@@ -78,7 +77,7 @@ public class NoSwing extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
@@ -89,13 +88,13 @@ public class NoSwing extends CheckExecutor {
                 || player.getTrackers().has(Trackers.TrackerType.TRIDENT)) {
             return;
         }
-        Cooldowns cooldowns = player.getCooldowns(hackType);
+        Cooldowns cooldowns = this.getCooldowns();
 
         if (cooldowns.canDo("damage")) {
             cooldowns.add("damage", 20);
 
-            if (!player.getTimer(hackType).has("animation")) {
-                Buffer buffer = player.getBuffer(hackType);
+            if (!this.getTimer().has("animation")) {
+                Buffer buffer = this.getBuffer();
 
                 if (buffer.count("damage", refreshTime) >= 3) {
                     buffer.remove("damage");
@@ -110,13 +109,12 @@ public class NoSwing extends CheckExecutor {
     }
 
     private void clearData() {
-        player.getTimer(hackType).remove("animation");
+        this.getTimer().remove("animation");
     }
 
     @Override
     public boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && !Vehicles.has(player, "drill")
+        return !Vehicles.has(player, "drill")
                 && !mcMMO.hasGeneralAbility(player);
     }
 

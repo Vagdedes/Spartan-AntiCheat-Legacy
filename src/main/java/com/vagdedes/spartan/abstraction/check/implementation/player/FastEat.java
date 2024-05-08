@@ -46,7 +46,7 @@ public class FastEat extends CheckExecutor {
 
     private boolean checkDelay() {
         boolean bool;
-        Timer timer = player.getTimer(hackType);
+        Timer timer = this.getTimer();
         long time = timer.get("time"),
                 delay = getDelay();
 
@@ -61,7 +61,7 @@ public class FastEat extends CheckExecutor {
     }
 
     private boolean checkEating() {
-        long time = player.getTimer(hackType).get("food"),
+        long time = this.getTimer().get("food"),
                 delay = getDelay();
 
         if (delay > 0L && time <= delay) {
@@ -77,13 +77,13 @@ public class FastEat extends CheckExecutor {
         if (item != null
                 && item.getType() == Material.GOLDEN_APPLE) {
             if (!p.hasPotionEffect(PotionEffectType.REGENERATION, 0)) {
-                p.getCooldowns(hackType).add("regeneration", ticks);
+                this.getCooldowns().add("regeneration", ticks);
             }
             if (!p.hasPotionEffect(PotionEffectType.ABSORPTION, 0)) {
-                p.getCooldowns(hackType).add("absorption", ticks);
+                this.getCooldowns().add("absorption", ticks);
             }
             if (!p.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0)) {
-                p.getCooldowns(hackType).add("resistance", ticks);
+                this.getCooldowns().add("resistance", ticks);
             }
         }
     }
@@ -96,7 +96,7 @@ public class FastEat extends CheckExecutor {
 
                 if (lvl > player.getFoodLevel()
                         && (checkDelay() || checkEating())) {
-                    Cooldowns cooldowns = player.getCooldowns(hackType);
+                    Cooldowns cooldowns = this.getCooldowns();
                     player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()), true);
 
                     if (!cooldowns.canDo("regeneration")) {
@@ -122,7 +122,7 @@ public class FastEat extends CheckExecutor {
                 case RIGHT_CLICK_AIR:
                     if (player.getItemInHand().getType().isEdible()) {
                         goldenAppleEffects(player);
-                        player.getTimer(hackType).set("food");
+                        this.getTimer().set("food");
                     }
                     break;
                 default:
@@ -137,14 +137,13 @@ public class FastEat extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && player.getWorld().getDifficulty() != Difficulty.PEACEFUL
+        return player.getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && !player.hasPotionEffect(PotionEffectType.SATURATION, 0);
     }
 }

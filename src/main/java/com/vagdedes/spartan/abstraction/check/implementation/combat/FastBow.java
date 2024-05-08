@@ -20,29 +20,27 @@ public class FastBow extends CheckExecutor {
     @Override
     public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityShootBowEvent) {
-            if (canDo()
-                    && player.getItemInHand().getType() == Material.BOW) {
+            if (player.getItemInHand().getType() == Material.BOW) {
                 checkBowShots();
                 checkBowForce(((EntityShootBowEvent) object).getForce());
             }
-        } else if (canDo()
-                && ((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
+        } else if (((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
             SpartanInventory inventory = player.getInventory();
 
             if (inventory.itemInHand.getType() == Material.BOW
                     && inventory.contains(Material.ARROW)) {
-                player.getTimer(hackType).set("interact");
+                this.getTimer().set("interact");
             }
         }
     }
 
     private void checkBowForce(float force) {
-        long time = player.getTimer(hackType).get("interact");
+        long time = this.getTimer().get("interact");
 
         if (!hackType.getCheck().getBooleanOption("check_bow_force", true) || force != 1.0f || time > 500L) {
             return;
         }
-        Buffer buffer = player.getBuffer(hackType);
+        Buffer buffer = this.getBuffer();
         String key = "bow-force";
 
         if (buffer.start(key, 20, Check.detectionMeasurementTicks) >= 2) {
@@ -53,7 +51,7 @@ public class FastBow extends CheckExecutor {
 
     private void checkBowShots() {
         if (hackType.getCheck().getBooleanOption("check_bow_shots", true)) {
-            Buffer buffer = player.getBuffer(hackType);
+            Buffer buffer = this.getBuffer();
 
             if (buffer.start("bow-shots", 10, Check.detectionMeasurementTicks) >= 0.7) {
                 buffer.remove("bow-shots");
@@ -68,12 +66,12 @@ public class FastBow extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, false);
+        return false;
     }
 }

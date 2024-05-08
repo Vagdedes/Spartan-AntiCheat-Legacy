@@ -79,14 +79,13 @@ public class XRay extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, false)
-                && player.getWorld().getWorldType() != WorldType.FLAT
+        return player.getWorld().getWorldType() != WorldType.FLAT
                 && !player.getViolations(hackType).hasLevel();
     }
 

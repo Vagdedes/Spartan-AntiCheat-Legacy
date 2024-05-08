@@ -33,13 +33,12 @@ public class Speed extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && MovementProcessing.canCheck(player, false, true, false);
+        return MovementProcessing.canCheck(player, false, true, false);
     }
 }

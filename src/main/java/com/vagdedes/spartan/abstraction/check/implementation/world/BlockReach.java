@@ -128,14 +128,13 @@ public class BlockReach extends CheckExecutor { // todo improve
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
         return !Compatibility.CompatibilityType.MC_MMO.isFunctional()
-                && player.canRunCheck(hackType, true)
                 && !PrinterMode.canCancel(player)
                 && !MineBomb.canUse(player)
                 && !AureliumSkills.canCancel(player)

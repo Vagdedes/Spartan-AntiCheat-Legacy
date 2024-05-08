@@ -28,7 +28,7 @@ public class GhostHand extends CheckExecutor { // todo improve
             BlockBreakEvent event = (BlockBreakEvent) object;
 
             if (event.isCancelled()) {
-                player.getCooldowns(hackType).add("break-protection", 2);
+                this.getCooldowns().add("break-protection", 2);
             } else if (canDo()) {
                 SpartanBlock b = new SpartanBlock(player, event.getBlock());
 
@@ -53,8 +53,7 @@ public class GhostHand extends CheckExecutor { // todo improve
 
                 if (canDo(b)
                         || !hackType.getCheck().getBooleanOption("check_player_interactions", true)
-                        || !BlockUtils.isChangeable(b.getLocation().getBlock().material)
-                        && !BlockUtils.areEggs(player.getItemInHand().getType())) {
+                        || !BlockUtils.isChangeable(b.getLocation().getBlock().material)) {
                     SpartanBlock itb = player.getIllegalTargetBlock(b);
 
                     if (itb != null
@@ -74,19 +73,17 @@ public class GhostHand extends CheckExecutor { // todo improve
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     private boolean canDo(SpartanBlock b) {
-        return b.world == player.getWorld() && !BlockUtils.areWires(b.material);
+        return b.world == player.getWorld();
     }
 
     @Override
     protected boolean canDo() {
-        if (!player.bedrockPlayer
-                && player.canRunCheck(hackType, true)
-                && !player.movement.isFlying()
+        if (!player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GAME_MODE)
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.canCancel(player)

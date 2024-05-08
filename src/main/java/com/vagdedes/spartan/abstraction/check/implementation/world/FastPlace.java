@@ -38,11 +38,11 @@ public class FastPlace extends CheckExecutor {
                         && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                         || material != Material.CAVE_AIR
                         && material != Material.VOID_AIR)) {
-                    Timer timer = player.getTimer(hackType);
-                    long time = player.getTimer(hackType).get("time");
+                    Timer timer = this.getTimer();
+                    long time = this.getTimer().get("time");
 
                     if (timer.has(time)) {
-                        Buffer buffer = player.getBuffer(hackType);
+                        Buffer buffer = this.getBuffer();
                         int ticks = 20;
 
                         if (time <= 150L) {
@@ -82,14 +82,13 @@ public class FastPlace extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && !player.movement.isFlying()
+        return !player.movement.isFlying()
                 && !PrinterMode.canCancel(player)
                 && !Vehicles.has(player, new String[]{"drill", "tractor"});
     }

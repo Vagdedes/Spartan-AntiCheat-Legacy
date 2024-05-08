@@ -80,7 +80,7 @@ public class KillAura extends CheckExecutor {
         if (canDo()) {
             SpartanLocation to = player.movement.getNmsToLocation(),
                     from = player.movement.getNmsFromLocation();
-            Buffer buffer = player.getBuffer(hackType);
+            Buffer buffer = this.getBuffer();
 
             runDetection(
                     "check_aim",
@@ -101,7 +101,7 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
     }
 
     @Override
@@ -166,7 +166,6 @@ public class KillAura extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(hackType, true)
-                && CombatProcessing.canCheck(player);
+        return CombatProcessing.canCheck(player);
     }
 }

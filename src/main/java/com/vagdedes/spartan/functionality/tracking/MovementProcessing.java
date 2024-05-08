@@ -239,8 +239,7 @@ public class MovementProcessing {
         if ((elytra || !player.getTrackers().has(Trackers.TrackerType.ELYTRA_USE))
                 && (flight || !player.getTrackers().has(Trackers.TrackerType.FLIGHT))
                 && (velocity || !AbstractVelocity.hasCooldown(player))
-                && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)
-                && player.canRunChecks(true)) {
+                && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)) {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()
                     || Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
                 List<Entity> entities = player.getNearbyEntities(

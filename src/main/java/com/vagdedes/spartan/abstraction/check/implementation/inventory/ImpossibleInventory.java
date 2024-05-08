@@ -7,8 +7,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
@@ -16,7 +14,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ImpossibleInventory extends CheckExecutor { // todo improve
+public class ImpossibleInventory extends CheckExecutor {
 
     public static final Enums.HackType check = Enums.HackType.ImpossibleInventory;
     private static final Material
@@ -24,9 +22,6 @@ public class ImpossibleInventory extends CheckExecutor { // todo improve
             totem_of_undying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
                     ? Material.getMaterial("TOTEM_OF_UNDYING")
                     : null; // Do not change, material changes mid-version
-    private static final int
-            jumping = 8,
-            requiredJumpingMotions = AlgebraUtils.integerRound(PlayerUtils.getJumpTicks(0) / 2.0);
 
     private static final double[] belowBlocks = new double[]{
             1, -1, 1
@@ -38,54 +33,48 @@ public class ImpossibleInventory extends CheckExecutor { // todo improve
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        if (canDo()) {
-            if (object == null) {
-                int ticks = player.getCooldowns(check).get("auto-totem");
+        if (object == null) {
+            int ticks = this.getCooldowns().get("auto-totem");
 
-                if (ticks > 0) {
-                    cancel("type: auto-totem, remaining-ticks: " + ticks);
-                }
-            } else {
-                InventoryClickEvent e = (InventoryClickEvent) object;
-                ItemStack item = e.getCurrentItem();
-                runClosedInventory(e.getClick());
-                runPortalInventory(item);
-                trackAutoTotem(player, item);
+            if (ticks > 0) {
+                cancel("type: auto-totem, remaining-ticks: " + ticks);
             }
+        } else {
+            InventoryClickEvent e = (InventoryClickEvent) object;
+            ItemStack item = e.getCurrentItem();
+            runClosedInventory(e.getClick());
+            runPortalInventory(item);
+            trackAutoTotem(player, item);
         }
     }
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()
-                && !player.movement.isSwimming()
+        if (!player.movement.isSwimming()
                 && player.getVehicle() == null
                 && player.getOpenInventory().isUsingTheCursor()) {
             int cases = getActionCase();
 
-            if (cases != 0
-                    && (cases != jumping
-                    || player.getBuffer(check).start("cursor-usage", 20, Check.detectionMeasurementTicks) >= 0.15)) {
+            if (cases != 0) {
                 cancel("type: cursor-usage, case: " + cases, player.movement.getNmsFromLocation(), 0, false);
             }
         }
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return player.canRunCheck(check, true)
-                && !player.movement.isCrawling();
+        return false;
     }
 
     private void trackAutoTotem(SpartanPlayer p, ItemStack itemStack) {
         if (totem_of_undying != null
                 && itemStack.getType() == totem_of_undying) {
-            p.getCooldowns(check).add("auto-totem", 3);
+            this.getCooldowns().add("auto-totem", 3);
         }
     }
 
@@ -98,8 +87,7 @@ public class ImpossibleInventory extends CheckExecutor { // todo improve
                 && !player.movement.isSwimming()
                 && player.getVehicle() == null
                 && player.getOpenInventory().isUsingAnotherInventory()
-                && !PatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)
-                && (cases != jumping || player.getBuffer(check).start("closed-inventory", 20, Check.detectionMeasurementTicks) >= (requiredJumpingMotions / 20.0))) {
+                && !PatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)) {
             cancel("type: closed-inventory, case: " + cases);
         }
     }
@@ -116,12 +104,11 @@ public class ImpossibleInventory extends CheckExecutor { // todo improve
     }
 
     private int getActionCase() {
-        if (player.movement.isFlying()) {
+        if (player.movement.isFlying() || player.movement.isCrawling()) {
             return 0;
         } else {
             Check check = ImpossibleInventory.check.getCheck();
-            return !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
-                    && check.getBooleanOption("check_sneaking", true)
+            return check.getBooleanOption("check_sneaking", true)
                     && player.movement.isSneaking() ? 1
                     : !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                     && check.getBooleanOption("check_sprinting", true)
@@ -131,12 +118,11 @@ public class ImpossibleInventory extends CheckExecutor { // todo improve
                     : check.getBooleanOption("check_dead", true)
                     && player.isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
-                    && player.movement.isSprintJumping(player.movement.getNmsVerticalDistance()) ? 6
+                    && player.movement.isSprintJumping(player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0)) ? 6
                     : check.getBooleanOption("check_walk_jumping", true)
-                    && player.movement.isWalkJumping(player.movement.getNmsVerticalDistance()) ? 7
+                    && player.movement.isWalkJumping(player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0)) ? 7
                     : check.getBooleanOption("check_jumping", true)
-                    && player.movement.isJumping(player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0))
-                    ? jumping
+                    && player.movement.isJumping(player.movement.getValueOrDefault(player.movement.getNmsVerticalDistance(), 0.0)) ? 8
                     : 0;
         }
     }

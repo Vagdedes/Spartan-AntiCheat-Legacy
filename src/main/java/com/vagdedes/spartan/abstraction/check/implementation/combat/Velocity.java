@@ -21,14 +21,13 @@ public class Velocity extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        return !player.canRunCheck(hackType, true)
-                && CombatProcessing.canCheck(player)
+        return CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0);
     }
 

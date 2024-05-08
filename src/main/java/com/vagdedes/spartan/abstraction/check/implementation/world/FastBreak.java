@@ -41,7 +41,7 @@ public class FastBreak extends CheckExecutor {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                long time = player.getTimer(hackType).get("delay=" + Objects.hash(block.world.getName(), block.material, block.x, block.y, block.z), 0L);
+                long time = this.getTimer().get("delay=" + Objects.hash(block.world.getName(), block.material, block.x, block.y, block.z), 0L);
 
                 if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
                     ItemStack itemStack = player.getItemInHand();
@@ -111,7 +111,7 @@ public class FastBreak extends CheckExecutor {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
 
             if (limit > 0) {
-                Buffer buffer = player.getBuffer(hackType);
+                Buffer buffer = this.getBuffer();
                 String key = "breaks-per-second";
 
                 if (buffer.start(key, 20, Check.detectionMeasurementTicks) >= (limit / 20.0)) {
@@ -134,7 +134,7 @@ public class FastBreak extends CheckExecutor {
 
             if (limit > 0) {
                 String key = "indirect-surroundings";
-                Buffer buffer = player.getBuffer(hackType);
+                Buffer buffer = this.getBuffer();
                 int bufferTime = 20;
                 double bufferThreshold;
 
@@ -178,8 +178,8 @@ public class FastBreak extends CheckExecutor {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
 
-                if (player.canRunCheck(hackType, false)) {
-                    player.getTimer(hackType).set("delay=" + Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z));
+                if (this.canFunction()) {
+                    this.getTimer().set("delay=" + Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z));
                 }
             }
         } else if (canDo()) {
@@ -200,25 +200,17 @@ public class FastBreak extends CheckExecutor {
     }
 
     @Override
-    public void scheduler() {
+    public void schedulerInternal() {
 
     }
 
     @Override
     protected boolean canDo() {
-        if (player.canRunCheck(hackType, true)) {
-            GameMode gameMode = player.getGameMode();
-            return (gameMode == GameMode.SURVIVAL
-                    || gameMode == GameMode.ADVENTURE
-                    || gameMode == GameMode.CREATIVE)
-                    && !MineBomb.canUse(player)
-                    && !Vehicles.has(player, "drill")
-                    && !SuperPickaxe.canCancel(player)
-                    && !AureliumSkills.canCancel(player)
-                    && !mcMMO.hasGeneralAbility(player)
-                    && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
-        } else {
-            return false;
-        }
+        return !MineBomb.canUse(player)
+                && !Vehicles.has(player, "drill")
+                && !SuperPickaxe.canCancel(player)
+                && !AureliumSkills.canCancel(player)
+                && !mcMMO.hasGeneralAbility(player)
+                && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
     }
 }
