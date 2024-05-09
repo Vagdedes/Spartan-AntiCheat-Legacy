@@ -45,19 +45,22 @@ public class ImpossibleInventory extends CheckExecutor {
             ItemStack item = e.getCurrentItem();
             runClosedInventory(e.getClick());
             runPortalInventory(item);
-            trackAutoTotem(player, item);
+            trackAutoTotem(item);
         }
     }
 
     @Override
     public void runInternal(boolean cancelled) {
         if (!player.movement.isSwimming()
-                && player.getVehicle() == null
-                && player.getOpenInventory().getCursor() != null) {
-            int cases = getActionCase();
+                && player.getVehicle() == null) {
+            ItemStack cursor = player.getOpenInventory().getCursor();
 
-            if (cases != 0) {
-                cancel("type: cursor-usage, case: " + cases, player.movement.getNmsFromLocation(), 0, false);
+            if (BlockUtils.hasMaterial(cursor)) {
+                int cases = getActionCase();
+
+                if (cases != 0) {
+                    cancel("type: cursor-usage, case: " + cases, player.movement.getNmsFromLocation(), 0, false);
+                }
             }
         }
     }
@@ -72,8 +75,9 @@ public class ImpossibleInventory extends CheckExecutor {
         return false;
     }
 
-    private void trackAutoTotem(SpartanPlayer p, ItemStack itemStack) {
+    private void trackAutoTotem(ItemStack itemStack) {
         if (totem_of_undying != null
+                && itemStack != null
                 && itemStack.getType() == totem_of_undying) {
             this.getCooldowns().add("auto-totem", 3);
         }
@@ -94,7 +98,7 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     private void runPortalInventory(ItemStack item) {
-        if (item.getType() != Material.AIR) {
+        if (BlockUtils.hasMaterial(item)) {
             SpartanLocation loc = player.movement.getLocation();
 
             if (loc.getBlock().material == nether_portal

@@ -47,7 +47,7 @@ public class InventoryClicks extends CheckExecutor { // todo improve
 
                 if (shift
                         && !quick
-                        && player.getOpenInventory().getCursor() == null
+                        && !BlockUtils.hasMaterial(player.getOpenInventory().getCursor())
                         && buffer.start(key + "shift", 5, Check.detectionMeasurementTicks) > 0.5) { // Inventory
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);

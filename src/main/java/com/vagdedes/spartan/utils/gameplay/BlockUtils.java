@@ -8,6 +8,7 @@ import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -1435,6 +1436,10 @@ public class BlockUtils {
     }
 
     // Separator
+
+    public static boolean hasMaterial(ItemStack itemStack) {
+        return itemStack != null && itemStack.getType() != Material.AIR;
+    }
 
     public static String environmentToString(World.Environment e) {
         return toString(e);

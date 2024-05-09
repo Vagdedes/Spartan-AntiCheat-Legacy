@@ -8,9 +8,9 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CheckDelay;
 import com.vagdedes.spartan.functionality.tracking.Piston;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -58,7 +58,7 @@ public class EventsHandler4 implements Listener {
     private void InventoryClick(InventoryClickEvent e) {
         ItemStack item = e.getCurrentItem();
 
-        if (item != null && item.getType() != Material.AIR) {
+        if (BlockUtils.hasMaterial(item)) {
             Player n = (Player) e.getWhoClicked();
             SpartanPlayer p = SpartanBukkit.getPlayer(n);
 

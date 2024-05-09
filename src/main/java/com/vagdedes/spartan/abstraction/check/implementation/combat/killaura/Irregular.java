@@ -2,7 +2,9 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import org.bukkit.inventory.InventoryView;
 
 public class Irregular extends DetectionExecutor {
 
@@ -15,10 +17,16 @@ public class Irregular extends DetectionExecutor {
             cancel("type: irregular, scenario: death");
         } else if (player.isSleeping()) {
             cancel("type: irregular, scenario: sleeping");
-        } else if (player.getOpenInventory().getCursor() != null) {
-            cancel("type: irregular, scenario: cursor");
-        } else if (player.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots) {
-            cancel("type: irregular, scenario: inventory");
+        } else {
+            InventoryView inventoryView = player.getOpenInventory();
+
+            if (inventoryView != null) {
+                if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
+                    cancel("type: irregular, scenario: cursor");
+                } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots) {
+                    cancel("type: irregular, scenario: inventory");
+                }
+            }
         }
     }
 }
