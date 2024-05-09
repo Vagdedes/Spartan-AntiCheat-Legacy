@@ -434,32 +434,8 @@ public class ResearchEngine {
     public static Map<String, String> getLogs() {
         Map<String, String> cache = new LinkedHashMap<>();
         int byteSize = 0;
-        boolean isFull = false;
-        boolean continueWithYAML = false;
-
-        // Separator
-        if (Config.settings.getBoolean(Settings.cloudSynchroniseFilesOption)) {
-            String crossServerInformationOption = CrossServerInformation.getOptionValue();
-
-            if (CrossServerInformation.isOptionValid(crossServerInformationOption)) {
-                String[] incomingInformation = CloudConnections.getCrossServerInformation("log", crossServerInformationOption);
-
-                if (incomingInformation.length > 0) {
-                    String key = AntiCheatLogs.syntaxDate(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now()), new Random().nextInt());
-
-                    for (String information : incomingInformation) {
-                        AntiCheatLogs.logInfo(null, information, null, null, null, false, -1);
-                        cache.put(key, information);
-                        byteSize += key.length() + information.length();
-
-                        if (byteSize >= Cache.maxBytes) {
-                            isFull = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        boolean isFull = false,
+                continueWithYAML = false;
 
         // Separator
 

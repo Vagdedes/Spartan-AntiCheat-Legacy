@@ -94,27 +94,6 @@ public class CloudConnections {
         return -1;
     }
 
-    static void logServerSpecifications() {
-        SpartanBukkit.connectionThread.execute(() -> {
-            Runtime runtime = Runtime.getRuntime();
-            String motd = StringUtils.getClearColorString(Bukkit.getMotd());
-
-            String specs = MultiVersion.versionString() + CloudBase.separator
-                    + Bukkit.getPort() + CloudBase.separator
-                    + runtime.availableProcessors() + CloudBase.separator
-                    + (runtime.totalMemory() / 1024 / 1024) + CloudBase.separator
-                    + Register.manager.getPlugins().length + CloudBase.separator
-                    + Base64.getEncoder().encodeToString(motd.getBytes());
-
-            try {
-                RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification + "&action=add&data=serverSpecifications"
-                        + "&value=" + URLEncoder.encode(specs, "UTF-8") + "&version=" + CloudBase.version);
-            } catch (Exception e) {
-                CloudBase.throwError(e, "serverSpecifications:ADD");
-            }
-        });
-    }
-
     static boolean ownsProduct(String productID) { // Once
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification

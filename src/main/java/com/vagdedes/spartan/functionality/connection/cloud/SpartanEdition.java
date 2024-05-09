@@ -86,7 +86,7 @@ public class SpartanEdition {
         if (alternativeVersion) {
             return "Spartan AntiCheat: Java & Bedrock Edition";
         } else {
-            return "Spartan AntiCheat: " + dataType + " Edition";
+            return "Spartan AntiCheat: " + dataType.name + " Edition";
         }
     }
 

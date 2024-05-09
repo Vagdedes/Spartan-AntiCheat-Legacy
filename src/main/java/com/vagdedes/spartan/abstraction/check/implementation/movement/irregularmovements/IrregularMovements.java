@@ -50,10 +50,10 @@ public class IrregularMovements extends CheckExecutor {
                 if (vertical == 0.0) {
                     this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
                 } else {
-                    step.run(knownBox, knownOldBox, box, oldBox, vertical);
+                    this.step.run(knownBox, knownOldBox, box, oldBox, vertical);
                 }
             } else {
-                gravity.run(vertical, oldVertical, box, oldBox);
+                this.gravity.run(vertical, oldVertical, box, oldBox);
             }
             jump.run(vertical, box);
         }

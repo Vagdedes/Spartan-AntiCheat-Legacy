@@ -203,11 +203,11 @@ public class CloudBase {
             }
 
             // Separator
-            if (independent && Config.settings.getBoolean(Settings.cloudSynchroniseFilesOption)) {
+            if (independent) {
                 SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
                     try {
                         String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
-                                + "&action=get&data=automaticConfigurationChanges&version=" + version + "&value=" + Bukkit.getPort());
+                                + "&action=get&data=automaticConfigurationChanges&version=" + version);
 
                         if (results.length > 0) {
                             boolean changed = false;
