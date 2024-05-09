@@ -286,18 +286,6 @@ public class CloudConnections {
 
     // Manual
 
-    public static String getAiAssistance(String question) {
-        try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
-                    + "&action=get&data=aiAssistance&version=" + CloudBase.version + "&value="
-                    + URLEncoder.encode(question, "UTF-8"));
-            return results.length > 0 ? results[0] : null;
-        } catch (Exception e) {
-            CloudBase.throwError(e, "aiAssistance:GET");
-            return null;
-        }
-    }
-
     private static String sendCustomerSupport(String contactPlatform, String contactInformation,
                                               String columnType, String columnInformation,
                                               String userInformation) {
