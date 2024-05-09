@@ -3,13 +3,13 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.replicates.SpartanInventory;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.PlayerInventory;
 
 public class FastBow extends CheckExecutor {
 
@@ -25,9 +25,9 @@ public class FastBow extends CheckExecutor {
                 checkBowForce(((EntityShootBowEvent) object).getForce());
             }
         } else if (((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
-            SpartanInventory inventory = player.getInventory();
+            PlayerInventory inventory = player.getInventory();
 
-            if (inventory.itemInHand.getType() == Material.BOW
+            if (inventory.getItemInHand().getType() == Material.BOW
                     && inventory.contains(Material.ARROW)) {
                 this.getTimer().set("interact");
             }

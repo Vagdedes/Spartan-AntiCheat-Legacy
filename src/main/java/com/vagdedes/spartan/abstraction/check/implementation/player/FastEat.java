@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 
 public class FastEat extends CheckExecutor {
@@ -26,13 +27,29 @@ public class FastEat extends CheckExecutor {
     }
 
     private long getDelay() {
-        for (ItemStack itemStack : new ItemStack[]{player.getItemInHand(), player.getInventory().itemInOffHand}) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            PlayerInventory inventory = player.getInventory();
+
+            if (inventory != null) {
+                for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
+                    if (itemStack != null) {
+                        Material type = itemStack.getType();
+
+                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && type == Material.DRIED_KELP) {
+                            return driedKelp;
+                        }
+                        if (type.isEdible()) {
+                            return delay;
+                        }
+                    }
+                }
+            }
+        } else {
+            ItemStack itemStack = player.getItemInHand();
+
             if (itemStack != null) {
                 Material type = itemStack.getType();
 
-                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && type == Material.DRIED_KELP) {
-                    return driedKelp;
-                }
                 if (type.isEdible()) {
                     return delay;
                 }
@@ -76,7 +93,7 @@ public class FastEat extends CheckExecutor {
 
                 if (lvl > player.getFoodLevel()
                         && (checkDelay() || checkEating())) {
-                    player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()), true);
+                    player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()));
                 }
             }
         } else if (!player.bedrockPlayer && canDo()) {

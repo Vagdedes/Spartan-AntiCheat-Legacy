@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.PatternUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
@@ -52,7 +53,7 @@ public class ImpossibleInventory extends CheckExecutor {
     public void runInternal(boolean cancelled) {
         if (!player.movement.isSwimming()
                 && player.getVehicle() == null
-                && player.getOpenInventory().isUsingTheCursor()) {
+                && player.getOpenInventory().getCursor() != null) {
             int cases = getActionCase();
 
             if (cases != 0) {
@@ -86,7 +87,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !click.isKeyboardClick()
                 && !player.movement.isSwimming()
                 && player.getVehicle() == null
-                && player.getOpenInventory().isUsingAnotherInventory()
+                && player.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                 && !PatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)) {
             cancel("type: closed-inventory, case: " + cases);
         }

@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -36,8 +37,8 @@ public class InventoryClicks extends CheckExecutor { // todo improve
             if (!BlockUtils.isSensitive(player, material)) {
                 Buffer buffer = this.getBuffer();
                 String key = "";
-                boolean quick = !player.getOpenInventory().isUsingAnotherInventory();
-                boolean shift = click.isShiftClick();
+                boolean quick = player.getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
+                        shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);
 
                 int newHash = type.hashCode();
@@ -46,7 +47,7 @@ public class InventoryClicks extends CheckExecutor { // todo improve
 
                 if (shift
                         && !quick
-                        && !player.getOpenInventory().isUsingTheCursor()
+                        && player.getOpenInventory().getCursor() == null
                         && buffer.start(key + "shift", 5, Check.detectionMeasurementTicks) > 0.5) { // Inventory
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);
