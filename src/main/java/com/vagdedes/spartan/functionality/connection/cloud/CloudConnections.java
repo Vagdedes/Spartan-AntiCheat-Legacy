@@ -3,7 +3,6 @@ package com.vagdedes.spartan.functionality.connection.cloud;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.profiling.ViolationHistory;
@@ -270,8 +269,7 @@ public class CloudConnections {
                                         + y + CloudBase.separator
                                         + z + CloudBase.separator
                                         + StringUtils.getClearColorString(type) + CloudBase.separator
-                                        + StringUtils.getClearColorString(information) + CloudBase.separator
-                                        + Config.settings.getBoolean(Settings.showEcosystemOption), "UTF-8"));
+                                        + StringUtils.getClearColorString(information), "UTF-8"));
                     } catch (Exception e) {
                         CloudBase.throwError(e, "discordWebhooks:ADD");
                     }
