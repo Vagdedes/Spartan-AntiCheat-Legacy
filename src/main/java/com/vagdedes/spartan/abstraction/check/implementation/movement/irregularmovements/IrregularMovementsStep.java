@@ -92,30 +92,32 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 true
                         );
                     }
-                } else if (!player.movement.isJumping(vertical)) { // todo velocity/trackers
+                } else { // todo velocity/trackers
                     if (vertical > 0.0) {
-                        double limit = PlayerUtils.getJumpMotion(
-                                PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
-                                0
-                        );
+                        if (!player.movement.isJumping(vertical)) {
+                            double limit = PlayerUtils.getJumpMotion(
+                                    PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+                                    0
+                            );
 
-                        if (vertical > limit) {
-                            double predictedHeight = box - oldBox;
+                            if (vertical > limit) {
+                                double predictedHeight = box - oldBox;
 
-                            if (predictedHeight < 0.0) {
-                                predictedHeight += 1.0;
-                            }
-                            if (predictedHeight != vertical
-                                    || vertical > GroundUtils.maxPlayerStep) {
-                                cancel(
-                                        "type: step(abstract-up)"
-                                                + ", box: " + box
-                                                + ", old-box: " + oldBox
-                                                + ", vertical: " + vertical,
-                                        player.movement.getDetectionLocation(),
-                                        0,
-                                        true
-                                );
+                                if (predictedHeight < 0.0) {
+                                    predictedHeight += 1.0;
+                                }
+                                if (predictedHeight != vertical
+                                        || vertical > GroundUtils.maxPlayerStep) {
+                                    cancel(
+                                            "type: step(abstract-up)"
+                                                    + ", box: " + box
+                                                    + ", old-box: " + oldBox
+                                                    + ", vertical: " + vertical,
+                                            player.movement.getDetectionLocation(),
+                                            0,
+                                            true
+                                    );
+                                }
                             }
                         }
                     } else {

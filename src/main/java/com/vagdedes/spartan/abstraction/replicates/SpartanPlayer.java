@@ -632,42 +632,6 @@ public class SpartanPlayer {
         return null;
     }
 
-    public SpartanBlock getIllegalTargetBlock(SpartanBlock clickedBlock) { // todo improve
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            SpartanLocation clickedBlockLocation = clickedBlock.getLocation();
-            boolean editableClickedBlock = BlockUtils.isChangeable(clickedBlockLocation.getBlock().material);
-
-            if (!editableClickedBlock
-                    && !BlockUtils.isSolid(clickedBlockLocation.getBlock().material)) {
-                return null;
-            }
-            double distance = movement.getLocation().distance(clickedBlockLocation);
-
-            if (distance >= 0.5) {
-                try {
-                    SpartanBlock targetBlock = getTargetBlock(Math.max(Math.floor(distance), 1.0));
-
-                    if (targetBlock != null && BlockUtils.isSolid(targetBlock.material)) {
-                        SpartanLocation targetBlockLocation = targetBlock.getLocation();
-
-                        if (clickedBlockLocation.distance(targetBlockLocation) >= (trackers.has(Trackers.TrackerType.ELYTRA_USE) ? 2.5 : BlockUtils.areEggs(getItemInHand().getType()) ? 2.0 : 1.0)
-
-                                && (targetBlock.x != clickedBlock.x
-                                || targetBlock.y != clickedBlock.y
-                                || targetBlock.z != clickedBlock.z)
-
-                                && (editableClickedBlock && !targetBlockLocation.getBlock().isLiquidOrWaterLogged(true)
-                                || BlockUtils.isFullSolid(targetBlockLocation.getBlock().material))) {
-                            return targetBlock;
-                        }
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        }
-        return null;
-    }
-
     // Separator
 
     public Entity getVehicle() {

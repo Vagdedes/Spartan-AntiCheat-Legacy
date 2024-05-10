@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
@@ -29,11 +30,24 @@ public class GhostHand extends CheckExecutor {
 
                 if (canDo(b)
                         && hackType.getCheck().getBooleanOption("check_block_breaking", true)) {
-                    SpartanBlock itb = player.getIllegalTargetBlock(b);
+                    SpartanLocation location = player.movement.getLocation();
+                    double bDistance = location.distance(b.getLocation());
+                    SpartanBlock t = player.getTargetBlock(bDistance);
 
-                    if (itb != null) {
-                        cancel("type: break, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
-                                null, 1);
+                    if (t != null) {
+                        double tDistance = location.distance(t.getLocation());
+
+                        if (tDistance < bDistance) {
+                            cancel(
+                                    "type: break"
+                                            + ", interacted-block: " + BlockUtils.blockToString(b)
+                                            + ", blocking-block: " + BlockUtils.blockToString(t)
+                                            + ", interacted-distance: " + bDistance
+                                            + ", blocking-distance: " + tDistance,
+                                    null,
+                                    1
+                            );
+                        }
                     }
                 }
             } else {
@@ -45,11 +59,24 @@ public class GhostHand extends CheckExecutor {
                     if (canDo(b)
                             && hackType.getCheck().getBooleanOption("check_block_interactions", true)
                             && BlockUtils.isChangeable(b.getLocation().getBlock().material)) {
-                        SpartanBlock itb = player.getIllegalTargetBlock(b);
+                        SpartanLocation location = player.movement.getLocation();
+                        double bDistance = location.distance(b.getLocation());
+                        SpartanBlock t = player.getTargetBlock(bDistance);
 
-                        if (itb != null) {
-                            cancel("type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
-                                    null, 1);
+                        if (t != null) {
+                            double tDistance = location.distance(t.getLocation());
+
+                            if (tDistance < bDistance) {
+                                cancel(
+                                        "type: interact"
+                                                + ", interacted-block: " + BlockUtils.blockToString(b)
+                                                + ", blocking-block: " + BlockUtils.blockToString(t)
+                                                + ", interacted-distance: " + bDistance
+                                                + ", blocking-distance: " + tDistance,
+                                        null,
+                                        1
+                                );
+                            }
                         }
                     }
                 }

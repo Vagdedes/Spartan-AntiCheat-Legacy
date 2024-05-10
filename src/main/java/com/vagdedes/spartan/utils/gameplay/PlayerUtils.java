@@ -181,7 +181,8 @@ public class PlayerUtils {
     public static int getFallTick(double d, double precision, int jump) {
         if (d < 0.0) {
             int key = (Double.hashCode(precision) * SpartanBukkit.hashCodeMultiplier)
-                    + Double.hashCode(AlgebraUtils.cut(d, GroundUtils.maxHeightLength));
+                    + Double.hashCode(AlgebraUtils.cut(d, GroundUtils.maxHeightLength)),
+            maxTicks = AlgebraUtils.integerCeil(terminalVelocity / airAcceleration);
             key = (key * SpartanBukkit.hashCodeMultiplier) + jump;
             Integer ticks;
 
@@ -196,6 +197,11 @@ public class PlayerUtils {
                         preD = d;
                         d = (d + airAcceleration) / airDrag;
                         ticks++;
+
+                        if (ticks == maxTicks) {
+                            fallTicks.put(key, -1);
+                            return -1;
+                        }
                     }
 
                     if (ticks > 0) {
