@@ -202,34 +202,36 @@ public class GroundUtils {
         original &= p.getVehicle() == null && !p.bedrockPlayer;
         double box = loc.getY() - loc.getBlockY();
 
-        for (SpartanLocation loopLocation : loc.getSurroundingLocations(
-                BlockUtils.boundingBox,
-                box == 0.0 ? -minPossibleStep : 0.0,
-                BlockUtils.boundingBox
-        )) {
-            Material type = loopLocation.getBlock().material;
+        for (double position : new double[]{-(box + minPossibleStep), 0.0}) {
+            for (SpartanLocation loopLocation : loc.getSurroundingLocations(
+                    BlockUtils.boundingBox,
+                    position,
+                    BlockUtils.boundingBox
+            )) {
+                Material type = loopLocation.getBlock().material;
 
-            if (BlockUtils.isSolid(type)) {
-                if (original) {
-                    double[] heights = correlatedBlockHeights.get(type);
+                if (BlockUtils.isSolid(type)) {
+                    if (original) {
+                        double[] heights = correlatedBlockHeights.get(type);
 
-                    if (heights != null) {
-                        if (heights.length == 1) {
-                            if (heights[0] == -1.0 || heights[0] == box) {
-                                return true;
-                            }
-                        } else {
-                            for (double height : heights) {
-                                if (height == box) {
+                        if (heights != null) {
+                            if (heights.length == 1) {
+                                if (heights[0] == -1.0 || heights[0] == box) {
                                     return true;
                                 }
+                            } else {
+                                for (double height : heights) {
+                                    if (height == box) {
+                                        return true;
+                                    }
+                                }
                             }
+                        } else if (box == 0.0) {
+                            return true;
                         }
-                    } else if (box == 0.0) {
+                    } else {
                         return true;
                     }
-                } else {
-                    return true;
                 }
             }
         }
