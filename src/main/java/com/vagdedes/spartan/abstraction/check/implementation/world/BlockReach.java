@@ -10,6 +10,8 @@ import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.gameplay.GroundUtils;
+import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -76,11 +78,11 @@ public class BlockReach extends CheckExecutor {
                             && !BlockUtils.isScaffoldingBlock(block.material)) {
                         SpartanLocation to = player.movement.getLocation();
                         double distance = to.distance(block.getLocation()),
-                                ab_distance = to.distance(blockAgainst.getLocation()) + 0.1;
+                                ab_distance = to.distance(blockAgainst.getLocation()) + BlockUtils.boundingBox;
 
                         if (!player.bedrockPlayer
                                 && player.getVehicle() == null
-                                && distance >= 2.0 && distance > ab_distance) {
+                                && distance > 1.0 && distance > ab_distance) {
                             cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
                         } else {
                             double limit = getLimit();

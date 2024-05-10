@@ -17,6 +17,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,13 +29,14 @@ public class SpartanPlayerMovement {
     private final List<Double>
             nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
             nmsBox;
+    private final List<SpartanLocation> eventFrom;
     private long
             artificialSwimming,
             lastLiquidTicks,
             lastOnGround,
             lastVanillaOnGround;
     private Material lastLiquidMaterial;
-    private SpartanLocation location, eventFrom, detectionLocation;
+    private SpartanLocation location, detectionLocation;
     SpartanLocation schedulerFrom;
     private Vector clampVector;
 
@@ -55,7 +57,7 @@ public class SpartanPlayerMovement {
 
         this.location = new SpartanLocation(this.parent, p.getLocation());
         this.schedulerFrom = this.location;
-        this.eventFrom = this.location;
+        this.eventFrom = Collections.synchronizedList(new LinkedList<>());
         this.detectionLocation = this.location;
 
         this.clampVector = new Vector();
@@ -357,7 +359,11 @@ public class SpartanPlayerMovement {
     }
 
     public SpartanLocation getEventFromLocation() {
-        return eventFrom;
+        return !eventFrom.isEmpty() ? eventFrom.get(eventFrom.size() - 1) : location;
+    }
+
+    public List<SpartanLocation> getEventFromLocations() {
+        return new ArrayList<>(eventFrom);
     }
 
     public SpartanLocation getDetectionLocation() {
@@ -397,14 +403,16 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean positionChanged() {
-        return this.location.getX() != this.eventFrom.getX()
-                || this.location.getY() != this.eventFrom.getY()
-                || this.location.getZ() != this.eventFrom.getZ();
+        SpartanLocation from = this.getEventFromLocation();
+        return this.location.getX() != from.getX()
+                || this.location.getY() != from.getY()
+                || this.location.getZ() != from.getZ();
     }
 
     public boolean directionChanged() {
-        return this.location.getYaw() != this.eventFrom.getYaw()
-                || this.location.getPitch() != this.eventFrom.getPitch();
+        SpartanLocation from = this.getEventFromLocation();
+        return this.location.getYaw() != from.getYaw()
+                || this.location.getPitch() != from.getPitch();
     }
 
     // Separator
@@ -423,8 +431,11 @@ public class SpartanPlayerMovement {
             }
         }
         this.location = to;
-        this.eventFrom = from;
+        this.eventFrom.add(from);
 
+        if (this.eventFrom.size() > TPS.maximum) {
+            this.eventFrom.remove(0);
+        }
         if (this.parent.isOnGround(to)) {
             this.resetAirTicks();
             this.parent.onGroundCustom = true;

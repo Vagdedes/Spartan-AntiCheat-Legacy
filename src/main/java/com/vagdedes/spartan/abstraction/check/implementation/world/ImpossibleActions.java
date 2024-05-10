@@ -12,11 +12,14 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.List;
 
 public class ImpossibleActions extends CheckExecutor {
 
@@ -34,41 +37,87 @@ public class ImpossibleActions extends CheckExecutor {
                     blockY = event.getBlock().getY();
 
             if (blockY < playerY) {
-                if (AlgebraUtils.getHorizontalDistance(playerLocation.getBlockLocation(), block.getLocation()) <= 1.0) {
-                    ItemStack handItem = player.getItemInHand();
-                    int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
-                            motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
-                    double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
-                            blockHeight = GroundUtils.getMinHeight(
-                                    handItem == null ? Material.AIR : handItem.getType()
-                            ),
-                            deltaXZ = player.movement.getNmsHorizontalDistance();
-                    int deltaYMinus1 = playerY - blockY - 1,
-                            possiblePlacements = AlgebraUtils.integerFloor(
-                                    motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
-                            ) + deltaYMinus1;
+                Block blockAgainst = event.getBlockAgainst();
+                BlockFace blockFace = blockAgainst.getFace(event.getBlock());
 
-                    if (deltaXZ > 0.1) {
-                        possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
-                    }
+                switch (blockFace) {
+                    case EAST:
+                    case EAST_NORTH_EAST:
+                    case EAST_SOUTH_EAST:
+                    case WEST:
+                    case WEST_NORTH_WEST:
+                    case WEST_SOUTH_WEST:
+                    case NORTH:
+                    case NORTH_EAST:
+                    case NORTH_NORTH_EAST:
+                    case SOUTH:
+                    case SOUTH_EAST:
+                    case SOUTH_SOUTH_EAST:
+                        double directionDistance = blockFace.getDirection().distance(playerLocation.getDirection());
 
-                    if (this.getBuffer().count("tower", motionTicks) > possiblePlacements) {
-                        this.getBuffer().remove("tower");
-                        cancel(
-                                "type: tower"
-                                        + ", placements: " + possiblePlacements
-                                        + ", horizontal: " + deltaXZ
-                                        + ", vertical: " + deltaYMinus1,
-                                player.movement.getDetectionLocation(),
-                                0,
-                                true
-                        );
-                    }
+                        if (directionDistance <= 1.35) {
+                            cancel(
+                                    "type: scaffold(direction)"
+                                            + ", vector-distance: " + directionDistance
+                                            + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
+                            );
+                        } else {
+                            float pitch = playerLocation.getPitch();
+
+                            if (pitch <= 0.0) {
+                                cancel(
+                                        "type: scaffold(up)"
+                                                + ", pitch: " + pitch
+                                                + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
+                                );
+                            } else {
+                                List<SpartanLocation> fromLocations = player.movement.getEventFromLocations();
+
+                                if (!fromLocations.isEmpty()) {
+
+                                }
+                                // todo direction consistency with power and square root
+                            }
+                        }
+                        break;
+                    case UP:
+                        if (AlgebraUtils.getHorizontalDistance(
+                                playerLocation.getBlockLocation(),
+                                block.getLocation()
+                        ) <= 1.0) {
+                            ItemStack handItem = player.getItemInHand();
+                            int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+                                    motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
+                            double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
+                                    blockHeight = GroundUtils.getMinHeight(
+                                            handItem == null ? Material.AIR : handItem.getType()
+                                    ),
+                                    deltaXZ = player.movement.getNmsHorizontalDistance();
+                            int deltaYMinus1 = playerY - blockY - 1,
+                                    possiblePlacements = AlgebraUtils.integerFloor(
+                                            motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
+                                    ) + deltaYMinus1;
+
+                            if (deltaXZ > 0.1) {
+                                possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
+                            }
+
+                            if (this.getBuffer().count("tower", motionTicks) > possiblePlacements) {
+                                this.getBuffer().remove("tower");
+                                cancel(
+                                        "type: tower"
+                                                + ", placements: " + possiblePlacements
+                                                + ", horizontal: " + deltaXZ
+                                                + ", vertical: " + deltaYMinus1,
+                                        player.movement.getDetectionLocation(),
+                                        0,
+                                        true
+                                );
+                            }
+                        }
+                    default:
+                        break;
                 }
-            } else if (blockY == playerY) {
-                // todo horizontal bridge
-            } else {
-                // todo upwards bridge
             }
         } else {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
