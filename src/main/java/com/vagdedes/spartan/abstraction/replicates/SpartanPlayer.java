@@ -52,13 +52,12 @@ import java.util.*;
 
 public class SpartanPlayer {
 
-    private static final int tickFrequency = 5 * 1200;
-    private static int syncTicks = 0;
+    private static int schedulerTicks = 0;
     private static final Map<World, List<Entity>> worldEntities
             = Collections.synchronizedMap(new LinkedHashMap<>(Math.max(Bukkit.getWorlds().size(), 1)));
 
     public final boolean bedrockPlayer;
-    private boolean onGroundCustom;
+    boolean onGroundCustom;
     public final long creationTime;
     public final String name;
     public final UUID uuid;
@@ -95,62 +94,27 @@ public class SpartanPlayer {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
                 List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+                schedulerTicks++;
 
-                boolean clearCache, hasPlayers = !players.isEmpty();
+                if (!MultiVersion.folia && schedulerTicks % 20 == 0) {
+                    synchronized (worldEntities) {
+                        worldEntities.clear();
 
-                if (syncTicks == 0) {
-                    clearCache = true;
-                    syncTicks = tickFrequency;
-
-                    if (!MultiVersion.folia) {
-                        synchronized (worldEntities) {
-                            worldEntities.clear();
-
-                            if (hasPlayers) {
-                                for (World world : Bukkit.getWorlds()) {
-                                    worldEntities.put(
-                                            world,
-                                            new ArrayList<>(world.getEntities())
-                                    );
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    clearCache = false;
-                    syncTicks--;
-
-                    if (!MultiVersion.folia && syncTicks % 20 == 0) {
-                        synchronized (worldEntities) {
-                            worldEntities.clear();
-
-                            if (hasPlayers) {
-                                for (World world : Bukkit.getWorlds()) {
-                                    worldEntities.put(
-                                            world,
-                                            new ArrayList<>(world.getEntities())
-                                    );
-                                }
+                        if (!players.isEmpty()) {
+                            for (World world : Bukkit.getWorlds()) {
+                                worldEntities.put(
+                                        world,
+                                        new ArrayList<>(world.getEntities())
+                                );
                             }
                         }
                     }
                 }
 
-                if (hasPlayers) {
+                if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
-                        if (clearCache) {
-                            for (Enums.HackType hackType : Enums.HackType.values()) {
-                                if (!p.getViolations(hackType).hasLevel()) {
-                                    p.getBuffer(hackType).clear();
-                                    p.getTimer(hackType).clear();
-                                    p.getDecimals(hackType).clear();
-                                    p.getCooldowns(hackType).clear();
-                                }
-                            }
-                        }
-                        if (p.refreshOnGround(p.movement.getLocation())) {
-                            p.movement.resetAirTicks();
-                        }
+                        p.movement.getLocation(); // Method refreshes its parameters
+
                         if (p.isOnGroundDefault()) {
                             p.movement.resetVanillaAirTicks();
                         }
@@ -195,31 +159,6 @@ public class SpartanPlayer {
     }
 
     // Separator
-
-    public static void clear() {
-        synchronized (worldEntities) {
-            worldEntities.clear();
-        }
-        SpartanLocation.clear();
-        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-        if (!players.isEmpty()) {
-            for (SpartanPlayer p : players) {
-                for (Buffer buffer : p.buffer) {
-                    buffer.clear();
-                }
-                for (Timer timer : p.timer) {
-                    timer.clear();
-                }
-                for (Decimals decimals : p.decimals) {
-                    decimals.clear();
-                }
-                for (Cooldowns cooldowns : p.cooldowns) {
-                    cooldowns.clear();
-                }
-            }
-        }
-    }
 
     public static void cacheEntity(Entity entity) {
         synchronized (worldEntities) {
@@ -591,10 +530,6 @@ public class SpartanPlayer {
             Player p = this.getPlayer();
             return p != null && p.isOnGround();
         }
-    }
-
-    public boolean refreshOnGround(SpartanLocation location) {
-        return this.onGroundCustom = GroundUtils.isOnGround(this, location, 0.0, false, true);
     }
 
     // Separator

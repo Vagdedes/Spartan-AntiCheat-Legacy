@@ -46,9 +46,6 @@ public class MovementProcessing {
                            SpartanLocation to,
                            double distance, double horizontal,
                            double vertical, double box) {
-        if (player.refreshOnGround(player.movement.getLocation())) {
-            player.movement.resetAirTicks();
-        }
         if (player.isOnGroundDefault()) {
             player.movement.resetVanillaAirTicks();
         }

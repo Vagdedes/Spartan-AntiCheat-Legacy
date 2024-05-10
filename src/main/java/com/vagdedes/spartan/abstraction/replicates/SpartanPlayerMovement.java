@@ -338,6 +338,13 @@ public class SpartanPlayerMovement {
                         SpartanLocation from = this.location.clone();
                         this.location = new SpartanLocation(this.parent, bukkitLocation);
                         this.location.retrieveDataFrom(from);
+
+                        if (this.parent.isOnGround(this.location)) {
+                            this.resetAirTicks();
+                            this.parent.onGroundCustom = true;
+                        } else {
+                            this.parent.onGroundCustom = false;
+                        }
                     }
                 }
             }
@@ -417,6 +424,13 @@ public class SpartanPlayerMovement {
         }
         this.location = to;
         this.eventFrom = from;
+
+        if (this.parent.isOnGround(to)) {
+            this.resetAirTicks();
+            this.parent.onGroundCustom = true;
+        } else {
+            this.parent.onGroundCustom = false;
+        }
         return true;
     }
 

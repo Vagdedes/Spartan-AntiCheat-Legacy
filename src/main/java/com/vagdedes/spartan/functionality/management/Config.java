@@ -177,9 +177,6 @@ public class Config {
             AwarenessNotifications.clear();
         }
 
-        // Objects
-        SpartanPlayer.clear();
-
         // System
         PluginUtils.clear();
         Cache.clearStorage(!enabledPlugin);
