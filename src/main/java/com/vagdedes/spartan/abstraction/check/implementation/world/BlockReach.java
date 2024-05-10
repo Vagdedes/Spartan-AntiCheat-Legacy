@@ -9,17 +9,13 @@ import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
-import org.bukkit.Material;
-import org.bukkit.entity.Strider;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class BlockReach extends CheckExecutor { // todo improve
+public class BlockReach extends CheckExecutor {
 
     private static final double minimumLimit = 6.0;
 
@@ -27,21 +23,14 @@ public class BlockReach extends CheckExecutor { // todo improve
         super(HackType.BlockReach, player);
     }
 
-    private double getMultiplier() {
-        return player.bedrockPlayer ? 2 : // Building
-                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && player.getVehicle() instanceof Strider ? 1.5 :
-                        1; // Building
-    }
-
     private boolean canDo(SpartanBlock b) {
-        return !BlockUtils.isScaffoldingBlock(b.material)
-                && !TreeFeller.canCancel(player, b);
+        return player.getWorld().equals(b.getLocation().world);
     }
 
     private double getLimit() {
         return Math.max(
-                hackType.getCheck().getDecimalOption("overall_distance", 7.5),
-                player.movement.isFlying() ? PlayerUtils.chunk : minimumLimit
+                hackType.getCheck().getDecimalOption("overall_distance", minimumLimit),
+                minimumLimit
         );
     }
 
@@ -51,20 +40,13 @@ public class BlockReach extends CheckExecutor { // todo improve
             if (object instanceof BlockBreakEvent) {
                 SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
-                if (canDo(block) && BlockUtils.isSensitive(player, block.material)) {
-                    Material item = player.getItemInHand().getType();
+                if (canDo(block)
+                        && !TreeFeller.canCancel(player, block)) {
+                    double distance = player.movement.getLocation().distance(block.getLocation()),
+                            limit = getLimit();
 
-                    if (item != Material.FLINT_AND_STEEL
-                            && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) || item != Material.END_CRYSTAL)) {
-                        SpartanLocation to = player.movement.getLocation();
-                        SpartanLocation bloc = block.getLocation();
-                        double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
-                                limit = getLimit(),
-                                multiplier = getMultiplier();
-
-                        if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
-                            cancel("type: break, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
-                        }
+                    if (distance >= limit) {
+                        cancel("type: break, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
                     }
                 }
             } else if (object instanceof PlayerInteractEvent) {
@@ -74,41 +56,37 @@ public class BlockReach extends CheckExecutor { // todo improve
                     SpartanLocation bloc = block.getLocation();
 
                     if (BlockUtils.isChangeable(bloc.getBlock().material)) {
-                        SpartanLocation to = player.movement.getLocation();
-                        double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
-                                limit = getLimit(),
-                                multiplier = getMultiplier();
+                        double distance = player.movement.getLocation().distance(bloc),
+                                limit = getLimit();
 
-                        if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
-                            cancel("type: interact, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
+                        if (distance >= limit) {
+                            cancel("type: interact, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
                         }
                     }
                 }
             } else {
                 BlockPlaceEvent event = (BlockPlaceEvent) object;
                 SpartanBlock blockAgainst = new SpartanBlock(player, event.getBlockAgainst());
-                SpartanLocation baLoc = blockAgainst.getLocation();
 
-                if (BlockUtils.isFullSolid(baLoc.getBlock().material)
-                        && player.getItemInHand().getType() != (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))) {
+                if (BlockUtils.isSolid(blockAgainst.material)) {
                     SpartanBlock block = new SpartanBlock(player, event.getBlock());
 
-                    if (!BlockUtils.areBeds(block.material)
-                            && block.material != Material.BEDROCK) {
-                        SpartanLocation to = player.movement.getLocation(), bloc = block.getLocation();
-                        double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
-                                ab_distance = to.distance(baLoc) + 0.4;
+                    if (canDo(block)
+                            && BlockUtils.isSolid(block.material)
+                            && !BlockUtils.isScaffoldingBlock(block.material)) {
+                        SpartanLocation to = player.movement.getLocation();
+                        double distance = to.distance(block.getLocation()),
+                                ab_distance = to.distance(blockAgainst.getLocation());
 
                         if (!player.bedrockPlayer
                                 && player.getVehicle() == null
-                                && distance >= 1.4 && distance > ab_distance) {
+                                && distance >= 2.0 && distance > ab_distance) {
                             cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
                         } else {
-                            double limit = getLimit(),
-                                    multiplier = getMultiplier();
+                            double limit = getLimit();
 
-                            if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
-                                cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
+                            if (distance >= limit) {
+                                cancel("type: place, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
                             }
                         }
                     }
@@ -130,10 +108,9 @@ public class BlockReach extends CheckExecutor { // todo improve
     @Override
     protected boolean canDo() {
         return !Compatibility.CompatibilityType.MC_MMO.isFunctional()
-                && !PrinterMode.canCancel(player)
-                && !MineBomb.canUse(player)
-                && !AureliumSkills.canCancel(player)
-                && !MineBomb.canUse(player)
-                && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
+                && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
+                && !PrinterMode.isUsing(player)
+                && !AureliumSkills.isUsing(player)
+                && !MineBomb.isUsing(player);
     }
 }

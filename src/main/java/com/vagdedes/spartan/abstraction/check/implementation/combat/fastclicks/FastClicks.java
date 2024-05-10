@@ -29,7 +29,7 @@ public class FastClicks extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return !PlayerUtils.isPickaxeItem(player.getItemInHand().getType())
-                && !PrinterMode.canCancel(player);
+                && !PrinterMode.isUsing(player);
     }
 
     @Override

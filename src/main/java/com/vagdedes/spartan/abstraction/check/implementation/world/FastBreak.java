@@ -205,10 +205,10 @@ public class FastBreak extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return !MineBomb.canUse(player)
+        return !MineBomb.isUsing(player)
                 && !Vehicles.has(player, "drill")
                 && !SuperPickaxe.canCancel(player)
-                && !AureliumSkills.canCancel(player)
+                && !AureliumSkills.isUsing(player)
                 && !mcMMO.hasGeneralAbility(player)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
     }

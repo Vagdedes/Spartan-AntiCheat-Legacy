@@ -76,7 +76,7 @@ public class GhostHand extends CheckExecutor {
         if (!player.movement.isFlying()
                 && !player.getTrackers().has(Trackers.TrackerType.GAME_MODE)
                 && !Vehicles.has(player, "drill")
-                && !PrinterMode.canCancel(player)
+                && !PrinterMode.isUsing(player)
                 && !mcMMO.hasGeneralAbility(player)) {
             GameMode gameMode = player.getGameMode();
             return gameMode == GameMode.SURVIVAL

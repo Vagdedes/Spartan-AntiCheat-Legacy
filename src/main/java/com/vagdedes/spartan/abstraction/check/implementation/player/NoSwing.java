@@ -44,8 +44,8 @@ public class NoSwing extends CheckExecutor {
         } else if (object instanceof BlockBreakEvent) {
             if (!canDo()
                     || !hackType.getCheck().getBooleanOption("check_breaking", true)
-                    || MineBomb.canUse(player)
-                    || AureliumSkills.canCancel(player)) {
+                    || MineBomb.isUsing(player)
+                    || AureliumSkills.isUsing(player)) {
                 return;
             }
             SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
