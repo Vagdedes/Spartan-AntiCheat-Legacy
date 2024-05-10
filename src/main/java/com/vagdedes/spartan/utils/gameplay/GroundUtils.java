@@ -209,9 +209,6 @@ public class GroundUtils {
         )) {
             Material type = loopLocation.getBlock().material;
 
-            if (original) {
-                p.debug(true, false, false, type);
-            }
             if (BlockUtils.isSolid(type)) {
                 if (original) {
                     double[] heights = correlatedBlockHeights.get(type);

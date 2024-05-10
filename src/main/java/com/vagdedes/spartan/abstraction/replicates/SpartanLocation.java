@@ -585,37 +585,23 @@ public class SpartanLocation {
 
     public Collection<SpartanLocation> getSurroundingLocations(double x, double y, double z) {
         Map<Integer, SpartanLocation> locations = new LinkedHashMap<>(10, 1.0f);
+        SpartanLocation yOnly = this.clone().add(0, y, 0);
+        locations.put(yOnly.identifier, yOnly);
 
         for (double[] positions : new double[][]{
-                {this.x + x, this.z},
-                {this.x - x, this.z},
-                {this.x, this.z + z},
-                {this.x, this.z - z},
-                {this.x + x, this.z + z},
-                {this.x - x, this.z - z},
-                {this.x + x, this.z - z},
-                {this.x - x, this.z + z}
+                {x, 0.0},
+                {-x, 0.0},
+                {0.0, z},
+                {0.0, -z},
+                {x, z},
+                {-x, -z},
+                {x, -z},
+                {-x, z}
         }) {
-            SpartanLocation location = new SpartanLocation(
-                    this.player, this.world, this.chunk,
-                    positions[0], this.y + y, positions[1],
-                    this.yaw, this.pitch
-            );
+            SpartanLocation location = this.clone().add(positions[0], y, positions[1]);
 
-            if (locations.putIfAbsent(
-                    (AlgebraUtils.integerFloor(positions[0]) * SpartanBukkit.hashCodeMultiplier)
-                            + AlgebraUtils.integerFloor(positions[1]),
-                    location
-            ) == null) {
+            if (locations.putIfAbsent(location.identifier, location) == null) {
                 location.retrieveDataFrom(this);
-            }
-        }
-        while (true) {
-            if (locations.putIfAbsent(
-                    new Random().nextInt(),
-                    this.clone().add(0, y, 0)
-            ) == null) {
-                break;
             }
         }
         return locations.values();

@@ -39,7 +39,7 @@ public class ImpossibleActions extends CheckExecutor {
                     int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
                             motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
                     double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
-                            blockHeight = GroundUtils.getMaxHeight(
+                            blockHeight = GroundUtils.getMinHeight(
                                     handItem == null ? Material.AIR : handItem.getType()
                             ),
                             deltaXZ = player.movement.getNmsHorizontalDistance();
