@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -114,7 +113,7 @@ public class FastBreak extends CheckExecutor {
                 Buffer buffer = this.getBuffer();
                 String key = "breaks-per-second";
 
-                if (buffer.start(key, 20, Check.detectionMeasurementTicks) >= (limit / 20.0)) {
+                if (buffer.count(key, 20) == limit) {
                     buffer.remove(key);
                     cancel(
                             "type: breaks-per-second"
@@ -150,15 +149,15 @@ public class FastBreak extends CheckExecutor {
                             || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Back-Diagonal
                             || block.x == lastBlock.x && block.y == (lastBlock.y + 1) && block.z == lastBlock.z // Up
                             || block.x == lastBlock.x && block.y == (lastBlock.y - 1) && block.z == lastBlock.z)) { // Down
-                        bufferThreshold = buffer.start(key, bufferTime, Check.detectionMeasurementTicks);
+                        bufferThreshold = buffer.count(key, bufferTime);
                     } else {
-                        bufferThreshold = buffer.get(key);
+                        return;
                     }
                 } else {
-                    bufferThreshold = buffer.start(key, bufferTime, Check.detectionMeasurementTicks);
+                    bufferThreshold = buffer.count(key, bufferTime);
                 }
 
-                if (bufferThreshold >= (limit / (double) bufferTime)) {
+                if (bufferThreshold == limit) {
                     buffer.remove(key);
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)

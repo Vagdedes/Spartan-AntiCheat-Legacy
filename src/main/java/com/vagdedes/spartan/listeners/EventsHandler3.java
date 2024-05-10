@@ -149,7 +149,6 @@ public class EventsHandler3 implements Listener {
                     p.getExecutor(Enums.HackType.ImpossibleActions).handle(false, e);
                 }
                 p.getExecutor(Enums.HackType.FastEat).handle(false, e);
-                p.getExecutor(Enums.HackType.ItemDrops).handle(false, e);
 
                 if (!customBlock) {
                     p.getExecutor(Enums.HackType.GhostHand).handle(false, e);

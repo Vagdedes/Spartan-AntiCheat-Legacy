@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Timer;
@@ -13,12 +12,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClicks extends CheckExecutor { // todo improve
-
-    private static final Enums.HackType check = Enums.HackType.InventoryClicks;
+public class InventoryClicks extends CheckExecutor {
 
     public InventoryClicks(SpartanPlayer player) {
-        super(check, player);
+        super(Enums.HackType.InventoryClicks, player);
     }
 
     @Override
@@ -48,7 +45,7 @@ public class InventoryClicks extends CheckExecutor { // todo improve
                 if (shift
                         && !quick
                         && !BlockUtils.hasMaterial(player.getOpenInventory().getCursor())
-                        && buffer.start(key + "shift", 5, Check.detectionMeasurementTicks) > 0.5) { // Inventory
+                        && buffer.count(key + "shift", 5) == 3) { // Inventory
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);
                 } else {
@@ -58,16 +55,16 @@ public class InventoryClicks extends CheckExecutor { // todo improve
                     if (timer.has(time)
                             && (!shift && !quick || newHash != oldHash)) {
                         if (time < 150L) {
-                            if (buffer.start("slow", 10, Check.detectionMeasurementTicks) >= 0.8) {
+                            if (buffer.count("slow", 10) == 8) {
                                 buffer.remove("slow");
                                 cancel("type: slow, ms: " + time + ", item: " + type);
                             }
                             if (time < 100L) {
-                                if (buffer.start("average", 5, Check.detectionMeasurementTicks) >= 0.8) {
+                                if (buffer.count("average", 5) == 4) {
                                     buffer.remove("average");
                                     cancel("type: average, ms: " + time + ", item: " + type);
                                 }
-                                if (time < 50L && buffer.start("fast", 5, Check.detectionMeasurementTicks) >= (time == 0L ? 0.8 : 0.2)) {
+                                if (time == 0L || time < 50L && buffer.count("fast", 5) == 4) {
                                     buffer.remove("fast");
                                     cancel("type: fast, ms: " + time + ", item: " + type);
                                 }

@@ -26,10 +26,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class NoSwing extends CheckExecutor {
 
     private static final int refreshTime = 30 * 20;
-    private static final Enums.HackType check = Enums.HackType.NoSwing;
 
     public NoSwing(SpartanPlayer player) {
-        super(check, player);
+        super(Enums.HackType.NoSwing, player);
     }
 
     @Override

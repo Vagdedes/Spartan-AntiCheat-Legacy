@@ -25,7 +25,7 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (canDo() && false) {
+        if (canDo()) {
             float fallDistance = player.getFallDistance();
 
             if (previousFall != Float.MIN_VALUE) {

@@ -59,7 +59,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 int cases = getActionCase();
 
                 if (cases != 0) {
-                    cancel("type: cursor-usage, case: " + cases, player.movement.getNmsFromLocation(), 0, false);
+                    cancel("type: cursor-usage, case: " + cases, player.movement.getEventFromLocation(), 0, false);
                 }
             }
         }

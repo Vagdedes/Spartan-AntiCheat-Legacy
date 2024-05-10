@@ -55,7 +55,7 @@ public class LiveViolation {
     void run(HackPrevention newPrevention, String information, long time) {
         synchronized (this) {
             if (!CheckDelay.hasCooldown(player)
-                    && !CloudBase.isPublicInformationCancelled(hackType, information)
+                    && !CloudBase.isInformationCancelled(hackType, information)
                     && (disableCause == null
                     || !disableCause.pointerMatches(information))) {
                 InformationAnalysis analysis = new InformationAnalysis(hackType, information);

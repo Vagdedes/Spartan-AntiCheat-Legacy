@@ -13,10 +13,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class ImpossibleActions extends CheckExecutor {
 
-    public static final Enums.HackType check = Enums.HackType.ImpossibleActions;
-
     public ImpossibleActions(SpartanPlayer player) {
-        super(check, player);
+        super(Enums.HackType.ImpossibleActions, player);
     }
 
     @Override

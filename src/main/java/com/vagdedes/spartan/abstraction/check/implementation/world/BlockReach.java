@@ -21,11 +21,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class BlockReach extends CheckExecutor { // todo improve
 
-    private static final HackType check = HackType.BlockReach;
     private static final double minimumLimit = 6.0;
 
     public BlockReach(SpartanPlayer player) {
-        super(check, player);
+        super(HackType.BlockReach, player);
     }
 
     private double getMultiplier() {
@@ -48,8 +47,8 @@ public class BlockReach extends CheckExecutor { // todo improve
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof BlockBreakEvent) {
-            if (canDo()) {
+        if (canDo()) {
+            if (object instanceof BlockBreakEvent) {
                 SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
                 if (canDo(block) && BlockUtils.isSensitive(player, block.material)) {
@@ -68,9 +67,7 @@ public class BlockReach extends CheckExecutor { // todo improve
                         }
                     }
                 }
-            }
-        } else if (object instanceof PlayerInteractEvent) {
-            if (canDo()) {
+            } else if (object instanceof PlayerInteractEvent) {
                 SpartanBlock block = new SpartanBlock(player, ((PlayerInteractEvent) object).getClickedBlock());
 
                 if (canDo(block)) {
@@ -87,34 +84,32 @@ public class BlockReach extends CheckExecutor { // todo improve
                         }
                     }
                 }
-            }
-        } else if (canDo()) {
-            BlockPlaceEvent event = (BlockPlaceEvent) object;
-            SpartanBlock blockAgainst = new SpartanBlock(player, event.getBlockAgainst());
-            SpartanLocation baLoc = blockAgainst.getLocation();
+            } else {
+                BlockPlaceEvent event = (BlockPlaceEvent) object;
+                SpartanBlock blockAgainst = new SpartanBlock(player, event.getBlockAgainst());
+                SpartanLocation baLoc = blockAgainst.getLocation();
 
-            if (BlockUtils.isFullSolid(baLoc.getBlock().material)
-                    && player.getItemInHand().getType() != (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))) {
-                SpartanBlock block = new SpartanBlock(player, event.getBlock());
+                if (BlockUtils.isFullSolid(baLoc.getBlock().material)
+                        && player.getItemInHand().getType() != (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.BONE_MEAL : Material.getMaterial("INK_SACK"))) {
+                    SpartanBlock block = new SpartanBlock(player, event.getBlock());
 
-                if (!BlockUtils.areBeds(block.material)
-                        && block.material != Material.BEDROCK) {
-                    SpartanLocation to = player.movement.getLocation(), bloc = block.getLocation();
-                    double ypos = bloc.getY() - to.getY(),
-                            distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
-                            ab_distance = to.distance(baLoc) + 0.4;
+                    if (!BlockUtils.areBeds(block.material)
+                            && block.material != Material.BEDROCK) {
+                        SpartanLocation to = player.movement.getLocation(), bloc = block.getLocation();
+                        double distance = Math.min(to.distance(bloc), to.clone().add(0, player.getEyeHeight(), 0).distance(bloc)),
+                                ab_distance = to.distance(baLoc) + 0.4;
 
-                    if (!player.bedrockPlayer
-                            && player.getVehicle() == null
-                            && ypos <= 0.5
-                            && distance >= 1.4 && distance > ab_distance && distance <= PlayerUtils.chunk) {
-                        cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", vertical-distance: " + ypos + ", block: " + BlockUtils.blockToString(block));
-                    } else {
-                        double limit = getLimit(),
-                                multiplier = getMultiplier();
+                        if (!player.bedrockPlayer
+                                && player.getVehicle() == null
+                                && distance >= 1.4 && distance > ab_distance) {
+                            cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
+                        } else {
+                            double limit = getLimit(),
+                                    multiplier = getMultiplier();
 
-                        if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
-                            cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
+                            if (distance <= PlayerUtils.chunk && distance >= (limit * multiplier)) {
+                                cancel("type: place, distance: " + distance + ", limit: " + limit + ", multiplier: " + multiplier + ", block: " + BlockUtils.blockToString(block));
+                            }
                         }
                     }
                 }

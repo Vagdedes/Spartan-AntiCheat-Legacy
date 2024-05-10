@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Decimals;
@@ -19,11 +18,8 @@ import org.bukkit.potion.PotionEffectType;
 
 public class FastHeal extends CheckExecutor {
 
-    private static final HackType check = HackType.FastHeal;
-    private static final String checkID = Integer.toString(check.ordinal());
-
     public FastHeal(SpartanPlayer player) {
-        super(check, player);
+        super(HackType.FastHeal, player);
     }
 
     private long calculate() {
@@ -54,8 +50,8 @@ public class FastHeal extends CheckExecutor {
                     Decimals decimals = this.getDecimals();
                     double health = player.getHealth();
 
-                    double previousHealth = this.getDecimals().get(checkID);
-                    long time = this.getTimer().get(checkID);
+                    double previousHealth = this.getDecimals().get("");
+                    long time = this.getTimer().get("");
 
                     if (timer.has(time) && decimals.has(previousHealth)
                             && previousHealth != health) {
@@ -64,14 +60,15 @@ public class FastHeal extends CheckExecutor {
                         if (limit > 0L) {
                             Buffer buffer = this.getBuffer();
 
-                            if (time < limit && buffer.start(checkID, 10, Check.detectionMeasurementTicks) >= 0.3) {
-                                buffer.remove(checkID);
+                            if (time < limit
+                                    && buffer.count("", 10) == 3) {
+                                buffer.remove("");
                                 cancel("type: default, ms: " + time + ", limit: " + limit);
                             }
                         }
                     }
-                    timer.set(checkID);
-                    decimals.set(checkID, health);
+                    timer.set("");
+                    decimals.set("", health);
                 }
             }
         } else if (canDo() && ((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()

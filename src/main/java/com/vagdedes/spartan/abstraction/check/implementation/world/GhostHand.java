@@ -11,10 +11,9 @@ import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class GhostHand extends CheckExecutor { // todo improve
+public class GhostHand extends CheckExecutor {
 
     private static final HackType check = HackType.GhostHand;
 
@@ -24,43 +23,34 @@ public class GhostHand extends CheckExecutor { // todo improve
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof BlockBreakEvent) {
-            BlockBreakEvent event = (BlockBreakEvent) object;
-
-            if (event.isCancelled()) {
-                this.getCooldowns().add("break-protection", 2);
-            } else if (canDo()) {
-                SpartanBlock b = new SpartanBlock(player, event.getBlock());
+        if (canDo()) {
+            if (object instanceof SpartanBlock) {
+                SpartanBlock b = (SpartanBlock) object;
 
                 if (canDo(b)
-                        && hackType.getCheck().getBooleanOption("check_block_breaking", true)
-                        && !BlockUtils.isSensitive(player, b.material)) {
+                        && hackType.getCheck().getBooleanOption("check_block_breaking", true)) {
                     SpartanBlock itb = player.getIllegalTargetBlock(b);
 
-                    if (itb != null
-                            && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
-                            || BlockUtils.isFullSolid(itb.material))) {
+                    if (itb != null) {
                         cancel("type: break, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
                                 null, 1);
                     }
                 }
-            }
-        } else if (canDo()) {
-            PlayerInteractEvent event = (PlayerInteractEvent) object;
+            } else {
+                PlayerInteractEvent event = (PlayerInteractEvent) object;
 
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
 
-                if (canDo(b)
-                        || !hackType.getCheck().getBooleanOption("check_player_interactions", true)
-                        || !BlockUtils.isChangeable(b.getLocation().getBlock().material)) {
-                    SpartanBlock itb = player.getIllegalTargetBlock(b);
+                    if (canDo(b)
+                            && hackType.getCheck().getBooleanOption("check_block_interactions", true)
+                            && BlockUtils.isChangeable(b.getLocation().getBlock().material)) {
+                        SpartanBlock itb = player.getIllegalTargetBlock(b);
 
-                    if (itb != null
-                            && (!hackType.getCheck().getBooleanOption("check_fully_solid_blocks_only", true)
-                            || BlockUtils.isFullSolid(itb.material))) {
-                        cancel("type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
-                                null, 1);
+                        if (itb != null) {
+                            cancel("type: interact, block: " + BlockUtils.blockToString(b) + ", real-block: " + BlockUtils.blockToString(itb),
+                                    null, 1);
+                        }
                     }
                 }
             }

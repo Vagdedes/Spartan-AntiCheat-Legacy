@@ -9,11 +9,10 @@ import org.bukkit.GameRule;
 
 public class AutoRespawn extends CheckExecutor {
 
-    private static final HackType check = HackType.AutoRespawn;
     private long memory;
 
     public AutoRespawn(SpartanPlayer player) {
-        super(check, player);
+        super(HackType.AutoRespawn, player);
         this.memory = 0L;
     }
 

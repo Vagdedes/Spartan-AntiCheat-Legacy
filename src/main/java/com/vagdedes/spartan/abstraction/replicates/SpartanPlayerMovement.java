@@ -24,8 +24,7 @@ import java.util.List;
 public class SpartanPlayerMovement {
 
     private final SpartanPlayer parent;
-    private double
-            customDistance, customHorizontalDistance, customVerticalDistance;
+    double schedulerDistance;
     private final List<Double>
             nmsDistance, nmsHorizontalDistance, nmsVerticalDistance,
             nmsBox;
@@ -35,15 +34,13 @@ public class SpartanPlayerMovement {
             lastOnGround,
             lastVanillaOnGround;
     private Material lastLiquidMaterial;
-    private SpartanLocation location, nmsTo, nmsFrom, detectionLocation;
-    SpartanLocation customFromLocation;
+    private SpartanLocation location, eventFrom, detectionLocation;
+    SpartanLocation schedulerFrom;
     private Vector clampVector;
 
     SpartanPlayerMovement(SpartanPlayer parent, Player p) {
         this.parent = parent;
-        this.customDistance = 0.0;
-        this.customHorizontalDistance = 0.0;
-        this.customVerticalDistance = 0.0;
+        this.schedulerDistance = 0.0;
 
         this.nmsDistance = Collections.synchronizedList(new LinkedList<>());
         this.nmsHorizontalDistance = Collections.synchronizedList(new LinkedList<>());
@@ -57,35 +54,18 @@ public class SpartanPlayerMovement {
         this.lastVanillaOnGround = 0;
 
         this.location = new SpartanLocation(this.parent, p.getLocation());
-        this.customFromLocation = this.location;
-        this.nmsTo = this.location;
-        this.nmsFrom = this.location;
+        this.schedulerFrom = this.location;
+        this.eventFrom = this.location;
         this.detectionLocation = this.location;
 
         this.clampVector = new Vector();
     }
 
-    public double getCustomDistance() {
-        return customDistance;
-    }
-
-    public double getCustomHorizontalDistance() {
-        return customHorizontalDistance;
-    }
-
-    public double getCustomVerticalDistance() {
-        return customVerticalDistance;
+    public double getSchedulerDistance() {
+        return schedulerDistance;
     }
 
     // Separator
-
-    public synchronized void setCustomDistance(double distance,
-                                               double horizontal,
-                                               double vertical) {
-        this.customDistance = distance;
-        this.customHorizontalDistance = horizontal;
-        this.customVerticalDistance = vertical;
-    }
 
     public synchronized void setNmsDistance(double distance,
                                             double horizontal,
@@ -365,16 +345,12 @@ public class SpartanPlayerMovement {
         }
     }
 
-    public SpartanLocation getCustomFromLocation() {
-        return customFromLocation;
+    public SpartanLocation getSchedulerFromLocation() {
+        return schedulerFrom;
     }
 
-    public SpartanLocation getNmsToLocation() {
-        return nmsTo;
-    }
-
-    public SpartanLocation getNmsFromLocation() {
-        return nmsFrom;
+    public SpartanLocation getEventFromLocation() {
+        return eventFrom;
     }
 
     public SpartanLocation getDetectionLocation() {
@@ -414,14 +390,14 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean positionChanged() {
-        return this.nmsTo.getX() != this.nmsFrom.getX()
-                || this.nmsTo.getY() != this.nmsFrom.getY()
-                || this.nmsTo.getZ() != this.nmsFrom.getZ();
+        return this.location.getX() != this.eventFrom.getX()
+                || this.location.getY() != this.eventFrom.getY()
+                || this.location.getZ() != this.eventFrom.getZ();
     }
 
     public boolean directionChanged() {
-        return this.nmsTo.getYaw() != this.nmsFrom.getYaw()
-                || this.nmsTo.getPitch() != this.nmsFrom.getPitch();
+        return this.location.getYaw() != this.eventFrom.getYaw()
+                || this.location.getPitch() != this.eventFrom.getPitch();
     }
 
     // Separator
@@ -439,8 +415,8 @@ public class SpartanPlayerMovement {
                 return false;
             }
         }
-        this.nmsTo = to;
-        this.nmsFrom = from;
+        this.location = to;
+        this.eventFrom = from;
         return true;
     }
 

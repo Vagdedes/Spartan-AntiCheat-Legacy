@@ -79,8 +79,7 @@ public class KillAura extends CheckExecutor {
     @Override
     public void runInternal(boolean cancelled) {
         if (canDo()) {
-            SpartanLocation to = player.movement.getNmsToLocation(),
-                    from = player.movement.getNmsFromLocation();
+            SpartanLocation to = player.movement.getLocation();
             Buffer buffer = this.getBuffer();
 
             runDetection(

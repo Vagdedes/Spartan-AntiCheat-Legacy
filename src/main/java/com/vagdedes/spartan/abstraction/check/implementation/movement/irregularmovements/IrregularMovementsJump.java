@@ -64,7 +64,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                             if (!player.isOnGround()
                                     && !player.movement.wasInLiquids()
                                     && airTicks > limit
-                                    && !player.isOnGround(player.movement.getNmsFromLocation())) {
+                                    && !player.isOnGround(player.movement.getEventFromLocation())) {
                                 cancel("type: jump(ticks)"
                                                 + ", box: " + box
                                                 + ", vertical: " + vertical

@@ -36,9 +36,6 @@ public class EventsHandler6 implements Listener {
 
         if (ChatProtection.runCommand(p, msg, false)) {
             e.setCancelled(true);
-        } else {
-            // Detections
-            p.getExecutor(Enums.HackType.ItemDrops).handle(e.isCancelled(), msg);
         }
     }
 

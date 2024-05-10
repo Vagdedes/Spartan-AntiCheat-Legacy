@@ -169,16 +169,12 @@ public class SpartanPlayer {
                                 Collection<PotionEffect> potionEffects = n.getActivePotionEffects();
                                 p.setStoredPotionEffects(potionEffects); // Bad
                                 SpartanLocation to = p.movement.getLocation(),
-                                        from = p.movement.getCustomFromLocation();
+                                        from = p.movement.getSchedulerFromLocation();
 
                                 if (from != null) {
-                                    p.movement.setCustomDistance(
-                                            to.distance(from),
-                                            AlgebraUtils.getHorizontalDistance(to, from),
-                                            to.getY() - from.getY()
-                                    );
+                                    p.movement.schedulerDistance = to.distance(from);
                                 }
-                                p.movement.customFromLocation = to;
+                                p.movement.schedulerFrom = to;
 
                                 for (CheckExecutor executor : p.executors) {
                                     executor.scheduler();

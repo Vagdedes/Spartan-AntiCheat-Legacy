@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -21,7 +20,7 @@ public class MoveLength extends DetectionExecutor {
     MoveLength(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
-        previousPitch = executor.player.movement.getCustomFromLocation().getPitch();
+        previousPitch = executor.player.movement.getSchedulerFromLocation().getPitch();
         previousPitchDifference = 0.0f;
     }
 
@@ -49,8 +48,8 @@ public class MoveLength extends DetectionExecutor {
 
                             if (gcd <= minimumGCD) {
                                 if (gcd <= safeGCD ?
-                                        buffer.start(key + "=safe", 20, Check.detectionMeasurementTicks) >= 0.25 :
-                                        buffer.start(key, 20, Check.detectionMeasurementTicks) >= 0.65) {
+                                        buffer.count(key + "=safe", 20) >= 5 :
+                                        buffer.count(key, 20) >= 13) {
                                     buffer.remove(key);
                                     killAura.violateLive("type: move-time"
                                             + ", pitch: " + pitch
