@@ -148,7 +148,7 @@ public class SpartanPlayer {
                                 }
                             }
                         }
-                        if (p.refreshOnGround(new SpartanLocation[]{p.movement.getLocation()})) {
+                        if (p.refreshOnGround(p.movement.getLocation())) {
                             p.movement.resetAirTicks();
                         }
                         if (p.isOnGroundDefault()) {
@@ -593,13 +593,8 @@ public class SpartanPlayer {
         }
     }
 
-    public boolean refreshOnGround(SpartanLocation[] locations) {
-        for (SpartanLocation location : locations) {
-            if (GroundUtils.isOnGround(this, location, 0.0, false, true)) {
-                return this.onGroundCustom = true;
-            }
-        }
-        return this.onGroundCustom = false;
+    public boolean refreshOnGround(SpartanLocation location) {
+        return this.onGroundCustom = GroundUtils.isOnGround(this, location, 0.0, false, true);
     }
 
     // Separator
@@ -620,10 +615,14 @@ public class SpartanPlayer {
                 Player n = getPlayer();
 
                 if (n != null) {
-                    Block block = n.getTargetBlock(null, (int) distance);
+                    List<Block> list = n.getLineOfSight(null, (int) distance);
 
-                    if (block != null) {
-                        return new SpartanBlock(this, block);
+                    if (!list.isEmpty()) {
+                        for (Block block : list) {
+                            if (BlockUtils.isFullSolid(block.getType())) {
+                                return new SpartanBlock(this, block);
+                            }
+                        }
                     }
                 }
             } catch (Exception ignored) {

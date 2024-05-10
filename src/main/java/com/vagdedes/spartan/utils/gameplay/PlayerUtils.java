@@ -57,7 +57,7 @@ public class PlayerUtils {
             maxJumpingMotionDifference;
 
     public static final int
-            playerInventorySlots = (9 * 4) + 1,
+            playerInventorySlots = (9 * 5) + 1,
             height,
             fallDamageAboveBlocks = 3;
 

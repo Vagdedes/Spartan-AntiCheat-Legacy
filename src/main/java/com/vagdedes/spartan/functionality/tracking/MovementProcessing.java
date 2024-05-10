@@ -42,11 +42,11 @@ public class MovementProcessing {
             );
     public static final double maxPrecisionHeightLengthRatio = 1.0 / Math.pow(10, heightPrecision);
 
-    public static void run(Player n, SpartanPlayer player,
+    public static void run(SpartanPlayer player,
                            SpartanLocation to,
                            double distance, double horizontal,
                            double vertical, double box) {
-        if (player.refreshOnGround(new SpartanLocation[]{to, player.movement.getLocation()})) {
+        if (player.refreshOnGround(player.movement.getLocation())) {
             player.movement.resetAirTicks();
         }
         if (player.isOnGroundDefault()) {
@@ -207,7 +207,7 @@ public class MovementProcessing {
     public static boolean canCheck(SpartanPlayer player,
                                    boolean elytra, boolean velocity, boolean flight) {
         if ((elytra || !player.getTrackers().has(Trackers.TrackerType.ELYTRA_USE))
-                && (flight || !player.getTrackers().has(Trackers.TrackerType.FLIGHT))
+                && (flight || !player.movement.isFlying())
                 && (velocity || !player.getTrackers().has(Trackers.TrackerType.ABSTRACT_VELOCITY))
                 && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)) {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()

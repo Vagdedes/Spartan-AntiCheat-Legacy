@@ -47,35 +47,33 @@ public class IrregularMovementsJump extends DetectionExecutor {
                         : player.movement.isJumping(vertical)) {
                     int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;
 
-                    for (int i : new int[]{0, jumpEffect}) {
-                        if (!heights.get(i).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision))) {
-                            cancel("type: jump(height)"
+                    if (!heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision))) {
+                        cancel("type: jump(height)"
+                                        + ", box: " + box
+                                        + ", vertical: " + vertical
+                                        + ", jump-effect: " + jumpEffect
+                                        + ", air-ticks: " + airTicks,
+                                player.movement.getDetectionLocation(),
+                                0,
+                                true
+                        );
+                    } else {
+                        int limit = Math.max(PlayerUtils.getJumpTicks(jumpEffect), (int) TPS.maximum);
+
+                        if (!player.isOnGround()
+                                && !player.movement.wasInLiquids()
+                                && airTicks > limit
+                                && !player.isOnGround(player.movement.getEventFromLocation())) {
+                            cancel("type: jump(ticks)"
                                             + ", box: " + box
                                             + ", vertical: " + vertical
                                             + ", jump-effect: " + jumpEffect
-                                            + ", air-ticks: " + airTicks,
+                                            + ", air-ticks: " + airTicks
+                                            + ", limit: " + limit,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true
                             );
-                        } else {
-                            int limit = Math.max(PlayerUtils.getJumpTicks(i), (int) TPS.maximum);
-
-                            if (!player.isOnGround()
-                                    && !player.movement.wasInLiquids()
-                                    && airTicks > limit
-                                    && !player.isOnGround(player.movement.getEventFromLocation())) {
-                                cancel("type: jump(ticks)"
-                                                + ", box: " + box
-                                                + ", vertical: " + vertical
-                                                + ", jump-effect: " + jumpEffect
-                                                + ", air-ticks: " + airTicks
-                                                + ", limit: " + limit,
-                                        player.movement.getDetectionLocation(),
-                                        0,
-                                        true
-                                );
-                            }
                         }
                     }
                 }

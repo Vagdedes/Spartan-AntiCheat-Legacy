@@ -180,7 +180,7 @@ public class GroundUtils {
 
     // Method
 
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y, boolean liquid, boolean climbable) { // todo fix beds
+    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y, boolean liquid, boolean climbable) {
         boolean original = y == 0;
 
         if (original) {
@@ -202,32 +202,37 @@ public class GroundUtils {
         original &= p.getVehicle() == null && !p.bedrockPlayer;
         double box = loc.getY() - loc.getBlockY();
 
-        for (SpartanLocation loopLocation : loc.getSurroundingLocations(BlockUtils.boundingBox, 0, BlockUtils.boundingBox)) {
-            for (double position : new double[]{-(box + minPossibleStep), 0.0}) {
-                Material type = loopLocation.clone().add(0.0, position, 0.0).getBlock().material;
+        for (SpartanLocation loopLocation : loc.getSurroundingLocations(
+                BlockUtils.boundingBox,
+                box == 0.0 ? -minPossibleStep : 0.0,
+                BlockUtils.boundingBox
+        )) {
+            Material type = loopLocation.getBlock().material;
 
-                if (BlockUtils.isSolid(type)) {
-                    if (original) {
-                        double[] heights = correlatedBlockHeights.get(type);
+            if (original) {
+                //p.debug(true, false, false, type);
+            }
+            if (BlockUtils.isSolid(type)) {
+                if (original) {
+                    double[] heights = correlatedBlockHeights.get(type);
 
-                        if (heights != null) {
-                            if (heights.length == 1) {
-                                if (heights[0] == -1.0 || heights[0] == box) {
+                    if (heights != null) {
+                        if (heights.length == 1) {
+                            if (heights[0] == -1.0 || heights[0] == box) {
+                                return true;
+                            }
+                        } else {
+                            for (double height : heights) {
+                                if (height == box) {
                                     return true;
                                 }
-                            } else {
-                                for (double height : heights) {
-                                    if (height == box) {
-                                        return true;
-                                    }
-                                }
                             }
-                        } else if (box == 0.0) {
-                            return true;
                         }
-                    } else {
+                    } else if (box == 0.0) {
                         return true;
                     }
+                } else {
+                    return true;
                 }
             }
         }
@@ -254,6 +259,23 @@ public class GroundUtils {
                 }
             }
             return max;
+        }
+    }
+
+    public static double getMinHeight(Material m) {
+        double[] heights = correlatedBlockHeights.getOrDefault(m, new double[]{0.0});
+
+        if (heights.length == 1) {
+            return heights[0];
+        } else {
+            double min = Double.MAX_VALUE;
+
+            for (double height : heights) {
+                if (height < min) {
+                    min = height;
+                }
+            }
+            return min;
         }
     }
 

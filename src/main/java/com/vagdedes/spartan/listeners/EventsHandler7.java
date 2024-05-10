@@ -64,7 +64,7 @@ public class EventsHandler7 implements Listener {
         if (!p.movement.processLastMoveEvent(to, from)) {
             return;
         }
-        MovementProcessing.run(n, p, to, dis, hor, ver, box);
+        MovementProcessing.run(p, to, dis, hor, ver, box);
 
         // Patterns
         for (Enums.HackType hackType : handledChecks) {

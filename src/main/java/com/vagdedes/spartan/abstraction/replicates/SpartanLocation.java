@@ -458,6 +458,14 @@ public class SpartanLocation {
         return block;
     }
 
+    public SpartanLocation getBlockLocation() {
+        SpartanLocation location = this.clone();
+        location.setX(location.getBlockX());
+        location.setY(location.getBlockY());
+        location.setZ(location.getBlockZ());
+        return location;
+    }
+
     public void retrieveDataFrom(SpartanLocation other) {
         if (this.hashCode() != other.hashCode()) {
             if (this.block == null) {
@@ -577,7 +585,6 @@ public class SpartanLocation {
 
     public Collection<SpartanLocation> getSurroundingLocations(double x, double y, double z) {
         Map<Integer, SpartanLocation> locations = new LinkedHashMap<>(10, 1.0f);
-        locations.put(Integer.MIN_VALUE, this.clone().add(0, y, 0));
 
         for (double[] positions : new double[][]{
                 {this.x + x, this.z},
@@ -598,8 +605,17 @@ public class SpartanLocation {
             if (locations.putIfAbsent(
                     (AlgebraUtils.integerFloor(positions[0]) * SpartanBukkit.hashCodeMultiplier)
                             + AlgebraUtils.integerFloor(positions[1]),
-                    location) == null) {
+                    location
+            ) == null) {
                 location.retrieveDataFrom(this);
+            }
+        }
+        while (true) {
+            if (locations.putIfAbsent(
+                    new Random().nextInt(),
+                    this.clone().add(0, y, 0)
+            ) == null) {
+                break;
             }
         }
         return locations.values();

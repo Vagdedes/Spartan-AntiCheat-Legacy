@@ -76,7 +76,7 @@ public class BlockReach extends CheckExecutor {
                             && !BlockUtils.isScaffoldingBlock(block.material)) {
                         SpartanLocation to = player.movement.getLocation();
                         double distance = to.distance(block.getLocation()),
-                                ab_distance = to.distance(blockAgainst.getLocation());
+                                ab_distance = to.distance(blockAgainst.getLocation()) + 0.1;
 
                         if (!player.bedrockPlayer
                                 && player.getVehicle() == null

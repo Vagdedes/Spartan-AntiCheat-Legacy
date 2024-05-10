@@ -19,8 +19,7 @@ public class Trackers {
         EXTREME_COLLISION(TrackerFamily.VELOCITY), TRIDENT(TrackerFamily.VELOCITY),
         DAMAGE(TrackerFamily.VELOCITY),
 
-        GAME_MODE(TrackerFamily.MOTION), ELYTRA_USE(TrackerFamily.MOTION),
-        FLIGHT(TrackerFamily.MOTION);
+        GAME_MODE(TrackerFamily.MOTION), ELYTRA_USE(TrackerFamily.MOTION);
 
         public final TrackerFamily family;
 
