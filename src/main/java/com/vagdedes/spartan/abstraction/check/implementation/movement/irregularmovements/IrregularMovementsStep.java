@@ -104,7 +104,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 true
                         );
                     }
-                } else { // todo velocity/trackers
+                } else {
                     if (vertical > 0.0) {
                         if (!player.movement.isJumping(vertical)) {
                             double limit = PlayerUtils.getJumpMotion(

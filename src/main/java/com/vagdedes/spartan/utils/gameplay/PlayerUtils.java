@@ -64,7 +64,6 @@ public class PlayerUtils {
     private static final Map<Byte, List<Double>> jumpsValues = new LinkedHashMap<>();
     private static final Map<Integer, Integer>
             fallTicks = Collections.synchronizedMap(new LinkedHashMap<>());
-    private static final Map<Integer, Collection<Double>> fallMotions = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<PotionEffectType, Integer> handledPotionEffects = new LinkedHashMap<>();
 
     static {
@@ -178,11 +177,14 @@ public class PlayerUtils {
 
     // Falling
 
-    public static int getFallTick(double d, double precision, int jump) {
+    public static int getFallTick(double d, double acceleration, double drag, double precision, int jump) {
         if (d < 0.0) {
+            acceleration = Math.abs(acceleration);
             int key = (Double.hashCode(precision) * SpartanBukkit.hashCodeMultiplier)
                     + Double.hashCode(AlgebraUtils.cut(d, GroundUtils.maxHeightLength)),
-            maxTicks = AlgebraUtils.integerCeil(1.0 / (1.0 - airDrag));
+                    maxTicks = AlgebraUtils.integerCeil(1.0 / (1.0 - drag));
+            key = (key * SpartanBukkit.hashCodeMultiplier) + Double.hashCode(acceleration);
+            key = (key * SpartanBukkit.hashCodeMultiplier) + Double.hashCode(drag);
             key = (key * SpartanBukkit.hashCodeMultiplier) + jump;
             Integer ticks;
 
@@ -195,7 +197,7 @@ public class PlayerUtils {
 
                     while (d < 0.0) {
                         preD = d;
-                        d = (d / airDrag) + airAcceleration;
+                        d = (d / drag) + acceleration;
                         ticks++;
 
                         if (ticks == maxTicks) {
@@ -205,7 +207,7 @@ public class PlayerUtils {
                     }
 
                     if (ticks > 0) {
-                        if (Math.abs(preD - airAcceleration) >= precision) {
+                        if (Math.abs(preD - (acceleration * drag)) >= precision) {
                             boolean found = false;
 
                             if (jump == 0) {
@@ -243,48 +245,13 @@ public class PlayerUtils {
     }
 
     public static double calculateNextFallMotion(double motion,
-                                                 double drag, double acceleration) {
+                                                 double acceleration, double drag) {
         double terminalVelocity = ((1.0 / (1.0 - drag)) * acceleration) - GroundUtils.maxHeightLengthRatio;
 
         if (motion > -terminalVelocity) {
-            return (motion - acceleration) * drag;
+            return (motion + acceleration) * drag;
         } else {
             return Double.MIN_VALUE;
-        }
-    }
-
-    public static Collection<Double> calculateFallMotions(double motion,
-                                                          double drag, double acceleration) {
-        double terminalVelocity = ((1.0 / (1.0 - drag)) * acceleration) - GroundUtils.maxHeightLengthRatio;
-
-        if (motion > -terminalVelocity) {
-            int key = Objects.hash(
-                    AlgebraUtils.cut(motion, GroundUtils.maxHeightLength),
-                    drag,
-                    acceleration,
-                    terminalVelocity
-            );
-            Collection<Double> data;
-
-            synchronized (fallMotions) {
-                data = fallMotions.get(key);
-            }
-            if (data != null) {
-                return data;
-            } else {
-                data = new ArrayList<>();
-
-                while (motion > terminalVelocity) {
-                    motion = (motion * drag) - acceleration;
-                    data.add(motion);
-                }
-                synchronized (fallMotions) {
-                    fallMotions.put(key, data);
-                }
-                return data;
-            }
-        } else {
-            return new ArrayList<>(0);
         }
     }
 
