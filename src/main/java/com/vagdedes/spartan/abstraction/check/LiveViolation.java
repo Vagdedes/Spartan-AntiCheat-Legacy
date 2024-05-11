@@ -174,7 +174,7 @@ public class LiveViolation {
     }
 
     private void increaseLevel(int hash) {
-        int multiplier = 1 + player.getProfile().evidence.getKnowledgeList().size();
+        int multiplier = 1 + player.getProfile().evidence.getKnowledgeList(false).size();
 
         synchronized (this.level) {
             Long time = this.level.get(hash);
@@ -223,7 +223,7 @@ public class LiveViolation {
         }
 
         // Always last
-        player.getProfile().evidence.remove(hackType, true, false, true);
+        player.getProfile().evidence.remove(hackType, true, false, false, true);
         InteractiveInventory.playerInfo.refresh(player.name);
     }
 
