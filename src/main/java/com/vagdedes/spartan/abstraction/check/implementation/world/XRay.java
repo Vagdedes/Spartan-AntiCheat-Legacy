@@ -17,11 +17,8 @@ import java.io.File;
 
 public class XRay extends CheckExecutor {
 
-    public static final Enums.HackType check = Enums.HackType.XRay;
-
     static {
-        if (check.getCheck().isEnabled(null, null, null)
-                && Config.settings.getBoolean("Important.modify_server_configuration")) {
+        if (Config.settings.getBoolean("Important.modify_server_configuration")) {
             String key = "Config.settings.world-Config.settings.default.anti-xray";
             File file = new File(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19) ? "/config/paper-global.yml" : "paper.yml");
 
@@ -44,7 +41,7 @@ public class XRay extends CheckExecutor {
     }
 
     public XRay(SpartanPlayer player) {
-        super(check, player);
+        super(Enums.HackType.XRay, player);
     }
 
     @Override

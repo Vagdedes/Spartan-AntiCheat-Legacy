@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class ImpossibleInventory extends CheckExecutor {
 
-    public static final Enums.HackType check = Enums.HackType.ImpossibleInventory;
     private static final Material
             nether_portal = MaterialUtils.get("nether_portal"),
             totem_of_undying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
@@ -29,7 +28,7 @@ public class ImpossibleInventory extends CheckExecutor {
     };
 
     public ImpossibleInventory(SpartanPlayer player) {
-        super(check, player);
+        super(Enums.HackType.ImpossibleInventory, player);
     }
 
     @Override
@@ -112,7 +111,7 @@ public class ImpossibleInventory extends CheckExecutor {
         if (player.movement.isFlying() || player.movement.isCrawling()) {
             return 0;
         } else {
-            Check check = ImpossibleInventory.check.getCheck();
+            Check check = hackType.getCheck();
             return check.getBooleanOption("check_sneaking", true)
                     && player.movement.isSneaking() ? 1
                     : !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)

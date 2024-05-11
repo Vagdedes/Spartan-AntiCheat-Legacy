@@ -28,11 +28,10 @@ import java.util.*;
 
 public class FastBreak extends CheckExecutor {
 
-    private static final HackType check = HackType.FastBreak;
     private SpartanBlock lastBlock = null;
 
     public FastBreak(SpartanPlayer player) {
-        super(check, player);
+        super(HackType.FastBreak, player);
     }
 
     private void checkDelay(SpartanBlock block, int seconds) {
