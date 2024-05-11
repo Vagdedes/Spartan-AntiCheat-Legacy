@@ -76,11 +76,11 @@ public class BlockReach extends CheckExecutor {
                             && !BlockUtils.isScaffoldingBlock(block.material)) {
                         SpartanLocation to = player.movement.getLocation();
                         double distance = to.distance(block.getLocation()),
-                                ab_distance = to.distance(blockAgainst.getLocation()) + BlockUtils.boundingBox;
+                                ab_distance = to.distance(blockAgainst.getLocation());
 
                         if (!player.bedrockPlayer
                                 && player.getVehicle() == null
-                                && distance > 1.0 && distance > ab_distance) {
+                                && distance > (ab_distance + BlockUtils.boundingBox)) {
                             cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
                         } else {
                             double limit = getLimit();

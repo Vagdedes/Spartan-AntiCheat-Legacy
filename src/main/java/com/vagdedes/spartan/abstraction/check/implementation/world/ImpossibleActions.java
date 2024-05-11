@@ -71,12 +71,17 @@ public class ImpossibleActions extends CheckExecutor {
                                                 + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
                                 );
                             } else {
-                                List<SpartanLocation> fromLocations = player.movement.getEventFromLocations();
+                                List<SpartanLocation> fromLocations = player.movement.getLocations();
 
-                                if (!fromLocations.isEmpty()) {
+                                if (fromLocations.size() > 5) {
+                                    fromLocations = fromLocations.subList(fromLocations.size() - 5, fromLocations.size());
+                                    double pitchDeviation = 0.0, yawDeviation = 0.0;
 
+                                    for (SpartanLocation location : fromLocations) {
+                                        pitchDeviation += Math.abs(location.getPitch() - pitch);
+                                        yawDeviation += Math.abs(location.getYaw() - playerLocation.getYaw());
+                                    }
                                 }
-                                // todo direction consistency with power and square root
                             }
                         }
                         break;

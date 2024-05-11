@@ -158,7 +158,7 @@ public class PlayerInfo extends InventoryMenu {
             if (hackType.category == checkType) {
                 violations = isOnline ? player.getViolations(hackType).getTotalLevel() : 0;
                 boolean hasViolations = violations > 0,
-                        hasData = playerProfile.evidence.has(hackType);
+                        hasData = playerProfile.evidence.has(hackType, true);
                 String state = getDetectionState(
                         player,
                         hackType,
@@ -173,7 +173,7 @@ public class PlayerInfo extends InventoryMenu {
 
                 if (hasViolations || hasData || state != null) {
                     String color = "§c";
-                    String data = playerProfile.evidence.getKnowledge(hackType, color);
+                    String data = playerProfile.evidence.getKnowledge(hackType, color, true);
                     listedChecks = true;
                     lore.add("§6" + hackType.getCheck().getName() + "§8[§e" + state + "§8] " + color
                             + (hasData ? data : hasViolations ? violations + " " + (violations == 1 ? "violation" : "violations") : "")
@@ -197,7 +197,7 @@ public class PlayerInfo extends InventoryMenu {
                 new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(violations, 64), (short) 14) :
                 new ItemStack(Material.QUARTZ_BLOCK);
         boolean hasViolations = violations > 0,
-                hasData = playerProfile.evidence.has(hackType);
+                hasData = playerProfile.evidence.has(hackType, true);
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         String state = getDetectionState(player,
                 hackType,
@@ -215,7 +215,7 @@ public class PlayerInfo extends InventoryMenu {
 
             if (hasData) {
                 String color = "§c";
-                lore.add(color + playerProfile.evidence.getKnowledge(hackType, color));
+                lore.add(color + playerProfile.evidence.getKnowledge(hackType, color, true));
             }
         } else {
             lore.add("§c" + PlayerStateLists.noDataAvailable);
@@ -265,15 +265,6 @@ public class PlayerInfo extends InventoryMenu {
                         InventoryView inventoryView = no.getOpenInventory();
 
                         if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)) {
-                            boolean back = false;
-
-                            for (ItemStack itemStack : inventoryView.getTopInventory().getContents()) {
-                                if (itemStack != null && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
-                                        && StringUtils.getClearColorString(itemStack.getItemMeta().getDisplayName()).equals("Back")) {
-                                    back = true;
-                                    break;
-                                }
-                            }
                             InteractiveInventory.playerInfo.open(o, targetName);
                         }
                     }

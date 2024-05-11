@@ -47,9 +47,6 @@ public class EventsHandler7 implements Listener {
         SpartanLocation
                 to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
                 from = new SpartanLocation(p, e.getFrom());
-
-        // Objects
-        to.retrieveDataFrom(p.movement.getLocation());
         from.retrieveDataFrom(to);
 
         // Values

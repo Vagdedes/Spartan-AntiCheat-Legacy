@@ -212,7 +212,7 @@ public class PlayerStateLists {
 
     private static <E> List<E> subList(List<E> list, int startIndex, int toIndex) {
         int size = list.size();
-        return startIndex >= size ? new ArrayList<>(0) :
-                list.subList(startIndex, Math.min(toIndex, size - 1));
+        return startIndex > size ? new ArrayList<>(0) :
+                list.subList(startIndex, Math.min(toIndex, size));
     }
 }

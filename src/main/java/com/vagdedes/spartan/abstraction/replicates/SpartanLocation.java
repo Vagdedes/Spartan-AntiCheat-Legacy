@@ -63,14 +63,9 @@ public class SpartanLocation {
         }
     }
 
-    static void clear() {
-        synchronized (memory) {
-            memory.clear();
-        }
-    }
-
     // Object
 
+    public final long creation;
     public final SpartanPlayer player;
     public final World world;
     private Chunk chunk;
@@ -94,7 +89,8 @@ public class SpartanLocation {
 
     private SpartanLocation(SpartanPlayer player, World world, Chunk chunk,
                             double x, double y, double z,
-                            float yaw, float pitch) { // Used for inititation
+                            float yaw, float pitch) { // Used for initiation
+        this.creation = System.currentTimeMillis();
         this.player = player;
         this.world = world;
         this.chunk = chunk;

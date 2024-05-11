@@ -126,12 +126,16 @@ public class PlayerEvidence {
 
     // Separator
 
-    public String getKnowledge(Enums.HackType hackType, String color) {
+    public String getKnowledge(Enums.HackType hackType, String color, boolean informational) {
         synchronized (this.live) {
             String knowledge = historical.get(hackType);
 
             if (knowledge == null) {
                 knowledge = live.get(hackType);
+
+                if (knowledge == null && informational) {
+                    knowledge = this.informational.get(hackType);
+                }
             }
             return knowledge == null ? null : addColor(knowledge, color);
         }
@@ -147,9 +151,11 @@ public class PlayerEvidence {
         return this.type == type;
     }
 
-    public boolean has(Enums.HackType hackType) {
+    public boolean has(Enums.HackType hackType, boolean informational) {
         synchronized (this.live) {
-            return live.containsKey(hackType) || historical.containsKey(hackType);
+            return live.containsKey(hackType)
+                    || historical.containsKey(hackType)
+                    || informational && this.informational.containsKey(hackType);
         }
     }
 
