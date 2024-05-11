@@ -79,19 +79,23 @@ public class ImpossibleActions extends CheckExecutor {
                                     fromLocations = fromLocations.subList(fromLocations.size() - requiredSize, fromLocations.size());
                                     Iterator<SpartanLocation> iterator = fromLocations.iterator();
                                     SpartanLocation previousLocation = iterator.next();
-                                    double pitchDeviation = 0.0, yawDeviation = 0.0;
+                                    double yawDeviation = 0.0;
 
                                     while (iterator.hasNext()) {
                                         SpartanLocation loopLocation = iterator.next();
-                                        double diff = Math.abs(previousLocation.getPitch() - loopLocation.getPitch());
-                                        pitchDeviation += diff * diff;
-                                        diff = Math.abs(previousLocation.getYaw() - loopLocation.getYaw());
+                                        double diff = Math.abs(previousLocation.getYaw() - loopLocation.getYaw());
                                         yawDeviation += diff * diff;
                                         previousLocation = loopLocation;
                                     }
-                                    pitchDeviation = Math.sqrt(pitchDeviation / (requiredSize - 1.0));
                                     yawDeviation = Math.sqrt(yawDeviation / (requiredSize - 1.0));
-                                    player.debug(true, false, false, pitchDeviation, yawDeviation);
+
+                                    if (yawDeviation >= 90.0) {
+                                        cancel(
+                                                "type: scaffold(yaw)"
+                                                        + ", deviation: " + yawDeviation
+                                                        + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
+                                        );
+                                    }
                                 }
                             }
                         }
