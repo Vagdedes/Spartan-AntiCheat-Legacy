@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class ImpossibleActions extends CheckExecutor {
@@ -72,15 +73,25 @@ public class ImpossibleActions extends CheckExecutor {
                                 );
                             } else {
                                 List<SpartanLocation> fromLocations = player.movement.getLocations();
+                                int requiredSize = 6;
 
-                                if (fromLocations.size() > 5) {
-                                    fromLocations = fromLocations.subList(fromLocations.size() - 5, fromLocations.size());
+                                if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
+                                    fromLocations = fromLocations.subList(fromLocations.size() - requiredSize, fromLocations.size());
+                                    Iterator<SpartanLocation> iterator = fromLocations.iterator();
+                                    SpartanLocation previousLocation = iterator.next();
                                     double pitchDeviation = 0.0, yawDeviation = 0.0;
 
-                                    for (SpartanLocation location : fromLocations) {
-                                        pitchDeviation += Math.abs(location.getPitch() - pitch);
-                                        yawDeviation += Math.abs(location.getYaw() - playerLocation.getYaw());
+                                    while (iterator.hasNext()) {
+                                        SpartanLocation loopLocation = iterator.next();
+                                        double diff = Math.abs(previousLocation.getPitch() - loopLocation.getPitch());
+                                        pitchDeviation += diff * diff;
+                                        diff = Math.abs(previousLocation.getYaw() - loopLocation.getYaw());
+                                        yawDeviation += diff * diff;
+                                        previousLocation = loopLocation;
                                     }
+                                    pitchDeviation = Math.sqrt(pitchDeviation / (requiredSize - 1.0));
+                                    yawDeviation = Math.sqrt(yawDeviation / (requiredSize - 1.0));
+                                    player.debug(true, false, false, pitchDeviation, yawDeviation);
                                 }
                             }
                         }

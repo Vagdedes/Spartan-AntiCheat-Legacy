@@ -349,11 +349,6 @@ public class SpartanPlayerMovement {
                         this.setLocation(to);
                         to.retrieveDataFrom(from);
 
-                        if (this.locations.size() == TPS.maximum) {
-                            this.locations.keySet().iterator().remove();
-                        }
-                        this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(to);
-
                         if (this.parent.isOnGround(this.location)) {
                             this.resetAirTicks();
                             this.parent.onGroundCustom = true;
@@ -378,14 +373,18 @@ public class SpartanPlayerMovement {
     public List<SpartanLocation> getLocations() {
         List<SpartanLocation> toReturn = new ArrayList<>();
 
-        for (List<SpartanLocation> list : locations.values()) {
-            toReturn.addAll(list);
+        synchronized (this.locations) {
+            for (List<SpartanLocation> list : locations.values()) {
+                toReturn.addAll(list);
+            }
         }
         return toReturn;
     }
 
     public Set<Map.Entry<Long, List<SpartanLocation>>> getLocationEntries() {
-        return new HashSet<>(locations.entrySet());
+        synchronized (this.locations) {
+            return new HashSet<>(locations.entrySet());
+        }
     }
 
     public SpartanLocation getDetectionLocation() {
@@ -442,10 +441,14 @@ public class SpartanPlayerMovement {
     // Separator
 
     private void setLocation(SpartanLocation location) {
-        if (this.locations.size() == TPS.maximum) {
-            this.locations.keySet().iterator().remove();
+        synchronized (this.locations) {
+            if (this.locations.size() == TPS.maximum) {
+                Iterator<Long> iterator = this.locations.keySet().iterator();
+                iterator.next();
+                iterator.remove();
+            }
+            this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
         }
-        this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
         this.location = location;
     }
 
