@@ -236,14 +236,26 @@ public class ViolationAnalysis {
                                 );
                             } else {
                                 profile.evidence.remove(hackType, false, true, false, false);
-                                profile.evidence.add(
-                                        hackType,
-                                        "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
-                                        false,
-                                        false,
-                                        true,
-                                        false
-                                );
+
+                                if (probability < 1.0) {
+                                    profile.evidence.add(
+                                            hackType,
+                                            "Probability: " + AlgebraUtils.cut(probability * 100.0, 2) + "%",
+                                            false,
+                                            false,
+                                            true,
+                                            false
+                                    );
+                                } else {
+                                    profile.evidence.add(
+                                            hackType,
+                                            "Probability: Insufficient",
+                                            false,
+                                            false,
+                                            true,
+                                            false
+                                    );
+                                }
                             }
                         }
                     }

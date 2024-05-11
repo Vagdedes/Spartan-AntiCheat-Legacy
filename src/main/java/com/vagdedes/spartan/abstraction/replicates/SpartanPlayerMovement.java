@@ -215,7 +215,7 @@ public class SpartanPlayerMovement {
 
     public boolean isWalkJumping(double vertical) {
         return !this.isSprinting()
-                && this.getNmsDistance() > 0.0
+                && this.getValueOrDefault(this.getNmsDistance(), 0.0) > 0.0
                 && this.isJumping(vertical);
     }
 
