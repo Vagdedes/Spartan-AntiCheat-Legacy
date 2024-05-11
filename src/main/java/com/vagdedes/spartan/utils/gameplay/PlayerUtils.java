@@ -47,9 +47,9 @@ public class PlayerUtils {
             airDrag = AlgebraUtils.floatDouble(0.98),
             waterDrag = AlgebraUtils.floatDouble(0.8),
             lavaDrag = 0.5,
-            terminalVelocity = AlgebraUtils.floatDouble(3.92),
             jumpAcceleration = AlgebraUtils.floatDouble(0.42),
-            airAcceleration = terminalVelocity * 0.02,
+            airAcceleration = 0.08,
+            slowFallAcceleration = 0.01,
             liquidAcceleration = 0.02,
             chunk = 16.0,
             climbingDefault = 0.11760,
@@ -87,7 +87,7 @@ public class PlayerUtils {
 
             while (jump > 0.0) {
                 jumps.add(jump);
-                jump = (jump * airDrag) - airAcceleration;
+                jump = (jump - airAcceleration) * airDrag;
             }
             jumpsValues.put((byte) jumpEffect, jumps);
         }
@@ -182,7 +182,7 @@ public class PlayerUtils {
         if (d < 0.0) {
             int key = (Double.hashCode(precision) * SpartanBukkit.hashCodeMultiplier)
                     + Double.hashCode(AlgebraUtils.cut(d, GroundUtils.maxHeightLength)),
-            maxTicks = AlgebraUtils.integerCeil(terminalVelocity / airAcceleration);
+            maxTicks = AlgebraUtils.integerCeil(1.0 / (1.0 - airDrag));
             key = (key * SpartanBukkit.hashCodeMultiplier) + jump;
             Integer ticks;
 
@@ -195,7 +195,7 @@ public class PlayerUtils {
 
                     while (d < 0.0) {
                         preD = d;
-                        d = (d + airAcceleration) / airDrag;
+                        d = (d / airDrag) + airAcceleration;
                         ticks++;
 
                         if (ticks == maxTicks) {
@@ -243,19 +243,21 @@ public class PlayerUtils {
     }
 
     public static double calculateNextFallMotion(double motion,
-                                                 double drag, double acceleration,
-                                                 double terminalVelocity) {
-        if (motion > terminalVelocity) {
-            return (motion * drag) - acceleration;
+                                                 double drag, double acceleration) {
+        double terminalVelocity = ((1.0 / (1.0 - drag)) * acceleration) - GroundUtils.maxHeightLengthRatio;
+
+        if (motion > -terminalVelocity) {
+            return (motion - acceleration) * drag;
         } else {
             return Double.MIN_VALUE;
         }
     }
 
     public static Collection<Double> calculateFallMotions(double motion,
-                                                          double drag, double acceleration,
-                                                          double terminalVelocity) {
-        if (motion > terminalVelocity) {
+                                                          double drag, double acceleration) {
+        double terminalVelocity = ((1.0 / (1.0 - drag)) * acceleration) - GroundUtils.maxHeightLengthRatio;
+
+        if (motion > -terminalVelocity) {
             int key = Objects.hash(
                     AlgebraUtils.cut(motion, GroundUtils.maxHeightLength),
                     drag,

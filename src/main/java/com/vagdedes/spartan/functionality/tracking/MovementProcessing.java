@@ -28,7 +28,6 @@ public class MovementProcessing {
     private static final boolean
             v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8),
             v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
-    private static final int roundedFall = AlgebraUtils.integerCeil(PlayerUtils.terminalVelocity);
     private static final Material
             MAGMA_BLOCK = MaterialUtils.get("magma"),
             WATER = MaterialUtils.get("water"),
@@ -113,11 +112,11 @@ public class MovementProcessing {
     private static void calculateBouncing(SpartanPlayer player, SpartanLocation location,
                                           double vertical) {
         if (v1_8 && vertical != 0.0) {
-            if (BlockUtils.isSlime(player, location, roundedFall)) {
+            if (BlockUtils.isSlime(player, location, 4)) {
                 int time = (int) (TPS.maximum * 2);
                 player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, time);
                 player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, "slime", time);
-            } else if (BlockUtils.isBed(player, location, roundedFall)) {
+            } else if (BlockUtils.isBed(player, location, 4)) {
                 int time = (int) (TPS.maximum * 2);
                 player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, time);
                 player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, "bed", time);

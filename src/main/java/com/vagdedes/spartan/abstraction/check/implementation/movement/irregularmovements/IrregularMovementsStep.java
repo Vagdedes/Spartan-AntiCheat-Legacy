@@ -22,7 +22,19 @@ public class IrregularMovementsStep extends DetectionExecutor {
     static {
         for (double before : GroundUtils.getHeights()) {
             firstFallingBox.add(AlgebraUtils.cut(
-                    AlgebraUtils.removeBase(before - PlayerUtils.airAcceleration),
+                    AlgebraUtils.removeBase(before - (PlayerUtils.airAcceleration * PlayerUtils.airDrag)),
+                    GroundUtils.maxHeightLength
+            ));
+            firstFallingBox.add(AlgebraUtils.cut(
+                    AlgebraUtils.removeBase(before - (PlayerUtils.slowFallAcceleration * PlayerUtils.airDrag)),
+                    GroundUtils.maxHeightLength
+            ));
+            firstFallingBox.add(AlgebraUtils.cut(
+                    AlgebraUtils.removeBase(before - (PlayerUtils.liquidAcceleration * PlayerUtils.waterDrag)),
+                    GroundUtils.maxHeightLength
+            ));
+            firstFallingBox.add(AlgebraUtils.cut(
+                    AlgebraUtils.removeBase(before - (PlayerUtils.liquidAcceleration * PlayerUtils.lavaDrag)),
                     GroundUtils.maxHeightLength
             ));
 
@@ -69,7 +81,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (vertical <= -(PlayerUtils.airAcceleration + GroundUtils.maxHeightLengthRatio)
+                        } else if (vertical < -PlayerUtils.airAcceleration
                                 || vertical > GroundUtils.maxPlayerStep) {
                             cancel(
                                     "type: step(combination)"
@@ -122,7 +134,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         }
                     } else {
                         if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
-                            if (vertical <= -(PlayerUtils.airAcceleration + GroundUtils.maxHeightLengthRatio)) {
+                            if (vertical <= -PlayerUtils.airAcceleration) {
                                 cancel(
                                         "type: step(high-first-fall)"
                                                 + ", box: " + box

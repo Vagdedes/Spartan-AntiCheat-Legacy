@@ -18,15 +18,16 @@ public class IrregularMovementsGravity extends DetectionExecutor {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
             int airTicks = player.movement.getTicksOnAir();
 
-            runAsync(() -> { // todo ladder-drag/acceleration, levitation effect, slow-fall effect, velocity, slow-timer-bypass, web
+            runAsync(() -> { // todo ladder-drag/acceleration, levitation effect, velocity, slow-timer-bypass, web
                 boolean liquid = player.movement.wasInLiquids();
                 double prediction = PlayerUtils.calculateNextFallMotion(
                         oldVertical,
                         liquid ? (player.movement.getLastLiquidMaterial() == Material.LAVA
                                 ? PlayerUtils.lavaDrag : PlayerUtils.waterDrag)
                                 : PlayerUtils.airDrag,
-                        liquid ? PlayerUtils.liquidAcceleration : PlayerUtils.airAcceleration,
-                        -(PlayerUtils.terminalVelocity - GroundUtils.maxHeightLengthRatio)
+                        liquid ? PlayerUtils.liquidAcceleration
+                               : (player.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0) ?
+                                        PlayerUtils.slowFallAcceleration : PlayerUtils.airAcceleration)
                 );
 
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {

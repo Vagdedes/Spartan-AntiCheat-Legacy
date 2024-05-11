@@ -410,7 +410,7 @@ public class SpartanPlayerMovement {
 
         if (force
                 || !location.world.equals(this.detectionLocation.world)
-                || location.distance(this.detectionLocation) > PlayerUtils.terminalVelocity) {
+                || location.distance(this.detectionLocation) > 4.0) {
             int minHeight = BlockUtils.getMinHeight(location.world);
 
             if (location.getBlockY() < minHeight) {
