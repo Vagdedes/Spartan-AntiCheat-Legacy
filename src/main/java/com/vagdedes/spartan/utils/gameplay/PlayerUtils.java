@@ -182,7 +182,7 @@ public class PlayerUtils {
             acceleration = Math.abs(acceleration);
             int key = (Double.hashCode(precision) * SpartanBukkit.hashCodeMultiplier)
                     + Double.hashCode(AlgebraUtils.cut(d, GroundUtils.maxHeightLength)),
-                    maxTicks = AlgebraUtils.integerCeil(1.0 / (1.0 - drag));
+                    maxTicks = AlgebraUtils.integerCeil(1.0 / (1.0 - drag)) * 10;
             key = (key * SpartanBukkit.hashCodeMultiplier) + Double.hashCode(acceleration);
             key = (key * SpartanBukkit.hashCodeMultiplier) + Double.hashCode(drag);
             key = (key * SpartanBukkit.hashCodeMultiplier) + jump;
@@ -200,14 +200,17 @@ public class PlayerUtils {
                         d = (d / drag) + acceleration;
                         ticks++;
 
-                        if (ticks == maxTicks) {
+                        if (ticks > maxTicks) {
                             fallTicks.put(key, -1);
                             return -1;
                         }
                     }
 
                     if (ticks > 0) {
-                        if (Math.abs(preD - (acceleration * drag)) >= precision) {
+                        preD = Math.abs(preD);
+                        boolean precisely = preD < precision;
+
+                        if (!precisely && Math.abs(preD - (acceleration * drag)) >= precision) {
                             boolean found = false;
 
                             if (jump == 0) {
@@ -232,6 +235,8 @@ public class PlayerUtils {
                             if (!found) {
                                 ticks = -1;
                             }
+                        } else if (precisely) {
+                            ticks -= 1;
                         }
                     } else {
                         ticks = -1;

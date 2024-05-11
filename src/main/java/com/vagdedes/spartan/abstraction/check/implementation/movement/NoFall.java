@@ -6,7 +6,6 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
 
@@ -30,14 +29,17 @@ public class NoFall extends CheckExecutor {
                 return;
             }
             float fallDistance = player.getFallDistance();
+            int fallTick = player.movement.getFallTick(
+                    vertical,
+                    -PlayerUtils.airAcceleration,
+                    PlayerUtils.airDrag,
+                    GroundUtils.maxHeightLengthRatio
+            );
             player.debug(true, false, false,
                     fallDistance,
-                    player.movement.getFallTick(
-                            vertical,
-                            PlayerUtils.airAcceleration,
-                            PlayerUtils.airDrag,
-                            GroundUtils.maxHeightLengthRatio
-                    )
+                    vertical,
+                    fallTick,
+                    0.0784 + (fallTick - 1) * 0.0784
             );
         }
     }
