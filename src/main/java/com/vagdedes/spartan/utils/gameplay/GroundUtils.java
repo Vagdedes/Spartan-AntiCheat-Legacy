@@ -180,7 +180,8 @@ public class GroundUtils {
 
     // Method
 
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y, boolean liquid, boolean climbable) {
+    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y,
+                                     boolean liquid, boolean climbable) {
         boolean original = y == 0;
 
         if (original) {
@@ -199,14 +200,24 @@ public class GroundUtils {
             }
             return true;
         }
-        original &= p.getVehicle() == null && !p.bedrockPlayer;
-        double box = loc.getY() - loc.getBlockY();
+        Entity vehicle = p.getVehicle();
+        boolean hasVehicle = vehicle != null;
+        original &= !hasVehicle && !p.bedrockPlayer;
+        double box = loc.getY() - loc.getBlockY(), distribution;
 
+        if (hasVehicle) {
+            distribution = Math.max(
+                    CombatUtils.getWidthAndHeight(vehicle)[0],
+                    BlockUtils.boundingBox
+            );
+        } else {
+            distribution = BlockUtils.boundingBox;
+        }
         for (double position : new double[]{-(box + minPossibleStep), 0.0}) {
             for (SpartanLocation loopLocation : loc.getSurroundingLocations(
-                    BlockUtils.boundingBox,
+                    distribution,
                     position,
-                    BlockUtils.boundingBox
+                    distribution
             )) {
                 Material type = loopLocation.getBlock().material;
 
