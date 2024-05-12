@@ -138,12 +138,16 @@ public class Speed extends CheckExecutor {
             newRayRequest = true;
         }
         if (dolphinEffect != null) if (multiply < 5) multiply = 5D;
+        if (inLiquid) {
+            yDiff = 0D;
+            wrappedOnFly = wrappedOnFly + 1;
+        }
         if (solidBlockOnTop) {
             if (multiply < 0.07) multiply = 0.07;
             yDiff = 0D;
             wrappedOnFly = wrappedOnFly + 1;
         } else if (!onBlock) {
-            if (multiply < 0.08 && !onGround && vertical != -0.09 && isJump) {
+            if (multiply < 0.08 && !onGround && vertical != -0.09 && isJump && horizontal > 0.1) {
                 yDiff = yDiff + verticalDiff;
                 if (yDiff > 0.05) {
                     verticalVl = verticalVl + 4;
