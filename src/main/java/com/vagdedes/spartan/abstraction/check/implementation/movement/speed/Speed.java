@@ -242,7 +242,7 @@ public class Speed extends CheckExecutor {
                     double diffRayLines = RayUtils.calculateRayLines(a, b);
                     double wrappedLimit = limit / 1.6 + ((diffRayLines >= 90) ? 0 : (limit / 2.4) * (1 - diffRayLines / 90));
                     if (horizontal > RayUtils.scaleVal(wrappedLimit, 2) && speedModify < 1.0 && !ignoreBasicChecks) {
-                        flag = "type: simulation-air-direction (basic), speed: " + horizontal
+                        flag = "type: simulation-air-direction(basic), speed: " + horizontal
                                 + ", speed-limit: " + RayUtils.scaleVal(wrappedLimit, 2)
                                 + ", diff: " + RayUtils.scaleVal(diffRayLines, 2);
                     }
@@ -283,7 +283,7 @@ public class Speed extends CheckExecutor {
                             && speedModify < 1.0 && !onDamage) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
                         if (antiAbuseProcessor > 200) {
-                            flag = "type: simulation-air-direction (blatant), speed: " + horizontal
+                            flag = "type: simulation-air-direction(blatant), speed: " + horizontal
                                     + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                         }
                     }
@@ -323,7 +323,7 @@ public class Speed extends CheckExecutor {
                     && speedModify < 1.0) {
                 antiAbuseProcessor = antiAbuseProcessor + 60;
                 if (antiAbuseProcessor > 200) {
-                    flag = "type: simulation-ground-direction (basic), speed: " + horizontal
+                    flag = "type: simulation-ground-direction(basic), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
             }
@@ -331,7 +331,7 @@ public class Speed extends CheckExecutor {
                     && speedModify < 1.0) {
                 antiAbuseProcessor = antiAbuseProcessor + 90;
                 if (antiAbuseProcessor > 200) {
-                    flag = "type: simulation-ground-direction (blatant), speed: " + horizontal
+                    flag = "type: simulation-ground-direction(blatant), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
             }
