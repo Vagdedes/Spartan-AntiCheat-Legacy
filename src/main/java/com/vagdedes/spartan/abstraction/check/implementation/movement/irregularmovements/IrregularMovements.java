@@ -14,19 +14,22 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsGravity gravity;
     private final IrregularMovementsJump jump;
     private final IrregularMovementsHorizontal horizontal;
+    private final IrregularMovementsFoodSprint foodSprint;
 
     public IrregularMovements(SpartanPlayer player) {
-        super(HackType.IrregularMovements, player, 4);
+        super(HackType.IrregularMovements, player, 5);
         this.addDetections(new DetectionExecutor[]{
                 step = new IrregularMovementsStep(this),
                 gravity = new IrregularMovementsGravity(this),
                 jump = new IrregularMovementsJump(this),
-                horizontal = new IrregularMovementsHorizontal(this)
+                horizontal = new IrregularMovementsHorizontal(this),
+                foodSprint = new IrregularMovementsFoodSprint(this)
         });
     }
 
     @Override
     public void runInternal(boolean cancelled) {
+        foodSprint.run();
         Double vertical = player.movement.getNmsVerticalDistance(),
                 oldVertical = player.movement.getPreviousNmsVerticalDistance(),
                 horizontal = player.movement.getNmsHorizontalDistance(),

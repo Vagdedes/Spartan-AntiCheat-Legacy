@@ -128,6 +128,10 @@ public class EventsHandler6 implements Listener {
             }
             // Objects
             p.addReceivedDamage(e);
+
+            // Detections
+
+            p.getExecutor(Enums.HackType.Speed).handle(e.isCancelled(), e);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? defaultEntity.getPassengers().toArray(new Entity[0])

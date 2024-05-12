@@ -1,12 +1,12 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import org.bukkit.GameMode;
 
-public class SpeedFoodSprint extends DetectionExecutor {
+public class IrregularMovementsFoodSprint extends DetectionExecutor {
 
-    SpeedFoodSprint(CheckExecutor executor) {
+    IrregularMovementsFoodSprint(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
     }
 
