@@ -118,10 +118,12 @@ public class Speed extends CheckExecutor {
         boolean onBlock = !RayUtils.onBlock(player, player.movement.getLocation(), "air");
         double multiplexSpecify = solidBlockOnTop ? 2.65 : 1;
 
-        if (RayUtils.onBlock(player, player.movement.getLocation(), "ice")) {
+        if (RayUtils.onBlock(player, player.movement.getLocation(), "ice")
+                || RayUtils.onBlock(player, player.movement.getLocation().subtract(0, 1, 0), "ice")) {
             if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
         }
-        if (RayUtils.onBlock(player, player.movement.getLocation(), "slime")) {
+        if (RayUtils.onBlock(player, player.movement.getLocation(), "slime")
+                || RayUtils.onBlock(player, player.movement.getLocation().subtract(0, 1, 0), "slime")) {
             if (multiply < 0.15) multiply = 0.15;
         }
         if (RayUtils.onBlock(player, player.movement.getLocation(), "honey")) {
