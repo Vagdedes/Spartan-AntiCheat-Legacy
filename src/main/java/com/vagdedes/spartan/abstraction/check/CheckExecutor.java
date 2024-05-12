@@ -51,7 +51,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     // Run handlers or detections when parameters are needed
     public final void handle(boolean cancelled, Object object) {
-        if (function && (!cancelled || hackType.getCheck().handleCancelledEvents)) {
+        if (!cancelled || hackType.getCheck().handleCancelledEvents) {
             handleInternal(cancelled, object);
         }
     }

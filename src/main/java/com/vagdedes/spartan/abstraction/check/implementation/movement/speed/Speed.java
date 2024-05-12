@@ -23,6 +23,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Speed extends CheckExecutor {
@@ -59,7 +60,7 @@ public class Speed extends CheckExecutor {
     };
 
 
-    private static final Map<Entity, KeepSprint> keepSprint = new ConcurrentHashMap<>();
+    private static final Map<UUID, KeepSprint> keepSprint = new ConcurrentHashMap<>();
     private RayLine jumpRayLine;
     private boolean
             onDamage,
@@ -86,7 +87,6 @@ public class Speed extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         String flag = null;
-        Player realPlayer = player.getPlayer();
         SpartanLocation to = player.movement.getLocation(),
                 from = player.movement.getEventFromLocation();
         boolean onGround = player.isOnGroundDefault();
@@ -217,7 +217,7 @@ public class Speed extends CheckExecutor {
                             + ", speed-limit: " + limit + ", air-tick: " + onAir;
                 }
             }
-            if (horizontal > wrapLimit && !keepSprint.get(realPlayer).isTimedOut()) {
+            if (horizontal > wrapLimit && !keepSprint.get(player.uuid).isTimedOut()) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
                 if (antiAbuseProcessor > 200) {
                     flag = "type: keepsprint-silent, speed: " + horizontal
@@ -232,7 +232,7 @@ public class Speed extends CheckExecutor {
                 jumpRayLine = new RayLine(dx, dz);
                 jumpRotation = to.getYaw();
                 yDiff = 0D;
-                keepSprint.put(realPlayer, new KeepSprint(0, false, 0, System.currentTimeMillis()));
+                keepSprint.put(player.uuid, new KeepSprint(0, false, 0, System.currentTimeMillis()));
                 isJump = (vertical > 0);
                 {
                     float yaw = to.getYaw();
@@ -253,16 +253,16 @@ public class Speed extends CheckExecutor {
                 boolean muchThanAllowedStrafe = horizontal > limit / 1.4;
                 boolean muchThanAllowedRotation = horizontal > limit / 1.5;
                 if (!player.movement.isSprinting()) {
-                    keepSprint.get(realPlayer).sprint();
+                    keepSprint.get(player.uuid).sprint();
                 }
 
-                if (keepSprint.get(realPlayer).hits() > 0 && !keepSprint.get(realPlayer).sprinted()
+                if (keepSprint.get(player.uuid).hits() > 0 && !keepSprint.get(player.uuid).sprinted()
                         && onAir > 2 && muchThanAllowedRotation) {
-                    keepSprint.get(realPlayer).newFlag();
-                    if (keepSprint.get(realPlayer).flags() > 2) {
+                    keepSprint.get(player.uuid).newFlag();
+                    if (keepSprint.get(player.uuid).flags() > 2) {
                         antiAbuseProcessor = antiAbuseProcessor + 210;
                         if (antiAbuseProcessor > 200) {
-                            flag = "type: keepsprint, hits: " + keepSprint.get(realPlayer).hits();
+                            flag = "type: keepsprint, hits: " + keepSprint.get(player.uuid).hits();
                         }
                     }
                 }
@@ -294,7 +294,8 @@ public class Speed extends CheckExecutor {
         } else {
             collideMinecraftShitMathFactor = false;
             double limit = 0.3D * (speedMultiply * 1.2) * ((speedModify > 0) ? 2 : 1);
-            if (!keepSprint.get(realPlayer).isTimedOut() && !player.movement.isSprinting()) {
+
+            if (!keepSprint.get(player.uuid).isTimedOut() && !player.movement.isSprinting()) {
                 sprintVl = sprintVl + 2;
                 if (sprintVl > 4) {
                     limit = RayUtils.scaleVal(limit / 1.15, 2);
@@ -377,14 +378,13 @@ public class Speed extends CheckExecutor {
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) object;
-            Entity entity = e.getDamager();
+            Entity damager = e.getDamager();
 
-            if (entity instanceof Player && e.getEntity() instanceof Player) {
-                keepSprint.get(entity).newHit();
-                keepSprint.get(entity).setTimedOut(System.currentTimeMillis());
+            if (damager instanceof Player && e.getEntity() instanceof Player) {
+                keepSprint.get(damager.getUniqueId()).newHit();
+                keepSprint.get(damager.getUniqueId()).setTimedOut(System.currentTimeMillis());
             }
 
-            Entity damager = e.getDamager();
             double multi = 0.4;
             newRayRequest = true;
             wrappedOnAir = 0;
@@ -417,7 +417,7 @@ public class Speed extends CheckExecutor {
             collideMinecraftShitMathFactor = false;
             newRayRequest = true;
             onGroundMinecraftShitMathFactor = 1.6;
-            keepSprint.put(player.getPlayer(), new KeepSprint(0, false, 0, System.currentTimeMillis()));
+            keepSprint.put(player.uuid, new KeepSprint(0, false, 0, System.currentTimeMillis()));
             onDamage = false;
             yDiff = 0D;
             isJump = false;
@@ -482,7 +482,7 @@ public class Speed extends CheckExecutor {
 
     private static double getSpeedAmplifier(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasAttributeModifiers()) {
-            return Objects.requireNonNull(item.getItemMeta().getAttributeModifiers(Attribute.GENERIC_MOVEMENT_SPEED)).stream()
+            return item.getItemMeta().getAttributeModifiers(Attribute.GENERIC_MOVEMENT_SPEED).stream()
                     .mapToDouble(AttributeModifier::getAmount)
                     .max().orElse(0.0);
         }
@@ -491,6 +491,6 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected boolean canDo() {
-        return false;
+        return true;
     }
 }
