@@ -22,7 +22,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -87,7 +86,7 @@ public class Speed extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         String flag = null;
-        SpartanLocation to = player.movement.getLocation(),
+        SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
         boolean onGround = player.isOnGroundDefault();
         double dx = to.getX() - from.getX();
@@ -233,7 +232,7 @@ public class Speed extends CheckExecutor {
                 jumpRotation = to.getYaw();
                 yDiff = 0D;
                 keepSprint.put(player.uuid, new KeepSprint(0, false, 0, System.currentTimeMillis()));
-                isJump = (vertical > 0);
+                isJump = (vertical >= -0.04);
                 {
                     float yaw = to.getYaw();
                     float yR = (float) Math.toRadians(yaw);

@@ -30,7 +30,7 @@ public class BlockUtils {
             semi_solid, changeable, walls, interactive_bushes, scaffolding, interactive_snow, interactive_and_passable,
             honey_block, slime_block, web;
 
-    public static final double boundingBox = 0.305;
+    public static final double boundingBox = 0.301;
 
     public static boolean endsWith(String s, String ending) {
         return s.endsWith(ending) && !s.contains("LEGACY_");

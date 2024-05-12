@@ -36,6 +36,7 @@ public class SpartanPlayerMovement {
             lastVanillaOnGround;
     private Material lastLiquidMaterial;
     private SpartanLocation location,
+            eventTo,
             eventFrom,
             detectionLocation;
     SpartanLocation schedulerFrom;
@@ -63,6 +64,7 @@ public class SpartanPlayerMovement {
         this.locations.put(TPS.getTick(this.parent), list);
 
         this.location = location;
+        this.eventTo = location;
         this.eventFrom = location;
         this.schedulerFrom = location;
         this.detectionLocation = location;
@@ -373,6 +375,10 @@ public class SpartanPlayerMovement {
         return schedulerFrom;
     }
 
+    public SpartanLocation getEventToLocation() {
+        return eventTo;
+    }
+
     public SpartanLocation getEventFromLocation() {
         return eventFrom;
     }
@@ -473,6 +479,7 @@ public class SpartanPlayerMovement {
             }
         }
         this.setLocation(to);
+        this.eventTo = to;
         this.eventFrom = from;
 
         if (this.parent.isOnGround(to)) {

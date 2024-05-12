@@ -251,9 +251,9 @@ public class PlayerUtils {
 
     public static double calculateNextFallMotion(double motion,
                                                  double acceleration, double drag) {
-        double terminalVelocity = ((1.0 / (1.0 - drag)) * acceleration) - GroundUtils.maxHeightLengthRatio;
+        double terminalVelocity = ((1.0 / (1.0 - drag)) * acceleration);
 
-        if (motion > -terminalVelocity) {
+        if (motion >= terminalVelocity) {
             return (motion + acceleration) * drag;
         } else {
             return Double.MIN_VALUE;
