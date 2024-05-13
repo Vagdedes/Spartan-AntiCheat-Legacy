@@ -106,7 +106,7 @@ public class NoFall extends CheckExecutor {
     }
 
     @Override
-    protected boolean canDo() {
+    protected boolean canDo() { // todo fix non-measurement times
         return MovementProcessing.canCheck(player, false, false, false)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()

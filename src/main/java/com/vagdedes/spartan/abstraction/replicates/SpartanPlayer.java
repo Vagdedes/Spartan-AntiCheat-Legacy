@@ -113,7 +113,7 @@ public class SpartanPlayer {
 
                 if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
-                        p.movement.getLocation();
+                        p.movement.judgeGround(p.movement.getLocation());
 
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                             Elytra.judge(p, false);
