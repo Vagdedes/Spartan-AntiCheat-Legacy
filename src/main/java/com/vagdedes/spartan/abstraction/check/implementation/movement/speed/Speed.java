@@ -502,13 +502,12 @@ public class Speed extends CheckExecutor {
         if (auraAnalysis.isEmpty()) return;
         String flag = null;
         float yawDiff = 0;
+        float yawDiffFromFirst = Math.abs(auraAnalysis.getLast().yaw() - auraAnalysis.getFirst().yaw());
         double rayDiff = 0;
         double raySimDiff = 0;
         double angle = Math.toDegrees(RayUtils.calculateRayLine(auraAnalysis.get(0).rayLine()));
         float yaw = auraAnalysis.get(0).yaw();
-        double raySim = RayUtils.calculateRayLines(
-                auraAnalysis.get(0).rayLine(), auraAnalysis.get(0).simRayLine()
-        );
+        double raySim = RayUtils.calculateRayLine(auraAnalysis.get(0).simRayLine());
         boolean oldInTarget = false;
         int tooFactRotationCause = 0;
         for (Aura a : auraAnalysis) {
@@ -517,20 +516,31 @@ public class Speed extends CheckExecutor {
 
             rayDiff += Math.abs(angleLocal - angle);
             yawDiff += Math.abs(yawLocal - yaw);
-            double raySimDiffAdd = Math.abs(RayUtils.calculateRayLines(a.rayLine(), a.simRayLine()) - raySim);
+            double raySimDiffAdd = Math.abs(RayUtils.calculateRayLine(a.simRayLine()) - raySim);
             raySimDiff += raySimDiffAdd;
             yaw = yawLocal;
             angle = angleLocal;
-            raySim = RayUtils.calculateRayLines(
-                    a.rayLine(), a.simRayLine()
-            );
+            raySim = RayUtils.calculateRayLine(a.simRayLine());
 
             oldInTarget = a.isLookAtTarget();
         }
         auraAnalysis.clear();
 
-        yawDiff = RayUtils.set360Limit(yawDiff);
-        rayDiff = RayUtils.set360Limit((float) rayDiff);
+        yawDiff = (float) RayUtils.scaleVal(RayUtils.set360Limit(yawDiff), 2);
+        yawDiffFromFirst = (float) RayUtils.scaleVal(yawDiffFromFirst, 2);
+        rayDiff = RayUtils.scaleVal(RayUtils.set360Limit((float) rayDiff), 2);
+        raySimDiff = RayUtils.scaleVal(Math.toDegrees(raySimDiff), 2);
+
+        // player.sendMessage(raySimDiff + " " + rayDiff + " " + yawDiff + " " + yawDiffFromFirst);
+
+        if (rayDiff * 6.5 < raySimDiff && rayDiff < 16 && raySimDiff < 75 && rayDiff > 0.5 && yawDiffFromFirst > 9.8) {
+            for (int i = 0; i < 5; i++) {
+                flag = "type: aura(direction), final-rayDiff: "
+                                + rayDiff + ", final-raySimDiff: " + raySimDiff + ", count: " + (i + 1);
+                cancel(flag, player.movement.getLocation(), 9);
+            }
+        }
+
 
 
     }
