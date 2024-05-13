@@ -22,9 +22,12 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.vagdedes.spartan.abstraction.check.implementation.movement.speed.DataProcessor.keepSprint;
 
 public class Speed extends CheckExecutor {
 
@@ -60,21 +63,24 @@ public class Speed extends CheckExecutor {
     };
 
 
-    private static final Map<UUID, KeepSprint> keepSprint = new ConcurrentHashMap<>();
     private RayLine jumpRayLine;
+    private Entity target;
     private boolean
             onDamage,
             ignoreBasicChecks,
             collideMinecraftShitMathFactor,
             newRayRequest,
+            needToCheckAura,
             isJump;
     private float jumpRotation;
+    private LinkedList<Aura> auraAnalysis;
     private int
             antiAbuseProcessor,
             collideMinecraftShitMathFactorValue,
             wrappedOnAir,
             wrappedOnFly,
             verticalVl,
+            rayChallengeVl,
             sprintVl;
     private double yDiff,
             onGroundMinecraftShitMathFactor,
@@ -119,11 +125,23 @@ public class Speed extends CheckExecutor {
         boolean onBlock = RayUtils.onBlock(player, to, BlockUtils.solid, BlockUtils.semi_solid);
         double multiplexSpecify = solidBlockOnTop ? 2.65 : 1;
 
+        float yaw = to.getYaw();
+        float yR = (float) Math.toRadians(yaw);
+        RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
+        RayLine b = new RayLine(dx, dz);
+
+        if (needToCheckAura) {
+            auraAnalysis.addFirst(new Aura(
+                            yaw, b, a, false));
+            if (auraAnalysis.size() > 10) {
+                checkAuraAnalysis(to);
+            }
+        }
+
         if (RayUtils.onBlock(player, to, BlockUtils.ice)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
             if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
         }
-
         if (RayUtils.onBlock(player, to, BlockUtils.slime_block)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.slime_block)) {
             if (multiply < 0.15) multiply = 0.15;
@@ -207,6 +225,8 @@ public class Speed extends CheckExecutor {
         }
         if (player.getVehicle() != null) {
             if (multiply < 9) multiply = 9D;
+            ignoreBasicChecks = true;
+            newRayRequest = true;
         }
         if (!onGround) {
             // player.sendMessage("nigger " + horizontal);
@@ -241,10 +261,6 @@ public class Speed extends CheckExecutor {
                 keepSprint.put(player.uuid, new KeepSprint(0, false, 0, System.currentTimeMillis()));
                 isJump = (vertical >= -0.04);
                 {
-                    float yaw = to.getYaw();
-                    float yR = (float) Math.toRadians(yaw);
-                    RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
-                    RayLine b = new RayLine(dx, dz);
                     // player.sendMessage(String.valueOf(horizontal));
                     double diffRayLines = RayUtils.calculateRayLines(a, b);
                     double wrappedLimit = limit / 1.6 + ((diffRayLines >= 90) ? 0 : (limit / 2.4) * (1 - diffRayLines / 90));
@@ -282,10 +298,6 @@ public class Speed extends CheckExecutor {
                 }
 
                 {
-                    float yaw = to.getYaw();
-                    float yR = (float) Math.toRadians(yaw);
-                    RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
-                    RayLine b = new RayLine(dx, dz);
                     if (horizontal > limit / 1.35 && !RayUtils.validRayLines(a, b, 90)
                             && speedModify < 1.0 && !onDamage) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
@@ -310,10 +322,6 @@ public class Speed extends CheckExecutor {
             if (sprintVl > 0) sprintVl = sprintVl - 1;
 
             limit = RayUtils.scaleVal(limit * (1 + multiply), 2);
-            float yaw = to.getYaw();
-            float yR = (float) Math.toRadians(yaw);
-            RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
-            RayLine b = new RayLine(dx, dz);
             if (onGroundMinecraftShitMathFactor > 0) {
                 onGroundMinecraftShitMathFactor = onGroundMinecraftShitMathFactor / 1.33;
                 limit = RayUtils.scaleVal(limit * (1 + onGroundMinecraftShitMathFactor), 2);
@@ -351,13 +359,13 @@ public class Speed extends CheckExecutor {
             antiAbuseProcessor = antiAbuseProcessor - 8;
         if (flag != null) cancel(flag, to, 2);
         ignoreBasicChecks = false;
+        needToCheckAura = (multiply < 2);
     }
 
     @Override
     protected void schedulerInternal() {
 
     }
-
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerVelocityEvent) {
@@ -380,17 +388,20 @@ public class Speed extends CheckExecutor {
                 wrappedOnFly = 0;
                 ignoreBasicChecks = true;
                 onDamage = true;
+                needToCheckAura = false;
                 // player.sendMessage(String.valueOf(horizontal));
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) object;
             Entity damager = e.getDamager();
-
+            DataProcessor.target.put(e.getEntity().getUniqueId(), damager);
+            DataProcessor.target.put(damager.getUniqueId(), e.getEntity());
             if (damager instanceof Player && e.getEntity() instanceof Player) {
                 keepSprint.get(damager.getUniqueId()).newHit();
                 keepSprint.get(damager.getUniqueId()).setTimedOut(System.currentTimeMillis());
             }
 
+            needToCheckAura = false;
             double multi = 0.4;
             newRayRequest = true;
             wrappedOnAir = 0;
@@ -431,6 +442,9 @@ public class Speed extends CheckExecutor {
             verticalVl = 0;
             ignoreBasicChecks = true;
             sprintVl = 0;
+            auraAnalysis = new LinkedList<>();
+            needToCheckAura = false;
+            target = null;
         } else if (object == SpeedAction.RIPTIDE) {
             newRayRequest = true;
             wrappedOnAir = 1;
@@ -483,6 +497,42 @@ public class Speed extends CheckExecutor {
         } else {
             return 0.0;
         }
+    }
+    private void checkAuraAnalysis(SpartanLocation to) {
+        if (auraAnalysis.isEmpty()) return;
+        String flag = null;
+        float yawDiff = 0;
+        double rayDiff = 0;
+        double raySimDiff = 0;
+        double angle = Math.toDegrees(RayUtils.calculateRayLine(auraAnalysis.get(0).rayLine()));
+        float yaw = auraAnalysis.get(0).yaw();
+        double raySim = RayUtils.calculateRayLines(
+                auraAnalysis.get(0).rayLine(), auraAnalysis.get(0).simRayLine()
+        );
+        boolean oldInTarget = false;
+        int tooFactRotationCause = 0;
+        for (Aura a : auraAnalysis) {
+            double angleLocal = Math.toDegrees(RayUtils.calculateRayLine(a.rayLine()));
+            float yawLocal = a.yaw();
+
+            rayDiff += Math.abs(angleLocal - angle);
+            yawDiff += Math.abs(yawLocal - yaw);
+            double raySimDiffAdd = Math.abs(RayUtils.calculateRayLines(a.rayLine(), a.simRayLine()) - raySim);
+            raySimDiff += raySimDiffAdd;
+            yaw = yawLocal;
+            angle = angleLocal;
+            raySim = RayUtils.calculateRayLines(
+                    a.rayLine(), a.simRayLine()
+            );
+
+            oldInTarget = a.isLookAtTarget();
+        }
+        auraAnalysis.clear();
+
+        yawDiff = RayUtils.set360Limit(yawDiff);
+        rayDiff = RayUtils.set360Limit((float) rayDiff);
+
+
     }
 
 
