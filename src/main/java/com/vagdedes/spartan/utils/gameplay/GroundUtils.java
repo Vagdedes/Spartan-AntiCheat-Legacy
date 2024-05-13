@@ -194,7 +194,7 @@ public class GroundUtils {
         SpartanBlock block = loc.getBlock();
 
         if (liquid && block.isLiquidOrWaterLogged(true)
-                || climbable && BlockUtils.canClimb(block.material)) {
+                || climbable && BlockUtils.canClimb(block.material, false)) {
             if (original) {
                 return true;
             }

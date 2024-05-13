@@ -24,11 +24,11 @@ public class BlockUtils {
             magma = MaterialUtils.get("magma"),
             beetroot_block = MaterialUtils.get("beetroot_block");
 
-    public static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, slabs, climbable,
-            door, entity_blocks, trap_door, liquid, banner, carpet, bed, shulker_box, stairs, fence, fence_gate, heads, leaves, egg,
-            coral_fan, pot, anvil, cobble_walls, terracotta, concrete, candle, candleCake, dripleaf, ores, wood, wool, wire,
-            semi_solid, changeable, walls, interactive_bushes, scaffolding, interactive_snow, interactive_and_passable,
-            honey_block, slime_block, web;
+    public static final Set<Material> air, solid, sensitive, editable, chest, plate, ice, glass, glass_pane, slabs,
+            climbable, climbableOriginal, door, entity_blocks, trap_door, liquid, banner, carpet, bed, shulker_box, stairs,
+            fence, fence_gate, heads, leaves, egg, coral_fan, pot, anvil, cobble_walls, terracotta, concrete, candle,
+            candleCake, dripleaf, ores, wood, wool, wire, semi_solid, changeable, walls, interactive_bushes, scaffolding,
+            interactive_snow, interactive_and_passable, honey_block, slime_block, web;
 
     public static final double boundingBox = 0.301;
 
@@ -283,18 +283,22 @@ public class BlockUtils {
         builder.add(Material.LADDER);
         builder.add(Material.VINE);
 
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)) {
-                builder.add(Material.HONEY_BLOCK);
-            }
-            builder.add(Material.SCAFFOLDING);
-        }
         for (Material m : materials) {
             String s = m.toString();
 
             if (endsWith(s, "_VINES") || endsWith(s, "_VINES_PLANT")) {
                 builder.add(m);
             }
+        }
+        climbableOriginal = new HashSet<>(builder);
+
+        // Separator
+
+        builder.clear();
+        builder.addAll(climbableOriginal);
+
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
+            builder.add(Material.SCAFFOLDING);
         }
         climbable = new HashSet<>(builder);
 
@@ -1403,8 +1407,8 @@ public class BlockUtils {
         return interactive_bushes.contains(m);
     }
 
-    public static boolean canClimb(Material m) {
-        return climbable.contains(m);
+    public static boolean canClimb(Material m, boolean original) {
+        return original ? climbableOriginal.contains(m) : climbable.contains(m);
     }
 
     private static boolean isSensitive(Material m, long time) {
@@ -1480,7 +1484,7 @@ public class BlockUtils {
                                 && !areSlabs(m)
                                 && !areStairs(m)
                                 && !areWalls(m)
-                                && !canClimb(m)) {
+                                && !canClimb(m, false)) {
                             break;
                         }
                     }

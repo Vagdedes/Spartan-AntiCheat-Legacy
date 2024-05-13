@@ -12,15 +12,29 @@ import java.util.*;
 
 public class PlayerEvidence {
 
-    enum EvidenceType {
+    public enum EvidenceType {
         HACKER(2),
         SUSPECTED(1),
         LEGITIMATE(0);
 
         private final int requirement;
+        public final String name;
 
         EvidenceType(int requirement) {
             this.requirement = requirement;
+
+            switch (this.ordinal()) {
+                case 0:
+                    this.name = "Legitimate";
+                    break;
+                case 1:
+                    this.name = "Suspected";
+                    break;
+                default:
+                    this.name = "Hacker";
+                    break;
+
+            }
         }
     }
 

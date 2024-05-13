@@ -118,6 +118,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 if (predictedHeight < 0.0) {
                                     predictedHeight += 1.0;
                                 }
+                                // todo fix horse jump
                                 if (predictedHeight != vertical
                                         || vertical > GroundUtils.maxPlayerStep) {
                                     cancel(
@@ -181,4 +182,5 @@ public class IrregularMovementsStep extends DetectionExecutor {
             });
         }
     }
+
 }

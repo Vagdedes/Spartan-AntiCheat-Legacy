@@ -17,7 +17,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.tracking.CheckDelay;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.server.ConfigUtils;
@@ -54,8 +53,7 @@ public class LiveViolation {
 
     void run(HackPrevention newPrevention, String information, long time) {
         synchronized (this) {
-            if (!CheckDelay.hasCooldown(player)
-                    && !CloudBase.isInformationCancelled(hackType, information)
+            if (!CloudBase.isInformationCancelled(hackType, information)
                     && (disableCause == null
                     || !disableCause.pointerMatches(information))) {
                 InformationAnalysis analysis = new InformationAnalysis(hackType, information);
