@@ -55,7 +55,6 @@ public class EventsHandler3 implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Damage(EntityDamageEvent e) {
         Entity entity = e.getEntity();
-        EntityDamageEvent.DamageCause dmg = e.getCause();
 
         if (entity instanceof Player) {
             Player n = (Player) entity;
@@ -77,7 +76,9 @@ public class EventsHandler3 implements Listener {
                 p.getTrackers().disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 2);
             }
         } else {
-            Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? entity.getPassengers().toArray(new Entity[0]) : new Entity[]{entity.getPassenger()};
+            Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    ? entity.getPassengers().toArray(new Entity[0])
+                    : new Entity[]{entity.getPassenger()};
 
             if (passengers.length > 0) {
                 for (Entity passenger : passengers) {

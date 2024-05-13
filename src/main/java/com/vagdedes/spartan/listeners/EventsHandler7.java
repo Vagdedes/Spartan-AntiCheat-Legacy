@@ -1,16 +1,21 @@
 package com.vagdedes.spartan.listeners;
 
+import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class EventsHandler7 implements Listener {
@@ -74,6 +79,31 @@ public class EventsHandler7 implements Listener {
         p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
         p.getExecutor(Enums.HackType.Speed).run(cancelled);
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void Death(EntityDeathEvent e) {
+        Entity entity = e.getEntity();
+        Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                ? entity.getPassengers().toArray(new Entity[0])
+                : new Entity[]{entity.getPassenger()};
+
+        if (passengers.length > 0) {
+            for (Entity passenger : passengers) {
+                if (passenger instanceof Player) {
+                    Player n = (Player) passenger;
+                    SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+                    if (p != null) {
+                        p.getViolations(Enums.HackType.IrregularMovements).addDisableCause(
+                                Enums.HackType.IrregularMovements.toString(),
+                                null,
+                                1
+                        );
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -19,7 +19,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
             int airTicks = player.movement.getTicksOnAir();
 
-            runAsync(() -> { // todo ladder-drag/acceleration, slow-timer-bypass, web
+            runAsync(() -> { // todo ladder-drag/acceleration, slow-timer-bypass, web, entity-dying
                 boolean liquid = player.movement.wasInLiquids();
                 double prediction,
                         acceleration = liquid

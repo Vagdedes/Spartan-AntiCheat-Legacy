@@ -379,7 +379,11 @@ public class LiveViolation {
 
             if (DetectionNotifications.canAcceptMessages(player, divisor, false)
                     && isDivisorValid(playerViolation.level, divisor)) { // Attention
-                ClickableMessage.sendCommand(player, message, "Command: " + command, command);
+                Player realPlayer = player.getPlayer();
+
+                if (realPlayer != null) {
+                    ClickableMessage.sendCommand(realPlayer, message, "Command: " + command, command);
+                }
             }
         } else {
             List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers(false);
@@ -390,12 +394,16 @@ public class LiveViolation {
                             playerViolation.level,
                             NotifyViolation.get(staff, player, ignoredViolations)
                     )) {
-                        ClickableMessage.sendCommand(
-                                staff,
-                                message,
-                                "Command: " + command,
-                                command
-                        );
+                        Player realPlayer = staff.getPlayer();
+
+                        if (realPlayer != null) {
+                            ClickableMessage.sendCommand(
+                                    realPlayer,
+                                    message,
+                                    "Command: " + command,
+                                    command
+                            );
+                        }
                     }
                 }
             }

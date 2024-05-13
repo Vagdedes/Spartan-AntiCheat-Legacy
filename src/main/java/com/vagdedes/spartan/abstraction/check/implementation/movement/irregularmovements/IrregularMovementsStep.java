@@ -6,7 +6,10 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.server.ReflectionUtils;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Horse;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
@@ -16,6 +19,9 @@ import java.util.Set;
 
 public class IrregularMovementsStep extends DetectionExecutor {
 
+    private static final boolean abstractHorseClass = ReflectionUtils.classExists(
+            "org.bukkit.entity.AbstractHorse"
+    );
     private static final Map<Integer, Boolean> stepCombination = new LinkedHashMap<>();
     private static final Set<Double> firstFallingBox = new HashSet<>();
 
@@ -107,19 +113,36 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 } else {
                     if (vertical > 0.0) {
                         if (!player.movement.isJumping(vertical)) {
+                            Entity vehicle = player.getVehicle();
                             double limit = PlayerUtils.getJumpMotion(
                                     PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
                                     0
                             );
 
+                            if (vehicle != null) {
+                                if (abstractHorseClass) {
+                                    if (vehicle instanceof AbstractHorse) {
+                                        limit = Math.max(
+                                                limit,
+                                                ((AbstractHorse) vehicle).getJumpStrength()
+                                                        + GroundUtils.maxHeightLengthRatio
+                                        );
+                                    }
+                                } else if (vehicle instanceof Horse) {
+                                    limit = Math.max(
+                                            limit,
+                                            ((Horse) vehicle).getJumpStrength()
+                                                    + GroundUtils.maxHeightLengthRatio
+                                    );
+                                }
+                            }
                             if (vertical > limit) {
                                 double predictedHeight = box - oldBox;
 
                                 if (predictedHeight < 0.0) {
                                     predictedHeight += 1.0;
                                 }
-                                // todo fix horse jump
-                                
+
                                 if (predictedHeight != vertical
                                         || vertical > GroundUtils.maxPlayerStep) {
                                     cancel(
@@ -136,7 +159,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         }
                     } else {
                         if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
-                            if (vertical <= -PlayerUtils.airAcceleration) {
+                            if (vertical < -PlayerUtils.airAcceleration) {
                                 cancel(
                                         "type: step(high-first-fall)"
                                                 + ", box: " + box
@@ -167,7 +190,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else {
+                        } else if (vertical < -PlayerUtils.airAcceleration) {
                             cancel(
                                     "type: step(abstract-down)"
                                             + ", box: " + box
