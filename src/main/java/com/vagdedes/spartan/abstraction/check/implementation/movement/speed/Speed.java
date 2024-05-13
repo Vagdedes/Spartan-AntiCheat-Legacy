@@ -149,7 +149,8 @@ public class Speed extends CheckExecutor {
             yDiff = 0D;
             wrappedOnFly = wrappedOnFly + 1;
         } else if (!onBlock) {
-            if (multiply < 0.08 && !onGround && vertical != -0.09 && isJump && horizontal > 0.1) {
+            if (multiply < 0.08 && !onGround && vertical != -0.09
+                    && isJump && horizontal > 0.1 && player.getVehicle() == null) {
                 yDiff = yDiff + verticalDiff;
                 if (yDiff > 0.05) {
                     verticalVl = verticalVl + 4;
