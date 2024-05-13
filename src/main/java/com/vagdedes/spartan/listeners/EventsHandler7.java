@@ -2,11 +2,9 @@ package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -14,8 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 
 public class EventsHandler7 implements Listener {
 
@@ -80,23 +76,4 @@ public class EventsHandler7 implements Listener {
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
     }
 
-    @EventHandler
-    private void PluginEnable(PluginEnableEvent e) {
-
-        // Utils
-        PluginUtils.clear();
-
-        // System
-        Config.compatibility.fastClear();
-    }
-
-    @EventHandler
-    private void PluginDisable(PluginDisableEvent e) {
-
-        // Utils
-        PluginUtils.clear();
-
-        // System
-        Config.compatibility.fastClear();
-    }
 }

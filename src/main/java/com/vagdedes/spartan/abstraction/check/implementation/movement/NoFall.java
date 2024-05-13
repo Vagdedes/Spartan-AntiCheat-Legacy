@@ -81,7 +81,7 @@ public class NoFall extends CheckExecutor {
         return MovementProcessing.canCheck(player, false, false, false)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()
-                && !BlockUtils.canClimb(player.movement.getLocation().getBlock().material)
+                && !BlockUtils.canClimb(player.movement.getLocation().getBlock().material, false)
                 && (!PlayerUtils.levitation || !player.hasPotionEffect(PotionEffectType.LEVITATION, 0));
     }
 }

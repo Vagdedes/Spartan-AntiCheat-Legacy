@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
+import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
@@ -113,27 +114,26 @@ public class Speed extends CheckExecutor {
         int onFlyID = wrappedOnFly - 1;
         double predictedVertical = (onAirID > 76) ? FLY_SPEED[76] : (onAirID < 0) ? FLY_SPEED[0] : FLY_SPEED[onAirID];
         double verticalDiff = (predictedVertical < vertical) ? 0 : predictedVertical - vertical;
-        boolean solidBlockOnTop = RayUtils.onSolidBlock(player, player.movement.getLocation().add(0, 2, 0));
-        boolean inLiquid = RayUtils.onBlock(player, player.movement.getLocation(), "water") || RayUtils.onBlock(player, player.movement.getLocation(), "lava");
-        boolean onBlock = !RayUtils.onBlock(player, player.movement.getLocation(), "air");
+        boolean solidBlockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0));
+        boolean inLiquid = RayUtils.onBlock(player, to, BlockUtils.liquid);
+        boolean onBlock = RayUtils.onBlock(player, to, BlockUtils.solid, BlockUtils.semi_solid);
         double multiplexSpecify = solidBlockOnTop ? 2.65 : 1;
 
-        if (RayUtils.onBlock(player, player.movement.getLocation(), "ice")
-                || RayUtils.onBlock(player, player.movement.getLocation().subtract(0, 1, 0), "ice")) {
+        if (RayUtils.onBlock(player, to, BlockUtils.ice)
+                || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
             if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
         }
-        if (RayUtils.onBlock(player, player.movement.getLocation(), "slime")
-                || RayUtils.onBlock(player, player.movement.getLocation().subtract(0, 1, 0), "slime")) {
+        if (RayUtils.onBlock(player, to, BlockUtils.slime_block)
+                || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.slime_block)) {
             if (multiply < 0.15) multiply = 0.15;
         }
-        if (RayUtils.onBlock(player, player.movement.getLocation(), "honey")) {
+        if (RayUtils.onBlock(player, to, BlockUtils.honey_block)) {
             if (multiply < 0.15) multiply = 0.15;
         }
-        if (RayUtils.onBlock(player, player.movement.getLocation(), "ladder")
-                || RayUtils.onBlock(player, player.movement.getLocation(), "vine")) {
+        if (RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
             if (multiply < 0.3) multiply = 0.3;
         }
-        if (RayUtils.onBlock(player, player.movement.getLocation(), "stair")) {
+        if (RayUtils.onBlock(player, to, BlockUtils.stairs)) {
             if (multiply < 0.35) multiply = 0.35;
         }
         if (player.movement.isSwimming()) {
@@ -166,8 +166,7 @@ public class Speed extends CheckExecutor {
                 } else if (verticalVl > 0) verticalVl = verticalVl - 1;
             }
             if (oldAir < 3 && oldAir != -1 && isJump) {
-                if (!RayUtils.onBlock(player, player.movement.getLocation(), "ladder")
-                        && !RayUtils.onBlock(player, player.movement.getLocation(), "vine")) {
+                if (!RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
                     antiAbuseProcessor = antiAbuseProcessor + 25;
                     if (antiAbuseProcessor > 200) {
                         flag = "type: landing, air: " + oldAir;
@@ -178,7 +177,7 @@ public class Speed extends CheckExecutor {
             yDiff = 0D;
             wrappedOnFly = wrappedOnFly + 1;
         }
-        if (slimeBlockCause(player)) {
+        if (slimeBlockCause(player, to)) {
             if (multiply < 3) multiply = 3D;
             return;
         }
@@ -230,9 +229,9 @@ public class Speed extends CheckExecutor {
                 }
             }
             if (onAir == 1) {
-                int diff = Math.abs(player.movement.getLocation().getBlockY() - collideMinecraftShitMathFactorValue);
+                int diff = Math.abs(to.getBlockY() - collideMinecraftShitMathFactorValue);
                 if (diff > 0) collideMinecraftShitMathFactor = true;
-                collideMinecraftShitMathFactorValue = player.movement.getLocation().getBlockY();
+                collideMinecraftShitMathFactorValue = to.getBlockY();
                 onGroundMinecraftShitMathFactor = 1.6;
                 jumpRayLine = new RayLine(dx, dz);
                 jumpRotation = to.getYaw();
@@ -348,7 +347,7 @@ public class Speed extends CheckExecutor {
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
-        if (flag != null) cancel(flag, player.movement.getLocation(), 2);
+        if (flag != null) cancel(flag, to, 2);
         ignoreBasicChecks = false;
     }
 
@@ -412,13 +411,14 @@ public class Speed extends CheckExecutor {
             }
             multiply = multiply + multi;
         } else if (object instanceof PlayerJoinEvent) {
+            SpartanLocation to = player.movement.getLocation();
             wrappedOnAir = 0;
             wrappedOnFly = 0;
             multiply = 0D;
             antiAbuseProcessor = 0;
             jumpRayLine = new RayLine(0, 0);
-            jumpRotation = player.movement.getLocation().getYaw();
-            collideMinecraftShitMathFactorValue = player.movement.getLocation().getBlockY();
+            jumpRotation = to.getYaw();
+            collideMinecraftShitMathFactorValue = to.getBlockY();
             collideMinecraftShitMathFactor = false;
             newRayRequest = true;
             onGroundMinecraftShitMathFactor = 1.6;
@@ -440,8 +440,7 @@ public class Speed extends CheckExecutor {
         }
     }
 
-    private boolean slimeBlockCause(SpartanPlayer player) {
-        SpartanLocation location = player.movement.getLocation();
+    private boolean slimeBlockCause(SpartanPlayer player, SpartanLocation location) {
         boolean slime = false;
         boolean piston = false;
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {

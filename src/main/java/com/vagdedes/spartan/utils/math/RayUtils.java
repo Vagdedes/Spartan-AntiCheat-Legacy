@@ -3,8 +3,12 @@ package com.vagdedes.spartan.utils.math;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.util.Vector;
+
+import java.util.Set;
 
 public class RayUtils {
 
@@ -64,16 +68,61 @@ public class RayUtils {
         return num - (wrapShitMath * 180);
     }
 
-    public static boolean onBlock(SpartanPlayer player, SpartanLocation location, String material) {
+    @SafeVarargs
+    public static boolean onBlock(SpartanPlayer player, SpartanLocation location, Set<Material>... sets) {
         World world = player.getWorld();
-        org.bukkit.util.Vector playerLocation = location.toVector();
-        org.bukkit.util.Vector min = playerLocation.clone().add(new org.bukkit.util.Vector(-0.3, -0.5, -0.3));
-        org.bukkit.util.Vector max = playerLocation.clone().add(new org.bukkit.util.Vector(0.3, 0.1, 0.3));
+        Vector playerLocation = location.toVector(),
+                min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
+                max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
+
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Block block = world.getBlockAt(x, y, z);
-                    if (block.getType().toString().toLowerCase().contains(material)) {
+
+                    for (Set<Material> set : sets) {
+                        if (set.contains(block.getType())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean onBlock(SpartanPlayer player, SpartanLocation location, Set<Material> set) {
+        World world = player.getWorld();
+        Vector playerLocation = location.toVector(),
+                min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
+                max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                    Block block = world.getBlockAt(x, y, z);
+
+                    if (set.contains(block.getType())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean onBlock(SpartanPlayer player, SpartanLocation location, Material material) {
+        World world = player.getWorld();
+        Vector playerLocation = location.toVector(),
+                min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
+                max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
+
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+                    Block block = world.getBlockAt(x, y, z);
+
+                    if (block.getType() == material) {
                         return true;
                     }
                 }
@@ -84,9 +133,10 @@ public class RayUtils {
 
     public static boolean onSolidBlock(SpartanPlayer player, SpartanLocation location) {
         World world = player.getWorld();
-        org.bukkit.util.Vector playerLocation = location.toVector();
-        org.bukkit.util.Vector min = playerLocation.clone().add(new org.bukkit.util.Vector(-0.3, -0.5, -0.3));
-        org.bukkit.util.Vector max = playerLocation.clone().add(new org.bukkit.util.Vector(0.3, 0.1, 0.3));
+        Vector playerLocation = location.toVector(),
+                min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
+                max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
+
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {

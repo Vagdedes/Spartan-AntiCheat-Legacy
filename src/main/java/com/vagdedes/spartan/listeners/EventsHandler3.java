@@ -8,10 +8,10 @@ import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.CheckDelay;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,9 +22,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-
-import java.util.UUID;
+import org.bukkit.event.server.ServerCommandEvent;
 
 public class EventsHandler3 implements Listener {
 
@@ -97,15 +95,6 @@ public class EventsHandler3 implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    private void Login(PlayerLoginEvent e) {
-        Player n = e.getPlayer();
-        UUID uuid = n.getUniqueId();
-
-        // Protections
-        CheckDelay.cancel(uuid, 5);
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Sign(SignChangeEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
@@ -172,4 +161,16 @@ public class EventsHandler3 implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void Command(ServerCommandEvent e) {
+        CommandSender s = e.getSender();
+        String msg = e.getCommand();
+
+        // Protections
+        if (ChatProtection.runConsoleCommand(s, msg)) {
+            e.setCancelled(true);
+        }
+    }
+
 }

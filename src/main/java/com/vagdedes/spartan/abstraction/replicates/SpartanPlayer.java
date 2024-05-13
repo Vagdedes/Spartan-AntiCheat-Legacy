@@ -535,7 +535,7 @@ public class SpartanPlayer {
         return playerProfile;
     }
 
-    public synchronized void setProfile(PlayerProfile playerProfile) {
+    public void setProfile(PlayerProfile playerProfile) {
         this.playerProfile = playerProfile;
     }
 
@@ -566,11 +566,8 @@ public class SpartanPlayer {
     // Separator
 
     public Entity getVehicle() {
-        return vehicle;
-    }
-
-    public synchronized void setVehicle(Entity vehicle) {
-        this.vehicle = vehicle;
+        Player p = getPlayer();
+        return p == null ? null : p.getVehicle();
     }
 
     // Separator
@@ -594,7 +591,7 @@ public class SpartanPlayer {
         return p == null ? 0 : p.getFoodLevel();
     }
 
-    public synchronized void setFoodLevel(int foodLevel) {
+    public void setFoodLevel(int foodLevel) {
         Player p = getPlayer();
 
         if (p != null) {
@@ -616,7 +613,7 @@ public class SpartanPlayer {
         return p == null ? 0.0f : p.getFallDistance();
     }
 
-    public synchronized void setFallDistance(float fallDistance) {
+    public void setFallDistance(float fallDistance) {
         Player p = getPlayer();
 
         if (p != null) {
@@ -944,7 +941,7 @@ public class SpartanPlayer {
 
         if (BlockUtils.isSolid(locationP1.getBlock().material)
                 && !(BlockUtils.areWalls(locationP1.getBlock().material)
-                || BlockUtils.canClimb(locationP1.getBlock().material))) {
+                || BlockUtils.canClimb(locationP1.getBlock().material, false))) {
             return;
         }
         World world = getWorld();
@@ -961,7 +958,7 @@ public class SpartanPlayer {
             Material material = loopLocation.getBlock().material;
 
             if (iterations != PlayerUtils.chunk
-                    && (BlockUtils.canClimb(material)
+                    && (BlockUtils.canClimb(material, false)
                     || BlockUtils.areWalls(material)
                     || !BlockUtils.isSolid(material))) {
                 iterations++;
