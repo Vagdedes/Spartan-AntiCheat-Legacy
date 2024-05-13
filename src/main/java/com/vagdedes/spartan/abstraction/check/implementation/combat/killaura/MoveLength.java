@@ -20,7 +20,7 @@ public class MoveLength extends DetectionExecutor {
     MoveLength(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         killAura = (KillAura) executor;
-        previousPitch = executor.player.movement.getSchedulerFromLocation().getPitch();
+        previousPitch = executor.player.movement.getEventFromLocation().getPitch();
         previousPitchDifference = 0.0f;
     }
 

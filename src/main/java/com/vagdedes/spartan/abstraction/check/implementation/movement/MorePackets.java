@@ -112,7 +112,7 @@ public class MorePackets extends CheckExecutor {
                     double sum = ratioSum;
                     ratioSum /= collections;
 
-                    if (ratioSum >= 1.1) {
+                    if (collections >= 10 && ratioSum >= 1.1) {
                         buffer++;
 
                         if (buffer > 2) {

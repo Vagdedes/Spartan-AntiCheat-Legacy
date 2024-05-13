@@ -43,7 +43,7 @@ public class EventsHandler7 implements Listener {
         if (nto == null) {
             return;
         }
-        SpartanLocation vehicle = p.movement.getVehicleLocation();
+        SpartanLocation vehicle = p.movement.getVehicleLocation(n);
         SpartanLocation
                 to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
                 from = new SpartanLocation(p, e.getFrom());
@@ -58,10 +58,10 @@ public class EventsHandler7 implements Listener {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
 
-        if (!p.movement.processLastMoveEvent(to, from)) {
+        if (!p.movement.processLastMoveEvent(to, from,dis, hor, ver, box)) {
             return;
         }
-        MovementProcessing.run(p, to, dis, hor, ver, box);
+        MovementProcessing.run(p, to, ver, box);
 
         // Patterns
         for (Enums.HackType hackType : handledChecks) {

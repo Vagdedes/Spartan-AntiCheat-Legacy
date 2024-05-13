@@ -42,23 +42,13 @@ public class MovementProcessing {
 
     public static void run(SpartanPlayer player,
                            SpartanLocation to,
-                           double distance, double horizontal,
                            double vertical, double box) {
-        if (player.isOnGroundDefault()) {
-            player.movement.resetVanillaAirTicks();
-        }
-        // Separator
-
         GameMode current = player.getGameMode();
 
         if (current == GameMode.CREATIVE
                 || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && current == GameMode.SPECTATOR) {
             player.getTrackers().add(Trackers.TrackerType.GAME_MODE, (int) TPS.maximum);
         }
-
-        // Separator
-
-        player.movement.setNmsDistance(distance, horizontal, vertical, box);
 
         // Separator
 

@@ -115,9 +115,6 @@ public class SpartanPlayer {
                     for (SpartanPlayer p : players) {
                         p.movement.getLocation(); // Method refreshes its parameters
 
-                        if (p.isOnGroundDefault()) {
-                            p.movement.resetVanillaAirTicks();
-                        }
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                             Elytra.judge(p, false);
                         }
@@ -872,7 +869,7 @@ public class SpartanPlayer {
                         nearbyEntities.addAll(entities);
                         return entities;
                     } else {
-                        SpartanLocation loc = this.movement.getLocation();
+                        SpartanLocation loc = this.movement.getEventToLocation();
                         List<Entity> entities;
 
                         synchronized (worldEntities) {
@@ -910,7 +907,7 @@ public class SpartanPlayer {
                     return new ArrayList<>(0);
                 }
             } else if (!nearbyEntities.isEmpty()) {
-                SpartanLocation loc = this.movement.getLocation();
+                SpartanLocation loc = this.movement.getEventToLocation();
                 List<Entity> entities = new ArrayList<>(nearbyEntities);
                 Entity vehicle = this.getVehicle();
 
