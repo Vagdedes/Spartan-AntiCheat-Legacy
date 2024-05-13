@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.listeners;
 
-import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -15,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class EventsHandler7 implements Listener {
@@ -89,17 +87,24 @@ public class EventsHandler7 implements Listener {
                 : new Entity[]{entity.getPassenger()};
 
         if (passengers.length > 0) {
+            Enums.HackType[] hackTypes = new Enums.HackType[]{
+                    Enums.HackType.NoFall,
+                    Enums.HackType.IrregularMovements,
+            };
+
             for (Entity passenger : passengers) {
                 if (passenger instanceof Player) {
                     Player n = (Player) passenger;
                     SpartanPlayer p = SpartanBukkit.getPlayer(n);
 
                     if (p != null) {
-                        p.getViolations(Enums.HackType.IrregularMovements).addDisableCause(
-                                Enums.HackType.IrregularMovements.toString(),
-                                null,
-                                1
-                        );
+                        for (Enums.HackType hackType : hackTypes) {
+                            p.getViolations(hackType).addDisableCause(
+                                    hackType.toString(),
+                                    null,
+                                    1
+                            );
+                        }
                     }
                 }
             }

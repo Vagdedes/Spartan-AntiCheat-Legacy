@@ -14,10 +14,12 @@ import java.util.List;
 public class NoFall extends CheckExecutor {
 
     private double[] previous;
+    private int fallTicks;
 
     public NoFall(SpartanPlayer player) {
         super(HackType.NoFall, player);
         this.previous = new double[]{0.0, 0.0};
+        this.fallTicks = 0;
     }
 
     @Override
@@ -29,12 +31,14 @@ public class NoFall extends CheckExecutor {
     public void runInternal(boolean cancelled) {
         if (!canDo()) {
             this.previous = new double[]{0.0, 0.0};
+            this.fallTicks = 0;
             return;
         }
         Double vertical = player.movement.getNmsVerticalDistance();
 
         if (vertical == null) {
             this.previous = new double[]{0.0, 0.0};
+            this.fallTicks = 0;
             return;
         }
         float fallDistance = player.getFallDistance();
@@ -51,24 +55,48 @@ public class NoFall extends CheckExecutor {
                 PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1
         );
         double drag = 0.98,
-                jumpDifference = jumpMotions.get(jumpMotions.size() - 1),
-                acceleration1 = PlayerUtils.airAcceleration * drag,
-                acceleration2 = acceleration1 - jumpDifference,
+                jumpDifference = jumpMotions.get(jumpMotions.size() - 1) * PlayerUtils.airDrag,
+                acceleration = PlayerUtils.airAcceleration * drag,
                 prediction1 = fallTick == 0 ? 0.0 :
-                        fallTick == 1 ? acceleration1 :
-                                (this.previous[0] * drag) + (fallTick * acceleration1),
+                        fallTick == 1 ? acceleration :
+                                (this.previous[0] * drag) + (fallTick * acceleration),
                 prediction2 = fallTick == 0 ? 0.0 :
-                        fallTick == 1 ? acceleration2
-                                : (this.previous[1] * drag) + (fallTick * acceleration1) - jumpDifference;
+                        fallTick == 1 ? acceleration - jumpDifference
+                                : (this.previous[1] * drag) + (fallTick * acceleration) - jumpDifference,
+                difference = Math.min(
+                        Math.abs(fallDistance - prediction1),
+                        Math.abs(fallDistance - prediction2)
+                );
+
+        if (difference >= PlayerUtils.airAcceleration) {
+            fallTick = this.fallTicks + 1;
+            prediction1 = fallTick == 1 ? acceleration :
+                    (this.previous[0] * drag) + (fallTick * acceleration);
+            prediction2 = fallTick == 1 ? acceleration - jumpDifference
+                    : (this.previous[1] * drag) + (fallTick * acceleration) - jumpDifference;
+            difference = Math.min(
+                    Math.abs(fallDistance - prediction1),
+                    Math.abs(fallDistance - prediction2)
+            );
+
+            if (difference >= PlayerUtils.airAcceleration) {
+                cancel(
+                        "type: motion"
+                                + ", fall-distance: " + fallDistance
+                                + ", fall-tick: " + fallTick
+                                + ", fall-prediction: " + prediction1
+                                + ", jump-prediction: " + prediction2
+                                + ", difference: " + difference,
+                        null,
+                        0,
+                        false,
+                        0.0 // todo damage
+                );
+            }
+        }
         this.previous[0] = prediction1;
         this.previous[1] = prediction2;
-        player.debug(false, false, true,
-                fallTick,
-                fallDistance,
-                prediction1,
-                prediction2,
-                player.isOnGround()
-        );
+        this.fallTicks = fallTick;
     }
 
     @Override

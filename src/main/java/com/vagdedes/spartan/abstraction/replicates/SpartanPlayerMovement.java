@@ -395,6 +395,7 @@ public class SpartanPlayerMovement {
             }
             this.detectionLocation = location;
         }
+        this.runGround();
     }
 
     // Separator
@@ -421,7 +422,10 @@ public class SpartanPlayerMovement {
             }
             this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
         }
+        this.location = location;
+    }
 
+    private void runGround() {
         if (this.parent.isOnGround(location)) {
             this.resetAirTicks();
             this.parent.onGroundCustom = true;
@@ -431,7 +435,6 @@ public class SpartanPlayerMovement {
         if (this.parent.isOnGroundDefault()) {
             this.parent.movement.resetVanillaAirTicks();
         }
-        this.location = location;
     }
 
     public boolean processLastMoveEvent(SpartanLocation to, SpartanLocation from,
@@ -466,13 +469,11 @@ public class SpartanPlayerMovement {
                 list.remove(0);
             }
         }
+        this.runGround();
         return true;
     }
 
     private double clampMin(double d, double d2, double d3) {
-        if (d < d2) {
-            return d2;
-        }
-        return Math.min(d, d3);
+        return d < d2 ? d2 : Math.min(d, d3);
     }
 }

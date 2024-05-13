@@ -1,9 +1,7 @@
 package com.vagdedes.spartan.functionality.notifications.clickable;
 
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class ClickableMessage {
 
