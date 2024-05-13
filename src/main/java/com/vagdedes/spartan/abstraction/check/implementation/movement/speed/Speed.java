@@ -123,6 +123,7 @@ public class Speed extends CheckExecutor {
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
             if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
         }
+
         if (RayUtils.onBlock(player, to, BlockUtils.slime_block)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.slime_block)) {
             if (multiply < 0.15) multiply = 0.15;
