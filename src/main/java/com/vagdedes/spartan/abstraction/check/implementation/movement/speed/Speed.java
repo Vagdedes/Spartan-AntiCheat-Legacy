@@ -79,7 +79,9 @@ public class Speed extends CheckExecutor {
             collideMinecraftShitMathFactorValue,
             wrappedOnAir,
             wrappedOnFly,
+            oldWrappedOnFly,
             verticalVl,
+            ticksOnGround,
             rayChallengeVl,
             sprintVl;
     private double yDiff,
@@ -236,6 +238,7 @@ public class Speed extends CheckExecutor {
             limit += (collideMinecraftShitMathFactor ? 0.05 : 0);
             limit = RayUtils.scaleVal(limit * (1 + multiply), 2);
             double wrapLimit = !player.movement.isSprinting() ? RayUtils.scaleVal(limit / 1.2, 2) : limit;
+            ticksOnGround = 0;
             if (horizontal > limit) {
                 antiAbuseProcessor = antiAbuseProcessor + 75;
                 if (antiAbuseProcessor > 200) {
@@ -310,6 +313,16 @@ public class Speed extends CheckExecutor {
 
             }
         } else {
+            ticksOnGround++;
+            if (ticksOnGround == 1) {
+                if (oldWrappedOnFly < 16 && vertical < -0.13 && !solidBlockOnTop) {
+                    antiAbuseProcessor = antiAbuseProcessor + 75;
+                    if (antiAbuseProcessor > 200) {
+                        flag = "type: landing-end, speed: " + vertical
+                                        + ", air: " + oldWrappedOnFly;
+                    }
+                }
+            }
             collideMinecraftShitMathFactor = false;
             double limit = 0.3D * (speedMultiply * 1.2) * ((speedModify > 0) ? 2 : 1);
 
@@ -360,6 +373,7 @@ public class Speed extends CheckExecutor {
         if (flag != null) cancel(flag, to, 2);
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
+        oldWrappedOnFly = wrappedOnFly;
     }
 
     @Override
@@ -445,6 +459,8 @@ public class Speed extends CheckExecutor {
             auraAnalysis = new LinkedList<>();
             needToCheckAura = false;
             target = null;
+            ticksOnGround = 0;
+            oldWrappedOnFly = 0;
         } else if (object == SpeedAction.RIPTIDE) {
             newRayRequest = true;
             wrappedOnAir = 1;
