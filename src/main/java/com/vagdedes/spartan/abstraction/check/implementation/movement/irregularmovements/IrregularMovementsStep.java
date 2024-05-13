@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -177,7 +178,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             if (verticalPrediction < 0.0) {
                                 verticalPrediction += 1.0;
                             }
-                            if (verticalPrediction != motionRemainder) {
+                            if (verticalPrediction != motionRemainder
+                                    && !player.getTrackers().has(Trackers.TrackerType.VEHICLE, "enter")) {
                                 cancel(
                                         "type: step(landing)"
                                                 + ", box: " + box

@@ -417,6 +417,12 @@ public class SpartanLocation {
         }
     }
 
+    public void removeBlockCache() {
+        synchronized (memory) {
+            memory.remove(identifier);
+        }
+    }
+
     public SpartanBlock getBlock() {
         if (block == null) {
             int blockY = getBlockY();

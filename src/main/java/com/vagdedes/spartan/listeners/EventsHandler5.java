@@ -110,12 +110,12 @@ public class EventsHandler5 implements Listener {
         }
         Block nb = e.getBlock();
         SpartanBlock b = new SpartanBlock(p, nb);
+        b.removeBlockCache();
+        p.movement.judgeGround(p.movement.getLocation());
 
         if (n.getWorld() != b.world) {
             return;
         }
-        Block rba = e.getBlockAgainst();
-        BlockFace blockFace = nb.getFace(rba);
         boolean cancelled = e.isCancelled();
 
         // Detections

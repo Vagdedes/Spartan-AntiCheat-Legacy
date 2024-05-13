@@ -124,7 +124,7 @@ public class ImpossibleActions extends CheckExecutor {
 
                             if (this.getBuffer().count("tower", motionTicks) > possiblePlacements) {
                                 this.getBuffer().remove("tower");
-                                cancel(
+                                cancel( // todo fix when changing back and forth between blocks
                                         "type: tower"
                                                 + ", placements: " + possiblePlacements
                                                 + ", horizontal: " + deltaXZ
