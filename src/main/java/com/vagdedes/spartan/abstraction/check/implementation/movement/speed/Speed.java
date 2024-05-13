@@ -343,7 +343,7 @@ public class Speed extends CheckExecutor {
             }
 
             onDamage = false;
-            multiply = multiply / 1.4;
+            multiply = multiply / 1.8;
             if (multiply < 0.04) multiply = 0D;
         }
         if (flag == null && antiAbuseProcessor > 0)
