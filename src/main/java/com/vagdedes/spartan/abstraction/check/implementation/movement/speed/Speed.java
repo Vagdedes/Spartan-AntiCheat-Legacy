@@ -105,7 +105,7 @@ public class Speed extends CheckExecutor {
         SpartanPotionEffect glideEffect = player.getPotionEffect(PotionEffectType.SLOW_FALLING, 1L);
         SpartanPotionEffect levitationEffect = player.getPotionEffect(PotionEffectType.LEVITATION, 1L);
         SpartanPotionEffect dolphinEffect = player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 1L);
-        if (player.isOnGround() && wrappedOnFly > 0) oldAir = wrappedOnFly;
+        if (onGround && wrappedOnFly > 0) oldAir = wrappedOnFly;
         wrappedOnAir = onGround ? 0 : wrappedOnAir + 1;
         wrappedOnFly = onGround ? 0 : wrappedOnFly + 1;
         int onAir = wrappedOnAir;
@@ -165,7 +165,7 @@ public class Speed extends CheckExecutor {
                     }
                 } else if (verticalVl > 0) verticalVl = verticalVl - 1;
             }
-            if (oldAir < 3 && oldAir != -1 && isJump) {
+            if (oldAir < 3 && oldAir != -1 && isJump && player.getVehicle() == null) {
                 if (!RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
                     antiAbuseProcessor = antiAbuseProcessor + 25;
                     if (antiAbuseProcessor > 200) {
