@@ -114,7 +114,7 @@ public class ImpossibleActions extends CheckExecutor {
                                             handItem == null ? Material.AIR : handItem.getType()
                                     ),
                                     deltaXZ = player.movement.getNmsHorizontalDistance();
-                            int deltaYMinus1 = playerY - blockY - 1, // todo cover surrounding
+                            int deltaYMinus1 = playerY - blockY,
                                     possiblePlacements = AlgebraUtils.integerFloor(
                                             motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
                                     ) + deltaYMinus1;
@@ -126,11 +126,12 @@ public class ImpossibleActions extends CheckExecutor {
 
                             if (this.getBuffer().count("tower" + hash, motionTicks) > possiblePlacements) {
                                 this.getBuffer().remove("tower" + hash);
-                                cancel( // todo fix when changing back and forth between blocks
+                                cancel(
                                         "type: tower"
                                                 + ", placements: " + possiblePlacements
                                                 + ", horizontal: " + deltaXZ
                                                 + ", vertical: " + deltaYMinus1,
+                                        1.0,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
@@ -175,21 +176,6 @@ public class ImpossibleActions extends CheckExecutor {
                 }
             }
         }
-    }
-
-    @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
-        return false;
     }
 
 }

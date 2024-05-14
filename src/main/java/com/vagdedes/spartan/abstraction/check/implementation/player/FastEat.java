@@ -88,15 +88,13 @@ public class FastEat extends CheckExecutor {
     @Override
     public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof FoodLevelChangeEvent) {
-            if (canDo()) {
-                int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
+            int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
 
-                if (lvl > player.getFoodLevel()
-                        && (checkDelay() || checkEating())) {
-                    player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()));
-                }
+            if (lvl > player.getFoodLevel()
+                    && (checkDelay() || checkEating())) {
+                player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()));
             }
-        } else if (!player.bedrockPlayer && canDo()) {
+        } else if (!player.bedrockPlayer) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             switch (e.getAction()) {
@@ -117,17 +115,7 @@ public class FastEat extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return player.getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && !player.hasPotionEffect(PotionEffectType.SATURATION, 0);
     }

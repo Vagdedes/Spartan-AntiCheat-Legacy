@@ -53,6 +53,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                         + ", vertical: " + vertical
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks,
+                                1.0,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true
@@ -70,6 +71,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                             + ", jump-effect: " + jumpEffect
                                             + ", air-ticks: " + airTicks
                                             + ", limit: " + limit,
+                                    1.0,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true

@@ -45,35 +45,23 @@ public class IrregularMovements extends CheckExecutor {
                 || oldBox == null) {
             return;
         }
-        if (canDo()) {
-            boolean knownBox = GroundUtils.blockHeightExists(box),
-                    knownOldBox = GroundUtils.blockHeightExists(oldBox);
+        boolean knownBox = GroundUtils.blockHeightExists(box),
+                knownOldBox = GroundUtils.blockHeightExists(oldBox);
 
-            if (knownBox || knownOldBox) {
-                if (vertical == 0.0) {
-                    this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
-                } else {
-                    this.step.run(knownBox, knownOldBox, box, oldBox, vertical);
-                }
+        if (knownBox || knownOldBox) {
+            if (vertical == 0.0) {
+                this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
             } else {
-                this.gravity.run(vertical, oldVertical, box, oldBox);
+                this.step.run(knownBox, knownOldBox, box, oldBox, vertical);
             }
-            jump.run(vertical, box);
+        } else {
+            this.gravity.run(vertical, oldVertical, box, oldBox);
         }
+        jump.run(vertical, box);
     }
 
     @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return MovementProcessing.canCheck(player, false, true, false);
     }
 }

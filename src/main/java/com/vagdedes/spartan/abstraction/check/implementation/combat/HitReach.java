@@ -13,23 +13,11 @@ public class HitReach extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-
+        // todo
     }
 
     @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    public void handleInternal(boolean cancelled, Object object) {
-        if (canDo()) {
-            // todo
-        }
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return CombatProcessing.canCheck(player);
     }
 }

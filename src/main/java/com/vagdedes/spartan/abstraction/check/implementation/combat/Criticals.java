@@ -13,7 +13,7 @@ public class Criticals extends CheckExecutor {
     }
 
     @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return CombatProcessing.canCheck(player)
                 && !player.movement.wasInLiquids()
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
@@ -21,18 +21,6 @@ public class Criticals extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()) {
-            // todo
-        }
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
+        // todo
     }
 }

@@ -41,37 +41,35 @@ public class FastHeal extends CheckExecutor {
     @Override
     public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityRegainHealthEvent) {
-            if (canDo()) {
-                RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
+            RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
 
-                if (reason != RegainReason.CUSTOM
-                        && reason != RegainReason.MAGIC) {
-                    Timer timer = this.getTimer();
-                    Decimals decimals = this.getDecimals();
-                    double health = player.getHealth();
+            if (reason != RegainReason.CUSTOM
+                    && reason != RegainReason.MAGIC) {
+                Timer timer = this.getTimer();
+                Decimals decimals = this.getDecimals();
+                double health = player.getHealth();
 
-                    double previousHealth = this.getDecimals().get("");
-                    long time = this.getTimer().get("");
+                double previousHealth = this.getDecimals().get("");
+                long time = this.getTimer().get("");
 
-                    if (timer.has(time) && decimals.has(previousHealth)
-                            && previousHealth != health) {
-                        long limit = calculate();
+                if (timer.has(time) && decimals.has(previousHealth)
+                        && previousHealth != health) {
+                    long limit = calculate();
 
-                        if (limit > 0L) {
-                            Buffer buffer = this.getBuffer();
+                    if (limit > 0L) {
+                        Buffer buffer = this.getBuffer();
 
-                            if (time < limit
-                                    && buffer.count("", 10) == 3) {
-                                buffer.remove("");
-                                cancel("type: default, ms: " + time + ", limit: " + limit);
-                            }
+                        if (time < limit
+                                && buffer.count("", 10) == 3) {
+                            buffer.remove("");
+                            cancel("type: default, ms: " + time + ", limit: " + limit);
                         }
                     }
-                    timer.set("");
-                    decimals.set("", health);
                 }
+                timer.set("");
+                decimals.set("", health);
             }
-        } else if (canDo() && ((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()
+        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 || player.getItemInHand().getType() != Material.DRIED_KELP)) {
             player.getViolations(hackType).addDisableCause(hackType.toString(), null, 10);
@@ -79,17 +77,7 @@ public class FastHeal extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         if (player.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
             GameMode gameMode = player.getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;

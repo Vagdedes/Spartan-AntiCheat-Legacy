@@ -51,19 +51,20 @@ public class LiveViolation {
 
     // Separator
 
-    void run(HackPrevention newPrevention, String information, long time) {
+    void run(HackPrevention newPrevention, String information, double violations, long time) {
         synchronized (this) {
             if (!CloudBase.isInformationCancelled(hackType, information)
                     && (disableCause == null
                     || !disableCause.pointerMatches(information))) {
                 InformationAnalysis analysis = new InformationAnalysis(hackType, information);
+                int violationsInt = AlgebraUtils.integerRound(violations);
                 PlayerViolation playerViolation = new PlayerViolation(
                         time,
                         hackType,
                         information,
                         Math.max(
-                                this.getLevel(analysis.identity) + 1,
-                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + 1))
+                                this.getLevel(analysis.identity) + violationsInt,
+                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + violationsInt))
                         ),
                         analysis
                 );

@@ -21,28 +21,21 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
-    }
-
-    @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()) {
-            synchronized (nmsMap) {
-                nmsMap.put(TPS.getTick(player), nmsMap.getOrDefault(TPS.getTick(player), 0) + 1);
+        synchronized (nmsMap) {
+            nmsMap.put(TPS.getTick(player), nmsMap.getOrDefault(TPS.getTick(player), 0) + 1);
 
-                if (nmsMap.size() > configuredTicks()) {
-                    Iterator<Long> iterator = nmsMap.keySet().iterator();
-                    iterator.next();
-                    iterator.remove();
-                }
+            if (nmsMap.size() > configuredTicks()) {
+                Iterator<Long> iterator = nmsMap.keySet().iterator();
+                iterator.next();
+                iterator.remove();
             }
         }
     }
 
     @Override
     public void schedulerInternal() {
-        if (!nmsMap.isEmpty() && canDo()) {
+        if (!nmsMap.isEmpty()) {
             runAsync(() -> {
                 long currentTick = TPS.getTick(player),
                         oldestTick = currentTick - configuredTicks();
@@ -122,6 +115,7 @@ public class MorePackets extends CheckExecutor {
                                             + ", sum: " + sum
                                             + ", collections: " + collections
                                             + ", ratio: " + ratioSum,
+                                    1.0,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true
@@ -151,7 +145,7 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return MovementProcessing.canCheck(player, true, true, true);
     }
 }

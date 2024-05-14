@@ -94,7 +94,7 @@ public class FastBreak extends CheckExecutor {
                                     + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                     + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]")
                                     + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
-                            cancel(prevention, null, seconds);
+                            cancel(prevention, 1.0, null, seconds);
                         }
                     }
                 }
@@ -117,8 +117,11 @@ public class FastBreak extends CheckExecutor {
                     cancel(
                             "type: breaks-per-second"
                                     + ", type: " + BlockUtils.blockToString(block)
-                                    + ", limit: " + limit, null,
-                            seconds);
+                                    + ", limit: " + limit,
+                            1.0,
+                            null,
+                            seconds
+                    );
                 }
             }
         }
@@ -161,7 +164,7 @@ public class FastBreak extends CheckExecutor {
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)
                             + ", limit: " + limit;
-                    cancel(prevention, null, seconds);
+                    cancel(prevention, 1.0, null, seconds);
                 }
                 lastBlock = block;
             }
@@ -175,12 +178,9 @@ public class FastBreak extends CheckExecutor {
 
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
-
-                if (this.canFunction()) {
-                    this.getTimer().set("delay=" + Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z));
-                }
+                this.getTimer().set("delay=" + Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z));
             }
-        } else if (canDo()) {
+        } else {
             SpartanBlock b = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
             if (!TreeFeller.canCancel(this.player, b)) {
@@ -193,17 +193,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return !MineBomb.isUsing(player)
                 && !Vehicles.has(player, "drill")
                 && !SuperPickaxe.canCancel(player)

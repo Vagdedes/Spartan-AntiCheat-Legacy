@@ -42,8 +42,7 @@ public class NoSwing extends CheckExecutor {
         } else if (object instanceof PlayerAnimationEvent) {
             this.getTimer().set("animation");
         } else if (object instanceof BlockBreakEvent) {
-            if (!canDo()
-                    || !hackType.getCheck().getBooleanOption("check_breaking", true)
+            if (!hackType.getCheck().getBooleanOption("check_breaking", true)
                     || MineBomb.isUsing(player)
                     || AureliumSkills.isUsing(player)) {
                 return;
@@ -70,19 +69,8 @@ public class NoSwing extends CheckExecutor {
         }
     }
 
-    @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
     private void runDamage(LivingEntity entity) {
-        if (!canDo()
-                || !hackType.getCheck().getBooleanOption("check_damage", true)
+        if (!hackType.getCheck().getBooleanOption("check_damage", true)
                 || player.hasAttackCooldown()
                 || player.getTrackers().has(Trackers.TrackerType.TRIDENT)) {
             return;
@@ -112,7 +100,7 @@ public class NoSwing extends CheckExecutor {
     }
 
     @Override
-    public boolean canDo() {
+    public boolean canRun() {
         return !Vehicles.has(player, "drill")
                 && !mcMMO.hasGeneralAbility(player);
     }

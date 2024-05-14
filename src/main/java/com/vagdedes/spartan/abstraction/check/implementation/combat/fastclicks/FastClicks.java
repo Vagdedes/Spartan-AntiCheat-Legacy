@@ -27,26 +27,14 @@ public class FastClicks extends CheckExecutor {
     }
 
     @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return !PlayerUtils.isPickaxeItem(player.getItemInHand().getType())
                 && !PrinterMode.isUsing(player);
     }
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()) {
-            this.clicksPerSecond.run();
-            this.clickPattern.run();
-        }
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
+        this.clicksPerSecond.run();
+        this.clickPattern.run();
     }
 }

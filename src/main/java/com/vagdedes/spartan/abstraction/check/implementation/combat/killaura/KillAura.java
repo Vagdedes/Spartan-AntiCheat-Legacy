@@ -60,7 +60,7 @@ public class KillAura extends CheckExecutor {
     }
 
     void violateLive(String information) {
-        cancel(information, null, (int) TPS.maximum);
+        cancel(information, 1.0, null, (int) TPS.maximum);
         player.getViolations(hackType).prevent();
     }
 
@@ -78,26 +78,24 @@ public class KillAura extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()) {
-            SpartanLocation to = player.movement.getLocation();
-            Buffer buffer = this.getBuffer();
+        SpartanLocation to = player.movement.getLocation();
+        Buffer buffer = this.getBuffer();
 
-            runDetection(
-                    "check_aim",
-                    () -> moveDirection.runMove(),
-                    false
-            );
-            runDetection(
-                    "check_sensitivity",
-                    () -> moveLength.run(to, buffer),
-                    false
-            );
-            runDetection(
-                    "check_response",
-                    () -> responseTime.runMove(),
-                    false
-            );
-        }
+        runDetection(
+                "check_aim",
+                () -> moveDirection.runMove(),
+                false
+        );
+        runDetection(
+                "check_sensitivity",
+                () -> moveLength.run(to, buffer),
+                false
+        );
+        runDetection(
+                "check_response",
+                () -> responseTime.runMove(),
+                false
+        );
     }
 
     @Override
@@ -107,57 +105,53 @@ public class KillAura extends CheckExecutor {
     @Override
     public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerFight) {
-            if (canDo()) {
-                analysis.run((PlayerFight) object);
-            }
+            analysis.run((PlayerFight) object);
         } else {
-            if (canDo()) {
-                Object[] objects = (Object[]) object;
-                LivingEntity entity = (LivingEntity) objects[0];
+            Object[] objects = (Object[]) object;
+            LivingEntity entity = (LivingEntity) objects[0];
 
-                if (canRunEntity(entity)) {
-                    double[] utility = (double[]) objects[1];
-                    double distance = utility[2];
+            if (canRunEntity(entity)) {
+                double[] utility = (double[]) objects[1];
+                double distance = utility[2];
 
-                    if (distance >= minimumDistance) {
-                        double width = utility[0],
-                                height = utility[1];
+                if (distance >= minimumDistance) {
+                    double width = utility[0],
+                            height = utility[1];
 
-                        if (width != 0.0
-                                && height != 0.0) {
-                            SpartanLocation location = player.movement.getLocation();
+                    if (width != 0.0
+                            && height != 0.0) {
+                        SpartanLocation location = player.movement.getLocation();
 
-                            runDetection(
-                                    "check_irregular",
-                                    irregular::run,
-                                    true
-                            );
-                            runDetection(
-                                    "check_block_raytrace",
-                                    () -> blockRaytrace.run(),
-                                    true
-                            );
-                            runDetection(
-                                    "check_entity_raytrace",
-                                    () -> entityRaytrace.run(),
-                                    true
-                            );
-                            runDetection(
-                                    "check_time",
-                                    () -> hitTime.run(),
-                                    true
-                            );
-                            runDetection(
-                                    "check_direction",
-                                    () -> hitDirection.run(),
-                                    true
-                            );
-                            runDetection(
-                                    "check_response",
-                                    () -> responseTime.run(),
-                                    true
-                            );
-                        }
+                        runDetection(
+                                "check_irregular",
+                                irregular::run,
+                                true
+                        );
+                        runDetection(
+                                "check_block_raytrace",
+                                () -> blockRaytrace.run(),
+                                true
+                        );
+                        runDetection(
+                                "check_entity_raytrace",
+                                () -> entityRaytrace.run(),
+                                true
+                        );
+                        runDetection(
+                                "check_time",
+                                () -> hitTime.run(),
+                                true
+                        );
+                        runDetection(
+                                "check_direction",
+                                () -> hitDirection.run(),
+                                true
+                        );
+                        runDetection(
+                                "check_response",
+                                () -> responseTime.run(),
+                                true
+                        );
                     }
                 }
             }
@@ -165,7 +159,7 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return CombatProcessing.canCheck(player);
     }
 }

@@ -15,34 +15,22 @@ public class ItemDrops extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()) {
-            Timer timer = this.getTimer();
-            long time = timer.get("");
+        Timer timer = this.getTimer();
+        long time = timer.get("");
 
-            if (time <= TPS.tickTime) {
-                Buffer buffer = this.getBuffer();
+        if (time <= TPS.tickTime) {
+            Buffer buffer = this.getBuffer();
 
-                if (buffer.count("", 10) == 7) {
-                    buffer.remove("");
-                    cancel("type: default, ms: " + time, null, 10);
-                }
+            if (buffer.count("", 10) == 7) {
+                buffer.remove("");
+                cancel("type: default, ms: " + time, 1.0, null, 10);
             }
-            timer.set("");
         }
+        timer.set("");
     }
 
     @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return !player.isDead();
-    }
-
-    @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
     }
 }

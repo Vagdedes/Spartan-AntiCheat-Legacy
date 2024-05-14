@@ -22,67 +22,73 @@ public class FastPlace extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        if (canDo()) {
-            SpartanBlock b = new SpartanBlock(player, ((BlockPlaceEvent) object).getBlock());
+        SpartanBlock b = new SpartanBlock(player, ((BlockPlaceEvent) object).getBlock());
 
-            if (!BlockUtils.isScaffoldingBlock(b.material)) {
-                Material material = b.material;
+        if (!BlockUtils.isScaffoldingBlock(b.material)) {
+            Material material = b.material;
 
-                if (material != Material.FIRE
-                        && material != Material.AIR
+            if (material != Material.FIRE
+                    && material != Material.AIR
 
-                        && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                        || material != Material.CAVE_AIR
-                        && material != Material.VOID_AIR)) {
-                    Timer timer = this.getTimer();
-                    long time = this.getTimer().get("time");
+                    && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    || material != Material.CAVE_AIR
+                    && material != Material.VOID_AIR)) {
+                Timer timer = this.getTimer();
+                long time = this.getTimer().get("time");
 
-                    if (timer.has(time)) {
-                        Buffer buffer = this.getBuffer();
-                        int ticks = 20;
+                if (timer.has(time)) {
+                    Buffer buffer = this.getBuffer();
+                    int ticks = 20;
 
-                        if (time <= 150L) {
-                            if (buffer.count("slow", ticks) >= 8) {
-                                cancel("type: slow, ms: " + time + ", block: " + BlockUtils.materialToString(material),
-                                        null, ticks);
+                    if (time <= 150L) {
+                        if (buffer.count("slow", ticks) >= 8) {
+                            cancel(
+                                    "type: slow"
+                                            + ", ms: " + time
+                                            + ", block: " + BlockUtils.materialToString(material),
+                                    1.0,
+                                    null,
+                                    ticks
+                            );
+                        }
+                        if (time <= 100L) {
+                            if (buffer.count("medium", ticks) >= 7) {
+                                cancel(
+                                        "type: medium"
+                                                + ", ms: " + time
+                                                + ", block: " + BlockUtils.materialToString(material),
+                                        1.0,
+                                        null,
+                                        ticks
+                                );
                             }
-                            if (time <= 100L) {
-                                if (buffer.count("medium", ticks) >= 7) {
-                                    cancel("type: medium, ms: " + time + ", block: " + BlockUtils.materialToString(material),
-                                            null, ticks);
-                                }
-                                if (time <= 50L) {
-                                    String detection = "type: fast";
+                            if (time <= 50L) {
+                                String detection = "type: fast";
 
-                                    if (!player.bedrockPlayer
-                                            && hackType.getCheck().getBooleanOption("check_fast", true)
-                                            && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                            && buffer.count("fast", ticks) >= 4) {
-                                        cancel(detection + ", ms: " + time + ", block: " + BlockUtils.materialToString(material),
-                                                null, ticks);
-                                    }
+                                if (!player.bedrockPlayer
+                                        && hackType.getCheck().getBooleanOption("check_fast", true)
+                                        && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
+                                        && buffer.count("fast", ticks) >= 4) {
+                                    cancel(
+                                            detection
+                                                    + ", ms: " + time
+                                                    + ", block: " + BlockUtils.materialToString(material),
+                                            1.0,
+                                            null,
+                                            ticks
+                                    );
                                 }
                             }
                         }
                     }
-                    timer.set("time");
                 }
+                timer.set("time");
             }
         }
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return !player.movement.isFlying()
                 && !PrinterMode.isUsing(player)
                 && !Vehicles.has(player, new String[]{"drill", "tractor"});

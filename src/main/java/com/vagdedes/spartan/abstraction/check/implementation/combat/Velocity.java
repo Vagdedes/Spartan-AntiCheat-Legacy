@@ -13,24 +13,12 @@ public class Velocity extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()) {
-            // todo
-        }
+        // todo
     }
 
     @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0);
-    }
-
-    @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
     }
 }

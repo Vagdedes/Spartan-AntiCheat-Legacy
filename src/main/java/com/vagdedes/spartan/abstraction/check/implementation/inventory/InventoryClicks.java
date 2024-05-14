@@ -24,8 +24,7 @@ public class InventoryClicks extends CheckExecutor {
         ItemStack item = event.getCurrentItem();
         ClickType click = event.getClick();
 
-        if (canDo()
-                && !click.isCreativeAction()
+        if (!click.isCreativeAction()
                 && !click.isKeyboardClick()
                 && item != null
                 && item.getItemMeta() != null) {
@@ -78,17 +77,7 @@ public class InventoryClicks extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return !player.bedrockPlayer;
     }
 }

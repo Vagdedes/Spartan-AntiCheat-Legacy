@@ -58,7 +58,7 @@ public class SpartanPlayer {
 
     public final boolean bedrockPlayer;
     boolean onGroundCustom;
-    public final long creationTime;
+    private final long creationTime;
     public final String name;
     public final UUID uuid;
     public final String ipAddress;
@@ -482,6 +482,10 @@ public class SpartanPlayer {
 
     public Player getPlayer() {
         return SpartanBukkit.getRealPlayer(uuid);
+    }
+
+    public long timePassedSinceCreation() {
+        return System.currentTimeMillis() - creationTime;
     }
 
     public boolean isOp() {

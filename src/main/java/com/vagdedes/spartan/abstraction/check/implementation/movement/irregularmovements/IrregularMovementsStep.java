@@ -83,6 +83,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                                 + ", box: " + box
                                                 + ", old-box: " + oldBox
                                                 + ", vertical: " + vertical,
+                                        1.0,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
@@ -95,6 +96,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical,
+                                    1.0,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true
@@ -106,6 +108,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
                                         + ", vertical: " + vertical,
+                                1.0,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true
@@ -144,13 +147,18 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                     predictedHeight += 1.0;
                                 }
 
-                                if (predictedHeight != vertical
-                                        || vertical > GroundUtils.maxPlayerStep) {
+                                if ((predictedHeight != vertical
+                                        || vertical > GroundUtils.maxPlayerStep)
+                                        && (!player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime")
+                                        || oldBox != 0.0)
+                                        && (!player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed")
+                                        || oldBox != 0.5625)) {
                                     cancel(
                                             "type: step(abstract-up)"
                                                     + ", box: " + box
                                                     + ", old-box: " + oldBox
                                                     + ", vertical: " + vertical,
+                                            1.0,
                                             player.movement.getDetectionLocation(),
                                             0,
                                             true
@@ -166,6 +174,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                                 + ", box: " + box
                                                 + ", old-box: " + oldBox
                                                 + ", vertical: " + vertical,
+                                        1.0,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
@@ -187,6 +196,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                                 + ", vertical: " + vertical
                                                 + ", vertical-prediction: " + verticalPrediction
                                                 + ", motion-remainder: " + motionRemainder,
+                                        1.0,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
@@ -198,6 +208,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical,
+                                    1.0,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true

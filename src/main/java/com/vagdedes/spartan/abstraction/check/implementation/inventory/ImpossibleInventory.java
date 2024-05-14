@@ -58,20 +58,16 @@ public class ImpossibleInventory extends CheckExecutor {
                 int cases = getActionCase();
 
                 if (cases != 0) {
-                    cancel("type: cursor-usage, case: " + cases, player.movement.getEventFromLocation(), 0, false);
+                    cancel(
+                            "type: cursor-usage, case: " + cases,
+                            1.0,
+                            player.movement.getEventFromLocation(),
+                            0,
+                            false
+                    );
                 }
             }
         }
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
-        return false;
     }
 
     private void trackAutoTotem(ItemStack itemStack) {

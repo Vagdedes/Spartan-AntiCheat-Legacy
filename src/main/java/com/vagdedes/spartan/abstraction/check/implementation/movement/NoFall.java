@@ -24,17 +24,7 @@ public class NoFall extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
-    }
-
-    @Override
     public void runInternal(boolean cancelled) {
-        if (!canDo()) {
-            this.previous = new double[]{0.0, 0.0};
-            this.fallTicks = 0;
-            return;
-        }
         Double vertical = player.movement.getNmsVerticalDistance();
 
         if (vertical == null) {
@@ -69,7 +59,7 @@ public class NoFall extends CheckExecutor {
                         Math.abs(fallDistance - prediction2)
                 );
 
-        if (difference >= PlayerUtils.airAcceleration) {
+        if (fallDistance > 3.0 && difference >= PlayerUtils.airAcceleration) {
             fallTick = this.fallTicks + 1;
             prediction1 = fallTick == 1 ? acceleration :
                     (this.previous[0] * drag) + (fallTick * acceleration);
@@ -88,6 +78,7 @@ public class NoFall extends CheckExecutor {
                                 + ", fall-prediction: " + prediction1
                                 + ", jump-prediction: " + prediction2
                                 + ", difference: " + difference,
+                        1.0,
                         null,
                         0,
                         false,
@@ -101,12 +92,13 @@ public class NoFall extends CheckExecutor {
     }
 
     @Override
-    public void schedulerInternal() {
-
+    public void cannotRun(boolean cancelled) {
+        this.previous = new double[]{0.0, 0.0};
+        this.fallTicks = 0;
     }
 
     @Override
-    protected boolean canDo() { // todo fix non-measurement times
+    protected boolean canRun() { // todo fix non-measurement times
         return MovementProcessing.canCheck(player, false, false, false)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()

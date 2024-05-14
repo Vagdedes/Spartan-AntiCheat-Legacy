@@ -17,15 +17,8 @@ public class AutoRespawn extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
-
-    }
-
-    @Override
     public void runInternal(boolean cancelled) {
-        if (canDo()) {
-            memory = System.currentTimeMillis();
-        }
+        memory = System.currentTimeMillis();
     }
 
     @Override
@@ -39,7 +32,7 @@ public class AutoRespawn extends CheckExecutor {
     }
 
     @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return !PluginUtils.contains("respawn")
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                 || !player.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true);

@@ -396,7 +396,7 @@ public class Speed extends CheckExecutor {
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
-        if (flag != null) cancel(flag, to, 2);
+        if (flag != null) cancel(flag, 1.0, to, 2);
         player.debug(false, false, false, antiAbuseProcessor);
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
@@ -601,11 +601,6 @@ public class Speed extends CheckExecutor {
                     .max().orElse(0.0);
         }
         return 0.0;
-    }
-
-    @Override
-    protected boolean canDo() {
-        return true;
     }
 
     private boolean allowedAngle(double angle) {

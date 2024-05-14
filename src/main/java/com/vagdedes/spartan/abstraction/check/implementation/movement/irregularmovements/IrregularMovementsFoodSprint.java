@@ -24,6 +24,7 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
                             "type: food-sprint"
                                     + ", game-mode: " + gameMode
                                     + ", food: " + food,
+                            1.0,
                             player.movement.getDetectionLocation(),
                             0,
                             true

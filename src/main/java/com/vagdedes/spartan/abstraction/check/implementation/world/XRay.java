@@ -46,42 +46,30 @@ public class XRay extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        if (canDo()) {
-            Object[] objects = (Object[]) object;
-            MiningHistory miningHistory = (MiningHistory) objects[1];
-            int mines = miningHistory.getMines(World.Environment.valueOf(objects[0].toString()));
+        Object[] objects = (Object[]) object;
+        MiningHistory miningHistory = (MiningHistory) objects[1];
+        int mines = miningHistory.getMines(World.Environment.valueOf(objects[0].toString()));
 
-            if (mines > 0) {
-                double globalAverage = ResearchEngine.getMiningHistoryAverage((Enums.MiningOre) objects[2]),
-                        average = mines / ((double) miningHistory.getDays());
+        if (mines > 0) {
+            double globalAverage = ResearchEngine.getMiningHistoryAverage((Enums.MiningOre) objects[2]),
+                    average = mines / ((double) miningHistory.getDays());
 
-                if (globalAverage < 0.0) {
-                    globalAverage = Math.abs(globalAverage);
-                } else {
-                    globalAverage = globalAverage * 1.5;
-                }
-                double points = AlgebraUtils.cut(average - globalAverage, 2);
+            if (globalAverage < 0.0) {
+                globalAverage = Math.abs(globalAverage);
+            } else {
+                globalAverage = globalAverage * 1.5;
+            }
+            double points = AlgebraUtils.cut(average - globalAverage, 2);
 
-                if (points > 0.0) {
-                    cancel(
-                            "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points"));
-                }
+            if (points > 0.0) {
+                cancel(
+                        "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points"));
             }
         }
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
+    protected boolean canRun() {
         return player.getWorld().getWorldType() != WorldType.FLAT
                 && !player.getViolations(hackType).hasLevel();
     }

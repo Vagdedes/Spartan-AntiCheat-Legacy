@@ -57,19 +57,4 @@ public class FastBow extends CheckExecutor {
             }
         }
     }
-
-    @Override
-    public void runInternal(boolean cancelled) {
-
-    }
-
-    @Override
-    public void schedulerInternal() {
-
-    }
-
-    @Override
-    protected boolean canDo() {
-        return false;
-    }
 }
