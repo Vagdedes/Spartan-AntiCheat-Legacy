@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -121,9 +122,10 @@ public class ImpossibleActions extends CheckExecutor {
                             if (deltaXZ > 0.1) {
                                 possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
                             }
+                            int hash = (block.x * SpartanBukkit.hashCodeMultiplier) + block.z;
 
-                            if (this.getBuffer().count("tower", motionTicks) > possiblePlacements) {
-                                this.getBuffer().remove("tower");
+                            if (this.getBuffer().count("tower" + hash, motionTicks) > possiblePlacements) {
+                                this.getBuffer().remove("tower" + hash);
                                 cancel( // todo fix when changing back and forth between blocks
                                         "type: tower"
                                                 + ", placements: " + possiblePlacements
