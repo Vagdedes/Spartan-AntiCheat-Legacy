@@ -405,11 +405,6 @@ public class Speed extends CheckExecutor {
     }
 
     @Override
-    protected void schedulerInternal() {
-
-    }
-
-    @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerVelocityEvent) {
             if (!cancelled) {
