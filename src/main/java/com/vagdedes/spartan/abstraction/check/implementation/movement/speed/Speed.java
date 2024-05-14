@@ -107,6 +107,7 @@ public class Speed extends CheckExecutor {
         double horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
         float speedMultiply = (player.getWalkSpeed() * 5) < 1 ? 1 : (player.getWalkSpeed() * 5);
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 1L);
+        SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 1L);
         SpartanPotionEffect glideEffect = player.getPotionEffect(PotionEffectType.SLOW_FALLING, 1L);
         SpartanPotionEffect levitationEffect = player.getPotionEffect(PotionEffectType.LEVITATION, 1L);
         SpartanPotionEffect dolphinEffect = player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 1L);
@@ -329,7 +330,8 @@ public class Speed extends CheckExecutor {
         } else {
             ticksOnGround++;
             if (ticksOnGround == 1) {
-                if (oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop && !ignoreBasicChecks) {
+                if (oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop
+                                && !ignoreBasicChecks && jumpEffect == null) {
                     antiAbuseProcessor = antiAbuseProcessor + 75;
                     if (antiAbuseProcessor > 200) {
                         flag = "type: landing-end, speed: " + vertical
@@ -396,12 +398,17 @@ public class Speed extends CheckExecutor {
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
-        if (flag != null) cancel(flag, 1.0, to, 2);
+        if (flag != null) cancel(flag, 2, to);
         player.debug(false, false, false, antiAbuseProcessor);
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
         oldWrappedOnFly = wrappedOnFly;
         oldYaw = wrappedYaw;
+    }
+
+    @Override
+    protected void schedulerInternal() {
+
     }
 
     @Override
@@ -596,6 +603,10 @@ public class Speed extends CheckExecutor {
                     .max().orElse(0.0);
         }
         return 0.0;
+    }
+
+    protected boolean canDo() {
+        return true;
     }
 
     private boolean allowedAngle(double angle) {
