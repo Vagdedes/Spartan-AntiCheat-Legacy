@@ -113,7 +113,7 @@ public class SpartanPlayer {
 
                 if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
-                        p.movement.getLocation(); // Method refreshes its parameters
+                        p.movement.judgeGround(p.movement.getLocation());
 
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                             Elytra.judge(p, false);
@@ -515,7 +515,7 @@ public class SpartanPlayer {
     }
 
     public boolean isOnGround(SpartanLocation location) {
-        return GroundUtils.isOnGround(this, location, 0.0, false, true);
+        return GroundUtils.isOnGround(this, location, 0.0);
     }
 
     public boolean isOnGroundDefault() {

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -105,11 +106,13 @@ public class NoFall extends CheckExecutor {
     }
 
     @Override
-    protected boolean canDo() {
+    protected boolean canDo() { // todo fix non-measurement times
         return MovementProcessing.canCheck(player, false, false, false)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()
-                && !BlockUtils.canClimb(player.movement.getLocation().getBlock().material, false)
+                && !player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS)
+                && !player.getTrackers().has(Trackers.TrackerType.BUBBLE_WATER, "soul-sand")
+                && !BlockUtils.canClimb(player.movement.getEventToLocation().getBlock().material, false)
                 && (!PlayerUtils.levitation || !player.hasPotionEffect(PotionEffectType.LEVITATION, 0));
     }
 }

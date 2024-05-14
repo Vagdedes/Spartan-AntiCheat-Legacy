@@ -180,8 +180,7 @@ public class GroundUtils {
 
     // Method
 
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y,
-                                     boolean liquid, boolean climbable) {
+    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y) {
         boolean original = y == 0;
 
         if (original) {
@@ -193,11 +192,10 @@ public class GroundUtils {
         }
         SpartanBlock block = loc.getBlock();
 
-        if (liquid && block.isLiquidOrWaterLogged(true)
-                || climbable && BlockUtils.canClimb(block.material, false)) {
-            if (original) {
-                return true;
-            }
+        if (BlockUtils.canClimb(block.material, false)
+                || original
+                && p.isOnGroundDefault()
+                && block.isLiquidOrWaterLogged(true)) {
             return true;
         }
         Entity vehicle = p.getVehicle();

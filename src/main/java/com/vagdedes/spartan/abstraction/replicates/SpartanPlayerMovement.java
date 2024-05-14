@@ -28,11 +28,12 @@ public class SpartanPlayerMovement {
             nmsVerticalDistance,
             nmsBox;
     private final Map<Long, List<SpartanLocation>> locations;
+    private int
+            airTicks,
+            vanillaAirTicks;
     private long
             artificialSwimming,
-            lastLiquidTicks,
-            lastOnGround,
-            lastVanillaOnGround;
+            lastLiquidTicks;
     private Material lastLiquidMaterial;
     private SpartanLocation
             location,
@@ -51,11 +52,12 @@ public class SpartanPlayerMovement {
         this.nmsVerticalDistance = Collections.synchronizedList(new LinkedList<>());
         this.nmsBox = Collections.synchronizedList(new LinkedList<>());
 
+        this.airTicks = 0;
+        this.vanillaAirTicks = 0;
+
         this.artificialSwimming = 0L;
         this.lastLiquidTicks = 0L;
         this.lastLiquidMaterial = Material.AIR;
-        this.lastOnGround = 0L;
-        this.lastVanillaOnGround = 0;
 
         SpartanLocation location = new SpartanLocation(this.parent, p.getLocation());
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -292,23 +294,13 @@ public class SpartanPlayerMovement {
     // Separator
 
     public int getTicksOnAir() {
-        long airTicks = TPS.getTick(this.parent) - this.lastOnGround,
-                vanillaAirTicks = TPS.getTick(this.parent) - this.lastVanillaOnGround;
         return AlgebraUtils.integerRound(
-                Math.sqrt(((airTicks * airTicks) + (vanillaAirTicks * vanillaAirTicks)) / 2.0)
+                Math.sqrt((airTicks * airTicks + vanillaAirTicks * vanillaAirTicks) / 2.0)
         );
     }
 
     public int getDefaultTicksOnAir() {
-        return (int) (TPS.getTick(this.parent) - this.lastVanillaOnGround);
-    }
-
-    public synchronized void resetAirTicks() {
-        this.lastOnGround = TPS.getTick(this.parent);
-    }
-
-    public synchronized void resetVanillaAirTicks() {
-        this.lastVanillaOnGround = TPS.getTick(this.parent);
+        return vanillaAirTicks;
     }
 
     // Separator
@@ -395,7 +387,6 @@ public class SpartanPlayerMovement {
             }
             this.detectionLocation = location;
         }
-        this.runGround();
     }
 
     // Separator
@@ -423,18 +414,6 @@ public class SpartanPlayerMovement {
             this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
         }
         this.location = location;
-    }
-
-    private void runGround() {
-        if (this.parent.isOnGround(location)) {
-            this.resetAirTicks();
-            this.parent.onGroundCustom = true;
-        } else {
-            this.parent.onGroundCustom = false;
-        }
-        if (this.parent.isOnGroundDefault()) {
-            this.parent.movement.resetVanillaAirTicks();
-        }
     }
 
     public boolean processLastMoveEvent(SpartanLocation to, SpartanLocation from,
@@ -469,8 +448,27 @@ public class SpartanPlayerMovement {
                 list.remove(0);
             }
         }
-        this.runGround();
+        this.judgeGround(to, true);
         return true;
+    }
+
+    private void judgeGround(SpartanLocation location, boolean increase) {
+        if (this.parent.isOnGround(location)) {
+            this.parent.onGroundCustom = true;
+            this.airTicks = 0;
+        } else if (increase) {
+            this.parent.onGroundCustom = false;
+            this.airTicks++;
+        }
+        if (this.parent.isOnGroundDefault()) {
+            this.vanillaAirTicks = 0;
+        } else if (increase) {
+            this.vanillaAirTicks++;
+        }
+    }
+
+    public void judgeGround(SpartanLocation location) {
+        this.judgeGround(location, false);
     }
 
     private double clampMin(double d, double d2, double d3) {

@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -15,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class EventsHandler7 implements Listener {
 
@@ -35,8 +37,6 @@ public class EventsHandler7 implements Listener {
         if (p == null) {
             return;
         }
-        boolean cancelled = e.isCancelled();
-
         Location nto = e.getTo();
 
         if (nto == null) {
@@ -57,7 +57,7 @@ public class EventsHandler7 implements Listener {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
 
-        if (!p.movement.processLastMoveEvent(to, from,dis, hor, ver, box)) {
+        if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
             return;
         }
         MovementProcessing.run(p, to, ver, box);
@@ -70,6 +70,7 @@ public class EventsHandler7 implements Listener {
         }
 
         // Detections
+        boolean cancelled = e.isCancelled();
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
         p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
         p.getExecutor(Enums.HackType.KillAura).run(cancelled);
@@ -108,6 +109,20 @@ public class EventsHandler7 implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Vehicle(VehicleEnterEvent e) {
+        Entity entity = e.getEntered();
+
+        if (entity instanceof Player) {
+            SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
+
+            if (p == null) {
+                return;
+            }
+            p.getTrackers().add(Trackers.TrackerType.VEHICLE, "enter", 5);
         }
     }
 
