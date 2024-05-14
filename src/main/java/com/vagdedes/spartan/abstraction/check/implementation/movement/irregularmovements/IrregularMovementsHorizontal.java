@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 
 public class IrregularMovementsHorizontal extends DetectionExecutor {
@@ -27,7 +28,7 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
                                             + ", vertical: " + vertical
                                             + ", air-ticks: " + airTicks
                                             + ", limit: " + limit,
-                                    1.0,
+                                    airTicks / TPS.maximum,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true
@@ -40,7 +41,7 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
                                         + ", old-box: " + oldBox
                                         + ", vertical: " + vertical
                                         + ", air-ticks: " + airTicks,
-                                1.0,
+                                airTicks / TPS.maximum,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

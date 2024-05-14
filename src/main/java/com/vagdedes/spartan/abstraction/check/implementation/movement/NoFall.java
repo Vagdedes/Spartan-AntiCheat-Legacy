@@ -7,98 +7,124 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NoFall extends CheckExecutor {
 
-    private double[] previous;
+    private static final double
+            drag = 0.98,
+            acceleration = PlayerUtils.airAcceleration * drag;
+    private static final float significantFallDistance = 3.0f;
+    private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
+
+    static {
+        double previous = 0.0;
+
+        for (int fallTick = 0; fallTick < 500; fallTick++) {
+            double prediction = fallTick == 0 ? 0.0 :
+                    fallTick == 1 ? acceleration
+                            : (previous * drag) + (fallTick * acceleration);
+            previous = prediction;
+            fallTicksLibrary.put(AlgebraUtils.cut(prediction, MovementProcessing.heightPrecision), fallTick);
+        }
+    }
+
+    private double previous;
+    private double distance;
     private int fallTicks;
 
     public NoFall(SpartanPlayer player) {
         super(HackType.NoFall, player);
-        this.previous = new double[]{0.0, 0.0};
+        this.previous = 0.0;
+        this.distance = 0.0;
         this.fallTicks = 0;
     }
 
     @Override
     public void runInternal(boolean cancelled) {
         Double vertical = player.movement.getNmsVerticalDistance();
+        double fallDistance = player.getFallDistance();
 
         if (vertical == null) {
-            this.previous = new double[]{0.0, 0.0};
+            this.previous = fallDistance;
+            this.distance = 0.0;
             this.fallTicks = 0;
             return;
         }
-        float fallDistance = player.getFallDistance();
-        int fallTick = Math.max(
-                player.movement.getFallTick(
-                        vertical,
-                        -PlayerUtils.airAcceleration,
-                        PlayerUtils.airDrag,
-                        GroundUtils.maxHeightLengthRatio
-                ) - 1,
-                0
-        );
-        List<Double> jumpMotions = PlayerUtils.getJumpMotions(
-                PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1
-        );
-        double drag = 0.98,
-                jumpDifference = jumpMotions.get(jumpMotions.size() - 1) * PlayerUtils.airDrag,
-                acceleration = PlayerUtils.airAcceleration * drag,
-                prediction1 = fallTick == 0 ? 0.0 :
+        int fallTick = getFallTicks(previous) + 1;
+        double prediction = fallTick == 0 ? 0.0 :
                         fallTick == 1 ? acceleration :
-                                (this.previous[0] * drag) + (fallTick * acceleration),
-                prediction2 = fallTick == 0 ? 0.0 :
-                        fallTick == 1 ? acceleration - jumpDifference
-                                : (this.previous[1] * drag) + (fallTick * acceleration) - jumpDifference,
-                difference = Math.min(
-                        Math.abs(fallDistance - prediction1),
-                        Math.abs(fallDistance - prediction2)
-                );
+                                (this.previous * drag) + (fallTick * acceleration),
+                difference = Math.abs(fallDistance - prediction);
+        player.debug(true, false, true,
+                fallDistance,
+                prediction,
+                difference,
+                player.isOnGroundDefault(),
+                player.isOnGround()
+        );
 
-        if (fallDistance > 3.0 && difference >= PlayerUtils.airAcceleration) {
-            fallTick = this.fallTicks + 1;
-            prediction1 = fallTick == 1 ? acceleration :
-                    (this.previous[0] * drag) + (fallTick * acceleration);
-            prediction2 = fallTick == 1 ? acceleration - jumpDifference
-                    : (this.previous[1] * drag) + (fallTick * acceleration) - jumpDifference;
-            difference = Math.min(
-                    Math.abs(fallDistance - prediction1),
-                    Math.abs(fallDistance - prediction2)
+        if (false && fallDistance > significantFallDistance
+                && difference >= PlayerUtils.airAcceleration) {
+            int amplifier = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP);
+            cancel(
+                    "type: motion"
+                            + ", fall-distance: " + fallDistance
+                            + ", fall-tick: " + fallTick
+                            + ", prediction: " + prediction
+                            + ", difference: " + difference,
+                    difference,
+                    null,
+                    0,
+                    false,
+                    AlgebraUtils.integerCeil(
+                            this.distance
+                                    - significantFallDistance
+                                    - (amplifier == -1 ? 0.0f : amplifier + 1.0f)
+                    )
             );
-
-            if (difference >= PlayerUtils.airAcceleration) {
-                cancel(
-                        "type: motion"
-                                + ", fall-distance: " + fallDistance
-                                + ", fall-tick: " + fallTick
-                                + ", fall-prediction: " + prediction1
-                                + ", jump-prediction: " + prediction2
-                                + ", difference: " + difference,
-                        1.0,
-                        null,
-                        0,
-                        false,
-                        0.0 // todo damage
-                );
-            }
         }
-        this.previous[0] = prediction1;
-        this.previous[1] = prediction2;
+        this.previous = fallDistance;
+        this.distance = fallTick == 0 ? 0.0 : this.distance + vertical;
         this.fallTicks = fallTick;
+    }
+
+    private int getFallTicks(double fallDistance) {
+        if (fallDistance == 0.0) {
+            return 0;
+        } else {
+            double min = Double.MAX_VALUE;
+            int found = 0;
+
+            for (Map.Entry<Double, Integer> entry : fallTicksLibrary.entrySet()) {
+                double comparison = Math.abs(entry.getKey() - fallDistance);
+
+                if (comparison < min) {
+                    min = comparison;
+                    found = entry.getValue();
+                } else {
+                    break;
+                }
+            }
+            return found;
+        }
     }
 
     @Override
     public void cannotRun(boolean cancelled) {
-        this.previous = new double[]{0.0, 0.0};
+        this.previous = player.getFallDistance();
+        this.distance = 0.0;
         this.fallTicks = 0;
     }
 
     @Override
-    protected boolean canRun() { // todo fix non-measurement times
+    protected boolean canRun() {
         return MovementProcessing.canCheck(player, false, false, false)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()

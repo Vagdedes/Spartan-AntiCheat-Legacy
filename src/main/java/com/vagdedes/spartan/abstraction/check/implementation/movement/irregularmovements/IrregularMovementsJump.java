@@ -53,13 +53,13 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                         + ", vertical: " + vertical
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks,
-                                1.0,
+                                airTicks / TPS.tickTimeDecimal,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
                     } else {
-                        int limit = Math.max(PlayerUtils.getJumpTicks(jumpEffect), (int) TPS.maximum);
+                        double limit = Math.max(PlayerUtils.getJumpTicks(jumpEffect), TPS.maximum);
 
                         if (!player.isOnGround()
                                 && !player.movement.wasInLiquids()
@@ -71,7 +71,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                             + ", jump-effect: " + jumpEffect
                                             + ", air-ticks: " + airTicks
                                             + ", limit: " + limit,
-                                    1.0,
+                                    (airTicks / limit) - 1.0,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true

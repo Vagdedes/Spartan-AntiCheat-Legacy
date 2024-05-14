@@ -62,7 +62,7 @@ public abstract class DetectionExecutor {
 
     protected final void cancel(String information, double violations, SpartanLocation location,
                                 int cancelTicks, boolean groundTeleport, double damage) {
-        if (executor.canFunction()) {
+        if (executor.canFunction()) { // Refer to 'canFunctionOrJustImplemented' in CheckExecutor
             new HackPrevention(
                     player, hackType,
                     information, violations,

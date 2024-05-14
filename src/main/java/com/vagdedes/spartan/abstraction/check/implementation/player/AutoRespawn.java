@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameRule;
@@ -23,11 +24,15 @@ public class AutoRespawn extends CheckExecutor {
 
     @Override
     public void schedulerInternal() {
-        long time = System.currentTimeMillis() - memory;
+        long time = System.currentTimeMillis() - memory,
+                limit = 750L;
 
-        if (time <= 750L && !player.isDead()) {
+        if (time <= limit && !player.isDead()) {
             memory = 0L;
-            cancel("type: default, ms: " + time);
+            cancel(
+                    "type: default, ms: " + time,
+                    (limit - time) / TPS.tickTimeDecimal
+            );
         }
     }
 

@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import org.bukkit.Material;
@@ -78,7 +79,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
                                         + ", air-ticks: " + airTicks,
-                                1.0,
+                                airTicks / TPS.maximum,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

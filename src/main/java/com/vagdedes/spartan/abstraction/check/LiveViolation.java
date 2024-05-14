@@ -57,7 +57,7 @@ public class LiveViolation {
                     && (disableCause == null
                     || !disableCause.pointerMatches(information))) {
                 InformationAnalysis analysis = new InformationAnalysis(hackType, information);
-                int violationsInt = AlgebraUtils.integerRound(violations);
+                int violationsInt = Math.max(AlgebraUtils.integerRound(violations), 1);
                 PlayerViolation playerViolation = new PlayerViolation(
                         time,
                         hackType,
@@ -86,7 +86,7 @@ public class LiveViolation {
                         }
                     }
                     player.getProfile().getViolationHistory(hackType).store(playerViolation);
-                    this.increaseLevel(playerViolation.identity);
+                    this.increaseLevel(playerViolation.identity, violationsInt);
                     this.performNotification(playerViolation);
                     this.performPunishments(playerViolation);
                     this.prevention = newPrevention;
@@ -172,8 +172,8 @@ public class LiveViolation {
         return false;
     }
 
-    private void increaseLevel(int hash) {
-        int multiplier = 1 + player.getProfile().evidence.getKnowledgeList(false).size();
+    private void increaseLevel(int hash, int amount) {
+        int multiplier = amount * (player.getProfile().evidence.getKnowledgeList(false).size() + 1);
 
         synchronized (this.level) {
             Long time = this.level.get(hash);

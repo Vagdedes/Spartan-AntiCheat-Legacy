@@ -112,7 +112,7 @@ public class CheckExecutorExample extends CheckExecutor {
         // this method for the requirements all checks/detections have in common.
         // Keep in mind that basic factors such as the check being enabled are
         // already accounted for prior to running this method.
-        return false;
+        return true;
     }
 
     // Here you can add more methods since you are extending an abstract class.
