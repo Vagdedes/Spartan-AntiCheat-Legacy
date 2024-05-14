@@ -82,10 +82,10 @@ public class Speed extends CheckExecutor {
             oldWrappedOnFly,
             verticalVl,
             ticksOnGround,
-            rayChallengeVl,
             sprintVl;
     private double yDiff,
             onGroundMinecraftShitMathFactor,
+            oldYaw,
             multiply;
 
     public Speed(SpartanPlayer player) {
@@ -131,6 +131,9 @@ public class Speed extends CheckExecutor {
         float yR = (float) Math.toRadians(yaw);
         RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
         RayLine b = new RayLine(dx, dz);
+
+        double wrappedYaw = Math.toDegrees(RayUtils.calculateRayLine(a));
+        double deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
 
         if (needToCheckAura) {
             auraAnalysis.addFirst(new Aura(
@@ -234,6 +237,7 @@ public class Speed extends CheckExecutor {
             // player.sendMessage("nigger " + horizontal);
             // player.sendMessage("My tick check: " + onAir + " Vagdedes tick check: " + player.movement.getTicksOnAir());
             double limit = (onAirID > 12 ? BASIC_SPEED[12] : BASIC_SPEED[onAirID]) * speedMultiply;
+            double limitNonSprint =  RayUtils.scaleVal(0.19 * speedMultiply, 2);
             limit += ((speedEffect != null) ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2D : 0);
             limit += (collideMinecraftShitMathFactor ? 0.05 : 0);
             limit = RayUtils.scaleVal(limit * (1 + multiply), 2);
@@ -309,13 +313,26 @@ public class Speed extends CheckExecutor {
                                     + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                         }
                     }
+                    if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
+                                    && !player.getPlayer().isSprinting() && !ignoreBasicChecks
+                                    && speedModify < 1.0) {
+                        double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
+                        if (calcDiff > 10 && !allowedAngle(calcDiff)) {
+                            antiAbuseProcessor = antiAbuseProcessor + 60;
+                            if (antiAbuseProcessor > 200) {
+                                flag = "type: simulation-air-direction(profound), speed: " + horizontal
+                                                + ", speed-limit: " + limitNonSprint
+                                                + ", angle: " + calcDiff;
+                            }
+                        }
+                    }
                 }
 
             }
         } else {
             ticksOnGround++;
             if (ticksOnGround == 1) {
-                if (oldWrappedOnFly < 16 && vertical < -0.13 && !solidBlockOnTop) {
+                if (oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop && !ignoreBasicChecks) {
                     antiAbuseProcessor = antiAbuseProcessor + 75;
                     if (antiAbuseProcessor > 200) {
                         flag = "type: landing-end, speed: " + vertical
@@ -355,6 +372,18 @@ public class Speed extends CheckExecutor {
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
             }
+            if (horizontal >= limit / 1.7 && !player.getPlayer().isSprinting()
+                            && speedModify < 1.0) {
+                double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
+                if (calcDiff > 10 && !allowedAngle(calcDiff)) {
+                    antiAbuseProcessor = antiAbuseProcessor + 60;
+                    if (antiAbuseProcessor > 200) {
+                        flag = "type: simulation-ground-direction(profound), speed: " + horizontal
+                                        + ", speed-limit: " + RayUtils.scaleVal(limit / 1.7, 2)
+                                        + ", angle: " + calcDiff;
+                    }
+                }
+            }
             if (horizontal > limit / 1.1 && !RayUtils.validRayLines(a, b, 25)
                     && speedModify < 1.0) {
                 antiAbuseProcessor = antiAbuseProcessor + 90;
@@ -374,6 +403,7 @@ public class Speed extends CheckExecutor {
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
         oldWrappedOnFly = wrappedOnFly;
+        oldYaw = wrappedYaw;
     }
 
     @Override
@@ -461,6 +491,7 @@ public class Speed extends CheckExecutor {
             target = null;
             ticksOnGround = 0;
             oldWrappedOnFly = 0;
+            oldYaw = 0;
         } else if (object == SpeedAction.RIPTIDE) {
             newRayRequest = true;
             wrappedOnAir = 1;
@@ -549,13 +580,15 @@ public class Speed extends CheckExecutor {
 
         // player.sendMessage(raySimDiff + " " + rayDiff + " " + yawDiff + " " + yawDiffFromFirst);
 
-        if (rayDiff * 6.5 < raySimDiff && rayDiff < 16 && raySimDiff < 75 && rayDiff > 0.5 && yawDiffFromFirst > 9.8) {
+        /*
+                if (rayDiff * 6.5 < raySimDiff && rayDiff < 16 && raySimDiff < 75 && rayDiff > 0.5 && yawDiffFromFirst > 9.8) {
             for (int i = 0; i < 5; i++) {
                 flag = "type: aura(direction), final-rayDiff: "
                                 + rayDiff + ", final-raySimDiff: " + raySimDiff + ", count: " + (i + 1);
                 cancel(flag, player.movement.getLocation(), 9);
             }
         }
+         */
 
 
 
@@ -574,5 +607,11 @@ public class Speed extends CheckExecutor {
     @Override
     protected boolean canDo() {
         return true;
+    }
+    private boolean allowedAngle(double angle) {
+        double a = angle / 45;
+        int wrapGoodMath = (int) Math.floor(a);
+        double b =  a - (wrapGoodMath);
+        return (b < 0.3 || b > 0.7);
     }
 }
