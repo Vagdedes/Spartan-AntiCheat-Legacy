@@ -305,7 +305,7 @@ public class Speed extends CheckExecutor {
                 }
 
                 {
-                    if (horizontal > limit / 1.35 && !RayUtils.validRayLines(a, b, 90)
+                    if (horizontal > limit / 1.35 && !RayUtils.validRayLines(a, b, 100)
                             && speedModify < 1.0 && !onDamage) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
                         if (antiAbuseProcessor > 200) {
@@ -394,12 +394,13 @@ public class Speed extends CheckExecutor {
             }
 
             onDamage = false;
-            multiply = multiply / 1.85;
+            multiply = multiply / 2;
             if (multiply < 0.04) multiply = 0D;
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
         if (flag != null) cancel(flag, to, 2);
+        player.sendMessage(String.valueOf(antiAbuseProcessor));
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
         oldWrappedOnFly = wrappedOnFly;
