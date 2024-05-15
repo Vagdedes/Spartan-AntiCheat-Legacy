@@ -2,6 +2,7 @@ package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
@@ -20,8 +21,7 @@ public class SpartanBukkit {
             testMode = !JarVerification.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart()
             && Bukkit.getMotd().contains(Register.plugin.getName()),
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
-            canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart(),
-            packetEvents = true;
+            canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
@@ -158,8 +158,12 @@ public class SpartanBukkit {
 
     // Separator
 
+    public static boolean packetsEnabled() {
+        return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+    }
+
     public static void runBukkitTask(Runnable runnable) {
-        if (!packetEvents) {
+        if (!packetsEnabled()) {
             runnable.run();
         }
     }

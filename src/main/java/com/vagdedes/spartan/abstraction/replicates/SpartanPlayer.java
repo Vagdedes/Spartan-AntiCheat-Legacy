@@ -526,7 +526,7 @@ public class SpartanPlayer {
         } else {
             Player p = this.getPlayer();
 
-            if (SpartanBukkit.packetEvents) {
+            if (SpartanBukkit.packetsEnabled()) {
                 return p != null && Move.isOnGround(this);
             } else {
                 return p != null && p.isOnGround();

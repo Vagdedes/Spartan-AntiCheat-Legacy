@@ -313,7 +313,7 @@ public class SpartanPlayerMovement {
         if (p != null) {
             SpartanLocation location = getVehicleLocation(p);
 
-            if (SpartanBukkit.packetEvents) {
+            if (SpartanBukkit.packetsEnabled()) {
                 if (location == null) {
                     return Move.getLocation(this.parent);
                 } else {

@@ -10,15 +10,12 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.SharedEvents;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Join extends PacketAdapter implements Listener {
+public class Join extends PacketAdapter {
 
     public static Map<Player, Boolean> canCheck = new ConcurrentHashMap<>();
 
@@ -28,21 +25,21 @@ public class Join extends PacketAdapter implements Listener {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        Player player = event.getPlayer();
         PacketContainer packet = event.getPacket();
 
         if (packet.getType() == PacketType.Play.Server.LOGIN) {
+            Player player = event.getPlayer();
             canCheck.put(player, false);
-        }
-    }
+            SpartanPlayer p = SpartanBukkit.getPlayer(player);
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void JoinEvent(PlayerJoinEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-        if (p == null) {
-            return;
+            if (p == null) {
+                return;
+            }
+            SharedEvents.join(
+                    p,
+                    new PlayerJoinEvent(player, (String) null)
+            );
         }
-        SharedEvents.join(p, e);
     }
 
     public static boolean canCheck(Player player) {

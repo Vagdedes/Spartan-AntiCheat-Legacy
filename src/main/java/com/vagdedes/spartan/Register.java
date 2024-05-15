@@ -67,12 +67,11 @@ public class Register extends JavaPlugin {
         SuspicionNotifications.run();
 
         // Listeners
-        if (SpartanBukkit.packetEvents) {
+        if (SpartanBukkit.packetsEnabled()) {
             ProtocolManager p = ProtocolLibrary.getProtocolManager();
             p.addPacketListener(new Move());
             p.addPacketListener(new Teleport());
             p.addPacketListener(new Join());
-            enable(new Join(), Join.class);
         } else {
             enable(new EventHandler_Shared(), EventHandler_Shared.class);
         }
