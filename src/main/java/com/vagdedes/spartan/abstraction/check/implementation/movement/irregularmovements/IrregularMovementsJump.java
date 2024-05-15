@@ -39,14 +39,17 @@ public class IrregularMovementsJump extends DetectionExecutor {
 
     void run(double vertical, double box) {
         if (hackType.getCheck().getBooleanOption("check_jump", true)) {
-            int airTicks = player.movement.getTicksOnAir();
+            int airTicks = player.movement.getTicksOnAir(),
+                    jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;
+            boolean liquids = player.movement.wasInLiquids(),
+                    toGround = player.isOnGround(),
+                    fromGround = player.isOnGround(player.movement.getEventFromLocation()),
+                    velocity = player.getTrackers().has(Trackers.TrackerFamily.VELOCITY);
 
             runAsync(() -> {
-                if (player.getTrackers().has(Trackers.TrackerFamily.VELOCITY)
+                if (velocity
                         ? player.movement.justJumped(vertical)
                         : player.movement.isJumping(vertical)) {
-                    int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;
-
                     if (!heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision))) {
                         cancel("type: jump(height)"
                                         + ", box: " + box
@@ -61,10 +64,10 @@ public class IrregularMovementsJump extends DetectionExecutor {
                     } else {
                         double limit = Math.max(PlayerUtils.getJumpTicks(jumpEffect), TPS.maximum);
 
-                        if (!player.isOnGround()
-                                && !player.movement.wasInLiquids()
-                                && airTicks > limit
-                                && !player.isOnGround(player.movement.getEventFromLocation())) {
+                        if (!toGround
+                                && !fromGround
+                                && !liquids
+                                && airTicks > limit) {
                             cancel("type: jump(ticks)"
                                             + ", box: " + box
                                             + ", vertical: " + vertical

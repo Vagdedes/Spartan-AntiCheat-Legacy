@@ -53,32 +53,39 @@ public class NoFall extends CheckExecutor {
             return;
         }
         int fallTick = getFallTicks(previous) + 1;
-        double prediction = fallTick == 1
-                ? acceleration
-                : (this.previous * drag) + (fallTick * acceleration),
-                difference = Math.abs(fallDistance - prediction);
+        boolean toGround = player.isOnGround(),
+                fromGround = player.isOnGround(player.movement.getEventFromLocation());
 
-        if ((player.isOp() || player.isWhitelisted())
-                && difference >= PlayerUtils.airAcceleration
-                && (difference != prediction || !player.isOnGround())) {
-            int amplifier = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP);
-            cancel(
-                    "type: motion"
-                            + ", fall-distance: " + fallDistance
-                            + ", fall-tick: " + fallTick
-                            + ", prediction: " + prediction
-                            + ", difference: " + difference,
-                    difference,
-                    null,
-                    0,
-                    false,
-                    AlgebraUtils.integerCeil(
-                            this.distance
-                                    - significantFallDistance
-                                    - (amplifier == -1 ? 0.0f : amplifier + 1.0f)
-                    )
-            );
-        }
+        runAsync(() -> {
+            double prediction = fallTick == 1
+                    ? acceleration
+                    : (this.previous * drag) + (fallTick * acceleration),
+                    difference = Math.abs(fallDistance - prediction);
+
+            if (difference >= PlayerUtils.airAcceleration
+                    && (fallDistance > significantFallDistance
+                    || previous > significantFallDistance)
+                    && (difference != prediction
+                    || !toGround && !fromGround)) {
+                int amplifier = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP);
+                cancel(
+                        "type: motion"
+                                + ", fall-distance: " + fallDistance
+                                + ", fall-tick: " + fallTick
+                                + ", prediction: " + prediction
+                                + ", difference: " + difference,
+                        difference,
+                        null,
+                        0,
+                        false,
+                        AlgebraUtils.integerCeil(
+                                this.distance
+                                        - significantFallDistance
+                                        - (amplifier == -1 ? 0.0f : amplifier + 1.0f)
+                        )
+                );
+            }
+        });
         this.previous = fallDistance;
         this.distance = fallTick == 1 ? acceleration : this.distance + vertical;
     }
