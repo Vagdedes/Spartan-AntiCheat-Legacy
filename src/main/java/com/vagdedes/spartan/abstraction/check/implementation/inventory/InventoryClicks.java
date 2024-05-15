@@ -19,7 +19,7 @@ public class InventoryClicks extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         InventoryClickEvent event = (InventoryClickEvent) object;
         ItemStack item = event.getCurrentItem();
         ClickType click = event.getClick();

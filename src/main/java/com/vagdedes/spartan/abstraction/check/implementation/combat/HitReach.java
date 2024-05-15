@@ -12,7 +12,7 @@ public class HitReach extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
+    protected void runInternal(boolean cancelled) {
         // todo
     }
 

@@ -32,7 +32,7 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object == null) {
             int ticks = this.getCooldowns().get("auto-totem");
 
@@ -49,7 +49,7 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
+    protected void runInternal(boolean cancelled) {
         if (!player.movement.isSwimming()
                 && player.getVehicle() == null) {
             ItemStack cursor = player.getOpenInventory().getCursor();

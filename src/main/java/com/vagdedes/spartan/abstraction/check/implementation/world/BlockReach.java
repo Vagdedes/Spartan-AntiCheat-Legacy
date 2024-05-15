@@ -36,7 +36,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
             SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 

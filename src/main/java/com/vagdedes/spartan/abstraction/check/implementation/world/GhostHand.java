@@ -21,7 +21,7 @@ public class GhostHand extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof SpartanBlock) {
             SpartanBlock b = (SpartanBlock) object;
 

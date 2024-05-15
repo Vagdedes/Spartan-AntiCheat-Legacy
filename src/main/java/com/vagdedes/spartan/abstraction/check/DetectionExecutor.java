@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -48,10 +47,6 @@ public abstract class DetectionExecutor {
 
     public final Timer getTimer() {
         return player.getTimer(hackType);
-    }
-
-    public Decimals getDecimals() {
-        return player.getDecimals(hackType);
     }
 
     public Cooldowns getCooldowns() {

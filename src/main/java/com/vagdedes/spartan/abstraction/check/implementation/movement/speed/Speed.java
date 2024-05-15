@@ -400,11 +400,6 @@ public class Speed extends CheckExecutor {
     }
 
     @Override
-    protected void schedulerInternal() {
-
-    }
-
-    @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerVelocityEvent) {
             if (!cancelled) {
@@ -588,7 +583,6 @@ public class Speed extends CheckExecutor {
 
     }
 
-
     private static double getSpeedAmplifier(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasAttributeModifiers()) {
             return item.getItemMeta().getAttributeModifiers(Attribute.GENERIC_MOVEMENT_SPEED).stream()
@@ -596,10 +590,6 @@ public class Speed extends CheckExecutor {
                     .max().orElse(0.0);
         }
         return 0.0;
-    }
-
-    protected boolean canDo() {
-        return true;
     }
 
     private boolean allowedAngle(double angle) {

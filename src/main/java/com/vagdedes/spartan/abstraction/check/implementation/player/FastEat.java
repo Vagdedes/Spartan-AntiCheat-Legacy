@@ -86,7 +86,7 @@ public class FastEat extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof FoodLevelChangeEvent) {
             int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
 

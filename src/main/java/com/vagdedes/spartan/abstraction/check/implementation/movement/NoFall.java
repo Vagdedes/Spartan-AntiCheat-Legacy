@@ -112,7 +112,7 @@ public class NoFall extends CheckExecutor {
     }
 
     @Override
-    public void cannotRun(boolean cancelled) {
+    protected void cannotRun(boolean cancelled) {
         this.previous = player.getFallDistance();
         this.distance = 0.0;
     }

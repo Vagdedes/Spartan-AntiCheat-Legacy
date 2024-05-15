@@ -181,7 +181,7 @@ public class Compatibility {
                     int count = 0, desired = 0;
 
                     for (String pluginOrClass : pluginsOrClasses) {
-                        if (pluginOrClass.length() == 0) {
+                        if (pluginOrClass.isEmpty()) {
                             function = true;
                             break;
                         } else {

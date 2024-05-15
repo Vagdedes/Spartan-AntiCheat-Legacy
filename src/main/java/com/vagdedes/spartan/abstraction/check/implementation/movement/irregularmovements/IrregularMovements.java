@@ -28,7 +28,7 @@ public class IrregularMovements extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
+    protected void runInternal(boolean cancelled) {
         foodSprint.run();
         Double vertical = player.movement.getNmsVerticalDistance(),
                 oldVertical = player.movement.getPreviousNmsVerticalDistance(),

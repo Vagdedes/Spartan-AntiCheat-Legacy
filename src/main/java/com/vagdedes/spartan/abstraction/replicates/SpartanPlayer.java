@@ -71,7 +71,6 @@ public class SpartanPlayer {
 
     private final Buffer[] buffer;
     private final Timer[] timer;
-    private final Decimals[] decimals;
     private final Cooldowns[] cooldowns;
     private final CheckExecutor[] executors;
     private final LiveViolation[] violations;
@@ -212,7 +211,6 @@ public class SpartanPlayer {
 
         this.buffer = new Buffer[hackTypes.length + 1];
         this.timer = new Timer[hackTypes.length + 1];
-        this.decimals = new Decimals[hackTypes.length + 1];
         this.cooldowns = new Cooldowns[hackTypes.length + 1];
         this.executors = new CheckExecutor[hackTypes.length];
         this.violations = new LiveViolation[hackTypes.length];
@@ -221,7 +219,6 @@ public class SpartanPlayer {
             int id = hackType.ordinal();
             this.buffer[id] = new Buffer(this);
             this.timer[id] = new Timer();
-            this.decimals[id] = new Decimals();
             this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
             this.executors[id] = new CheckExecutorExample(this);
@@ -239,7 +236,6 @@ public class SpartanPlayer {
         this.lastViolation = this.violations[0];
         this.buffer[hackTypes.length] = new Buffer(this);
         this.timer[hackTypes.length] = new Timer();
-        this.decimals[hackTypes.length] = new Decimals();
         this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
@@ -307,10 +303,6 @@ public class SpartanPlayer {
         return timer[Enums.HackType.values().length];
     }
 
-    public Decimals getDecimals() {
-        return decimals[Enums.HackType.values().length];
-    }
-
     public Cooldowns getCooldowns() {
         return cooldowns[Enums.HackType.values().length];
     }
@@ -321,10 +313,6 @@ public class SpartanPlayer {
 
     public Timer getTimer(Enums.HackType hackType) {
         return timer[hackType.ordinal()];
-    }
-
-    public Decimals getDecimals(Enums.HackType hackType) {
-        return decimals[hackType.ordinal()];
     }
 
     public Cooldowns getCooldowns(Enums.HackType hackType) {

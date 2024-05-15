@@ -49,7 +49,7 @@ public class CheckExecutorExample extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         // This method should be used to handle data for a check/detection when
         // the information is not directly available via the class or other classes.
         // You may also use this method to run checks/detections, although it is best
@@ -62,7 +62,7 @@ public class CheckExecutorExample extends CheckExecutor {
     }
 
     @Override
-    public void cannotHandle(boolean cancelled, Object object) {
+    protected void cannotHandle(boolean cancelled, Object object) {
         // This method will be called when the 'handleInternal' method cannot run.
         // Reasons for the method being unable to run can vary, such as the check
         // being disabled, the player being in a certain game mode, a compatibility
@@ -70,7 +70,7 @@ public class CheckExecutorExample extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
+    protected void runInternal(boolean cancelled) {
         // This method should be used to run a check/detection when no information
         // needs to be inserted via the method being called and is all available in
         // the class or via methods of other classes.
@@ -80,7 +80,7 @@ public class CheckExecutorExample extends CheckExecutor {
     }
 
     @Override
-    public void cannotRun(boolean cancelled) {
+    protected void cannotRun(boolean cancelled) {
         // This method will be called when the 'runInternal' method cannot run.
         // Reasons for the method being unable to run can vary, such as the check
         // being disabled, the player being in a certain game mode, a compatibility
@@ -88,7 +88,7 @@ public class CheckExecutorExample extends CheckExecutor {
     }
 
     @Override
-    public void schedulerInternal() {
+    protected void schedulerInternal() {
         // Checks/detections support scheduling. This method is called every
         // 1 tick which is worth approximately 50 milliseconds. This method runs
         // as the server runs, so it is called approximately 20 times per second.
@@ -98,7 +98,7 @@ public class CheckExecutorExample extends CheckExecutor {
     }
 
     @Override
-    public void cannotSchedule() {
+    protected void cannotSchedule() {
         // This method will be called when the 'schedulerInternal' method cannot run.
         // Reasons for the method being unable to run can vary, such as the check
         // being disabled, the player being in a certain game mode, a compatibility

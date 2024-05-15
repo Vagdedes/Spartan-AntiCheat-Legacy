@@ -77,7 +77,7 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
+    protected void runInternal(boolean cancelled) {
         SpartanLocation to = player.movement.getLocation();
         Buffer buffer = this.getBuffer();
 
@@ -103,7 +103,7 @@ public class KillAura extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerFight) {
             analysis.run((PlayerFight) object);
         } else {

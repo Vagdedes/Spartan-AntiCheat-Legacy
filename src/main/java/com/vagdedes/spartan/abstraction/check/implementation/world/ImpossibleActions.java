@@ -30,7 +30,7 @@ public class ImpossibleActions extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockPlaceEvent) {
             BlockPlaceEvent event = (BlockPlaceEvent) object;
             SpartanBlock block = new SpartanBlock(player, event.getBlock());

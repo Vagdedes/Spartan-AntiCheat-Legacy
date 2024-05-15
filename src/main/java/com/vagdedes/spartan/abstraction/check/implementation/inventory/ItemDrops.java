@@ -14,7 +14,7 @@ public class ItemDrops extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
+    protected void runInternal(boolean cancelled) {
         Timer timer = this.getTimer();
         long time = timer.get("");
 

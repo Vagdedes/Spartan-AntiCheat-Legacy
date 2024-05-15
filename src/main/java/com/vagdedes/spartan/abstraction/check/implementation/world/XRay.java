@@ -45,7 +45,7 @@ public class XRay extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
         MiningHistory miningHistory = (MiningHistory) objects[1];
         int mines = miningHistory.getMines(World.Environment.valueOf(objects[0].toString()));

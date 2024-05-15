@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -26,21 +25,24 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class NoSwing extends CheckExecutor {
 
     private static final int refreshTime = 30 * 20;
+    private long breakTime, animationTime;
 
     public NoSwing(SpartanPlayer player) {
         super(Enums.HackType.NoSwing, player);
+        this.breakTime = Long.MAX_VALUE;
+        this.animationTime = Long.MAX_VALUE;
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                this.getTimer().set("break");
+                this.breakTime = System.currentTimeMillis();
             }
         } else if (object instanceof PlayerAnimationEvent) {
-            this.getTimer().set("animation");
+            this.animationTime = System.currentTimeMillis();
         } else if (object instanceof BlockBreakEvent) {
             if (!hackType.getCheck().getBooleanOption("check_breaking", true)
                     || MineBomb.isUsing(player)
@@ -50,23 +52,24 @@ public class NoSwing extends CheckExecutor {
             SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
 
             if (!BlockUtils.isSensitive(player, block.getLocation().getBlock().material)
-                    && !TreeFeller.canCancel(player, block)) {
-                Timer timer = this.getTimer();
-
-                if (timer.get("break") > TPS.tickTime) {
-                    if (!timer.has("animation")) {
-                        cancel(
-                                "type: break"
-                                        + ", block: " + BlockUtils.blockToString(block)
-                                        + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
-                    } else {
-                        clearData();
-                    }
+                    && !TreeFeller.canCancel(player, block)
+                    && System.currentTimeMillis() - breakTime > TPS.tickTime) {
+                if (this.animationTime == Long.MAX_VALUE) {
+                    cancel(
+                            "type: break"
+                                    + ", block: " + BlockUtils.blockToString(block)
+                                    + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
+                } else {
+                    clearAnimationData();
                 }
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
             runDamage((LivingEntity) ((EntityDamageByEntityEvent) object).getEntity());
         }
+    }
+
+    @Override
+    protected void cannotHandle(boolean cancelled, Object object) {
     }
 
     private void runDamage(LivingEntity entity) {
@@ -80,7 +83,7 @@ public class NoSwing extends CheckExecutor {
         if (cooldowns.canDo("damage")) {
             cooldowns.add("damage", 20);
 
-            if (!this.getTimer().has("animation")) {
+            if (this.animationTime == Long.MAX_VALUE) {
                 Buffer buffer = this.getBuffer();
 
                 if (buffer.count("damage", refreshTime) >= 3) {
@@ -90,13 +93,13 @@ public class NoSwing extends CheckExecutor {
                             + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
                 }
             } else {
-                clearData();
+                clearAnimationData();
             }
         }
     }
 
-    private void clearData() {
-        this.getTimer().remove("animation");
+    private void clearAnimationData() {
+        this.animationTime = Long.MAX_VALUE;
     }
 
     @Override

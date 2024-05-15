@@ -17,7 +17,7 @@ public class FastBow extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityShootBowEvent) {
             if (player.getItemInHand().getType() == Material.BOW) {
                 checkBowShots();

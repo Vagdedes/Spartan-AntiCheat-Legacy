@@ -12,6 +12,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
@@ -29,9 +30,11 @@ import java.util.*;
 public class FastBreak extends CheckExecutor {
 
     private SpartanBlock lastBlock = null;
+    private final Map<Integer, Long> interactTime;
 
     public FastBreak(SpartanPlayer player) {
         super(HackType.FastBreak, player);
+        this.interactTime = Collections.synchronizedMap(new LinkedHashMap<>());
     }
 
     private void checkDelay(SpartanBlock block, int seconds) {
@@ -39,8 +42,11 @@ public class FastBreak extends CheckExecutor {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                long time = this.getTimer().get("delay=" + Objects.hash(block.world.getName(), block.material, block.x, block.y, block.z), 0L);
+                long time = interactTime.getOrDefault(Objects.hash(block.world.getName(), block.material, block.x, block.y, block.z), 0L);
 
+                if (time > 0L) {
+                    time = System.currentTimeMillis() - time;
+                }
                 if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
                     ItemStack itemStack = player.getItemInHand();
                     long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, block.material),
@@ -172,13 +178,19 @@ public class FastBreak extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
-                this.getTimer().set("delay=" + Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z));
+
+                if (interactTime.size() == TPS.maximum) {
+                    Iterator<Integer> iterator = interactTime.keySet().iterator();
+                    iterator.next();
+                    iterator.remove();
+                }
+                interactTime.put(Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z), System.currentTimeMillis());
             }
         } else {
             SpartanBlock b = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());

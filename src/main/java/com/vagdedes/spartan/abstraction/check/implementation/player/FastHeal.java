@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Decimals;
 import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -18,8 +17,11 @@ import org.bukkit.potion.PotionEffectType;
 
 public class FastHeal extends CheckExecutor {
 
+    private double previousHealth;
+
     public FastHeal(SpartanPlayer player) {
         super(HackType.FastHeal, player);
+        this.previousHealth = player.getHealth();
     }
 
     private long calculate() {
@@ -39,20 +41,18 @@ public class FastHeal extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityRegainHealthEvent) {
             RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
 
             if (reason != RegainReason.CUSTOM
                     && reason != RegainReason.MAGIC) {
                 Timer timer = this.getTimer();
-                Decimals decimals = this.getDecimals();
                 double health = player.getHealth();
 
-                double previousHealth = this.getDecimals().get("");
                 long time = this.getTimer().get("");
 
-                if (timer.has(time) && decimals.has(previousHealth)
+                if (timer.has(time)
                         && previousHealth != health) {
                     long limit = calculate();
 
@@ -67,7 +67,7 @@ public class FastHeal extends CheckExecutor {
                     }
                 }
                 timer.set("");
-                decimals.set("", health);
+                previousHealth = health;
             }
         } else if (((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)

@@ -21,7 +21,7 @@ public class FastPlace extends CheckExecutor {
     }
 
     @Override
-    public void handleInternal(boolean cancelled, Object object) {
+    protected void handleInternal(boolean cancelled, Object object) {
         SpartanBlock b = new SpartanBlock(player, ((BlockPlaceEvent) object).getBlock());
 
         if (!BlockUtils.isScaffoldingBlock(b.material)) {

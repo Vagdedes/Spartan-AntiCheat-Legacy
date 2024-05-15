@@ -21,7 +21,7 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    public void runInternal(boolean cancelled) {
+    protected void runInternal(boolean cancelled) {
         synchronized (nmsMap) {
             nmsMap.put(TPS.getTick(player), nmsMap.getOrDefault(TPS.getTick(player), 0) + 1);
 
@@ -34,7 +34,7 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    public void schedulerInternal() {
+    protected void schedulerInternal() {
         if (!nmsMap.isEmpty()) {
             runAsync(() -> {
                 long currentTick = TPS.getTick(player),
