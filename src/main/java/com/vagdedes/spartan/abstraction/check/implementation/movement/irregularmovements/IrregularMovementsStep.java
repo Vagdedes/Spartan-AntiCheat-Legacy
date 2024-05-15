@@ -70,10 +70,14 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         if (hackType.getCheck().getBooleanOption("check_step", true)) {
+            Entity vehicle = player.getVehicle();
+            boolean slime = player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime"),
+                    bed = player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed"),
+                    vehicleEnter = player.getTrackers().has(Trackers.TrackerType.VEHICLE, "enter");
+
             runAsync(() -> {
                 if (knownBox && knownOldBox) {
                     int hash = hash(oldBox, box);
-                    Entity vehicle = player.getVehicle();
 
                     if (vehicle == null) {
                         if (stepCombination.get(hash)) {
@@ -117,7 +121,6 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 } else {
                     if (vertical > 0.0) {
                         if (!player.movement.isJumping(vertical)) {
-                            Entity vehicle = player.getVehicle();
                             double limit = PlayerUtils.getJumpMotion(
                                     PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
                                     0
@@ -149,10 +152,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
                                 if ((predictedHeight != vertical
                                         || vertical > GroundUtils.maxPlayerStep)
-                                        && (!player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime")
-                                        || oldBox != 0.0)
-                                        && (!player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed")
-                                        || oldBox != 0.5625)) {
+                                        && (!slime || oldBox != 0.0)
+                                        && (!bed || oldBox != 0.5625)) {
                                     cancel(
                                             "type: step(abstract-up)"
                                                     + ", box: " + box
@@ -187,8 +188,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             if (verticalPrediction < 0.0) {
                                 verticalPrediction += 1.0;
                             }
-                            if (verticalPrediction != motionRemainder
-                                    && !player.getTrackers().has(Trackers.TrackerType.VEHICLE, "enter")) {
+                            if (!vehicleEnter && verticalPrediction != motionRemainder) {
                                 cancel(
                                         "type: step(landing)"
                                                 + ", box: " + box
