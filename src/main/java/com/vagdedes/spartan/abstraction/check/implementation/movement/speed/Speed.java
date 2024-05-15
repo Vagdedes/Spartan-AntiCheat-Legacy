@@ -105,6 +105,7 @@ public class Speed extends CheckExecutor {
         }
         double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2);
         double horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
+        player.sendMessage(String.valueOf(horizontal));
         float speedMultiply = (player.getWalkSpeed() * 5) < 1 ? 1 : (player.getWalkSpeed() * 5);
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 1L);
         SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 1L);
@@ -133,13 +134,6 @@ public class Speed extends CheckExecutor {
         double wrappedYaw = Math.toDegrees(RayUtils.calculateRayLine(a));
         double deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
 
-        if (needToCheckAura) {
-            auraAnalysis.addFirst(new Aura(
-                    yaw, b, a, false));
-            if (auraAnalysis.size() > 10) {
-                checkAuraAnalysis(to);
-            }
-        }
 
         if (RayUtils.onBlock(player, to, BlockUtils.ice)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {

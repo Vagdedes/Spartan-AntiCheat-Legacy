@@ -1,8 +1,9 @@
-package com.vagdedes.spartan.listeners;
+package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.omnibridge.MovementEvents;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -20,18 +21,7 @@ public class EventsHandler2 implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Teleport(PlayerTeleportEvent e) {
-        Location nto = e.getTo();
-
-        if (nto == null) {
-            return;
-        }
-        Player n = e.getPlayer();
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-        if (p == null) {
-            return;
-        }
-        p.movement.judgeGround(new SpartanLocation(p, nto));
+        MovementEvents.Teleport(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

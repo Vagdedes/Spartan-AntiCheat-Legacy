@@ -22,7 +22,9 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.EventsHandler7;
+import com.vagdedes.spartan.listeners.bukkit.EventsHandler7;
+import com.vagdedes.spartan.listeners.omnibridge.MovementEvents;
+import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
@@ -143,7 +145,7 @@ public class SpartanPlayer {
                             }
 
                             // Preventions
-                            for (Enums.HackType hackType : EventsHandler7.handledChecks) {
+                            for (Enums.HackType hackType : MovementEvents.handledChecks) {
                                 if (p.getViolations(hackType).prevent()) {
                                     break;
                                 }
@@ -524,12 +526,15 @@ public class SpartanPlayer {
 
     public boolean isOnGroundDefault() {
         Entity vehicle = getVehicle();
-
         if (vehicle != null) {
             return vehicle.isOnGround();
         } else {
             Player p = this.getPlayer();
-            return p != null && p.isOnGround();
+            if (Register.packetEvents) {
+                return p != null && Move.isOnGround(this);
+            } else {
+                return p != null && p.isOnGround();
+            }
         }
     }
 

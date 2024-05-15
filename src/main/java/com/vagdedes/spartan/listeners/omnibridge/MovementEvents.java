@@ -1,0 +1,86 @@
+package com.vagdedes.spartan.listeners.omnibridge;
+
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
+public class MovementEvents {
+    public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
+                    Enums.HackType.NoFall,
+                    Enums.HackType.IrregularMovements,
+                    Enums.HackType.Speed,
+                    Enums.HackType.MorePackets,
+                    Enums.HackType.ImpossibleInventory,
+                    Enums.HackType.Exploits
+    };
+
+    public static void Move(PlayerMoveEvent e) {
+        Player n = e.getPlayer();
+        SpartanPlayer p = SpartanBukkit.getPlayer(n);
+        if (p == null) {
+            return;
+        }
+        Location nto = e.getTo();
+        if (nto == null) {
+            return;
+        }
+        SpartanLocation vehicle = p.movement.getVehicleLocation(n);
+        SpartanLocation
+                        to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
+                        from = new SpartanLocation(p, e.getFrom());
+        from.retrieveDataFrom(to);
+
+        // Values
+        double preXZ = AlgebraUtils.getSquare(to.getX(), from.getX()) + AlgebraUtils.getSquare(to.getZ(), from.getZ()),
+                        toY = to.getY(),
+                        fromY = from.getY(),
+                        dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
+                        box = toY - to.getBlockY(),
+                        ver = toY - fromY,
+                        hor = Math.sqrt(preXZ);
+
+        if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
+            return;
+        }
+        MovementProcessing.run(p, to, ver, box);
+
+
+        // Patterns
+        for (Enums.HackType hackType : handledChecks) {
+            if (p.getViolations(hackType).prevent()) {
+                break;
+            }
+        }
+
+        // Detections
+        boolean cancelled = e.isCancelled();
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
+        // p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
+        p.getExecutor(Enums.HackType.KillAura).run(cancelled);
+        p.getExecutor(Enums.HackType.NoFall).run(cancelled);
+        p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
+        p.getExecutor(Enums.HackType.Speed).run(cancelled);
+        p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
+    }
+    public static void Teleport(PlayerTeleportEvent e) {
+        Location nto = e.getTo();
+
+        if (nto == null) {
+            return;
+        }
+        Player n = e.getPlayer();
+        SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+        if (p == null) {
+            return;
+        }
+        p.movement.judgeGround(new SpartanLocation(p, nto));
+    }
+}

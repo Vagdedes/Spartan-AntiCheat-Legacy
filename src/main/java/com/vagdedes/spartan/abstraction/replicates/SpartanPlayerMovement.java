@@ -1,8 +1,10 @@
 package com.vagdedes.spartan.abstraction.replicates;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
 import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
@@ -310,19 +312,33 @@ public class SpartanPlayerMovement {
 
         if (p != null) {
             SpartanLocation location = getVehicleLocation(p);
+            if (Register.packetEvents) {
+                if (location == null) {
+                    return Move.getLocation(this.parent);
+                } else {
+                    return getSpartanLocationVelince(location);
+                }
+            } else {
 
-            if (location == null) {
-                location = new SpartanLocation(this.parent, p.getLocation());
+                if (location == null) {
+                    location = new SpartanLocation(this.parent, p.getLocation());
+                }
+
+                return getSpartanLocationVelince(location);
             }
-            if (this.location.getX() != location.getX()
-                    || this.location.getY() != location.getY()
-                    || this.location.getZ() != location.getZ()
-                    || this.location.getYaw() != location.getYaw()
-                    || this.location.getPitch() != location.getPitch()) {
-                SpartanLocation from = this.location.clone();
-                this.setLocation(location);
-                location.retrieveDataFrom(from);
-            }
+        }
+        return null;
+    }
+
+    private SpartanLocation getSpartanLocationVelince(SpartanLocation location) {
+        if (this.location.getX() != location.getX()
+                        || this.location.getY() != location.getY()
+                        || this.location.getZ() != location.getZ()
+                        || this.location.getYaw() != location.getYaw()
+                        || this.location.getPitch() != location.getPitch()) {
+            SpartanLocation from = this.location.clone();
+            this.setLocation(location);
+            location.retrieveDataFrom(from);
         }
         return this.location;
     }

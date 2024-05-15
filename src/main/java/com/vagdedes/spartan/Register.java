@@ -1,5 +1,7 @@
 package com.vagdedes.spartan;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.command.CommandTab;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
@@ -9,7 +11,10 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.listeners.*;
+import com.vagdedes.spartan.listeners.bukkit.*;
+import com.vagdedes.spartan.listeners.protocol.Join;
+import com.vagdedes.spartan.listeners.protocol.Move;
+import com.vagdedes.spartan.listeners.protocol.Teleport;
 import com.vagdedes.spartan.utils.server.NetworkUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -23,6 +28,9 @@ import java.util.Set;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
+
+    // true - using protocollib
+    public static boolean packetEvents = false;
 
     public static final PluginManager manager = Bukkit.getPluginManager();
     private static final Set<Class<?>> listeners = new LinkedHashSet<>(2);
@@ -60,7 +68,15 @@ public class Register extends JavaPlugin {
         PlayerLimitPerIP.cache();
         SuspicionNotifications.run();
 
-        // Listeners
+        if (packetEvents) {
+            ProtocolManager p = ProtocolLibrary.getProtocolManager();
+            enable(new Join(), Join.class);
+            p.addPacketListener(new Move());
+            p.addPacketListener(new Teleport());
+        } else {
+            // Listeners
+            enable(new EventHandlerMain(), EventHandlerMain.class);
+        }
         enable(new EventsHandler1(), EventsHandler1.class);
         enable(new EventsHandler2(), EventsHandler2.class);
         enable(new EventsHandler3(), EventsHandler3.class);
@@ -68,6 +84,8 @@ public class Register extends JavaPlugin {
         enable(new EventsHandler5(), EventsHandler5.class);
         enable(new EventsHandler6(), EventsHandler6.class);
         enable(new EventsHandler7(), EventsHandler7.class);
+
+
 
         if (!MultiVersion.folia) {
             enable(new EventsHandler_non_folia(), EventsHandler_non_folia.class);
