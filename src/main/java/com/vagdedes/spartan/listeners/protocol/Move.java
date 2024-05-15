@@ -46,6 +46,7 @@ public class Move extends PacketAdapter {
             PlayerMoveEvent playerMoveEvent = new PlayerMoveEvent(
                     player, from, to
             );
+            player.sendMessage(String.valueOf(Join.canCheck(player)));
             if (Join.canCheck(player)) {
                 SharedEvents.move(playerMoveEvent);
             }

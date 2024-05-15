@@ -21,7 +21,7 @@ public class SpartanBukkit {
             && Bukkit.getMotd().contains(Register.plugin.getName()),
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
             canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart(),
-            packetEvents = false;
+            packetEvents = true;
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),

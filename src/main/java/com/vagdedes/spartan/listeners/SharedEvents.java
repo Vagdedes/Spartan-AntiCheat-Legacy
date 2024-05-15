@@ -4,6 +4,9 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.Join;
+import com.vagdedes.spartan.listeners.protocol.Move;
+import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -23,6 +26,7 @@ public class SharedEvents {
     };
 
     public static void join(SpartanPlayer p, PlayerJoinEvent e) {
+        Join.canCheck.put(e.getPlayer(), true);
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
 
@@ -78,6 +82,8 @@ public class SharedEvents {
 
     public static void teleport(PlayerTeleportEvent e) {
         Location nto = e.getTo();
+        Move.positionManager.put(e.getPlayer(), nto);
+        Move.lastRotation.put(e.getPlayer(), new RotationData(nto.getYaw(), nto.getPitch()));
 
         if (nto == null) {
             return;
