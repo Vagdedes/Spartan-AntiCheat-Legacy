@@ -26,7 +26,6 @@ public class SharedEvents {
     };
 
     public static void join(SpartanPlayer p, PlayerJoinEvent e) {
-        Join.canCheck.put(e.getPlayer(), true);
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
 

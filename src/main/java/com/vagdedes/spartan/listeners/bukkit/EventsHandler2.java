@@ -18,10 +18,6 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class EventsHandler2 implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Teleport(PlayerTeleportEvent e) {
-        SharedEvents.teleport(e);
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void BowShot(EntityShootBowEvent e) {

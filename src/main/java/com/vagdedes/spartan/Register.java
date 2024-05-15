@@ -13,6 +13,7 @@ import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.*;
+import com.vagdedes.spartan.listeners.protocol.Abilities;
 import com.vagdedes.spartan.listeners.protocol.Join;
 import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.Teleport;
@@ -72,6 +73,8 @@ public class Register extends JavaPlugin {
             p.addPacketListener(new Move());
             p.addPacketListener(new Teleport());
             p.addPacketListener(new Join());
+            p.addPacketListener(new Abilities());
+            enable(new Join(), Join.class);
         } else {
             enable(new EventHandler_Shared(), EventHandler_Shared.class);
         }

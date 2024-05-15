@@ -10,12 +10,14 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.SharedEvents;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Join extends PacketAdapter {
+public class Join extends PacketAdapter implements Listener {
 
     public static Map<Player, Boolean> canCheck = new ConcurrentHashMap<>();
 
@@ -44,5 +46,9 @@ public class Join extends PacketAdapter {
 
     public static boolean canCheck(Player player) {
         return canCheck.get(player);
+    }
+    @EventHandler
+    private void onJoin(PlayerJoinEvent e) {
+        Join.canCheck.put(e.getPlayer(), true);
     }
 }

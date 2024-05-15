@@ -8,6 +8,8 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.listeners.SharedEvents;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Map;
@@ -27,8 +29,7 @@ public class Teleport extends PacketAdapter {
                         new PlayerTeleportEvent(player,
                                         Move.positionManager.get(player),
                                         Move.readMovePacket(event));
+        lastTeleport.put(player, Move.readMovePacket(event));
         SharedEvents.teleport(playerTeleportEvent);
-
-
     }
 }

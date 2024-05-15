@@ -105,7 +105,6 @@ public class Speed extends CheckExecutor {
         }
         double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2);
         double horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
-        player.sendMessage(String.valueOf(horizontal));
         float speedMultiply = (player.getWalkSpeed() * 5) < 1 ? 1 : (player.getWalkSpeed() * 5);
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 1L);
         SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 1L);
