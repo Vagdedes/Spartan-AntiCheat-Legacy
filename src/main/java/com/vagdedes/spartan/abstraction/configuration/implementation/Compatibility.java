@@ -222,6 +222,7 @@ public class Compatibility {
                     if (runnable != null) {
                         try {
                             runnable.run();
+                            this.functional = true;
                         } catch (Exception ex) {
                             this.functional = false;
                             AwarenessNotifications.forcefullySend("Compatibility '" + this + "' failed to load.");
