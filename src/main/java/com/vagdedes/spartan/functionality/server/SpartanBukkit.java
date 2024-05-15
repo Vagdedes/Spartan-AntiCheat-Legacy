@@ -7,7 +7,7 @@ import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.utils.server.ReflectionUtils;
+import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;

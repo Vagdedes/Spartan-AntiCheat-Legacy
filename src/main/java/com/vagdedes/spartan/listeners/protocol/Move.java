@@ -8,7 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.listeners.omnibridge.MovementEvents;
+import com.vagdedes.spartan.listeners.SharedEvents;
 import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import org.bukkit.Location;
@@ -47,7 +47,7 @@ public class Move extends PacketAdapter {
                     player, from, to
             );
             if (Join.canCheck(player)) {
-                MovementEvents.move(playerMoveEvent);
+                SharedEvents.move(playerMoveEvent);
             }
             ;
             positionManager.put(player, to);

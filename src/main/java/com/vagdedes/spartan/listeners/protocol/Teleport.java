@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.listeners.omnibridge.MovementEvents;
+import com.vagdedes.spartan.listeners.SharedEvents;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -27,7 +27,7 @@ public class Teleport extends PacketAdapter {
                         new PlayerTeleportEvent(player,
                                         Move.positionManager.get(player),
                                         Move.readMovePacket(event));
-        MovementEvents.teleport(playerTeleportEvent);
+        SharedEvents.teleport(playerTeleportEvent);
 
 
     }

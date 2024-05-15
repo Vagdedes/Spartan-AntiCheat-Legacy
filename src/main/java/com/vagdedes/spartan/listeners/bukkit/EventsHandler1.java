@@ -9,7 +9,7 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.omnibridge.ProtocolEvents;
+import com.vagdedes.spartan.listeners.SharedEvents;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,7 +50,7 @@ public class EventsHandler1 implements Listener {
         }, 10);
 
         SpartanBukkit.runBukkitTask(
-                () -> ProtocolEvents.join(p, e)
+                () -> SharedEvents.join(p, e)
         );
     }
 

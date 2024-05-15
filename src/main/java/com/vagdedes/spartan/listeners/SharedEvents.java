@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.omnibridge;
+package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -8,10 +8,11 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-public class MovementEvents {
+public class SharedEvents {
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
             Enums.HackType.NoFall,
             Enums.HackType.IrregularMovements,
@@ -20,6 +21,10 @@ public class MovementEvents {
             Enums.HackType.ImpossibleInventory,
             Enums.HackType.Exploits
     };
+
+    public static void join(SpartanPlayer p, PlayerJoinEvent e) {
+        p.getExecutor(Enums.HackType.Speed).handle(false, e);
+    }
 
     public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();

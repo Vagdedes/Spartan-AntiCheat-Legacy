@@ -10,7 +10,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.utils.gameplay.CombatUtils;
+import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 

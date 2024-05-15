@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.utils.server;
+package com.vagdedes.spartan.utils.minecraft.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -12,7 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.List;
 
-public class NetworkUtils {
+public class ProxyUtils {
 
     private static final String name = "BungeeCord";
 

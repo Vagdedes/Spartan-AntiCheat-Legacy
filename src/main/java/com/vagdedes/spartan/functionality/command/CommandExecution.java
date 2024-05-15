@@ -16,8 +16,8 @@ import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessa
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.server.ConfigUtils;
-import com.vagdedes.spartan.utils.server.NetworkUtils;
+import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
+import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -245,7 +245,7 @@ public class CommandExecution implements CommandExecutor {
                         sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                         return true;
                     }
-                    if (!NetworkUtils.executeCommand(isPlayer ? player.getPlayer() : null, argumentsToString)) {
+                    if (!ProxyUtils.executeCommand(isPlayer ? player.getPlayer() : null, argumentsToString)) {
                         sender.sendMessage(Config.messages.getColorfulString("failed_command"));
                         return true;
                     }

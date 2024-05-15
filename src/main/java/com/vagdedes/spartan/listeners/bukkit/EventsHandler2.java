@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.omnibridge.MovementEvents;
+import com.vagdedes.spartan.listeners.SharedEvents;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ public class EventsHandler2 implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Teleport(PlayerTeleportEvent e) {
-        MovementEvents.teleport(e);
+        SharedEvents.teleport(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

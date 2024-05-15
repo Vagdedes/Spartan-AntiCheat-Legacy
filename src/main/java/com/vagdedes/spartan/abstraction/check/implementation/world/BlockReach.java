@@ -9,7 +9,8 @@ import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -79,7 +80,7 @@ public class BlockReach extends CheckExecutor {
 
                     if (!player.bedrockPlayer
                             && player.getVehicle() == null
-                            && distance > (ab_distance + BlockUtils.boundingBox)) {
+                            && distance > (ab_distance + GroundUtils.boundingBox)) {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
                     } else {
                         double limit = getLimit();

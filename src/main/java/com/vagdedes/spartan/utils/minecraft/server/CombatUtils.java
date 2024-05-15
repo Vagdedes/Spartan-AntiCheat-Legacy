@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.utils.gameplay;
+package com.vagdedes.spartan.utils.minecraft.server;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;

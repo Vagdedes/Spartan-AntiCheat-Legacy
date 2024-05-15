@@ -22,15 +22,11 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.omnibridge.MovementEvents;
+import com.vagdedes.spartan.listeners.SharedEvents;
 import com.vagdedes.spartan.listeners.protocol.Move;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.server.PluginUtils;
+import com.vagdedes.spartan.utils.minecraft.server.*;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -144,7 +140,7 @@ public class SpartanPlayer {
                             }
 
                             // Preventions
-                            for (Enums.HackType hackType : MovementEvents.handledChecks) {
+                            for (Enums.HackType hackType : SharedEvents.handledChecks) {
                                 if (p.getViolations(hackType).prevent()) {
                                     break;
                                 }

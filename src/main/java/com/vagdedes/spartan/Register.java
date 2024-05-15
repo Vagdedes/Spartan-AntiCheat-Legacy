@@ -16,7 +16,7 @@ import com.vagdedes.spartan.listeners.bukkit.*;
 import com.vagdedes.spartan.listeners.protocol.Join;
 import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.Teleport;
-import com.vagdedes.spartan.utils.server.NetworkUtils;
+import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -66,13 +66,13 @@ public class Register extends JavaPlugin {
         PlayerLimitPerIP.cache();
         SuspicionNotifications.run();
 
+        // Listeners
         if (SpartanBukkit.packetEvents) {
             ProtocolManager p = ProtocolLibrary.getProtocolManager();
             enable(new Join(), Join.class);
             p.addPacketListener(new Move());
             p.addPacketListener(new Teleport());
         } else {
-            // Listeners
             enable(new EventHandler_Shared(), EventHandler_Shared.class);
         }
         enable(new EventsHandler1(), EventsHandler1.class);
@@ -95,7 +95,7 @@ public class Register extends JavaPlugin {
         if (!MultiVersion.fork().equals("Unknown")) {
             enable(new EventHandler_Incompatible(), EventHandler_Incompatible.class);
         }
-        NetworkUtils.register();
+        ProxyUtils.register();
 
         // Commands
         String command = plugin.getName().toLowerCase();
@@ -108,7 +108,7 @@ public class Register extends JavaPlugin {
         plugin.setNaggable(false);
 
         // Separator
-        NetworkUtils.unregister();
+        ProxyUtils.unregister();
         listeners.clear();
         Cache.disable();
     }

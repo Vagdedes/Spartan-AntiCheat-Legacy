@@ -18,9 +18,9 @@ import com.vagdedes.spartan.compatibility.necessary.Floodgate;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.server.ConfigUtils;
-import com.vagdedes.spartan.utils.server.PluginUtils;
-import com.vagdedes.spartan.utils.server.ReflectionUtils;
+import com.vagdedes.spartan.utils.java.ReflectionUtils;
+import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
+import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.configuration.file.YamlConfiguration;
 

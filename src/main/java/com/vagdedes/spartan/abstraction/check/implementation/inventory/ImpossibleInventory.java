@@ -5,10 +5,10 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.PatternUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
-import com.vagdedes.spartan.utils.server.MaterialUtils;
+import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
+import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
+import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -87,7 +87,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !player.movement.isSwimming()
                 && player.getVehicle() == null
                 && player.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
-                && !PatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)) {
+                && !BlockPatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)) {
             cancel("type: closed-inventory, case: " + cases);
         }
     }

@@ -1,12 +1,11 @@
-package com.vagdedes.spartan.utils.gameplay;
+package com.vagdedes.spartan.utils.minecraft.server;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.utils.server.MaterialUtils;
 import org.bukkit.Material;
 
 import java.util.Set;
 
-public class PatternUtils {
+public class BlockPatternUtils {
 
     @SafeVarargs
     public static boolean collides(SpartanLocation location,

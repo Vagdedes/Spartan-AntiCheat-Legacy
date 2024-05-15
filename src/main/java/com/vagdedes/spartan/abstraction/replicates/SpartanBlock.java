@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.server.MaterialUtils;
+import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;

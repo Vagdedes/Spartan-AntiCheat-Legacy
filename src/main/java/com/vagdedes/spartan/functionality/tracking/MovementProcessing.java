@@ -10,12 +10,8 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.CombatUtils;
-import com.vagdedes.spartan.utils.gameplay.GroundUtils;
-import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.server.MaterialUtils;
+import com.vagdedes.spartan.utils.minecraft.server.*;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -131,7 +127,7 @@ public class MovementProcessing {
             return true;
         } else {
             for (double i = 0.0; i < player.getEyeHeight(); i++) {
-                for (SpartanLocation locationModified : location.getSurroundingLocations(BlockUtils.boundingBox, i, BlockUtils.boundingBox)) {
+                for (SpartanLocation locationModified : location.getSurroundingLocations(GroundUtils.boundingBox, i, GroundUtils.boundingBox)) {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
                         player.movement.setLastLiquid(WATER);
 
@@ -160,7 +156,7 @@ public class MovementProcessing {
 
                 for (int i = 0; i <= (blockY - minY); i++) {
                     int nonLiquid = 0;
-                    Collection<SpartanLocation> locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(BlockUtils.boundingBox, 0, BlockUtils.boundingBox);
+                    Collection<SpartanLocation> locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(GroundUtils.boundingBox, 0, GroundUtils.boundingBox);
 
                     for (SpartanLocation loc : locations) {
                         SpartanBlock block = loc.getBlock();
