@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.listeners.protocol.Join;
 import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

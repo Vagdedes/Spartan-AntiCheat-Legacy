@@ -188,6 +188,8 @@ public class SpartanPlayerMovement {
         this.artificialSwimming = TPS.getTick(this.parent) + 1;
     }
 
+    // Separator
+
     public boolean isLowEyeHeight() {
         return this.parent.getEyeHeight() < 1.0;
     }
@@ -307,41 +309,6 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public SpartanLocation getLocation() {
-        Player p = this.parent.getPlayer();
-
-        if (p != null) {
-            SpartanLocation location = getVehicleLocation(p);
-
-            if (SpartanBukkit.packetsEnabled()) {
-                if (location == null) {
-                    return Move.getLocation(this.parent);
-                } else {
-                    return getSpartanLocationVelince(location);
-                }
-            } else {
-                if (location == null) {
-                    location = new SpartanLocation(this.parent, p.getLocation());
-                }
-                return getSpartanLocationVelince(location);
-            }
-        }
-        return null;
-    }
-
-    private SpartanLocation getSpartanLocationVelince(SpartanLocation location) {
-        if (this.location.getX() != location.getX()
-                        || this.location.getY() != location.getY()
-                        || this.location.getZ() != location.getZ()
-                        || this.location.getYaw() != location.getYaw()
-                        || this.location.getPitch() != location.getPitch()) {
-            SpartanLocation from = this.location.clone();
-            this.setLocation(location);
-            location.retrieveDataFrom(from);
-        }
-        return this.location;
-    }
-
     public SpartanLocation getSchedulerFromLocation() {
         return schedulerFrom;
     }
@@ -353,6 +320,8 @@ public class SpartanPlayerMovement {
     public SpartanLocation getEventFromLocation() {
         return eventFrom;
     }
+
+    // Separator
 
     public List<SpartanLocation> getLocations() {
         List<SpartanLocation> toReturn = new ArrayList<>();
@@ -371,21 +340,10 @@ public class SpartanPlayerMovement {
         }
     }
 
+    // Separator
+
     public SpartanLocation getDetectionLocation() {
         return detectionLocation;
-    }
-
-    public SpartanLocation getVehicleLocation(Player player) {
-        Entity vehicle = player.getVehicle();
-
-        if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            Location playerLocation = player.getLocation();
-            return new SpartanLocation(this.parent,
-                    vehicle.getLocation(),
-                    playerLocation.getYaw(),
-                    playerLocation.getPitch());
-        }
-        return null;
     }
 
     public void setDetectionLocation(boolean force) {
@@ -419,6 +377,45 @@ public class SpartanPlayerMovement {
 
     // Separator
 
+    public SpartanLocation getVehicleLocation(Player player) {
+        Entity vehicle = player.getVehicle();
+
+        if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
+            Location playerLocation = player.getLocation();
+            return new SpartanLocation(this.parent,
+                    vehicle.getLocation(),
+                    playerLocation.getYaw(),
+                    playerLocation.getPitch());
+        }
+        return null;
+    }
+
+    public SpartanLocation getLocation() {
+        Player p = this.parent.getPlayer();
+
+        if (p != null) {
+            SpartanLocation spartanLocation = getVehicleLocation(p);
+
+            if (spartanLocation == null) {
+                Location actualLocation = SpartanBukkit.packetsEnabled()
+                        ? Move.getLocation(this.parent)
+                        : p.getLocation();
+
+                if (this.location.getX() != actualLocation.getX()
+                        || this.location.getY() != actualLocation.getY()
+                        || this.location.getZ() != actualLocation.getZ()
+                        || this.location.getYaw() != actualLocation.getYaw()
+                        || this.location.getPitch() != actualLocation.getPitch()) {
+                    spartanLocation = new SpartanLocation(this.parent, actualLocation);
+                    SpartanLocation from = this.location.clone();
+                    this.setLocation(spartanLocation);
+                    location.retrieveDataFrom(from);
+                }
+            }
+        }
+        return location;
+    }
+
     private void setLocation(SpartanLocation location) {
         synchronized (this.locations) {
             if (this.locations.size() == TPS.maximum) {
@@ -433,6 +430,8 @@ public class SpartanPlayerMovement {
         }
         this.location = location;
     }
+
+    // Separator
 
     public boolean processLastMoveEvent(SpartanLocation to, SpartanLocation from,
                                         double distance, double horizontal, double vertical, double box) {
@@ -470,6 +469,12 @@ public class SpartanPlayerMovement {
         return true;
     }
 
+    private double clampMin(double d, double d2, double d3) {
+        return d < d2 ? d2 : Math.min(d, d3);
+    }
+
+    // Separator
+
     private void judgeGround(SpartanLocation location, boolean increase) {
         if (this.parent.isOnGround(location)) {
             this.parent.onGroundCustom = true;
@@ -487,9 +492,5 @@ public class SpartanPlayerMovement {
 
     public void judgeGround(SpartanLocation location) {
         this.judgeGround(location, false);
-    }
-
-    private double clampMin(double d, double d2, double d3) {
-        return d < d2 ? d2 : Math.min(d, d3);
     }
 }

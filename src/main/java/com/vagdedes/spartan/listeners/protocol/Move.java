@@ -86,12 +86,8 @@ public class Move extends PacketAdapter {
         return packet.getBooleans().read(0);
     }
 
-    public static SpartanLocation getLocation(SpartanPlayer spartanPlayer) {
-        Player player = spartanPlayer.getPlayer();
-        SpartanLocation location = new SpartanLocation(spartanPlayer, positionManager.get(player));
-        location.setYaw(lastRotation.get(player).yaw());
-        location.setPitch(lastRotation.get(player).pitch());
-        return location;
+    public static Location getLocation(SpartanPlayer spartanPlayer) {
+        return positionManager.get(spartanPlayer.getPlayer());
     }
 
     public static Boolean isOnGround(SpartanPlayer spartanPlayer) {

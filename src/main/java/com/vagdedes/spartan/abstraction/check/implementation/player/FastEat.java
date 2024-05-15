@@ -60,7 +60,7 @@ public class FastEat extends CheckExecutor {
 
     private boolean checkDelay() {
         boolean bool;
-        Timer timer = this.getTimer();
+        Timer timer = player.getTimer(hackType);
         long time = timer.get("time"),
                 delay = getDelay();
 
@@ -75,7 +75,7 @@ public class FastEat extends CheckExecutor {
     }
 
     private boolean checkEating() {
-        long time = this.getTimer().get("food"),
+        long time = player.getTimer(hackType).get("food"),
                 delay = getDelay();
 
         if (delay > 0L && time <= delay) {
@@ -105,7 +105,7 @@ public class FastEat extends CheckExecutor {
                     break;
                 case RIGHT_CLICK_AIR:
                     if (player.getItemInHand().getType().isEdible()) {
-                        this.getTimer().set("food");
+                        player.getTimer(hackType).set("food");
                     }
                     break;
                 default:

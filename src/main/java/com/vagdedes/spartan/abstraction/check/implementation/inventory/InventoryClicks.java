@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
@@ -13,6 +12,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryClicks extends CheckExecutor {
+
+    private long time;
 
     public InventoryClicks(SpartanPlayer player) {
         super(Enums.HackType.InventoryClicks, player);
@@ -48,30 +49,29 @@ public class InventoryClicks extends CheckExecutor {
                     buffer.remove(key + "shift");
                     cancel("type: shift, item: " + type);
                 } else {
-                    Timer timer = this.getTimer();
-                    long time = timer.get(key + "time");
+                    long timePassed = System.currentTimeMillis() - time;
+                    time = System.currentTimeMillis();
 
-                    if (timer.has(time)
-                            && (!shift && !quick || newHash != oldHash)) {
-                        if (time < 150L) {
+                    if ((!shift && !quick || newHash != oldHash)) {
+                        if (timePassed < 150L) {
                             if (buffer.count("slow", 10) == 8) {
                                 buffer.remove("slow");
-                                cancel("type: slow, ms: " + time + ", item: " + type);
+                                cancel("type: slow, ms: " + timePassed + ", item: " + type);
                             }
-                            if (time < 100L) {
+                            if (timePassed < 100L) {
                                 if (buffer.count("average", 5) == 4) {
                                     buffer.remove("average");
-                                    cancel("type: average, ms: " + time + ", item: " + type);
+                                    cancel("type: average, ms: " + timePassed + ", item: " + type);
                                 }
-                                if (time == 0L || time < 50L && buffer.count("fast", 5) == 4) {
+                                if (timePassed == 0L
+                                        || timePassed < 50L && buffer.count("fast", 5) == 4) {
                                     buffer.remove("fast");
-                                    cancel("type: fast, ms: " + time + ", item: " + type);
+                                    cancel("type: fast, ms: " + timePassed + ", item: " + type);
                                 }
                             }
                         }
                     }
                 }
-                this.getTimer().set(key + "time");
             }
         }
     }

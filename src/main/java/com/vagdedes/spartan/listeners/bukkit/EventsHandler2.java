@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.SharedEvents;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -13,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class EventsHandler2 implements Listener {

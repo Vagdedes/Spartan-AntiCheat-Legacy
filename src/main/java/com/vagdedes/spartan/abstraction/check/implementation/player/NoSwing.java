@@ -60,7 +60,7 @@ public class NoSwing extends CheckExecutor {
                                     + ", block: " + BlockUtils.blockToString(block)
                                     + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
                 } else {
-                    clearAnimationData();
+                    resetAnimationData();
                 }
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
@@ -70,6 +70,15 @@ public class NoSwing extends CheckExecutor {
 
     @Override
     protected void cannotHandle(boolean cancelled, Object object) {
+        if (object instanceof PlayerInteractEvent) {
+            PlayerInteractEvent e = (PlayerInteractEvent) object;
+
+            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                this.resetBreakData();
+            }
+        } else if (object instanceof PlayerAnimationEvent) {
+           this.resetAnimationData();
+        }
     }
 
     private void runDamage(LivingEntity entity) {
@@ -93,13 +102,17 @@ public class NoSwing extends CheckExecutor {
                             + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
                 }
             } else {
-                clearAnimationData();
+                resetAnimationData();
             }
         }
     }
 
-    private void clearAnimationData() {
+    private void resetAnimationData() {
         this.animationTime = Long.MAX_VALUE;
+    }
+
+    private void resetBreakData() {
+        this.breakTime = Long.MAX_VALUE;
     }
 
     @Override

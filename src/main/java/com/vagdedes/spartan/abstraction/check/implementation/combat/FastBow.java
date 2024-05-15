@@ -28,13 +28,13 @@ public class FastBow extends CheckExecutor {
 
             if (inventory.getItemInHand().getType() == Material.BOW
                     && inventory.contains(Material.ARROW)) {
-                this.getTimer().set("interact");
+                player.getTimer(hackType).set("interact");
             }
         }
     }
 
     private void checkBowForce(float force) {
-        long time = this.getTimer().get("interact");
+        long time = player.getTimer(hackType).get("interact");
 
         if (!hackType.getCheck().getBooleanOption("check_bow_force", true) || force != 1.0f || time > 500L) {
             return;

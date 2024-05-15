@@ -54,7 +54,6 @@ public class CommandExecution implements CommandExecutor {
                             + "§7(§fVersion: " + v + "§7)§8, "
                             + "§7(§fID: " + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
 
-            sender.sendMessage(command);
             ClickableMessage.sendURL(
                     sender,
                     command,

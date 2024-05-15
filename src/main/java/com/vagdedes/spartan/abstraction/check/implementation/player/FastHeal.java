@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
@@ -18,6 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 public class FastHeal extends CheckExecutor {
 
     private double previousHealth;
+    private long time;
 
     public FastHeal(SpartanPlayer player) {
         super(HackType.FastHeal, player);
@@ -47,26 +47,23 @@ public class FastHeal extends CheckExecutor {
 
             if (reason != RegainReason.CUSTOM
                     && reason != RegainReason.MAGIC) {
-                Timer timer = this.getTimer();
                 double health = player.getHealth();
+                long timePassed = System.currentTimeMillis() - time;
+                time = System.currentTimeMillis();
 
-                long time = this.getTimer().get("");
-
-                if (timer.has(time)
-                        && previousHealth != health) {
+                if (previousHealth != health) {
                     long limit = calculate();
 
                     if (limit > 0L) {
                         Buffer buffer = this.getBuffer();
 
-                        if (time < limit
+                        if (timePassed < limit
                                 && buffer.count("", 10) == 3) {
                             buffer.remove("");
-                            cancel("type: default, ms: " + time + ", limit: " + limit);
+                            cancel("type: default, ms: " + timePassed + ", limit: " + limit);
                         }
                     }
                 }
-                timer.set("");
                 previousHealth = health;
             }
         } else if (((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()

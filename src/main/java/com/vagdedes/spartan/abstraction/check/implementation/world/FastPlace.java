@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
@@ -15,6 +14,8 @@ import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class FastPlace extends CheckExecutor {
+
+    private long time;
 
     public FastPlace(SpartanPlayer player) {
         super(HackType.FastPlace, player);
@@ -33,56 +34,52 @@ public class FastPlace extends CheckExecutor {
                     && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     || material != Material.CAVE_AIR
                     && material != Material.VOID_AIR)) {
-                Timer timer = this.getTimer();
-                long time = this.getTimer().get("time");
+                long timePassed = System.currentTimeMillis() - time;
+                time = System.currentTimeMillis();
+                Buffer buffer = this.getBuffer();
+                int ticks = 20;
 
-                if (timer.has(time)) {
-                    Buffer buffer = this.getBuffer();
-                    int ticks = 20;
-
-                    if (time <= 150L) {
-                        if (buffer.count("slow", ticks) >= 8) {
+                if (timePassed <= 150L) {
+                    if (buffer.count("slow", ticks) >= 8) {
+                        cancel(
+                                "type: slow"
+                                        + ", ms: " + timePassed
+                                        + ", block: " + BlockUtils.materialToString(material),
+                                1.0,
+                                null,
+                                ticks
+                        );
+                    }
+                    if (timePassed <= 100L) {
+                        if (buffer.count("medium", ticks) >= 7) {
                             cancel(
-                                    "type: slow"
-                                            + ", ms: " + time
+                                    "type: medium"
+                                            + ", ms: " + timePassed
                                             + ", block: " + BlockUtils.materialToString(material),
                                     1.0,
                                     null,
                                     ticks
                             );
                         }
-                        if (time <= 100L) {
-                            if (buffer.count("medium", ticks) >= 7) {
+                        if (timePassed <= 50L) {
+                            String detection = "type: fast";
+
+                            if (!player.bedrockPlayer
+                                    && hackType.getCheck().getBooleanOption("check_fast", true)
+                                    && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
+                                    && buffer.count("fast", ticks) >= 4) {
                                 cancel(
-                                        "type: medium"
-                                                + ", ms: " + time
+                                        detection
+                                                + ", ms: " + timePassed
                                                 + ", block: " + BlockUtils.materialToString(material),
                                         1.0,
                                         null,
                                         ticks
                                 );
                             }
-                            if (time <= 50L) {
-                                String detection = "type: fast";
-
-                                if (!player.bedrockPlayer
-                                        && hackType.getCheck().getBooleanOption("check_fast", true)
-                                        && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                        && buffer.count("fast", ticks) >= 4) {
-                                    cancel(
-                                            detection
-                                                    + ", ms: " + time
-                                                    + ", block: " + BlockUtils.materialToString(material),
-                                            1.0,
-                                            null,
-                                            ticks
-                                    );
-                                }
-                            }
                         }
                     }
                 }
-                timer.set("time");
             }
         }
     }
