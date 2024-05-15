@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.replicates;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -312,18 +313,17 @@ public class SpartanPlayerMovement {
 
         if (p != null) {
             SpartanLocation location = getVehicleLocation(p);
-            if (Register.packetEvents) {
+
+            if (SpartanBukkit.packetEvents) {
                 if (location == null) {
                     return Move.getLocation(this.parent);
                 } else {
                     return getSpartanLocationVelince(location);
                 }
             } else {
-
                 if (location == null) {
                     location = new SpartanLocation(this.parent, p.getLocation());
                 }
-
                 return getSpartanLocationVelince(location);
             }
         }
@@ -428,6 +428,9 @@ public class SpartanPlayerMovement {
                 iterator.remove();
             }
             this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
+        }
+        if (!this.location.world.equals(location.world)) {
+            this.parent.resetHandlers();
         }
         this.location = location;
     }

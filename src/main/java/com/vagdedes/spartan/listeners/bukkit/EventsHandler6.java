@@ -5,7 +5,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.gameplay.CombatUtils;
@@ -19,9 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 
 public class EventsHandler6 implements Listener {
 
@@ -38,23 +35,6 @@ public class EventsHandler6 implements Listener {
             e.setCancelled(true);
         }
     }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void KickEvent(PlayerKickEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
-        // System
-        if (Config.settings.getBoolean("Important.violations_reset_on_kick")) {
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                p.getViolations(hackType).reset();
-            }
-        }
-    }
-
-    // Separator
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Damage(EntityDamageByEntityEvent e) {
@@ -161,18 +141,5 @@ public class EventsHandler6 implements Listener {
         }
         // Detections
         p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void TabCompletion(PlayerChatTabCompleteEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
-        // Protections
-        if (ChatProtection.runCommand(p, e.getChatMessage(), true)) {
-            e.getTabCompletions().clear();
-        }
     }
 }

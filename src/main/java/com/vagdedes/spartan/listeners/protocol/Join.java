@@ -6,6 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.omnibridge.ProtocolEvents;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,7 +39,12 @@ public class Join extends PacketAdapter implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Join(PlayerJoinEvent e) {
-        ProtocolEvents.Join(e);
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+
+        if (p == null) {
+            return;
+        }
+        ProtocolEvents.join(p, e);
         canCheck.put(e.getPlayer(), true);
     }
     public static boolean canCheck(Player player) {

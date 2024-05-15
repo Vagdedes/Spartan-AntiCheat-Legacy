@@ -23,6 +23,36 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class EventsHandler1 implements Listener {
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Join(PlayerJoinEvent e) {
+        Player n = e.getPlayer();
+        SpartanBukkit.addRealPlayer(n);
+
+        // Utils
+        if (PlayerLimitPerIP.add(n)) {
+            e.setJoinMessage(null);
+            return;
+        }
+        SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+        if (p == null) {
+            return;
+        }
+        // System
+        MaximumCheckedPlayers.add(p);
+        SpartanEdition.attemptNotification(p);
+
+        SpartanBukkit.runDelayedTask(p, () -> {
+            if (p != null) {
+                Config.settings.runOnLogin(p);
+                CloudBase.announce(p);
+            }
+        }, 10);
+
+        SpartanBukkit.runBukkitTask(
+                () -> ProtocolEvents.join(p, e)
+        );
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent e) {

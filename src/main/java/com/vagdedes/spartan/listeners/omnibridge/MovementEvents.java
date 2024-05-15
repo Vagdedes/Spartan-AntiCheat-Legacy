@@ -13,44 +13,45 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class MovementEvents {
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
-                    Enums.HackType.NoFall,
-                    Enums.HackType.IrregularMovements,
-                    Enums.HackType.Speed,
-                    Enums.HackType.MorePackets,
-                    Enums.HackType.ImpossibleInventory,
-                    Enums.HackType.Exploits
+            Enums.HackType.NoFall,
+            Enums.HackType.IrregularMovements,
+            Enums.HackType.Speed,
+            Enums.HackType.MorePackets,
+            Enums.HackType.ImpossibleInventory,
+            Enums.HackType.Exploits
     };
 
-    public static void Move(PlayerMoveEvent e) {
+    public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
         if (p == null) {
             return;
         }
         Location nto = e.getTo();
+
         if (nto == null) {
             return;
         }
         SpartanLocation vehicle = p.movement.getVehicleLocation(n);
         SpartanLocation
-                        to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
-                        from = new SpartanLocation(p, e.getFrom());
+                to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
+                from = new SpartanLocation(p, e.getFrom());
         from.retrieveDataFrom(to);
 
         // Values
         double preXZ = AlgebraUtils.getSquare(to.getX(), from.getX()) + AlgebraUtils.getSquare(to.getZ(), from.getZ()),
-                        toY = to.getY(),
-                        fromY = from.getY(),
-                        dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
-                        box = toY - to.getBlockY(),
-                        ver = toY - fromY,
-                        hor = Math.sqrt(preXZ);
+                toY = to.getY(),
+                fromY = from.getY(),
+                dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
+                box = toY - to.getBlockY(),
+                ver = toY - fromY,
+                hor = Math.sqrt(preXZ);
 
         if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
             return;
         }
         MovementProcessing.run(p, to, ver, box);
-
 
         // Patterns
         for (Enums.HackType hackType : handledChecks) {
@@ -69,7 +70,8 @@ public class MovementEvents {
         p.getExecutor(Enums.HackType.Speed).run(cancelled);
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
     }
-    public static void Teleport(PlayerTeleportEvent e) {
+
+    public static void teleport(PlayerTeleportEvent e) {
         Location nto = e.getTo();
 
         if (nto == null) {

@@ -70,11 +70,13 @@ public class PlayerUtils {
         handledPotionEffects.put(JUMP, 100);
         handledPotionEffects.put(SPEED, 60);
 
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            handledPotionEffects.put(DOLPHINS_GRACE, 30);
+        if (slowFall) {
             handledPotionEffects.put(SLOW_FALLING, 20);
         }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+        if (dolphinsGrace) {
+            handledPotionEffects.put(DOLPHINS_GRACE, 30);
+        }
+        if (levitation) {
             handledPotionEffects.put(LEVITATION, 10);
         }
 

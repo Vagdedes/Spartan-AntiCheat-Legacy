@@ -22,7 +22,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.bukkit.EventsHandler7;
 import com.vagdedes.spartan.listeners.omnibridge.MovementEvents;
 import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
@@ -530,7 +529,8 @@ public class SpartanPlayer {
             return vehicle.isOnGround();
         } else {
             Player p = this.getPlayer();
-            if (Register.packetEvents) {
+
+            if (SpartanBukkit.packetEvents) {
                 return p != null && Move.isOnGround(this);
             } else {
                 return p != null && p.isOnGround();

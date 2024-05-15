@@ -1,9 +1,5 @@
 package com.vagdedes.spartan.listeners.protocol.modules;
 
-import com.vagdedes.spartan.functionality.tracking.RayLine;
-
-import com.vagdedes.spartan.functionality.tracking.RayLine;
-
 public class RotationData {
 
     private final float yaw;

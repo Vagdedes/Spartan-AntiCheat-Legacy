@@ -27,7 +27,7 @@ public class Teleport extends PacketAdapter {
                         new PlayerTeleportEvent(player,
                                         Move.positionManager.get(player),
                                         Move.readMovePacket(event));
-        MovementEvents.Teleport(playerTeleportEvent);
+        MovementEvents.teleport(playerTeleportEvent);
 
 
     }

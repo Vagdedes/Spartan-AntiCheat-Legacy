@@ -20,7 +20,8 @@ public class SpartanBukkit {
             testMode = !JarVerification.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart()
             && Bukkit.getMotd().contains(Register.plugin.getName()),
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
-            canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
+            canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart(),
+            packetEvents = false;
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
@@ -153,6 +154,14 @@ public class SpartanBukkit {
             }
         }
         return -1;
+    }
+
+    // Separator
+
+    public static void runBukkitTask(Runnable runnable) {
+        if (!packetEvents) {
+            runnable.run();
+        }
     }
 
     // Separator

@@ -5,14 +5,12 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.gameplay.BlockUtils;
-import com.vagdedes.spartan.utils.gameplay.GroundUtils;
 import com.vagdedes.spartan.utils.gameplay.PlayerUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class NoFall extends CheckExecutor {
@@ -37,13 +35,11 @@ public class NoFall extends CheckExecutor {
 
     private double previous;
     private double distance;
-    private int fallTicks;
 
     public NoFall(SpartanPlayer player) {
         super(HackType.NoFall, player);
         this.previous = 0.0;
         this.distance = 0.0;
-        this.fallTicks = 0;
     }
 
     @Override
@@ -54,24 +50,17 @@ public class NoFall extends CheckExecutor {
         if (vertical == null) {
             this.previous = fallDistance;
             this.distance = 0.0;
-            this.fallTicks = 0;
             return;
         }
         int fallTick = getFallTicks(previous) + 1;
-        double prediction = fallTick == 0 ? 0.0 :
-                        fallTick == 1 ? acceleration :
-                                (this.previous * drag) + (fallTick * acceleration),
+        double prediction = fallTick == 1
+                ? acceleration
+                : (this.previous * drag) + (fallTick * acceleration),
                 difference = Math.abs(fallDistance - prediction);
-        player.debug(true, false, true,
-                fallDistance,
-                prediction,
-                difference,
-                player.isOnGroundDefault(),
-                player.isOnGround()
-        );
 
-        if (false && fallDistance > significantFallDistance
-                && difference >= PlayerUtils.airAcceleration) {
+        if ((player.isOp() || player.isWhitelisted())
+                && difference >= PlayerUtils.airAcceleration
+                && (difference != prediction || !player.isOnGround())) {
             int amplifier = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP);
             cancel(
                     "type: motion"
@@ -91,8 +80,7 @@ public class NoFall extends CheckExecutor {
             );
         }
         this.previous = fallDistance;
-        this.distance = fallTick == 0 ? 0.0 : this.distance + vertical;
-        this.fallTicks = fallTick;
+        this.distance = fallTick == 1 ? acceleration : this.distance + vertical;
     }
 
     private int getFallTicks(double fallDistance) {
@@ -120,7 +108,6 @@ public class NoFall extends CheckExecutor {
     public void cannotRun(boolean cancelled) {
         this.previous = player.getFallDistance();
         this.distance = 0.0;
-        this.fallTicks = 0;
     }
 
     @Override
