@@ -21,7 +21,7 @@ public class ServerFlying {
                 && !p.getTrackers().has(Trackers.TrackerFamily.MOTION)
                 && !Attributes.has(p, Attributes.GENERIC_FLYING_SPEED)) {
             double limit = (p.getFlySpeed() * 10.0) + 1.0;
-            Double nmsDistance = p.movement.getNmsDistance();
+            Double nmsDistance = p.movement.getEventDistance();
 
             if (nmsDistance != null && nmsDistance >= limit
                     || p.movement.getSchedulerDistance() >= limit) {

@@ -113,7 +113,7 @@ public class ImpossibleActions extends CheckExecutor {
                                     blockHeight = GroundUtils.getMinHeight(
                                             handItem == null ? Material.AIR : handItem.getType()
                                     ),
-                                    deltaXZ = player.movement.getNmsHorizontalDistance();
+                                    deltaXZ = player.movement.getEventHorizontal();
                             int deltaYMinus1 = playerY - blockY,
                                     possiblePlacements = AlgebraUtils.integerFloor(
                                             motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)

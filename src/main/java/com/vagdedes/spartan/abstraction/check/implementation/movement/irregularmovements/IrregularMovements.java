@@ -30,12 +30,12 @@ public class IrregularMovements extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         foodSprint.run();
-        Double vertical = player.movement.getNmsVerticalDistance(),
-                oldVertical = player.movement.getPreviousNmsVerticalDistance(),
-                horizontal = player.movement.getNmsHorizontalDistance(),
-                oldHorizontal = player.movement.getPreviousNmsHorizontalDistance(),
-                box = player.movement.getNmsBox(),
-                oldBox = player.movement.getPreviousNmsBox();
+        Double vertical = player.movement.getEventVertical(),
+                oldVertical = player.movement.getPreviousEventVertical(),
+                horizontal = player.movement.getEventHorizontal(),
+                oldHorizontal = player.movement.getPreviousEventHorizontal(),
+                box = player.movement.getEventBox(),
+                oldBox = player.movement.getPreviousEventBox();
 
         if (vertical == null
                 || oldVertical == null

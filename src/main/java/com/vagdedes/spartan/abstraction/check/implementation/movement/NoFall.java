@@ -44,7 +44,7 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        Double vertical = player.movement.getNmsVerticalDistance();
+        Double vertical = player.movement.getEventVertical();
         double fallDistance = player.getFallDistance();
 
         if (vertical == null) {
