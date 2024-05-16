@@ -241,7 +241,7 @@ public class Speed extends CheckExecutor {
                             + ", speed-limit: " + limit + ", air-tick: " + onAir;
                 }
             }
-            if (horizontal > wrapLimit && !keepSprint.get(player.uuid).isTimedOut()) {
+            if (horizontal > wrapLimit && keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut()) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
                 if (antiAbuseProcessor > 200) {
                     flag = "type: keepsprint-silent, speed: " + horizontal

@@ -15,13 +15,13 @@ public class Abilities extends PacketAdapter {
 
     public static Map<Player, AbilitiesContainer> playerAbilitiesContainer = new ConcurrentHashMap<>();
     public Abilities() {
-        super(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.getInstance());
+        super(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.ABILITIES);
     }
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
-        player.sendMessage(event.getPacket().getType().name() + " " + event.getPacket().getBooleans().getValues());
+       // player.sendMessage(event.getPacket().getType().toString());
     }
 
 }

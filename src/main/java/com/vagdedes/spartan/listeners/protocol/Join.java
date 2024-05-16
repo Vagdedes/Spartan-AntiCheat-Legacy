@@ -28,27 +28,13 @@ public class Join extends PacketAdapter implements Listener {
     @Override
     public void onPacketSending(PacketEvent event) {
         PacketContainer packet = event.getPacket();
-
         if (packet.getType() == PacketType.Play.Server.LOGIN) {
             Player player = event.getPlayer();
             canCheck.put(player, false);
-            SpartanPlayer p = SpartanBukkit.getPlayer(player);
-
-            if (p == null) {
-                return;
-            }
-            SharedEvents.join(
-                    p,
-                    new PlayerJoinEvent(player, (String) null)
-            );
         }
     }
 
     public static boolean canCheck(Player player) {
         return canCheck.get(player);
-    }
-    @EventHandler
-    private void onJoin(PlayerJoinEvent e) {
-        Join.canCheck.put(e.getPlayer(), true);
     }
 }

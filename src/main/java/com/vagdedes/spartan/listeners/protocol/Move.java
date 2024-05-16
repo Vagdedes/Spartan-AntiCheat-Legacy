@@ -11,6 +11,8 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.listeners.SharedEvents;
 import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
+import com.vagdedes.spartan.utils.math.RayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -39,15 +41,18 @@ public class Move extends PacketAdapter {
                 || packet.getType() == PacketType.Play.Client.LOOK) {
             // CPlayerPacket
             Location to = readMovePacket(event);
+            double xz = to.getX() + to.getZ();
+            if (xz == 17 || xz == 0) return;
+            importRotation(player, to);
             positionManager.putIfAbsent(player, to);
+            Location from = positionManager.get(player);
+            importRotation(player, from);
             boolean ground = packet.getBooleans().read(0);
             groundManager.put(player, ground);
-            Location from = positionManager.get(player);
             PlayerMoveEvent playerMoveEvent = new PlayerMoveEvent(
                     player, from, to
             );
-            player.sendMessage(String.valueOf(Join.canCheck(player)));
-            if (Join.canCheck(player)) {
+            if (Join.canCheck(player) && !rumiaShield(player, from, to)) {
                 SharedEvents.move(playerMoveEvent);
             }
             ;
@@ -80,6 +85,10 @@ public class Move extends PacketAdapter {
             );
         }
     }
+    public static void importRotation(Player player, Location l) {
+        l.setYaw(lastRotation.get(player).yaw());
+        l.setPitch(lastRotation.get(player).pitch());
+    }
 
     public static boolean onGroundPacketLevel(PacketEvent event) {
         PacketContainer packet = event.getPacket();
@@ -87,11 +96,26 @@ public class Move extends PacketAdapter {
     }
 
     public static Location getLocation(SpartanPlayer spartanPlayer) {
-        return positionManager.get(spartanPlayer.getPlayer());
+        if (positionManager.containsKey(spartanPlayer.getPlayer())) {
+            return positionManager.get(spartanPlayer.getPlayer());
+        } else {
+            return spartanPlayer.getPlayer().getLocation();
+        }
     }
 
     public static Boolean isOnGround(SpartanPlayer spartanPlayer) {
         Player player = spartanPlayer.getPlayer();
-        return groundManager.get(player);
+        if (groundManager.containsKey(player)) {
+            return groundManager.get(player);
+        } else {
+            return player.isOnGround();
+        }
+    }
+    private static boolean rumiaShield(Player player, Location from, Location to) {
+        double dx = to.getX() - from.getX();
+        double dz = to.getZ() - from.getZ();
+        double y = RayUtils.scaleVal(to.getY() - from.getY(), 2);
+        double speed = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
+        return  y == -0.09;
     }
 }

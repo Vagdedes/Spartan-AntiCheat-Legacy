@@ -25,33 +25,7 @@ public class EventsHandler1 implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Join(PlayerJoinEvent e) {
-        Player n = e.getPlayer();
-        SpartanBukkit.addRealPlayer(n);
-
-        // Utils
-        if (PlayerLimitPerIP.add(n)) {
-            e.setJoinMessage(null);
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-        if (p == null) {
-            return;
-        }
-        // System
-        MaximumCheckedPlayers.add(p);
-        SpartanEdition.attemptNotification(p);
-
-        SpartanBukkit.runDelayedTask(p, () -> {
-            if (p != null) {
-                Config.settings.runOnLogin(p);
-                CloudBase.announce(p);
-            }
-        }, 10);
-
-        SpartanBukkit.runBukkitTask(
-                () -> SharedEvents.join(p, e)
-        );
+        SharedEvents.join(e.getPlayer(), e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -119,22 +93,4 @@ public class EventsHandler1 implements Listener {
         p.resetHandlers(); // Always First
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Velocity(PlayerVelocityEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
-
-        // Object
-        p.addReceivedVelocity(e);
-
-        // Detections
-        p.getExecutor(Enums.HackType.Speed).handle(e.isCancelled(), e);
-
-        if (p.getViolations(Enums.HackType.Velocity).prevent()) {
-            e.setCancelled(true);
-        }
-    }
 }

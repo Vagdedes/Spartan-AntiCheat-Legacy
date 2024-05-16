@@ -2,17 +2,26 @@ package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.Join;
 import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class SharedEvents {
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
@@ -24,9 +33,44 @@ public class SharedEvents {
             Enums.HackType.Exploits
     };
 
-    public static void join(SpartanPlayer p, PlayerJoinEvent e) {
+    public static void join(Player n, PlayerJoinEvent e) {
+        SpartanBukkit.addRealPlayer(n);
+
+        // Utils
+        if (PlayerLimitPerIP.add(n)) {
+            e.setJoinMessage(null);
+            return;
+        }
+        SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+        if (p == null) {
+            return;
+        }
+        // System
+        MaximumCheckedPlayers.add(p);
+        SpartanEdition.attemptNotification(p);
+
+        SpartanBukkit.runDelayedTask(p, () -> {
+            if (p != null) {
+                Config.settings.runOnLogin(p);
+                CloudBase.announce(p);
+            }
+        }, 10);
+
+        /*
+                SpartanBukkit.runBukkitTask(
+                        () -> joinInit(p, e)
+        );
+        it break code!
+         */
+        joinInit(p, e);
+        Join.canCheck.put(e.getPlayer(), true);
+    }
+
+    public static void joinInit(SpartanPlayer p, PlayerJoinEvent e) {
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
+
 
     public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();
@@ -94,4 +138,23 @@ public class SharedEvents {
         }
         p.movement.judgeGround(new SpartanLocation(p, nto));
     }
+    public static void velocity(PlayerVelocityEvent e) {
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+
+        if (p == null) {
+            return;
+        }
+
+        // Object
+        p.addReceivedVelocity(e);
+
+        // Detections
+        p.getExecutor(Enums.HackType.Speed).handle(e.isCancelled(), e);
+
+        if (p.getViolations(Enums.HackType.Velocity).prevent()) {
+            e.setCancelled(true);
+        }
+        p.sendMessage(e.getVelocity().toString());
+    }
+
 }
