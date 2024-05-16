@@ -9,6 +9,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.SharedEvents;
+import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,6 +32,8 @@ public class Join extends PacketAdapter implements Listener {
         if (packet.getType() == PacketType.Play.Server.LOGIN) {
             Player player = event.getPlayer();
             canCheck.put(player, false);
+            Move.spawnStatus.put(player, true);
+            EntityAction.playerAbilitiesContainer.put(player, new AbilitiesContainer(false, false, false));
         }
     }
 

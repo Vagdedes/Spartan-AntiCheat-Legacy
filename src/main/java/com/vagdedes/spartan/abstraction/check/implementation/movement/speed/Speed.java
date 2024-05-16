@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
@@ -425,6 +426,7 @@ public class Speed extends CheckExecutor {
                 // player.sendMessage(String.valueOf(horizontal));
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
+            if (SpartanBukkit.packetsEnabled()) return;
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) object;
             Entity damager = e.getDamager();
             DataProcessor.target.put(e.getEntity().getUniqueId(), damager);

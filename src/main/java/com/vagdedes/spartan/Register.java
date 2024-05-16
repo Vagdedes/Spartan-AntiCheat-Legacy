@@ -70,7 +70,7 @@ public class Register extends JavaPlugin {
             p.addPacketListener(new Move());
             p.addPacketListener(new Teleport());
             p.addPacketListener(new Join());
-            p.addPacketListener(new Abilities());
+            p.addPacketListener(new EntityAction());
             p.addPacketListener(new Velocity());
 
         } else {

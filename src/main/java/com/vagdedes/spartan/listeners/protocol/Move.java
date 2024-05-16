@@ -9,6 +9,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.listeners.SharedEvents;
+import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -26,10 +27,11 @@ public class Move extends PacketAdapter {
 
     public static Map<Player, Location> positionManager = new ConcurrentHashMap<>();
     public static Map<Player, Boolean> groundManager = new ConcurrentHashMap<>();
+    public static Map<Player, Boolean> spawnStatus = new ConcurrentHashMap<>();
     public static Map<Player, RotationData> lastRotation = new ConcurrentHashMap<>();
 
     public Move() {
-        super(Register.plugin, ListenerPriority.LOWEST, PacketType.Play.Client.getInstance());
+        super(Register.plugin, ListenerPriority.LOWEST, PacketType.Play.Client.getInstance().values());
     }
 
     @Override
@@ -42,7 +44,11 @@ public class Move extends PacketAdapter {
             // CPlayerPacket
             Location to = readMovePacket(event);
             double xz = to.getX() + to.getZ();
-            if (xz == 17 || xz == 0) return;
+            if ((xz == 17 || xz == 0) && spawnStatus.containsKey(player) && spawnStatus.get(player)) {
+                return;
+            } else {
+                spawnStatus.put(player, false);
+            }
             importRotation(player, to);
             positionManager.putIfAbsent(player, to);
             Location from = positionManager.get(player);
@@ -52,10 +58,9 @@ public class Move extends PacketAdapter {
             PlayerMoveEvent playerMoveEvent = new PlayerMoveEvent(
                     player, from, to
             );
-            if (Join.canCheck(player) && !rumiaShield(player, from, to)) {
+            if (Join.canCheck(player) && !spawnStatus.get(player)) {
                 SharedEvents.move(playerMoveEvent);
             }
-            ;
             positionManager.put(player, to);
             // Action
         } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())

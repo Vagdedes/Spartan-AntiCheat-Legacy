@@ -4,6 +4,7 @@ import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.protocol.EntityAction;
 import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
@@ -206,7 +207,8 @@ public class SpartanPlayerMovement {
 
     public boolean isSneaking() {
         Player p = this.parent.getPlayer();
-        return p != null && p.isSneaking();
+        return p != null && (SpartanBukkit.packetsEnabled()
+                        ? EntityAction.getAbilities(p).sneak() : p.isSneaking());
     }
 
     public boolean isFlying() {
@@ -224,7 +226,8 @@ public class SpartanPlayerMovement {
 
     public boolean isSprinting() {
         Player p = this.parent.getPlayer();
-        return p != null && p.isSprinting();
+        return p != null && (SpartanBukkit.packetsEnabled()
+                        ? EntityAction.getAbilities(p).sprint() : p.isSprinting());
     }
 
     public boolean isSprintJumping(double vertical) {

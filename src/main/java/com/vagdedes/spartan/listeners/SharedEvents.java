@@ -154,7 +154,6 @@ public class SharedEvents {
         if (p.getViolations(Enums.HackType.Velocity).prevent()) {
             e.setCancelled(true);
         }
-        p.sendMessage(e.getVelocity().toString());
     }
 
 }
