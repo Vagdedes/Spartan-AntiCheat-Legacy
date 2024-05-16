@@ -44,10 +44,15 @@ public class Move extends PacketAdapter {
             // CPlayerPacket
             Location to = readMovePacket(event);
             double xz = to.getX() + to.getZ();
-            if ((xz == 17 || xz == 0) && spawnStatus.containsKey(player) && spawnStatus.get(player)) {
+            if ((xz == 17 || xz == 0 && spawnStatus.containsKey(player) && spawnStatus.get(player))
+            ) {
                 return;
             } else {
                 spawnStatus.put(player, false);
+            }
+            if (Teleport.lastTeleport.containsKey(player)) {
+                Teleport.lastTeleport.remove(player);
+                return;
             }
             importRotation(player, to);
             positionManager.putIfAbsent(player, to);

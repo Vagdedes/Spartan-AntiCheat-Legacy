@@ -9,7 +9,10 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesEnum;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerKickEvent;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +32,9 @@ public class EntityAction extends PacketAdapter {
             if (getAbilities(player).sprint()) {
                 getPlugin().getLogger().warning(player.getName()
                                 + " use impossible EntityAction! (START_SPRINTING while already sprinting)");
+                Bukkit.getScheduler().runTask(getPlugin(),
+                                () -> player.kick(Component.text("Invalid packet received"),
+                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
             } else {
                 playerAbilitiesContainer.get(player).setSprint(true);
             }
@@ -37,15 +43,34 @@ public class EntityAction extends PacketAdapter {
             if (!getAbilities(player).sprint()) {
                 getPlugin().getLogger().warning(player.getName()
                                 + " use impossible EntityAction! (STOP_SPRINTING while already non-sprinting)");
+                Bukkit.getScheduler().runTask(getPlugin(),
+                                () -> player.kick(Component.text("Invalid packet received"),
+                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
             } else {
                 playerAbilitiesContainer.get(player).setSprint(false);
             }
         }
         if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
-            playerAbilitiesContainer.get(player).setSneak(true);
+            if (getAbilities(player).sneak()) {
+                getPlugin().getLogger().warning(player.getName()
+                                + " use impossible EntityAction! (PRESS_SHIFT_KEY while already sneaking)");
+                Bukkit.getScheduler().runTask(getPlugin(),
+                                () -> player.kick(Component.text("Invalid packet received"),
+                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
+            } else {
+                playerAbilitiesContainer.get(player).setSneak(true);
+            }
         }
         if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
-            playerAbilitiesContainer.get(player).setSneak(false);
+            if (!getAbilities(player).sneak()) {
+                getPlugin().getLogger().warning(player.getName()
+                                + " use impossible EntityAction! (RELEASE_SHIFT_KEY while already non-sneaking)");
+                Bukkit.getScheduler().runTask(getPlugin(),
+                                () -> player.kick(Component.text("Invalid packet received"),
+                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
+            } else {
+                playerAbilitiesContainer.get(player).setSneak(false);
+            }
         }
     }
 

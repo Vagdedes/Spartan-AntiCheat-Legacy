@@ -297,12 +297,12 @@ public class Speed extends CheckExecutor {
                 }
 
                 {
-                    if (horizontal > limit / 1.35 && !RayUtils.validRayLines(a, b, 100)
+                    if (horizontal > limit / 1.2 && !RayUtils.validRayLines(a, b, 90)
                             && speedModify < 1.0 && !onDamage) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
                         if (antiAbuseProcessor > 200) {
                             flag = "type: simulation-air-direction(blatant), speed: " + horizontal
-                                    + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
+                                    + ", speed-limit: " + RayUtils.scaleVal(limit / 1.2, 2);
                         }
                     }
                     if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15

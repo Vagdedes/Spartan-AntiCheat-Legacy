@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
@@ -14,6 +15,7 @@ import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -105,11 +107,13 @@ public class SharedEvents {
         MovementProcessing.run(p, to, ver, box);
 
         // Patterns
-        for (Enums.HackType hackType : handledChecks) {
-            if (p.getViolations(hackType).prevent()) {
-                break;
+        Bukkit.getScheduler().runTask(Register.plugin, () -> {
+            for (Enums.HackType hackType : handledChecks) {
+                if (p.getViolations(hackType).prevent()) {
+                    break;
+                }
             }
-        }
+        });
 
         // Detections
         boolean cancelled = e.isCancelled();

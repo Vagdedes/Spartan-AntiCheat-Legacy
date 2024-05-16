@@ -23,11 +23,16 @@ public class Teleport extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();
-        PlayerTeleportEvent playerTeleportEvent =
-                        new PlayerTeleportEvent(player,
-                                        Move.positionManager.get(player),
-                                        Move.readMovePacket(event));
-        lastTeleport.put(player, Move.readMovePacket(event));
-        SharedEvents.teleport(playerTeleportEvent);
+        Location currentLocation = Move.positionManager.get(player);
+        Location newLocation = Move.readMovePacket(event);
+
+        // Check if the worlds are the same before adding the locations
+        if (currentLocation != null && currentLocation.getWorld().equals(newLocation.getWorld())) {
+            Location finalLocation = newLocation.add(currentLocation);
+            PlayerTeleportEvent playerTeleportEvent = new PlayerTeleportEvent(player, currentLocation, finalLocation);
+            lastTeleport.put(player, finalLocation);
+            SharedEvents.teleport(playerTeleportEvent);
+        }
     }
+
 }
