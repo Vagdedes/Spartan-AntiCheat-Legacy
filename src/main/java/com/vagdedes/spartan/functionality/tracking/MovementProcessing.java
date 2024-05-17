@@ -11,8 +11,10 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.server.*;
-import org.bukkit.GameMode;
+import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
+import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
+import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 
@@ -39,15 +41,6 @@ public class MovementProcessing {
     public static void run(SpartanPlayer player,
                            SpartanLocation to,
                            double vertical, double box) {
-        GameMode current = player.getGameMode();
-
-        if (current == GameMode.CREATIVE
-                || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && current == GameMode.SPECTATOR) {
-            player.trackers.add(Trackers.TrackerType.GAME_MODE, (int) TPS.maximum);
-        }
-
-        // Separator
-
         if (!calculateLiquid(player, to)) {
             if (!calculateGroundCollision(player, vertical, box)) {
                 calculateBouncing(player, to, vertical);
@@ -55,7 +48,6 @@ public class MovementProcessing {
         } else {
             calculateBouncing(player, to, vertical);
         }
-        calculateExtremeCollision(player, to);
 
         // Separator
 
@@ -76,18 +68,6 @@ public class MovementProcessing {
             return true;
         } else {
             return false;
-        }
-    }
-
-    private static void calculateExtremeCollision(SpartanPlayer player, SpartanLocation location) {
-        if (v1_9
-                && !player.trackers.isDisabled(Trackers.TrackerType.EXTREME_COLLISION)) {
-            player.trackers.disable(Trackers.TrackerType.EXTREME_COLLISION, 2); // Disable for the next tick
-            int collisions = PlayerUtils.getNearbyCollisions(player, location);
-
-            if (collisions > 10) {
-                player.trackers.add(Trackers.TrackerType.EXTREME_COLLISION, Math.min((int) (TPS.maximum * 2), collisions));
-            }
         }
     }
 
@@ -183,7 +163,7 @@ public class MovementProcessing {
 
     public static boolean canCheck(SpartanPlayer player,
                                    boolean elytra, boolean velocity, boolean flight) {
-        if ((elytra || !player.trackers.has(Trackers.TrackerType.ELYTRA_USE))
+        if ((elytra || !player.movement.isGliding())
                 && (flight || !player.movement.isFlying())
                 && (velocity || !player.trackers.has(Trackers.TrackerType.ABSTRACT_VELOCITY))
                 && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)) {

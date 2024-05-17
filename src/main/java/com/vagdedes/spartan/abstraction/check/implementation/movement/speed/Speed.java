@@ -600,4 +600,5 @@ public class Speed extends CheckExecutor {
         double b = a - (wrapGoodMath);
         return (b < 0.3 || b > 0.7);
     }
+
 }

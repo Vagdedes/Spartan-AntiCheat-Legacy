@@ -467,8 +467,6 @@ public class SpartanPlayer {
         return p == null ? 0.0f : p.getFlySpeed();
     }
 
-    // Separator
-
     public Entity getVehicle() {
         Player p = getInstance();
         return p == null ? null : p.getVehicle();
@@ -861,10 +859,7 @@ public class SpartanPlayer {
     public boolean canSee(Player target) {
         if (SpartanBukkit.supportedFork) {
             Player p = getInstance();
-
-            if (p != null) {
-                return p.canSee(target);
-            }
+            return p != null && p.canSee(target);
         }
         return false;
     }

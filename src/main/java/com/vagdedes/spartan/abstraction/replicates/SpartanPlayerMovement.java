@@ -407,7 +407,7 @@ public class SpartanPlayerMovement {
                                 || this.location.getPitch() != actualLocation.getPitch()) {
                     spartanLocation = new SpartanLocation(this.parent, actualLocation);
                     SpartanLocation from = this.location.clone();
-                    this.setLocation(spartanLocation);
+                    this.setLocation(spartanLocation, false);
                     location.retrieveDataFrom(from);
                 }
             }
@@ -415,14 +415,16 @@ public class SpartanPlayerMovement {
         return location;
     }
 
-    private void setLocation(SpartanLocation location) {
-        synchronized (this.locations) {
-            if (this.locations.size() == TPS.maximum) {
-                Iterator<Long> iterator = this.locations.keySet().iterator();
-                iterator.next();
-                iterator.remove();
+    private void setLocation(SpartanLocation location, boolean queue) {
+        if (queue) {
+            synchronized (this.locations) {
+                if (this.locations.size() == TPS.maximum) {
+                    Iterator<Long> iterator = this.locations.keySet().iterator();
+                    iterator.next();
+                    iterator.remove();
+                }
+                this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
             }
-            this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
         }
         if (!this.location.world.equals(location.world)) {
             this.parent.resetTrackers();
@@ -446,7 +448,7 @@ public class SpartanPlayerMovement {
                 return false;
             }
         }
-        this.setLocation(to);
+        this.setLocation(to, true);
         this.eventTo = to;
         this.eventFrom = from;
         this.eventDistance.add(distance);

@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.functionality.tracking;
 
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -26,10 +24,6 @@ public class Elytra {
                                 p.getExecutor(Enums.HackType.Exploits).handle(false, Elytra.class);
                             } else {
                                 p.cooldowns.add("elytra-wear", 2);
-
-                                if (gliding) {
-                                    p.trackers.add(Trackers.TrackerType.ELYTRA_USE, (int) (TPS.maximum / 2));
-                                }
                             }
                         } else {
                             p.movement.setGliding(false);

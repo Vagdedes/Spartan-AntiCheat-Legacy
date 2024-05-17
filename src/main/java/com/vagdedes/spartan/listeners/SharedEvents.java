@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class SharedEvents {
+
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
             Enums.HackType.NoFall,
             Enums.HackType.IrregularMovements,
