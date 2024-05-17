@@ -2,6 +2,7 @@ package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -12,10 +13,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class EventsHandler2 implements Listener {
-
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void BowShot(EntityShootBowEvent e) {
@@ -98,4 +99,19 @@ public class EventsHandler2 implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Command(PlayerCommandPreprocessEvent e) {
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+
+        if (p == null) {
+            return;
+        }
+        String msg = e.getMessage();
+
+        if (ChatProtection.runCommand(p, msg, false)) {
+            e.setCancelled(true);
+        }
+    }
+
 }

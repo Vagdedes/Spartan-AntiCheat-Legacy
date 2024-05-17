@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
-import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
@@ -17,24 +16,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class EventsHandler6 implements Listener {
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Command(PlayerCommandPreprocessEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
-        String msg = e.getMessage();
-
-        if (ChatProtection.runCommand(p, msg, false)) {
-            e.setCancelled(true);
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Damage(EntityDamageByEntityEvent e) {
@@ -132,14 +115,4 @@ public class EventsHandler6 implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Animation(PlayerAnimationEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
-        // Detections
-        p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
-    }
 }

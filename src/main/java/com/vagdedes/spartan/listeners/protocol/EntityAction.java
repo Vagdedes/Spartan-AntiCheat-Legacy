@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EntityAction extends PacketAdapter {
 
     public static Map<Player, AbilitiesContainer> playerAbilitiesContainer = new ConcurrentHashMap<>();
+
     public EntityAction() {
         super(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.ENTITY_ACTION);
     }
@@ -30,10 +31,10 @@ public class EntityAction extends PacketAdapter {
         if (type == AbilitiesEnum.START_SPRINTING) {
             if (getAbilities(player).sprint()) {
                 getPlugin().getLogger().warning(player.getName()
-                                + " use impossible EntityAction! (START_SPRINTING while already sprinting)");
+                        + " use impossible EntityAction! (START_SPRINTING while already sprinting)");
                 Bukkit.getScheduler().runTask(getPlugin(),
-                                () -> player.kick(Component.text("Invalid packet received"),
-                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
+                        () -> player.kick(Component.text("Invalid packet received"),
+                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
             } else {
                 playerAbilitiesContainer.get(player).setSprint(true);
             }
@@ -41,10 +42,10 @@ public class EntityAction extends PacketAdapter {
         if (type == AbilitiesEnum.STOP_SPRINTING) {
             if (!getAbilities(player).sprint()) {
                 getPlugin().getLogger().warning(player.getName()
-                                + " use impossible EntityAction! (STOP_SPRINTING while already non-sprinting)");
+                        + " use impossible EntityAction! (STOP_SPRINTING while already non-sprinting)");
                 Bukkit.getScheduler().runTask(getPlugin(),
-                                () -> player.kick(Component.text("Invalid packet received"),
-                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
+                        () -> player.kick(Component.text("Invalid packet received"),
+                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
             } else {
                 playerAbilitiesContainer.get(player).setSprint(false);
             }
@@ -52,10 +53,10 @@ public class EntityAction extends PacketAdapter {
         if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
             if (getAbilities(player).sneak()) {
                 getPlugin().getLogger().warning(player.getName()
-                                + " use impossible EntityAction! (PRESS_SHIFT_KEY while already sneaking)");
+                        + " use impossible EntityAction! (PRESS_SHIFT_KEY while already sneaking)");
                 Bukkit.getScheduler().runTask(getPlugin(),
-                                () -> player.kick(Component.text("Invalid packet received"),
-                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
+                        () -> player.kick(Component.text("Invalid packet received"),
+                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
             } else {
                 playerAbilitiesContainer.get(player).setSneak(true);
             }
@@ -63,10 +64,10 @@ public class EntityAction extends PacketAdapter {
         if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
             if (!getAbilities(player).sneak()) {
                 getPlugin().getLogger().warning(player.getName()
-                                + " use impossible EntityAction! (RELEASE_SHIFT_KEY while already non-sneaking)");
+                        + " use impossible EntityAction! (RELEASE_SHIFT_KEY while already non-sneaking)");
                 Bukkit.getScheduler().runTask(getPlugin(),
-                                () -> player.kick(Component.text("Invalid packet received"),
-                                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
+                        () -> player.kick(Component.text("Invalid packet received"),
+                                PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT));
             } else {
                 playerAbilitiesContainer.get(player).setSneak(false);
             }
@@ -76,6 +77,7 @@ public class EntityAction extends PacketAdapter {
     public static AbilitiesContainer getAbilities(Player player) {
         return playerAbilitiesContainer.get(player);
     }
+
     public static AbilitiesContainer getAbilities(SpartanPlayer player) {
         return playerAbilitiesContainer.get(player.getInstance());
     }

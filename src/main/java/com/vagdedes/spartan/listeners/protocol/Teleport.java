@@ -20,6 +20,7 @@ public class Teleport extends PacketAdapter {
     public Teleport() {
         super(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.POSITION);
     }
+
     @Override
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();

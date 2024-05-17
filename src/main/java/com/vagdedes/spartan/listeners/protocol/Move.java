@@ -92,6 +92,7 @@ public class Move extends PacketAdapter {
             );
         }
     }
+
     public static void importRotation(Player player, Location l) {
         l.setYaw(lastRotation.get(player).yaw());
         l.setPitch(lastRotation.get(player).pitch());
@@ -118,11 +119,12 @@ public class Move extends PacketAdapter {
             return player.isOnGround();
         }
     }
+
     private static boolean rumiaShield(Player player, Location from, Location to) {
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         double y = RayUtils.scaleVal(to.getY() - from.getY(), 2);
         double speed = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
-        return  y == -0.09;
+        return y == -0.09;
     }
 }

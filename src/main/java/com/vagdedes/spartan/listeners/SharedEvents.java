@@ -140,6 +140,7 @@ public class SharedEvents {
         }
         p.movement.judgeGround(new SpartanLocation(p, nto));
     }
+
     public static void velocity(PlayerVelocityEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 

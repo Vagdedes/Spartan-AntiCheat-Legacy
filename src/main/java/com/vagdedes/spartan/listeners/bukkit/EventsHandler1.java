@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -87,6 +88,17 @@ public class EventsHandler1 implements Listener {
 
         // Protections
         p.resetTrackers(); // Always First
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Animation(PlayerAnimationEvent e) {
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+
+        if (p == null) {
+            return;
+        }
+        // Detections
+        p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
     }
 
 }

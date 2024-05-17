@@ -72,7 +72,6 @@ public class Register extends JavaPlugin {
             p.addPacketListener(new Join());
             p.addPacketListener(new EntityAction());
             p.addPacketListener(new Velocity());
-
         } else {
             enable(new EventHandler_Shared(), EventHandler_Shared.class);
         }
