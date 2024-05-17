@@ -77,7 +77,7 @@ public class EntityAction extends PacketAdapter {
         return playerAbilitiesContainer.get(player);
     }
     public static AbilitiesContainer getAbilities(SpartanPlayer player) {
-        return playerAbilitiesContainer.get(player.getPlayer());
+        return playerAbilitiesContainer.get(player.getInstance());
     }
 
 }

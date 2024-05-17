@@ -130,7 +130,7 @@ public class SpartanPlayerDamage {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) this.event;
 
             if (event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
-                Player p = this.parent.getPlayer();
+                Player p = this.parent.getInstance();
                 return p != null && event.getDamager().equals(p);
             }
         }

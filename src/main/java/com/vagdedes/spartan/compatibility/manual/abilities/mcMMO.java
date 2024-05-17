@@ -14,7 +14,7 @@ public class mcMMO {
 
     public static boolean hasGeneralAbility(SpartanPlayer p) {
         if (Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
-            Player n = p.getPlayer();
+            Player n = p.getInstance();
             return n != null && AbilityAPI.isAnyAbilityEnabled(n)
 
                     || PlayerUtils.isAxeItem(p.getItemInHand().getType())
@@ -31,7 +31,7 @@ public class mcMMO {
 
     public static boolean hasTreeFeller(SpartanPlayer p) {
         if (Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
-            Player n = p.getPlayer();
+            Player n = p.getInstance();
             return n != null && AbilityAPI.treeFellerEnabled(n);
         } else {
             return false;

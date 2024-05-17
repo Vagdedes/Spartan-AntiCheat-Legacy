@@ -103,15 +103,15 @@ public class Move extends PacketAdapter {
     }
 
     public static Location getLocation(SpartanPlayer spartanPlayer) {
-        if (positionManager.containsKey(spartanPlayer.getPlayer())) {
-            return positionManager.get(spartanPlayer.getPlayer());
+        if (positionManager.containsKey(spartanPlayer.getInstance())) {
+            return positionManager.get(spartanPlayer.getInstance());
         } else {
-            return spartanPlayer.getPlayer().getLocation();
+            return spartanPlayer.getInstance().getLocation();
         }
     }
 
     public static Boolean isOnGround(SpartanPlayer spartanPlayer) {
-        Player player = spartanPlayer.getPlayer();
+        Player player = spartanPlayer.getInstance();
         if (groundManager.containsKey(player)) {
             return groundManager.get(player);
         } else {

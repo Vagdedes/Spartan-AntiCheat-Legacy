@@ -244,7 +244,7 @@ public class CommandExecution implements CommandExecutor {
                         sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
                         return true;
                     }
-                    if (!ProxyUtils.executeCommand(isPlayer ? player.getPlayer() : null, argumentsToString)) {
+                    if (!ProxyUtils.executeCommand(isPlayer ? player.getInstance() : null, argumentsToString)) {
                         sender.sendMessage(Config.messages.getColorfulString("failed_command"));
                         return true;
                     }

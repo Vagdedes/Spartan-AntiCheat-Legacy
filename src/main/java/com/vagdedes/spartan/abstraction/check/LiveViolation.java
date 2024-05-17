@@ -69,12 +69,11 @@ public class LiveViolation {
                         analysis
                 );
                 boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-                this.player.setLastViolation(this);
 
                 Runnable runnable = () -> {
                     if (event) {
                         PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                                player.getPlayer(),
+                                player.getInstance(),
                                 hackType,
                                 playerViolation.level,
                                 information
@@ -111,7 +110,7 @@ public class LiveViolation {
             if (this.prevention.canPrevent
                     && !this.prevention.hasExpired(TPS.getTick(player))) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getPlayer(), hackType);
+                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
                     Register.manager.callEvent(checkCancelEvent);
 
                     if (!checkCancelEvent.isCancelled()) {
@@ -199,7 +198,7 @@ public class LiveViolation {
         ViolationResetEvent event;
 
         if (SpartanBukkit.isSynchronised()) {
-            Player player = this.player.getPlayer();
+            Player player = this.player.getInstance();
 
             if (player != null) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
@@ -273,7 +272,7 @@ public class LiveViolation {
             List<String> commands = Config.settings.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
-                Player n = player.getPlayer();
+                Player n = player.getInstance();
 
                 if (n != null) {
                     boolean performed = false, found = false;
@@ -380,7 +379,7 @@ public class LiveViolation {
 
             if (DetectionNotifications.canAcceptMessages(player, divisor, false)
                     && isDivisorValid(playerViolation.level, divisor)) { // Attention
-                Player realPlayer = player.getPlayer();
+                Player realPlayer = player.getInstance();
 
                 if (realPlayer != null) {
                     ClickableMessage.sendCommand(realPlayer, message, "Command: " + command, command);
@@ -395,7 +394,7 @@ public class LiveViolation {
                             playerViolation.level,
                             NotifyViolation.get(staff, player, ignoredViolations)
                     )) {
-                        Player realPlayer = staff.getPlayer();
+                        Player realPlayer = staff.getInstance();
 
                         if (realPlayer != null) {
                             ClickableMessage.sendCommand(

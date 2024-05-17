@@ -243,7 +243,7 @@ public class CombatUtils {
                 && PlayerUtils.isSwordItem(p.getItemInHand().getType())) {
             double distance = 4.0;
             List<Entity> nearbyEntities = entity.getNearbyEntities(distance, distance, distance);
-            nearbyEntities.remove(p.getPlayer());
+            nearbyEntities.remove(p.getInstance());
             int i = 0;
 
             for (Entity e : nearbyEntities) {

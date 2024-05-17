@@ -93,9 +93,6 @@ public class Register extends JavaPlugin {
                 enable(new EventsHandler_1_13(), EventsHandler_1_13.class);
             }
         }
-        if (!MultiVersion.fork().equals("Unknown")) {
-            enable(new EventHandler_Incompatible(), EventHandler_Incompatible.class);
-        }
         ProxyUtils.register();
 
         // Commands

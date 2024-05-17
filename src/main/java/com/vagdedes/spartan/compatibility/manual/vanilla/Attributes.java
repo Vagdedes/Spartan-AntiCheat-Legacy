@@ -29,7 +29,7 @@ public class Attributes {
         if (Compatibility.CompatibilityType.ITEM_ATTRIBUTES.isFunctional()) {
             try {
                 Attribute attribute = Attribute.valueOf(attributeString);
-                Player n = p.getPlayer();
+                Player n = p.getInstance();
 
                 if (n != null) {
                     AttributeInstance instance = n.getAttribute(attribute);

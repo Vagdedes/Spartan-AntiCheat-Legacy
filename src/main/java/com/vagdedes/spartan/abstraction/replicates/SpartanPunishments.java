@@ -20,7 +20,7 @@ public class SpartanPunishments {
     }
 
     public void kick(CommandSender punisher, String reason) {
-        Player target = this.parent.getPlayer();
+        Player target = this.parent.getInstance();
 
         if (target != null) {
             String punisherName = punisher instanceof ConsoleCommandSender
@@ -57,7 +57,7 @@ public class SpartanPunishments {
     }
 
     public void warn(CommandSender punisher, String reason) {
-        Player target = this.parent.getPlayer();
+        Player target = this.parent.getInstance();
 
         if (target != null) {
             String punisherName = punisher instanceof ConsoleCommandSender

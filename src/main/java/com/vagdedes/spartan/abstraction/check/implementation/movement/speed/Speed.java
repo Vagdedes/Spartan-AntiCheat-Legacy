@@ -306,7 +306,7 @@ public class Speed extends CheckExecutor {
                         }
                     }
                     if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
-                            && !player.getPlayer().isSprinting() && !ignoreBasicChecks
+                            && !player.getInstance().isSprinting() && !ignoreBasicChecks
                             && speedModify < 1.0) {
                         double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                         if (calcDiff > 10 && !allowedAngle(calcDiff)) {
@@ -365,7 +365,7 @@ public class Speed extends CheckExecutor {
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
             }
-            if (horizontal >= limit / 1.7 && !player.getPlayer().isSprinting()
+            if (horizontal >= limit / 1.7 && !player.getInstance().isSprinting()
                     && speedModify < 1.0) {
                 double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                 if (calcDiff > 10 && !allowedAngle(calcDiff)) {
@@ -393,7 +393,7 @@ public class Speed extends CheckExecutor {
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
         if (flag != null) cancel(flag, 2, to);
-        player.debug(false, false, false, antiAbuseProcessor);
+        //player.debug(false, false, false, antiAbuseProcessor);
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
         oldWrappedOnFly = wrappedOnFly;

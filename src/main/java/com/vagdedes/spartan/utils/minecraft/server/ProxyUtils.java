@@ -39,10 +39,10 @@ public class ProxyUtils {
                 if (!players.isEmpty()) { // 1 because we already know we have one player
                     for (SpartanPlayer loopPlayer : players) {
                         if (loopPlayer.isOp()) {
-                            player = loopPlayer.getPlayer();
+                            player = loopPlayer.getInstance();
                             break;
                         } else if (Permissions.isStaff(loopPlayer)) {
-                            player = loopPlayer.getPlayer();
+                            player = loopPlayer.getInstance();
                         }
                     }
                 }

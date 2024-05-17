@@ -10,7 +10,7 @@ public class ClicksPerSecond extends DetectionExecutor {
     }
 
     void run() {
-        int count = player.getClicks().getCount(),
+        int count = player.clicks.getCount(),
                 limit = hackType.getCheck().getNumericalOption(
                         "clicks_per_second_limit",
                         FastClicks.defaultClicksPerSecondLimit

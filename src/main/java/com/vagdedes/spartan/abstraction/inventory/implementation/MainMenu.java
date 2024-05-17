@@ -49,7 +49,7 @@ public class MainMenu extends InventoryMenu {
                 if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
                         SpartanBukkit.runTask(p, () -> {
-                            Player n = p.getPlayer();
+                            Player n = p.getInstance();
 
                             if (n != null) {
                                 String title = n.getOpenInventory().getTitle();
@@ -178,7 +178,7 @@ public class MainMenu extends InventoryMenu {
                 player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
                 if (Compatibility.CompatibilityType.FILE_GUI.isFunctional()) {
-                    Player n = player.getPlayer();
+                    Player n = player.getInstance();
 
                     if (n != null && n.hasPermission("filegui.modify")) {
                         FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);

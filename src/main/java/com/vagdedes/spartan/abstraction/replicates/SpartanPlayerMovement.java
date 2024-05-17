@@ -178,7 +178,7 @@ public class SpartanPlayerMovement {
         if (artificialSwimming >= TPS.getTick(this.parent)) {
             return true;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            Player p = this.parent.getPlayer();
+            Player p = this.parent.getInstance();
             return p != null && p.isSwimming();
         } else {
             return false;
@@ -206,7 +206,7 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isSneaking() {
-        Player p = this.parent.getPlayer();
+        Player p = this.parent.getInstance();
         return p != null && (SpartanBukkit.packetsEnabled()
                         ? EntityAction.getAbilities(p).sneak() : p.isSneaking());
     }
@@ -217,7 +217,7 @@ public class SpartanPlayerMovement {
         if (vehicle != null) {
             return vehicle instanceof Player && ((Player) vehicle).isFlying();
         } else {
-            Player p = this.parent.getPlayer();
+            Player p = this.parent.getInstance();
             return p != null && p.isFlying();
         }
     }
@@ -225,7 +225,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isSprinting() {
-        Player p = this.parent.getPlayer();
+        Player p = this.parent.getInstance();
         return p != null && (SpartanBukkit.packetsEnabled()
                         ? EntityAction.getAbilities(p).sprint() : p.isSprinting());
     }
@@ -277,7 +277,7 @@ public class SpartanPlayerMovement {
 
     public boolean isGliding() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            Player p = this.parent.getPlayer();
+            Player p = this.parent.getInstance();
             return p != null && p.isGliding();
         } else {
             return false;
@@ -286,7 +286,7 @@ public class SpartanPlayerMovement {
 
     public synchronized void setGliding(boolean gliding) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            Player p = this.parent.getPlayer();
+            Player p = this.parent.getInstance();
 
             if (p != null) {
                 p.setGliding(gliding);
@@ -390,7 +390,7 @@ public class SpartanPlayerMovement {
     }
 
     public SpartanLocation getLocation() {
-        Player p = this.parent.getPlayer();
+        Player p = this.parent.getInstance();
 
         if (p != null) {
             SpartanLocation spartanLocation = getVehicleLocation(p);

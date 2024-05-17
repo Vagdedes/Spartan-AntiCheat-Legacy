@@ -81,7 +81,7 @@ public class PlayerProfile {
         Enums.HackType[] hackTypes = Enums.HackType.values();
         this.uuid = player.uuid;
         this.name = player.name;
-        this.offlinePlayer = player.getPlayer(); // Attention
+        this.offlinePlayer = player.getInstance(); // Attention
         this.punishmentHistory = new PunishmentHistory();
         this.playerCombat = new PlayerCombat(this);
         this.evidence = new PlayerEvidence();
@@ -123,7 +123,7 @@ public class PlayerProfile {
                 if (spartanPlayer == null) {
                     return InventoryUtils.getHead();
                 } else {
-                    Player player = spartanPlayer.getPlayer();
+                    Player player = spartanPlayer.getInstance();
 
                     if (player == null) {
                         return InventoryUtils.getHead();

@@ -7,6 +7,7 @@ import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -91,7 +92,11 @@ public class FastEat extends CheckExecutor {
 
             if (lvl > player.getFoodLevel()
                     && (checkDelay() || checkEating())) {
-                player.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()));
+                Player p = player.getInstance();
+
+                if (p != null) {
+                    p.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()));
+                }
             }
         } else if (!player.bedrockPlayer) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
