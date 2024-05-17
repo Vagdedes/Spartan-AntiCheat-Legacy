@@ -9,9 +9,11 @@ import me.vagdedes.spartan.system.Enums;
 public class ItemDrops extends CheckExecutor {
 
     private long time;
+    private final Buffer buffer;
 
     public ItemDrops(SpartanPlayer player) {
         super(Enums.HackType.ItemDrops, player);
+        this.buffer = new Buffer(player);
     }
 
     @Override
@@ -19,13 +21,10 @@ public class ItemDrops extends CheckExecutor {
         long timePassed = System.currentTimeMillis() - time;
         this.time = System.currentTimeMillis();
 
-        if (timePassed <= TPS.tickTime) {
-            Buffer buffer = this.getBuffer();
-
-            if (buffer.count("", 10) == 7) {
-                buffer.remove("");
-                cancel("type: default, ms: " + timePassed, 1.0, null, 10);
-            }
+        if (timePassed <= TPS.tickTime
+                && buffer.count("", 10) == 7) {
+            buffer.remove("");
+            cancel("type: default, ms: " + timePassed, 1.0, null, 10);
         }
     }
 

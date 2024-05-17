@@ -5,8 +5,10 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.CheckExecutorExample;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.data.Timer;
-import com.vagdedes.spartan.abstraction.data.*;
+import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.data.Clicks;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -69,12 +71,11 @@ public class SpartanPlayer {
 
     // Data
 
-    private final Buffer[] buffer;
-    private final Timer[] timer;
-    private final Cooldowns[] cooldowns;
+    public final Buffer buffer;
+    public final Cooldowns cooldowns;
     private final CheckExecutor[] executors;
     private final LiveViolation[] violations;
-    private final Trackers trackers;
+    public final Trackers trackers;
     private LiveViolation lastViolation;
 
     // Cache
@@ -209,17 +210,13 @@ public class SpartanPlayer {
         }
         this.creationTime = System.currentTimeMillis();
 
-        this.buffer = new Buffer[hackTypes.length + 1];
-        this.timer = new Timer[hackTypes.length + 1];
-        this.cooldowns = new Cooldowns[hackTypes.length + 1];
+        this.buffer = new Buffer(this);
+        this.cooldowns = new Cooldowns(this);
         this.executors = new CheckExecutor[hackTypes.length];
         this.violations = new LiveViolation[hackTypes.length];
 
         for (Enums.HackType hackType : hackTypes) {
             int id = hackType.ordinal();
-            this.buffer[id] = new Buffer(this);
-            this.timer[id] = new Timer();
-            this.cooldowns[id] = new Cooldowns(this);
             this.violations[id] = new LiveViolation(this, hackType);
             this.executors[id] = new CheckExecutorExample(this);
         }
@@ -234,9 +231,6 @@ public class SpartanPlayer {
             }
         }
         this.lastViolation = this.violations[0];
-        this.buffer[hackTypes.length] = new Buffer(this);
-        this.timer[hackTypes.length] = new Timer();
-        this.cooldowns[hackTypes.length] = new Cooldowns(this);
     }
 
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
@@ -295,41 +289,11 @@ public class SpartanPlayer {
 
     // Separator
 
-    public Buffer getBuffer() {
-        return buffer[Enums.HackType.values().length];
-    }
-
-    public Timer getTimer() {
-        return timer[Enums.HackType.values().length];
-    }
-
-    public Cooldowns getCooldowns() {
-        return cooldowns[Enums.HackType.values().length];
-    }
-
-    public Buffer getBuffer(Enums.HackType hackType) {
-        return buffer[hackType.ordinal()];
-    }
-
-    public Timer getTimer(Enums.HackType hackType) {
-        return timer[hackType.ordinal()];
-    }
-
-    public Cooldowns getCooldowns(Enums.HackType hackType) {
-        return cooldowns[hackType.ordinal()];
-    }
-
     public CheckExecutor getExecutor(Enums.HackType hackType) {
         return executors[hackType.ordinal()];
     }
 
-    // Separator
-
-    public Trackers getTrackers() {
-        return trackers;
-    }
-
-    public void resetHandlers() {
+    public void resetTrackers() {
         for (Trackers.TrackerType handlerType : Trackers.TrackerType.values()) {
             trackers.remove(handlerType);
         }

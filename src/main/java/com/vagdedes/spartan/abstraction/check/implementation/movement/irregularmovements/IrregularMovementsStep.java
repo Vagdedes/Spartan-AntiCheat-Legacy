@@ -71,9 +71,9 @@ public class IrregularMovementsStep extends DetectionExecutor {
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         if (hackType.getCheck().getBooleanOption("check_step", true)) {
             Entity vehicle = player.getVehicle();
-            boolean slime = player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime"),
-                    bed = player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed"),
-                    vehicleEnter = player.getTrackers().has(Trackers.TrackerType.VEHICLE, "enter");
+            boolean slime = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime"),
+                    bed = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed"),
+                    vehicleEnter = player.trackers.has(Trackers.TrackerType.VEHICLE, "enter");
 
             runAsync(() -> {
                 if (knownBox && knownOldBox) {

@@ -45,8 +45,8 @@ public class CombatProcessing {
     public static boolean canCheck(SpartanPlayer player) {
         return !player.movement.isCrawling()
                 && !player.movement.isFlying()
-                && !player.getTrackers().has(Trackers.TrackerType.GAME_MODE)
-                && !player.getTrackers().has(Trackers.TrackerType.ELYTRA_USE)
+                && !player.trackers.has(Trackers.TrackerType.GAME_MODE)
+                && !player.trackers.has(Trackers.TrackerType.ELYTRA_USE)
                 && player.getVehicle() == null
                 && !mcMMO.hasGeneralAbility(player)
                 && !Attributes.has(player, Attributes.GENERIC_ARMOR);

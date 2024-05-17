@@ -31,10 +31,12 @@ public class FastBreak extends CheckExecutor {
 
     private SpartanBlock lastBlock = null;
     private final Map<Integer, Long> interactTime;
+    private final Buffer buffer;
 
     public FastBreak(SpartanPlayer player) {
         super(HackType.FastBreak, player);
         this.interactTime = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.buffer = new Buffer(player);
     }
 
     private void checkDelay(SpartanBlock block, int seconds) {
@@ -115,7 +117,6 @@ public class FastBreak extends CheckExecutor {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
 
             if (limit > 0) {
-                Buffer buffer = this.getBuffer();
                 String key = "breaks-per-second";
 
                 if (buffer.count(key, 20) == limit) {
@@ -141,7 +142,6 @@ public class FastBreak extends CheckExecutor {
 
             if (limit > 0) {
                 String key = "indirect-surroundings";
-                Buffer buffer = this.getBuffer();
                 int bufferTime = 20;
                 double bufferThreshold;
 

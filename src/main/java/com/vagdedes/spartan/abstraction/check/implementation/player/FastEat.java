@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.data.Timer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
@@ -17,10 +16,11 @@ import org.bukkit.potion.PotionEffectType;
 public class FastEat extends CheckExecutor {
 
     private static final Material cake = MaterialUtils.get("cake");
-
     private static final long
             delay = 1_000L,
             driedKelp = 550L;
+
+    private  long delayTime, eatTime;
 
     public FastEat(SpartanPlayer player) {
         super(HackType.FastEat, player);
@@ -60,9 +60,9 @@ public class FastEat extends CheckExecutor {
 
     private boolean checkDelay() {
         boolean bool;
-        Timer timer = player.getTimer(hackType);
-        long time = timer.get("time"),
-                delay = getDelay();
+        long time = System.currentTimeMillis() - delayTime;
+        this.delayTime = System.currentTimeMillis();
+        long delay = getDelay();
 
         if (delay > 0L && time <= delay) {
             cancel("type: eat, ms: " + time);
@@ -70,12 +70,11 @@ public class FastEat extends CheckExecutor {
         } else {
             bool = false;
         }
-        timer.set("time");
         return bool;
     }
 
     private boolean checkEating() {
-        long time = player.getTimer(hackType).get("food"),
+        long time = System.currentTimeMillis() - eatTime,
                 delay = getDelay();
 
         if (delay > 0L && time <= delay) {
@@ -105,7 +104,7 @@ public class FastEat extends CheckExecutor {
                     break;
                 case RIGHT_CLICK_AIR:
                     if (player.getItemInHand().getType().isEdible()) {
-                        player.getTimer(hackType).set("food");
+                        this.eatTime = System.currentTimeMillis();
                     }
                     break;
                 default:

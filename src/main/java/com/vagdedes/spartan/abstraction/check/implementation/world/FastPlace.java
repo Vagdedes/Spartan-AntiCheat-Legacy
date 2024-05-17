@@ -16,9 +16,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 public class FastPlace extends CheckExecutor {
 
     private long time;
+    private final Buffer buffer;
 
     public FastPlace(SpartanPlayer player) {
         super(HackType.FastPlace, player);
+        this.buffer = new Buffer(player);
     }
 
     @Override
@@ -36,7 +38,6 @@ public class FastPlace extends CheckExecutor {
                     && material != Material.VOID_AIR)) {
                 long timePassed = System.currentTimeMillis() - time;
                 time = System.currentTimeMillis();
-                Buffer buffer = this.getBuffer();
                 int ticks = 20;
 
                 if (timePassed <= 150L) {

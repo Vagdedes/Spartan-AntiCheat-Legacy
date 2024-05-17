@@ -184,7 +184,7 @@ public class GroundUtils {
         boolean original = y == 0;
 
         if (original) {
-            if (p.getTrackers().has(Trackers.TrackerType.PISTON)
+            if (p.trackers.has(Trackers.TrackerType.PISTON)
                     || stepsOnBoats(p)
                     || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
                 return true;

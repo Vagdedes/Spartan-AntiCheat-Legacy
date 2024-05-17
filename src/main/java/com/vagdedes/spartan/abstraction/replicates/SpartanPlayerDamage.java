@@ -37,7 +37,7 @@ public class SpartanPlayerDamage {
                         EntityDamageEvent event,
                         SpartanLocation location,
                         long tick) {
-        player.getTrackers().add(Trackers.TrackerType.DAMAGE, (int) TPS.maximum);
+        player.trackers.add(Trackers.TrackerType.DAMAGE, (int) TPS.maximum);
         this.parent = player;
         this.tick = tick;
         this.event = event;
@@ -91,7 +91,7 @@ public class SpartanPlayerDamage {
             int level = this.activeItem.getEnchantmentLevel(Enchantment.KNOCKBACK);
 
             if (level > 2) {
-                this.parent.getTrackers().add(
+                this.parent.trackers.add(
                         Trackers.TrackerType.ABSTRACT_VELOCITY,
                         AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
                 );

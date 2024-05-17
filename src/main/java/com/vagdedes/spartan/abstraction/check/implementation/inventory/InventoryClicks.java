@@ -14,9 +14,11 @@ import org.bukkit.inventory.ItemStack;
 public class InventoryClicks extends CheckExecutor {
 
     private long time;
+    private final Buffer buffer;
 
     public InventoryClicks(SpartanPlayer player) {
         super(Enums.HackType.InventoryClicks, player);
+        this.buffer = new Buffer(player);
     }
 
     @Override
@@ -32,14 +34,13 @@ public class InventoryClicks extends CheckExecutor {
             Material material = item.getType();
 
             if (!BlockUtils.isSensitive(player, material)) {
-                Buffer buffer = this.getBuffer();
                 String key = "";
                 boolean quick = player.getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
                         shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);
 
                 int newHash = type.hashCode();
-                int oldHash = this.getBuffer().get(key + "hash");
+                int oldHash = buffer.get(key + "hash");
                 buffer.set(key + "hash", newHash);
 
                 if (shift

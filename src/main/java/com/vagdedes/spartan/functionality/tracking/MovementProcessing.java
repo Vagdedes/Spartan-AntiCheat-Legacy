@@ -43,7 +43,7 @@ public class MovementProcessing {
 
         if (current == GameMode.CREATIVE
                 || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8) && current == GameMode.SPECTATOR) {
-            player.getTrackers().add(Trackers.TrackerType.GAME_MODE, (int) TPS.maximum);
+            player.trackers.add(Trackers.TrackerType.GAME_MODE, (int) TPS.maximum);
         }
 
         // Separator
@@ -70,9 +70,8 @@ public class MovementProcessing {
                 && player.getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
-            Trackers handlers = player.getTrackers();
-            handlers.removeMany(Trackers.TrackerFamily.MOTION);
-            handlers.removeMany(Trackers.TrackerFamily.VELOCITY);
+            player.trackers.removeMany(Trackers.TrackerFamily.MOTION);
+            player.trackers.removeMany(Trackers.TrackerFamily.VELOCITY);
             player.movement.removeLastLiquidTime();
             return true;
         } else {
@@ -81,16 +80,13 @@ public class MovementProcessing {
     }
 
     private static void calculateExtremeCollision(SpartanPlayer player, SpartanLocation location) {
-        if (v1_9) {
-            Trackers handlers = player.getTrackers();
+        if (v1_9
+                && !player.trackers.isDisabled(Trackers.TrackerType.EXTREME_COLLISION)) {
+            player.trackers.disable(Trackers.TrackerType.EXTREME_COLLISION, 2); // Disable for the next tick
+            int collisions = PlayerUtils.getNearbyCollisions(player, location);
 
-            if (!handlers.isDisabled(Trackers.TrackerType.EXTREME_COLLISION)) {
-                handlers.disable(Trackers.TrackerType.EXTREME_COLLISION, 2); // Disable for the next tick
-                int collisions = PlayerUtils.getNearbyCollisions(player, location);
-
-                if (collisions > 10) {
-                    handlers.add(Trackers.TrackerType.EXTREME_COLLISION, Math.min((int) (TPS.maximum * 2), collisions));
-                }
+            if (collisions > 10) {
+                player.trackers.add(Trackers.TrackerType.EXTREME_COLLISION, Math.min((int) (TPS.maximum * 2), collisions));
             }
         }
     }
@@ -100,12 +96,12 @@ public class MovementProcessing {
         if (v1_8 && vertical != 0.0) {
             if (BlockUtils.isSlime(player, location, 4)) {
                 int time = (int) (TPS.maximum * 2);
-                player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, time);
-                player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, "slime", time);
+                player.trackers.add(Trackers.TrackerType.BOUNCING_BLOCKS, time);
+                player.trackers.add(Trackers.TrackerType.BOUNCING_BLOCKS, "slime", time);
             } else if (BlockUtils.isBed(player, location, 4)) {
                 int time = (int) (TPS.maximum * 2);
-                player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, time);
-                player.getTrackers().add(Trackers.TrackerType.BOUNCING_BLOCKS, "bed", time);
+                player.trackers.add(Trackers.TrackerType.BOUNCING_BLOCKS, time);
+                player.trackers.add(Trackers.TrackerType.BOUNCING_BLOCKS, "bed", time);
             }
         }
     }
@@ -163,12 +159,12 @@ public class MovementProcessing {
                         Material type = block.material;
 
                         if (type == Material.SOUL_SAND) {
-                            player.getTrackers().add(Trackers.TrackerType.BUBBLE_WATER, (int) TPS.maximum);
-                            player.getTrackers().add(Trackers.TrackerType.BUBBLE_WATER, "soul-sand", (int) TPS.maximum);
+                            player.trackers.add(Trackers.TrackerType.BUBBLE_WATER, (int) TPS.maximum);
+                            player.trackers.add(Trackers.TrackerType.BUBBLE_WATER, "soul-sand", (int) TPS.maximum);
                             break;
                         } else if (type == MAGMA_BLOCK) {
-                            player.getTrackers().add(Trackers.TrackerType.BUBBLE_WATER, (int) TPS.maximum);
-                            player.getTrackers().add(Trackers.TrackerType.BUBBLE_WATER, "magma-block", (int) TPS.maximum);
+                            player.trackers.add(Trackers.TrackerType.BUBBLE_WATER, (int) TPS.maximum);
+                            player.trackers.add(Trackers.TrackerType.BUBBLE_WATER, "magma-block", (int) TPS.maximum);
                             break;
                         } else if (BlockUtils.isSolid(type) && !block.waterLogged) {
                             nonLiquid++;
@@ -187,9 +183,9 @@ public class MovementProcessing {
 
     public static boolean canCheck(SpartanPlayer player,
                                    boolean elytra, boolean velocity, boolean flight) {
-        if ((elytra || !player.getTrackers().has(Trackers.TrackerType.ELYTRA_USE))
+        if ((elytra || !player.trackers.has(Trackers.TrackerType.ELYTRA_USE))
                 && (flight || !player.movement.isFlying())
-                && (velocity || !player.getTrackers().has(Trackers.TrackerType.ABSTRACT_VELOCITY))
+                && (velocity || !player.trackers.has(Trackers.TrackerType.ABSTRACT_VELOCITY))
                 && !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED)) {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()
                     || Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {

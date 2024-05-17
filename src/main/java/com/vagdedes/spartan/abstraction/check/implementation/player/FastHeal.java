@@ -18,10 +18,12 @@ public class FastHeal extends CheckExecutor {
 
     private double previousHealth;
     private long time;
+    private final Buffer buffer;
 
     public FastHeal(SpartanPlayer player) {
         super(HackType.FastHeal, player);
         this.previousHealth = player.getHealth();
+        this.buffer = new Buffer(player);
     }
 
     private long calculate() {
@@ -55,8 +57,6 @@ public class FastHeal extends CheckExecutor {
                     long limit = calculate();
 
                     if (limit > 0L) {
-                        Buffer buffer = this.getBuffer();
-
                         if (timePassed < limit
                                 && buffer.count("", 10) == 3) {
                             buffer.remove("");

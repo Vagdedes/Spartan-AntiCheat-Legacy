@@ -44,14 +44,14 @@ public class Attributes {
                         }
 
                         if (modifiers > 0) {
-                            p.getCooldowns().add(key, 60);
+                            p.cooldowns.add(key, 60);
                             return true;
                         }
                     }
                 }
             } catch (Exception ignored) {
             }
-            return !p.getCooldowns().canDo(key);
+            return !p.cooldowns.canDo(key);
         }
         return false;
     }

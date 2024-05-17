@@ -44,7 +44,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
             boolean liquids = player.movement.wasInLiquids(),
                     toGround = player.isOnGround(),
                     fromGround = player.isOnGround(player.movement.getEventFromLocation()),
-                    velocity = player.getTrackers().has(Trackers.TrackerFamily.VELOCITY);
+                    velocity = player.trackers.has(Trackers.TrackerFamily.VELOCITY);
 
             runAsync(() -> {
                 if (velocity

@@ -26,11 +26,15 @@ public class NoSwing extends CheckExecutor {
 
     private static final int refreshTime = 30 * 20;
     private long breakTime, animationTime;
+    private final Cooldowns cooldowns;
+    private final Buffer buffer;
 
     public NoSwing(SpartanPlayer player) {
         super(Enums.HackType.NoSwing, player);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
+        this.cooldowns = new Cooldowns(player);
+        this.buffer = new Buffer(player);
     }
 
     @Override
@@ -84,17 +88,13 @@ public class NoSwing extends CheckExecutor {
     private void runDamage(LivingEntity entity) {
         if (!hackType.getCheck().getBooleanOption("check_damage", true)
                 || player.hasAttackCooldown()
-                || player.getTrackers().has(Trackers.TrackerType.TRIDENT)) {
+                || player.trackers.has(Trackers.TrackerType.TRIDENT)) {
             return;
         }
-        Cooldowns cooldowns = this.getCooldowns();
-
         if (cooldowns.canDo("damage")) {
             cooldowns.add("damage", 20);
 
             if (this.animationTime == Long.MAX_VALUE) {
-                Buffer buffer = this.getBuffer();
-
                 if (buffer.count("damage", refreshTime) >= 3) {
                     buffer.remove("damage");
                     cancel("type: damage"

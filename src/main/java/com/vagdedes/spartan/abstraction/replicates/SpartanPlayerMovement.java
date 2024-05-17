@@ -425,7 +425,7 @@ public class SpartanPlayerMovement {
             this.locations.computeIfAbsent(TPS.getTick(this.parent), k -> new ArrayList<>()).add(location);
         }
         if (!this.location.world.equals(location.world)) {
-            this.parent.resetHandlers();
+            this.parent.resetTrackers();
         }
         this.location = location;
     }

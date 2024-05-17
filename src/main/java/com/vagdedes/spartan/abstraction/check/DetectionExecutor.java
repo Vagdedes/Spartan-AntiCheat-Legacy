@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -36,16 +34,6 @@ public abstract class DetectionExecutor {
             // danger of moving the possible prevention in the next tick
             runnable.run();
         }
-    }
-
-    // Separator
-
-    public final Buffer getBuffer() {
-        return player.getBuffer(hackType);
-    }
-
-    public Cooldowns getCooldowns() {
-        return player.getCooldowns(hackType);
     }
 
     // Separator

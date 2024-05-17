@@ -122,8 +122,8 @@ public class NoFall extends CheckExecutor {
         return MovementProcessing.canCheck(player, false, false, false)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()
-                && !player.getTrackers().has(Trackers.TrackerType.BOUNCING_BLOCKS)
-                && !player.getTrackers().has(Trackers.TrackerType.BUBBLE_WATER, "soul-sand")
+                && !player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS)
+                && !player.trackers.has(Trackers.TrackerType.BUBBLE_WATER, "soul-sand")
                 && !BlockUtils.canClimb(player.movement.getEventToLocation().getBlock().material, false)
                 && (!PlayerUtils.levitation || !player.hasPotionEffect(PotionEffectType.LEVITATION, 0));
     }

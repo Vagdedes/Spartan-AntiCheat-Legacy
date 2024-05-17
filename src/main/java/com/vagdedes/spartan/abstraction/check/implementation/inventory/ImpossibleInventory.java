@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -27,14 +28,17 @@ public class ImpossibleInventory extends CheckExecutor {
             1, -1, 1
     };
 
+    private final Cooldowns cooldowns;
+
     public ImpossibleInventory(SpartanPlayer player) {
         super(Enums.HackType.ImpossibleInventory, player);
+        cooldowns = new Cooldowns(player);
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object == null) {
-            int ticks = this.getCooldowns().get("auto-totem");
+            int ticks = cooldowns.get("auto-totem");
 
             if (ticks > 0) {
                 cancel("type: auto-totem, remaining-ticks: " + ticks);
@@ -74,7 +78,7 @@ public class ImpossibleInventory extends CheckExecutor {
         if (totem_of_undying != null
                 && itemStack != null
                 && itemStack.getType() == totem_of_undying) {
-            this.getCooldowns().add("auto-totem", 3);
+            cooldowns.add("auto-totem", 3);
         }
     }
 

@@ -4,9 +4,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.SharedEvents;
@@ -19,7 +16,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class EventsHandler1 implements Listener {
 
@@ -73,7 +69,7 @@ public class EventsHandler1 implements Listener {
                 }
             }
         }
-        p.resetHandlers();
+        p.resetTrackers();
         p.movement.setDetectionLocation(true);
     }
 
@@ -90,7 +86,7 @@ public class EventsHandler1 implements Listener {
         p.movement.setDetectionLocation(true);
 
         // Protections
-        p.resetHandlers(); // Always First
+        p.resetTrackers(); // Always First
     }
 
 }

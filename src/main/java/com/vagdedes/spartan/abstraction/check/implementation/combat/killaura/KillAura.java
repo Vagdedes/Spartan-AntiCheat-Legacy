@@ -18,6 +18,7 @@ import java.util.UUID;
 
 public class KillAura extends CheckExecutor {
 
+    private final Buffer buffer;
     private final Irregular irregular;
     private final EntityRaytrace entityRaytrace;
     private final BlockRaytrace blockRaytrace;
@@ -41,6 +42,7 @@ public class KillAura extends CheckExecutor {
                 moveDirection = new MoveDirection(this),
                 moveLength = new MoveLength(this)
         });
+        this.buffer = new Buffer(player);
     }
 
     static final double
@@ -79,8 +81,6 @@ public class KillAura extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         SpartanLocation to = player.movement.getLocation();
-        Buffer buffer = this.getBuffer();
-
         runDetection(
                 "check_aim",
                 () -> moveDirection.runMove(),

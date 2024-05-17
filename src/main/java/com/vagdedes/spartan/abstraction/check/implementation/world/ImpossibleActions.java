@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -25,8 +26,11 @@ import java.util.List;
 
 public class ImpossibleActions extends CheckExecutor {
 
+    private final Buffer buffer;
+
     public ImpossibleActions(SpartanPlayer player) {
         super(Enums.HackType.ImpossibleActions, player);
+        this.buffer = new Buffer(player);
     }
 
     @Override
@@ -124,8 +128,8 @@ public class ImpossibleActions extends CheckExecutor {
                             }
                             int hash = (block.x * SpartanBukkit.hashCodeMultiplier) + block.z;
 
-                            if (this.getBuffer().count("tower" + hash, motionTicks) > possiblePlacements) {
-                                this.getBuffer().remove("tower" + hash);
+                            if (buffer.count("tower" + hash, motionTicks) > possiblePlacements) {
+                                buffer.remove("tower" + hash);
                                 cancel(
                                         "type: tower"
                                                 + ", placements: " + possiblePlacements

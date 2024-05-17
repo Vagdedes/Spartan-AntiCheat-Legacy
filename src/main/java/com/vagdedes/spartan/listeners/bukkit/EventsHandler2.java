@@ -78,7 +78,7 @@ public class EventsHandler2 implements Listener {
             if (p == null) {
                 return;
             }
-            p.getTrackers().add(Trackers.TrackerType.VEHICLE, "enter", 5);
+            p.trackers.add(Trackers.TrackerType.VEHICLE, "enter", 5);
         }
     }
 

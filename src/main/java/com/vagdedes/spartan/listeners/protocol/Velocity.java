@@ -11,7 +11,6 @@ import com.vagdedes.spartan.utils.minecraft.mcp.MathHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 public class Velocity extends PacketAdapter {
 

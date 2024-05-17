@@ -12,8 +12,12 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class FastBow extends CheckExecutor {
 
+    private long interactTime;
+    private final Buffer buffer;
+
     public FastBow(SpartanPlayer player) {
         super(HackType.FastBow, player);
+        this.buffer = new Buffer(player);
     }
 
     @Override
@@ -28,29 +32,27 @@ public class FastBow extends CheckExecutor {
 
             if (inventory.getItemInHand().getType() == Material.BOW
                     && inventory.contains(Material.ARROW)) {
-                player.getTimer(hackType).set("interact");
+                this.interactTime = System.currentTimeMillis();
             }
         }
     }
 
     private void checkBowForce(float force) {
-        long time = player.getTimer(hackType).get("interact");
+        long timePassed = System.currentTimeMillis() - interactTime;
 
-        if (!hackType.getCheck().getBooleanOption("check_bow_force", true) || force != 1.0f || time > 500L) {
+        if (!hackType.getCheck().getBooleanOption("check_bow_force", true)
+                || force != 1.0f
+                || timePassed > 500L) {
             return;
         }
-        Buffer buffer = this.getBuffer();
-
         if (buffer.count("bow-force", 20) == 2) {
             buffer.remove("bow-force");
-            cancel("type: bow-force, ms: " + time);
+            cancel("type: bow-force, ms: " + timePassed);
         }
     }
 
     private void checkBowShots() {
         if (hackType.getCheck().getBooleanOption("check_bow_shots", true)) {
-            Buffer buffer = this.getBuffer();
-
             if (buffer.count("bow-shots", 10) == 7) {
                 buffer.remove("bow-shots");
                 cancel("type: bow-shots");

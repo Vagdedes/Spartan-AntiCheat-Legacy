@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesEnum;
 import net.kyori.adventure.text.Component;

@@ -30,7 +30,7 @@ public class DragonPhases implements Listener {
                         SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
 
                         if (p != null) {
-                            p.getTrackers().add(
+                            p.trackers.add(
                                     Trackers.TrackerType.ABSTRACT_VELOCITY,
                                     !p.isOnGround() ? 120 : 60
                             );

@@ -89,7 +89,7 @@ public class GhostHand extends CheckExecutor {
     @Override
     protected boolean canRun() {
         if (!player.movement.isFlying()
-                && !player.getTrackers().has(Trackers.TrackerType.GAME_MODE)
+                && !player.trackers.has(Trackers.TrackerType.GAME_MODE)
                 && !Vehicles.has(player, "drill")
                 && !PrinterMode.isUsing(player)
                 && !mcMMO.hasGeneralAbility(player)) {

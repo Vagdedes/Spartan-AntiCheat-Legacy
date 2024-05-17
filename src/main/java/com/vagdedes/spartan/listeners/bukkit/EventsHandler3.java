@@ -73,7 +73,7 @@ public class EventsHandler3 implements Listener {
 
             // Handlers
             if (!cancelled) {
-                p.getTrackers().disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 2);
+                p.trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 2);
             }
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)

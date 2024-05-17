@@ -361,7 +361,7 @@ public class LiveViolation {
             CrossServerInformation.queueNotification(message, true);
         }
         SpartanLocation location = player.movement.getLocation();
-        String information = Config.getConstruct() + player.name + " failed " + hackType + " (VL: " + playerViolation
+        String information = Config.getConstruct() + player.name + " failed " + hackType + " (VL: " + playerViolation.level
                 + ") " + "[(Version: " + MultiVersion.fork() + " " + MultiVersion.versionString()
                 + "), (I-V: " + (canPrevent ? "-" : "") + ignoredViolations + ") (Silent: "
                 + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
