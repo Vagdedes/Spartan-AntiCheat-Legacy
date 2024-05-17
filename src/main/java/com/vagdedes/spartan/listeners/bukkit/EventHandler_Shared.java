@@ -4,11 +4,17 @@ import com.vagdedes.spartan.listeners.SharedEvents;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class EventHandler_Shared implements Listener {
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Join(PlayerJoinEvent e) {
+        SharedEvents.join(e);
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Move(PlayerMoveEvent e) {

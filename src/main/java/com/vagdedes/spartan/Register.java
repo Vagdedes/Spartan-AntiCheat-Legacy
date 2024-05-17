@@ -33,25 +33,14 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
-
-        /*PluginDescriptionFile description = plugin.getDescription();
-
-        if (ReflectionUtils.classExists("com.google.gson.JsonArray")
-                && ReflectionUtils.classExists("com.google.gson.JsonObject")
-                && ReflectionUtils.classExists("com.google.gson.JsonParser")
-                && ReflectionUtils.classExists("com.google.gson.JsonPrimitive")) {
-            try {
-                Metrics metrics = new Metrics(plugin, ((int) Math.pow(85, 2)) + description.getName().substring(1).length());
-            } catch (Exception ex) {
-            }
-        }*/
-
-        // Separator
         Config.create();
 
         // Separator
         if (MultiVersion.other) {
-            AwarenessNotifications.forcefullySend("The server's version or type is not supported. Please contact the plugin's developer if you think this is an error.");
+            AwarenessNotifications.forcefullySend(
+                    "The server's version or type is not supported. "
+                            + "Please contact the plugin's developer if you think this is an error."
+            );
             disablePlugin();
             return;
         }
@@ -80,7 +69,6 @@ public class Register extends JavaPlugin {
         enable(new EventsHandler3(), EventsHandler3.class);
         enable(new EventsHandler4(), EventsHandler4.class);
         enable(new EventsHandler5(), EventsHandler5.class);
-        enable(new EventsHandler6(), EventsHandler6.class);
 
         if (!MultiVersion.folia) {
             enable(new EventsHandler_non_folia(), EventsHandler_non_folia.class);

@@ -162,12 +162,6 @@ public class SpartanBukkit {
         return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
-    public static void runBukkitTask(Runnable runnable) {
-        if (!packetsEnabled()) {
-            runnable.run();
-        }
-    }
-
     // Separator
 
     public static Object runDelayedTask(SpartanPlayer player, Runnable runnable, long start) {

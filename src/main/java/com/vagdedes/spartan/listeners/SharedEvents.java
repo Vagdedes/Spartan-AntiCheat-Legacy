@@ -33,7 +33,8 @@ public class SharedEvents {
             Enums.HackType.Exploits
     };
 
-    public static void join(Player n, PlayerJoinEvent e) {
+    public static void join(PlayerJoinEvent e) {
+        Player n = e.getPlayer();
         SpartanBukkit.addRealPlayer(n);
 
         // Utils
@@ -50,6 +51,9 @@ public class SharedEvents {
         MaximumCheckedPlayers.add(p);
         SpartanEdition.attemptNotification(p);
 
+        // Detections
+        p.getExecutor(Enums.HackType.Speed).handle(false, e);
+
         SpartanBukkit.runDelayedTask(p, () -> {
             if (p != null) {
                 Config.settings.runOnLogin(p);
@@ -57,20 +61,8 @@ public class SharedEvents {
             }
         }, 10);
 
-        /*
-                SpartanBukkit.runBukkitTask(
-                        () -> joinInit(p, e)
-        );
-        it break code!
-         */
-        joinInit(p, e);
         Join.canCheck.put(e.getPlayer(), true);
     }
-
-    public static void joinInit(SpartanPlayer p, PlayerJoinEvent e) {
-        p.getExecutor(Enums.HackType.Speed).handle(false, e);
-    }
-
 
     public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();
@@ -147,7 +139,6 @@ public class SharedEvents {
         if (p == null) {
             return;
         }
-
         // Object
         p.addReceivedVelocity(e);
 
