@@ -99,7 +99,6 @@ public class SpartanLocation {
         this.z = z;
         this.yaw = yaw;
         this.pitch = pitch;
-        this.vector = null;
         this.identifier = Chunks.locationIdentifier(world.hashCode(), getBlockX(), getBlockY(), getBlockZ());
     }
 
@@ -107,18 +106,6 @@ public class SpartanLocation {
         this(Bukkit.getWorlds().get(0), null, 0, 0, 0, 0, 0);
         loadEmptyBlock(false);
     }
-
-    SpartanLocation(World world, Chunk chunk, double x, double y, double z, float yaw, float pitch, SpartanBlock block) { // Used for objects
-        this(world, chunk, x, y, z, yaw, pitch);
-
-        if (block != null) {
-            loadBlock(block.material, block.data, block.liquid, block.waterLogged);
-        } else {
-            this.block = null;
-        }
-    }
-
-    // Native
 
     SpartanLocation(Location loc, float yaw, float pitch) { // Used for vehicles
         this(loc.getWorld(), null, loc.getX(), loc.getY(), loc.getZ(), yaw, pitch);

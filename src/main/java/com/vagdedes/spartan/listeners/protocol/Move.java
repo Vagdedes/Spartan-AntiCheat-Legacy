@@ -16,10 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Move extends PacketAdapter {
@@ -54,7 +51,7 @@ public class Move extends PacketAdapter {
                 return;
             }
             importRotation(player, to);
-            SpartanLocation from = ProtocolStorage.positionManager.computeIfAbsent(player.uuid, k -> to);
+            SpartanLocation from = ProtocolStorage.getLocation(player.uuid, to);
             importRotation(player, from);
             boolean ground = packet.getBooleans().read(0);
             ProtocolStorage.groundManager.put(player.uuid, ground);
@@ -99,7 +96,7 @@ public class Move extends PacketAdapter {
             if (player == null) {
                 return new SpartanLocation();
             } else {
-                return ProtocolStorage.positionManager.get(player.uuid);
+                return ProtocolStorage.getLocation(player.uuid);
             }
         } else {
             SpartanPlayer player = SpartanBukkit.getPlayer(event.getPlayer());

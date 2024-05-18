@@ -43,9 +43,16 @@ public class ProtocolStorage {
         return spawnStatus.getOrDefault(uuid, false);
     }
 
-    public static SpartanLocation getLocation(SpartanPlayer player) {
+    public static SpartanLocation getLocation(UUID uuid, SpartanLocation defaultLocation) {
         return ProtocolStorage.positionManager.computeIfAbsent(
-                player.uuid,
+                uuid,
+                k -> defaultLocation
+        );
+    }
+
+    public static SpartanLocation getLocation(UUID uuid) {
+        return ProtocolStorage.positionManager.computeIfAbsent(
+                uuid,
                 k -> new SpartanLocation()
         );
     }

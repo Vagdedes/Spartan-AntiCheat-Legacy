@@ -9,10 +9,6 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class Teleport extends PacketAdapter {
 
     public Teleport() {

@@ -8,10 +8,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import org.bukkit.event.Listener;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class Join extends PacketAdapter implements Listener {
 
     public Join() {

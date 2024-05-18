@@ -24,7 +24,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.ProtocolStorage;
 import com.vagdedes.spartan.listeners.protocol.Shared;
 import com.vagdedes.spartan.utils.java.StringUtils;
@@ -709,17 +708,12 @@ public class SpartanPlayer {
         Player p = this.getInstance();
 
         if (p != null) {
-            if (!MultiVersion.folia
-                    && SpartanBukkit.isSynchronised()) {
-                return p.getNearbyEntities(x, y, z);
-            } else {
-                List<Entity> nearbyEntities = new ArrayList<>();
-                SpartanBukkit.runTask(
-                        this,
-                        () -> nearbyEntities.addAll(p.getNearbyEntities(x, y, z))
-                );
-                return nearbyEntities;
-            }
+            List<Entity> nearbyEntities = new ArrayList<>();
+            SpartanBukkit.transferTask(
+                    this,
+                    () -> nearbyEntities.addAll(p.getNearbyEntities(x, y, z))
+            );
+            return nearbyEntities;
         } else {
             return new ArrayList<>(0);
         }

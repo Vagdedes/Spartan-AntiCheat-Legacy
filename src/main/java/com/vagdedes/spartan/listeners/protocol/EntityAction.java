@@ -12,10 +12,6 @@ import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesEnum;
 import org.bukkit.Bukkit;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class EntityAction extends PacketAdapter {
 
     public EntityAction() {

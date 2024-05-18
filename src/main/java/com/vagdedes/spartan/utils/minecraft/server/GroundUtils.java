@@ -190,18 +190,21 @@ public class GroundUtils {
                 return true;
             }
         }
-        SpartanBlock block = loc.getBlock();
+        double box = loc.getY() - loc.getBlockY(), distribution;
 
-        if (BlockUtils.canClimb(block.material, false)
-                || original
+        if (original
                 && p.isOnGroundDefault()
-                && block.isLiquidOrWaterLogged(true)) {
-            return true;
+                && blockHeightExists(box)) {
+            SpartanBlock block = loc.getBlock();
+
+            if (block.isLiquidOrWaterLogged(true)
+                    || BlockUtils.canClimb(block.material, false)) {
+                return true;
+            }
         }
         Entity vehicle = p.getVehicle();
         boolean hasVehicle = vehicle != null;
         original &= !hasVehicle && !p.bedrockPlayer;
-        double box = loc.getY() - loc.getBlockY(), distribution;
 
         if (hasVehicle) {
             distribution = Math.max(

@@ -27,7 +27,7 @@ public class SpartanBlock {
         this.z = z;
         this.liquid = liquid;
         this.waterLogged = waterLogged;
-        this.location = new SpartanLocation(world, chunk, this.x, this.y, this.z, 0.0f, 0.0f, this);
+        this.location = new SpartanLocation(world, chunk, this.x, this.y, this.z, 0.0f, 0.0f);
     }
 
     public SpartanBlock(Block block) {
@@ -35,7 +35,7 @@ public class SpartanBlock {
         this.x = block.getX();
         this.y = (short) block.getY();
         this.z = block.getZ();
-        this.location = new SpartanLocation(block.getWorld(), null, this.x, this.y, this.z, 0.0f, 0.0f, this);
+        this.location = new SpartanLocation(block.getWorld(), null, this.x, this.y, this.z, 0.0f, 0.0f);
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             Object blockData = block.getBlockData();

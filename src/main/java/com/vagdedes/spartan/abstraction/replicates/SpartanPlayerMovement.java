@@ -4,8 +4,6 @@ import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.listeners.protocol.EntityAction;
-import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.ProtocolStorage;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
@@ -403,9 +401,10 @@ public class SpartanPlayerMovement {
             SpartanLocation spartanLocation = getVehicleLocation(p);
 
             if (spartanLocation == null) {
-                SpartanLocation actualLocation = SpartanBukkit.packetsEnabled()
-                        ? ProtocolStorage.getLocation(this.parent)
-                        : new SpartanLocation(p.getLocation());
+                SpartanLocation defaultLocation = new SpartanLocation(p.getLocation()),
+                        actualLocation = SpartanBukkit.packetsEnabled()
+                        ? ProtocolStorage.getLocation(this.parent.uuid, defaultLocation)
+                        : defaultLocation;
 
                 if (this.location.getX() != actualLocation.getX()
                         || this.location.getY() != actualLocation.getY()

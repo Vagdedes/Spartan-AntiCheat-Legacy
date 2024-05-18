@@ -52,21 +52,28 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 }
 
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
-                    double difference = Math.abs(vertical - prediction),
-                            product = player.bedrockPlayer ? Math.max(PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1), 2.0)
-                                    : !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
-                                    && !player.movement.isFalling(vertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
-                                    && !player.movement.isFalling(oldVertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
-                                    ? 1.0
-                                    : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1),
-                            limit = Math.max(
-                                    product / (double) airTicks,
-                                    velocity ? GroundUtils.maxPossibleStep :
-                                            liquid || motion ? GroundUtils.maxPlayerStep :
-                                                    player.bedrockPlayer ? PlayerUtils.jumpAcceleration :
-                                                            hasLevitation ? levitationMultiplier :
-                                                                    GroundUtils.maxHeightLengthRatio
-                            );
+                    double difference = Math.abs(vertical - prediction), product;
+
+                    if (player.bedrockPlayer) {
+                        product = PlayerUtils.calculateTerminalVelocity(
+                                PlayerUtils.airDrag,
+                                PlayerUtils.airAcceleration
+                        );
+                    } else {
+                        product = !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
+                                && !player.movement.isFalling(vertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
+                                && !player.movement.isFalling(oldVertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
+                                ? 1.0
+                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1);
+                    }
+                    double limit = Math.max(
+                            product / (double) airTicks,
+                            velocity ? GroundUtils.maxPossibleStep :
+                                    liquid || motion ? GroundUtils.maxPlayerStep :
+                                            player.bedrockPlayer ? PlayerUtils.jumpAcceleration :
+                                                    hasLevitation ? levitationMultiplier :
+                                                            GroundUtils.maxHeightLengthRatio
+                    );
 
                     if (difference >= limit) {
                         cancel(

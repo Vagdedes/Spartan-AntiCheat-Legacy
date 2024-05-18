@@ -250,9 +250,13 @@ public class PlayerUtils {
         return -1;
     }
 
+    public static double calculateTerminalVelocity(double drag, double acceleration) {
+        return ((1.0 / (1.0 - drag)) * acceleration);
+    }
+
     public static double calculateNextFallMotion(double motion,
                                                  double acceleration, double drag) {
-        double terminalVelocity = ((1.0 / (1.0 - drag)) * acceleration);
+        double terminalVelocity = calculateTerminalVelocity(acceleration, drag);
 
         if (motion >= terminalVelocity) {
             return (motion + acceleration) * drag;
