@@ -81,12 +81,15 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
                     if (vehicle == null) {
                         if (stepCombination.get(hash)) {
-                            if (vertical > GroundUtils.maxPlayerStep) {
+                            double limit = (player.bedrockPlayer ? 1.0 : 0.0) + GroundUtils.maxPlayerStep;
+
+                            if (vertical > limit) {
                                 cancel(
                                         "type: step(high)"
                                                 + ", box: " + box
                                                 + ", old-box: " + oldBox
-                                                + ", vertical: " + vertical,
+                                                + ", vertical: " + vertical
+                                                + ", limit: " + limit,
                                         vertical,
                                         player.movement.getDetectionLocation(),
                                         0,

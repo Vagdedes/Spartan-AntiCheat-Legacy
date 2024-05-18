@@ -76,7 +76,7 @@ public class EventsHandler5 implements Listener {
             return;
         }
         Block nb = e.getBlock();
-        SpartanBlock b = new SpartanBlock(p, nb);
+        SpartanBlock b = new SpartanBlock(nb);
         boolean cancelled = e.isCancelled();
 
         // Detections
@@ -108,11 +108,11 @@ public class EventsHandler5 implements Listener {
             return;
         }
         Block nb = e.getBlock();
-        SpartanBlock b = new SpartanBlock(p, nb);
+        SpartanBlock b = new SpartanBlock(nb);
         b.removeBlockCache();
         p.movement.judgeGround(p.movement.getLocation());
 
-        if (n.getWorld() != b.world) {
+        if (n.getWorld() != b.getWorld()) {
             return;
         }
         boolean cancelled = e.isCancelled();

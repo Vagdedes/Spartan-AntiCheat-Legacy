@@ -37,7 +37,7 @@ public class ImpossibleActions extends CheckExecutor {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockPlaceEvent) {
             BlockPlaceEvent event = (BlockPlaceEvent) object;
-            SpartanBlock block = new SpartanBlock(player, event.getBlock());
+            SpartanBlock block = new SpartanBlock(event.getBlock());
             SpartanLocation playerLocation = player.movement.getLocation();
             int playerY = playerLocation.getBlockY(),
                     blockY = event.getBlock().getY();
@@ -175,7 +175,7 @@ public class ImpossibleActions extends CheckExecutor {
                     if (b == null) {
                         cancel("type: actions, action: " + action_string + ", case: " + cases);
                     } else {
-                        cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(new SpartanBlock(player, b)));
+                        cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(new SpartanBlock(b)));
                     }
                 }
             }

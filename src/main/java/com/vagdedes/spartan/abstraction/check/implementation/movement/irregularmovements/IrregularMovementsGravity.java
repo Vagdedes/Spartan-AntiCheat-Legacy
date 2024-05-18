@@ -12,6 +12,8 @@ import org.bukkit.potion.PotionEffectType;
 
 public class IrregularMovementsGravity extends DetectionExecutor {
 
+    private static final double levitationMultiplier = 0.05;
+
     IrregularMovementsGravity(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
     }
@@ -40,7 +42,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
                 if (hasLevitation) {
                     double level = levitation.bukkitEffect.getAmplifier() + 1;
-                    prediction = (oldVertical + ((0.05 * level - oldVertical) * 0.2)) * PlayerUtils.airDrag;
+                    prediction = (oldVertical + ((levitationMultiplier * level - oldVertical) * 0.2)) * PlayerUtils.airDrag;
                 } else {
                     prediction = PlayerUtils.calculateNextFallMotion(
                             oldVertical,
@@ -51,22 +53,19 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
                     double difference = Math.abs(vertical - prediction),
-                            product = !player.movement.isJumping(vertical)
+                            product = player.bedrockPlayer ? Math.max(PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1), 2.0)
+                                    : !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
                                     && !player.movement.isFalling(vertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
-                                    && !player.movement.isJumping(oldVertical)
                                     && !player.movement.isFalling(oldVertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
                                     ? 1.0
                                     : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1),
                             limit = Math.max(
                                     product / (double) airTicks,
-                                    velocity
-                                            ? GroundUtils.maxPossibleStep
-                                            : liquid || motion
-                                            ? GroundUtils.maxPlayerStep
-                                            : player.bedrockPlayer ? PlayerUtils.jumpAcceleration :
-                                            hasLevitation
-                                                    ? 0.05
-                                                    : GroundUtils.maxHeightLengthRatio
+                                    velocity ? GroundUtils.maxPossibleStep :
+                                            liquid || motion ? GroundUtils.maxPlayerStep :
+                                                    player.bedrockPlayer ? PlayerUtils.jumpAcceleration :
+                                                            hasLevitation ? levitationMultiplier :
+                                                                    GroundUtils.maxHeightLengthRatio
                             );
 
                     if (difference >= limit) {

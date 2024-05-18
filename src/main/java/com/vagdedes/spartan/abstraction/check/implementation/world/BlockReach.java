@@ -38,7 +38,7 @@ public class BlockReach extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
-            SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
+            SpartanBlock block = new SpartanBlock(((BlockBreakEvent) object).getBlock());
 
             if (canDo(block)
                     && !TreeFeller.canCancel(player, block)) {
@@ -50,7 +50,7 @@ public class BlockReach extends CheckExecutor {
                 }
             }
         } else if (object instanceof PlayerInteractEvent) {
-            SpartanBlock block = new SpartanBlock(player, ((PlayerInteractEvent) object).getClickedBlock());
+            SpartanBlock block = new SpartanBlock(((PlayerInteractEvent) object).getClickedBlock());
 
             if (canDo(block)) {
                 SpartanLocation bloc = block.getLocation();
@@ -66,10 +66,10 @@ public class BlockReach extends CheckExecutor {
             }
         } else {
             BlockPlaceEvent event = (BlockPlaceEvent) object;
-            SpartanBlock blockAgainst = new SpartanBlock(player, event.getBlockAgainst());
+            SpartanBlock blockAgainst = new SpartanBlock(event.getBlockAgainst());
 
             if (BlockUtils.isSolid(blockAgainst.material)) {
-                SpartanBlock block = new SpartanBlock(player, event.getBlock());
+                SpartanBlock block = new SpartanBlock(event.getBlock());
 
                 if (canDo(block)
                         && BlockUtils.isSolid(block.material)

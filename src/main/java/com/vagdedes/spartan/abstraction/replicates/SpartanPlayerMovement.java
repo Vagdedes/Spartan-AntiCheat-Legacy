@@ -6,6 +6,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.protocol.EntityAction;
 import com.vagdedes.spartan.listeners.protocol.Move;
+import com.vagdedes.spartan.listeners.protocol.ProtocolStorage;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
@@ -26,23 +27,23 @@ public class SpartanPlayerMovement {
     private final SpartanPlayer parent;
     double schedulerDistance;
     private final List<Double>
-                    eventDistance,
-                    eventHorizontal,
-                    eventVertical,
-                    eventBox;
+            eventDistance,
+            eventHorizontal,
+            eventVertical,
+            eventBox;
     private final Map<Long, List<SpartanLocation>> locations;
     private int
-                    airTicks,
-                    vanillaAirTicks;
+            airTicks,
+            vanillaAirTicks;
     private long
-                    artificialSwimming,
-                    lastLiquidTicks;
+            artificialSwimming,
+            lastLiquidTicks;
     private Material lastLiquidMaterial;
     private SpartanLocation
-                    location,
-                    eventTo,
-                    eventFrom,
-                    detectionLocation;
+            location,
+            eventTo,
+            eventFrom,
+            detectionLocation;
     SpartanLocation schedulerFrom;
     private Vector clampVector;
 
@@ -62,7 +63,7 @@ public class SpartanPlayerMovement {
         this.lastLiquidTicks = 0L;
         this.lastLiquidMaterial = Material.AIR;
 
-        SpartanLocation location = new SpartanLocation(this.parent, p.getLocation());
+        SpartanLocation location = new SpartanLocation(p.getLocation());
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         List<SpartanLocation> list = new ArrayList<>();
         list.add(location);
@@ -155,8 +156,8 @@ public class SpartanPlayerMovement {
 
     public boolean wasInLiquids() {
         return this.isSwimming()
-                        || TPS.getTick(this.parent) - this.lastLiquidTicks <=
-                        Math.max(Latency.getRoundedDelay(this.parent), 5L);
+                || TPS.getTick(this.parent) - this.lastLiquidTicks <=
+                Math.max(Latency.getRoundedDelay(this.parent), 5L);
     }
 
     public Material getLastLiquidMaterial() {
@@ -201,14 +202,17 @@ public class SpartanPlayerMovement {
 
     public boolean isWalkJumping(double vertical) {
         return !this.isSprinting()
-                        && this.getValueOrDefault(this.getEventDistance(), 0.0) > 0.0
-                        && this.isJumping(vertical);
+                && this.getValueOrDefault(this.getEventDistance(), 0.0) > 0.0
+                && this.isJumping(vertical);
     }
 
     public boolean isSneaking() {
-        Player p = this.parent.getInstance();
-        return p != null && (SpartanBukkit.packetsEnabled()
-                        ? EntityAction.getAbilities(p).sneak() : p.isSneaking());
+        if (SpartanBukkit.packetsEnabled()) {
+            return ProtocolStorage.getAbilities(this.parent.uuid).sneak();
+        } else {
+            Player p = this.parent.getInstance();
+            return p != null && p.isSneaking();
+        }
     }
 
     public boolean isFlying() {
@@ -225,9 +229,12 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isSprinting() {
-        Player p = this.parent.getInstance();
-        return p != null && (SpartanBukkit.packetsEnabled()
-                        ? EntityAction.getAbilities(p).sprint() : p.isSprinting());
+        if (SpartanBukkit.packetsEnabled()) {
+            return ProtocolStorage.getAbilities(this.parent.uuid).sprint();
+        } else {
+            Player p = this.parent.getInstance();
+            return p != null && p.isSprinting();
+        }
     }
 
     public boolean isSprintJumping(double vertical) {
@@ -238,17 +245,17 @@ public class SpartanPlayerMovement {
 
     public boolean isJumping(double d) {
         return PlayerUtils.isJumping(
-                        d,
-                        PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
-                        GroundUtils.maxHeightLengthRatio
+                d,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
+                GroundUtils.maxHeightLengthRatio
         );
     }
 
     public boolean justJumped(double d) {
         return PlayerUtils.justJumped(
-                        d,
-                        PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
-                        GroundUtils.maxHeightLengthRatio
+                d,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
+                GroundUtils.maxHeightLengthRatio
         );
     }
 
@@ -256,20 +263,20 @@ public class SpartanPlayerMovement {
 
     public int getFallTick(double d, double acceleration, double drag, double precision) {
         return PlayerUtils.getFallTick(
-                        d,
-                        acceleration,
-                        drag,
-                        precision,
-                        PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1
+                d,
+                acceleration,
+                drag,
+                precision,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1
         );
     }
 
     public boolean isFalling(double d, double acceleration, double drag, double precision) {
         return getFallTick(
-                        d,
-                        -acceleration,
-                        drag,
-                        precision
+                d,
+                -acceleration,
+                drag,
+                precision
         ) != -1;
     }
 
@@ -298,7 +305,7 @@ public class SpartanPlayerMovement {
 
     public int getTicksOnAir() {
         return AlgebraUtils.integerRound(
-                        Math.sqrt((airTicks * airTicks + vanillaAirTicks * vanillaAirTicks) / 2.0)
+                Math.sqrt((airTicks * airTicks + vanillaAirTicks * vanillaAirTicks) / 2.0)
         );
     }
 
@@ -349,8 +356,8 @@ public class SpartanPlayerMovement {
         SpartanLocation location = this.getLocation();
 
         if (force
-                        || !location.world.equals(this.detectionLocation.world)
-                        || location.distance(this.detectionLocation) > 4.0) {
+                || !location.world.equals(this.detectionLocation.world)
+                || location.distance(this.detectionLocation) > 4.0) {
             int minHeight = BlockUtils.getMinHeight(location.world);
 
             if (location.getBlockY() < minHeight) {
@@ -365,13 +372,13 @@ public class SpartanPlayerMovement {
 
     public boolean positionChanged() {
         return this.eventTo.getX() != this.eventFrom.getX()
-                        || this.eventTo.getY() != this.eventFrom.getY()
-                        || this.eventTo.getZ() != this.eventFrom.getZ();
+                || this.eventTo.getY() != this.eventFrom.getY()
+                || this.eventTo.getZ() != this.eventFrom.getZ();
     }
 
     public boolean directionChanged() {
         return this.eventTo.getYaw() != this.eventFrom.getYaw()
-                        || this.eventTo.getPitch() != this.eventFrom.getPitch();
+                || this.eventTo.getPitch() != this.eventFrom.getPitch();
     }
 
     // Separator
@@ -381,10 +388,10 @@ public class SpartanPlayerMovement {
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             Location playerLocation = player.getLocation();
-            return new SpartanLocation(this.parent,
-                            vehicle.getLocation(),
-                            playerLocation.getYaw(),
-                            playerLocation.getPitch());
+            return new SpartanLocation(
+                    vehicle.getLocation(),
+                    playerLocation.getYaw(),
+                    playerLocation.getPitch());
         }
         return null;
     }
@@ -396,18 +403,17 @@ public class SpartanPlayerMovement {
             SpartanLocation spartanLocation = getVehicleLocation(p);
 
             if (spartanLocation == null) {
-                Location actualLocation = SpartanBukkit.packetsEnabled()
-                                ? Move.getLocation(this.parent)
-                                : p.getLocation();
+                SpartanLocation actualLocation = SpartanBukkit.packetsEnabled()
+                        ? ProtocolStorage.getLocation(this.parent)
+                        : new SpartanLocation(p.getLocation());
 
                 if (this.location.getX() != actualLocation.getX()
-                                || this.location.getY() != actualLocation.getY()
-                                || this.location.getZ() != actualLocation.getZ()
-                                || this.location.getYaw() != actualLocation.getYaw()
-                                || this.location.getPitch() != actualLocation.getPitch()) {
-                    spartanLocation = new SpartanLocation(this.parent, actualLocation);
+                        || this.location.getY() != actualLocation.getY()
+                        || this.location.getZ() != actualLocation.getZ()
+                        || this.location.getYaw() != actualLocation.getYaw()
+                        || this.location.getPitch() != actualLocation.getPitch()) {
                     SpartanLocation from = this.location.clone();
-                    this.setLocation(spartanLocation, false);
+                    this.setLocation(actualLocation, false);
                     location.retrieveDataFrom(from);
                 }
             }
@@ -438,8 +444,8 @@ public class SpartanPlayerMovement {
                                         double distance, double horizontal, double vertical, double box) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
-                            y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
-                            z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
+                    y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
+                    z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
             Vector vector = new Vector(x, y, z);
             double d = this.clampVector.distanceSquared(vector);
             this.clampVector = vector;
@@ -457,10 +463,10 @@ public class SpartanPlayerMovement {
         this.eventBox.add(box);
 
         for (List list : new List[]{
-                        eventDistance,
-                        eventHorizontal,
-                        eventVertical,
-                        eventBox
+                eventDistance,
+                eventHorizontal,
+                eventVertical,
+                eventBox
         }) {
             if (list.size() > 2) {
                 list.remove(0);

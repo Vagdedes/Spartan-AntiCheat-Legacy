@@ -10,6 +10,11 @@ public class RotationData {
         this.pitch = pitch;
     }
 
-    public float yaw() { return this.yaw; }
-    public float pitch() { return this.pitch; }
+    public float yaw() {
+        return this.yaw;
+    }
+
+    public float pitch() {
+        return this.pitch;
+    }
 }

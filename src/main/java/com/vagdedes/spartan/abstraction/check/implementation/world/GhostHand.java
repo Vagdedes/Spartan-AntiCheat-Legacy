@@ -51,7 +51,7 @@ public class GhostHand extends CheckExecutor {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
+                SpartanBlock b = new SpartanBlock(event.getClickedBlock());
 
                 if (canDo(b)
                         && hackType.getCheck().getBooleanOption("check_block_interactions", true)
@@ -82,7 +82,7 @@ public class GhostHand extends CheckExecutor {
     }
 
     private boolean canDo(SpartanBlock b) {
-        return b.world == player.getWorld();
+        return b.getWorld() == player.getWorld();
     }
 
     @Override

@@ -53,7 +53,7 @@ public class NoSwing extends CheckExecutor {
                     || AureliumSkills.isUsing(player)) {
                 return;
             }
-            SpartanBlock block = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
+            SpartanBlock block = new SpartanBlock(((BlockBreakEvent) object).getBlock());
 
             if (!BlockUtils.isSensitive(player, block.getLocation().getBlock().material)
                     && !TreeFeller.canCancel(player, block)

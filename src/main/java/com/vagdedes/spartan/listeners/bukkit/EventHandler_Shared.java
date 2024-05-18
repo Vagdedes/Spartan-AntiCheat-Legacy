@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.listeners.SharedEvents;
+import com.vagdedes.spartan.listeners.protocol.Shared;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,22 +13,22 @@ public class EventHandler_Shared implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Join(PlayerJoinEvent e) {
-        SharedEvents.join(e);
+        Shared.join(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Move(PlayerMoveEvent e) {
-        SharedEvents.move(e);
+        Shared.move(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Teleport(PlayerTeleportEvent e) {
-        SharedEvents.teleport(e);
+        Shared.teleport(e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Velocity(PlayerVelocityEvent e) {
-        SharedEvents.velocity(e);
+        Shared.velocity(e);
     }
 
 }

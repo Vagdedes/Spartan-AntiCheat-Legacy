@@ -8,36 +8,6 @@ import java.util.Set;
 public class BlockPatternUtils {
 
     @SafeVarargs
-    public static boolean collides(SpartanLocation location,
-                                   boolean top,
-                                   boolean aboveTop,
-                                   double horizontalBox,
-                                   Set<Material>... sets) {
-        if (top) {
-            double verticalBox;
-
-            if (aboveTop) {
-                verticalBox = location.player != null
-                        ? location.player.getEyeHeight() + (location.getY() - location.getBlockY())
-                        : 1.0;
-            } else {
-                verticalBox = 0.0;
-            }
-            return isBlockPattern(new double[][]{
-                    {horizontalBox, 0.0, horizontalBox},
-                    {horizontalBox, 1.0, horizontalBox, aboveTop ? 1.0 : 0.0},
-                    {horizontalBox, verticalBox, horizontalBox, verticalBox > 2.0 ? 1.0 : 0.0}
-            }, location, horizontalBox > 0.0, sets);
-        } else {
-            return isBlockPattern(new double[]{
-                    horizontalBox, 0.0, horizontalBox
-            }, location, horizontalBox > 0.0, sets);
-        }
-    }
-
-    // Separator
-
-    @SafeVarargs
     public static boolean isBlockPattern(double[][] positions,
                                          SpartanLocation location,
                                          boolean surroundings,

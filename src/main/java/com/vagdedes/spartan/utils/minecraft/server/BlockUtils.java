@@ -1447,7 +1447,7 @@ public class BlockUtils {
     }
 
     public static String blockToString(SpartanBlock b) {
-        return toString(b.getBlock().getType());
+        return toString(b.material.toString());
     }
 
     public static String materialToString(Material m) {

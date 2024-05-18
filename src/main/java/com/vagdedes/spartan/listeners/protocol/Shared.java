@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners;
+package com.vagdedes.spartan.listeners.protocol;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
@@ -10,8 +10,6 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.listeners.protocol.Join;
-import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -23,7 +21,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
-public class SharedEvents {
+public class Shared {
 
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
             Enums.HackType.NoFall,
@@ -62,7 +60,8 @@ public class SharedEvents {
             }
         }, 10);
 
-        Join.canCheck.put(e.getPlayer(), true);
+        // Trackers
+        ProtocolStorage.canCheck.put(p.uuid, true);
     }
 
     public static void move(PlayerMoveEvent e) {
@@ -79,8 +78,8 @@ public class SharedEvents {
         }
         SpartanLocation vehicle = p.movement.getVehicleLocation(n);
         SpartanLocation
-                to = vehicle != null ? vehicle : new SpartanLocation(p, nto),
-                from = new SpartanLocation(p, e.getFrom());
+                to = vehicle != null ? vehicle : new SpartanLocation(nto),
+                from = new SpartanLocation(e.getFrom());
         from.retrieveDataFrom(to);
 
         // Values
@@ -109,7 +108,7 @@ public class SharedEvents {
         // Detections
         boolean cancelled = e.isCancelled();
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
-        // p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
+        p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
         p.getExecutor(Enums.HackType.KillAura).run(cancelled);
         p.getExecutor(Enums.HackType.NoFall).run(cancelled);
         p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
@@ -119,8 +118,6 @@ public class SharedEvents {
 
     public static void teleport(PlayerTeleportEvent e) {
         Location nto = e.getTo();
-        Move.positionManager.put(e.getPlayer(), nto);
-        Move.lastRotation.put(e.getPlayer(), new RotationData(nto.getYaw(), nto.getPitch()));
 
         if (nto == null) {
             return;
@@ -131,7 +128,15 @@ public class SharedEvents {
         if (p == null) {
             return;
         }
-        p.movement.judgeGround(new SpartanLocation(p, nto));
+        SpartanLocation to = new SpartanLocation(nto);
+
+        // Object
+        p.movement.judgeGround(to);
+
+        // Trackers
+        ProtocolStorage.positionManager.put(p.uuid, to);
+        ProtocolStorage.lastRotation.put(p.uuid, new RotationData(to.getYaw(), to.getPitch()));
+        ProtocolStorage.lastTeleport.put(p.uuid, to);
     }
 
     public static void velocity(PlayerVelocityEvent e) {

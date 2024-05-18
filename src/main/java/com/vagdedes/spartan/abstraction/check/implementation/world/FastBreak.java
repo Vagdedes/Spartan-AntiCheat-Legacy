@@ -44,7 +44,7 @@ public class FastBreak extends CheckExecutor {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                long time = interactTime.getOrDefault(Objects.hash(block.world.getName(), block.material, block.x, block.y, block.z), 0L);
+                long time = interactTime.getOrDefault(Objects.hash(block.getWorld().getName(), block.material, block.x, block.y, block.z), 0L);
 
                 if (time > 0L) {
                     time = System.currentTimeMillis() - time;
@@ -183,17 +183,17 @@ public class FastBreak extends CheckExecutor {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                SpartanBlock b = new SpartanBlock(player, event.getClickedBlock());
+                SpartanBlock b = new SpartanBlock(event.getClickedBlock());
 
                 if (interactTime.size() == TPS.maximum) {
                     Iterator<Integer> iterator = interactTime.keySet().iterator();
                     iterator.next();
                     iterator.remove();
                 }
-                interactTime.put(Objects.hash(b.world.getName(), b.material, b.x, b.y, b.z), System.currentTimeMillis());
+                interactTime.put(Objects.hash(b.getWorld().getName(), b.material, b.x, b.y, b.z), System.currentTimeMillis());
             }
         } else {
-            SpartanBlock b = new SpartanBlock(player, ((BlockBreakEvent) object).getBlock());
+            SpartanBlock b = new SpartanBlock(((BlockBreakEvent) object).getBlock());
 
             if (!TreeFeller.canCancel(this.player, b)) {
                 int seconds = 20; // 1 second in ticks

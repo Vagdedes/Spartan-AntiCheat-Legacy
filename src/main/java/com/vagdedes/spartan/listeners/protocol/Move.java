@@ -6,8 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.listeners.SharedEvents;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -17,15 +18,11 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Move extends PacketAdapter {
-
-    public static Map<Player, Location> positionManager = new ConcurrentHashMap<>();
-    public static Map<Player, Boolean> groundManager = new ConcurrentHashMap<>();
-    public static Map<Player, Boolean> spawnStatus = new ConcurrentHashMap<>();
-    public static Map<Player, RotationData> lastRotation = new ConcurrentHashMap<>();
 
     public Move() {
         super(Register.plugin, ListenerPriority.LOWEST, PacketType.Play.Client.getInstance().values());
@@ -33,37 +30,42 @@ public class Move extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
-        Player player = event.getPlayer();
         PacketContainer packet = event.getPacket();
         if (packet.getType() == PacketType.Play.Client.POSITION
                 || packet.getType() == PacketType.Play.Client.POSITION_LOOK
                 || packet.getType() == PacketType.Play.Client.LOOK) {
+            Player real = event.getPlayer();
+            SpartanPlayer player = SpartanBukkit.getPlayer(real);
+
+            if (player == null) {
+                return;
+            }
             // CPlayerPacket
-            Location to = readMovePacket(event);
+            SpartanLocation to = readMovePacket(event);
             double xz = to.getX() + to.getZ();
-            if ((xz == 17 || xz == 0 && spawnStatus.containsKey(player) && spawnStatus.get(player))
-            ) {
+
+            if (xz == 17
+                    || xz == 0 && ProtocolStorage.getSpawnStatus(player.uuid)) {
                 return;
             } else {
-                spawnStatus.put(player, false);
+                ProtocolStorage.spawnStatus.put(player.uuid, false);
             }
-            if (Teleport.lastTeleport.containsKey(player)) {
-                Teleport.lastTeleport.remove(player);
+            if (ProtocolStorage.lastTeleport.remove(player.uuid) != null) {
                 return;
             }
             importRotation(player, to);
-            positionManager.putIfAbsent(player, to);
-            Location from = positionManager.get(player);
+            SpartanLocation from = ProtocolStorage.positionManager.computeIfAbsent(player.uuid, k -> to);
             importRotation(player, from);
             boolean ground = packet.getBooleans().read(0);
-            groundManager.put(player, ground);
-            PlayerMoveEvent playerMoveEvent = new PlayerMoveEvent(
-                    player, from, to
-            );
-            if (Join.canCheck(player) && !spawnStatus.get(player)) {
-                SharedEvents.move(playerMoveEvent);
+            ProtocolStorage.groundManager.put(player.uuid, ground);
+
+            if (ProtocolStorage.canCheck(player.uuid)
+                    && !ProtocolStorage.getSpawnStatus(player.uuid)) {
+                Shared.move(new PlayerMoveEvent(
+                        real, from.getBukkitLocation(), to.getBukkitLocation()
+                ));
             }
-            positionManager.put(player, to);
+            ProtocolStorage.positionManager.put(player.uuid, to);
             // Action
         } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())
                 || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {
@@ -72,52 +74,61 @@ public class Move extends PacketAdapter {
 
     }
 
-    public static Location readMovePacket(PacketEvent event) {
+    public static SpartanLocation readMovePacket(PacketEvent event) {
         PacketContainer packet = event.getPacket();
-        Player player = event.getPlayer();
+
         if (event.getPacket().getType() == PacketType.Play.Client.LOOK
                 || event.getPacket().getType() == PacketType.Play.Client.POSITION_LOOK) {
-            lastRotation.put(event.getPlayer(), new RotationData(
-                    packet.getFloat().read(0), packet.getFloat().read(1))
-            );
+            SpartanPlayer player = SpartanBukkit.getPlayer(event.getPlayer());
+
+            if (player == null) {
+                return new SpartanLocation();
+            } else {
+                ProtocolStorage.lastRotation.put(
+                        player.uuid,
+                        new RotationData(
+                                packet.getFloat().read(0),
+                                packet.getFloat().read(1)
+                        )
+                );
+            }
         }
         if (event.getPacket().getType() == PacketType.Play.Client.LOOK) {
-            return positionManager.get(player);
+            SpartanPlayer player = SpartanBukkit.getPlayer(event.getPlayer());
+
+            if (player == null) {
+                return new SpartanLocation();
+            } else {
+                return ProtocolStorage.positionManager.get(player.uuid);
+            }
         } else {
-            return new Location(
-                    player.getWorld(),
-                    packet.getDoubles().read(0),
-                    packet.getDoubles().read(1),
-                    packet.getDoubles().read(2)
-            );
+            SpartanPlayer player = SpartanBukkit.getPlayer(event.getPlayer());
+
+            if (player == null) {
+                return new SpartanLocation();
+            } else {
+                return new SpartanLocation(
+                        player.getWorld(),
+                        null,
+                        packet.getDoubles().read(0),
+                        packet.getDoubles().read(1),
+                        packet.getDoubles().read(2),
+                        0.0f,
+                        0.0f
+                );
+            }
         }
     }
 
-    public static void importRotation(Player player, Location l) {
-        l.setYaw(lastRotation.get(player).yaw());
-        l.setPitch(lastRotation.get(player).pitch());
+    public static void importRotation(SpartanPlayer player, SpartanLocation location) {
+        RotationData rotation = ProtocolStorage.getRotation(player.uuid);
+        location.setYaw(rotation.yaw());
+        location.setPitch(rotation.pitch());
     }
 
     public static boolean onGroundPacketLevel(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         return packet.getBooleans().read(0);
-    }
-
-    public static Location getLocation(SpartanPlayer spartanPlayer) {
-        if (positionManager.containsKey(spartanPlayer.getInstance())) {
-            return positionManager.get(spartanPlayer.getInstance());
-        } else {
-            return spartanPlayer.getInstance().getLocation();
-        }
-    }
-
-    public static Boolean isOnGround(SpartanPlayer spartanPlayer) {
-        Player player = spartanPlayer.getInstance();
-        if (groundManager.containsKey(player)) {
-            return groundManager.get(player);
-        } else {
-            return player.isOnGround();
-        }
     }
 
     private static boolean rumiaShield(Player player, Location from, Location to) {
@@ -127,4 +138,5 @@ public class Move extends PacketAdapter {
         double speed = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
         return y == -0.09;
     }
+
 }

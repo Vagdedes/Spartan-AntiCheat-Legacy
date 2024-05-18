@@ -24,8 +24,9 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.SharedEvents;
 import com.vagdedes.spartan.listeners.protocol.Move;
+import com.vagdedes.spartan.listeners.protocol.ProtocolStorage;
+import com.vagdedes.spartan.listeners.protocol.Shared;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.*;
@@ -113,7 +114,7 @@ public class SpartanPlayer {
                             }
 
                             // Preventions
-                            for (Enums.HackType hackType : SharedEvents.handledChecks) {
+                            for (Enums.HackType hackType : Shared.handledChecks) {
                                 if (p.getViolations(hackType).prevent()) {
                                     break;
                                 }
@@ -399,7 +400,7 @@ public class SpartanPlayer {
             Player p = this.getInstance();
 
             if (SpartanBukkit.packetsEnabled()) {
-                return p != null && Move.isOnGround(this);
+                return p != null && ProtocolStorage.isOnGround(this);
             } else {
                 return p != null && p.isOnGround();
             }
@@ -429,7 +430,7 @@ public class SpartanPlayer {
                     if (!list.isEmpty()) {
                         for (Block block : list) {
                             if (BlockUtils.isFullSolid(block.getType())) {
-                                return new SpartanBlock(this, block);
+                                return new SpartanBlock(block);
                             }
                         }
                     }
