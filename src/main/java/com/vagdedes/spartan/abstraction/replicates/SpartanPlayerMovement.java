@@ -5,7 +5,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.protocol.ProtocolStorage;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
@@ -31,8 +30,7 @@ public class SpartanPlayerMovement {
             eventBox;
     private final Map<Long, List<SpartanLocation>> locations;
     private int
-            airTicks,
-            vanillaAirTicks;
+            airTicks;
     private long
             artificialSwimming,
             lastLiquidTicks;
@@ -55,7 +53,6 @@ public class SpartanPlayerMovement {
         this.eventBox = Collections.synchronizedList(new LinkedList<>());
 
         this.airTicks = 0;
-        this.vanillaAirTicks = 0;
 
         this.artificialSwimming = 0L;
         this.lastLiquidTicks = 0L;
@@ -302,13 +299,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public int getTicksOnAir() {
-        return AlgebraUtils.integerRound(
-                Math.sqrt((airTicks * airTicks + vanillaAirTicks * vanillaAirTicks) / 2.0)
-        );
-    }
-
-    public int getDefaultTicksOnAir() {
-        return vanillaAirTicks;
+        return airTicks;
     }
 
     // Separator
@@ -471,7 +462,7 @@ public class SpartanPlayerMovement {
                 list.remove(0);
             }
         }
-        this.judgeGround(to, true);
+        this.judgeGround(true);
         return true;
     }
 
@@ -481,22 +472,15 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    private void judgeGround(SpartanLocation location, boolean increase) {
-        if (this.parent.isOnGround(location)) {
-            this.parent.onGroundCustom = true;
+    private void judgeGround(boolean increase) {
+        if (this.parent.isOnGround()) {
             this.airTicks = 0;
         } else if (increase) {
-            this.parent.onGroundCustom = false;
             this.airTicks++;
-        }
-        if (this.parent.isOnGroundDefault()) {
-            this.vanillaAirTicks = 0;
-        } else if (increase) {
-            this.vanillaAirTicks++;
         }
     }
 
-    public void judgeGround(SpartanLocation location) {
-        this.judgeGround(location, false);
+    public void judgeGround() {
+        this.judgeGround(false);
     }
 }

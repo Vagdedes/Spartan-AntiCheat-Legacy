@@ -76,8 +76,6 @@ public class SpartanPlayer {
             lastDamageDealt;
     private PlayerProfile playerProfile;
 
-    boolean onGroundCustom;
-
     static {
         if (Register.isPluginLoaded()) {
             SpartanBukkit.runRepeatingTask(() -> {
@@ -85,7 +83,8 @@ public class SpartanPlayer {
 
                 if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
-                        p.movement.judgeGround(p.movement.getLocation());
+                        p.movement.judgeGround();
+                        p.movement.getLocation();
 
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                             Elytra.judge(p, false);
@@ -382,15 +381,11 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean isOnGround() {
-        return onGroundCustom;
-    }
-
     public boolean isOnGround(SpartanLocation location) {
-        return GroundUtils.isOnGround(this, location, 0.0);
+        return GroundUtils.isOnGround(this, location);
     }
 
-    public boolean isOnGroundDefault() {
+    public boolean isOnGround() {
         Entity vehicle = getVehicle();
 
         if (vehicle != null) {
@@ -723,7 +718,7 @@ public class SpartanPlayer {
 
     public void groundTeleport() {
         if (!Config.settings.getBoolean("Detections.ground_teleport_on_detection")
-                || this.onGroundCustom) {
+                || this.isOnGround()) {
             return;
         }
         SpartanLocation location = this.movement.getLocation(),

@@ -180,20 +180,15 @@ public class GroundUtils {
 
     // Method
 
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, double y) {
-        boolean original = y == 0;
-
-        if (original) {
-            if (p.trackers.has(Trackers.TrackerType.PISTON)
-                    || stepsOnBoats(p)
-                    || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
-                return true;
-            }
+    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc) {
+        if (p.trackers.has(Trackers.TrackerType.PISTON)
+                || stepsOnBoats(p)
+                || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
+            return true;
         }
         double box = loc.getY() - loc.getBlockY(), distribution;
 
-        if (original
-                && p.isOnGroundDefault()
+        if (p.isOnGround()
                 && blockHeightExists(box)) {
             SpartanBlock block = loc.getBlock();
 
@@ -204,7 +199,6 @@ public class GroundUtils {
         }
         Entity vehicle = p.getVehicle();
         boolean hasVehicle = vehicle != null;
-        original &= !hasVehicle && !p.bedrockPlayer;
 
         if (hasVehicle) {
             distribution = Math.max(
@@ -223,25 +217,21 @@ public class GroundUtils {
                 Material type = loopLocation.getBlock().material;
 
                 if (BlockUtils.isSolid(type)) {
-                    if (original) {
-                        double[] heights = correlatedBlockHeights.get(type);
+                    double[] heights = correlatedBlockHeights.get(type);
 
-                        if (heights != null) {
-                            if (heights.length == 1) {
-                                if (heights[0] == -1.0 || heights[0] == box) {
+                    if (heights != null) {
+                        if (heights.length == 1) {
+                            if (heights[0] == -1.0 || heights[0] == box) {
+                                return true;
+                            }
+                        } else {
+                            for (double height : heights) {
+                                if (height == box) {
                                     return true;
                                 }
-                            } else {
-                                for (double height : heights) {
-                                    if (height == box) {
-                                        return true;
-                                    }
-                                }
                             }
-                        } else if (box == 0.0) {
-                            return true;
                         }
-                    } else {
+                    } else if (box == 0.0) {
                         return true;
                     }
                 }

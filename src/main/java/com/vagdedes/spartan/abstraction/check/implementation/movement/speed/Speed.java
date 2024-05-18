@@ -95,7 +95,7 @@ public class Speed extends CheckExecutor {
         String flag = null;
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
-        boolean onGround = player.isOnGroundDefault();
+        boolean onGround = player.isOnGround();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         int oldAir = -1;

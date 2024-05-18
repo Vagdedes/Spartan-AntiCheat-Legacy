@@ -110,7 +110,7 @@ public class EventsHandler5 implements Listener {
         Block nb = e.getBlock();
         SpartanBlock b = new SpartanBlock(nb);
         b.removeBlockCache();
-        p.movement.judgeGround(p.movement.getLocation());
+        p.movement.judgeGround();
 
         if (n.getWorld() != b.getWorld()) {
             return;

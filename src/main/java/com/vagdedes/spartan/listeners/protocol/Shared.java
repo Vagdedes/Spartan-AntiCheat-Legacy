@@ -131,7 +131,7 @@ public class Shared {
         SpartanLocation to = new SpartanLocation(nto);
 
         // Object
-        p.movement.judgeGround(to);
+        p.movement.judgeGround();
 
         // Trackers
         ProtocolStorage.positionManager.put(p.uuid, to);
