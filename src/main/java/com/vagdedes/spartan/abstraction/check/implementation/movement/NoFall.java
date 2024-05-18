@@ -5,7 +5,9 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
@@ -124,7 +126,14 @@ public class NoFall extends CheckExecutor {
                 && !player.movement.wasInLiquids()
                 && !player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS)
                 && !player.trackers.has(Trackers.TrackerType.BUBBLE_WATER, "soul-sand")
-                && !BlockUtils.canClimb(player.movement.getEventToLocation().getBlock().material, false)
-                && (!PlayerUtils.levitation || !player.hasPotionEffect(PotionEffectType.LEVITATION, 0));
+                && (!PlayerUtils.levitation || !player.hasPotionEffect(PotionEffectType.LEVITATION, 0))
+                && !BlockPatternUtils.isBlockPattern(new double[]{
+                        1,
+                        0.0,
+                        1
+                },
+                player.movement.getEventToLocation(),
+                true,
+                BlockUtils.climbable);
     }
 }

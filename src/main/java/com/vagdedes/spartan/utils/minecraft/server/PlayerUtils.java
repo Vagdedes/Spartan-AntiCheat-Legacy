@@ -51,8 +51,8 @@ public class PlayerUtils {
             slowFallAcceleration = 0.01,
             liquidAcceleration = 0.02,
             chunk = 16.0,
-            climbingDefault = 0.11760,
-            climbingScaffoldingMax = climbingDefault + 0.2,
+            climbingUpDefault = 0.12 * airDrag, // 0.11760
+            climbingDownDefault = AlgebraUtils.floatDouble(0.15),
             maxJumpingMotionDifference;
 
     public static final int
@@ -67,7 +67,7 @@ public class PlayerUtils {
 
     static {
         handledPotionEffects.put(JUMP, 100);
-        handledPotionEffects.put(SPEED, 60);
+        handledPotionEffects.put(SPEED, 40);
 
         if (slowFall) {
             handledPotionEffects.put(SLOW_FALLING, 20);

@@ -20,6 +20,7 @@ import java.util.Set;
 
 public class IrregularMovementsStep extends DetectionExecutor {
 
+    private static final double bedrockPlayerStepExtra = 1.0;
     private static final boolean abstractHorseClass = ReflectionUtils.classExists(
             "org.bukkit.entity.AbstractHorse"
     );
@@ -82,7 +83,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
                     if (vehicle == null) {
                         if (stepCombination.get(hash)) {
-                            double limit = (player.bedrockPlayer ? 1.0 : 0.0) + GroundUtils.maxPlayerStep;
+                            double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                    + GroundUtils.maxPlayerStep;
 
                             if (vertical > limit) {
                                 cancel(
@@ -125,30 +127,34 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 } else {
                     if (vertical > 0.0) {
                         if (!player.movement.isJumping(vertical)) {
-                            double limit = PlayerUtils.getJumpMotion(
+                            double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                    + PlayerUtils.getJumpMotion(
                                     PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
                                     0
                             );
 
                             if (vehicle != null) {
+                                double vehicleLimit = 0.0;
+
                                 if (abstractHorseClass) {
                                     if (vehicle instanceof AbstractHorse) {
-                                        limit = Math.max(
-                                                limit,
-                                                ((AbstractHorse) vehicle).getJumpStrength()
-                                                        + GroundUtils.maxHeightLengthRatio
-                                        );
+                                        vehicleLimit = ((AbstractHorse) vehicle).getJumpStrength()
+                                                + GroundUtils.maxHeightLengthRatio;
                                     }
                                 } else if (vehicle instanceof Horse) {
-                                    limit = Math.max(
-                                            limit,
-                                            ((Horse) vehicle).getJumpStrength()
-                                                    + GroundUtils.maxHeightLengthRatio
-                                    );
+                                    vehicleLimit = ((Horse) vehicle).getJumpStrength()
+                                            + GroundUtils.maxHeightLengthRatio;
                                 }
-                            } else if (player.bedrockPlayer) {
-                                limit = (1.0 - limit) + GroundUtils.maxHeightLengthRatio;
+
+                                if (vehicleLimit > 0.0) {
+                                    if (player.bedrockPlayer) {
+                                        limit = Math.max(limit, vehicleLimit);
+                                    } else {
+                                        limit = vehicleLimit;
+                                    }
+                                }
                             }
+
                             if (vertical > limit) {
                                 double predictedHeight = box - oldBox;
 
@@ -164,7 +170,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                             "type: step(abstract-up)"
                                                     + ", box: " + box
                                                     + ", old-box: " + oldBox
-                                                    + ", vertical: " + vertical,
+                                                    + ", vertical: " + vertical
+                                                    + ", limit: " + limit,
                                             vertical,
                                             player.movement.getDetectionLocation(),
                                             0,
@@ -194,7 +201,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             if (verticalPrediction < 0.0) {
                                 verticalPrediction += 1.0;
                             }
-                            if (!vehicleEnter && verticalPrediction != motionRemainder) {
+                            if (!vehicleEnter
+                                    && verticalPrediction != motionRemainder) {
                                 cancel(
                                         "type: step(landing)"
                                                 + ", box: " + box
@@ -208,17 +216,23 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (vertical < -PlayerUtils.airAcceleration) {
-                            cancel(
-                                    "type: step(abstract-down)"
-                                            + ", box: " + box
-                                            + ", old-box: " + oldBox
-                                            + ", vertical: " + vertical,
-                                    0.0d - vertical,
-                                    player.movement.getDetectionLocation(),
-                                    0,
-                                    true
-                            );
+                        } else {
+                            double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                    + PlayerUtils.airAcceleration;
+
+                            if (vertical <= -limit) {
+                                cancel(
+                                        "type: step(abstract-down)"
+                                                + ", box: " + box
+                                                + ", old-box: " + oldBox
+                                                + ", vertical: " + vertical
+                                                + ", limit: " + limit,
+                                        0.0d - vertical,
+                                        player.movement.getDetectionLocation(),
+                                        0,
+                                        true
+                                );
+                            }
                         }
                     }
                 }

@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -107,11 +108,17 @@ public class Speed extends CheckExecutor {
         double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2);
         double horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
         float speedMultiply = (player.getWalkSpeed() * 5) < 1 ? 1 : (player.getWalkSpeed() * 5);
-        SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 1L);
-        SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 1L);
-        SpartanPotionEffect glideEffect = player.getPotionEffect(PotionEffectType.SLOW_FALLING, 1L);
-        SpartanPotionEffect levitationEffect = player.getPotionEffect(PotionEffectType.LEVITATION, 1L);
-        SpartanPotionEffect dolphinEffect = player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 1L);
+        SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
+        SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 0);
+        SpartanPotionEffect glideEffect = PlayerUtils.slowFall
+                ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                : null;
+        SpartanPotionEffect levitationEffect = PlayerUtils.levitation
+                ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                : null;
+        SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
+                ? player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                : null;
         if (onGround && wrappedOnFly > 0) oldAir = wrappedOnFly;
         wrappedOnAir = onGround ? 0 : wrappedOnAir + 1;
         wrappedOnFly = onGround ? 0 : wrappedOnFly + 1;
@@ -306,7 +313,7 @@ public class Speed extends CheckExecutor {
                         }
                     }
                     if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
-                            && !player.getInstance().isSprinting() && !ignoreBasicChecks
+                            && !player.movement.isSprinting() && !ignoreBasicChecks
                             && speedModify < 1.0) {
                         double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                         if (calcDiff > 10 && !allowedAngle(calcDiff)) {
@@ -325,7 +332,7 @@ public class Speed extends CheckExecutor {
             ticksOnGround++;
             if (ticksOnGround == 1) {
                 if (oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop
-                                && !ignoreBasicChecks && jumpEffect == null) {
+                        && !ignoreBasicChecks && jumpEffect == null) {
                     antiAbuseProcessor = antiAbuseProcessor + 75;
                     if (antiAbuseProcessor > 200) {
                         flag = "type: landing-end, speed: " + vertical
@@ -365,7 +372,7 @@ public class Speed extends CheckExecutor {
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
             }
-            if (horizontal >= limit / 1.7 && !player.getInstance().isSprinting()
+            if (horizontal >= limit / 1.7 && !player.movement.isSprinting()
                     && speedModify < 1.0) {
                 double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                 if (calcDiff > 10 && !allowedAngle(calcDiff)) {
