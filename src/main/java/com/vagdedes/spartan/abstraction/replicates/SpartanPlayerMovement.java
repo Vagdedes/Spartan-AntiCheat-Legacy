@@ -159,12 +159,12 @@ public class SpartanPlayerMovement {
         return lastLiquidMaterial;
     }
 
-    public synchronized void setLastLiquid(Material material) {
+    public void setLastLiquid(Material material) {
         lastLiquidTicks = TPS.getTick(this.parent);
         lastLiquidMaterial = material;
     }
 
-    public synchronized void removeLastLiquidTime() {
+    public void removeLastLiquidTime() {
         lastLiquidTicks = 0L;
     }
 
@@ -181,7 +181,7 @@ public class SpartanPlayerMovement {
         }
     }
 
-    public synchronized void setArtificialSwimming() {
+    public void setArtificialSwimming() {
         this.artificialSwimming = TPS.getTick(this.parent) + 1;
     }
 
@@ -283,16 +283,6 @@ public class SpartanPlayerMovement {
             return p != null && p.isGliding();
         } else {
             return false;
-        }
-    }
-
-    public synchronized void setGliding(boolean gliding) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            Player p = this.parent.getInstance();
-
-            if (p != null) {
-                p.setGliding(gliding);
-            }
         }
     }
 

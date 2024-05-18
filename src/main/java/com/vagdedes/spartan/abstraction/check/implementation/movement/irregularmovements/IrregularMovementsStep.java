@@ -146,6 +146,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                                     + GroundUtils.maxHeightLengthRatio
                                     );
                                 }
+                            } else if (player.bedrockPlayer) {
+                                limit = (1.0 - limit) + GroundUtils.maxHeightLengthRatio;
                             }
                             if (vertical > limit) {
                                 double predictedHeight = box - oldBox;

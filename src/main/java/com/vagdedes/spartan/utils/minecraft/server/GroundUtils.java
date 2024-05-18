@@ -180,7 +180,7 @@ public class GroundUtils {
 
     // Method
 
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc) {
+    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, boolean defaultOnGround) {
         if (p.trackers.has(Trackers.TrackerType.PISTON)
                 || stepsOnBoats(p)
                 || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
@@ -188,7 +188,7 @@ public class GroundUtils {
         }
         double box = loc.getY() - loc.getBlockY(), distribution;
 
-        if (p.isOnGround()
+        if (defaultOnGround
                 && blockHeightExists(box)) {
             SpartanBlock block = loc.getBlock();
 

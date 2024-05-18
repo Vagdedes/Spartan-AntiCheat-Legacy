@@ -258,7 +258,7 @@ public class PlayerUtils {
                                                  double acceleration, double drag) {
         double terminalVelocity = calculateTerminalVelocity(acceleration, drag);
 
-        if (motion >= terminalVelocity) {
+        if (motion >= -terminalVelocity) {
             return (motion + acceleration) * drag;
         } else {
             return Double.MIN_VALUE;
