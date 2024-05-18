@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class EventsHandler2 implements Listener {
 
@@ -84,8 +85,8 @@ public class EventsHandler2 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void VehicleEnter(VehicleEnterEvent e) {
-        Entity en = e.getEntered();
+    private void VehicleExit(VehicleExitEvent e) {
+        Entity en = e.getExited();
 
         if (en instanceof Player) {
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) en);
@@ -93,10 +94,7 @@ public class EventsHandler2 implements Listener {
             if (p == null) {
                 return;
             }
-            if (p.getViolations(Enums.HackType.Speed).prevent()
-                    || p.getViolations(Enums.HackType.IrregularMovements).prevent()) {
-                e.setCancelled(true);
-            }
+            p.trackers.add(Trackers.TrackerType.VEHICLE, "exit", 5);
         }
     }
 

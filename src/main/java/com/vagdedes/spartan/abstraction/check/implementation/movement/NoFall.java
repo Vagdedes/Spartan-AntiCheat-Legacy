@@ -53,7 +53,7 @@ public class NoFall extends CheckExecutor {
             return;
         }
         int fallTick = getFallTicks(previous) + 1;
-        boolean toGround = player.isOnGround(),
+        boolean toGround = player.isOnGround() || player.isOnGround(player.movement.getEventToLocation()),
                 fromGround = player.isOnGround(player.movement.getEventFromLocation());
 
         runAsync(() -> {

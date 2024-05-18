@@ -73,7 +73,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
             Entity vehicle = player.getVehicle();
             boolean slime = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime"),
                     bed = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed"),
-                    vehicleEnter = player.trackers.has(Trackers.TrackerType.VEHICLE, "enter");
+                    vehicleEnter = player.trackers.has(Trackers.TrackerType.VEHICLE, "enter"),
+                    vehicleExit = player.trackers.has(Trackers.TrackerType.VEHICLE, "exit");
 
             runAsync(() -> {
                 if (knownBox && knownOldBox) {
@@ -96,8 +97,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (vertical < -PlayerUtils.airAcceleration
-                                || vertical > GroundUtils.maxPlayerStep) {
+                        } else if (!vehicleExit && vertical < -PlayerUtils.airAcceleration
+                                || !vehicleEnter && vertical > GroundUtils.maxPlayerStep) {
                             cancel(
                                     "type: step(combination)"
                                             + ", box: " + box
