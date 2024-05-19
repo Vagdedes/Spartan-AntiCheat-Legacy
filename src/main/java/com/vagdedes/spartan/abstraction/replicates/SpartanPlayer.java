@@ -178,9 +178,9 @@ public class SpartanPlayer {
             this.executors[id] = new CheckExecutorExample(this);
         }
         if (CheckExecutorExample.executors.length > 0) {
-            for (String executorClass : CheckExecutorExample.executors) {
+            for (Class<?> executorClass : CheckExecutorExample.executors) {
                 try {
-                    CheckExecutor executor = (CheckExecutor) Class.forName(executorClass).getConstructor(SpartanPlayer.class).newInstance(this);
+                    CheckExecutor executor = (CheckExecutor) executorClass.getConstructor(SpartanPlayer.class).newInstance(this);
                     this.executors[executor.hackType.ordinal()] = executor;
                 } catch (Exception ex) {
                     ex.printStackTrace();

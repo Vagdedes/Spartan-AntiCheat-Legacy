@@ -1,5 +1,24 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.abstraction.check.implementation.combat.Criticals;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.FastBow;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.HitReach;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.Velocity;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks.FastClicks;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.KillAura;
+import com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits;
+import com.vagdedes.spartan.abstraction.check.implementation.inventory.ImpossibleInventory;
+import com.vagdedes.spartan.abstraction.check.implementation.inventory.InventoryClicks;
+import com.vagdedes.spartan.abstraction.check.implementation.inventory.ItemDrops;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed;
+import com.vagdedes.spartan.abstraction.check.implementation.player.AutoRespawn;
+import com.vagdedes.spartan.abstraction.check.implementation.player.FastEat;
+import com.vagdedes.spartan.abstraction.check.implementation.player.FastHeal;
+import com.vagdedes.spartan.abstraction.check.implementation.player.NoSwing;
+import com.vagdedes.spartan.abstraction.check.implementation.world.*;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 
 public class CheckExecutorExample extends CheckExecutor {
@@ -7,36 +26,36 @@ public class CheckExecutorExample extends CheckExecutor {
     // This is the list of all checks/detections that are implemented in the plugin's code.
     // The developer has not made the following classes available to you, so you should
     // remove their paths from the list and add the paths of the classes you may implement.
-    public static final String[] executors = new String[]{
-            "com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.KillAura",
-            "com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks.FastClicks",
-            "com.vagdedes.spartan.abstraction.check.implementation.combat.Criticals",
-            "com.vagdedes.spartan.abstraction.check.implementation.combat.FastBow",
-            "com.vagdedes.spartan.abstraction.check.implementation.combat.HitReach",
-            "com.vagdedes.spartan.abstraction.check.implementation.combat.Velocity",
+    public static final Class<?>[] executors = new Class[]{
+            KillAura.class,
+            FastClicks.class,
+            Criticals.class,
+            FastBow.class,
+            HitReach.class,
+            Velocity.class,
 
-            "com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements",
-            "com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed",
-            "com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets",
-            "com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall",
+            IrregularMovements.class,
+            Speed.class,
+            MorePackets.class,
+            NoFall.class,
 
-            "com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits",
+            Exploits.class,
 
-            "com.vagdedes.spartan.abstraction.check.implementation.inventory.ImpossibleInventory",
-            "com.vagdedes.spartan.abstraction.check.implementation.inventory.InventoryClicks",
-            "com.vagdedes.spartan.abstraction.check.implementation.inventory.ItemDrops",
+            ImpossibleInventory.class,
+            InventoryClicks.class,
+            ItemDrops.class,
 
-            "com.vagdedes.spartan.abstraction.check.implementation.player.AutoRespawn",
-            "com.vagdedes.spartan.abstraction.check.implementation.player.FastEat",
-            "com.vagdedes.spartan.abstraction.check.implementation.player.FastHeal",
-            "com.vagdedes.spartan.abstraction.check.implementation.player.NoSwing",
+            AutoRespawn.class,
+            FastEat.class,
+            FastHeal.class,
+            NoSwing.class,
 
-            "com.vagdedes.spartan.abstraction.check.implementation.world.BlockReach",
-            "com.vagdedes.spartan.abstraction.check.implementation.world.FastBreak",
-            "com.vagdedes.spartan.abstraction.check.implementation.world.FastPlace",
-            "com.vagdedes.spartan.abstraction.check.implementation.world.GhostHand",
-            "com.vagdedes.spartan.abstraction.check.implementation.world.ImpossibleActions",
-            "com.vagdedes.spartan.abstraction.check.implementation.world.XRay",
+            BlockReach.class,
+            FastBreak.class,
+            FastPlace.class,
+            GhostHand.class,
+            ImpossibleActions.class,
+            XRay.class,
     };
 
     public CheckExecutorExample(SpartanPlayer player) {
