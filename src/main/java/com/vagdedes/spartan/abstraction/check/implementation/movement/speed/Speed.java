@@ -608,4 +608,9 @@ public class Speed extends CheckExecutor {
         return (b < 0.3 || b > 0.7);
     }
 
+    @Override
+    protected boolean canRun() {
+        return !player.bedrockPlayer; // REMOVE THIS WHEN YOU ADD BEDROCK SUPPORT - VAGDEDES
+    }
+
 }

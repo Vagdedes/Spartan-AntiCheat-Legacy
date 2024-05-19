@@ -17,19 +17,25 @@ import java.util.Set;
 
 public class IrregularMovementsJump extends DetectionExecutor {
 
-    private static final Map<Integer, Set<Double>> heights = new LinkedHashMap<>();
+    private static final Map<Integer, Set<Double>>
+            heights = new LinkedHashMap<>(),
+            heightsBedrock = new LinkedHashMap<>();
 
     static {
         for (int jumpEffect = 0; jumpEffect < 255; jumpEffect++) {
-            Set<Double> collection = new HashSet<>();
+            Set<Double>
+                    collection = new HashSet<>(),
+                    collectionBedrock = new HashSet<>();
 
             for (double height : GroundUtils.getHeights()) {
                 for (double motion : PlayerUtils.getJumpMotions(jumpEffect)) {
                     height += motion;
                     collection.add(AlgebraUtils.cut(AlgebraUtils.removeBase(height), MovementProcessing.heightPrecision));
+                    collectionBedrock.add(AlgebraUtils.removeBase(height));
                 }
             }
             heights.put(jumpEffect, collection);
+            heightsBedrock.put(jumpEffect, collectionBedrock);
         }
     }
 
@@ -50,7 +56,18 @@ public class IrregularMovementsJump extends DetectionExecutor {
                 if (velocity
                         ? player.movement.justJumped(vertical)
                         : player.movement.isJumping(vertical)) {
-                    if (!heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision))) {
+                    boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
+
+                    if (!contains && player.bedrockPlayer) {
+                        for (double height : heightsBedrock.get(jumpEffect)) {
+                            if (Math.abs(height - box) < MovementProcessing.heightPrecision) {
+                                contains = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!contains) {
                         cancel("type: jump(height)"
                                         + ", box: " + box
                                         + ", vertical: " + vertical

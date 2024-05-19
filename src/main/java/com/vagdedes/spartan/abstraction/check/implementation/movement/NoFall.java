@@ -3,22 +3,24 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class NoFall extends CheckExecutor {
 
     private static final double
             drag = 0.98,
-            acceleration = PlayerUtils.airAcceleration * drag;
+            acceleration = PlayerUtils.airAcceleration * drag,
+            potentialFallTicksError = 10.0;
     private static final float significantFallDistance = 3.0f;
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
@@ -34,13 +36,58 @@ public class NoFall extends CheckExecutor {
         }
     }
 
-    private double previous;
-    private double distance;
+    private static final class ViolationObject {
+
+        private final SpartanPlayer player;
+        private final String info;
+        private final long tick;
+        private final double violations, damage;
+
+        private ViolationObject(SpartanPlayer player, String info, double violations, double damage) {
+            this.tick = TPS.getTick(player);
+            this.player = player;
+            this.info = info;
+            this.violations = violations;
+            this.damage = damage;
+        }
+
+        private boolean valid() {
+            return TPS.getTick(player) - this.tick <= 2;
+        }
+    }
+
+    private double previous, distance;
+    private final List<ViolationObject> violationObjects;
 
     public NoFall(SpartanPlayer player) {
         super(HackType.NoFall, player);
-        this.previous = 0.0;
-        this.distance = 0.0;
+        this.violationObjects = Collections.synchronizedList(new LinkedList<>());
+    }
+
+    @Override
+    public void handleInternal(boolean cancelled, Object object) {
+        if (object == null) {
+            this.previous = player.getFallDistance();
+            this.distance = 0.0;
+        } else if (object == EntityDamageEvent.DamageCause.FALL
+                && !this.violationObjects.isEmpty()) {
+            synchronized (this.violationObjects) {
+                Iterator<ViolationObject> iterator = this.violationObjects.iterator();
+
+                while (iterator.hasNext()) {
+                    ViolationObject violationObject = iterator.next();
+
+                    if (!violationObject.valid()) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void cannotHandle(boolean cancelled, Object object) {
+        this.handleInternal(cancelled, object);
     }
 
     @Override
@@ -57,34 +104,62 @@ public class NoFall extends CheckExecutor {
         boolean toGround = player.isOnGround() || player.isOnGround(player.movement.getEventToLocation()),
                 fromGround = player.isOnGround(player.movement.getEventFromLocation());
 
+        if (!this.violationObjects.isEmpty()) {
+            Iterator<ViolationObject> iterator = this.violationObjects.iterator();
+
+            while (iterator.hasNext()) {
+                ViolationObject violationObject = iterator.next();
+
+                if (violationObject.valid()) {
+                    iterator.remove();
+                    cancel(
+                            violationObject.info,
+                            violationObject.violations,
+                            null,
+                            0,
+                            false,
+                            violationObject.damage
+                    );
+                }
+            }
+        }
         runAsync(() -> {
             double prediction = fallTick == 1
                     ? acceleration
                     : (this.previous * drag) + (fallTick * acceleration),
-                    difference = Math.abs(fallDistance - prediction);
+                    difference = Math.abs(fallDistance - prediction),
+                    limit = Math.max(
+                            fallTick / potentialFallTicksError,
+                            PlayerUtils.airAcceleration
+                    );
 
-            if (difference >= PlayerUtils.airAcceleration
+            if (difference >= limit
                     && (fallDistance > significantFallDistance
                     || previous > significantFallDistance)
                     && (difference != prediction
                     || !toGround && !fromGround)) {
                 int amplifier = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP);
-                cancel(
-                        "type: motion"
-                                + ", fall-distance: " + fallDistance
-                                + ", fall-tick: " + fallTick
-                                + ", prediction: " + prediction
-                                + ", difference: " + difference,
-                        difference,
-                        null,
-                        0,
-                        false,
-                        AlgebraUtils.integerCeil(
-                                this.distance
-                                        - significantFallDistance
-                                        - (amplifier == -1 ? 0.0f : amplifier + 1.0f)
-                        )
+                double damage = AlgebraUtils.integerCeil(
+                        this.distance
+                                - significantFallDistance
+                                - (amplifier == -1 ? 0.0f : amplifier + 1.0f)
                 );
+                synchronized (this.violationObjects) {
+                    if (this.violationObjects.size() == TPS.maximum) {
+                        this.violationObjects.remove(0);
+                    }
+                    this.violationObjects.add(new ViolationObject(
+                            player,
+                            "type: motion"
+                                    + ", fall-distance: " + fallDistance
+                                    + ", fall-tick: " + fallTick
+                                    + ", prediction: " + prediction
+                                    + ", difference: " + difference
+                                    + ", limit: " + limit,
+                            difference,
+                            damage
+                    ));
+                }
             }
         });
         this.previous = fallDistance;
@@ -133,6 +208,13 @@ public class NoFall extends CheckExecutor {
                 },
                 player.movement.getEventToLocation(),
                 true,
-                BlockUtils.climbable);
+                BlockUtils.climbable, BlockUtils.liquid)
+                && !BlockPatternUtils.isLiquidPattern(new double[]{
+                        1,
+                        0.0,
+                        1
+                },
+                player.movement.getEventToLocation(),
+                true);
     }
 }

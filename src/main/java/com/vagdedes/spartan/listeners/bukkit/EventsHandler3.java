@@ -75,6 +75,9 @@ public class EventsHandler3 implements Listener {
             if (!cancelled) {
                 p.trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 2);
             }
+
+            // Detections
+            p.getExecutor(Enums.HackType.NoFall).handle(cancelled, e.getCause());
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])

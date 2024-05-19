@@ -57,6 +57,7 @@ public class EventsHandler1 implements Listener {
         // Detections
         p.getExecutor(Enums.HackType.AutoRespawn).run(false);
         p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
+        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
 
         // Objects
         Player killer = n.getKiller();
@@ -89,7 +90,10 @@ public class EventsHandler1 implements Listener {
         p.movement.setDetectionLocation(true);
 
         // Protections
-        p.resetTrackers(); // Always First
+        p.resetTrackers();
+
+        // Detections
+        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

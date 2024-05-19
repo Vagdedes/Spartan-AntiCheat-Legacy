@@ -99,18 +99,26 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (!vehicleExit && vertical < -PlayerUtils.airAcceleration
-                                || !vehicleEnter && vertical > GroundUtils.maxPlayerStep) {
-                            cancel(
-                                    "type: step(combination)"
-                                            + ", box: " + box
-                                            + ", old-box: " + oldBox
-                                            + ", vertical: " + vertical,
-                                    Math.abs(vertical),
-                                    player.movement.getDetectionLocation(),
-                                    0,
-                                    true
-                            );
+                        } else {
+                            double extra = player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0,
+                                    downLimit = extra + PlayerUtils.airAcceleration,
+                                    upLimit = extra + GroundUtils.maxPlayerStep;
+
+                            if (!vehicleExit && vertical < -downLimit
+                                    || !vehicleEnter && vertical > upLimit) {
+                                cancel(
+                                        "type: step(combination)"
+                                                + ", box: " + box
+                                                + ", old-box: " + oldBox
+                                                + ", vertical: " + vertical
+                                                + ", down-limit: " + downLimit
+                                                + ", up-limit: " + upLimit,
+                                        Math.abs(vertical),
+                                        player.movement.getDetectionLocation(),
+                                        0,
+                                        true
+                                );
+                            }
                         }
                     } else if (vertical > 1.0) {
                         cancel(

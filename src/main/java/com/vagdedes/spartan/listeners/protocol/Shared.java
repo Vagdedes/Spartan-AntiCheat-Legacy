@@ -137,6 +137,9 @@ public class Shared {
         ProtocolStorage.positionManager.put(p.uuid, to);
         ProtocolStorage.lastRotation.put(p.uuid, new RotationData(to.getYaw(), to.getPitch()));
         ProtocolStorage.lastTeleport.put(p.uuid, to);
+
+        // Detections
+        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
     public static void velocity(PlayerVelocityEvent e) {
