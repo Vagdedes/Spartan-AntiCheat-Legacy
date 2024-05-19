@@ -64,4 +64,5 @@ public class IrregularMovements extends CheckExecutor {
     protected boolean canRun() {
         return MovementProcessing.canCheck(player, false, true, false);
     }
+
 }
