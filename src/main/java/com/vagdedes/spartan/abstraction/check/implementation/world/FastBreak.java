@@ -33,8 +33,8 @@ public class FastBreak extends CheckExecutor {
     private final Map<Integer, Long> interactTime;
     private final Buffer buffer;
 
-    public FastBreak(SpartanPlayer player) {
-        super(HackType.FastBreak, player);
+    public FastBreak(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.interactTime = Collections.synchronizedMap(new LinkedHashMap<>());
         this.buffer = new Buffer(player);
     }

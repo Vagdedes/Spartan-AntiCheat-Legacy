@@ -8,8 +8,8 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Criticals extends CheckExecutor {
 
-    public Criticals(SpartanPlayer player) {
-        super(HackType.Criticals, player);
+    public Criticals(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
     }
 
     @Override

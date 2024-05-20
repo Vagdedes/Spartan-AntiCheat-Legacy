@@ -29,8 +29,8 @@ public class KillAura extends CheckExecutor {
     private final MoveLength moveLength;
     private final FightAnalysis analysis;
 
-    public KillAura(SpartanPlayer player) {
-        super(Enums.HackType.KillAura, player, 9);
+    public KillAura(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player, 9);
         this.addDetections(new DetectionExecutor[]{
                 irregular = new Irregular(this),
                 entityRaytrace = new EntityRaytrace(this),
@@ -63,7 +63,6 @@ public class KillAura extends CheckExecutor {
 
     void violateLive(String information) {
         cancel(information, 1.0, null, (int) TPS.maximum);
-        player.getViolations(hackType).prevent();
     }
 
     boolean canRunEntity(LivingEntity entity) {

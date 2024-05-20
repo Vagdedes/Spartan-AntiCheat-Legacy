@@ -30,8 +30,8 @@ public class ImpossibleInventory extends CheckExecutor {
 
     private final Cooldowns cooldowns;
 
-    public ImpossibleInventory(SpartanPlayer player) {
-        super(Enums.HackType.ImpossibleInventory, player);
+    public ImpossibleInventory(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         cooldowns = new Cooldowns(player);
     }
 

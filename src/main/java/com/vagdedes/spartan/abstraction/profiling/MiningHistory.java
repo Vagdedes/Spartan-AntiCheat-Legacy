@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
 
 import java.sql.Timestamp;
@@ -10,11 +9,26 @@ import java.util.Set;
 
 public class MiningHistory {
 
-    public final Enums.MiningOre ore;
+    public enum MiningOre {
+        ANCIENT_DEBRIS, DIAMOND, EMERALD, GOLD;
+
+        private final String string;
+
+        MiningOre() {
+            string = this.name().toLowerCase().replace("_", "-");
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+    }
+
+    public final MiningOre ore;
     private final int[] mines;
     private final Set<String> days;
 
-    MiningHistory(Enums.MiningOre ore, int mines) {
+    MiningHistory(MiningOre ore, int mines) {
         World.Environment[] environments = World.Environment.values();
         this.mines = new int[environments.length];
 

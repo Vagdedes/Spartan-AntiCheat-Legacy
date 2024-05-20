@@ -16,8 +16,8 @@ public class InventoryClicks extends CheckExecutor {
     private long time;
     private final Buffer buffer;
 
-    public InventoryClicks(SpartanPlayer player) {
-        super(Enums.HackType.InventoryClicks, player);
+    public InventoryClicks(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.buffer = new Buffer(player);
     }
 

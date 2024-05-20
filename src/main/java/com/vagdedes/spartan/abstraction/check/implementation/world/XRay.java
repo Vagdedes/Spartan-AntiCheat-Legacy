@@ -40,8 +40,8 @@ public class XRay extends CheckExecutor {
         }
     }
 
-    public XRay(SpartanPlayer player) {
-        super(Enums.HackType.XRay, player);
+    public XRay(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class XRay extends CheckExecutor {
         int mines = miningHistory.getMines(World.Environment.valueOf(objects[0].toString()));
 
         if (mines > 0) {
-            double globalAverage = ResearchEngine.getMiningHistoryAverage((Enums.MiningOre) objects[2]),
+            double globalAverage = ResearchEngine.getMiningHistoryAverage((MiningHistory.MiningOre) objects[2]),
                     average = mines / ((double) miningHistory.getDays());
 
             if (globalAverage < 0.0) {

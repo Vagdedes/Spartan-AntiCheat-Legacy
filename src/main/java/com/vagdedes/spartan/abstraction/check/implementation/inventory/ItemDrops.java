@@ -11,8 +11,8 @@ public class ItemDrops extends CheckExecutor {
     private long time;
     private final Buffer buffer;
 
-    public ItemDrops(SpartanPlayer player) {
-        super(Enums.HackType.ItemDrops, player);
+    public ItemDrops(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.buffer = new Buffer(player);
     }
 

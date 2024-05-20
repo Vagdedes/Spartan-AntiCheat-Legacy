@@ -28,8 +28,8 @@ public class ImpossibleActions extends CheckExecutor {
 
     private final Buffer buffer;
 
-    public ImpossibleActions(SpartanPlayer player) {
-        super(Enums.HackType.ImpossibleActions, player);
+    public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.buffer = new Buffer(player);
     }
 

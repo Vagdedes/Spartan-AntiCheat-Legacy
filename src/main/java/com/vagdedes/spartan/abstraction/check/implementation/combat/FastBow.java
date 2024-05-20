@@ -15,8 +15,8 @@ public class FastBow extends CheckExecutor {
     private long interactTime;
     private final Buffer buffer;
 
-    public FastBow(SpartanPlayer player) {
-        super(HackType.FastBow, player);
+    public FastBow(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.buffer = new Buffer(player);
     }
 

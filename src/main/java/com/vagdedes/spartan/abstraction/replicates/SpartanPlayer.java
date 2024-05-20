@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.replicates;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.CheckExecutorExample;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -175,16 +174,14 @@ public class SpartanPlayer {
         for (Enums.HackType hackType : hackTypes) {
             int id = hackType.ordinal();
             this.violations[id] = new LiveViolation(this, hackType);
-            this.executors[id] = new CheckExecutorExample(this);
-        }
-        if (CheckExecutorExample.executors.length > 0) {
-            for (Class<?> executorClass : CheckExecutorExample.executors) {
-                try {
-                    CheckExecutor executor = (CheckExecutor) executorClass.getConstructor(SpartanPlayer.class).newInstance(this);
-                    this.executors[executor.hackType.ordinal()] = executor;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+
+            try {
+                CheckExecutor executor = (CheckExecutor) hackType.executor
+                        .getConstructor(hackType.getClass(), this.getClass())
+                        .newInstance(hackType, this);
+                this.executors[id] = executor;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

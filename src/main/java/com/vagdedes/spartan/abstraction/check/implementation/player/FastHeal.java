@@ -20,8 +20,8 @@ public class FastHeal extends CheckExecutor {
     private long time;
     private final Buffer buffer;
 
-    public FastHeal(SpartanPlayer player) {
-        super(HackType.FastHeal, player);
+    public FastHeal(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.previousHealth = player.getHealth();
         this.buffer = new Buffer(player);
     }

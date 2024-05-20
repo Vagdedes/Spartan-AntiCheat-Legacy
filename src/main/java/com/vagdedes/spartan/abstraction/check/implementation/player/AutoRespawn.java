@@ -12,8 +12,8 @@ public class AutoRespawn extends CheckExecutor {
 
     private long memory;
 
-    public AutoRespawn(SpartanPlayer player) {
-        super(HackType.AutoRespawn, player);
+    public AutoRespawn(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.memory = 0L;
     }
 

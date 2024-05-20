@@ -7,8 +7,8 @@ import me.vagdedes.spartan.system.Enums;
 
 public class Velocity extends CheckExecutor {
 
-    public Velocity(SpartanPlayer player) {
-        super(Enums.HackType.Velocity, player);
+    public Velocity(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
     }
 
     @Override

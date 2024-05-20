@@ -7,8 +7,8 @@ import me.vagdedes.spartan.system.Enums.HackType;
 
 public class HitReach extends CheckExecutor {
 
-    public HitReach(SpartanPlayer player) {
-        super(HackType.HitReach, player);
+    public HitReach(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
     }
 
     @Override

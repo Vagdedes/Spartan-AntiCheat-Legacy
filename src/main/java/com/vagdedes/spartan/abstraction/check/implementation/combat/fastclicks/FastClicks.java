@@ -14,8 +14,8 @@ public class FastClicks extends CheckExecutor {
     private final ClickPattern clickPattern;
     private final ClicksPerSecond clicksPerSecond;
 
-    public FastClicks(SpartanPlayer player) {
-        super(Enums.HackType.FastClicks, player, 2);
+    public FastClicks(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player, 2);
         this.clickPattern = new ClickPattern(this);
         this.clicksPerSecond = new ClicksPerSecond(this);
         this.addDetections(

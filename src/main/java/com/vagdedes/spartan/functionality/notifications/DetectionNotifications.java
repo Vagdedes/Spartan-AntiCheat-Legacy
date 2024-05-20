@@ -105,40 +105,40 @@ public class DetectionNotifications {
 
     // Handlers
 
-    public static Enums.MiningOre getMiningOre(Material material) {
+    public static MiningHistory.MiningOre getMiningOre(Material material) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
             if (material == Material.ANCIENT_DEBRIS) {
-                return Enums.MiningOre.ANCIENT_DEBRIS;
+                return MiningHistory.MiningOre.ANCIENT_DEBRIS;
             }
             if (material == Material.GILDED_BLACKSTONE || material == Material.NETHER_GOLD_ORE) {
-                return Enums.MiningOre.GOLD;
+                return MiningHistory.MiningOre.GOLD;
             }
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
                 if (material == Material.DEEPSLATE_DIAMOND_ORE) {
-                    return Enums.MiningOre.DIAMOND;
+                    return MiningHistory.MiningOre.DIAMOND;
                 }
                 if (material == Material.DEEPSLATE_EMERALD_ORE) {
-                    return Enums.MiningOre.EMERALD;
+                    return MiningHistory.MiningOre.EMERALD;
                 }
                 if (material == Material.DEEPSLATE_GOLD_ORE) {
-                    return Enums.MiningOre.GOLD;
+                    return MiningHistory.MiningOre.GOLD;
                 }
             }
         }
         switch (material) {
             case DIAMOND_ORE:
-                return Enums.MiningOre.DIAMOND;
+                return MiningHistory.MiningOre.DIAMOND;
             case EMERALD_ORE:
-                return Enums.MiningOre.EMERALD;
+                return MiningHistory.MiningOre.EMERALD;
             case GOLD_ORE:
-                return Enums.MiningOre.GOLD;
+                return MiningHistory.MiningOre.GOLD;
         }
         return null;
     }
 
     public static void runMining(SpartanPlayer player, SpartanBlock block, boolean cancelled) {
         if (player.getGameMode() == GameMode.SURVIVAL && PlayerUtils.isPickaxeItem(player.getItemInHand().getType())) {
-            Enums.MiningOre ore = getMiningOre(block.material);
+            MiningHistory.MiningOre ore = getMiningOre(block.material);
 
             if (ore != null) {
                 SpartanLocation location = player.movement.getLocation();

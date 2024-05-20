@@ -87,8 +87,8 @@ public class Speed extends CheckExecutor {
             oldYaw,
             multiply;
 
-    public Speed(SpartanPlayer player) {
-        super(Enums.HackType.Speed, player);
+    public Speed(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
     }
 
     @Override

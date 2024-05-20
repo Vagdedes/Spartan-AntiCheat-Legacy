@@ -42,11 +42,11 @@ public class ResearchEngine {
 
     private static final Map<String, PlayerProfile> playerProfiles
             = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
-    private static final Map<Enums.MiningOre, Double> averageMining = new LinkedHashMap<>(Enums.MiningOre.values().length);
-    private static final double[] defaultAverageMining = new double[Enums.MiningOre.values().length];
+    private static final Map<MiningHistory.MiningOre, Double> averageMining = new LinkedHashMap<>(MiningHistory.MiningOre.values().length);
+    private static final double[] defaultAverageMining = new double[MiningHistory.MiningOre.values().length];
 
     static {
-        for (Enums.MiningOre ore : Enums.MiningOre.values()) {
+        for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             switch (ore) {
                 case DIAMOND:
                     defaultAverageMining[ore.ordinal()] = -32.0;
@@ -278,7 +278,7 @@ public class ResearchEngine {
         return new ViolationHistory(list, false);
     }
 
-    public static double getMiningHistoryAverage(Enums.MiningOre ore) {
+    public static double getMiningHistoryAverage(MiningHistory.MiningOre ore) {
         Double average = averageMining.get(ore);
         return average == null ? defaultAverageMining[ore.ordinal()] : average;
     }
@@ -597,7 +597,7 @@ public class ResearchEngine {
                                     String name = split[0].toLowerCase();
 
                                     try {
-                                        Enums.MiningOre ore = DetectionNotifications.getMiningOre(
+                                        MiningHistory.MiningOre ore = DetectionNotifications.getMiningOre(
                                                 Material.getMaterial(
                                                         split[3].toUpperCase().replace("-", "_")
                                                 )
@@ -743,7 +743,7 @@ public class ResearchEngine {
             // Separator
 
             if (!legitimatePlayers.isEmpty()) {
-                for (Enums.MiningOre ore : Enums.MiningOre.values()) {
+                for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
                     double average = 0.0, total = 0.0;
 
                     for (PlayerProfile playerProfile : legitimatePlayers) {

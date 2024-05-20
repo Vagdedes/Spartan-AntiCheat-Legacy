@@ -18,8 +18,8 @@ public class FastPlace extends CheckExecutor {
     private long time;
     private final Buffer buffer;
 
-    public FastPlace(SpartanPlayer player) {
-        super(HackType.FastPlace, player);
+    public FastPlace(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.buffer = new Buffer(player);
     }
 

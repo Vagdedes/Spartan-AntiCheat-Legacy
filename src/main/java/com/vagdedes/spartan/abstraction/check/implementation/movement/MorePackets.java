@@ -14,8 +14,8 @@ public class MorePackets extends CheckExecutor {
     private final Map<Long, Integer> nmsMap;
     private int buffer;
 
-    public MorePackets(SpartanPlayer player) {
-        super(HackType.MorePackets, player);
+    public MorePackets(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.nmsMap = Collections.synchronizedMap(new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f));
         this.buffer = 0;
     }

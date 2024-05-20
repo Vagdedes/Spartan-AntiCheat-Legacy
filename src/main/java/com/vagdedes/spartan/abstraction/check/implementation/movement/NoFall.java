@@ -59,8 +59,8 @@ public class NoFall extends CheckExecutor {
     private double previous, distance;
     private final List<ViolationObject> violationObjects;
 
-    public NoFall(SpartanPlayer player) {
-        super(HackType.NoFall, player);
+    public NoFall(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.violationObjects = Collections.synchronizedList(new LinkedList<>());
     }
 

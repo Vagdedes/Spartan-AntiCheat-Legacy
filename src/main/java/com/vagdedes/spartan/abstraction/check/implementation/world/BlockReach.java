@@ -20,8 +20,8 @@ public class BlockReach extends CheckExecutor {
 
     private static final double minimumLimit = 6.0;
 
-    public BlockReach(SpartanPlayer player) {
-        super(HackType.BlockReach, player);
+    public BlockReach(HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
     }
 
     private boolean canDo(SpartanBlock b) {

@@ -29,8 +29,8 @@ public class NoSwing extends CheckExecutor {
     private final Cooldowns cooldowns;
     private final Buffer buffer;
 
-    public NoSwing(SpartanPlayer player) {
-        super(Enums.HackType.NoSwing, player);
+    public NoSwing(Enums.HackType hackType, SpartanPlayer player) {
+        super(hackType, player);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.cooldowns = new Cooldowns(player);
