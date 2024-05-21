@@ -772,7 +772,7 @@ public class SpartanPlayer {
             if (Config.settings.getBoolean("Detections.fall_damage_on_teleport")
                     && iterations > PlayerUtils.fallDamageAboveBlocks
                     && playerProfile.isSuspectedOrHacker()) { // Damage
-                applyFallDamage(Math.max(getFallDistance(), iterations));
+                applyDamage(EntityDamageEvent.DamageCause.FALL, Math.max(getFallDistance(), iterations));
             }
         }
     }
@@ -804,9 +804,9 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean applyFallDamage(double d) {
+    public boolean applyDamage(EntityDamageEvent.DamageCause damageCause, double amount) {
         trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 3);
-        return this.damage(d, EntityDamageEvent.DamageCause.FALL);
+        return this.damage(amount, damageCause);
     }
 
     private boolean damage(double amount, EntityDamageEvent.DamageCause damageCause) {

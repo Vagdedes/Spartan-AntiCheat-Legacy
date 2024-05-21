@@ -315,23 +315,25 @@ public class Enums {
     public enum DataType {
         JAVA, BEDROCK, UNIVERSAL;
 
-        public final String lowerCase, name;
+        private final String string;
 
         DataType() {
             switch (this.ordinal()) {
                 case 0:
-                    lowerCase = "java";
-                    name = "Java";
+                    this.string = "Java";
                     break;
                 case 1:
-                    lowerCase = "bedrock";
-                    name = "Bedrock";
+                    this.string = "Bedrock";
                     break;
                 default:
-                    lowerCase = "universal";
-                    name = "Universal";
+                    this.string = "Universal";
                     break;
             }
+        }
+
+        @Override
+        public String toString() {
+            return string;
         }
     }
 

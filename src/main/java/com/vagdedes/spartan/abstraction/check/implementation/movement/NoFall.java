@@ -195,7 +195,7 @@ public class NoFall extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheck(player, false, false, false)
+        return MovementProcessing.canCheck(player, false, false, false, true)
                 && player.getVehicle() == null
                 && !player.movement.wasInLiquids()
                 && !player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS)

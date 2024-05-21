@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
@@ -459,7 +460,7 @@ public class Speed extends CheckExecutor {
             if (damager instanceof Player) {
                 LivingEntity livingEntity = (LivingEntity) damager;
                 EntityEquipment equipment = livingEntity.getEquipment();
-                ItemStack item = equipment.getItemInMainHand();
+                ItemStack item = equipment.getItemInHand();
                 int enchant = item.getEnchantmentLevel(Enchantment.KNOCKBACK);
                 multi += enchant * 1.8;
 
@@ -525,7 +526,7 @@ public class Speed extends CheckExecutor {
 
         if (inventory != null) {
             double maxAmplifier = 0.0;
-            ItemStack mainHandItem = inventory.getItemInMainHand();
+            ItemStack mainHandItem = inventory.getItemInHand();
 
             double mainHandAmplifier = getSpeedAmplifier(mainHandItem);
             maxAmplifier = Math.max(maxAmplifier, mainHandAmplifier);
@@ -610,7 +611,8 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !player.bedrockPlayer; // REMOVE THIS WHEN YOU ADD BEDROCK SUPPORT - VAGDEDES
+        return MovementProcessing.canCheck(player, true, true, false, true)
+                && !player.bedrockPlayer; // REMOVE 'player.bedrockPlayer' WHEN/UPON YOU ADD BEDROCK SUPPORT - VAGDEDES
     }
 
 }
