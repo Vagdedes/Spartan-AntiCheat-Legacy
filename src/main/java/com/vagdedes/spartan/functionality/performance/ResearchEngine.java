@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.*;
@@ -10,7 +11,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
@@ -133,7 +133,7 @@ public class ResearchEngine {
     }
 
     public static int getDetectionViolationLevel(String s) {
-        int index1 = s.indexOf("(VL: ");
+        int index1 = s.indexOf("(" + LiveViolation.violationLevelIdentifier + " ");
 
         if (index1 > -1) {
             int index2 = s.indexOf(") [");
@@ -399,7 +399,7 @@ public class ResearchEngine {
     // Separator
 
     public static Collection<File> getFiles() {
-        File[] files = new File(Register.plugin.getDataFolder() + "/logs/").listFiles();
+        File[] files = new File(AntiCheatLogs.folderPath).listFiles();
 
         if (files != null && files.length > 0) {
             TreeMap<Integer, File> map = new TreeMap<>();
@@ -506,7 +506,6 @@ public class ResearchEngine {
     public static void refresh(boolean enabledPlugin) {
         Runnable runnable = () -> {
             // Complete Storage
-            AntiCheatLogs.refresh();
             Config.sql.refreshDatabase();
 
             if (enabledPlugin) {
@@ -597,7 +596,7 @@ public class ResearchEngine {
                                     String name = split[0].toLowerCase();
 
                                     try {
-                                        MiningHistory.MiningOre ore = DetectionNotifications.getMiningOre(
+                                        MiningHistory.MiningOre ore = MiningHistory.getMiningOre(
                                                 Material.getMaterial(
                                                         split[3].toUpperCase().replace("-", "_")
                                                 )

@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import org.bukkit.Material;
 import org.bukkit.World;
 
 import java.sql.Timestamp;
@@ -8,6 +10,37 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MiningHistory {
+
+    public static MiningHistory.MiningOre getMiningOre(Material material) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
+            if (material == Material.ANCIENT_DEBRIS) {
+                return MiningHistory.MiningOre.ANCIENT_DEBRIS;
+            }
+            if (material == Material.GILDED_BLACKSTONE || material == Material.NETHER_GOLD_ORE) {
+                return MiningHistory.MiningOre.GOLD;
+            }
+            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+                if (material == Material.DEEPSLATE_DIAMOND_ORE) {
+                    return MiningHistory.MiningOre.DIAMOND;
+                }
+                if (material == Material.DEEPSLATE_EMERALD_ORE) {
+                    return MiningHistory.MiningOre.EMERALD;
+                }
+                if (material == Material.DEEPSLATE_GOLD_ORE) {
+                    return MiningHistory.MiningOre.GOLD;
+                }
+            }
+        }
+        switch (material) {
+            case DIAMOND_ORE:
+                return MiningHistory.MiningOre.DIAMOND;
+            case EMERALD_ORE:
+                return MiningHistory.MiningOre.EMERALD;
+            case GOLD_ORE:
+                return MiningHistory.MiningOre.GOLD;
+        }
+        return null;
+    }
 
     public enum MiningOre {
         ANCIENT_DEBRIS, DIAMOND, EMERALD, GOLD;

@@ -398,7 +398,7 @@ public class Pattern {
         if (this.loaded) {
             long time = System.currentTimeMillis();
             PlayerProfile profile = player.getProfile();
-            Integer divisor = DetectionNotifications.getDivisor(player, false);
+            Integer divisor = DetectionNotifications.getFrequency(player, false);
             boolean notifications = divisor != null,
                     found = false,
                     store = false,

@@ -273,6 +273,7 @@ public class SpartanPlayer {
         if (runRegardless
                 && (action == null || action == Action.LEFT_CLICK_AIR)) {
             clicks.calculate();
+            this.getExecutor(Enums.HackType.FastClicks).run(false);
 
             if (clicks.canDistributeInformation()) {
                 InteractiveInventory.playerInfo.refresh(name);

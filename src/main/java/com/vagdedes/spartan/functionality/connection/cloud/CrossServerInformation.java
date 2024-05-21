@@ -26,7 +26,6 @@ public class CrossServerInformation {
     private static String serverName = null;
     private static final List<String>
             notifications = Collections.synchronizedList(new ArrayList<>()),
-            logs = Collections.synchronizedList(new ArrayList<>()),
             configurations = Collections.synchronizedList(new ArrayList<>());
     private static final Runnable generalTask = () -> {
         if (Config.settings.getBoolean(Settings.cloudSynchroniseFilesOption)) {
@@ -150,19 +149,10 @@ public class CrossServerInformation {
 
     public static void clear() {
         synchronized (notifications) {
-            synchronized (logs) {
-                synchronized (configurations) {
-                    notifications.clear();
-                    logs.clear();
-                    configurations.clear();
-                }
+            synchronized (configurations) {
+                notifications.clear();
+                configurations.clear();
             }
-        }
-    }
-
-    public static void queueLog(String string) {
-        synchronized (logs) {
-            logs.add(string);
         }
     }
 

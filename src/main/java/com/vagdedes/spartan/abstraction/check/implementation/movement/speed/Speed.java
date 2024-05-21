@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
@@ -531,7 +532,9 @@ public class Speed extends CheckExecutor {
             double mainHandAmplifier = getSpeedAmplifier(mainHandItem);
             maxAmplifier = Math.max(maxAmplifier, mainHandAmplifier);
 
-            ItemStack offHandItem = inventory.getItemInOffHand();
+            ItemStack offHandItem = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                    ? inventory.getItemInOffHand()
+                    : null;
             double offHandAmplifier = getSpeedAmplifier(offHandItem);
             maxAmplifier = Math.max(maxAmplifier, offHandAmplifier);
 

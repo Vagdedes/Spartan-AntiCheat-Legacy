@@ -112,7 +112,7 @@ public class CommandExecution implements CommandExecutor {
                     boolean permission = false;
 
                     if (isPlayer && DetectionNotifications.hasPermission(player)) {
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " notifications [frequency]",
+                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " notifications [ticks-frequency]",
                                 "This command can be used to receive chat messages whenever a player is suspected of using hack modules.", null);
                     }
                     if (isPlayer && info) {
@@ -223,7 +223,7 @@ public class CommandExecution implements CommandExecutor {
                         sender.sendMessage(Config.messages.getColorfulString("no_permission"));
                         return true;
                     }
-                    DetectionNotifications.toggle(player, 0);
+                    DetectionNotifications.set(player, DetectionNotifications.defaultFrequency);
 
                 } else {
                     completeMessage(sender, "default");
@@ -332,19 +332,13 @@ public class CommandExecution implements CommandExecutor {
                             if (AlgebraUtils.validInteger(divisorString)) {
                                 int divisor = Integer.parseInt(divisorString);
 
-                                if (divisor > 0) {
-                                    Integer cachedDivisor = DetectionNotifications.getDivisor(player, true);
-
-                                    if (cachedDivisor != null && cachedDivisor != divisor) {
-                                        DetectionNotifications.change(player, divisor, true);
-                                    } else {
-                                        DetectionNotifications.toggle(player, divisor);
-                                    }
+                                if (divisor >= 0) {
+                                    DetectionNotifications.set(player, divisor);
                                 } else {
-                                    completeMessage(sender, "moderation");
+                                    sender.sendMessage(Config.messages.getColorfulString("failed_command"));
                                 }
                             } else {
-                                completeMessage(sender, "moderation");
+                                sender.sendMessage(Config.messages.getColorfulString("failed_command"));
                             }
 
                         } else {

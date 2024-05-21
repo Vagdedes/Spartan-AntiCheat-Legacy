@@ -136,9 +136,6 @@ public class EventsHandler3 implements Listener {
                 }
             } else {
                 // Detections
-                if (action == Action.LEFT_CLICK_AIR) {
-                    p.getExecutor(Enums.HackType.FastClicks).run(false);
-                }
                 p.getExecutor(Enums.HackType.FastEat).handle(false, e);
             }
             // Detections
