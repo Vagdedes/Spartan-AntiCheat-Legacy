@@ -152,7 +152,9 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 }
 
                 if (violation != null) {
-                    if (!ignore) {
+                    if (ignore) {
+                        ignore = false;
+                    } else {
                         cancel(
                                 violation,
                                 airTicks / TPS.maximum,
@@ -161,7 +163,6 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                 true
                         );
                     }
-                    ignore = false;
                 }
             });
         }

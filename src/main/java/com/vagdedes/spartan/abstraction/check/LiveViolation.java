@@ -376,9 +376,9 @@ public class LiveViolation {
                 .replace("{player}", player.name);
 
         if (individualOnlyNotifications) {
-            Integer divisor = DetectionNotifications.getFrequency(player, false);
+            Integer frequency = DetectionNotifications.getFrequency(player, false);
 
-            if (DetectionNotifications.canAcceptMessages(player, divisor, false)) { // Attention
+            if (DetectionNotifications.canAcceptMessages(player, frequency, false)) { // Attention
                 Player realPlayer = player.getInstance();
 
                 if (realPlayer != null) {

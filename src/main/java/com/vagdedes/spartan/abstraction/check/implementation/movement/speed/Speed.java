@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
@@ -12,7 +13,7 @@ import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
@@ -504,16 +505,20 @@ public class Speed extends CheckExecutor {
     }
 
     private boolean slimeBlockCause(SpartanPlayer player, SpartanLocation location) {
-        boolean slime = false;
-        boolean piston = false;
+        boolean slime = false,
+                piston = false;
+        World world = player.getWorld();
+
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    if (player.getWorld().getBlockAt(x, y2, z).getType() == Material.SLIME_BLOCK
-                            || player.getWorld().getBlockAt(x, y2, z).getType() == Material.PISTON) {
+                    SpartanBlock block = new SpartanLocation(world, null, x, y2, z, 0.0f, 0.0f).getBlock();
+
+                    if (BlockUtils.areSlimeBlocks(block.material)
+                            || BlockUtils.arePistons(block.material)) {
                         piston = true;
                     }
-                    if (player.getWorld().getBlockAt(x, y2, z).getType().toString().toLowerCase().contains("slime")) {
+                    if (BlockUtils.areSlimeBlocks(block.material)) {
                         slime = true;
                     }
                 }

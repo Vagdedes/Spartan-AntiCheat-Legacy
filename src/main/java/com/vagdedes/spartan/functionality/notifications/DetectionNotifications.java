@@ -66,6 +66,7 @@ public class DetectionNotifications {
                 && frequency != defaultFrequency
 
                 || (all
+                || frequency >= 0
                 || !ResearchEngine.enoughData()
                 || Config.settings.getBoolean("Notifications.individual_only_notifications"))
                 && hasPermission(p));
