@@ -49,7 +49,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                     jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;
             boolean liquids = player.movement.wasInLiquids(),
                     toGround = player.isOnGround(),
-                    fromGround = player.isOnGround(player.movement.getEventFromLocation()),
+                    fromGround = player.isOnGround(player.movement.getEventFromLocation(), true),
                     velocity = player.trackers.has(Trackers.TrackerFamily.VELOCITY);
 
             runAsync(() -> {

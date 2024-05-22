@@ -379,12 +379,13 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean isOnGround(SpartanLocation location) {
+    public boolean isOnGround(SpartanLocation location, boolean checkEntities) {
         Player p = this.getInstance();
         return GroundUtils.isOnGround(
                 this,
                 location,
-                p != null && p.isOnGround()
+                p != null && p.isOnGround(),
+                checkEntities
         );
     }
 
@@ -396,12 +397,12 @@ public class SpartanPlayer {
         } else if (SpartanBukkit.packetsEnabled()) {
             return ProtocolStorage.isOnGround(this)
                     || bedrockPlayer
-                    && GroundUtils.isOnGround(this, movement.getLocation(), false);
+                    && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         } else {
             Player p = this.getInstance();
             return p != null && p.isOnGround()
                     || bedrockPlayer
-                    && GroundUtils.isOnGround(this, movement.getLocation(), false);
+                    && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         }
     }
 

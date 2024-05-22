@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
@@ -14,8 +14,6 @@ import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,7 +21,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
@@ -182,7 +179,8 @@ public class Speed extends CheckExecutor {
                     verticalVl = verticalVl + 4;
                     if (verticalVl > 36) {
                         antiAbuseProcessor = antiAbuseProcessor + 45;
-                        if (antiAbuseProcessor > 200) {
+                        if (hackType.getCheck().getBooleanOption("check_flying", true)
+                                && antiAbuseProcessor > 200) {
                             flag = "type: flying, speed: " + vertical
                                     + ", speed-require: " + predictedVertical + ", air-tick: " + onFly;
                             verticalVl = verticalVl - 3;
@@ -195,7 +193,8 @@ public class Speed extends CheckExecutor {
             if (oldAir < 3 && oldAir != -1 && isJump && player.getVehicle() == null) {
                 if (!RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
                     antiAbuseProcessor = antiAbuseProcessor + 25;
-                    if (antiAbuseProcessor > 200) {
+                    if (hackType.getCheck().getBooleanOption("check_landing", true)
+                            && antiAbuseProcessor > 200) {
                         flag = "type: landing, air: " + oldAir;
                     }
                 }
@@ -247,14 +246,16 @@ public class Speed extends CheckExecutor {
             ticksOnGround = 0;
             if (horizontal > limit) {
                 antiAbuseProcessor = antiAbuseProcessor + 75;
-                if (antiAbuseProcessor > 200) {
+                if (hackType.getCheck().getBooleanOption("check_simulation_air_limit", true)
+                        && antiAbuseProcessor > 200) {
                     flag = "type: simulation-air-limit, speed: " + horizontal
                             + ", speed-limit: " + limit + ", air-tick: " + onAir;
                 }
             }
             if (horizontal > wrapLimit && keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut()) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
-                if (antiAbuseProcessor > 200) {
+                if (hackType.getCheck().getBooleanOption("check_keepsprint_silent", true)
+                        && antiAbuseProcessor > 200) {
                     flag = "type: keepsprint-silent, speed: " + horizontal
                             + ", speed-limit: " + wrapLimit + ", air-tick: " + onAir;
                 }
@@ -273,7 +274,10 @@ public class Speed extends CheckExecutor {
                     // player.sendMessage(String.valueOf(horizontal));
                     double diffRayLines = RayUtils.calculateRayLines(a, b);
                     double wrappedLimit = limit / 1.6 + ((diffRayLines >= 90) ? 0 : (limit / 2.4) * (1 - diffRayLines / 90));
-                    if (horizontal > RayUtils.scaleVal(wrappedLimit, 2) && speedModify < 1.0 && !ignoreBasicChecks) {
+                    if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_basic", true)
+                            && horizontal > RayUtils.scaleVal(wrappedLimit, 2)
+                            && speedModify < 1.0
+                            && !ignoreBasicChecks) {
                         flag = "type: simulation-air-direction(basic), speed: " + horizontal
                                 + ", speed-limit: " + RayUtils.scaleVal(wrappedLimit, 2)
                                 + ", diff: " + RayUtils.scaleVal(diffRayLines, 2);
@@ -292,7 +296,8 @@ public class Speed extends CheckExecutor {
                     keepSprint.get(player.uuid).newFlag();
                     if (keepSprint.get(player.uuid).flags() > 2) {
                         antiAbuseProcessor = antiAbuseProcessor + 210;
-                        if (antiAbuseProcessor > 200) {
+                        if (hackType.getCheck().getBooleanOption("check_keepsprint", true)
+                                && antiAbuseProcessor > 200) {
                             flag = "type: keepsprint, hits: " + keepSprint.get(player.uuid).hits();
                         }
                     }
@@ -300,7 +305,8 @@ public class Speed extends CheckExecutor {
 
                 if (!validPsychic && muchThanAllowedStrafe) {
                     antiAbuseProcessor = antiAbuseProcessor + 50;
-                    if (antiAbuseProcessor > 200) {
+                    if (hackType.getCheck().getBooleanOption("check_simulation_air_physics", true)
+                            && antiAbuseProcessor > 200) {
                         flag = "type: simulation-air-physics, speed: " + horizontal
                                 + ", speed-limit: " + RayUtils.scaleVal(limit / 1.4, 2) + ", air-tick: " + onAir;
                     }
@@ -310,7 +316,8 @@ public class Speed extends CheckExecutor {
                     if (horizontal > limit / 1.2 && !RayUtils.validRayLines(a, b, 90)
                             && speedModify < 1.0 && !onDamage) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
-                        if (antiAbuseProcessor > 200) {
+                        if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_blatant", true)
+                                && antiAbuseProcessor > 200) {
                             flag = "type: simulation-air-direction(blatant), speed: " + horizontal
                                     + ", speed-limit: " + RayUtils.scaleVal(limit / 1.2, 2);
                         }
@@ -321,7 +328,8 @@ public class Speed extends CheckExecutor {
                         double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                         if (calcDiff > 10 && !allowedAngle(calcDiff)) {
                             antiAbuseProcessor = antiAbuseProcessor + 60;
-                            if (antiAbuseProcessor > 200) {
+                            if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_profound", true)
+                                    && antiAbuseProcessor > 200) {
                                 flag = "type: simulation-air-direction(profound), speed: " + horizontal
                                         + ", speed-limit: " + limitNonSprint
                                         + ", angle: " + calcDiff;
@@ -337,7 +345,8 @@ public class Speed extends CheckExecutor {
                 if (oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop
                         && !ignoreBasicChecks && jumpEffect == null) {
                     antiAbuseProcessor = antiAbuseProcessor + 75;
-                    if (antiAbuseProcessor > 200) {
+                    if (hackType.getCheck().getBooleanOption("check_landing_end", true)
+                            && antiAbuseProcessor > 200) {
                         flag = "type: landing-end, speed: " + vertical
                                 + ", air: " + oldWrappedOnFly;
                     }
@@ -362,7 +371,8 @@ public class Speed extends CheckExecutor {
             }
             if (horizontal > limit) {
                 antiAbuseProcessor = antiAbuseProcessor + 110;
-                if (antiAbuseProcessor > 200) {
+                if (hackType.getCheck().getBooleanOption("check_simulation_ground", true)
+                        && antiAbuseProcessor > 200) {
                     flag = "type: simulation-ground, speed: " + horizontal
                             + ", speed-limit: " + limit;
                 }
@@ -370,7 +380,8 @@ public class Speed extends CheckExecutor {
             if (horizontal > limit / 1.35 && !RayUtils.validRayLines(a, b, 88)
                     && speedModify < 1.0) {
                 antiAbuseProcessor = antiAbuseProcessor + 60;
-                if (antiAbuseProcessor > 200) {
+                if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_basic", true)
+                        && antiAbuseProcessor > 200) {
                     flag = "type: simulation-ground-direction(basic), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
@@ -380,7 +391,8 @@ public class Speed extends CheckExecutor {
                 double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                 if (calcDiff > 10 && !allowedAngle(calcDiff)) {
                     antiAbuseProcessor = antiAbuseProcessor + 60;
-                    if (antiAbuseProcessor > 200) {
+                    if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_profound", true)
+                            && antiAbuseProcessor > 200) {
                         flag = "type: simulation-ground-direction(profound), speed: " + horizontal
                                 + ", speed-limit: " + RayUtils.scaleVal(limit / 1.7, 2)
                                 + ", angle: " + calcDiff;
@@ -390,7 +402,8 @@ public class Speed extends CheckExecutor {
             if (horizontal > limit / 1.1 && !RayUtils.validRayLines(a, b, 25)
                     && speedModify < 1.0) {
                 antiAbuseProcessor = antiAbuseProcessor + 90;
-                if (antiAbuseProcessor > 200) {
+                if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_blatant", true)
+                        && antiAbuseProcessor > 200) {
                     flag = "type: simulation-ground-direction(blatant), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
@@ -528,29 +541,7 @@ public class Speed extends CheckExecutor {
     }
 
     private double getMaxSpeedAmplifier() {
-        PlayerInventory inventory = player.getInventory();
-
-        if (inventory != null) {
-            double maxAmplifier = 0.0;
-            ItemStack mainHandItem = inventory.getItemInHand();
-
-            double mainHandAmplifier = getSpeedAmplifier(mainHandItem);
-            maxAmplifier = Math.max(maxAmplifier, mainHandAmplifier);
-
-            ItemStack offHandItem = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                    ? inventory.getItemInOffHand()
-                    : null;
-            double offHandAmplifier = getSpeedAmplifier(offHandItem);
-            maxAmplifier = Math.max(maxAmplifier, offHandAmplifier);
-
-            for (ItemStack armor : inventory.getArmorContents()) {
-                double armorAmplifier = getSpeedAmplifier(armor);
-                maxAmplifier = Math.max(maxAmplifier, armorAmplifier);
-            }
-            return maxAmplifier;
-        } else {
-            return 0.0;
-        }
+        return Attributes.getAmount(player, Attributes.GENERIC_MOVEMENT_SPEED);
     }
 
     private void checkAuraAnalysis(SpartanLocation to) {
@@ -601,15 +592,6 @@ public class Speed extends CheckExecutor {
 
     }
 
-    private static double getSpeedAmplifier(ItemStack item) {
-        if (item != null && item.hasItemMeta() && item.getItemMeta().hasAttributeModifiers()) {
-            return item.getItemMeta().getAttributeModifiers(Attribute.GENERIC_MOVEMENT_SPEED).stream()
-                    .mapToDouble(AttributeModifier::getAmount)
-                    .max().orElse(0.0);
-        }
-        return 0.0;
-    }
-
     private boolean allowedAngle(double angle) {
         double a = angle / 45;
         int wrapGoodMath = (int) Math.floor(a);
@@ -619,6 +601,9 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
+        // Check will no longer run when someone uses server flying
+        // Do not change as there is a protection for it via the IrregularMovements check
+        // The flying method should still be considered in the code, in case anything ever changes
         return MovementProcessing.canCheck(player, true, true, false, true)
                 && !player.bedrockPlayer; // REMOVE 'player.bedrockPlayer' WHEN/UPON YOU ADD BEDROCK SUPPORT - VAGDEDES
     }

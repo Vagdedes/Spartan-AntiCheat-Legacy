@@ -166,7 +166,7 @@ public class MovementProcessing {
         if ((elytra || !player.movement.isGliding())
                 && (flight || !player.movement.isFlying())
                 && (velocity || !player.trackers.has(Trackers.TrackerType.ABSTRACT_VELOCITY))
-                && (attributes || !Attributes.has(player, Attributes.GENERIC_MOVEMENT_SPEED))) {
+                && (attributes || Attributes.getAmount(player, Attributes.GENERIC_MOVEMENT_SPEED) == 0.0)) {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()
                     || Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
                 List<Entity> entities = player.getNearbyEntities(

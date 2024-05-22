@@ -180,10 +180,13 @@ public class GroundUtils {
 
     // Method
 
-    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc, boolean defaultOnGround) {
-        if (p.trackers.has(Trackers.TrackerType.PISTON)
+    public static boolean isOnGround(SpartanPlayer p, SpartanLocation loc,
+                                     boolean defaultOnGround,
+                                     boolean checkEntities) {
+        if (checkEntities
+                && (p.trackers.has(Trackers.TrackerType.PISTON)
                 || stepsOnBoats(p)
-                || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p))) {
+                || v1_9 && (stepsOnShulkers(p) || v1_20 && stepsOnSniffers(p)))) {
             return true;
         }
         double box = loc.getY() - loc.getBlockY(), distribution;

@@ -101,8 +101,8 @@ public class NoFall extends CheckExecutor {
             return;
         }
         int fallTick = getFallTicks(previous) + 1;
-        boolean toGround = player.isOnGround() || player.isOnGround(player.movement.getEventToLocation()),
-                fromGround = player.isOnGround(player.movement.getEventFromLocation());
+        boolean toGround = player.isOnGround() || player.isOnGround(player.movement.getEventToLocation(), true),
+                fromGround = player.isOnGround(player.movement.getEventFromLocation(), true);
 
         if (!this.violationObjects.isEmpty()) {
             Iterator<ViolationObject> iterator = this.violationObjects.iterator();
