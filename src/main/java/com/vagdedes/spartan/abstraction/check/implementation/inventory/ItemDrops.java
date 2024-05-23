@@ -21,7 +21,7 @@ public class ItemDrops extends CheckExecutor {
         long timePassed = System.currentTimeMillis() - time;
         this.time = System.currentTimeMillis();
 
-        if (timePassed <= TPS.tickTime
+        if (timePassed <= TPS.tickTime // todo fix lag
                 && buffer.count("", 10) == 7) {
             buffer.remove("");
             cancel("type: default, ms: " + timePassed, 1.0, null, 10);
