@@ -101,12 +101,12 @@ public class CrossServerInformation {
             }
             CloudConnections.sendCrossServerInformation(type, serverName, notificationsArray);
         }
-        String[] incomingInformation = CloudConnections.getCrossServerInformation(type, null);
+        List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers(true);
 
-        if (incomingInformation != null) {
-            List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers(true);
+        if (!notificationPlayers.isEmpty()) {
+            String[] incomingInformation = CloudConnections.getCrossServerInformation(type, null);
 
-            if (!notificationPlayers.isEmpty() && incomingInformation.length > 0) {
+            if (incomingInformation.length > 0) {
                 for (String information : incomingInformation) {
                     String[] split = information.split(CloudBase.separator, 3);
 

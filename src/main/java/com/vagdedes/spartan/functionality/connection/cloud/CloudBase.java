@@ -255,34 +255,6 @@ public class CloudBase {
             }
 
             // Separator
-            if (!independent) {
-                SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
-                    try {
-                        String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
-                                + "&action=get&data=customerSupportCommands&version=" + version + "&value=" + Bukkit.getPort());
-
-                        if (results.length > 0) {
-                            for (String result : results) {
-                                String[] split = result.split(separator);
-
-                                if (split.length == 2) {
-                                    // 0 = user, 1 = functionality
-                                    String functionality = StringUtils.decodeBase64(split[1]);
-
-                                    if (!functionality.equals("NULL")) {
-                                        AwarenessNotifications.forcefullySend("Customer Support Command: " +
-                                                CloudConnections.sendCustomerSupport(null, functionality, "Customer Support Command"));
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        throwError(e, "customerSupportCommand:GET");
-                    }
-                });
-            }
-
-            // Separator
             if (independent) {
                 Map<Enums.HackType, String[]> disabledDetections = new LinkedHashMap<>();
 
