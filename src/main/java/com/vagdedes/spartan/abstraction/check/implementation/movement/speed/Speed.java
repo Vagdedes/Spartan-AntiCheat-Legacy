@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
@@ -275,6 +276,7 @@ public class Speed extends CheckExecutor {
                     double diffRayLines = RayUtils.calculateRayLines(a, b);
                     double wrappedLimit = limit / 1.6 + ((diffRayLines >= 90) ? 0 : (limit / 2.4) * (1 - diffRayLines / 90));
                     if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_basic", true)
+                            && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
                             && horizontal > RayUtils.scaleVal(wrappedLimit, 2)
                             && speedModify < 1.0
                             && !ignoreBasicChecks) {

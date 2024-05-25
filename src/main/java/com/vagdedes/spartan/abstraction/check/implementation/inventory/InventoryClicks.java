@@ -55,18 +55,14 @@ public class InventoryClicks extends CheckExecutor {
 
                     if ((!shift && !quick || newHash != oldHash)) {
                         if (timePassed < 150L) {
-                            if (buffer.count("slow", 10) == 8) {
-                                buffer.remove("slow");
+                            if (buffer.count("slow", 10) >= 8) {
                                 cancel("type: slow, ms: " + timePassed + ", item: " + type);
                             }
                             if (timePassed < 100L) {
-                                if (buffer.count("average", 5) == 4) {
-                                    buffer.remove("average");
-                                    cancel("type: average, ms: " + timePassed + ", item: " + type);
+                                if (buffer.count("medium", 5) >= 4) {
+                                    cancel("type: medium, ms: " + timePassed + ", item: " + type);
                                 }
-                                if (timePassed == 0L
-                                        || timePassed < 50L && buffer.count("fast", 5) == 4) {
-                                    buffer.remove("fast");
+                                if (timePassed < 50L && buffer.count("fast", 5) >= 4) {
                                     cancel("type: fast, ms: " + timePassed + ", item: " + type);
                                 }
                             }

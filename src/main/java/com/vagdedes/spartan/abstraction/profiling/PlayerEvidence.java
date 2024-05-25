@@ -217,10 +217,6 @@ public class PlayerEvidence {
         for (EvidenceType evidenceType : EvidenceType.values()) {
             if (count >= evidenceType.ordinal()) {
                 type = evidenceType;
-
-                if (evidenceType != EvidenceType.LEGITIMATE) {
-                    break;
-                }
             }
         }
         this.type = type;

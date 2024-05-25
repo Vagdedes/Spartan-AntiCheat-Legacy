@@ -111,7 +111,7 @@ public class SpartanPlayerDamage {
             }
         }
 
-        if (!abstractVelocity && !event.isCancelled()) { // todo arrow knockback
+        if (!abstractVelocity && !event.isCancelled()) {
             player.trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 2);
         }
     }

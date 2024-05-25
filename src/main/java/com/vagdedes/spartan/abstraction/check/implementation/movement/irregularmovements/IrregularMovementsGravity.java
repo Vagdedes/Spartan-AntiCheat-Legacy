@@ -4,8 +4,8 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
@@ -36,11 +36,11 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     noNearbyEntities = player.getNearbyEntities(1.0, 1.0, 1.0).isEmpty();
             SpartanLocation to = player.movement.getEventToLocation(),
                     from = player.movement.getEventFromLocation();
-            SpartanPotionEffect levitationEffect = PlayerUtils.levitation
-                    ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
-                    : null;
+            int levitationLevel = PlayerUtils.levitation
+                    ? PlayerUtils.getPotionLevel(player, PotionEffectType.LEVITATION)
+                    : -1;
 
-            runAsync(() -> { // todo honey
+            runAsync(() -> {
                 List<Double> predictions = new ArrayList<>(5);
                 double acceleration = liquid
                         ? PlayerUtils.liquidAcceleration
@@ -50,39 +50,47 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                         drag = liquid
                                 ? player.movement.getLastLiquidMaterial() == Material.LAVA
                                 ? PlayerUtils.lavaDrag : PlayerUtils.waterDrag : PlayerUtils.airDrag;
-                boolean levitation = levitationEffect != null,
+                boolean levitation = levitationLevel != -1,
                         climb = BlockUtils.canClimb(to.getBlock().material, false)
                                 || BlockUtils.canClimb(from.getBlock().material, false),
                         web = BlockUtils.areWebs(to.getBlock().material)
                                 || BlockUtils.areWebs(from.getBlock().material),
-                        sensitive = web || climb || levitation;
-
-                if (sensitive && !this.sensitive) {
-                    this.ignore = true;
-                }
-                this.sensitive = sensitive;
+                        honey = BlockPatternUtils.isBlockPattern(
+                                new double[][]{
+                                        {GroundUtils.honeyBlockBoundingBox, 0.0, GroundUtils.honeyBlockBoundingBox},
+                                        {GroundUtils.honeyBlockBoundingBox, 1.0, GroundUtils.honeyBlockBoundingBox}
+                                },
+                                to,
+                                true,
+                                BlockUtils.honey_block
+                        ) || BlockPatternUtils.isBlockPattern(
+                                new double[][]{
+                                        {GroundUtils.honeyBlockBoundingBox, 0.0, GroundUtils.honeyBlockBoundingBox},
+                                        {GroundUtils.honeyBlockBoundingBox, 1.0, GroundUtils.honeyBlockBoundingBox}
+                                },
+                                from,
+                                true,
+                                BlockUtils.honey_block
+                        );
 
                 if (levitation) {
-                    double level = levitationEffect.bukkitEffect.getAmplifier() + 1;
                     predictions.add(
-                            (oldVertical + ((0.05 * level - oldVertical) * 0.2)) * PlayerUtils.airDrag
-                    );
-                } else {
-                    predictions.add(
-                            PlayerUtils.calculateNextFallMotion(
-                                    oldVertical,
-                                    -acceleration,
-                                    drag
-                            )
+                            (oldVertical + ((0.05 * (levitationLevel + 1) - oldVertical) * 0.2)) * PlayerUtils.airDrag
                     );
                 }
-                if (web) {
-                    double webMovement = 0.06272;
+                predictions.add( // Always second
+                        PlayerUtils.calculateNextFallMotion(
+                                oldVertical,
+                                -acceleration,
+                                drag
+                        )
+                );
 
+                if (web) {
                     if (levitation) {
-                        predictions.set(0, predictions.get(0) - webMovement);
+                        predictions.set(0, predictions.get(0) - PlayerUtils.webBlockDownDefault);
                     }
-                    predictions.add(-webMovement);
+                    predictions.add(-PlayerUtils.webBlockDownDefault);
                 } else if (climb) {
                     if (vertical == 0.0) {
                         if (!ground && !sneaking && noNearbyEntities) {
@@ -107,7 +115,18 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                         predictions.set(0, PlayerUtils.climbingUpDefault);
                         predictions.add(-PlayerUtils.climbingDownDefault);
                     }
+                } else if (honey) {
+                    if (levitation) {
+                        predictions.set(0, predictions.get(0) - PlayerUtils.honeyBlockDownDefault);
+                    }
+                    predictions.add(-PlayerUtils.honeyBlockDownDefault);
                 }
+                boolean sensitive = predictions.size() > 1;
+
+                if (sensitive && !this.sensitive) {
+                    this.ignore = true;
+                }
+                this.sensitive = sensitive;
                 String violation = null;
 
                 for (double prediction : predictions) {
@@ -120,7 +139,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                     PlayerUtils.airAcceleration
                             );
                         } else {
-                            product = !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
+                            product = !sensitive
+                                    && !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
                                     && !player.movement.isFalling(vertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
                                     && !player.movement.isFalling(oldVertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
                                     ? 1.0
@@ -157,7 +177,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     } else {
                         cancel(
                                 violation,
-                                airTicks / TPS.maximum,
+                                sensitive ? 1.0 : airTicks / TPS.maximum,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

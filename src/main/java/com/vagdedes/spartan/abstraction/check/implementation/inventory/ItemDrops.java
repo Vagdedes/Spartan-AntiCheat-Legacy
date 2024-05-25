@@ -6,25 +6,50 @@ import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 public class ItemDrops extends CheckExecutor {
 
     private long time;
     private final Buffer buffer;
+    private final List<Long> times;
 
     public ItemDrops(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.buffer = new Buffer(player);
+        this.times = Collections.synchronizedList(new LinkedList<>());
     }
 
     @Override
     protected void runInternal(boolean cancelled) {
-        long timePassed = System.currentTimeMillis() - time;
+        long timePassed = System.currentTimeMillis() - this.time;
         this.time = System.currentTimeMillis();
 
-        if (timePassed <= TPS.tickTime // todo fix lag
-                && buffer.count("", 10) == 7) {
-            buffer.remove("");
-            cancel("type: default, ms: " + timePassed, 1.0, null, 10);
+        if (timePassed <= TPS.tickTime) {
+            int count = buffer.count("", 10);
+
+            if (count == 1) {
+                this.times.clear();
+                this.times.add(timePassed);
+            } else {
+                this.times.add(timePassed);
+
+                if (count >= 7) {
+                    for (long timePassedStored : this.times) {
+                        if (timePassedStored > 0L) {
+                            cancel(
+                                    "type: default",
+                                    1.0,
+                                    null,
+                                    10
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 
