@@ -84,6 +84,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     if (vehicle == null) {
                         if (stepCombination.get(hash)) {
                             double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                    + (vehicleExit ? 1.0 : 0.0)
                                     + GroundUtils.maxPlayerStep;
 
                             if (vertical > limit) {
@@ -202,44 +203,45 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (knownBox) {
-                            double verticalPrediction = oldBox - box,
-                                    motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
+                        } else if (!vehicleEnter) {
+                            if (knownBox) {
+                                double verticalPrediction = oldBox - box,
+                                        motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
 
-                            if (verticalPrediction < 0.0) {
-                                verticalPrediction += 1.0;
-                            }
-                            if (!vehicleEnter
-                                    && verticalPrediction != motionRemainder) {
-                                cancel(
-                                        "type: step(landing)"
-                                                + ", box: " + box
-                                                + ", old-box: " + oldBox
-                                                + ", vertical: " + vertical
-                                                + ", vertical-prediction: " + verticalPrediction
-                                                + ", motion-remainder: " + motionRemainder,
-                                        1.0,
-                                        player.movement.getDetectionLocation(),
-                                        0,
-                                        true
-                                );
-                            }
-                        } else {
-                            double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                    + PlayerUtils.airAcceleration;
+                                if (verticalPrediction < 0.0) {
+                                    verticalPrediction += 1.0;
+                                }
+                                if (verticalPrediction != motionRemainder) {
+                                    cancel(
+                                            "type: step(landing)"
+                                                    + ", box: " + box
+                                                    + ", old-box: " + oldBox
+                                                    + ", vertical: " + vertical
+                                                    + ", vertical-prediction: " + verticalPrediction
+                                                    + ", motion-remainder: " + motionRemainder,
+                                            1.0,
+                                            player.movement.getDetectionLocation(),
+                                            0,
+                                            true
+                                    );
+                                }
+                            } else {
+                                double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                        + PlayerUtils.airAcceleration;
 
-                            if (vertical <= -limit) {
-                                cancel(
-                                        "type: step(abstract-down)"
-                                                + ", box: " + box
-                                                + ", old-box: " + oldBox
-                                                + ", vertical: " + vertical
-                                                + ", limit: " + limit,
-                                        0.0d - vertical,
-                                        player.movement.getDetectionLocation(),
-                                        0,
-                                        true
-                                );
+                                if (vertical <= -limit) {
+                                    cancel(
+                                            "type: step(abstract-down)"
+                                                    + ", box: " + box
+                                                    + ", old-box: " + oldBox
+                                                    + ", vertical: " + vertical
+                                                    + ", limit: " + limit,
+                                            0.0d - vertical,
+                                            player.movement.getDetectionLocation(),
+                                            0,
+                                            true
+                                    );
+                                }
                             }
                         }
                     }

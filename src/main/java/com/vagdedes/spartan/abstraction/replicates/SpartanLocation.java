@@ -138,6 +138,10 @@ public class SpartanLocation {
         return new SpartanLocation(this);
     }
 
+    public long timePassed() {
+        return System.currentTimeMillis() - creation;
+    }
+
     public Chunk getChunk() {
         if (chunk == null) {
             chunk = world.getChunkAt(getChunkX(), getChunkZ());

@@ -115,7 +115,7 @@ public class MorePackets extends CheckExecutor {
                                             + ", sum: " + sum
                                             + ", collections: " + collections
                                             + ", ratio: " + ratioSum,
-                                    1.0,
+                                    ratioSum,
                                     player.movement.getDetectionLocation(),
                                     0,
                                     true
