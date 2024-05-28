@@ -21,7 +21,6 @@ public class Move {
 
     public static Map<Player, Location> positionManager = new ConcurrentHashMap<>();
     public static Map<Player, Boolean> groundManager = new ConcurrentHashMap<>();
-    public static Map<Player, Boolean> spawnStatus = new ConcurrentHashMap<>();
     public static Map<Player, RotationData> lastRotation = new ConcurrentHashMap<>();
 
 

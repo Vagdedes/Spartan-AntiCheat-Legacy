@@ -134,7 +134,7 @@ public class MainMenu extends InventoryMenu {
             lore.add("§7Compatibilities§8:");
 
             for (Compatibility.CompatibilityType compatibility : activeCompatibilities) {
-                lore.add("§a" + compatibility.toString().toLowerCase().replace("_", "-"));
+                lore.add("§a" + compatibility.toString());
             }
         }
         add("§aCompatibilities", lore, new ItemStack(MaterialUtils.get("enchanting_table")), 52);

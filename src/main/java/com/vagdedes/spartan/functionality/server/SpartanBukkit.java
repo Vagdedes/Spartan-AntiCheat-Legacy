@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.packet.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -76,19 +75,17 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer getPlayer(Player real) {
-        if (!ProtocolLib.isTemporaryPLayer(real)) { // Temporary players have no UUIDs
-            UUID uuid = real.getUniqueId();
+        UUID uuid = real.getUniqueId();
+        SpartanPlayer player;
 
-            synchronized (players) {
-                SpartanPlayer player = players.get(uuid);
+        synchronized (players) {
+             player = players.get(uuid);
 
-                if (player == null && real.getAddress() != null) {
-                    players.put(uuid, player = new SpartanPlayer(real, uuid));
-                }
-                return player;
+            if (player == null) {
+                players.put(uuid, player = new SpartanPlayer(real, uuid));
             }
         }
-        return null;
+        return player;
     }
 
     public static SpartanPlayer removePlayer(Player real) {

@@ -123,7 +123,7 @@ public class JarVerification {
             for (SpartanPlayer p : players) {
                 if (p != null) {
                     if (Permissions.isStaff(p)) {
-                        String ip = p.ipAddress;
+                        String ip = p.getIpAddress();
 
                         if (ip != null) {
                             String dot = ".";

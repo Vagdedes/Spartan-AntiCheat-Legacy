@@ -136,10 +136,6 @@ public class Compatibility {
             this.functional = bool;
         }
 
-        public void setFunctional(Runnable runnable) {
-            setFunctional(new String[]{this.toString()}, null, runnable, null);
-        }
-
         public void setFunctional(Runnable runnable, Runnable elseRunnable) {
             setFunctional(new String[]{this.toString()}, null, runnable, elseRunnable);
         }
@@ -199,7 +195,7 @@ public class Compatibility {
                             this.functional = true;
                         } catch (Exception ex) {
                             this.functional = false;
-                            AwarenessNotifications.forcefullySend("Compatibility '" + this + "' failed to load.");
+                            AwarenessNotifications.forcefullySend("Compatibility '" + this.toString() + "' failed to load.");
                         }
                     } else {
                         this.functional = true;
@@ -232,12 +228,14 @@ public class Compatibility {
                 null,
                 null
         );
-        CompatibilityType.CRAFT_BOOK.setFunctional(CraftBook::resetBoatLimit);
+        CompatibilityType.CRAFT_BOOK.setFunctional(CraftBook::resetBoatLimit, null);
         CompatibilityType.CRACK_SHOT.setFunctional(
-                () -> Register.enable(new CrackShot(), CrackShot.class)
+                () -> Register.enable(new CrackShot(), CrackShot.class),
+                null
         );
         CompatibilityType.CRACK_SHOT_PLUS.setFunctional(
-                () -> Register.enable(new CrackShotPlus(), CrackShotPlus.class)
+                () -> Register.enable(new CrackShotPlus(), CrackShotPlus.class),
+                null
         );
         CompatibilityType.CUSTOM_KNOCKBACK.setFunctional(
                 new String[]{
@@ -256,10 +254,12 @@ public class Compatibility {
                 null
         );
         CompatibilityType.REAL_DUAL_WIELD.setFunctional(
-                () -> Register.enable(new RealDualWield(), RealDualWield.class)
+                () -> Register.enable(new RealDualWield(), RealDualWield.class),
+                null
         );
         CompatibilityType.MAGIC_SPELLS.setFunctional(
-                () -> Register.enable(new MagicSpells(), MagicSpells.class)
+                () -> Register.enable(new MagicSpells(), MagicSpells.class),
+                null
         );
         CompatibilityType.ACID_RAIN.setFunctional(
                 new String[]{
@@ -272,26 +272,37 @@ public class Compatibility {
                 null
         );
         CompatibilityType.ADVANCED_ABILITIES.setFunctional(
-                () -> Register.enable(new AdvancedAbilities(), AdvancedAbilities.class)
+                () -> Register.enable(new AdvancedAbilities(), AdvancedAbilities.class),
+                null
         );
         CompatibilityType.OLD_COMBAT_MECHANICS.setFunctional();
-        CompatibilityType.VEIN_MINER.setFunctional(VeinMiner::reload);
+        CompatibilityType.VEIN_MINER.setFunctional(
+                VeinMiner::reload,
+                null
+        );
         CompatibilityType.PROJECT_KORRA.setFunctional(
-                () -> Register.enable(new ProjectKorra(), ProjectKorra.class)
+                () -> Register.enable(new ProjectKorra(), ProjectKorra.class),
+                null
         );
         CompatibilityType.GRAPPLING_HOOK.setFunctional(
-                () -> Register.enable(new GrapplingHook(), GrapplingHook.class)
+                () -> Register.enable(new GrapplingHook(), GrapplingHook.class),
+                null
         );
-        CompatibilityType.MYTHIC_MOBS.setFunctional(MythicMobs::reload);
+        CompatibilityType.MYTHIC_MOBS.setFunctional(
+                MythicMobs::reload,
+                null
+        );
         CompatibilityType.CUSTOM_ENCHANTS_PLUS.setFunctional();
         CompatibilityType.ECO_ENCHANTS.setFunctional(
                 ReflectionUtils.classExists("com.willfp.ecoenchants.enchants.EcoEnchant")
         );
         CompatibilityType.VEHICLES.setFunctional(
-                () -> Register.enable(new Vehicles(), Vehicles.class)
+                () -> Register.enable(new Vehicles(), Vehicles.class),
+                null
         );
         CompatibilityType.MINE_TINKER.setFunctional(
-                () -> Register.enable(new MineTinker(), MineTinker.class)
+                () -> Register.enable(new MineTinker(), MineTinker.class),
+                null
         );
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             CompatibilityType.ITEM_ATTRIBUTES.setFunctional(
@@ -312,7 +323,8 @@ public class Compatibility {
             );
         }
         CompatibilityType.WILD_TOOLS.setFunctional(
-                () -> Register.enable(new WildTools(), WildTools.class)
+                () -> Register.enable(new WildTools(), WildTools.class),
+                null
         );
         CompatibilityType.FLOODGATE.setFunctional(
                 new String[]{
@@ -339,9 +351,13 @@ public class Compatibility {
         );
         CompatibilityType.MY_PET.setFunctional();
         CompatibilityType.RAMPEN_DRILLS.setFunctional(
-                () -> Register.enable(new RampenDrills(), RampenDrills.class)
+                () -> Register.enable(new RampenDrills(), RampenDrills.class),
+                null
         );
-        CompatibilityType.MINE_BOMB.setFunctional(MineBomb::reload);
+        CompatibilityType.MINE_BOMB.setFunctional(
+                MineBomb::reload,
+                null
+        );
         CompatibilityType.PRINTER_MODE.setFunctional();
         CompatibilityType.SUPER_PICKAXE.setFunctional(
                 new String[]{
@@ -353,7 +369,8 @@ public class Compatibility {
                 null
         );
         CompatibilityType.AURELIUM_SKILLS.setFunctional(
-                () -> Register.enable(new AureliumSkills(), AureliumSkills.class)
+                () -> Register.enable(new AureliumSkills(), AureliumSkills.class),
+                null
         );
         CompatibilityType.ITEMS_ADDER.setFunctional();
         MainMenu.refresh();

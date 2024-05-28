@@ -198,7 +198,7 @@ public class CloudConnections {
                     String ipAddress;
 
                     if (!isNull && offlinePlayer.isOnline()) {
-                        ipAddress = player.ipAddress;
+                        ipAddress = player.getIpAddress();
 
                         if (ipAddress == null) {
                             ipAddress = "NULL";

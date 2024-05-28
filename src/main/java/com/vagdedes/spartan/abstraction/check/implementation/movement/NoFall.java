@@ -216,7 +216,7 @@ public class NoFall extends CheckExecutor {
                         0.0,
                         1
                 },
-                player.movement.getEventFromLocation(),
+                player.movement.getEventToLocation(),
                 true);
     }
 

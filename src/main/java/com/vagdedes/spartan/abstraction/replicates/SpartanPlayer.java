@@ -52,7 +52,6 @@ public class SpartanPlayer {
     public final boolean bedrockPlayer;
     public final String name;
     public final UUID uuid;
-    public final String ipAddress;
     private final Map<PotionEffectType, SpartanPotionEffect> potionEffects;
     public final Enums.DataType dataType;
     public final SpartanPlayerMovement movement;
@@ -133,7 +132,6 @@ public class SpartanPlayer {
         this.dataType = bedrockPlayer ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
         this.trackers = new Trackers(this);
 
-        this.ipAddress = PlayerLimitPerIP.get(p);
         this.name = p.getName();
         this.potionEffects = Collections.synchronizedMap(
                 SpartanPotionEffect.mapFromBukkit(this, p.getActivePotionEffects())
@@ -445,6 +443,11 @@ public class SpartanPlayer {
     }
 
     // Separator
+
+    public String getIpAddress() {
+        Player p = this.getInstance();
+        return p == null ? null : PlayerLimitPerIP.get(p);
+    }
 
     public boolean isOp() {
         Player p = this.getInstance();
