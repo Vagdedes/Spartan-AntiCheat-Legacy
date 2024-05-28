@@ -389,21 +389,25 @@ public class SpartanPlayer {
         );
     }
 
-    public boolean isOnGround() {
+    public boolean isOnGround(boolean custom) {
         Entity vehicle = getVehicle();
 
         if (vehicle != null) {
             return vehicle.isOnGround();
         } else if (SpartanBukkit.packetsEnabled()) {
             return ProtocolStorage.isOnGround(this)
-                    || bedrockPlayer
+                    || bedrockPlayer && custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         } else {
             Player p = this.getInstance();
             return p != null && p.isOnGround()
-                    || bedrockPlayer
+                    || bedrockPlayer && custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         }
+    }
+
+    public boolean isOnGround() {
+        return this.isOnGround(true);
     }
 
     // Separator
