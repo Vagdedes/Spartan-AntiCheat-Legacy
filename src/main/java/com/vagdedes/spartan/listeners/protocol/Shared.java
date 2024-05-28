@@ -34,7 +34,6 @@ public class Shared {
 
     public static void join(PlayerJoinEvent e) {
         Player n = e.getPlayer();
-        SpartanBukkit.addRealPlayer(n);
 
         // Utils
         if (PlayerLimitPerIP.add(n)) {

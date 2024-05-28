@@ -29,9 +29,7 @@ public class EventsHandler1 implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent e) {
-        Player n = e.getPlayer();
-        SpartanBukkit.removeRealPlayer(n);
-        SpartanPlayer p = SpartanBukkit.removePlayer(n);
+        SpartanPlayer p = SpartanBukkit.removePlayer(e.getPlayer());
 
         if (p == null) {
             return;

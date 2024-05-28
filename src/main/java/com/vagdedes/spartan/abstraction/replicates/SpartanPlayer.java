@@ -368,9 +368,7 @@ public class SpartanPlayer {
     // Separator
 
     public Player getInstance() {
-        return SpartanBukkit.isSynchronised()
-                ? Bukkit.getPlayer(uuid)
-                : SpartanBukkit.getRealPlayer(uuid);
+        return SpartanBukkit.getRealPlayer(uuid);
     }
 
     public long timePassedSinceCreation() {

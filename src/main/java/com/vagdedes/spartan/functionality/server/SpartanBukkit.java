@@ -70,16 +70,39 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer getPlayer(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
+        Player player = getRealPlayer(uuid);
         return player == null ? null : getPlayer(player);
+    }
+
+    public static Player getRealPlayer(UUID uuid) {
+        Player player;
+
+        if (isSynchronised()) {
+            player = Bukkit.getPlayer(uuid);
+
+            if (player != null) {
+                synchronized (realPlayers) {
+                    realPlayers.putIfAbsent(uuid, player);
+                }
+            }
+        } else {
+            synchronized (realPlayers) {
+                player = realPlayers.get(uuid);
+            }
+        }
+        return player;
     }
 
     public static SpartanPlayer getPlayer(Player real) {
         UUID uuid = real.getUniqueId();
+
+        synchronized (realPlayers) {
+            realPlayers.putIfAbsent(real.getUniqueId(), real);
+        }
         SpartanPlayer player;
 
         synchronized (players) {
-             player = players.get(uuid);
+            player = players.get(uuid);
 
             if (player == null) {
                 players.put(uuid, player = new SpartanPlayer(real, uuid));
@@ -89,8 +112,11 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer removePlayer(Player real) {
-        synchronized (players) {
-            return players.remove(real.getUniqueId());
+        synchronized (realPlayers) {
+            synchronized (players) {
+                realPlayers.remove(real.getUniqueId());
+                return players.remove(real.getUniqueId());
+            }
         }
     }
 
@@ -107,29 +133,6 @@ public class SpartanBukkit {
     public static List<SpartanPlayer> getPlayers() {
         synchronized (players) {
             return new ArrayList<>(players.values());
-        }
-    }
-
-    // Separator
-
-    public static Player getRealPlayer(UUID uuid) {
-        Player player;
-
-        synchronized (realPlayers) {
-            player = realPlayers.get(uuid);
-        }
-        return player != null && player.isOnline() ? player : null;
-    }
-
-    public static void addRealPlayer(Player player) {
-        synchronized (realPlayers) {
-            realPlayers.put(player.getUniqueId(), player);
-        }
-    }
-
-    public static void removeRealPlayer(Player player) {
-        synchronized (realPlayers) {
-            realPlayers.remove(player.getUniqueId());
         }
     }
 
