@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.RayUtils;

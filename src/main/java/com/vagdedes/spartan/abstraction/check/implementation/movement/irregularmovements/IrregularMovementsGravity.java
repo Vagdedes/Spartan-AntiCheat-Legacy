@@ -141,8 +141,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                         } else {
                             product = !sensitive
                                     && !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
-                                    && !player.movement.isFalling(vertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
-                                    && !player.movement.isFalling(oldVertical, acceleration, drag, GroundUtils.maxHeightLengthRatio)
+                                    && !player.movement.isFalling(vertical, -acceleration, drag, GroundUtils.maxHeightLengthRatio)
+                                    && !player.movement.isFalling(oldVertical, -acceleration, drag, GroundUtils.maxHeightLengthRatio)
                                     ? 1.0
                                     : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1);
                         }

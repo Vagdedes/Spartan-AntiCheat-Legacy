@@ -20,7 +20,10 @@ public class NoFall extends CheckExecutor {
     private static final double
             drag = 0.98,
             acceleration = PlayerUtils.airAcceleration * drag,
-            potentialFallTicksError = 10.0;
+            terminalVelocity = PlayerUtils.calculateTerminalVelocity(
+                    PlayerUtils.airDrag,
+                    PlayerUtils.airAcceleration
+            );
     private static final float significantFallDistance = 3.0f;
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
@@ -100,7 +103,7 @@ public class NoFall extends CheckExecutor {
             this.distance = 0.0;
             return;
         }
-        int fallTick = getFallTicks(previous) + 1;
+        int fallDistanceTick = getFallTicks(previous) + 1;
         boolean toGround = player.isOnGround() || player.isOnGround(player.movement.getEventToLocation(), true),
                 fromGround = player.isOnGround(player.movement.getEventFromLocation(), true);
 
@@ -124,14 +127,13 @@ public class NoFall extends CheckExecutor {
             }
         }
         runAsync(() -> {
-            double prediction = fallTick == 1
+            double prediction = fallDistanceTick == 1
                     ? acceleration
-                    : (this.previous * drag) + (fallTick * acceleration),
+                    : (this.previous * drag) + (fallDistanceTick * acceleration),
                     difference = Math.abs(fallDistance - prediction),
-                    limit = Math.max(
-                            fallTick / potentialFallTicksError,
-                            PlayerUtils.airAcceleration
-                    );
+                    limit = vertical >= 0.0
+                            ? PlayerUtils.airAcceleration
+                            : ((0.0 - vertical) / terminalVelocity) * terminalVelocity;
 
             if (difference >= limit
                     && (fallDistance > significantFallDistance
@@ -152,7 +154,7 @@ public class NoFall extends CheckExecutor {
                             player,
                             "type: motion"
                                     + ", fall-distance: " + fallDistance
-                                    + ", fall-tick: " + fallTick
+                                    + ", fall-tick: " + fallDistanceTick
                                     + ", prediction: " + prediction
                                     + ", difference: " + difference
                                     + ", limit: " + limit,
@@ -163,7 +165,7 @@ public class NoFall extends CheckExecutor {
             }
         });
         this.previous = fallDistance;
-        this.distance = fallTick == 1 ? acceleration : this.distance + vertical;
+        this.distance = fallDistanceTick == 1 ? acceleration : this.distance + vertical;
     }
 
     private int getFallTicks(double fallDistance) {
@@ -214,7 +216,7 @@ public class NoFall extends CheckExecutor {
                         0.0,
                         1
                 },
-                player.movement.getEventToLocation(),
+                player.movement.getEventFromLocation(),
                 true);
     }
 

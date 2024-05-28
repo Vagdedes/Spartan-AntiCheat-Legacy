@@ -269,7 +269,7 @@ public class SpartanPlayerMovement {
     public boolean isFalling(double d, double acceleration, double drag, double precision) {
         return getFallTick(
                 d,
-                -acceleration,
+                acceleration,
                 drag,
                 precision
         ) != -1;

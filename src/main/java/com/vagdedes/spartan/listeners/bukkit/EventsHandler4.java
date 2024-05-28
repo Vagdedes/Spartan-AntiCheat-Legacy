@@ -9,7 +9,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.Piston;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
-import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -85,22 +84,14 @@ public class EventsHandler4 implements Listener {
 
     @EventHandler
     private void PluginEnable(PluginEnableEvent e) {
-
-        // Utils
-        PluginUtils.clear();
-
         // System
-        Config.compatibility.fastClear();
+        Config.compatibility.fastRefresh();
     }
 
     @EventHandler
     private void PluginDisable(PluginDisableEvent e) {
-
-        // Utils
-        PluginUtils.clear();
-
         // System
-        Config.compatibility.fastClear();
+        Config.compatibility.fastRefresh();
     }
 
 }

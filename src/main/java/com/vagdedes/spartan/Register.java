@@ -1,7 +1,5 @@
 package com.vagdedes.spartan;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.command.CommandTab;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
@@ -11,9 +9,7 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.*;
-import com.vagdedes.spartan.listeners.protocol.*;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -53,16 +49,7 @@ public class Register extends JavaPlugin {
         PlayerLimitPerIP.cache();
         SuspicionNotifications.run();
 
-        // Listeners
-        if (SpartanBukkit.packetsEnabled()) {
-            ProtocolManager p = ProtocolLibrary.getProtocolManager();
-            Move.registerPacketListeners(p);
-            p.addPacketListener(new Join());
-            p.addPacketListener(new EntityAction());
-            p.addPacketListener(new Velocity());
-        } else {
-            enable(new EventHandler_Shared(), EventHandler_Shared.class);
-        }
+        // Listeners (More may be registered in compatibilities)
         enable(new EventsHandler1(), EventsHandler1.class);
         enable(new EventsHandler2(), EventsHandler2.class);
         enable(new EventsHandler3(), EventsHandler3.class);

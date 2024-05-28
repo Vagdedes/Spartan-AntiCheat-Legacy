@@ -15,7 +15,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
-import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.SpartanReloadEvent;
 import me.vagdedes.spartan.system.Enums;
@@ -177,7 +176,6 @@ public class Config {
         }
 
         // System
-        PluginUtils.clear();
         Cache.clearStorage(!enabledPlugin);
         Chunks.reload(enabledPlugin);
         ResearchEngine.refresh(enabledPlugin);

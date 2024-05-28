@@ -14,6 +14,7 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 public class ImpossibleInventory extends CheckExecutor {
@@ -56,19 +57,23 @@ public class ImpossibleInventory extends CheckExecutor {
     protected void runInternal(boolean cancelled) {
         if (!player.movement.isSwimming()
                 && player.getVehicle() == null && player.getOpenInventory() != null) {
-            ItemStack cursor = player.getOpenInventory().getCursor();
+            InventoryView view = player.getOpenInventory();
 
-            if (BlockUtils.hasMaterial(cursor)) {
-                int cases = getActionCase();
+            if (view != null) {
+                ItemStack cursor = view.getCursor();
 
-                if (cases != 0) {
-                    cancel(
-                            "type: cursor-usage, case: " + cases,
-                            1.0,
-                            player.movement.getEventFromLocation(),
-                            0,
-                            false
-                    );
+                if (BlockUtils.hasMaterial(cursor)) {
+                    int cases = getActionCase();
+
+                    if (cases != 0) {
+                        cancel(
+                                "type: cursor-usage, case: " + cases,
+                                1.0,
+                                player.movement.getEventFromLocation(),
+                                0,
+                                false
+                        );
+                    }
                 }
             }
         }
@@ -90,9 +95,13 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !click.isKeyboardClick()
                 && !player.movement.isSwimming()
                 && player.getVehicle() == null
-                && player.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                 && !BlockPatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)) {
-            cancel("type: closed-inventory, case: " + cases);
+            InventoryView view = player.getOpenInventory();
+
+            if (view != null
+                    && view.countSlots() > PlayerUtils.playerInventorySlots) {
+                cancel("type: closed-inventory, case: " + cases);
+            }
         }
     }
 
@@ -130,4 +139,5 @@ public class ImpossibleInventory extends CheckExecutor {
                     : 0;
         }
     }
+
 }
