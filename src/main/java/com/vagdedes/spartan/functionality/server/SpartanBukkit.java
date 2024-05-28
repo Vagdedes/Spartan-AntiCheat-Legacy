@@ -4,7 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
+import com.vagdedes.spartan.compatibility.manual.packet.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
 import com.vagdedes.spartan.functionality.management.Config;

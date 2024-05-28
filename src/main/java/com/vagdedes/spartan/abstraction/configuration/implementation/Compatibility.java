@@ -11,7 +11,7 @@ import com.vagdedes.spartan.compatibility.manual.building.*;
 import com.vagdedes.spartan.compatibility.manual.damage.RealDualWield;
 import com.vagdedes.spartan.compatibility.manual.entity.CraftBook;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
-import com.vagdedes.spartan.compatibility.manual.packet.ProtocolLib;
+import com.vagdedes.spartan.compatibility.manual.packet.protocollib.ProtocolLib;
 import com.vagdedes.spartan.compatibility.manual.world.AcidRain;
 import com.vagdedes.spartan.compatibility.necessary.Floodgate;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
@@ -334,7 +334,7 @@ public class Compatibility {
                 null
         );
         CompatibilityType.PROTOCOL_LIB.setFunctional(
-                ProtocolLib::reload,
+                ProtocolLib::run,
                 () -> Register.enable(new EventHandler_Shared(), EventHandler_Shared.class)
         );
         CompatibilityType.MY_PET.setFunctional();
