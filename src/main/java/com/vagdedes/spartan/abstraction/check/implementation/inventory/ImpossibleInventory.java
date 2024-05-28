@@ -55,7 +55,7 @@ public class ImpossibleInventory extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         if (!player.movement.isSwimming()
-                && player.getVehicle() == null) {
+                && player.getVehicle() == null && player.getOpenInventory() != null) {
             ItemStack cursor = player.getOpenInventory().getCursor();
 
             if (BlockUtils.hasMaterial(cursor)) {

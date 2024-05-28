@@ -56,8 +56,7 @@ public class Register extends JavaPlugin {
         // Listeners
         if (SpartanBukkit.packetsEnabled()) {
             ProtocolManager p = ProtocolLibrary.getProtocolManager();
-            p.addPacketListener(new Move());
-            p.addPacketListener(new Teleport());
+            Move.registerPacketListeners(p);
             p.addPacketListener(new Join());
             p.addPacketListener(new EntityAction());
             p.addPacketListener(new Velocity());
