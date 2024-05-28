@@ -19,7 +19,7 @@ public class Teleport extends PacketAdapter {
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();
         SpartanLocation currentLocation = ProtocolStorage.positionManager.get(player.getUniqueId()),
-                newLocation = Move.readMovePacket(event);
+                newLocation = new SpartanLocation(Move.readMovePacket(event));
 
         // Check if the worlds are the same before adding the locations
         if (currentLocation != null

@@ -97,7 +97,7 @@ public class Speed extends CheckExecutor {
         String flag = null;
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
-        boolean onGround = player.isOnGround();
+        boolean onGround = player.getInstance().isOnGround();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         int oldAir = -1;
@@ -176,7 +176,7 @@ public class Speed extends CheckExecutor {
             if (multiply < 0.08 && !onGround && vertical != -0.09
                     && isJump && horizontal > 0.1 && player.getVehicle() == null) {
                 yDiff = yDiff + verticalDiff;
-                if (yDiff > 0.05) {
+                if (yDiff > 0.05 && onFly < 21) {
                     verticalVl = verticalVl + 4;
                     if (verticalVl > 36) {
                         antiAbuseProcessor = antiAbuseProcessor + 45;
@@ -607,7 +607,7 @@ public class Speed extends CheckExecutor {
         // Do not change as there is a protection for it via the IrregularMovements check
         // The flying method should still be considered in the code, in case anything ever changes
         return MovementProcessing.canCheck(player, true, true, false, true)
-                && !player.bedrockPlayer; // REMOVE 'player.bedrockPlayer' WHEN/UPON YOU ADD BEDROCK SUPPORT - VAGDEDES
+                ; // REMOVE 'player.bedrockPlayer' WHEN/UPON YOU ADD BEDROCK SUPPORT - VAGDEDES
     }
 
 }
