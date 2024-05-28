@@ -66,16 +66,13 @@ public class Shared {
 
     public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();
-        n.sendMessage("t");
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
 
         if (p == null) {
             return;
         }
-        p.sendMessage("s");
         Location nto = e.getTo();
 
-        p.sendMessage("0");
         if (nto == null) {
             return;
         }
@@ -84,7 +81,6 @@ public class Shared {
                 to = vehicle != null ? vehicle : new SpartanLocation(nto),
                 from = new SpartanLocation(e.getFrom());
         from.retrieveDataFrom(to);
-        p.sendMessage("1");
 
         // Values
         double preXZ = AlgebraUtils.getSquare(to.getX(), from.getX()) + AlgebraUtils.getSquare(to.getZ(), from.getZ()),
@@ -95,12 +91,10 @@ public class Shared {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
 
-        p.sendMessage("2");
         if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
             return;
         }
         MovementProcessing.run(p, to, ver, box);
-        p.sendMessage("3");
 
         // Patterns
         Bukkit.getScheduler().runTask(Register.plugin, () -> {
@@ -110,7 +104,6 @@ public class Shared {
                 }
             }
         });
-        p.sendMessage("4");
 
         // Detections
         boolean cancelled = e.isCancelled();
@@ -121,7 +114,6 @@ public class Shared {
         p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
         p.getExecutor(Enums.HackType.Speed).run(cancelled);
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
-        p.sendMessage("5");
     }
 
     public static void teleport(PlayerTeleportEvent e) {

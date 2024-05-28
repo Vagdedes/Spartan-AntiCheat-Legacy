@@ -94,7 +94,6 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        player.sendMessage("S");
         String flag = null;
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
