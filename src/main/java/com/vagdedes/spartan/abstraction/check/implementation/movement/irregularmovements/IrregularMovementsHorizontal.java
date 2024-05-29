@@ -2,7 +2,9 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 
 public class IrregularMovementsHorizontal extends DetectionExecutor {
@@ -14,9 +16,13 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         if (hackType.getCheck().getBooleanOption("check_horizontal", true)) {
             int airTicks = player.movement.getTicksOnAir();
+            SpartanLocation to = player.movement.getEventToLocation(),
+                    from = player.movement.getEventFromLocation();
 
             runAsync(() -> {
-                if (airTicks > 0) {
+                if (airTicks > 0
+                        && !BlockUtils.canClimb(to.getBlock().material, false)
+                        && !BlockUtils.canClimb(from.getBlock().material, false)) {
                     if (knownBox || knownOldBox) {
                         int limit = PlayerUtils.getJumpTicks(0);
 

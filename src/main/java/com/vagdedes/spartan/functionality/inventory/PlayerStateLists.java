@@ -15,9 +15,9 @@ import java.util.*;
 public class PlayerStateLists {
 
     public static final String
-            hackerPlayers = "Identified Hackers",
-            suspectedPlayers = "Suspected Players",
-            legitimatePlayers = "Legitimate Players",
+            hackerPlayers = "Identified Hacker",
+            suspectedPlayers = "Suspected Player",
+            legitimatePlayers = "Legitimate Player",
             inactiveColour = "§8",
 
     noDataAvailable = "No data available at this time",
@@ -39,7 +39,7 @@ public class PlayerStateLists {
     private static final Map<UUID, Integer> cache = Cache.store(new LinkedHashMap<>());
 
     private static void fill(String title, Inventory inventory, PlayerProfile profile, List<String> description, int slot) {
-        ItemStack item = profile.getSkull(false);
+        ItemStack item = profile.getSkull(profile.isSuspectedOrHacker());
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§c" + profile.getName());
 
