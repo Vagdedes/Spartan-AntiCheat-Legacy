@@ -59,11 +59,13 @@ public class NPCManager implements Listener {
     }
 
     public static void clear() {
-        synchronized (list) {
-            for (SpartanNPC npc : list) {
-                npc.remove();
+        if (!list.isEmpty()) {
+            synchronized (list) {
+                for (SpartanNPC npc : list) {
+                    npc.remove();
+                }
+                list.clear();
             }
-            list.clear();
         }
     }
 
@@ -101,7 +103,7 @@ public class NPCManager implements Listener {
                     for (SpartanNPC npc : list) {
                         if (npc.getUniqueId().equals(uuid)) {
                             e.setCancelled(true);
-                            npc.head();
+                            npc.updateHead();
                             SpartanPlayer player = SpartanBukkit.getPlayer(e.getPlayer());
 
                             if (player != null) {
@@ -127,7 +129,7 @@ public class NPCManager implements Listener {
                     for (SpartanNPC npc : list) {
                         if (npc.getUniqueId().equals(uuid)) {
                             e.setCancelled(true);
-                            npc.head();
+                            npc.updateHead();
                             Entity damager = e.getDamager();
 
                             if (damager instanceof Player) {

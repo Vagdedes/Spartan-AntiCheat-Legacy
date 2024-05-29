@@ -38,14 +38,14 @@ public class SpartanNPC {
                 loc.getBukkitLocation(),
                 EntityType.ARMOR_STAND
         );
-        armorStand.setVisible(false);
-        armorStand.setCustomName("§2Spartan §cAnti§4Cheat");
-        armorStand.setCustomNameVisible(true);
         armorStand.setGravity(false);
-        armorStand.setArms(true);
         armorStand.setCanMove(false);
         armorStand.setSmall(false);
         armorStand.setCanTick(false);
+        armorStand.setVisible(false);
+        armorStand.setCustomName("§2Spartan §cAnti§4Cheat");
+        armorStand.setCustomNameVisible(true);
+        armorStand.setArms(true);
 
         armorStand.setRightLegPose(new EulerAngle(
                 0,
@@ -68,7 +68,7 @@ public class SpartanNPC {
             armorStand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
             armorStand.getEquipment().setItemInOffHand(new ItemStack(Material.SHIELD));
         }
-        this.head();
+        this.updateHead();
 
         ItemStack itemStack = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
@@ -103,7 +103,8 @@ public class SpartanNPC {
         handPose += 0.2;
 
         armorStand.getWorld().playEffect(
-                armorStand.getLocation().add(0.0, Math.ceil(armorStand.getEyeHeight()) + 1.0, 0.0),
+                armorStand.getLocation().clone()
+                        .add(0.0, Math.ceil(armorStand.getEyeHeight()) + 1.0, 0.0),
                 Effect.ENDER_SIGNAL,
                 (int) PlayerUtils.chunk
         );
@@ -139,7 +140,7 @@ public class SpartanNPC {
         armorStand.teleport(armorStand.getLocation().setDirection(toLookAtVec));
     }
 
-    void head() {
+    void updateHead() {
         armorStand.getEquipment().setHelmet(
                 InventoryUtils.getSkull(offlinePlayer, backupName)
         );
@@ -152,4 +153,5 @@ public class SpartanNPC {
     UUID getUniqueId() {
         return armorStand.getUniqueId();
     }
+
 }

@@ -23,7 +23,6 @@ import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -95,9 +94,12 @@ public class MainMenu extends InventoryMenu {
             lore.add("");
             lore.add((dividedBy2 ? "§2" : "§6") + discordMemberCount + " online Discord " + (discordMemberCount == 1 ? "member" : "members"));
         }
-        ItemStack supportItem = new ItemStack(dividedBy2 ? Material.EMERALD_BLOCK : Material.GOLD_BLOCK, random);
-        supportItem.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-        add("§aAuto Updater", lore, supportItem, 48);
+        add(
+                "§aAuto Updater",
+                lore,
+                new ItemStack(dividedBy2 ? Material.EMERALD_BLOCK : Material.GOLD_BLOCK, random),
+                48
+        );
 
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
