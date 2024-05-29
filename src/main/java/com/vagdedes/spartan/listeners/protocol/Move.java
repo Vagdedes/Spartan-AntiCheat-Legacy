@@ -5,9 +5,13 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.bukkit.EventHandler_Shared;
 import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import dev.lone.itemsadder.e.E;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -64,7 +68,6 @@ public class Move {
             PlayerMoveEvent playerMoveEvent = new PlayerMoveEvent(
                     player, from, to
             );
-
             Shared.move(playerMoveEvent);
             positionManager.put(player, to);
             // Action

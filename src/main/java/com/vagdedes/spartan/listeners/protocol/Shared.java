@@ -61,12 +61,13 @@ public class Shared {
 
         // Trackers
         ProtocolStorage.canCheck.put(p.uuid, true);
+        ProtocolStorage.getAbilities(n.getUniqueId()).setSprint(false);
+        ProtocolStorage.getAbilities(n.getUniqueId()).setSneak(false);
     }
 
     public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
         if (p == null) {
             return;
         }
