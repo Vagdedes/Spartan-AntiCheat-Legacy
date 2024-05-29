@@ -10,6 +10,7 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -61,8 +62,6 @@ public class Shared {
 
         // Trackers
         ProtocolStorage.canCheck.put(p.uuid, true);
-        ProtocolStorage.getAbilities(n.getUniqueId()).setSprint(false);
-        ProtocolStorage.getAbilities(n.getUniqueId()).setSneak(false);
     }
 
     public static void move(PlayerMoveEvent e) {

@@ -26,10 +26,7 @@ public class ProtocolStorage {
     }
 
     public static AbilitiesContainer getAbilities(UUID uuid) {
-        return playerAbilitiesContainer.computeIfAbsent(
-                uuid,
-                k -> new AbilitiesContainer(false, false, false)
-        );
+        return playerAbilitiesContainer.get(uuid);
     }
 
     public static RotationData getRotation(UUID uuid) {

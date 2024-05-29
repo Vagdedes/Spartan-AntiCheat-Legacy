@@ -28,7 +28,6 @@ public class EntityAction extends PacketAdapter {
         AbilitiesEnum type = AbilitiesEnum.valueOf(event.getPacket().getModifier().getValues().get(1).toString());
         if (type == AbilitiesEnum.START_SPRINTING) {
             AbilitiesContainer container = ProtocolStorage.getAbilities(player.uuid);
-
             if (container.sprint()) {
                 AntiCheatLogs.logInfo(
                         player,
