@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
+import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.listeners.bukkit.*;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
@@ -56,6 +57,9 @@ public class Register extends JavaPlugin {
         enable(new EventsHandler4(), EventsHandler4.class);
         enable(new EventsHandler5(), EventsHandler5.class);
 
+        if (NPCManager.supported) {
+            enable(new NPCManager(), NPCManager.class);
+        }
         if (!MultiVersion.folia) {
             enable(new EventsHandler_non_folia(), EventsHandler_non_folia.class);
         }

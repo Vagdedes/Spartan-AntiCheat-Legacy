@@ -28,6 +28,19 @@ public class Permissions {
         return false;
     }
 
+    public static boolean has(SpartanPlayer p) {
+        Player n = p.getInstance();
+
+        if (n != null) {
+            for (Enums.Permission permission : Enums.Permission.values()) {
+                if (has(n, permission)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // Separator
 
     public static boolean has(SpartanPlayer p, Enums.Permission permission) {

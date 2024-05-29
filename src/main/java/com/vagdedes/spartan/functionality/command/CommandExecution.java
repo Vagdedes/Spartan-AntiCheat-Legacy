@@ -11,6 +11,7 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
+import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -158,8 +159,6 @@ public class CommandExecution implements CommandExecutor {
                         completeMessage(sender, "default");
                     }
                     break;
-                case "commands":
-                    sender.sendMessage(ChatColor.RED + "Run '/spartan commands' for a list of commands");
                 default:
                     break;
             }
@@ -184,11 +183,14 @@ public class CommandExecution implements CommandExecutor {
                 return false;
             }
             if (args.length == 0) {
-                if (isPlayer && InteractiveInventory.mainMenu.open(player, false)) {
-                    completeMessage(sender, "commands");
-                } else {
-                    completeMessage(sender, "default");
+                if (isPlayer) {
+                    if (NPCManager.supported && Permissions.isStaff(player)) {
+                        NPCManager.create(player);
+                    } else {
+                        InteractiveInventory.mainMenu.open(player, false);
+                    }
                 }
+                completeMessage(sender, "default");
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
                     InteractiveInventory.mainMenu.open(player);

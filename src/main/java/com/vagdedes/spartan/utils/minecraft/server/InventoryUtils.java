@@ -51,20 +51,34 @@ public class InventoryUtils {
     }
 
     public static ItemStack getHead() {
-        return new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.PLAYER_HEAD : Material.getMaterial("SKULL_ITEM"));
+        return new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                ? Material.PLAYER_HEAD
+                : Material.getMaterial("SKULL_ITEM"), 1, (short) SkullType.PLAYER.ordinal());
     }
 
-    public static ItemStack getSkull(OfflinePlayer offlinePlayer) {
-        ItemStack skull = new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.PLAYER_HEAD : Material.getMaterial("SKULL_ITEM"), 1, (short) SkullType.PLAYER.ordinal());
-        SkullMeta meta = (SkullMeta) skull.getItemMeta();
+    public static ItemStack getSkull(OfflinePlayer offlinePlayer, String backupName) {
+        ItemStack skull;
+        SkullMeta meta;
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            meta.setOwningPlayer(offlinePlayer);
-        } else {
-            String name = offlinePlayer.getName();
+            skull = new ItemStack(Material.PLAYER_HEAD);
+            meta = (SkullMeta) skull.getItemMeta();
 
+            if (offlinePlayer != null) {
+                meta.setOwningPlayer(offlinePlayer);
+            }
+        } else {
+            skull = new ItemStack(Material.getMaterial("SKULL_ITEM"), 1, (short) SkullType.PLAYER.ordinal());
+            meta = (SkullMeta) skull.getItemMeta();
+            String name = null;
+
+            if (offlinePlayer != null) {
+                name = offlinePlayer.getName();
+            }
             if (name != null) {
                 meta.setOwner(name);
+            } else if (backupName != null) {
+                meta.setOwner(backupName);
             }
         }
         skull.setItemMeta(meta);

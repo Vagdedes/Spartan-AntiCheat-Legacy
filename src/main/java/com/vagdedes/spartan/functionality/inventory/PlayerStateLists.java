@@ -29,10 +29,10 @@ public class PlayerStateLists {
     };
     private static final int[] ignoredSlots = new int[]{
             0, 1, 2, 3, 4, 5, 6, 7, 8,
-            9, 17,
-            18, 26,
-            27, 35,
-            36, 44,
+            9, 10, 16, 17,
+            18, 19, 25, 26,
+            27, 28, 34, 35,
+            36, 37, 43, 44,
             45, 46, 47, 48, 49, 50, 51, 52, 53
     };
 
@@ -83,7 +83,7 @@ public class PlayerStateLists {
 
     public static void fill(UUID uuid, Inventory inventory) {
         List<String> lore = new ArrayList<>(20);
-        int slotPosition = 0, limit = 7;
+        int slotPosition = 0, limit = 5;
         Integer[] freeSlots = getFreeSlots(inventory);
 
         for (String title : menuList) {
