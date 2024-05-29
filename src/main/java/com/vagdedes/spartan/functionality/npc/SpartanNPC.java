@@ -89,55 +89,60 @@ public class SpartanNPC {
         armorStand.getEquipment().setItemInHand(itemStack);
     }
 
-    void animate(List<SpartanPlayer> players) {
-        double headMax = 5.0, handMax = 15.0;
+    boolean animate(List<SpartanPlayer> players) {
+        if (armorStand.isDead()) {
+            return false;
+        } else {
+            double headMax = 5.0, handMax = 15.0;
 
-        if (headPose >= headMax) {
-            headPose = -headMax;
-        }
-        headPose += 0.1;
-
-        if (handPose >= handMax) {
-            handPose = -handMax;
-        }
-        handPose += 0.2;
-
-        armorStand.getWorld().playEffect(
-                armorStand.getLocation().clone()
-                        .add(0.0, Math.ceil(armorStand.getEyeHeight()) + 1.0, 0.0),
-                Effect.ENDER_SIGNAL,
-                (int) PlayerUtils.chunk
-        );
-        armorStand.setHeadPose(
-                new EulerAngle(
-                        Math.toRadians(Math.abs(headPose)),
-                        0.0,
-                        0.0
-                )
-        );
-        armorStand.setRightArmPose(new EulerAngle(
-                0.0,
-                0.0,
-                Math.toRadians(Math.abs(handPose))
-        ));
-        armorStand.setLeftArmPose(new EulerAngle(
-                0.0,
-                0.0,
-                -Math.toRadians(Math.abs(handPose))
-        ));
-        SpartanPlayer closest = null;
-
-        for (SpartanPlayer player : players) {
-            if (closest == null
-                    || player.movement.getLocation().distance(location)
-                    < closest.movement.getLocation().distance(location)) {
-                closest = player;
+            if (headPose >= headMax) {
+                headPose = -headMax;
             }
+            headPose += 0.1;
+
+            if (handPose >= handMax) {
+                handPose = -handMax;
+            }
+            handPose += 0.25;
+
+            armorStand.getWorld().playEffect(
+                    armorStand.getLocation().clone()
+                            .add(0.0, Math.ceil(armorStand.getEyeHeight()) + 1.0, 0.0),
+                    Effect.ENDER_SIGNAL,
+                    (int) PlayerUtils.chunk
+            );
+            armorStand.setHeadPose(
+                    new EulerAngle(
+                            Math.toRadians(Math.abs(headPose)),
+                            0.0,
+                            0.0
+                    )
+            );
+            armorStand.setRightArmPose(new EulerAngle(
+                    0.0,
+                    0.0,
+                    Math.toRadians(Math.abs(handPose))
+            ));
+            armorStand.setLeftArmPose(new EulerAngle(
+                    0.0,
+                    0.0,
+                    -Math.toRadians(Math.abs(handPose))
+            ));
+            SpartanPlayer closest = null;
+
+            for (SpartanPlayer player : players) {
+                if (closest == null
+                        || player.movement.getLocation().distance(location)
+                        < closest.movement.getLocation().distance(location)) {
+                    closest = player;
+                }
+            }
+            Vector playerVec = closest.movement.getLocation().toVector().clone();
+            Vector sheepVec = armorStand.getLocation().toVector();
+            Vector toLookAtVec = playerVec.subtract(sheepVec);
+            armorStand.teleport(armorStand.getLocation().setDirection(toLookAtVec));
+            return true;
         }
-        Vector playerVec = closest.movement.getLocation().toVector().clone();
-        Vector sheepVec = armorStand.getLocation().toVector();
-        Vector toLookAtVec = playerVec.subtract(sheepVec);
-        armorStand.teleport(armorStand.getLocation().setDirection(toLookAtVec));
     }
 
     void updateHead() {

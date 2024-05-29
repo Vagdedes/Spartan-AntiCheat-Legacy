@@ -394,12 +394,12 @@ public class SpartanPlayer {
             return vehicle.isOnGround();
         } else if (SpartanBukkit.packetsEnabled()) {
             return ProtocolStorage.isOnGround(this)
-                    || bedrockPlayer && custom
+                    || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         } else {
             Player p = this.getInstance();
             return p != null && p.isOnGround()
-                    || bedrockPlayer && custom
+                    || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         }
     }

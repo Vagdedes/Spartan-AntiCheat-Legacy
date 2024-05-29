@@ -53,25 +53,42 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 boolean levitation = levitationLevel != -1,
                         climb = BlockUtils.canClimb(to.getBlock().material, false)
                                 || BlockUtils.canClimb(from.getBlock().material, false),
-                        web = BlockUtils.areWebs(to.getBlock().material)
-                                || BlockUtils.areWebs(from.getBlock().material),
-                        honey = BlockPatternUtils.isBlockPattern(
+                        web = BlockPatternUtils.isBlockPattern(
                                 new double[][]{
-                                        {GroundUtils.honeyBlockBoundingBox, 0.0, GroundUtils.honeyBlockBoundingBox},
-                                        {GroundUtils.honeyBlockBoundingBox, 1.0, GroundUtils.honeyBlockBoundingBox}
+                                        {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                        {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
+                                        {GroundUtils.contactBoundingBox, Math.ceil(player.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                },
+                                to,
+                                true,
+                                BlockUtils.web
+                        ) || BlockPatternUtils.isBlockPattern(
+                                new double[][]{
+                                        {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                        {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
+                                        {GroundUtils.contactBoundingBox, Math.ceil(player.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                },
+                                from,
+                                true,
+                                BlockUtils.web
+                        ),
+                        honey = !web && (BlockPatternUtils.isBlockPattern(
+                                new double[][]{
+                                        {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                        {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox}
                                 },
                                 to,
                                 true,
                                 BlockUtils.honey_block
                         ) || BlockPatternUtils.isBlockPattern(
                                 new double[][]{
-                                        {GroundUtils.honeyBlockBoundingBox, 0.0, GroundUtils.honeyBlockBoundingBox},
-                                        {GroundUtils.honeyBlockBoundingBox, 1.0, GroundUtils.honeyBlockBoundingBox}
+                                        {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                        {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox}
                                 },
                                 from,
                                 true,
                                 BlockUtils.honey_block
-                        );
+                        ));
 
                 if (levitation) {
                     predictions.add(
@@ -93,9 +110,19 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     predictions.add(-PlayerUtils.webBlockDownDefault);
                 } else if (climb) {
                     if (vertical == 0.0) {
-                        if (!ground && !sneaking && noNearbyEntities) {
+                        if (!ground && !sneaking && noNearbyEntities
+                                && !BlockPatternUtils.isBlockPattern(
+                                new double[]{
+                                        GroundUtils.boundingBox,
+                                        Math.ceil(player.getEyeHeight()),
+                                        GroundUtils.boundingBox
+                                },
+                                to,
+                                true,
+                                BlockUtils.solid, BlockUtils.semi_solid
+                        )) {
                             cancel(
-                                    "type: gravity(ladder-stable)"
+                                    "type: gravity(climb-stable)"
                                             + ", vertical: " + vertical
                                             + ", old-vertical: " + oldVertical
                                             + ", box: " + box

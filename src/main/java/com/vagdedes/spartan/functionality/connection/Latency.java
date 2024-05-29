@@ -32,7 +32,7 @@ public class Latency {
         double pingDelay;
         int max = Config.settings.getInteger(Settings.maxSupportedLatencyOption);
 
-        if (max <= 0 || player.getProfile().isSuspectedOrHacker()) {
+        if (max <= 0) {
             pingDelay = 0.0;
         } else {
             int latency = player.getPing();

@@ -46,7 +46,9 @@ public class NPCManager implements Listener {
                             }
 
                             if (animate) {
-                                npc.animate(staff);
+                                if (!npc.animate(staff)) {
+                                    iterator.remove();
+                                }
                             } else {
                                 npc.remove();
                                 iterator.remove();
