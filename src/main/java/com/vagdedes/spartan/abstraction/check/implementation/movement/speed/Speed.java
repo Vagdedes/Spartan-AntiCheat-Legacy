@@ -417,7 +417,7 @@ public class Speed extends CheckExecutor {
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
-        if (flag != null) cancel(flag, 2, to);
+        if (flag != null) cancel(flag, horizontal, to);
         //player.debug(false, false, false, antiAbuseProcessor);
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
