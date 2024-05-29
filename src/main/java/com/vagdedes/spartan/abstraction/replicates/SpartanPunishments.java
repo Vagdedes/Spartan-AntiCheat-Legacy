@@ -52,7 +52,11 @@ public class SpartanPunishments {
             }
 
             this.parent.getProfile().punishmentHistory.increaseKicks(this.parent, kick);
-            target.kickPlayer(kick);
+
+            SpartanBukkit.transferTask(
+                    this.parent,
+                    () -> target.kickPlayer(kick)
+            );
         }
     }
 

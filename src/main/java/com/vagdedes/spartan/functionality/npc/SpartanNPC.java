@@ -44,6 +44,8 @@ public class SpartanNPC {
         armorStand.setGravity(false);
         armorStand.setArms(true);
         armorStand.setCanMove(false);
+        armorStand.setSmall(false);
+        armorStand.setCanTick(false);
 
         armorStand.setRightLegPose(new EulerAngle(
                 0,
