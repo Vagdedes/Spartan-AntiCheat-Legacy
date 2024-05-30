@@ -34,7 +34,9 @@ public class SpartanBukkit {
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final Map<UUID, Player> realPlayers =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
-    public static final Class<?> craftPlayer = ReflectionUtils.getClass(
+    public static final Class<?> craftPlayer = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+            ? null
+            : ReflectionUtils.getClass(
             ReflectionUtils.class.getPackage().getName().substring(0, 19) // Package
                     + "org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".entity.CraftPlayer" // Version
     );

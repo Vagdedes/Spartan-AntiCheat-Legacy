@@ -37,8 +37,8 @@ public class CloudBase {
 
     // Parameters
     static String identification = "", token = null;
-    static final double version = Math.abs(JarVerification.version);
-    public static final String separator = ">@#&!%<;=";
+    static int version = 0;
+    static final String separator = ">@#&!%<;=";
 
     static {
         clear(false);
@@ -48,6 +48,14 @@ public class CloudBase {
                 refresh(true);
                 refresh(false);
             }), 1L, refreshTime);
+        }
+        String[] verstionString = Register.plugin.getDescription().getVersion().split(" ");
+
+        for (String s : verstionString) {
+            if (AlgebraUtils.validInteger(s)) {
+                version = Integer.parseInt(s);
+                break;
+            }
         }
     }
 
