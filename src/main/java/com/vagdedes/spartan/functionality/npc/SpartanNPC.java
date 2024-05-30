@@ -107,7 +107,7 @@ public class SpartanNPC {
 
             armorStand.getWorld().playEffect(
                     armorStand.getLocation().clone()
-                            .add(0.0, Math.ceil(armorStand.getEyeHeight()) + 1.0, 0.0),
+                            .add(0.0, Math.ceil(armorStand.getEyeHeight()) * 2.0, 0.0),
                     Effect.ENDER_SIGNAL,
                     (int) PlayerUtils.chunk
             );

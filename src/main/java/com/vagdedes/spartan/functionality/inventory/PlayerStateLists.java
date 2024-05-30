@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.server.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.inventory.Inventory;
@@ -38,8 +39,9 @@ public class PlayerStateLists {
 
     private static final Map<UUID, Integer> cache = Cache.store(new LinkedHashMap<>());
 
-    private static void fill(String title, Inventory inventory, PlayerProfile profile, List<String> description, int slot) {
-        ItemStack item = profile.getSkull(profile.isSuspectedOrHacker());
+    private static void fill(String title, Inventory inventory, PlayerProfile profile,
+                             List<String> description, int slot) {
+        ItemStack item = InventoryUtils.getHead();
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§c" + profile.getName());
 
@@ -55,6 +57,15 @@ public class PlayerStateLists {
         meta.setLore(lore);
         item.setItemMeta(meta);
         inventory.setItem(slot, item);
+
+        SpartanBukkit.dataThread.executeWithPriority(() -> {
+            ItemStack itemNew = profile.getSkull(profile.isSuspectedOrHacker());
+            ItemMeta metaNew = itemNew.getItemMeta();
+            metaNew.setDisplayName(meta.getDisplayName());
+            metaNew.setLore(lore);
+            itemNew.setItemMeta(metaNew);
+            inventory.setItem(slot, itemNew);
+        });
     }
 
     public static int getPage(UUID uuid) {

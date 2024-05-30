@@ -56,10 +56,10 @@ public class PlayerInfo extends InventoryMenu {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
             return false;
         } else {
-            Collection<HackType> evidenceDetails = profile.evidence.getKnowledgeList(true);
+            boolean legitimate = profile.evidence.getType() == PlayerEvidence.EvidenceType.LEGITIMATE;
+            Collection<HackType> evidenceDetails = profile.evidence.getKnowledgeList(legitimate);
             PunishmentHistory punishmentHistory = profile.punishmentHistory;
             int miningHistoryMines = profile.getOverallMiningHistory().getMines();
-            boolean legitimate = profile.evidence.getType() == PlayerEvidence.EvidenceType.LEGITIMATE;
             List<String> lore = new ArrayList<>(20);
             int i = 19;
 
@@ -97,7 +97,7 @@ public class PlayerInfo extends InventoryMenu {
             add(
                     "§c" + profile.getName(),
                     lore,
-                    profile.getSkull(profile.isSuspectedOrHacker()),
+                    profile.getSkull(true),
                     4
             );
 
