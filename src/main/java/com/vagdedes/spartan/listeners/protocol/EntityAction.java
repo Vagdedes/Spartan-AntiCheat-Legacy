@@ -12,6 +12,8 @@ import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesEnum;
 import org.bukkit.Bukkit;
 
+import java.util.Random;
+
 public class EntityAction extends PacketAdapter {
 
     public EntityAction() {
@@ -25,78 +27,13 @@ public class EntityAction extends PacketAdapter {
         if (player == null) {
             return;
         }
+
         AbilitiesEnum type = AbilitiesEnum.valueOf(event.getPacket().getModifier().getValues().get(1).toString());
-        if (type == AbilitiesEnum.START_SPRINTING) {
-            AbilitiesContainer container = ProtocolStorage.getAbilities(player.uuid);
-            if (container.sprint()) {
-                AntiCheatLogs.logInfo(
-                        player,
-                        player.name
-                                + " use impossible EntityAction! (START_SPRINTING while already sprinting)",
-                        true
-                );
-                player.punishments.kick(
-                        Bukkit.getConsoleSender(),
-                        "Invalid packet received (1)"
-                );
-            } else {
-                container.setSprint(true);
-            }
-        }
-        if (type == AbilitiesEnum.STOP_SPRINTING) {
-            AbilitiesContainer container = ProtocolStorage.getAbilities(player.uuid);
-
-            if (!container.sprint()) {
-                AntiCheatLogs.logInfo(
-                        player,
-                        player.name
-                                + " use impossible EntityAction! (STOP_SPRINTING while already non-sprinting)",
-                        true
-                );
-                player.punishments.kick(
-                        Bukkit.getConsoleSender(),
-                        "Invalid packet received (2)"
-                );
-            } else {
-                container.setSprint(false);
-            }
-        }
-        if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
-            AbilitiesContainer container = ProtocolStorage.getAbilities(player.uuid);
-
-            if (container.sneak()) {
-                AntiCheatLogs.logInfo(
-                        player,
-                        player.name
-                                + " use impossible EntityAction! (PRESS_SHIFT_KEY while already sneaking)",
-                        true
-                );
-                player.punishments.kick(
-                        Bukkit.getConsoleSender(),
-                        "Invalid packet received (3)"
-                );
-            } else {
-                container.setSneak(true);
-            }
-        }
-        if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
-            AbilitiesContainer container = ProtocolStorage.getAbilities(player.uuid);
-
-            if (!container.sneak()) {
-                AntiCheatLogs.logInfo(
-                        player,
-                        player.name
-                                + " use impossible EntityAction! (RELEASE_SHIFT_KEY while already non-sneaking)",
-                        true
-                );
-                player.punishments.kick(
-                        Bukkit.getConsoleSender(),
-                        "Invalid packet received (4)"
-                );
-            } else {
-                container.setSneak(false);
-            }
-        }
+        AbilitiesContainer container = ProtocolStorage.getAbilities(player.uuid);
+        if (type == AbilitiesEnum.START_SPRINTING) container.setSprint(true);
+        if (type == AbilitiesEnum.STOP_SPRINTING) container.setSprint(false);
+        if (type == AbilitiesEnum.PRESS_SHIFT_KEY) container.setSneak(true);
+        if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) container.setSneak(false);
     }
 
 }

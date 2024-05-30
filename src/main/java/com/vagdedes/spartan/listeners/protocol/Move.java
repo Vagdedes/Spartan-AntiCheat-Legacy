@@ -68,8 +68,9 @@ public class Move {
             PlayerMoveEvent playerMoveEvent = new PlayerMoveEvent(
                     player, from, to
             );
-            Shared.move(playerMoveEvent);
+            // player.sendMessage(String.valueOf(playerMoveEvent.getTo().distance(playerMoveEvent.getFrom())));
             positionManager.put(player, to);
+            Shared.move(playerMoveEvent);
             // Action
         } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())
                 || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {
@@ -110,9 +111,26 @@ public class Move {
 
     public static Location getLocation(SpartanPlayer spartanPlayer) {
         if (positionManager.containsKey(spartanPlayer.getInstance())) {
-            return positionManager.get(spartanPlayer.getInstance());
+            Location l = positionManager.get(spartanPlayer.getInstance());
+            if (lastRotation.containsKey(spartanPlayer.getInstance())) {
+                l.setYaw(lastRotation.get(spartanPlayer.getInstance()).yaw());
+                l.setPitch(lastRotation.get(spartanPlayer.getInstance()).pitch());
+            }
+            return l;
         } else {
             return spartanPlayer.getInstance().getLocation();
+        }
+    }
+    public static Location getLocation(Player player) {
+        if (positionManager.containsKey(player)) {
+            Location l = positionManager.get(player);
+            if (lastRotation.containsKey(player)) {
+                l.setYaw(lastRotation.get(player).yaw());
+                l.setPitch(lastRotation.get(player).pitch());
+            }
+            return l;
+        } else {
+            return player.getLocation();
         }
     }
 

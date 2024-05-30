@@ -4,6 +4,7 @@ import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.protocol.Move;
 import com.vagdedes.spartan.listeners.protocol.ProtocolStorage;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
@@ -366,7 +367,12 @@ public class SpartanPlayerMovement {
         Entity vehicle = player.getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            Location playerLocation = player.getLocation();
+            Location playerLocation;
+            if (SpartanBukkit.packetsEnabled()) {
+                playerLocation = Move.getLocation(player);
+            } else {
+                playerLocation = player.getLocation();
+            }
             return new SpartanLocation(
                     vehicle.getLocation(),
                     playerLocation.getYaw(),
