@@ -3,8 +3,6 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 import com.vagdedes.filegui.api.FileGUIAPI;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.profiling.StatisticalProgress;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
@@ -12,7 +10,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -28,13 +25,12 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 public class MainMenu extends InventoryMenu {
 
-    private static final String name = "§0Spartan AntiCheat | Page ".substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
+    private static final String name = "§0Spartan AntiCheat (Page ".substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
 
     public MainMenu() {
         super(name, 54, new Permission[]{Permission.MANAGE, Permission.INFO});
@@ -76,30 +72,11 @@ public class MainMenu extends InventoryMenu {
         List<String> lore = new ArrayList<>(20);
         UUID uuid = player.uuid;
         int page = PlayerStateLists.getPage(uuid), previousPageSlot = 18, nextPageSlot = 26;
-        setTitle(player, name + page);
+        setTitle(player, name + page + ")");
 
         // AntiCheat Updates
-        add("§aSummary", this.getSummary(), new ItemStack(Material.CHEST), 46);
         int random = AlgebraUtils.randomInteger(1, 64);
         boolean dividedBy2 = random % 2 == 0;
-
-        // Live Customer Support
-        InventoryUtils.prepareDescription(lore, "Available via Discord Server");
-        lore.add("§7Download your favorite plugins");
-        lore.add("§7from our Discord server and save");
-        lore.add("§7time with our Auto Updater.");
-        int discordMemberCount = DiscordMemberCount.get();
-
-        if (discordMemberCount > 0) {
-            lore.add("");
-            lore.add((dividedBy2 ? "§2" : "§6") + discordMemberCount + " online Discord " + (discordMemberCount == 1 ? "member" : "members"));
-        }
-        add(
-                "§aAuto Updater",
-                lore,
-                new ItemStack(dividedBy2 ? Material.EMERALD_BLOCK : Material.GOLD_BLOCK, random),
-                48
-        );
 
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
@@ -121,7 +98,25 @@ public class MainMenu extends InventoryMenu {
         lore.add("");
         lore.add("§7Left click to §amanage checks§7.");
         lore.add("§7Right click to §creload the plugin's memory contents§7.");
-        add("§aConfiguration", lore, new ItemStack(MaterialUtils.get("crafting_table")), 50);
+        add("§aConfiguration", lore, new ItemStack(MaterialUtils.get("crafting_table")), 47);
+
+        // Live Customer Support
+        InventoryUtils.prepareDescription(lore, "Available via Discord Server");
+        lore.add("§7Download your favorite plugins");
+        lore.add("§7from our Discord server and save");
+        lore.add("§7time with our Auto Updater.");
+        int discordMemberCount = DiscordMemberCount.get();
+
+        if (discordMemberCount > 0) {
+            lore.add("");
+            lore.add((dividedBy2 ? "§2" : "§6") + discordMemberCount + " online Discord " + (discordMemberCount == 1 ? "member" : "members"));
+        }
+        add(
+                "§aAuto Updater",
+                lore,
+                new ItemStack(dividedBy2 ? Material.EMERALD_BLOCK : Material.GOLD_BLOCK, random),
+                49
+        );
 
         // Compatibilities
         InventoryUtils.prepareDescription(lore, "Local Functionality");
@@ -139,7 +134,7 @@ public class MainMenu extends InventoryMenu {
                 lore.add("§a" + compatibility.toString());
             }
         }
-        add("§aCompatibilities", lore, new ItemStack(MaterialUtils.get("enchanting_table")), 52);
+        add("§aCompatibilities", lore, new ItemStack(MaterialUtils.get("enchanting_table")), 51);
 
         // Player List
         PlayerStateLists.fill(uuid, inventory);
@@ -244,85 +239,4 @@ public class MainMenu extends InventoryMenu {
         return true;
     }
 
-    private List<String> getSummary() {
-        int arraySize = 20;
-        List<String> array = new ArrayList<>(arraySize),
-                statisticsArray = new ArrayList<>(arraySize);
-        StatisticalProgress object = ResearchEngine.getProgress();
-        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
-        double players = playerProfiles.size(); // purposely double to help with the divisions
-
-        if (players > 0) {
-            Collection<SpartanPlayer> staffOnline = object.getStaffOnline();
-            int hackers = ResearchEngine.getHackers().size(),
-                    suspectedPlayers = ResearchEngine.getSuspectedPlayers().size(),
-                    legitimates = ResearchEngine.getLegitimatePlayers().size(),
-                    staffOnlineAmount = staffOnline.size();
-
-            // Separator
-
-            if (hackers > 0) {
-                statisticsArray.add("§c" + AlgebraUtils.integerRound((hackers / players) * 100.0) + "§r§c% §7of players are §chackers");
-            }
-            if (suspectedPlayers > 0) {
-                statisticsArray.add("§c" + AlgebraUtils.integerRound((suspectedPlayers / players) * 100.0) + "§r§c% §7of players are §csuspected");
-            }
-            if (legitimates > 0) {
-                statisticsArray.add("§c" + AlgebraUtils.integerRound((legitimates / players) * 100.0) + "§r§c% §7of players are §clegitimate");
-            }
-            if (object.kicks > 0
-                    || object.warnings > 0
-                    || object.punishments > 0) {
-                statisticsArray.add("§c" + object.kicks + " §r§c" + (object.kicks == 1 ? "kick" : "kicks")
-                        + "§7, §c" + object.warnings + " §r§c" + (object.warnings == 1 ? "warning" : "warnings")
-                        + " §7& §c" + object.punishments + " §r§c" + (object.punishments == 1 ? "punishment" : "punishments")
-                        + " §7executed");
-            }
-            if (object.mines > 0) {
-                statisticsArray.add("§c" + object.mines + " ore " + (object.mines == 1 ? "block" : "§r§cblocks") + " have been §cmined");
-            }
-            if (staffOnlineAmount > 0) {
-                int counter = 10;
-
-                if (!statisticsArray.isEmpty()) {
-                    statisticsArray.add("");
-                }
-                statisticsArray.add("§c" + staffOnlineAmount + " §7staff " + (staffOnlineAmount == 1 ? "player is" : "players are") + " §conline§8:");
-
-                if (staffOnlineAmount > counter) {
-                    counter = 0;
-
-                    for (SpartanPlayer player : staffOnline) {
-                        statisticsArray.add("§c" + player.name);
-                        counter++;
-
-                        if (counter == 10) {
-                            break;
-                        }
-                    }
-                } else {
-                    for (SpartanPlayer player : staffOnline) {
-                        statisticsArray.add("§c" + player.name);
-                    }
-                }
-            }
-        }
-
-        // Separator
-        InventoryUtils.prepareDescription(array, "Important Information");
-
-        // Separator
-        if (players > 0.0) {
-            array.add("§7Data from §4" + ((int) players) + " stored " + (players == 1 ? "player" : "players") + "§8:");
-        } else {
-            array.add("§7Data from §4stored players§8:");
-        }
-
-        if (!statisticsArray.isEmpty()) {
-            array.addAll(statisticsArray);
-        } else {
-            array.add("§7" + PlayerStateLists.noDataAvailable);
-        }
-        return array;
-    }
 }

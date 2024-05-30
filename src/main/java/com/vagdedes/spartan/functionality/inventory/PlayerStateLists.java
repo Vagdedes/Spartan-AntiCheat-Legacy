@@ -5,6 +5,7 @@ import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.inventory.Inventory;
@@ -99,10 +100,26 @@ public class PlayerStateLists {
 
         for (String title : menuList) {
             int listSize, page = getPage(uuid), skip = ((page - 1) * limit);
+            int players = ResearchEngine.getPlayerProfiles().size();
+            List<PlayerProfile> hackers = ResearchEngine.getHackers(),
+                    suspectedPlayers = ResearchEngine.getSuspectedPlayers(),
+                    legitimates = ResearchEngine.getLegitimatePlayers();
+            String hackerString, suspectedString, legitimateString;
 
+            // Separator
+
+            if (players > 0) {
+                hackerString = " §8(§6" + AlgebraUtils.integerRound((hackers.size() / (double) players) * 100.0) + "% §7of players§8)";
+                suspectedString = " §8(§6" + AlgebraUtils.integerRound((suspectedPlayers.size() / (double) players) * 100.0) + "% §7of players§8)";
+                legitimateString = " §8(§6" + AlgebraUtils.integerRound((legitimates.size() / (double) players) * 100.0) + "% §7of players§8)";
+            } else {
+                hackerString = "";
+                suspectedString = "";
+                legitimateString = "";
+            }
             switch (title) {
-                case hackerPlayers:
-                    List<PlayerProfile> playerProfiles = subList(ResearchEngine.getHackers(), skip, skip + limit);
+                case PlayerStateLists.hackerPlayers:
+                    List<PlayerProfile> playerProfiles = subList(hackers, skip, skip + limit);
 
                     if ((listSize = playerProfiles.size()) > 0) {
                         for (PlayerProfile playerProfile : playerProfiles) {
@@ -115,7 +132,7 @@ public class PlayerStateLists {
                                 for (Enums.HackType hackType : evidenceDetails) {
                                     lore.add("§4" + hackType.getCheck().getName());
                                 }
-                                fill(title, inventory, playerProfile, lore, freeSlots[slotPosition]);
+                                fill(title + hackerString, inventory, playerProfile, lore, freeSlots[slotPosition]);
                                 slotPosition++;
                             } else {
                                 listSize--;
@@ -123,8 +140,8 @@ public class PlayerStateLists {
                         }
                     }
                     break;
-                case suspectedPlayers:
-                    playerProfiles = subList(ResearchEngine.getSuspectedPlayers(), skip, skip + limit);
+                case PlayerStateLists.suspectedPlayers:
+                    playerProfiles = subList(suspectedPlayers, skip, skip + limit);
 
                     if ((listSize = playerProfiles.size()) > 0) {
                         for (PlayerProfile playerProfile : playerProfiles) {
@@ -137,7 +154,7 @@ public class PlayerStateLists {
                                 for (Enums.HackType hackType : evidenceDetails) {
                                     lore.add("§4" + hackType.getCheck().getName());
                                 }
-                                fill(title, inventory, playerProfile, lore, freeSlots[slotPosition]);
+                                fill(title + suspectedString, inventory, playerProfile, lore, freeSlots[slotPosition]);
                                 slotPosition++;
                             } else {
                                 listSize--;
@@ -145,8 +162,8 @@ public class PlayerStateLists {
                         }
                     }
                     break;
-                case legitimatePlayers:
-                    playerProfiles = subList(ResearchEngine.getLegitimatePlayers(), skip, skip + limit);
+                case PlayerStateLists.legitimatePlayers:
+                    playerProfiles = subList(legitimates, skip, skip + limit);
 
                     if ((listSize = playerProfiles.size()) > 0) {
                         for (PlayerProfile playerProfile : playerProfiles) {
@@ -160,7 +177,7 @@ public class PlayerStateLists {
                                     lore.add("§4" + hackType.getCheck().getName());
                                 }
                             }
-                            fill(title, inventory, playerProfile, lore, freeSlots[slotPosition]);
+                            fill(title + legitimateString, inventory, playerProfile, lore, freeSlots[slotPosition]);
                             slotPosition++;
                         }
                     }

@@ -38,7 +38,6 @@ public class ResearchEngine {
     private static boolean enoughData = false;
 
     public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.JAVA, Enums.DataType.BEDROCK};
-    private static StatisticalProgress statisticalProgress = new StatisticalProgress();
 
     private static final Map<String, PlayerProfile> playerProfiles
             = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
@@ -144,12 +143,6 @@ public class ResearchEngine {
             }
         }
         return -1;
-    }
-
-    // Separator
-
-    public static StatisticalProgress getProgress() {
-        return statisticalProgress;
     }
 
     // Separator
@@ -638,16 +631,12 @@ public class ResearchEngine {
             Enums.HackType[] hackTypes = Enums.HackType.values();
             Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
             List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();
-            int mines = 0, kicks = 0, warnings = 0, punishments = 0;
+            int mines = 0;
             ViolationAnalysis.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
                 playerProfile.evidence.judge();
-                PunishmentHistory punishmentHistory = playerProfile.punishmentHistory;
                 mines += playerProfile.getOverallMiningHistory().getMines();
-                kicks += punishmentHistory.getKicks();
-                warnings += punishmentHistory.getWarnings();
-                punishments += punishmentHistory.getPunishments();
             }
 
             // Separator
@@ -657,13 +646,6 @@ public class ResearchEngine {
             if (!staffOnline.isEmpty()) {
                 staffOnline.removeIf(player -> !Permissions.isStaff(player));
             }
-            statisticalProgress = new StatisticalProgress(
-                    mines,
-                    kicks,
-                    warnings,
-                    punishments,
-                    staffOnline
-            );
 
             // Separator
 
@@ -766,7 +748,6 @@ public class ResearchEngine {
                 averageMining.clear();
             }
         } else { // We clear because there are no players
-            statisticalProgress = new StatisticalProgress();
             averageMining.clear();
             ViolationAnalysis.clear();
 

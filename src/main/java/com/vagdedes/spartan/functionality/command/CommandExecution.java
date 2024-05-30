@@ -56,7 +56,7 @@ public class CommandExecution implements CommandExecutor {
             ClickableMessage.sendURL(
                     sender,
                     command,
-                    "Support us on Patreon and get Benefits",
+                    "Click to learn how Detection Slots work!",
                     "https://www.idealistic.ai/patreon"
             );
             sender.sendMessage("§8§l<> §7Required command argument");
