@@ -22,11 +22,6 @@ public class JarVerification {
     private static final String name = Register.plugin.getName();
     public static final boolean enabled = AlgebraUtils.validInteger("%%__RESOURCE__%%");
 
-    private static final int
-            two = 2,
-            nameLength = name.length();
-    public static double version = -((5 * ((((nameLength * (nameLength / two)) + Math.pow(two, two)) * two) * two)) + (10 * 3) + 4.0);
-
     static {
         if (!enabled) {
             SpartanBukkit.connectionThread.execute(() -> {
@@ -52,7 +47,7 @@ public class JarVerification {
             if (!b) {
                 valid = b;
             }
-        }), delay * two);
+        }), delay * 2);
 
         // Separator
 
@@ -62,7 +57,7 @@ public class JarVerification {
             if (!valid && isSupplied()) {
                 Register.disablePlugin();
             }
-        }, delay * (two + 1L));
+        }, delay * 3L);
     }
 
     private static boolean isSupplied() {
@@ -130,13 +125,13 @@ public class JarVerification {
                             String[] split = ip.split("\\.");
 
                             if (split.length == 4) {
-                                ip = split[two - two] + dot + split[1] + dot + split[two] + dot + "XXX";
+                                ip = split[0] + dot + split[1] + dot + split[2] + dot + "XXX";
                             } else {
                                 split = ip.split(":");
 
                                 if (split.length == 8) {
                                     String hidden = "XXXX";
-                                    ip = split[two - two] + dot + split[1] + dot + split[two] + dot + split[3] + dot + split[two * 2] + dot + split[5] + dot + hidden + dot + hidden;
+                                    ip = split[0] + dot + split[1] + dot + split[2] + dot + split[3] + dot + split[4] + dot + split[5] + dot + hidden + dot + hidden;
                                 } else {
                                     ip = "Unknown";
                                 }
