@@ -323,7 +323,7 @@ public class LiveViolation {
 
                     if (performed) {
                         player.getProfile().punishmentHistory.increasePunishments(player, StringUtils.toString(commands, "\n"));
-                    } else if (found && AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-cancelled-punishment-event")) {
+                    } else if (found && AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-cancelled-punishment-event", 60 * 60)) {
                         String notification = "Just a reminder that the punishments of the '" + hackType + "' check were just cancelled via code by a third-party plugin."
                                 + " Please do not reach support for this as it relates only to your server.";
                         List<Plugin> dependentPlugins = PluginUtils.getDependentPlugins(Register.plugin.getName());
@@ -339,7 +339,7 @@ public class LiveViolation {
                         AwarenessNotifications.forcefullySend(notification);
                     }
                 }
-            } else if (AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-no-punishment-commands")) {
+            } else if (AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-no-punishment-commands", 60 * 60)) {
                 AwarenessNotifications.forcefullySend("Just a reminder that you have set no punishment commands for the '" + hackType + "' check.");
             }
         }

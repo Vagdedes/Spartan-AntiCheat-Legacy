@@ -266,8 +266,7 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        if (Config.settings.getBoolean("Important.refresh_inventory_menu")
-                && cooldowns.canDo("")) {
+        if (cooldowns.canDo("")) {
             cooldowns.add("", 1);
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 

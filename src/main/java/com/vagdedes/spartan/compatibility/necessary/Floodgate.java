@@ -30,7 +30,7 @@ public class Floodgate {
 
             if (!players.isEmpty()) {
                 for (SpartanPlayer p : players) {
-                    if (AwarenessNotifications.canSend(p.uuid, "floodgate")) {
+                    if (AwarenessNotifications.canSend(p.uuid, "floodgate", 0)) {
                         p.sendMessage(message);
                     }
                 }

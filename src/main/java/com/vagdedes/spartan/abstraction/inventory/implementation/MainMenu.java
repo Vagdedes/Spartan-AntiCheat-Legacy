@@ -38,33 +38,31 @@ public class MainMenu extends InventoryMenu {
     }
 
     public static void refresh() {
-        if (Config.settings.getBoolean("Important.refresh_inventory_menu")) {
-            Runnable runnable = () -> {
-                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+        Runnable runnable = () -> {
+            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-                if (!players.isEmpty()) {
-                    for (SpartanPlayer p : players) {
-                        SpartanBukkit.runTask(p, () -> {
-                            Player n = p.getInstance();
+            if (!players.isEmpty()) {
+                for (SpartanPlayer p : players) {
+                    SpartanBukkit.runTask(p, () -> {
+                        Player n = p.getInstance();
 
-                            if (n != null) {
-                                String title = n.getOpenInventory().getTitle();
+                        if (n != null) {
+                            String title = n.getOpenInventory().getTitle();
 
-                                if (title.startsWith(name)) {
-                                    DiscordMemberCount.ignore();
-                                    InteractiveInventory.mainMenu.open(p);
-                                }
+                            if (title.startsWith(name)) {
+                                DiscordMemberCount.ignore();
+                                InteractiveInventory.mainMenu.open(p);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-            };
-
-            if (SpartanBukkit.isSynchronised()) {
-                runnable.run();
-            } else {
-                SpartanBukkit.transferTask(runnable);
             }
+        };
+
+        if (SpartanBukkit.isSynchronised()) {
+            runnable.run();
+        } else {
+            SpartanBukkit.transferTask(runnable);
         }
     }
 
@@ -81,9 +79,14 @@ public class MainMenu extends InventoryMenu {
 
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
-        lore.add("§7Detection Slots§8: §a" + (CloudBase.getDetectionSlots() <= 0
-                ? "Unlimited"
-                : String.valueOf(CloudBase.getDetectionSlots())));
+        int slots = CloudBase.getDetectionSlots();
+
+        if (slots <= 0) {
+            lore.add("§7Detection Slots§8: §aUnlimited");
+        } else {
+            int players = SpartanBukkit.getPlayerCount();
+            lore.add("§7Detection Slots§8: §a" + slots + " (" + Math.max(slots - players, 0) + " remaining)");
+        }
         lore.add("§7Detections Available§8: "
                 + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.JAVA) ? "§a" : "§c") + Enums.DataType.JAVA
                 + " §8/ "

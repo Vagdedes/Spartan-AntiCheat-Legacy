@@ -321,6 +321,13 @@ public class CloudBase {
                             }
                         }
                     }
+                    List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+
+                    if (!players.isEmpty()) {
+                        for (SpartanPlayer p : players) {
+                            SpartanEdition.attemptNotification(p);
+                        }
+                    }
                 });
             }
 

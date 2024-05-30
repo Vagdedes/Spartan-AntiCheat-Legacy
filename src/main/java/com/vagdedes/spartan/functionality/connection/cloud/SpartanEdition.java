@@ -24,6 +24,7 @@ public class SpartanEdition {
             "Spartan",
     };
     public static final String patreonURL = "https://www.idealistic.ai/patreon";
+    private static final int notificationCooldown = 60 * 60;
     private static final String
             type = "{type}",
             product = "{product}",
@@ -89,7 +90,7 @@ public class SpartanEdition {
 
     // Notifications
 
-    public static void attemptNotification(SpartanPlayer player) {
+    public static boolean attemptNotification(SpartanPlayer player) {
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
         if (players.size() <= CloudBase.getDetectionSlots()
@@ -121,7 +122,7 @@ public class SpartanEdition {
                                     if (bedrockIsMissingDetection == otherPlayer.bedrockPlayer) {
                                         notifyCache = true;
                                         sendVersionNotification(player, missingDetection);
-                                        return;
+                                        return true;
                                     } else {
                                         checkedProfiles.add(player.getProfile());
                                     }
@@ -143,7 +144,7 @@ public class SpartanEdition {
                                         if (bedrockIsMissingDetection == profile.isBedrockPlayer()) {
                                             notifyCache = true;
                                             sendVersionNotification(player, missingDetection);
-                                            return;
+                                            return true;
                                         }
                                     }
                                 }
@@ -153,6 +154,7 @@ public class SpartanEdition {
                 }
             }
         }
+        return false;
     }
 
     private static void sendVersionNotification(SpartanPlayer player, Enums.DataType dataType) {
@@ -172,7 +174,7 @@ public class SpartanEdition {
                             )
             );
 
-            if (AwarenessNotifications.canSend(player.uuid, "alternative-version")) {
+            if (AwarenessNotifications.canSend(player.uuid, "alternative-version", notificationCooldown)) {
                 player.sendImportantMessage(message);
             }
         }
@@ -182,7 +184,7 @@ public class SpartanEdition {
         if (Permissions.isStaff(player)) {
             String message = AwarenessNotifications.getNotification(limitNotificationMessage);
 
-            if (AwarenessNotifications.canSend(player.uuid, "limit-notification")) {
+            if (AwarenessNotifications.canSend(player.uuid, "limit-notification", notificationCooldown)) {
                 player.sendImportantMessage(message);
                 return true;
             }

@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
-import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -45,14 +44,16 @@ public class CommandExecution implements CommandExecutor {
         if (!isPlayer || Permissions.has((Player) sender)) {
             String v = API.getVersion();
             sender.sendMessage("");
-            String detectionSlots = CloudBase.getDetectionSlots() <= 0
-                    ? "Unlimited"
-                    : String.valueOf(CloudBase.getDetectionSlots()),
-                    command = "§2" + SpartanEdition.getProductName()
-                            + " §8[§7(§cDetection Slots: " + detectionSlots + "§7)§8, "
-                            + "§7(§fVersion: " + v + "§7)§8, "
-                            + "§7(§fID: " + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "§7)§8]";
+            int slots = CloudBase.getDetectionSlots();
+            String command = "§2" + SpartanEdition.getProductName() + " §a" + v;
 
+            if (slots <= 0) {
+                command += "\n§8[§eDetection Slots§7: §6Unlimited§8]";
+            } else {
+                int players = SpartanBukkit.getPlayerCount();
+                command += "\n§8[§4Detection Slots§7: §c" + slots
+                        + " (" + Math.max(slots - players, 0) + " remaining)§8]";
+            }
             ClickableMessage.sendURL(
                     sender,
                     command,
@@ -195,7 +196,11 @@ public class CommandExecution implements CommandExecutor {
             if (args.length == 0) {
                 if (isPlayer) {
                     if (NPCManager.supported && Permissions.isStaff(player)) {
-                        NPCManager.create(player);
+                        if (Config.settings.getBoolean("Important.enable_npc")) {
+                            NPCManager.create(player);
+                        } else {
+                            InteractiveInventory.mainMenu.open(player, false);
+                        }
                     } else {
                         InteractiveInventory.mainMenu.open(player, false);
                     }

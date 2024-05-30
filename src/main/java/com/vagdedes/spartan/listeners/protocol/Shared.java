@@ -7,10 +7,10 @@ import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -48,7 +48,17 @@ public class Shared {
         }
         // System
         MaximumCheckedPlayers.add(p);
-        SpartanEdition.attemptNotification(p);
+
+        if (!SpartanEdition.attemptNotification(p)
+                && Config.settings.getBoolean("Important.enable_watermark")) {
+            p.sendMessage("");
+            AwarenessNotifications.forcefullySend(
+                    p,
+                    "\nThis server is protected by the Spartan AntiCheat",
+                    false
+            );
+            p.sendMessage("");
+        }
 
         // Detections
         p.getExecutor(Enums.HackType.Speed).handle(false, e);

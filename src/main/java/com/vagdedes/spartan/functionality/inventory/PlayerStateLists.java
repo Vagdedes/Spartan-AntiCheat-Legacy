@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.inventory;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.management.Cache;
-import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -100,7 +99,7 @@ public class PlayerStateLists {
 
         for (String title : menuList) {
             int listSize, page = getPage(uuid), skip = ((page - 1) * limit);
-            int players = ResearchEngine.getPlayerProfiles().size();
+            double players = ResearchEngine.getPlayerProfiles().size();
             List<PlayerProfile> hackers = ResearchEngine.getHackers(),
                     suspectedPlayers = ResearchEngine.getSuspectedPlayers(),
                     legitimates = ResearchEngine.getLegitimatePlayers();
@@ -109,9 +108,9 @@ public class PlayerStateLists {
             // Separator
 
             if (players > 0) {
-                hackerString = " §8(§6" + AlgebraUtils.integerRound((hackers.size() / (double) players) * 100.0) + "% §7of players§8)";
-                suspectedString = " §8(§6" + AlgebraUtils.integerRound((suspectedPlayers.size() / (double) players) * 100.0) + "% §7of players§8)";
-                legitimateString = " §8(§6" + AlgebraUtils.integerRound((legitimates.size() / (double) players) * 100.0) + "% §7of players§8)";
+                hackerString = " §8(§6" + AlgebraUtils.integerRound((hackers.size() / players) * 100.0) + "% §7of players§8)";
+                suspectedString = " §8(§6" + AlgebraUtils.integerRound((suspectedPlayers.size() / players) * 100.0) + "% §7of players§8)";
+                legitimateString = " §8(§6" + AlgebraUtils.integerRound((legitimates.size() / players) * 100.0) + "% §7of players§8)";
             } else {
                 hackerString = "";
                 suspectedString = "";
@@ -188,21 +187,15 @@ public class PlayerStateLists {
             }
 
             if (listSize != limit) {
-                boolean option = Config.settings.getBoolean("Important.inventory_menu_empty_heads");
-
-                if (option) {
-                    InventoryUtils.prepareDescription(lore, title);
-                    lore.add("§7" + noDataAvailable);
-                    lore.add("");
-                    lore.add("§cEmpty items like this will be filled with");
-                    lore.add("§cuseful information about your players");
-                    lore.add("§cas Spartan learns more about your server.");
-                }
+                InventoryUtils.prepareDescription(lore, title);
+                lore.add("§7" + noDataAvailable);
+                lore.add("");
+                lore.add("§cEmpty items like this will be filled with");
+                lore.add("§cuseful information about your players");
+                lore.add("§cas Spartan learns more about your server.");
 
                 for (int i = listSize; i < limit; i++) {
-                    if (option) {
-                        InventoryUtils.add(inventory, inactiveColour + "Empty", lore, InventoryUtils.getHead(), freeSlots[slotPosition]);
-                    }
+                    InventoryUtils.add(inventory, inactiveColour + "Empty", lore, InventoryUtils.getHead(), freeSlots[slotPosition]);
                     slotPosition++;
                 }
             }
