@@ -57,10 +57,20 @@ public class CommandExecution implements CommandExecutor {
                     sender,
                     command,
                     "Click to learn how Detection Slots work!",
-                    "https://www.idealistic.ai/patreon"
+                    SpartanEdition.patreonURL
             );
-            sender.sendMessage("§8§l<> §7Required command argument");
-            sender.sendMessage("§8§l[] §7Optional command argument");
+            ClickableMessage.sendURL(
+                    sender,
+                    "§8§l<> §7Required command argument",
+                    "Click to learn how Detection Slots work!",
+                    SpartanEdition.patreonURL
+            );
+            ClickableMessage.sendURL(
+                    sender,
+                    "§8§l[] §7Optional command argument",
+                    "Click to learn how Detection Slots work!",
+                    SpartanEdition.patreonURL
+            );
             return true;
         }
         sender.sendMessage(Config.messages.getColorfulString("unknown_command"));

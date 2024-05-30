@@ -23,13 +23,14 @@ public class SpartanEdition {
             StringUtils.decodeBase64("U3BhcnRhbkJlZHJvY2tFZGl0aW9u"),
             "Spartan",
     };
+    public static final String patreonURL = "https://www.idealistic.ai/patreon";
     private static final String
             type = "{type}",
             product = "{product}",
             versionNotificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections."
                     + (SpartanBukkit.canAdvertise ? "\nClick §n" + product + " §rto §lfix this§r." : ""),
             limitNotificationMessage = "\nHey, just a heads up! You have more online players than the anti-cheat can check at once."
-                    + "\nClick §nhttps://www.idealistic.ai/patreon§r to learn how §lDetection Slots §rwork.";
+                    + "\nClick §n" + patreonURL + "§r to learn how §lDetection Slots §rwork.";
     private static boolean
             notifyCache = false,
             alternativeVersion = false;

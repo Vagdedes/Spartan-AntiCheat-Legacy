@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -80,6 +81,13 @@ public class MainMenu extends InventoryMenu {
 
         // Configuration
         InventoryUtils.prepareDescription(lore, "Plugin Management");
+        lore.add("§7Detection Slots§8: §a" + (CloudBase.getDetectionSlots() <= 0
+                ? "Unlimited"
+                : String.valueOf(CloudBase.getDetectionSlots())));
+        lore.add("§7Detections Available§8: "
+                + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.JAVA) ? "§a" : "§c") + Enums.DataType.JAVA
+                + " §8/ "
+                + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.BEDROCK) ? "§a" : "§c") + Enums.DataType.BEDROCK);
         Runtime runtime = Runtime.getRuntime();
 
         if (!MultiVersion.unknownFork || !MultiVersion.other) {
@@ -91,14 +99,10 @@ public class MainMenu extends InventoryMenu {
                 + " - " + (tps >= TPS.excellent ? "Excellent" : tps >= TPS.good ? "Good" : tps >= TPS.minimum ? "Mediocre" : "Unstable"));
         long maxMemory = runtime.maxMemory();
         lore.add("§7Server Memory Usage§8: §a" + AlgebraUtils.cut(((maxMemory - runtime.freeMemory()) / ((double) maxMemory)) * 100.0, 2) + "%");
-        lore.add("§7Detections Available§8: "
-                + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.JAVA) ? "§a" : "§c") + Enums.DataType.JAVA
-                + " §8/ "
-                + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.BEDROCK) ? "§a" : "§c") + Enums.DataType.BEDROCK);
         lore.add("");
         lore.add("§7Left click to §amanage checks§7.");
-        lore.add("§7Right click to §creload the plugin's memory contents§7.");
-        add("§aConfiguration", lore, new ItemStack(MaterialUtils.get("crafting_table")), 47);
+        lore.add("§7Right click to §clearn about Detection Slots§7.");
+        add("§aManagement", lore, new ItemStack(MaterialUtils.get("crafting_table")), 47);
 
         // Live Customer Support
         InventoryUtils.prepareDescription(lore, "Available via Discord Server");
@@ -192,20 +196,16 @@ public class MainMenu extends InventoryMenu {
                 }
             }
 
-        } else if (item.equals("Configuration")) {
+        } else if (item.equals("Management")) {
             if (!Permissions.has(player, Permission.MANAGE)) {
                 player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
                 if (clickType == ClickType.LEFT) {
                     InteractiveInventory.manageChecks.open(player);
                 } else if (clickType == ClickType.RIGHT) {
-                    if (!Permissions.has(player, Permission.RELOAD)) {
-                        player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
-                        return true;
-                    } else {
-                        Config.reload(player);
-                        player.sendInventoryCloseMessage(null);
-                    }
+                    player.sendInventoryCloseMessage("");
+                    player.sendMessage("§6Learn more about Detection Slots§8: §e§n" + SpartanEdition.patreonURL);
+                    player.sendMessage("");
                 }
             }
 
