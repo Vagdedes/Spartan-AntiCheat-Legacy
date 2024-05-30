@@ -11,6 +11,7 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.modules.PlayerStayEvent;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -166,6 +167,17 @@ public class Shared {
         if (p.getViolations(Enums.HackType.Velocity).prevent()) {
             e.setCancelled(true);
         }
+    }
+    public static void stay(PlayerStayEvent e) {
+        // ONLY WORK WITH PACKETS!!! ! !!! !
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+
+        if (p == null) {
+            return;
+        }
+
+        // Detections
+        p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
 
 }

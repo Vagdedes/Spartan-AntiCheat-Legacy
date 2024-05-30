@@ -24,6 +24,7 @@ public class Join extends PacketAdapter implements Listener {
             ProtocolStorage.playerAbilitiesContainer.put(event.getPlayer().getUniqueId(), new AbilitiesContainer(false, false, false));
             ProtocolStorage.spawnStatus.put(event.getPlayer().getUniqueId(), true);
             Move.positionManager.put(event.getPlayer(), new Location(event.getPlayer().getWorld(), 0, 0, 0));
+            Move.toggleSpawn.put(event.getPlayer(), true);
         }
     }
 

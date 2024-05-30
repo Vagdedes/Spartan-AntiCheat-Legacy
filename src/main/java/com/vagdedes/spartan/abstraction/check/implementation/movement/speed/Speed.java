@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
@@ -10,6 +11,7 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
+import com.vagdedes.spartan.listeners.protocol.modules.PlayerStayEvent;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
@@ -138,7 +140,7 @@ public class Speed extends CheckExecutor {
         float yR = (float) Math.toRadians(yaw);
         RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
         RayLine b = new RayLine(dx, dz);
-
+        Register.plugin.getLogger().info(yaw + " " + horizontal + " " + onAirID + " " + onGround);
         double wrappedYaw = Math.toDegrees(RayUtils.calculateRayLine(a));
         double deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
 
@@ -163,6 +165,13 @@ public class Speed extends CheckExecutor {
         if (player.movement.isSwimming()) {
             newRayRequest = true;
         }
+        if (player.getInventory().getBoots() != null) {
+            int e = player.getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
+            double v = (e + 1) * 0.4;
+            if (e > 0) {
+                if (multiply < v) multiply = v;
+            }
+        }
         if (dolphinEffect != null) if (multiply < 5) multiply = 5D;
         if (inLiquid) {
             yDiff = 0D;
@@ -183,7 +192,7 @@ public class Speed extends CheckExecutor {
                         if (hackType.getCheck().getBooleanOption("check_flying", true)
                                 && antiAbuseProcessor > 200) {
                             flag = "type: flying, speed: " + vertical
-                                    + ", speed-require: " + predictedVertical + ", air-tick: " + onFly;
+                                    + ", speed-require: " + predictedVertical + ", air-tick: " + onAir;
                             verticalVl = verticalVl - 3;
                             if (wrappedOnFly > 1) wrappedOnFly = wrappedOnFly - 1;
                             yDiff = 0D;
@@ -427,6 +436,13 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
+        if (object instanceof PlayerStayEvent) {
+            PlayerStayEvent event = (PlayerStayEvent) object;
+            if (event.isOnGround()) {
+                wrappedOnAir = 0;
+                wrappedOnFly = 0;
+            }
+        }
         if (object instanceof PlayerVelocityEvent) {
             if (!cancelled) {
                 PlayerVelocityEvent event = (PlayerVelocityEvent) object;

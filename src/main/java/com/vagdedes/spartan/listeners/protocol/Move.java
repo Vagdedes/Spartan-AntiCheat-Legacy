@@ -22,17 +22,16 @@ public class Move {
     public static Map<Player, Location> positionManager = new ConcurrentHashMap<>();
     public static Map<Player, Boolean> groundManager = new ConcurrentHashMap<>();
     public static Map<Player, RotationData> lastRotation = new ConcurrentHashMap<>();
+    public static Map<Player, Boolean> toggleSpawn = new ConcurrentHashMap<>();
 
 
     public static void registerPacketListeners(ProtocolManager protocolManager) {
         PacketListener serverSideListener = new PacketAdapter(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.POSITION) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                if (positionManager.containsKey(event.getPlayer())) {
+                if (positionManager.containsKey(event.getPlayer()) && !toggleSpawn.get(event.getPlayer())) {
                     positionManager.put(event.getPlayer(),
                                     positionManager.get(event.getPlayer()).add(readMovePacket(event)));
-                } else {
-                    positionManager.put(event.getPlayer(), readMovePacket(event));
                 }
             }
         };
@@ -55,8 +54,22 @@ public class Move {
                 || packet.getType() == PacketType.Play.Client.LOOK) {
             Location to = readMovePacket(event);
             double xz = to.getX() + to.getZ();
+            if (xz == 17) {
+                if (toggleSpawn.get(player)) {
+                    Move.positionManager.put(event.getPlayer(), new Location(event.getPlayer().getWorld(), 8.5, 0, 8.5));
+                    return;
+                }
+            } else if (xz == 0) {
+                if (toggleSpawn.get(player)) {
+                    Move.positionManager.put(event.getPlayer(), new Location(event.getPlayer().getWorld(), 0, 0, 0));
+                    return;
+                }
+            } else if (toggleSpawn.get(player)) {
+                toggleSpawn.put(player, false);
+                positionManager.put(player, to);
+                return;
+            }
             importRotation(player, to);
-            positionManager.putIfAbsent(player, to);
             Location from = positionManager.get(player);
             importRotation(player, from);
             boolean ground = packet.getBooleans().read(0);
@@ -64,13 +77,13 @@ public class Move {
             PlayerMoveEvent playerMoveEvent = new PlayerMoveEvent(
                     player, from, to
             );
-            // player.sendMessage(String.valueOf(playerMoveEvent.getTo().distance(playerMoveEvent.getFrom())));
             positionManager.put(player, to);
             Shared.move(playerMoveEvent);
             // Action
         } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())
                 || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {
             boolean ground = packet.getBooleans().read(0);
+            groundManager.put(player, ground);
         }
 
     }
