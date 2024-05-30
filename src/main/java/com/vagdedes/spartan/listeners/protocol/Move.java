@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.*;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
 import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
+import com.vagdedes.spartan.listeners.protocol.modules.PlayerStayEvent;
 import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Location;
@@ -84,6 +85,7 @@ public class Move {
                 || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {
             boolean ground = packet.getBooleans().read(0);
             groundManager.put(player, ground);
+            Shared.stay(new PlayerStayEvent(ground, player));
         }
 
     }
