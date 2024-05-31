@@ -251,7 +251,8 @@ public class CloudBase {
                                 Config.settings.clear();
                                 Config.messages.clear();
                                 Config.sql.refreshConfiguration();
-                                Config.compatibility.clear();
+                                Config.compatibility.clearCache();
+                                Config.compatibility.fastRefresh();
                                 Config.refreshFields(true);
                             }
                         }

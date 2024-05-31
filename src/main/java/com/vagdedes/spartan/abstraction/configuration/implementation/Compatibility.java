@@ -58,7 +58,7 @@ public class Compatibility {
         FILE_GUI("FileGUI"), FLOODGATE("Floodgate"),
         PROTOCOL_SUPPORT("ProtocolSupport");
 
-        private boolean enabled, forced, functional;
+        private boolean enabled, forced, functional, elseRunnable;
         private final String name;
 
         CompatibilityType(String name) {
@@ -66,6 +66,7 @@ public class Compatibility {
             this.enabled = false;
             this.forced = false;
             this.functional = false;
+            this.elseRunnable = false;
         }
 
         @Override
@@ -145,6 +146,9 @@ public class Compatibility {
         public void setFunctional(String[] pluginsOrClasses, CompatibilityType[] compatibilities,
                                   Runnable runnable, Runnable elseRunnable) {
             if (this.isEnabled()) {
+                if (this.functional) {
+                    return;
+                }
                 boolean function = this.isForced();
 
                 if (!function && pluginsOrClasses != null) {
@@ -189,6 +193,8 @@ public class Compatibility {
                 }
 
                 if (function) {
+                    this.elseRunnable = false;
+
                     if (runnable != null) {
                         try {
                             runnable.run();
@@ -203,11 +209,13 @@ public class Compatibility {
                 } else {
                     this.functional = false;
 
-                    if (elseRunnable != null) {
+                    if (!this.elseRunnable && elseRunnable != null) {
+                        this.elseRunnable = true;
                         elseRunnable.run();
                     }
                 }
-            } else if (elseRunnable != null) {
+            } else if (!this.elseRunnable && elseRunnable != null) {
+                this.elseRunnable = true;
                 elseRunnable.run();
             }
         }
@@ -393,9 +401,8 @@ public class Compatibility {
         return value;
     }
 
-    public void clear() {
+    public void clearCache() {
         bool.clear();
-        fastRefresh();
     }
 
     public void fastRefresh() {

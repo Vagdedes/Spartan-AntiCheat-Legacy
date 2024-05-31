@@ -168,7 +168,7 @@ public class Config {
             settings.clear();
             sql.refreshConfiguration();
             messages.clear();
-            compatibility.clear();
+            compatibility.clearCache();
             Wave.clearCache();
 
             // System

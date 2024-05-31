@@ -78,7 +78,6 @@ public class Move {
             );
             protocol.position = to;
             Shared.move(playerMoveEvent);
-            // Action
         } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())
                 || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {
             SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
