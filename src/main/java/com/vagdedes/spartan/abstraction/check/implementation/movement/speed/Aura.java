@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
-import com.vagdedes.spartan.functionality.tracking.RayLine;
+
+import com.vagdedes.spartan.utils.math.RayLine;
 
 public class Aura {
 
