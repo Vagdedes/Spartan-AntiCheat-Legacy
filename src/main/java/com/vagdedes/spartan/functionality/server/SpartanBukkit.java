@@ -179,6 +179,12 @@ public class SpartanBukkit {
         }
     }
 
+    public static void pushProtocol(Player player, SpartanProtocol protocol) {
+        synchronized (playerProtocol) {
+            playerProtocol.put(player.getUniqueId(), protocol);
+        }
+    }
+
     // Separator
 
     public static Object runDelayedTask(SpartanPlayer player, Runnable runnable, long start) {
