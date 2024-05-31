@@ -1,13 +1,9 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
-import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -19,90 +15,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 
-public class EventsHandler1 implements Listener {
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Leave(PlayerQuitEvent e) {
-        SpartanPlayer p = SpartanBukkit.removePlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
-        // Features
-        MaximumCheckedPlayers.remove(p);
-
-        // Utils
-        PlayerLimitPerIP.remove(p);
-
-        // Features
-        ChatProtection.remove(p);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Death(PlayerDeathEvent e) {
-        Player n = e.getEntity();
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-        if (p == null) {
-            return;
-        }
-        // Detections
-        p.getExecutor(Enums.HackType.AutoRespawn).run(false);
-        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
-
-        // Objects
-        Player killer = n.getKiller();
-
-        if (killer != null && killer.isOnline()) {
-            SpartanPlayer p2 = SpartanBukkit.getPlayer(killer);
-
-            if (p2 != null) {
-                PlayerFight fight = p.getProfile().playerCombat.getFight(p2);
-
-                if (fight != null) {
-                    fight.setWinner(p2);
-                }
-            }
-        }
-        p.resetTrackers();
-        p.movement.setDetectionLocation(true);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Respawn(PlayerRespawnEvent e) {
-        Player n = e.getPlayer();
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-        if (p == null) {
-            return;
-        }
-
-        // Objects
-        p.movement.setDetectionLocation(true);
-
-        // Protections
-        p.resetTrackers();
-
-        // Detections
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Animation(PlayerAnimationEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
-        // Detections
-        p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
-    }
+public class Event_Combat implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Damage(EntityDamageByEntityEvent e) {
@@ -189,6 +104,62 @@ public class EventsHandler1 implements Listener {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Damage(EntityDamageEvent e) {
+        Entity entity = e.getEntity();
+
+        if (entity instanceof Player) {
+            Player n = (Player) entity;
+            SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+            if (p == null) {
+                return;
+            }
+            // Objects
+            p.addReceivedDamage(e);
+
+            // Detections
+            p.getExecutor(Enums.HackType.NoFall).handle(e.isCancelled(), e.getCause());
+        } else {
+            Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    ? entity.getPassengers().toArray(new Entity[0])
+                    : new Entity[]{entity.getPassenger()};
+
+            if (passengers.length > 0) {
+                for (Entity passenger : passengers) {
+                    if (passenger instanceof Player) {
+                        Player n = (Player) passenger;
+                        SpartanPlayer p = SpartanBukkit.getPlayer(n);
+
+                        if (p != null) {
+                            // Objects
+                            p.addReceivedDamage(e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void BowShot(EntityShootBowEvent e) {
+        Entity entity = e.getEntity();
+
+        if (entity instanceof Player) {
+            SpartanPlayer p = SpartanBukkit.getPlayer((Player) e.getEntity());
+
+            if (p == null) {
+                return;
+            }
+            // Detections
+            p.getExecutor(Enums.HackType.FastBow).handle(e.isCancelled(), e);
+
+            if (p.getViolations(Enums.HackType.FastBow).prevent()) {
+                e.setCancelled(true);
             }
         }
     }

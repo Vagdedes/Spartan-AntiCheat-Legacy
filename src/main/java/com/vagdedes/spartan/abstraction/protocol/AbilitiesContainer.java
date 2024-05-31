@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.player.protocol;
+package com.vagdedes.spartan.abstraction.protocol;
 
 public class AbilitiesContainer {
 

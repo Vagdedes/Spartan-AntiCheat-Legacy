@@ -3,10 +3,8 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
-import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.Piston;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -14,15 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class EventsHandler4 implements Listener {
+public class Event_Inventory implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemDrop(PlayerDropItemEvent e) {
@@ -39,12 +34,6 @@ public class EventsHandler4 implements Listener {
         if (p.getViolations(Enums.HackType.ItemDrops).prevent()) {
             e.setCancelled(true);
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void PistonEvent(BlockPistonExtendEvent e) {
-        // Handlers
-        Piston.run(e.getBlock(), e.getBlocks());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -80,18 +69,6 @@ public class EventsHandler4 implements Listener {
                 }
             }
         }
-    }
-
-    @EventHandler
-    private void PluginEnable(PluginEnableEvent e) {
-        // System
-        Config.compatibility.fastRefresh();
-    }
-
-    @EventHandler
-    private void PluginDisable(PluginDisableEvent e) {
-        // System
-        Config.compatibility.fastRefresh();
     }
 
 }

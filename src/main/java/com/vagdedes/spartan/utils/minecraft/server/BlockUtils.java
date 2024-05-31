@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.utils.minecraft.server;
 
-import com.vagdedes.spartan.abstraction.player.SpartanBlock;
-import com.vagdedes.spartan.abstraction.player.SpartanLocation;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.world.SpartanBlock;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import org.bukkit.Material;
 import org.bukkit.World;

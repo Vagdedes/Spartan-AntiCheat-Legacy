@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanLocation;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

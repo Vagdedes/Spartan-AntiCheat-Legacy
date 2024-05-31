@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.npc;
 
-import com.vagdedes.spartan.abstraction.player.SpartanLocation;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.server.InventoryUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;

@@ -17,7 +17,7 @@ import com.vagdedes.spartan.compatibility.necessary.Floodgate;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.listeners.bukkit.EventHandler_Shared;
+import com.vagdedes.spartan.listeners.bukkit.Event_Shared;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
@@ -355,7 +355,7 @@ public class Compatibility {
         );
         CompatibilityType.PROTOCOL_LIB.setFunctional(
                 ProtocolLib::run,
-                () -> Register.enable(new EventHandler_Shared(), EventHandler_Shared.class)
+                () -> Register.enable(new Event_Shared(), Event_Shared.class)
         );
         CompatibilityType.MY_PET.setFunctional();
         CompatibilityType.RAMPEN_DRILLS.setFunctional(

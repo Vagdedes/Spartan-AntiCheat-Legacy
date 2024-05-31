@@ -3,9 +3,9 @@ package com.vagdedes.spartan.listeners.protocol;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
-import com.vagdedes.spartan.abstraction.player.SpartanLocation;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -19,8 +19,11 @@ import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -174,39 +177,52 @@ public class Shared {
         }
     }
 
-    public static void stay(PlayerStayEvent e) {
-        // ONLY WORK WITH PACKETS!!! ! !!! !
+    public static void stay(PlayerStayEvent e) { // Packets Only
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         if (p == null) {
             return;
         }
-
         // Detections
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
-    public static void attack(PlayerAttackEvent e) {
+
+    public static void damage(EntityDamageByEntityEvent e) {
+        EntityDamageEvent.DamageCause cause = e.getCause();
+        if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            Entity attacker = e.getDamager();
+
+            if (attacker instanceof Player) {
+                Entity entity = e.getEntity();
+
+                if (entity instanceof LivingEntity) {
+                    attack(new PlayerAttackEvent(
+                            (Player) attacker,
+                            (LivingEntity) entity,
+                            e.isCancelled())
+                    );
+                }
+            }
+        }
+    }
+
+    static void attack(PlayerAttackEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         if (p == null) {
             return;
         }
-
         double[] utility = CombatUtils.get_X_Y_Distance(p, (LivingEntity) e.getTarget());
-
         boolean cancelled = e.isCancelled();
-        // Detections
+
         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
 
         if (utility != null) {
-            Object[] objects = new Object[]{e.getTarget(), utility};
-            p.getExecutor(Enums.HackType.KillAura).run(cancelled);
-            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
-            p.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
+            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
         }
-
     }
 
 }

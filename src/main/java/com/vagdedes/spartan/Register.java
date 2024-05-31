@@ -51,17 +51,20 @@ public class Register extends JavaPlugin {
         SuspicionNotifications.run();
 
         // Listeners (More may be registered in compatibilities)
-        enable(new EventsHandler1(), EventsHandler1.class);
-        enable(new EventsHandler2(), EventsHandler2.class);
-        enable(new EventsHandler3(), EventsHandler3.class);
-        enable(new EventsHandler4(), EventsHandler4.class);
-        enable(new EventsHandler5(), EventsHandler5.class);
+        enable(new Event_Status(), Event_Status.class);
+        enable(new Event_Vehicle(), Event_Vehicle.class);
+        enable(new Event_Chat(), Event_Chat.class);
+        enable(new Event_Plugin(), Event_Plugin.class);
+        enable(new Event_World(), Event_Plugin.class);
+        enable(new Event_Inventory(), Event_Inventory.class);
+        enable(new Event_Combat(), Event_Combat.class);
+        enable(new Events_Player(), Events_Player.class);
 
         if (NPCManager.supported) {
             enable(new NPCManager(), NPCManager.class);
         }
         if (!MultiVersion.folia) {
-            enable(new EventsHandler_non_folia(), EventsHandler_non_folia.class);
+            enable(new EventsHandler_Non_Folia(), EventsHandler_Non_Folia.class);
         }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             enable(new EventsHandler_1_9(), EventsHandler_1_9.class);

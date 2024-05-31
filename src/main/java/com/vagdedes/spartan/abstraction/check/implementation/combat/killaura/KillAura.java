@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -80,6 +81,16 @@ public class KillAura extends CheckExecutor {
                 responseTime::runMove,
                 false
         );
+        runDetection(
+                "check_move_direction",
+                moveDirection::runMove,
+                false
+        );
+        runDetection(
+                "check_move_direction_machine_learning",
+                moveDirectionML::runMove,
+                false
+        );
     }
 
     @Override
@@ -91,21 +102,9 @@ public class KillAura extends CheckExecutor {
         if (object instanceof PlayerFight) {
             analysis.run((PlayerFight) object);
         } else {
-            Object[] objects = (Object[]) object;
-            LivingEntity entity = (LivingEntity) objects[0];
+            PlayerAttackEvent event = (PlayerAttackEvent) object;
 
-            if (canRunEntity(entity)) {
-                double[] utility = (double[]) objects[1];
-                runDetection(
-                        "check_move_direction",
-                        moveDirection::runMove,
-                        false
-                );
-                runDetection(
-                        "check_move_direction_machine_learning",
-                        moveDirectionML::runMove,
-                        false
-                );
+            if (canRunEntity(event.getTarget())) {
                 runDetection(
                         "check_irregular",
                         irregular::run,
