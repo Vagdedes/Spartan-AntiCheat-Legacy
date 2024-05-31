@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 
+import com.vagdedes.spartan.listeners.protocol.modules.PlayerAttackEvent;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -35,6 +36,7 @@ public class Attack extends PacketAdapter {
             Entity entity = ProtocolLibrary.getProtocolManager().
                             getEntityFromID(event.getPlayer().getWorld(), event.getPacket().getIntegers().read(0));
             PacketContainer packet = event.getPacket();
+            Shared.attack(new PlayerAttackEvent(player, entity, false));
             //player.sendMessage(RayUtils.castTo360(player.getLocation().getYaw())
             //                + " " + getRotation(player, entity)[0]);
 

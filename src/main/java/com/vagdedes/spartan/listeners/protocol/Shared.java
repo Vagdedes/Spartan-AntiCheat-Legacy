@@ -15,9 +15,11 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.protocol.modules.PlayerAttackEvent;
 import com.vagdedes.spartan.listeners.protocol.modules.PlayerStayEvent;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -188,6 +190,21 @@ public class Shared {
 
         if (p == null) {
             return;
+        }
+
+        double[] utility = CombatUtils.get_X_Y_Distance(p, (LivingEntity) e.getTarget());
+
+        boolean cancelled = e.isCancelled();
+        // Detections
+        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
+
+        if (utility != null) {
+            Object[] objects = new Object[]{e.getTarget(), utility};
+            p.getExecutor(Enums.HackType.KillAura).run(cancelled);
+            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
+            p.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
         }
 
     }

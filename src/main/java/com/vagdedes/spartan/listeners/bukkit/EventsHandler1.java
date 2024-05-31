@@ -134,19 +134,12 @@ public class EventsHandler1 implements Listener {
                             && !MythicMobs.is(defaultEntity)
                             && !ItemsAdder.is(defaultEntity)) {
                         LivingEntity entity = (LivingEntity) defaultEntity;
-                        double[] utility = CombatUtils.get_X_Y_Distance(p, entity);
 
                         // Detections
                         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
                         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
                         p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
 
-                        if (utility != null) {
-                            Object[] objects = new Object[]{entity, utility};
-                            p.getExecutor(Enums.HackType.KillAura).run(cancelled);
-                            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, objects);
-                            p.getExecutor(Enums.HackType.HitReach).handle(cancelled, objects);
-                        }
                         if (!cancelled) {
                             // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
                             if (entityIsPlayer) {

@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -18,7 +19,10 @@ public class EventHandler_Shared implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void EntityAttackByEntity(EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof Player) {
-            Shared.attack(new PlayerAttackEvent((Player) e.getEntity(), e.getDamager()));
+            EntityDamageEvent.DamageCause cause = e.getCause();
+            if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                Shared.attack(new PlayerAttackEvent((Player) e.getEntity(), e.getDamager(), e.isCancelled()));
+            }
         }
     }
 
