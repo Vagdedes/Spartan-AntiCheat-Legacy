@@ -11,6 +11,7 @@ import com.vagdedes.spartan.listeners.protocol.modules.PlayerStayEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -24,11 +25,13 @@ public class Move {
             public void onPacketSending(PacketEvent event) {
                 SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
-                if (protocol.hasDataFor(protocol.position)
-                        && !protocol.trueOrFalse(protocol.spawnStatus)) {
-                    protocol.position = protocol.position.clone().add(
-                            readMovePacket(event, protocol)
-                    );
+                if (protocol.hasDataFor(protocol.position) && !protocol.spawnStatus) {
+                    if (protocol.position == protocol.verifiedPosition) {
+                        protocol.position = protocol.position.clone().add(
+                                        readMovePacket(event, protocol)
+                        );
+                        Shared.teleport(new PlayerTeleportEvent(event.getPlayer(), protocol.lastTeleport, protocol.position));
+                    }
                 }
             }
         };
@@ -68,6 +71,7 @@ public class Move {
                 || packet.getType().equals(PacketType.Play.Client.LOOK)) {
             SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
             Location to = readMovePacket(event, protocol);
+            protocol.verifiedPosition = to;
             double xz = to.getX() + to.getZ();
 
             if (xz == 17) {

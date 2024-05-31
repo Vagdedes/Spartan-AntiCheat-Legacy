@@ -3,6 +3,7 @@ package com.vagdedes.spartan.utils.math;
 import com.vagdedes.spartan.abstraction.player.SpartanBlock;
 import com.vagdedes.spartan.abstraction.player.SpartanLocation;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.utils.minecraft.math.client.impl.OptifineMath;
 import com.vagdedes.spartan.utils.minecraft.mcp.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.mcp.MathHelper;
 import com.vagdedes.spartan.utils.minecraft.mcp.MovingObjectPosition;

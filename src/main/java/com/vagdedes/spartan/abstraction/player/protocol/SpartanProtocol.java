@@ -16,6 +16,7 @@ public class SpartanProtocol {
             canCheck;
     public Location
             position,
+            verifiedPosition,
             lastTeleport;
 
     public SpartanProtocol(Player player) {
