@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.configuration.implementation.Messages;
 import com.vagdedes.spartan.abstraction.configuration.implementation.SQLFeature;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;

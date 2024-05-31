@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanBlock;
+import com.vagdedes.spartan.abstraction.player.SpartanLocation;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;

@@ -1,8 +1,9 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanLocation;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -12,7 +13,6 @@ import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.protocol.modules.PlayerStayEvent;
-import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
@@ -72,7 +72,7 @@ public class Shared {
         }, 10);
 
         // Trackers
-        ProtocolStorage.canCheck.put(p.uuid, true);
+        SpartanBukkit.getProtocol(n).canCheck = true;
     }
 
     public static void move(PlayerMoveEvent e) {
@@ -144,9 +144,11 @@ public class Shared {
         p.movement.judgeGround();
 
         // Trackers
-        ProtocolStorage.positionManager.put(p.uuid, to);
-        ProtocolStorage.lastRotation.put(p.uuid, new RotationData(to.getYaw(), to.getPitch()));
-        ProtocolStorage.lastTeleport.put(p.uuid, to);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(n);
+        protocol.position = nto;
+        protocol.lastRotation.setYaw(to.getYaw());
+        protocol.lastRotation.setPitch(to.getPitch());
+        protocol.lastTeleport = nto;
 
         // Detections
         p.getExecutor(Enums.HackType.NoFall).handle(false, null);
@@ -168,6 +170,7 @@ public class Shared {
             e.setCancelled(true);
         }
     }
+
     public static void stay(PlayerStayEvent e) {
         // ONLY WORK WITH PACKETS!!! ! !!! !
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());

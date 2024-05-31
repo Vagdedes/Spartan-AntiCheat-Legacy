@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;

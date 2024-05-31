@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanBlock;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;

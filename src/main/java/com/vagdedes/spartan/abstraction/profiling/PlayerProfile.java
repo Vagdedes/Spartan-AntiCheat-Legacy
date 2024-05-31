@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.server.InventoryUtils;

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import me.vagdedes.spartan.system.Enums;
 

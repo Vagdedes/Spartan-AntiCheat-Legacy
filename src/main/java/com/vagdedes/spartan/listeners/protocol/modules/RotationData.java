@@ -1,20 +1,39 @@
 package com.vagdedes.spartan.listeners.protocol.modules;
 
-public class RotationData {
+import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocolField;
 
-    private final float yaw;
-    private final float pitch;
+public class RotationData extends SpartanProtocolField {
 
-    public RotationData(float yaw, float pitch) {
-        this.yaw = yaw;
-        this.pitch = pitch;
+    private float yaw;
+    private float pitch;
+    private boolean has;
+
+    public RotationData() {
+        this.yaw = 0.0f;
+        this.pitch = 0.0f;
+        this.has = false;
     }
 
-    public float yaw() {
+    @Override
+    public boolean hasData() {
+        return has;
+    }
+
+    public float getYaw() {
         return this.yaw;
     }
 
-    public float pitch() {
+    public float getPitch() {
         return this.pitch;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+        this.has = true;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+        this.has = true;
     }
 }

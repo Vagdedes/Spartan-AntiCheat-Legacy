@@ -2,7 +2,7 @@ package com.vagdedes.spartan.compatibility.manual.entity;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import es.pollitoyeye.vehicles.enums.VehicleType;
 import es.pollitoyeye.vehicles.events.VehicleEnterEvent;

@@ -1,10 +1,8 @@
 package com.vagdedes.spartan.listeners.protocol.modules;
 
 public class AbilitiesContainer {
-    private boolean sprint;
-    private boolean sneak;
-    private boolean fly;
 
+    private boolean sprint, sneak, fly;
 
     public AbilitiesContainer(boolean sprint, boolean fly, boolean sneak) {
         this.sprint = sprint;
@@ -12,27 +10,28 @@ public class AbilitiesContainer {
         this.sneak = sneak;
     }
 
-    public boolean sprint() {
+    public boolean isSprinting() {
         return this.sprint;
     }
 
-    public boolean fly() {
+    public boolean isFlying() {
         return this.fly;
     }
 
-    public boolean sneak() {
+    public boolean isSneaking() {
         return this.sneak;
     }
 
-    public void setSprint(boolean isSprinting) {
+    public void setSprinting(boolean isSprinting) {
         this.sprint = isSprinting;
     }
 
-    public void setFly(boolean isFlying) {
+    public void setFlying(boolean isFlying) {
         this.fly = isFlying;
     }
 
-    public void setSneak(boolean isSneaking) {
+    public void setSneaking(boolean isSneaking) {
         this.sneak = isSneaking;
     }
+
 }

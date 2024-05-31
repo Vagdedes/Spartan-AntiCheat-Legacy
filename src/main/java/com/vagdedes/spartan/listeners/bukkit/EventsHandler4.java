@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;

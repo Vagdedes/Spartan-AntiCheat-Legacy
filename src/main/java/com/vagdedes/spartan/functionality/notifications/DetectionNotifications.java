@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.notifications;
 
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Permissions;

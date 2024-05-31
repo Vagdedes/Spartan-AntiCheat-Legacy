@@ -3,6 +3,7 @@ package com.vagdedes.spartan.listeners.protocol.modules;
 import org.bukkit.entity.Player;
 
 public class PlayerStayEvent {
+
     private final boolean onGround;
     private final Player player;
 
@@ -14,6 +15,7 @@ public class PlayerStayEvent {
     public boolean isOnGround() {
         return onGround;
     }
+
     public Player getPlayer() {
         return player;
     }

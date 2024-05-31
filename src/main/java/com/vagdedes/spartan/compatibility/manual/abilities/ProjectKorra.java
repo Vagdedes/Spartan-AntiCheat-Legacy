@@ -4,7 +4,7 @@ import com.projectkorra.projectkorra.event.AbilityDamageEntityEvent;
 import com.projectkorra.projectkorra.event.AbilityProgressEvent;
 import com.projectkorra.projectkorra.event.AbilityStartEvent;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;

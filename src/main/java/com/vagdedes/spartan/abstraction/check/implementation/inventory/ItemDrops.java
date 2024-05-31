@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 

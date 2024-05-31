@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;

@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 import com.vagdedes.filegui.api.FileGUIAPI;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;

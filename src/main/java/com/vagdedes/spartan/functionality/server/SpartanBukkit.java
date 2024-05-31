@@ -3,7 +3,8 @@ package com.vagdedes.spartan.functionality.server;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -33,6 +34,8 @@ public class SpartanBukkit {
     private static final Map<UUID, SpartanPlayer> players =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final Map<UUID, Player> realPlayers =
+            Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
+    private static final Map<UUID, SpartanProtocol> playerProtocol =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     public static final Class<?> craftPlayer = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
             ? null
@@ -115,9 +118,12 @@ public class SpartanBukkit {
 
     public static SpartanPlayer removePlayer(Player real) {
         synchronized (realPlayers) {
-            synchronized (players) {
-                realPlayers.remove(real.getUniqueId());
-                return players.remove(real.getUniqueId());
+            synchronized (playerProtocol) {
+                synchronized (players) {
+                    realPlayers.remove(real.getUniqueId());
+                    playerProtocol.remove(real.getUniqueId());
+                    return players.remove(real.getUniqueId());
+                }
             }
         }
     }
@@ -162,6 +168,15 @@ public class SpartanBukkit {
 
     public static boolean packetsEnabled() {
         return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+    }
+
+    public static SpartanProtocol getProtocol(Player player) {
+        synchronized (playerProtocol) {
+            return playerProtocol.computeIfAbsent(
+                    player.getUniqueId(),
+                    k -> new SpartanProtocol(player)
+            );
+        }
     }
 
     // Separator

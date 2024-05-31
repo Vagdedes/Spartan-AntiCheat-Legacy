@@ -2,11 +2,12 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.player.SpartanBlock;
+import com.vagdedes.spartan.abstraction.player.SpartanLocation;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.functionality.tracking.RayLine;
@@ -15,7 +16,6 @@ import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
-import net.mineland.core.api.AsyncScheduler;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
@@ -96,55 +97,58 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
+        SpartanLocation to = player.movement.getEventToLocation(),
+                from = player.movement.getEventFromLocation();
+        boolean onGround = player.isOnGround(false);
+        SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
+        SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 0);
+        SpartanPotionEffect glideEffect = PlayerUtils.slowFall
+                ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                : null;
+        SpartanPotionEffect levitationEffect = PlayerUtils.levitation
+                ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                : null;
+        SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
+                ? player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                : null;
+        double speedModify = getMaxSpeedAmplifier();
+        PlayerInventory inventory = player.getInventory();
+        Entity vehicle = player.getVehicle();
 
-        AsyncScheduler.run(() -> {
+        runAsync(() -> {
             String flag = null;
-            SpartanLocation to = player.movement.getEventToLocation(),
-                            from = player.movement.getEventFromLocation();
-            boolean onGround = player.isOnGround(false);
-            double dx = to.getX() - from.getX();
-            double dz = to.getZ() - from.getZ();
+            double dx = to.getX() - from.getX(),
+                    dz = to.getZ() - from.getZ();
             int oldAir = -1;
-            double speedModify = getMaxSpeedAmplifier();
+
             if (newRayRequest) {
                 newRayRequest = false;
                 jumpRayLine = new RayLine(dx, dz);
             }
-            double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2);
-            double horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
+            double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2),
+                    horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
             float speedMultiply = (player.getWalkSpeed() * 5) < 1 ? 1 : (player.getWalkSpeed() * 5);
-            SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
-            SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 0);
-            SpartanPotionEffect glideEffect = PlayerUtils.slowFall
-                            ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
-                            : null;
-            SpartanPotionEffect levitationEffect = PlayerUtils.levitation
-                            ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
-                            : null;
-            SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                            ? player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
-                            : null;
             if (onGround && wrappedOnFly > 0) oldAir = wrappedOnFly;
             wrappedOnAir = onGround ? 0 : wrappedOnAir + 1;
             wrappedOnFly = onGround ? 0 : wrappedOnFly + 1;
-            int onAir = wrappedOnAir;
-            int onAirID = wrappedOnAir - 1;
-            int onFly = wrappedOnFly;
-            int onFlyID = wrappedOnFly - 1;
+            int onAir = wrappedOnAir,
+                    onAirID = wrappedOnAir - 1,
+                    onFly = wrappedOnFly,
+                    onFlyID = wrappedOnFly - 1;
 
 
             double predictedVertical = (onAir > 76) ? FLY_SPEED[76] : (onAir < 0) ? FLY_SPEED[0] : FLY_SPEED[onAir];
             double verticalDiff = (predictedVertical < vertical) ? 0 : predictedVertical - vertical;
-            boolean solidBlockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0));
-            boolean inLiquid = RayUtils.onBlock(player, to, BlockUtils.liquid);
-            boolean onBlock = RayUtils.onBlock(player, to, BlockUtils.solid, BlockUtils.semi_solid);
+            boolean solidBlockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0)),
+                    inLiquid = RayUtils.onBlock(player, to, BlockUtils.liquid),
+                    onBlock = RayUtils.onBlock(player, to, BlockUtils.solid, BlockUtils.semi_solid);
             double multiplexSpecify = solidBlockOnTop ? 2.65 : 1;
 
             // 2
             //player.getInstance().sendMessage(onGround + " " + onAir + " fly: " + vertical + " | " + predictedVertical);
 
-            float yaw = to.getYaw();
-            float yR = (float) Math.toRadians(yaw);
+            float yaw = to.getYaw(),
+                    yR = (float) Math.toRadians(yaw);
             RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
             RayLine b = new RayLine(dx, dz);
 
@@ -157,11 +161,11 @@ public class Speed extends CheckExecutor {
 
 
             if (RayUtils.onBlock(player, to, BlockUtils.ice)
-                            || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
+                    || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
                 if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
             }
             if (RayUtils.onBlock(player, to, BlockUtils.slime_block)
-                            || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.slime_block)) {
+                    || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.slime_block)) {
                 if (multiply < 0.15) multiply = 0.15;
             }
             if (RayUtils.onBlock(player, to, BlockUtils.honey_block)) {
@@ -176,8 +180,10 @@ public class Speed extends CheckExecutor {
             if (player.movement.isSwimming()) {
                 newRayRequest = true;
             }
-            if (player.getInventory().getBoots() != null) {
-                int e = player.getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
+            if (inventory != null
+                    && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
+                    && inventory.getBoots() != null) {
+                int e = inventory.getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
                 double v = (e + 1) * 0.4;
                 if (e > 0) {
                     if (multiply < v) multiply = v;
@@ -194,16 +200,16 @@ public class Speed extends CheckExecutor {
                 wrappedOnFly = wrappedOnFly + 1;
             } else if (!onBlock) {
                 if (multiply < 0.08 && !onGround && vertical != -0.09
-                                && isJump && horizontal > 0.1 && player.getVehicle() == null) {
+                        && isJump && horizontal > 0.1 && vehicle == null) {
                     yDiff = yDiff + verticalDiff;
                     if (yDiff > 0.05 && onFly < 21) {
                         verticalVl = verticalVl + 4;
                         if (verticalVl > 36) {
                             antiAbuseProcessor = antiAbuseProcessor + 45;
                             if (hackType.getCheck().getBooleanOption("check_flying", true)
-                                            && antiAbuseProcessor > 200) {
+                                    && antiAbuseProcessor > 200) {
                                 flag = "type: flying, speed: " + vertical
-                                                + ", speed-require: " + predictedVertical + ", air-tick: " + onAir;
+                                        + ", speed-require: " + predictedVertical + ", air-tick: " + onAir;
                                 verticalVl = verticalVl - 3;
                                 if (wrappedOnFly > 1) wrappedOnFly = wrappedOnFly - 1;
                                 yDiff = 0D;
@@ -211,13 +217,13 @@ public class Speed extends CheckExecutor {
                         }
                     } else if (verticalVl > 0) verticalVl = verticalVl - 1;
                 }
-                if (oldAir < 3 && oldAir != -1 && isJump && player.getVehicle() == null) {
-                    if (!RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
-                        antiAbuseProcessor = antiAbuseProcessor + 25;
-                        if (hackType.getCheck().getBooleanOption("check_landing", true)
-                                        && antiAbuseProcessor > 200) {
-                            flag = "type: landing, air: " + oldAir;
-                        }
+                if (oldAir < 3 && oldAir != -1 && isJump && vehicle == null
+                        && !RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
+                    antiAbuseProcessor = antiAbuseProcessor + 25;
+
+                    if (hackType.getCheck().getBooleanOption("check_landing", true)
+                            && antiAbuseProcessor > 200) {
+                        flag = "type: landing, air: " + oldAir;
                     }
                 }
             } else {
@@ -250,7 +256,7 @@ public class Speed extends CheckExecutor {
             for (int i = 0; i < player.getNearbyEntities(2, 2, 2).size(); i++) {
                 if (multiply < 0.4) multiply = 0.4;
             }
-            if (player.getVehicle() != null) {
+            if (vehicle != null) {
                 if (multiply < 9) multiply = 9D;
                 ignoreBasicChecks = true;
                 newRayRequest = true;
@@ -258,8 +264,8 @@ public class Speed extends CheckExecutor {
             if (!onGround) {
                 // player.sendMessage("nigger " + horizontal);
                 // player.sendMessage("My tick check: " + onAir + " Vagdedes tick check: " + player.movement.getTicksOnAir());
-                double limit = (onAirID > 12 ? BASIC_SPEED[12] : BASIC_SPEED[onAirID]) * speedMultiply;
-                double limitNonSprint = RayUtils.scaleVal(0.19 * speedMultiply, 2);
+                double limit = (onAirID > 12 ? BASIC_SPEED[12] : BASIC_SPEED[onAirID]) * speedMultiply,
+                        limitNonSprint = RayUtils.scaleVal(0.19 * speedMultiply, 2);
                 limit += ((speedEffect != null) ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2D : 0);
                 limit += (collideMinecraftShitMathFactor ? 0.05 : 0);
                 limit = RayUtils.scaleVal(limit * (1 + multiply), 2);
@@ -268,17 +274,17 @@ public class Speed extends CheckExecutor {
                 if (horizontal > limit) {
                     antiAbuseProcessor = antiAbuseProcessor + 75;
                     if (hackType.getCheck().getBooleanOption("check_simulation_air_limit", true)
-                                    && antiAbuseProcessor > 200) {
+                            && antiAbuseProcessor > 200) {
                         flag = "type: simulation-air-limit, speed: " + horizontal
-                                        + ", speed-limit: " + limit + ", air-tick: " + onAir;
+                                + ", speed-limit: " + limit + ", air-tick: " + onAir;
                     }
                 }
                 if (horizontal > wrapLimit && keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut()) {
                     antiAbuseProcessor = antiAbuseProcessor + 25;
                     if (hackType.getCheck().getBooleanOption("check_keepsprint_silent", true)
-                                    && antiAbuseProcessor > 200) {
+                            && antiAbuseProcessor > 200) {
                         flag = "type: keepsprint-silent, speed: " + horizontal
-                                        + ", speed-limit: " + wrapLimit + ", air-tick: " + onAir;
+                                + ", speed-limit: " + wrapLimit + ", air-tick: " + onAir;
                     }
                 }
                 if (onAir == 1) {
@@ -291,35 +297,34 @@ public class Speed extends CheckExecutor {
                     yDiff = 0D;
                     keepSprint.put(player.uuid, new KeepSprint(0, false, 0, System.currentTimeMillis()));
                     isJump = (vertical >= -0.04);
-                    {
-                        // player.sendMessage(String.valueOf(horizontal));
-                        double diffRayLines = RayUtils.calculateRayLines(a, b);
-                        double wrappedLimit = limit / 1.6 + ((diffRayLines >= 90) ? 0 : (limit / 2.4) * (1 - diffRayLines / 90));
-                        if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_basic", true)
-                                        && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
-                                        && horizontal > RayUtils.scaleVal(wrappedLimit, 2)
-                                        && speedModify < 1.0
-                                        && !ignoreBasicChecks) {
-                            flag = "type: simulation-air-direction(basic), speed: " + horizontal
-                                            + ", speed-limit: " + RayUtils.scaleVal(wrappedLimit, 2)
-                                            + ", diff: " + RayUtils.scaleVal(diffRayLines, 2);
-                        }
+
+                    // player.sendMessage(String.valueOf(horizontal));
+                    double diffRayLines = RayUtils.calculateRayLines(a, b);
+                    double wrappedLimit = limit / 1.6 + ((diffRayLines >= 90) ? 0 : (limit / 2.4) * (1 - diffRayLines / 90));
+                    if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_basic", true)
+                            && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
+                            && horizontal > RayUtils.scaleVal(wrappedLimit, 2)
+                            && speedModify < 1.0
+                            && !ignoreBasicChecks) {
+                        flag = "type: simulation-air-direction(basic), speed: " + horizontal
+                                + ", speed-limit: " + RayUtils.scaleVal(wrappedLimit, 2)
+                                + ", diff: " + RayUtils.scaleVal(diffRayLines, 2);
                     }
                 } else if (jumpRayLine != null) {
-                    boolean validPsychic = RayUtils.validRayLines(new RayLine(dx, dz), jumpRayLine, 35);
-                    boolean muchThanAllowedStrafe = horizontal > limit / 1.4;
-                    boolean muchThanAllowedRotation = horizontal > limit / 1.5;
+                    boolean validPsychic = RayUtils.validRayLines(new RayLine(dx, dz), jumpRayLine, 35),
+                            muchThanAllowedStrafe = horizontal > limit / 1.4,
+                            muchThanAllowedRotation = horizontal > limit / 1.5;
                     if (!player.movement.isSprinting()) {
                         keepSprint.get(player.uuid).sprint();
                     }
 
                     if (keepSprint.get(player.uuid).hits() > 0 && !keepSprint.get(player.uuid).sprinted()
-                                    && onAir > 2 && muchThanAllowedRotation) {
+                            && onAir > 2 && muchThanAllowedRotation) {
                         keepSprint.get(player.uuid).newFlag();
                         if (keepSprint.get(player.uuid).flags() > 2) {
                             antiAbuseProcessor = antiAbuseProcessor + 210;
                             if (hackType.getCheck().getBooleanOption("check_keepsprint", true)
-                                            && antiAbuseProcessor > 200) {
+                                    && antiAbuseProcessor > 200) {
                                 flag = "type: keepsprint, hits: " + keepSprint.get(player.uuid).hits();
                             }
                         }
@@ -328,34 +333,32 @@ public class Speed extends CheckExecutor {
                     if (!validPsychic && muchThanAllowedStrafe) {
                         antiAbuseProcessor = antiAbuseProcessor + 50;
                         if (hackType.getCheck().getBooleanOption("check_simulation_air_physics", true)
-                                        && antiAbuseProcessor > 200) {
+                                && antiAbuseProcessor > 200) {
                             flag = "type: simulation-air-physics, speed: " + horizontal
-                                            + ", speed-limit: " + RayUtils.scaleVal(limit / 1.4, 2) + ", air-tick: " + onAir;
+                                    + ", speed-limit: " + RayUtils.scaleVal(limit / 1.4, 2) + ", air-tick: " + onAir;
                         }
                     }
 
-                    {
-                        if (horizontal > limit / 1.2 && !RayUtils.validRayLines(a, b, 90)
-                                        && speedModify < 1.0 && !onDamage) {
-                            antiAbuseProcessor = antiAbuseProcessor + 60;
-                            if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_blatant", true)
-                                            && antiAbuseProcessor > 200) {
-                                flag = "type: simulation-air-direction(blatant), speed: " + horizontal
-                                                + ", speed-limit: " + RayUtils.scaleVal(limit / 1.2, 2);
-                            }
+                    if (horizontal > limit / 1.2 && !RayUtils.validRayLines(a, b, 90)
+                            && speedModify < 1.0 && !onDamage) {
+                        antiAbuseProcessor = antiAbuseProcessor + 60;
+                        if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_blatant", true)
+                                && antiAbuseProcessor > 200) {
+                            flag = "type: simulation-air-direction(blatant), speed: " + horizontal
+                                    + ", speed-limit: " + RayUtils.scaleVal(limit / 1.2, 2);
                         }
-                        if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
-                                        && !player.movement.isSprinting() && !ignoreBasicChecks
-                                        && speedModify < 1.0) {
-                            double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
-                            if (calcDiff > 10 && !allowedAngle(calcDiff)) {
-                                antiAbuseProcessor = antiAbuseProcessor + 60;
-                                if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_profound", true)
-                                                && antiAbuseProcessor > 200) {
-                                    flag = "type: simulation-air-direction(profound), speed: " + horizontal
-                                                    + ", speed-limit: " + limitNonSprint
-                                                    + ", angle: " + calcDiff;
-                                }
+                    }
+                    if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
+                            && !player.movement.isSprinting() && !ignoreBasicChecks
+                            && speedModify < 1.0) {
+                        double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
+                        if (calcDiff > 10 && !allowedAngle(calcDiff)) {
+                            antiAbuseProcessor = antiAbuseProcessor + 60;
+                            if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_profound", true)
+                                    && antiAbuseProcessor > 200) {
+                                flag = "type: simulation-air-direction(profound), speed: " + horizontal
+                                        + ", speed-limit: " + limitNonSprint
+                                        + ", angle: " + calcDiff;
                             }
                         }
                     }
@@ -363,15 +366,15 @@ public class Speed extends CheckExecutor {
                 }
             } else {
                 ticksOnGround++;
-                if (ticksOnGround == 1) {
-                    if (oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop
-                                    && !ignoreBasicChecks && jumpEffect == null) {
-                        antiAbuseProcessor = antiAbuseProcessor + 75;
-                        if (hackType.getCheck().getBooleanOption("check_landing_end", true)
-                                        && antiAbuseProcessor > 200) {
-                            flag = "type: landing-end, speed: " + vertical
-                                            + ", air: " + oldWrappedOnFly;
-                        }
+
+                if (ticksOnGround == 1
+                        && oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop
+                        && !ignoreBasicChecks && jumpEffect == null) {
+                    antiAbuseProcessor = antiAbuseProcessor + 75;
+                    if (hackType.getCheck().getBooleanOption("check_landing_end", true)
+                            && antiAbuseProcessor > 200) {
+                        flag = "type: landing-end, speed: " + vertical
+                                + ", air: " + oldWrappedOnFly;
                     }
                 }
                 collideMinecraftShitMathFactor = false;
@@ -379,6 +382,7 @@ public class Speed extends CheckExecutor {
 
                 if (keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut() && !player.movement.isSprinting()) {
                     sprintVl = sprintVl + 2;
+
                     if (sprintVl > 4) {
                         limit = RayUtils.scaleVal(limit / 1.15, 2);
                     }
@@ -386,6 +390,7 @@ public class Speed extends CheckExecutor {
                 if (sprintVl > 0) sprintVl = sprintVl - 1;
 
                 limit = RayUtils.scaleVal(limit * (1 + multiply), 2);
+
                 if (onGroundMinecraftShitMathFactor > 0) {
                     onGroundMinecraftShitMathFactor = onGroundMinecraftShitMathFactor / 1.33;
                     limit = RayUtils.scaleVal(limit * (1 + onGroundMinecraftShitMathFactor), 2);
@@ -394,40 +399,43 @@ public class Speed extends CheckExecutor {
                 if (horizontal > limit) {
                     antiAbuseProcessor = antiAbuseProcessor + 110;
                     if (hackType.getCheck().getBooleanOption("check_simulation_ground", true)
-                                    && antiAbuseProcessor > 200) {
+                            && antiAbuseProcessor > 200) {
                         flag = "type: simulation-ground, speed: " + horizontal
-                                        + ", speed-limit: " + limit;
+                                + ", speed-limit: " + limit;
                     }
                 }
-                if (horizontal > limit / 1.35 && !RayUtils.validRayLines(a, b, 88)
-                                && speedModify < 1.0) {
+                if (horizontal > limit / 1.35
+                        && !RayUtils.validRayLines(a, b, 88)
+                        && speedModify < 1.0) {
                     antiAbuseProcessor = antiAbuseProcessor + 60;
                     if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_basic", true)
-                                    && antiAbuseProcessor > 200) {
+                            && antiAbuseProcessor > 200) {
                         flag = "type: simulation-ground-direction(basic), speed: " + horizontal
-                                        + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
+                                + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                     }
                 }
-                if (horizontal >= limit / 1.7 && !player.movement.isSprinting()
-                                && speedModify < 1.0) {
+                if (horizontal >= limit / 1.7
+                        && !player.movement.isSprinting()
+                        && speedModify < 1.0) {
                     double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                     if (calcDiff > 10 && !allowedAngle(calcDiff)) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
                         if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_profound", true)
-                                        && antiAbuseProcessor > 200) {
+                                && antiAbuseProcessor > 200) {
                             flag = "type: simulation-ground-direction(profound), speed: " + horizontal
-                                            + ", speed-limit: " + RayUtils.scaleVal(limit / 1.7, 2)
-                                            + ", angle: " + calcDiff;
+                                    + ", speed-limit: " + RayUtils.scaleVal(limit / 1.7, 2)
+                                    + ", angle: " + calcDiff;
                         }
                     }
                 }
-                if (horizontal > limit / 1.1 && !RayUtils.validRayLines(a, b, 25)
-                                && speedModify < 1.0) {
+                if (horizontal > limit / 1.1
+                        && !RayUtils.validRayLines(a, b, 25)
+                        && speedModify < 1.0) {
                     antiAbuseProcessor = antiAbuseProcessor + 90;
                     if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_blatant", true)
-                                    && antiAbuseProcessor > 200) {
+                            && antiAbuseProcessor > 200) {
                         flag = "type: simulation-ground-direction(blatant), speed: " + horizontal
-                                        + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
+                                + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                     }
                 }
 
@@ -438,7 +446,6 @@ public class Speed extends CheckExecutor {
             if (flag == null && antiAbuseProcessor > 0)
                 antiAbuseProcessor = antiAbuseProcessor - 8;
             if (flag != null) cancel(flag, horizontal, to);
-            //player.debug(false, false, false, antiAbuseProcessor);
             ignoreBasicChecks = false;
             needToCheckAura = (multiply < 2);
             oldWrappedOnFly = wrappedOnFly;
@@ -449,13 +456,11 @@ public class Speed extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerStayEvent) {
-            PlayerStayEvent event = (PlayerStayEvent) object;
-            if (event.isOnGround()) {
+            if (((PlayerStayEvent) object).isOnGround()) {
                 wrappedOnAir = 0;
                 wrappedOnFly = 0;
             }
-        }
-        if (object instanceof PlayerVelocityEvent) {
+        } else if (object instanceof PlayerVelocityEvent) {
             if (!cancelled) {
                 PlayerVelocityEvent event = (PlayerVelocityEvent) object;
                 RayLine line = new RayLine(event.getVelocity().getX(), event.getVelocity().getZ());
@@ -484,6 +489,7 @@ public class Speed extends CheckExecutor {
             Entity damager = e.getDamager();
             DataProcessor.target.put(e.getEntity().getUniqueId(), damager);
             DataProcessor.target.put(damager.getUniqueId(), e.getEntity());
+
             if (damager instanceof Player && e.getEntity() instanceof Player) {
                 keepSprint.get(damager.getUniqueId()).newHit();
                 keepSprint.get(damager.getUniqueId()).setTimedOut(System.currentTimeMillis());
@@ -494,13 +500,13 @@ public class Speed extends CheckExecutor {
             newRayRequest = true;
             wrappedOnAir = 0;
             wrappedOnFly = 0;
+
             if (damager instanceof TNTPrimed) {
                 multi += 5;
             }
-            if (damager instanceof Projectile) {
-                if (damager instanceof Arrow) {
-                    multi += (((Arrow) damager).getKnockbackStrength() + 1) * 3;
-                }
+
+            if (damager instanceof Arrow) {
+                multi += (((Arrow) damager).getKnockbackStrength() + 1) * 3;
             }
             if (damager instanceof Player) {
                 LivingEntity livingEntity = (LivingEntity) damager;
@@ -508,7 +514,6 @@ public class Speed extends CheckExecutor {
                 ItemStack item = equipment.getItemInHand();
                 int enchant = item.getEnchantmentLevel(Enchantment.KNOCKBACK);
                 multi += enchant * 1.8;
-
             }
             multiply = multiply + multi;
         } else if (object instanceof PlayerJoinEvent) {
@@ -577,15 +582,16 @@ public class Speed extends CheckExecutor {
     private void checkAuraAnalysis(SpartanLocation to) {
         if (auraAnalysis.isEmpty()) return;
         String flag = null;
-        float yawDiff = 0;
-        float yawDiffFromFirst = Math.abs(auraAnalysis.getLast().yaw() - auraAnalysis.getFirst().yaw());
-        double rayDiff = 0;
-        double raySimDiff = 0;
-        double angle = Math.toDegrees(RayUtils.calculateRayLine(auraAnalysis.get(0).rayLine()));
+        float yawDiff = 0,
+                yawDiffFromFirst = Math.abs(auraAnalysis.getLast().yaw() - auraAnalysis.getFirst().yaw());
+        double rayDiff = 0,
+                raySimDiff = 0,
+                angle = Math.toDegrees(RayUtils.calculateRayLine(auraAnalysis.get(0).rayLine()));
         float yaw = auraAnalysis.get(0).yaw();
         double raySim = RayUtils.calculateRayLine(auraAnalysis.get(0).simRayLine());
         boolean oldInTarget = false;
         int tooFactRotationCause = 0;
+
         for (Aura a : auraAnalysis) {
             double angleLocal = Math.toDegrees(RayUtils.calculateRayLine(a.rayLine()));
             float yawLocal = a.yaw();
@@ -625,7 +631,7 @@ public class Speed extends CheckExecutor {
     private boolean allowedAngle(double angle) {
         double a = angle / 45;
         int wrapGoodMath = (int) Math.floor(a);
-        double b = a - (wrapGoodMath);
+        double b = a - wrapGoodMath;
         return (b < 0.3 || b > 0.7);
     }
 
@@ -634,8 +640,7 @@ public class Speed extends CheckExecutor {
         // Check will no longer run when someone uses server flying
         // Do not change as there is a protection for it via the IrregularMovements check
         // The flying method should still be considered in the code, in case anything ever changes
-        return MovementProcessing.canCheck(player, true, true, false, true)
-                ; // REMOVE 'player.bedrockPlayer' WHEN/UPON YOU ADD BEDROCK SUPPORT - VAGDEDES
+        return MovementProcessing.canCheck(player, true, true, false, true);
     }
 
 }

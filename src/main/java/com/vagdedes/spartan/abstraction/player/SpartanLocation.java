@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.replicates;
+package com.vagdedes.spartan.abstraction.player;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.server.Chunks;

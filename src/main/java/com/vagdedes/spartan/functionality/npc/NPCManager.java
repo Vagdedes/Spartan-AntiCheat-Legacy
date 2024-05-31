@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.functionality.npc;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanLocation;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;

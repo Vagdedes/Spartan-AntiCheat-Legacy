@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;

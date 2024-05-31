@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.minecraft.server;
 
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
+import com.vagdedes.spartan.abstraction.player.SpartanLocation;
 import org.bukkit.Material;
 
 import java.util.Set;

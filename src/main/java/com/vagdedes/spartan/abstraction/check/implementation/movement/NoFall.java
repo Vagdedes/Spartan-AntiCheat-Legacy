@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

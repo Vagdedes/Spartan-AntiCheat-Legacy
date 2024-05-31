@@ -2,7 +2,7 @@ package com.vagdedes.spartan.functionality.command;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;

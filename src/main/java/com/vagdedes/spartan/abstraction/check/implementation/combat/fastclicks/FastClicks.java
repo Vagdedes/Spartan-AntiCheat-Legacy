@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 
 public class FastClicks extends CheckExecutor {

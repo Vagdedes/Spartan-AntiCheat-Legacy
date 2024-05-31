@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.utils.minecraft.server;
 
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.replicates.SpartanBlock;
-import com.vagdedes.spartan.abstraction.replicates.SpartanLocation;
-import com.vagdedes.spartan.abstraction.replicates.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.player.SpartanBlock;
+import com.vagdedes.spartan.abstraction.player.SpartanLocation;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;

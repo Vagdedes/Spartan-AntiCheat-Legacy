@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.replicates;
+package com.vagdedes.spartan.abstraction.player;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -23,7 +24,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.protocol.ProtocolStorage;
 import com.vagdedes.spartan.listeners.protocol.Shared;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -393,7 +393,9 @@ public class SpartanPlayer {
         if (vehicle != null) {
             return vehicle.isOnGround();
         } else if (SpartanBukkit.packetsEnabled()) {
-            return ProtocolStorage.isOnGround(this)
+            Player p = this.getInstance();
+            SpartanProtocol protocol = p == null ? null : SpartanBukkit.getProtocol(p);
+            return protocol != null && protocol.trueOrFalse(protocol.onGround)
                     || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         } else {
