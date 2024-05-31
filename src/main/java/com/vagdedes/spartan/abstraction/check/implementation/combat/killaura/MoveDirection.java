@@ -14,11 +14,11 @@ public class MoveDirection extends DetectionExecutor {
     }
 
     void runMove(Entity target) {
-        float diff = Math.abs(RayUtils.castTo360(player.movement.getLocation().getYaw()
-                        - getRotation(player.getInstance(), target)[0]));
         float yaw = RayUtils.castTo360(player.movement.getLocation().getYaw());
-        float predYaw = getRotation(player.getInstance(), target)[0];
-        //player.sendMessage("diff: " + diff + " " + Math.sin(yaw) + " " + Math.sin(predYaw));
+        float predYaw = RayUtils.set360Limit(getRotation(player.getInstance(), target)[0]);
+        float diff = Math.abs(yaw - predYaw);
+        float sinDiff = (float) Math.abs(Math.sin(yaw) * 360 - Math.sin(predYaw) * 360);
+        // player.sendMessage("diff: " + diff + " diff2: " + sinDiff);
         // todo
     }
 
