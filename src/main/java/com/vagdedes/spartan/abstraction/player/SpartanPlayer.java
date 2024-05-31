@@ -82,7 +82,6 @@ public class SpartanPlayer {
                 if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
                         p.movement.judgeGround();
-                        p.movement.getLocation();
 
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                             Elytra.judge(p, false);
@@ -96,17 +95,17 @@ public class SpartanPlayer {
 
                             if (n != null) {
                                 p.setStoredPotionEffects(n.getActivePotionEffects()); // Bad
-                                SpartanLocation to = p.movement.getLocation(),
-                                        from = p.movement.getSchedulerFromLocation();
+                            }
+                            SpartanLocation to = p.movement.getLocation(),
+                                    from = p.movement.getSchedulerFromLocation();
 
-                                if (from != null) {
-                                    p.movement.schedulerDistance = to.distance(from);
-                                }
-                                p.movement.schedulerFrom = to;
+                            if (from != null) {
+                                p.movement.schedulerDistance = to.distance(from);
+                            }
+                            p.movement.schedulerFrom = to;
 
-                                for (CheckExecutor executor : p.executors) {
-                                    executor.scheduler();
-                                }
+                            for (CheckExecutor executor : p.executors) {
+                                executor.scheduler();
                             }
 
                             // Preventions

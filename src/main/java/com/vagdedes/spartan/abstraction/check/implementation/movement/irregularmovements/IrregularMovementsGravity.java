@@ -51,8 +51,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                 ? player.movement.getLastLiquidMaterial() == Material.LAVA
                                 ? PlayerUtils.lavaDrag : PlayerUtils.waterDrag : PlayerUtils.airDrag;
                 boolean levitation = levitationLevel != -1,
-                        climb = BlockUtils.canClimb(to.getBlock().material, false)
-                                || BlockUtils.canClimb(from.getBlock().material, false),
+                        climb = canClimb(to) || canClimb(from),
                         web = BlockPatternUtils.isBlockPattern(
                                 new double[][]{
                                         {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
@@ -170,12 +169,12 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                     && !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
                                     && !player.movement.isFalling(vertical, -acceleration, drag, GroundUtils.maxHeightLengthRatio)
                                     && !player.movement.isFalling(oldVertical, -acceleration, drag, GroundUtils.maxHeightLengthRatio)
-                                    ? 1.0
+                                    ? GroundUtils.maxPlayerStep
                                     : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1);
                         }
                         double limit = Math.max(
                                 product / (double) airTicks,
-                                velocity ? GroundUtils.maxPossibleStep :
+                                velocity ? GroundUtils.maxBoundingBox :
                                         liquid || motion ? GroundUtils.maxPlayerStep :
                                                 player.bedrockPlayer || sensitive ? PlayerUtils.climbingDownDefault :
                                                         GroundUtils.maxHeightLengthRatio
@@ -213,6 +212,14 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 }
             });
         }
+    }
+
+    private boolean canClimb(SpartanLocation location) {
+        Material material = location.getBlock().material;
+        return BlockUtils.canClimb(material, false)
+                || BlockUtils.areTrapdoors(material)
+                && (BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().material, false)
+                || BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
     }
 
 }

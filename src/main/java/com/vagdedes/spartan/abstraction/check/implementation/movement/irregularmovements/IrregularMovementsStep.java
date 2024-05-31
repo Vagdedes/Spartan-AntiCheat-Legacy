@@ -76,6 +76,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     bed = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed"),
                     vehicleEnter = player.trackers.has(Trackers.TrackerType.VEHICLE, "enter"),
                     vehicleExit = player.trackers.has(Trackers.TrackerType.VEHICLE, "exit");
+            boolean ground = player.isOnGround();
 
             runAsync(() -> {
                 if (knownBox && knownOldBox) {
@@ -225,7 +226,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                             true
                                     );
                                 }
-                            } else {
+                            } else if (!ground) {
                                 double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                         + PlayerUtils.airAcceleration;
 
