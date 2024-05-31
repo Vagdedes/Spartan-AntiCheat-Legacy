@@ -23,7 +23,7 @@ public class EventHandler_Shared implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Teleport(PlayerTeleportEvent e) {
-        Shared.teleport(e);
+        Shared.teleport(e); // comment by Vagdedes: not called on packets
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
