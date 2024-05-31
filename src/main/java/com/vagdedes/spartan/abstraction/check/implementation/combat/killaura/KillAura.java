@@ -67,11 +67,6 @@ public class KillAura extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         runDetection(
-                "check_aim",
-                moveDirection::runMove,
-                false
-        );
-        runDetection(
                 "check_sensitivity",
                 moveLength::runMove,
                 false
@@ -102,6 +97,11 @@ public class KillAura extends CheckExecutor {
 
                 if (width != 0.0
                         && height != 0.0) {
+                    runDetection(
+                                    "check_aim",
+                                    () -> moveDirection.runMove(entity),
+                                    false
+                    );
                     runDetection(
                             "check_irregular",
                             irregular::run,
