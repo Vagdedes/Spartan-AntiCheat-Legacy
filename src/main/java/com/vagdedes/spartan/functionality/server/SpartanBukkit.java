@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -18,7 +19,8 @@ import java.util.*;
 public class SpartanBukkit {
 
     public static final boolean
-            testMode = !JarVerification.enabled && !IDs.isBuiltByBit() && !IDs.isPolymart()
+            testMode = !JarVerification.enabled && !CloudBase.hasToken()
+            && !IDs.isBuiltByBit() && !IDs.isPolymart()
             && Bukkit.getMotd().contains(Register.plugin.getName()),
             supportedFork = MultiVersion.fork().equals("Spigot") || MultiVersion.fork().equals("Paper"),
             canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
@@ -167,7 +169,7 @@ public class SpartanBukkit {
     // Separator
 
     public static boolean packetsEnabled() {
-        return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+        return testMode && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
     public static SpartanProtocol getProtocol(Player player) {
