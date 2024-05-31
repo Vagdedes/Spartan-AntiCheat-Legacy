@@ -13,13 +13,15 @@ public class MoveDirection extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void runMove(Entity target) {
-        float diff = Math.abs(RayUtils.castTo360(player.movement.getLocation().getYaw()
-                        - getRotation(player.getInstance(), target)[0]));
-        float yaw = RayUtils.castTo360(player.movement.getLocation().getYaw());
-        float predYaw = getRotation(player.getInstance(), target)[0];
-        //player.sendMessage("diff: " + diff + " " + Math.sin(yaw) + " " + Math.sin(predYaw));
-        // todo
+    void runMove() {
+        for (Entity target : player.getNearbyEntities(1, 1, 1)) {
+            float diff = Math.abs(RayUtils.castTo360(player.movement.getLocation().getYaw()
+                    - getRotation(player.getInstance(), target)[0]));
+            float yaw = RayUtils.castTo360(player.movement.getLocation().getYaw());
+            float predYaw = getRotation(player.getInstance(), target)[0];
+            //player.sendMessage("diff: " + diff + " " + Math.sin(yaw) + " " + Math.sin(predYaw));
+            // todo
+        }
     }
 
     private static float[] getRotation(Player player1, Entity entity2) {

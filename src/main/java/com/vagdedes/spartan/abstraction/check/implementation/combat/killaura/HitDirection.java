@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import org.bukkit.entity.Entity;
 
 public class HitDirection extends DetectionExecutor {
 
@@ -10,7 +11,9 @@ public class HitDirection extends DetectionExecutor {
     }
 
     void run() {
-        // todo
+        for (Entity target : player.getNearbyEntities(1, 1, 1)) {
+            // todo
+        }
     }
 
 }

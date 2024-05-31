@@ -28,7 +28,7 @@ public class KillAura extends CheckExecutor {
     private final FightAnalysis analysis;
 
     public KillAura(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 9);
+        super(hackType, player, 11);
         this.addDetections(new DetectionExecutor[]{
                 irregular = new Irregular(this),
                 entityRaytrace = new EntityRaytrace(this),
@@ -71,12 +71,12 @@ public class KillAura extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         runDetection(
-                "check_sensitivity",
+                "check_move_length",
                 moveLength::runMove,
                 false
         );
         runDetection(
-                "check_response",
+                "check_response_time",
                 responseTime::runMove,
                 false
         );
@@ -96,47 +96,51 @@ public class KillAura extends CheckExecutor {
 
             if (canRunEntity(entity)) {
                 double[] utility = (double[]) objects[1];
-                double width = utility[0],
-                        height = utility[1];
-
-                if (width != 0.0
-                        && height != 0.0) {
-                    runDetection(
-                                    "check_aim",
-                                    () -> moveDirection.runMove(entity),
-                                    false
-                    );
-                    runDetection(
-                            "check_irregular",
-                            irregular::run,
-                            true
-                    );
-                    runDetection(
-                            "check_block_raytrace",
-                            blockRaytrace::run,
-                            true
-                    );
-                    runDetection(
-                            "check_entity_raytrace",
-                            entityRaytrace::run,
-                            true
-                    );
-                    runDetection(
-                            "check_time",
-                            hitTime::run,
-                            true
-                    );
-                    runDetection(
-                            "check_direction",
-                            hitDirection::run,
-                            true
-                    );
-                    runDetection(
-                            "check_response",
-                            responseTime::run,
-                            true
-                    );
-                }
+                runDetection(
+                        "check_move_direction",
+                        moveDirection::runMove,
+                        false
+                );
+                runDetection(
+                        "check_move_direction_machine_learning",
+                        moveDirectionML::runMove,
+                        false
+                );
+                runDetection(
+                        "check_irregular",
+                        irregular::run,
+                        true
+                );
+                runDetection(
+                        "check_block_raytrace",
+                        blockRaytrace::run,
+                        true
+                );
+                runDetection(
+                        "check_entity_raytrace",
+                        entityRaytrace::run,
+                        true
+                );
+                runDetection(
+                        "check_hit_time",
+                        hitTime::run,
+                        true
+                );
+                runDetection(
+                        "check_hit_direction",
+                        hitDirection::run,
+                        true
+                );
+                runDetection(
+                        "check_hit_direction_machine_learning",
+                        hitDirectionML::run,
+                        true
+                );
+                runDetection(
+                        "check_response_time",
+                        responseTime::run,
+                        true
+                );
             }
         }
     }
