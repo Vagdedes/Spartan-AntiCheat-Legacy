@@ -76,12 +76,10 @@ public class Move {
 
             if (xz == 17) {
                 if (protocol.trueOrFalse(protocol.spawnStatus)) {
-                    protocol.position = new Location(player.getWorld(), 8.5, 0, 8.5);
                     return;
                 }
             } else if (xz == 0) {
                 if (protocol.trueOrFalse(protocol.spawnStatus)) {
-                    protocol.position = new Location(player.getWorld(), 0, 0, 0);
                     return;
                 }
             } else if (protocol.trueOrFalse(protocol.spawnStatus)) {
@@ -89,6 +87,7 @@ public class Move {
                 protocol.position = to;
                 return;
             }
+            // Register.plugin.getLogger().info(to.getX() + " " + to.getY() + " " + to.getZ());
             importRotation(protocol, to);
             Location from = protocol.position == null ? to : protocol.position;
             importRotation(protocol, from);
@@ -96,7 +95,7 @@ public class Move {
             protocol.onGround = ground;
             protocol.position = to;
             Shared.move(new PlayerMoveEvent(
-                    player, from, to
+                            player, from, to
             ));
         } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())
                 || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {

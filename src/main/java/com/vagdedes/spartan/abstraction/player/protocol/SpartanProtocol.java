@@ -18,11 +18,13 @@ public class SpartanProtocol {
             position,
             verifiedPosition,
             lastTeleport;
+    public int ignore;
 
     public SpartanProtocol(Player player) {
         this.player = player;
         this.abilities = new AbilitiesContainer(false, false, false);
         this.lastRotation = new RotationData();
+        this.ignore = 0;
     }
 
     // Utilities
