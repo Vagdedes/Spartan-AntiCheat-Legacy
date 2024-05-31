@@ -2,10 +2,7 @@ package com.vagdedes.spartan.compatibility.manual.packet.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.vagdedes.spartan.listeners.protocol.EntityAction;
-import com.vagdedes.spartan.listeners.protocol.Join;
-import com.vagdedes.spartan.listeners.protocol.Move;
-import com.vagdedes.spartan.listeners.protocol.Velocity;
+import com.vagdedes.spartan.listeners.protocol.*;
 
 public class BackgroundProtocolLib {
 
@@ -14,6 +11,7 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new Join());
         p.addPacketListener(new EntityAction());
         p.addPacketListener(new Velocity());
+        p.addPacketListener(new Attack());
         Move.registerPacketListeners(p);
     }
 }

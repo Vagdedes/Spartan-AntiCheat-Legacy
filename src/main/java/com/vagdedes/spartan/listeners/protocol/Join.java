@@ -9,6 +9,8 @@ import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -24,6 +26,7 @@ public class Join extends PacketAdapter implements Listener {
         SpartanProtocol protocol = new SpartanProtocol(player);
         protocol.spawnStatus = true;
         protocol.position = new Location(event.getPlayer().getWorld(), 0, 0, 0);
+        protocol.ignore = 2;
         SpartanBukkit.pushProtocol(player, protocol);
 
         Shared.join(new PlayerJoinEvent(
@@ -31,5 +34,6 @@ public class Join extends PacketAdapter implements Listener {
                 (String) null
         ));
     }
+
 
 }
