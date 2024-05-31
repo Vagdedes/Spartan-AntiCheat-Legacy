@@ -23,14 +23,19 @@ public class Move {
         PacketListener serverSideListener = new PacketAdapter(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.POSITION) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
+                Player player = event.getPlayer();
+                SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
                 if (protocol.hasDataFor(protocol.position) && !protocol.spawnStatus) {
                     if (protocol.position == protocol.verifiedPosition) {
                         protocol.position = protocol.position.clone().add(
                                         readMovePacket(event, protocol)
                         );
-                        Shared.teleport(new PlayerTeleportEvent(event.getPlayer(), protocol.lastTeleport, protocol.position));
+                        Shared.teleport(new PlayerTeleportEvent(
+                                player,
+                                protocol.lastTeleport,
+                                protocol.position)
+                        );
                     }
                 }
             }

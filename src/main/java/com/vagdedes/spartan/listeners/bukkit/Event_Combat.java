@@ -1,11 +1,13 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
+import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.protocol.Shared;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -21,34 +23,41 @@ public class Event_Combat implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Damage(EntityDamageByEntityEvent e) {
-        Entity damager = e.getDamager();
-        Entity defaultEntity = e.getEntity();
-        boolean entityIsPlayer = defaultEntity instanceof Player;
+        Entity damager = e.getDamager(),
+                entity = e.getEntity();
+        boolean entityIsPlayer = entity instanceof Player;
 
         if (damager instanceof Player) {
+            boolean entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
+
+            if (entityAttack
+                    && entity instanceof LivingEntity
+                    && !SpartanBukkit.packetsEnabled()) {
+                Shared.attack(new PlayerAttackEvent(
+                        (Player) damager,
+                        (LivingEntity) entity,
+                        e.isCancelled())
+                );
+            }
             SpartanPlayer p = SpartanBukkit.getPlayer((Player) damager);
 
             if (p == null) {
                 return;
             }
-            EntityDamageEvent.DamageCause cause = e.getCause();
-
             // Object
             p.addDealtDamage(e);
 
             // Detections
-            if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            if (entityAttack) {
                 p.calculateClicks(null, true);
 
-                if (entityIsPlayer || defaultEntity instanceof LivingEntity) {
+                if (entityIsPlayer || entity instanceof LivingEntity) {
                     boolean cancelled = e.isCancelled();
 
-                    if (!p.uuid.equals(defaultEntity.getUniqueId())
+                    if (!p.uuid.equals(entity.getUniqueId())
                             && !mcMMO.hasGeneralAbility(p)
-                            && !MythicMobs.is(defaultEntity)
-                            && !ItemsAdder.is(defaultEntity)) {
-                        LivingEntity entity = (LivingEntity) defaultEntity;
-
+                            && !MythicMobs.is(entity)
+                            && !ItemsAdder.is(entity)) {
                         // Detections
                         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
                         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
@@ -77,7 +86,7 @@ public class Event_Combat implements Listener {
         }
 
         if (entityIsPlayer) {
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) defaultEntity);
+            SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
 
             if (p == null) {
                 return;
@@ -86,12 +95,11 @@ public class Event_Combat implements Listener {
             p.addReceivedDamage(e);
 
             // Detections
-
             p.getExecutor(Enums.HackType.Speed).handle(e.isCancelled(), e);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                    ? defaultEntity.getPassengers().toArray(new Entity[0])
-                    : new Entity[]{defaultEntity.getPassenger()};
+                    ? entity.getPassengers().toArray(new Entity[0])
+                    : new Entity[]{entity.getPassenger()};
 
             if (passengers.length > 0) {
                 for (Entity passenger : passengers) {

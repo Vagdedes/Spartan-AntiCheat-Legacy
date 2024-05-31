@@ -15,15 +15,10 @@ import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -187,42 +182,18 @@ public class Shared {
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
 
-    public static void damage(EntityDamageByEntityEvent e) {
-        EntityDamageEvent.DamageCause cause = e.getCause();
-        if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            Entity attacker = e.getDamager();
-
-            if (attacker instanceof Player) {
-                Entity entity = e.getEntity();
-
-                if (entity instanceof LivingEntity) {
-                    attack(new PlayerAttackEvent(
-                            (Player) attacker,
-                            (LivingEntity) entity,
-                            e.isCancelled())
-                    );
-                }
-            }
-        }
-    }
-
-    static void attack(PlayerAttackEvent e) {
+    public static void attack(PlayerAttackEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         if (p == null) {
             return;
         }
-        double[] utility = CombatUtils.get_X_Y_Distance(p, (LivingEntity) e.getTarget());
-        boolean cancelled = e.isCancelled();
-
+        boolean cancelled = e.isCancelled(); // todo fix executor calls
         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
-
-        if (utility != null) {
-            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
-        }
+        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
     }
 
 }
