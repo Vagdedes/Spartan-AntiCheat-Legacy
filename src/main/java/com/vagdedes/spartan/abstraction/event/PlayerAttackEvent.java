@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.modules;
+package com.vagdedes.spartan.abstraction.event;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

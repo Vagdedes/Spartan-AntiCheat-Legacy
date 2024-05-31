@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
+import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanLocation;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocol;
@@ -12,8 +14,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.listeners.protocol.modules.PlayerAttackEvent;
-import com.vagdedes.spartan.listeners.protocol.modules.PlayerStayEvent;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import me.vagdedes.spartan.system.Enums;

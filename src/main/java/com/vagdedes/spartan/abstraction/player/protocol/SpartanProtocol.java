@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.player.protocol;
 
-import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesContainer;
-import com.vagdedes.spartan.listeners.protocol.modules.RotationData;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

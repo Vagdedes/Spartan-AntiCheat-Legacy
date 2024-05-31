@@ -20,8 +20,10 @@ public class KillAura extends CheckExecutor {
     private final BlockRaytrace blockRaytrace;
     private final HitTime hitTime;
     private final HitDirection hitDirection;
+    private final HitDirectionML hitDirectionML;
     private final ResponseTime responseTime;
     private final MoveDirection moveDirection;
+    private final MoveDirectionML moveDirectionML;
     private final MoveLength moveLength;
     private final FightAnalysis analysis;
 
@@ -36,7 +38,9 @@ public class KillAura extends CheckExecutor {
                 hitDirection = new HitDirection(this),
                 responseTime = new ResponseTime(this),
                 moveDirection = new MoveDirection(this),
-                moveLength = new MoveLength(this)
+                moveLength = new MoveLength(this),
+                hitDirectionML = new HitDirectionML(this),
+                moveDirectionML = new MoveDirectionML(this)
         });
     }
 

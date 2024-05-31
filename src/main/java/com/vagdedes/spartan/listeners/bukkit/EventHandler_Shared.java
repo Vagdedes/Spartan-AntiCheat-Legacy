@@ -1,8 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.listeners.protocol.Shared;
-import com.vagdedes.spartan.listeners.protocol.modules.PlayerAttackEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

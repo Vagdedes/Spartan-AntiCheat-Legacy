@@ -56,6 +56,7 @@ public class LiveViolation {
         synchronized (this) {
             if (!CloudBase.isInformationCancelled(hackType, information)
                     && (disableCause == null
+                    || disableCause.hasExpired()
                     || !disableCause.pointerMatches(information))) {
                 InformationAnalysis analysis = new InformationAnalysis(hackType, information);
                 int violationsInt = Math.max(AlgebraUtils.integerRound(violations), 1);
@@ -92,6 +93,7 @@ public class LiveViolation {
                     this.prevention = newPrevention;
                     this.prevention.canPrevent = !hackType.getCheck().isSilent(player.getWorld().getName())
                             && (silentCause == null
+                            || silentCause.hasExpired()
                             || !silentCause.pointerMatches(information))
                             && (player.getProfile().isSuspectedOrHacker(hackType)
                             || playerViolation.level >= playerViolation.getIgnoredViolations(player));
@@ -229,11 +231,11 @@ public class LiveViolation {
     // Separator
 
     public CancelCause getDisableCause() {
-        return disableCause;
+        return disableCause != null && disableCause.hasExpired() ? null : disableCause;
     }
 
     public CancelCause getSilentCause() {
-        return silentCause;
+        return silentCause != null && silentCause.hasExpired() ? null : silentCause;
     }
 
     public void addDisableCause(String reason, String pointer, int ticks) {

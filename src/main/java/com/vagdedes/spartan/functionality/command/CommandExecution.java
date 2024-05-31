@@ -13,6 +13,7 @@ import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessa
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
@@ -437,7 +438,7 @@ public class CommandExecution implements CommandExecutor {
                                                 sender.sendMessage(ChatColor.RED + "Seconds must be between 1 and 3600.");
                                                 return true;
                                             }
-                                            t.getViolations(hackType).addDisableCause("Command-" + sender.getName(), null, seconds * 20);
+                                            t.getViolations(hackType).addDisableCause("Command-" + sender.getName(), null, seconds * ((int) TPS.maximum));
                                         }
                                         String message = ConfigUtils.replaceWithSyntax(t, Config.messages.getColorfulString("bypass_message"), hackType)
                                                 .replace("{time}", noSeconds ? "infinite" : String.valueOf(seconds));

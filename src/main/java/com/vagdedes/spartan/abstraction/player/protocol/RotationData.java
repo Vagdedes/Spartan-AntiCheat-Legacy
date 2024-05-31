@@ -1,6 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.modules;
-
-import com.vagdedes.spartan.abstraction.player.protocol.SpartanProtocolField;
+package com.vagdedes.spartan.abstraction.player.protocol;
 
 public class RotationData extends SpartanProtocolField {
 
@@ -8,7 +6,7 @@ public class RotationData extends SpartanProtocolField {
     private float pitch;
     private boolean has;
 
-    public RotationData() {
+    RotationData() {
         this.yaw = 0.0f;
         this.pitch = 0.0f;
         this.has = false;

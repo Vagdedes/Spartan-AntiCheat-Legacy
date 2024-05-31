@@ -1,10 +1,10 @@
-package com.vagdedes.spartan.listeners.protocol.modules;
+package com.vagdedes.spartan.abstraction.player.protocol;
 
 public class AbilitiesContainer {
 
     private boolean sprint, sneak, fly;
 
-    public AbilitiesContainer(boolean sprint, boolean fly, boolean sneak) {
+    AbilitiesContainer(boolean sprint, boolean fly, boolean sneak) {
         this.sprint = sprint;
         this.fly = fly;
         this.sneak = sneak;

@@ -11,7 +11,6 @@ import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.listeners.bukkit.*;
-import com.vagdedes.spartan.listeners.protocol.Join;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
