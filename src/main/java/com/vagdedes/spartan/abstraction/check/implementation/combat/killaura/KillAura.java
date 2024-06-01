@@ -100,6 +100,7 @@ public class KillAura extends CheckExecutor {
         if (object instanceof PlayerFight) {
             analysis.run((PlayerFight) object);
         } else {
+
             if (object instanceof PlayerMoveEvent) {
                 PlayerMoveEvent event = (PlayerMoveEvent) object;
                 runDetection(
