@@ -167,7 +167,7 @@ public class SpartanBukkit {
 
     // Separator
 
-    public static boolean packetsEnabled() {
+    public static boolean packetsEnabled(UUID uuid) {
         return testMode && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 

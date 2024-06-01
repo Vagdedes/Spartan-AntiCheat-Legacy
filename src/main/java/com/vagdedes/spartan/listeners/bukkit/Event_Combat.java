@@ -58,7 +58,7 @@ public class Event_Combat implements Listener {
             }
             if (entityAttack
                     && (entityIsPlayer || entity instanceof LivingEntity)
-                    && !SpartanBukkit.packetsEnabled()) {
+                    && !SpartanBukkit.packetsEnabled(damager.getUniqueId())) {
                 Shared.attack(new PlayerAttackEvent(
                         (Player) damager,
                         (LivingEntity) entity,

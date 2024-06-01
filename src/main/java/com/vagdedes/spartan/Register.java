@@ -59,6 +59,7 @@ public class Register extends JavaPlugin {
         enable(new Event_Inventory(), Event_Inventory.class);
         enable(new Event_Combat(), Event_Combat.class);
         enable(new Events_Player(), Events_Player.class);
+        enable(new Event_Shared(), Event_Shared.class);
 
         if (NPCManager.supported) {
             enable(new NPCManager(), NPCManager.class);

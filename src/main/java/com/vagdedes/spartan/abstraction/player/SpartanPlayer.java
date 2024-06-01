@@ -393,7 +393,7 @@ public class SpartanPlayer {
 
         if (vehicle != null) {
             return vehicle.isOnGround();
-        } else if (SpartanBukkit.packetsEnabled()) {
+        } else if (SpartanBukkit.packetsEnabled(this.uuid)) {
             Player p = this.getInstance();
             SpartanProtocol protocol = p == null ? null : SpartanBukkit.getProtocol(p);
             return protocol != null && protocol.trueOrFalse(protocol.onGround)

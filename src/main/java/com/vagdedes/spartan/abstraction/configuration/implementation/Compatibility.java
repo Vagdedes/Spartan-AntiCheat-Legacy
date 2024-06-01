@@ -355,7 +355,7 @@ public class Compatibility {
         );
         CompatibilityType.PROTOCOL_LIB.setFunctional(
                 ProtocolLib::run,
-                () -> Register.enable(new Event_Shared(), Event_Shared.class)
+                null
         );
         CompatibilityType.MY_PET.setFunctional();
         CompatibilityType.RAMPEN_DRILLS.setFunctional(
