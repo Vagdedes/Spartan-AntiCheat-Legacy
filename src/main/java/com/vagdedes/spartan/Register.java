@@ -2,12 +2,10 @@ package com.vagdedes.spartan;
 
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.command.CommandTab;
-import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
-import com.vagdedes.spartan.functionality.notifications.SuspicionNotifications;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.listeners.bukkit.*;
@@ -32,7 +30,7 @@ public class Register extends JavaPlugin {
         plugin = this;
         Config.create();
 
-        // Separator
+        // Version
         if (MultiVersion.other) {
             AwarenessNotifications.forcefullySend(
                     "The server's version or type is not supported. "
@@ -42,15 +40,11 @@ public class Register extends JavaPlugin {
             return;
         }
 
-        // Pre Cache
-        DiscordMemberCount.get();
-
         // Base
         Config.settings.runOnLogin();
         PlayerLimitPerIP.cache();
-        SuspicionNotifications.run();
 
-        // Listeners (More may be registered in compatibilities)
+        // Listeners (More may be registered elsewhere)
         enable(new Event_Status(), Event_Status.class);
         enable(new Event_Vehicle(), Event_Vehicle.class);
         enable(new Event_Chat(), Event_Chat.class);
@@ -83,7 +77,7 @@ public class Register extends JavaPlugin {
     }
 
     public void onDisable() {
-        // Always First
+        plugin = this;
         plugin.setNaggable(false);
 
         // Separator
@@ -106,12 +100,8 @@ public class Register extends JavaPlugin {
         }
     }
 
-    public static boolean isPluginLoaded() {
-        return plugin != null;
-    }
-
     public static boolean isPluginEnabled() {
-        return isPluginLoaded() && plugin.isEnabled();
+        return plugin != null && plugin.isEnabled();
     }
 
     public static Class<?>[] getListeners() {

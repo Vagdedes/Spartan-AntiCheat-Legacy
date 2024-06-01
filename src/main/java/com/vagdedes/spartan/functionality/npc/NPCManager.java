@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.npc;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -24,40 +23,38 @@ public class NPCManager implements Listener {
     private static final List<SpartanNPC> list = Collections.synchronizedList(new ArrayList<>());
 
     static {
-        if (Register.isPluginEnabled()) {
-            SpartanBukkit.runRepeatingTask(() -> {
-                List<SpartanPlayer> staff = Permissions.getStaff();
+        SpartanBukkit.runRepeatingTask(() -> {
+            List<SpartanPlayer> staff = Permissions.getStaff();
 
-                if (staff.isEmpty()) {
-                    clear();
-                } else {
-                    synchronized (list) {
-                        Iterator<SpartanNPC> iterator = list.iterator();
+            if (staff.isEmpty()) {
+                clear();
+            } else {
+                synchronized (list) {
+                    Iterator<SpartanNPC> iterator = list.iterator();
 
-                        while (iterator.hasNext()) {
-                            SpartanNPC npc = iterator.next();
-                            boolean animate = false;
+                    while (iterator.hasNext()) {
+                        SpartanNPC npc = iterator.next();
+                        boolean animate = false;
 
-                            for (SpartanPlayer player : staff) {
-                                if (npc.location.distance(player.movement.getLocation()) <= PlayerUtils.chunk) {
-                                    animate = true;
-                                    break;
-                                }
+                        for (SpartanPlayer player : staff) {
+                            if (npc.location.distance(player.movement.getLocation()) <= PlayerUtils.chunk) {
+                                animate = true;
+                                break;
                             }
+                        }
 
-                            if (animate) {
-                                if (!npc.animate(staff)) {
-                                    iterator.remove();
-                                }
-                            } else {
-                                npc.remove();
+                        if (animate) {
+                            if (!npc.animate(staff)) {
                                 iterator.remove();
                             }
+                        } else {
+                            npc.remove();
+                            iterator.remove();
                         }
                     }
                 }
-            }, 1L, 1L);
-        }
+            }
+        }, 1L, 1L);
     }
 
     public static void clear() {

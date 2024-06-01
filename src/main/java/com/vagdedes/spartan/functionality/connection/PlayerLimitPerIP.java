@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.connection;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -32,27 +31,25 @@ public class PlayerLimitPerIP {
     private static final Map<Player, Storage> memory = new LinkedHashMap<>(Config.getMaxPlayers());
 
     static {
-        if (Register.isPluginLoaded()) {
-            SpartanBukkit.runRepeatingTask(() -> {
-                Iterator<Map.Entry<Player, Storage>> iterator = memory.entrySet().iterator();
+        SpartanBukkit.runRepeatingTask(() -> {
+            Iterator<Map.Entry<Player, Storage>> iterator = memory.entrySet().iterator();
 
-                while (iterator.hasNext()) {
-                    Map.Entry<Player, Storage> entry = iterator.next();
-                    Storage storage = entry.getValue();
+            while (iterator.hasNext()) {
+                Map.Entry<Player, Storage> entry = iterator.next();
+                Storage storage = entry.getValue();
 
-                    if (storage.kickTicks == 0) {
-                        Player p = entry.getKey();
+                if (storage.kickTicks == 0) {
+                    Player p = entry.getKey();
 
-                        if (p.isOnline()) {
-                            p.kickPlayer(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("player_ip_limit_kick_message"), null));
-                        }
-                        iterator.remove();
-                    } else if (storage.kickTicks > 0) {
-                        storage.kickTicks -= 1;
+                    if (p.isOnline()) {
+                        p.kickPlayer(ConfigUtils.replaceWithSyntax(p, Config.messages.getColorfulString("player_ip_limit_kick_message"), null));
                     }
+                    iterator.remove();
+                } else if (storage.kickTicks > 0) {
+                    storage.kickTicks -= 1;
                 }
-            }, 1L, 1L);
-        }
+            }
+        }, 1L, 1L);
     }
 
     public static void clear() {

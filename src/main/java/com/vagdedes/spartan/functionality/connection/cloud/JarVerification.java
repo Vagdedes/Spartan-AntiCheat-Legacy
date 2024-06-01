@@ -54,14 +54,10 @@ public class JarVerification {
         SpartanBukkit.runDelayedTask(() -> {
             SpartanBukkit.cancelTask(scheduledTask);
 
-            if (!valid && isSupplied()) {
+            if (!valid) {
                 Register.disablePlugin();
             }
         }, delay * 3L);
-    }
-
-    private static boolean isSupplied() {
-        return enabled || CloudBase.hasToken();
     }
 
     private static boolean isValid(String site, String spigot, String nonce) {

@@ -62,31 +62,29 @@ public class ResearchEngine {
             }
         }
 
-        if (Register.isPluginLoaded()) {
-            SpartanBukkit.runRepeatingTask(() -> {
-                if (schedulerTicks == 0) {
-                    schedulerTicks = cacheRefreshTicks * 10;
+        SpartanBukkit.runRepeatingTask(() -> {
+            if (schedulerTicks == 0) {
+                schedulerTicks = cacheRefreshTicks * 10;
 
-                    SpartanBukkit.analysisThread.executeIfFree(() -> {
-                        if (Config.sql.isEnabled()) {
-                            refresh(Register.isPluginEnabled());
-                        } else if (schedulerTicks % cacheRefreshTicks == 0) {
-                            updateCache();
-                            MainMenu.refresh();
-                        }
-                    });
-                } else {
-                    schedulerTicks -= 1;
-
-                    if (schedulerTicks % cacheRefreshTicks == 0) {
-                        SpartanBukkit.analysisThread.executeIfFree(() -> {
-                            updateCache();
-                            MainMenu.refresh();
-                        });
+                SpartanBukkit.analysisThread.executeIfFree(() -> {
+                    if (Config.sql.isEnabled()) {
+                        refresh(Register.isPluginEnabled());
+                    } else if (schedulerTicks % cacheRefreshTicks == 0) {
+                        updateCache();
+                        MainMenu.refresh();
                     }
+                });
+            } else {
+                schedulerTicks -= 1;
+
+                if (schedulerTicks % cacheRefreshTicks == 0) {
+                    SpartanBukkit.analysisThread.executeIfFree(() -> {
+                        updateCache();
+                        MainMenu.refresh();
+                    });
                 }
-            }, 1L, 1L);
-        }
+            }
+        }, 1L, 1L);
     }
 
     public static boolean isStorageMode() {
