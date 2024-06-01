@@ -107,7 +107,7 @@ public class SpartanLocation {
         loadEmptyBlock(false);
     }
 
-    SpartanLocation(Location loc, float yaw, float pitch) { // Used for vehicles
+    public SpartanLocation(Location loc, float yaw, float pitch) { // Used for vehicles
         this(loc.getWorld(), null, loc.getX(), loc.getY(), loc.getZ(), yaw, pitch);
 
         if (!v_1_9) { // 1.8 or older

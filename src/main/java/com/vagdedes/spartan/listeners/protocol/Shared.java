@@ -120,10 +120,10 @@ public class Shared {
         boolean cancelled = e.isCancelled();
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
         p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
-        p.getExecutor(Enums.HackType.KillAura).run(cancelled);
         p.getExecutor(Enums.HackType.NoFall).run(cancelled);
         p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
         p.getExecutor(Enums.HackType.Speed).run(cancelled);
+        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
     }
 
