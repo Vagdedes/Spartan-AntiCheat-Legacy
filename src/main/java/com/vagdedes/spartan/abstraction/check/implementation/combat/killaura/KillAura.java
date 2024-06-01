@@ -61,6 +61,7 @@ public class KillAura extends CheckExecutor {
 
     boolean canRunEntity(LivingEntity entity) {
         if (entity.getVehicle() == null
+                && CombatProcessing.canCheck(player, entity)
                 && !CombatUtils.isEntityWide(CombatUtils.getWidthAndHeight(entity)[0])) {
             UUID entityUUID = entity.getUniqueId();
             boolean isPlayer = SpartanBukkit.isPlayer(entityUUID);

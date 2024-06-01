@@ -115,20 +115,20 @@ public class PlayerProfile {
                 if (player == null) {
                     return InventoryUtils.getHead();
                 } else {
-                    this.skull = InventoryUtils.getSkull(player, name);
+                    this.skull = InventoryUtils.getSkull(player, name, false);
                 }
             } else {
                 SpartanPlayer spartanPlayer = getSpartanPlayer();
 
                 if (spartanPlayer == null) {
-                    return InventoryUtils.getSkull(null, name);
+                    return InventoryUtils.getSkull(null, name, false);
                 } else {
                     Player player = spartanPlayer.getInstance();
 
                     if (player == null) {
-                        return InventoryUtils.getSkull(null, name);
+                        return InventoryUtils.getSkull(null, name, false);
                     } else {
-                        this.skull = InventoryUtils.getSkull(player, name);
+                        this.skull = InventoryUtils.getSkull(player, name, false);
                     }
                 }
             }

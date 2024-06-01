@@ -147,7 +147,7 @@ public class SpartanNPC {
 
     void updateHead() {
         armorStand.getEquipment().setHelmet(
-                InventoryUtils.getSkull(offlinePlayer, backupName)
+                InventoryUtils.getSkull(offlinePlayer, backupName, true)
         );
     }
 

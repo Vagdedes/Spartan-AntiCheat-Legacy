@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
@@ -12,13 +13,13 @@ import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -67,8 +68,33 @@ public class NoSwing extends CheckExecutor {
                     resetAnimationData();
                 }
             }
-        } else if (object instanceof EntityDamageByEntityEvent) {
-            runDamage((LivingEntity) ((EntityDamageByEntityEvent) object).getEntity());
+        } else if (object instanceof PlayerAttackEvent) {
+            if (!hackType.getCheck().getBooleanOption("check_damage", true)
+                    || player.hasAttackCooldown()
+                    || player.trackers.has(Trackers.TrackerType.TRIDENT)) {
+                return;
+            }
+            LivingEntity entity = ((PlayerAttackEvent) object).getTarget();
+
+            if (!CombatProcessing.canCheck(player, entity)) {
+                return;
+            }
+            if (cooldowns.canDo("damage")) {
+                cooldowns.add("damage", 20);
+
+                if (this.animationTime == Long.MAX_VALUE) {
+                    if (buffer.count("damage", refreshTime) >= 3) {
+                        buffer.remove("damage");
+                        cancel(
+                                "type: damage"
+                                + ", entity: " + CombatUtils.entityToString(entity)
+                                + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType())
+                        );
+                    }
+                } else {
+                    resetAnimationData();
+                }
+            }
         }
     }
 

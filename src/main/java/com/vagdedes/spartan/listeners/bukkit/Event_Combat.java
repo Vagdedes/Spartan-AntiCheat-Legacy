@@ -2,9 +2,6 @@ package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
-import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.Shared;
@@ -29,59 +26,44 @@ public class Event_Combat implements Listener {
 
         if (damager instanceof Player) {
             boolean entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
+            SpartanPlayer p = SpartanBukkit.getPlayer((Player) damager);
 
+            if (p != null) {
+                // Object
+                p.addDealtDamage(e);
+
+                // Detections
+                if (entityAttack) {
+                    p.calculateClicks(null, true);
+
+                    if (entityIsPlayer || entity instanceof LivingEntity) {
+                        if (entityIsPlayer && !e.isCancelled()) {
+                            SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
+
+                            if (target != null) {
+                                p.getProfile().playerCombat.getFight(target).update(p);
+                            }
+                        }
+
+                        for (Enums.HackType hackType : Shared.handledCombatChecks) {
+                            if (p.getViolations(hackType).prevent()) {
+                                e.setCancelled(true);
+                            }
+                        }
+                        if (p.getViolations(Enums.HackType.FastClicks).prevent()) {
+                            e.setCancelled(true);
+                        }
+                    }
+                }
+            }
             if (entityAttack
-                    && entity instanceof LivingEntity
+                    && (entityIsPlayer || entity instanceof LivingEntity)
                     && !SpartanBukkit.packetsEnabled()) {
                 Shared.attack(new PlayerAttackEvent(
                         (Player) damager,
                         (LivingEntity) entity,
                         e.isCancelled())
                 );
-            }
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) damager);
-
-            if (p == null) {
-                return;
-            }
-            // Object
-            p.addDealtDamage(e);
-
-            // Detections
-            if (entityAttack) {
-                p.calculateClicks(null, true);
-
-                if (entityIsPlayer || entity instanceof LivingEntity) {
-                    boolean cancelled = e.isCancelled();
-
-                    if (!p.uuid.equals(entity.getUniqueId())
-                            && !mcMMO.hasGeneralAbility(p)
-                            && !MythicMobs.is(entity)
-                            && !ItemsAdder.is(entity)) {
-                        // Detections
-                        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
-                        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
-                        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
-
-                        if (!cancelled) {
-                            // Object (Always after detections so to not refresh last-hit, last-damage, e.t.c.)
-                            if (entityIsPlayer) {
-                                SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
-
-                                if (target != null) {
-                                    p.getProfile().playerCombat.getFight(target).update(p);
-                                }
-                            }
-                        }
-
-                        if (p.getViolations(Enums.HackType.KillAura).prevent()
-                                || p.getViolations(Enums.HackType.Criticals).prevent()
-                                || p.getViolations(Enums.HackType.NoSwing).prevent()
-                                || p.getViolations(Enums.HackType.FastClicks).prevent()) {
-                            e.setCancelled(true);
-                        }
-                    }
-                }
             }
         }
 
@@ -91,11 +73,14 @@ public class Event_Combat implements Listener {
             if (p == null) {
                 return;
             }
+            boolean cancelled = e.isCancelled();
+
             // Objects
             p.addReceivedDamage(e);
 
             // Detections
-            p.getExecutor(Enums.HackType.Speed).handle(e.isCancelled(), e);
+            p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])
