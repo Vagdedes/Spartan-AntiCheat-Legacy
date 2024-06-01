@@ -57,13 +57,16 @@ public class Event_Combat implements Listener {
                 }
             }
             if (entityAttack
-                    && (entityIsPlayer || entity instanceof LivingEntity)
-                    && !SpartanBukkit.packetsEnabled(damager.getUniqueId())) {
-                Shared.attack(new PlayerAttackEvent(
-                        (Player) damager,
-                        (LivingEntity) entity,
-                        e.isCancelled())
-                );
+                    && (entityIsPlayer || entity instanceof LivingEntity)) {
+                Player player = (Player) damager;
+
+                if (!SpartanBukkit.packetsEnabled(player)) {
+                    Shared.attack(new PlayerAttackEvent(
+                            player,
+                            (LivingEntity) entity,
+                            e.isCancelled())
+                    );
+                }
             }
         }
 

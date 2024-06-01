@@ -32,6 +32,7 @@ public class SpartanBukkit {
             detectionThread = MultiVersion.folia ? null : new Threads.ThreadPool(1L);
 
     public static final int hashCodeMultiplier = 31;
+    private static final long packetsGracePeriod = 5_000L;
     private static final Map<UUID, SpartanPlayer> players =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final Map<UUID, SpartanProtocol> playerProtocol =
@@ -173,17 +174,25 @@ public class SpartanBukkit {
 
     // Separator
 
+    private static boolean packetsEnabled() {
+        return testMode && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+    }
+
     public static boolean packetsEnabled(UUID uuid) {
-        if (testMode && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional()) {
+        if (packetsEnabled()) {
             SpartanProtocol protocol;
 
             synchronized (playerProtocol) {
                 protocol = playerProtocol.get(uuid);
             }
-            return protocol != null && protocol.timePassed() >= 5_000L;
+            return protocol != null && protocol.timePassed() > packetsGracePeriod;
         } else {
             return false;
         }
+    }
+
+    public static boolean packetsEnabled(Player player) {
+        return packetsEnabled() && getProtocol(player).timePassed() > packetsGracePeriod;
     }
 
     public static SpartanProtocol getProtocol(Player player) {
