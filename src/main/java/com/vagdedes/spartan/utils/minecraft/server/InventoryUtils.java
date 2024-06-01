@@ -62,26 +62,26 @@ public class InventoryUtils {
         SkullMeta meta;
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            if (create && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)) {
-                String name = null;
+            boolean notNull = offlinePlayer != null;
 
-                if (offlinePlayer != null) {
-                    name = offlinePlayer.getName();
+            if (create
+                    && notNull
+                    && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)) {
+                String name = offlinePlayer.getName();
 
-                    if (name == null) {
-                        name = backupName;
-                    }
-                    if (name == null) {
-                        Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
-                    } else {
-                        Bukkit.createPlayerProfile(offlinePlayer.getUniqueId(), name);
-                    }
+                if (name == null) {
+                    name = backupName;
+                }
+                if (name == null) {
+                    Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
+                } else {
+                    Bukkit.createPlayerProfile(offlinePlayer.getUniqueId(), name);
                 }
             }
             skull = new ItemStack(Material.PLAYER_HEAD);
             meta = (SkullMeta) skull.getItemMeta();
 
-            if (offlinePlayer != null) {
+            if (notNull) {
                 meta.setOwningPlayer(offlinePlayer);
             }
         } else {
