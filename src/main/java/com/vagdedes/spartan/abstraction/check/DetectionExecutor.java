@@ -25,7 +25,7 @@ public abstract class DetectionExecutor {
 
     protected final void runAsync(Runnable runnable) {
         if (!MultiVersion.folia
-                && !SpartanBukkit.packetsEnabled()
+                && !SpartanBukkit.packetsEnabled(player.uuid)
                 && (hackType.getCheck().isSilent(player.getWorld().getName())
                 || TPS.getMillisecondsPassed(player) <= tMinus)) {
             SpartanBukkit.detectionThread.executeIfFreeElseHere(runnable);

@@ -204,7 +204,7 @@ public class SpartanPlayerMovement {
     public boolean isSneaking() {
         Player p = this.parent.getInstance();
 
-        if (SpartanBukkit.packetsEnabled()) {
+        if (SpartanBukkit.packetsEnabled(this.parent.uuid)) {
             return p != null && SpartanBukkit.getProtocol(p).abilities.isSneaking();
         } else {
             return p != null && p.isSneaking();
@@ -227,7 +227,7 @@ public class SpartanPlayerMovement {
     public boolean isSprinting() {
         Player p = this.parent.getInstance();
 
-        if (SpartanBukkit.packetsEnabled()) {
+        if (SpartanBukkit.packetsEnabled(this.parent.uuid)) {
             return p != null && SpartanBukkit.getProtocol(p).abilities.isSprinting();
         } else {
             return p != null && p.isSprinting();
@@ -370,7 +370,7 @@ public class SpartanPlayerMovement {
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             Location playerLocation;
 
-            if (SpartanBukkit.packetsEnabled()) {
+            if (SpartanBukkit.packetsEnabled(this.parent.uuid)) {
                 playerLocation = SpartanBukkit.getProtocol(player).getLocation();
             } else {
                 playerLocation = player.getLocation();
@@ -392,7 +392,7 @@ public class SpartanPlayerMovement {
             if (spartanLocation == null) {
                 Location actualLocation;
 
-                if (SpartanBukkit.packetsEnabled()) {
+                if (SpartanBukkit.packetsEnabled(this.parent.uuid)) {
                     actualLocation = SpartanBukkit.getProtocol(p).getLocation();
                 } else {
                     actualLocation = p.getLocation();

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.world;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -41,28 +40,26 @@ public class SpartanLocation {
             v_1_17 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
     static {
-        if (Register.isPluginLoaded()) {
-            // Synchronised due to most calls being on the main thread
-            SpartanBukkit.runRepeatingTask(() -> {
-                if (!memory.isEmpty()) {
-                    long time = System.currentTimeMillis();
+        // Synchronised due to most calls being on the main thread
+        SpartanBukkit.runRepeatingTask(() -> {
+            if (!memory.isEmpty()) {
+                long time = System.currentTimeMillis();
 
-                    synchronized (memory) {
-                        Iterator<BlockCache> iterator = memory.values().iterator();
+                synchronized (memory) {
+                    Iterator<BlockCache> iterator = memory.values().iterator();
 
-                        while (iterator.hasNext()) {
-                            BlockCache cache = iterator.next();
+                    while (iterator.hasNext()) {
+                        BlockCache cache = iterator.next();
 
-                            if ((time - cache.time) >= clearanceTime) {
-                                iterator.remove();
-                            } else {
-                                break;
-                            }
+                        if ((time - cache.time) >= clearanceTime) {
+                            iterator.remove();
+                        } else {
+                            break;
                         }
                     }
                 }
-            }, 1L, clearanceTick);
-        }
+            }
+        }, 1L, clearanceTick);
     }
 
     // Object
@@ -89,8 +86,8 @@ public class SpartanLocation {
     // Base
 
     public SpartanLocation(World world, Chunk chunk,
-                            double x, double y, double z,
-                            float yaw, float pitch) { // Used for initiation
+                           double x, double y, double z,
+                           float yaw, float pitch) { // Used for initiation
         this.creation = System.currentTimeMillis();
         this.world = world;
         this.chunk = chunk;

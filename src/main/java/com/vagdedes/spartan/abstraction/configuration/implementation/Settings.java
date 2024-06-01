@@ -104,10 +104,9 @@ public class Settings extends ConfigurationBuilder {
 
     public void runOnLogin(SpartanPlayer p) {
         if (getBoolean("Notifications.enable_notifications_on_login")
-                && DetectionNotifications.hasPermission(p)) {
-            if (!DetectionNotifications.isEnabled(p)) {
-                DetectionNotifications.set(p, 0);
-            }
+                && DetectionNotifications.hasPermission(p)
+                && !DetectionNotifications.isEnabled(p)) {
+            DetectionNotifications.set(p, 0);
         }
     }
 

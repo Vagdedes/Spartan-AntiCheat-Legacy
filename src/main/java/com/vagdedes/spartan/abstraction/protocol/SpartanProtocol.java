@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public class SpartanProtocol {
 
-    private final Player player;
+    public final Player player;
     public final AbilitiesContainer abilities;
     public final RotationData lastRotation;
     public Boolean
@@ -16,13 +16,13 @@ public class SpartanProtocol {
             position,
             verifiedPosition,
             lastTeleport;
-    public int ignore;
+    private final long creationTime;
 
     public SpartanProtocol(Player player) {
+        this.creationTime = System.currentTimeMillis();
         this.player = player;
         this.abilities = new AbilitiesContainer(false, false, false);
         this.lastRotation = new RotationData();
-        this.ignore = 0;
     }
 
     // Utilities
@@ -38,6 +38,10 @@ public class SpartanProtocol {
     }
 
     // Implementations
+
+    public long timePassed() {
+        return System.currentTimeMillis() - creationTime;
+    }
 
     public Location getLocation() {
         if (hasDataFor(position)) {

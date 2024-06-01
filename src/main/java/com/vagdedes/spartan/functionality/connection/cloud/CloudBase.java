@@ -43,12 +43,11 @@ public class CloudBase {
     static {
         clear(false);
 
-        if (Register.isPluginLoaded()) {
-            SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.execute(() -> {
-                refresh(true);
-                refresh(false);
-            }), 1L, refreshTime);
-        }
+        SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.execute(() -> {
+            refresh(true);
+            refresh(false);
+        }), 1L, refreshTime);
+
         String[] verstionString = Register.plugin.getDescription().getVersion().split(" ");
 
         for (String s : verstionString) {

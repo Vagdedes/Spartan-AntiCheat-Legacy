@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.player;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
@@ -77,50 +76,48 @@ public class SpartanPlayer {
     private PlayerProfile playerProfile;
 
     static {
-        if (Register.isPluginLoaded()) {
-            SpartanBukkit.runRepeatingTask(() -> {
-                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+        SpartanBukkit.runRepeatingTask(() -> {
+            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-                if (!players.isEmpty()) {
-                    for (SpartanPlayer p : players) {
-                        p.movement.judgeGround();
+            if (!players.isEmpty()) {
+                for (SpartanPlayer p : players) {
+                    p.movement.judgeGround();
 
-                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                            Elytra.judge(p, false);
-                        }
-                        p.playerProfile.playerCombat.track();
-                        p.movement.setDetectionLocation(false);
-
-                        // Separator
-                        SpartanBukkit.runTask(p, () -> {
-                            Player n = p.getInstance();
-
-                            if (n != null) {
-                                p.setStoredPotionEffects(n.getActivePotionEffects()); // Bad
-                            }
-                            SpartanLocation to = p.movement.getLocation(),
-                                    from = p.movement.getSchedulerFromLocation();
-
-                            if (from != null) {
-                                p.movement.schedulerDistance = to.distance(from);
-                            }
-                            p.movement.schedulerFrom = to;
-
-                            for (CheckExecutor executor : p.executors) {
-                                executor.scheduler();
-                            }
-
-                            // Preventions
-                            for (Enums.HackType hackType : Shared.handledMovementChecks) {
-                                if (p.getViolations(hackType).prevent()) {
-                                    break;
-                                }
-                            }
-                        });
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                        Elytra.judge(p, false);
                     }
+                    p.playerProfile.playerCombat.track();
+                    p.movement.setDetectionLocation(false);
+
+                    // Separator
+                    SpartanBukkit.runTask(p, () -> {
+                        Player n = p.getInstance();
+
+                        if (n != null) {
+                            p.setStoredPotionEffects(n.getActivePotionEffects()); // Bad
+                        }
+                        SpartanLocation to = p.movement.getLocation(),
+                                from = p.movement.getSchedulerFromLocation();
+
+                        if (from != null) {
+                            p.movement.schedulerDistance = to.distance(from);
+                        }
+                        p.movement.schedulerFrom = to;
+
+                        for (CheckExecutor executor : p.executors) {
+                            executor.scheduler();
+                        }
+
+                        // Preventions
+                        for (Enums.HackType hackType : Shared.handledMovementChecks) {
+                            if (p.getViolations(hackType).prevent()) {
+                                break;
+                            }
+                        }
+                    });
                 }
-            }, 1L, 1L);
-        }
+            }
+        }, 1L, 1L);
     }
 
     // Object
@@ -393,7 +390,7 @@ public class SpartanPlayer {
 
         if (vehicle != null) {
             return vehicle.isOnGround();
-        } else if (SpartanBukkit.packetsEnabled()) {
+        } else if (SpartanBukkit.packetsEnabled(this.uuid)) {
             Player p = this.getInstance();
             SpartanProtocol protocol = p == null ? null : SpartanBukkit.getProtocol(p);
             return protocol != null && protocol.trueOrFalse(protocol.onGround)

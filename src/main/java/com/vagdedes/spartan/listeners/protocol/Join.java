@@ -21,12 +21,9 @@ public class Join extends PacketAdapter implements Listener {
     @Override
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();
-        SpartanProtocol protocol = new SpartanProtocol(player);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         protocol.spawnStatus = true;
         protocol.position = new Location(event.getPlayer().getWorld(), 0, 0, 0);
-        protocol.ignore = 2;
-        SpartanBukkit.pushProtocol(player, protocol);
-
         Shared.join(new PlayerJoinEvent(
                 player,
                 (String) null

@@ -18,13 +18,16 @@ public class Vehicles implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Enter(VehicleEnterEvent e) {
         if (Compatibility.CompatibilityType.VEHICLES.isFunctional()) {
-            SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer().getUniqueId());
-            VehicleType vehicleType = e.getVehicleType();
+            SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
-            if (vehicleType == VehicleType.DRILL) {
-                add(p, "drill");
-            } else if (vehicleType == VehicleType.TRACTOR) {
-                add(p, "tractor");
+            if (p != null) {
+                VehicleType vehicleType = e.getVehicleType();
+
+                if (vehicleType == VehicleType.DRILL) {
+                    add(p, "drill");
+                } else if (vehicleType == VehicleType.TRACTOR) {
+                    add(p, "tractor");
+                }
             }
         }
     }
@@ -32,8 +35,11 @@ public class Vehicles implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Exit(VehicleExitEvent e) {
         if (Compatibility.CompatibilityType.VEHICLES.isFunctional()) {
-            SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer().getUniqueId());
-            p.buffer.clear(key);
+            SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+
+            if (p != null) {
+                p.buffer.clear(key);
+            }
         }
     }
 

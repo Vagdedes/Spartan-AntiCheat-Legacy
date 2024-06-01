@@ -35,7 +35,7 @@ public class GrapplingHook implements Listener {
 
             if (caught instanceof Player) {
                 SpartanPlayer p = SpartanBukkit.getPlayer((Player) caught),
-                        t = SpartanBukkit.getPlayer(e.getPlayer().getUniqueId());
+                        t = SpartanBukkit.getPlayer(e.getPlayer());
 
                 if (p != null && t != null && !p.equals(t) && isItem(t.getItemInHand())) {
                     if (PluginUtils.exists("grapplinghook")) {
