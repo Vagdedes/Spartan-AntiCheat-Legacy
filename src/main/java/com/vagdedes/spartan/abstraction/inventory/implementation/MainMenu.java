@@ -93,10 +93,7 @@ public class MainMenu extends InventoryMenu {
                 + (SpartanEdition.hasDetectionsPurchased(Enums.DataType.BEDROCK) ? "§a" : "§c") + Enums.DataType.BEDROCK);
         Runtime runtime = Runtime.getRuntime();
 
-        if (!MultiVersion.unknownFork || !MultiVersion.other) {
-            lore.add("§7Server Information§8: §a" + (MultiVersion.unknownFork ? "Version" : MultiVersion.fork())
-                    + (MultiVersion.other ? "" : " " + MultiVersion.versionString()));
-        }
+        lore.add("§7Server Version§8: §a" + MultiVersion.versionString());
         double tps = TPS.get(player, false);
         lore.add("§7" + (MultiVersion.folia ? "Region " : "") + "TPS (Ticks Per Second)§8: §a" + AlgebraUtils.cut(tps, 2)
                 + " - " + (tps >= TPS.excellent ? "Excellent" : tps >= TPS.good ? "Good" : tps >= TPS.minimum ? "Mediocre" : "Unstable"));

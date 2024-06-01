@@ -364,7 +364,7 @@ public class LiveViolation {
         SpartanLocation location = player.movement.getLocation();
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + ") "
-                + "[(Version: " + MultiVersion.fork() + " "
+                + "[(Version: " + MultiVersion.versionString() + " "
                 + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
                 + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
                 + "(Ping: " + player.getPing() + "ms), (TPS: "

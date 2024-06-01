@@ -85,7 +85,11 @@ public class InventoryUtils {
                 meta.setOwningPlayer(offlinePlayer);
             }
         } else {
-            skull = new ItemStack(Material.getMaterial("SKULL_ITEM"), 1, (short) SkullType.PLAYER.ordinal());
+            skull = new ItemStack(
+                    Material.getMaterial("SKULL_ITEM"),
+                    1,
+                    (short) SkullType.PLAYER.ordinal()
+            );
             meta = (SkullMeta) skull.getItemMeta();
             String name = null;
 

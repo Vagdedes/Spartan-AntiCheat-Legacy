@@ -77,7 +77,6 @@ public class ConfigUtils {
         message = replace(message, "{server:name}", CrossServerInformation.getOptionValue());
         message = replace(message, "{plugin:version}", API.getVersion());
         message = replace(message, "{server:version}", MultiVersion.versionString());
-        message = replace(message, "{server:type}", MultiVersion.fork());
         message = replace(message, "{line}", "\n");
 
         if (contains(message, "{date:")) {

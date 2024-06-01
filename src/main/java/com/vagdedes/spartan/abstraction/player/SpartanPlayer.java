@@ -862,11 +862,8 @@ public class SpartanPlayer {
     // Separator
 
     public boolean canSee(Player target) {
-        if (SpartanBukkit.supportedFork) {
-            Player p = getInstance();
-            return p != null && p.canSee(target);
-        }
-        return false;
+        Player p = getInstance();
+        return p != null && p.canSee(target);
     }
 
     public int getPing() {
