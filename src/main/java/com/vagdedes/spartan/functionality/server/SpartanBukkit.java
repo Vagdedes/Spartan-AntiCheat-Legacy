@@ -145,6 +145,12 @@ public class SpartanBukkit {
         }
     }
 
+    public static Set<Map.Entry<UUID, SpartanPlayer>> getPlayerEntries() {
+        synchronized (players) {
+            return new HashSet<>(players.entrySet());
+        }
+    }
+
     // Separator
 
     public static boolean isSynchronised() {
@@ -168,7 +174,16 @@ public class SpartanBukkit {
     // Separator
 
     public static boolean packetsEnabled(UUID uuid) {
-        return testMode && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+        if (testMode && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional()) {
+            SpartanProtocol protocol;
+
+            synchronized (playerProtocol) {
+                protocol = playerProtocol.get(uuid);
+            }
+            return protocol != null && protocol.timePassed() >= 5_000L;
+        } else {
+            return false;
+        }
     }
 
     public static SpartanProtocol getProtocol(Player player) {

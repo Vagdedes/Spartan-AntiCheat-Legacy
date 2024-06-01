@@ -16,8 +16,10 @@ public class SpartanProtocol {
             position,
             verifiedPosition,
             lastTeleport;
+    private final long creationTime;
 
     public SpartanProtocol(Player player) {
+        this.creationTime = System.currentTimeMillis();
         this.player = player;
         this.abilities = new AbilitiesContainer(false, false, false);
         this.lastRotation = new RotationData();
@@ -36,6 +38,10 @@ public class SpartanProtocol {
     }
 
     // Implementations
+
+    public long timePassed() {
+        return System.currentTimeMillis() - creationTime;
+    }
 
     public Location getLocation() {
         if (hasDataFor(position)) {
