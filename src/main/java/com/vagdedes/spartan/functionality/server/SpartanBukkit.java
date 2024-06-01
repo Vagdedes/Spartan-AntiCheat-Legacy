@@ -34,8 +34,6 @@ public class SpartanBukkit {
     public static final int hashCodeMultiplier = 31;
     private static final Map<UUID, SpartanPlayer> players =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
-    private static final Map<UUID, Player> realPlayers =
-            Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final Map<UUID, SpartanProtocol> playerProtocol =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     public static final Class<?> craftPlayer = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
@@ -49,8 +47,8 @@ public class SpartanBukkit {
         synchronized (players) {
             players.clear();
         }
-        synchronized (realPlayers) {
-            realPlayers.clear();
+        synchronized (playerProtocol) {
+            playerProtocol.clear();
         }
     }
 
@@ -81,29 +79,34 @@ public class SpartanBukkit {
     }
 
     public static Player getRealPlayer(UUID uuid) {
-        Player player;
+        SpartanProtocol protocol;
 
         if (isSynchronised()) {
-            player = Bukkit.getPlayer(uuid);
+            Player player = Bukkit.getPlayer(uuid);
 
             if (player != null) {
-                synchronized (realPlayers) {
-                    realPlayers.putIfAbsent(uuid, player);
+                protocol = getProtocol(player);
+            } else {
+                synchronized (playerProtocol) {
+                    protocol = playerProtocol.get(uuid);
                 }
             }
         } else {
-            synchronized (realPlayers) {
-                player = realPlayers.get(uuid);
+            synchronized (playerProtocol) {
+                protocol = playerProtocol.get(uuid);
             }
         }
-        return player;
+        return protocol == null ? null : protocol.player;
     }
 
     public static SpartanPlayer getPlayer(Player real) {
         UUID uuid = real.getUniqueId();
 
-        synchronized (realPlayers) {
-            realPlayers.putIfAbsent(real.getUniqueId(), real);
+        synchronized (playerProtocol) {
+            playerProtocol.computeIfAbsent(
+                    real.getUniqueId(),
+                    k -> new SpartanProtocol(real)
+            );
         }
         SpartanPlayer player;
 
@@ -118,13 +121,10 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer removePlayer(Player real) {
-        synchronized (realPlayers) {
-            synchronized (playerProtocol) {
-                synchronized (players) {
-                    realPlayers.remove(real.getUniqueId());
-                    playerProtocol.remove(real.getUniqueId());
-                    return players.remove(real.getUniqueId());
-                }
+        synchronized (playerProtocol) {
+            synchronized (players) {
+                playerProtocol.remove(real.getUniqueId());
+                return players.remove(real.getUniqueId());
             }
         }
     }
@@ -177,12 +177,6 @@ public class SpartanBukkit {
                     player.getUniqueId(),
                     k -> new SpartanProtocol(player)
             );
-        }
-    }
-
-    public static void pushProtocol(Player player, SpartanProtocol protocol) {
-        synchronized (playerProtocol) {
-            playerProtocol.put(player.getUniqueId(), protocol);
         }
     }
 

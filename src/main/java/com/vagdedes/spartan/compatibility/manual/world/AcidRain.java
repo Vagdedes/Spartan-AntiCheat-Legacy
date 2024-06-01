@@ -17,7 +17,7 @@ public class AcidRain implements Listener {
     private void AcidRainEvent(AcidRainEvent e) {
         if (Compatibility.CompatibilityType.ACID_RAIN.isFunctional()) {
             Player n = e.getPlayer();
-            SpartanPlayer p = SpartanBukkit.getPlayer(n.getUniqueId());
+            SpartanPlayer p = SpartanBukkit.getPlayer(n);
 
             if (p == null) {
                 return;
@@ -34,7 +34,7 @@ public class AcidRain implements Listener {
     private void AcidEvent(AcidEvent e) {
         if (Compatibility.CompatibilityType.ACID_RAIN.isFunctional()) {
             Player n = e.getPlayer();
-            SpartanPlayer p = SpartanBukkit.getPlayer(n.getUniqueId());
+            SpartanPlayer p = SpartanBukkit.getPlayer(n);
 
             if (p == null) {
                 return;
