@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
@@ -11,6 +12,7 @@ import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.UUID;
 
@@ -83,11 +85,6 @@ public class KillAura extends CheckExecutor {
                 false
         );
         runDetection(
-                "check_move_direction",
-                moveDirection::runMove,
-                false
-        );
-        runDetection(
                 "check_move_direction_machine_learning",
                 moveDirectionML::runMove,
                 false
@@ -103,45 +100,61 @@ public class KillAura extends CheckExecutor {
         if (object instanceof PlayerFight) {
             analysis.run((PlayerFight) object);
         } else {
-            PlayerAttackEvent event = (PlayerAttackEvent) object;
-
-            if (canRunEntity(event.getTarget())) {
+            if (object instanceof PlayerMoveEvent) {
+                PlayerMoveEvent event = (PlayerMoveEvent) object;
                 runDetection(
-                        "check_irregular",
-                        irregular::run,
-                        true
-                );
-                runDetection(
-                        "check_block_raytrace",
-                        blockRaytrace::run,
-                        true
-                );
-                runDetection(
-                        "check_entity_raytrace",
-                        entityRaytrace::run,
-                        true
-                );
-                runDetection(
-                        "check_hit_time",
-                        hitTime::run,
-                        true
-                );
-                runDetection(
-                        "check_hit_direction",
-                        hitDirection::run,
-                        true
-                );
-                runDetection(
-                        "check_hit_direction_machine_learning",
-                        hitDirectionML::run,
-                        true
-                );
-                runDetection(
-                        "check_response_time",
-                        responseTime::run,
-                        true
+                                "check_move_direction",
+                                () -> moveDirection.runMove(null, false),
+                                false
                 );
             }
+            if (object instanceof PlayerAttackEvent) {
+                PlayerAttackEvent event = (PlayerAttackEvent) object;
+
+                if (canRunEntity(event.getTarget())) {
+                    runDetection(
+                                    "check_irregular",
+                                    irregular::run,
+                                    true
+                    );
+                    runDetection(
+                                    "check_block_raytrace",
+                                    blockRaytrace::run,
+                                    true
+                    );
+                    runDetection(
+                                    "check_entity_raytrace",
+                                    entityRaytrace::run,
+                                    true
+                    );
+                    runDetection(
+                                    "check_move_direction",
+                                    () -> moveDirection.runMove(event.getTarget(), true),
+                                    false
+                    );
+                    runDetection(
+                                    "check_hit_time",
+                                    hitTime::run,
+                                    true
+                    );
+                    runDetection(
+                                    "check_hit_direction",
+                                    hitDirection::run,
+                                    true
+                    );
+                    runDetection(
+                                    "check_hit_direction_machine_learning",
+                                    hitDirectionML::run,
+                                    true
+                    );
+                    runDetection(
+                                    "check_response_time",
+                                    responseTime::run,
+                                    true
+                    );
+                }
+            }
+
         }
     }
 

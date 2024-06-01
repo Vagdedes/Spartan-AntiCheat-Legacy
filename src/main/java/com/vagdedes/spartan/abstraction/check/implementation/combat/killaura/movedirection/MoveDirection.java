@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
+package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
@@ -7,20 +7,30 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class MoveDirection extends DetectionExecutor {
 
-    MoveDirection(CheckExecutor executor) {
+    public MoveDirection(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
     }
 
-    void runMove() {
-        for (Entity target : player.getNearbyEntities(1, 1, 1)) {
+    Map<Player, AttackHandle> container = new ConcurrentHashMap<>();
+
+    public void runMove(Entity targetHandle, Boolean handle) {
+        //player.sendMessage(String.valueOf(handle));
+        if (handle) {
+            container.put(player.getInstance(), new AttackHandle(targetHandle, System.currentTimeMillis()));
+        } else if (container.containsKey(player.getInstance())
+                        && container.get(player.getInstance()).getTimeMillis() + 3000 > System.currentTimeMillis()) {
+            // main
+            Entity target = container.get(player.getInstance()).getTarget();
             float diff = Math.abs(RayUtils.castTo360(player.movement.getLocation().getYaw()
-                    - getRotation(player.getInstance(), target)[0]));
+                            - getRotation(player.getInstance(), target)[0]));
             float yaw = RayUtils.castTo360(player.movement.getLocation().getYaw());
             float predYaw = getRotation(player.getInstance(), target)[0];
-            //player.sendMessage("diff: " + diff + " " + Math.sin(yaw) + " " + Math.sin(predYaw));
-            // todo
+            // player.sendMessage("diff: " + diff + " " + Math.sin(yaw) + " " + Math.sin(predYaw));
         }
     }
 
