@@ -16,21 +16,20 @@ public class MoveDirection extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    Map<Player, AttackHandle> container = new ConcurrentHashMap<>();
+    AttackHandle container = new AttackHandle(null, System.currentTimeMillis());
 
     public void runMove(Entity targetHandle, Boolean handle) {
-        //player.sendMessage(String.valueOf(handle));
+        // player.sendMessage(String.valueOf(handle));
         if (handle) {
-            container.put(player.getInstance(), new AttackHandle(targetHandle, System.currentTimeMillis()));
-        } else if (container.containsKey(player.getInstance())
-                        && container.get(player.getInstance()).getTimeMillis() + 3000 > System.currentTimeMillis()) {
+            container = new AttackHandle(targetHandle, System.currentTimeMillis());
+        } else if (container.getTarget() != null && container.getTimeMillis() + 3000 > System.currentTimeMillis()) {
             // main
-            Entity target = container.get(player.getInstance()).getTarget();
+            Entity target = container.getTarget();
             float diff = Math.abs(RayUtils.castTo360(player.movement.getLocation().getYaw()
                             - getRotation(player.getInstance(), target)[0]));
             float yaw = RayUtils.castTo360(player.movement.getLocation().getYaw());
             float predYaw = getRotation(player.getInstance(), target)[0];
-            // player.sendMessage("diff: " + diff + " " + Math.sin(yaw) + " " + Math.sin(predYaw));
+            player.sendMessage("diff: " + diff + " " + Math.sin(yaw) + " " + Math.sin(predYaw));
         }
     }
 
