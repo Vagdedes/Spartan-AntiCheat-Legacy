@@ -3,18 +3,12 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 import static java.lang.Math.PI;
 

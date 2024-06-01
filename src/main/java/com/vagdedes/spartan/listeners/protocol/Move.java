@@ -26,18 +26,18 @@ public class Move {
                 Player player = event.getPlayer();
                 SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-                if (SpartanBukkit.packetsEnabled(protocol)) {
-                    if (protocol.hasDataFor(protocol.position) && !protocol.spawnStatus) {
-                        if (protocol.position == protocol.verifiedPosition) {
-                            protocol.position = protocol.position.clone().add(
-                                    readMovePacket(event, protocol)
-                            );
-                            Shared.teleport(new PlayerTeleportEvent(
-                                    player,
-                                    protocol.lastTeleport,
-                                    protocol.position)
-                            );
-                        }
+                if (protocol.hasDataFor(protocol.position) && !protocol.spawnStatus
+                        && protocol.position == protocol.verifiedPosition) {
+                    protocol.position = protocol.position.clone().add(
+                            readMovePacket(event, protocol)
+                    );
+
+                    if (SpartanBukkit.packetsEnabled(protocol)) {
+                        Shared.teleport(new PlayerTeleportEvent(
+                                player,
+                                protocol.lastTeleport,
+                                protocol.position)
+                        );
                     }
                 }
             }
@@ -69,7 +69,7 @@ public class Move {
         }
     }
 
-    static void moving(PacketEvent event) {
+    private static void moving(PacketEvent event) {
         Player player = event.getPlayer();
         PacketContainer packet = event.getPacket();
 
@@ -101,19 +101,25 @@ public class Move {
             boolean ground = packet.getBooleans().read(0);
             protocol.onGround = ground;
             protocol.position = to;
-            Shared.move(new PlayerMoveEvent(
-                            player, from, to
-            ));
+
+            if (SpartanBukkit.packetsEnabled(protocol)) {
+                Shared.move(new PlayerMoveEvent(
+                        player, from, to
+                ));
+            }
         } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())
                 || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {
             SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
             boolean ground = packet.getBooleans().read(0);
             protocol.onGround = ground;
-            Shared.stay(new PlayerStayEvent(ground, player));
+
+            if (SpartanBukkit.packetsEnabled(protocol)) {
+                Shared.stay(new PlayerStayEvent(ground, player));
+            }
         }
     }
 
-    static Location readMovePacket(PacketEvent event, SpartanProtocol protocol) {
+    private static Location readMovePacket(PacketEvent event, SpartanProtocol protocol) {
         PacketContainer packet = event.getPacket();
         Player player = event.getPlayer();
 
@@ -134,7 +140,7 @@ public class Move {
         }
     }
 
-    static void importRotation(SpartanProtocol protocol, Location l) {
+    private static void importRotation(SpartanProtocol protocol, Location l) {
         l.setYaw(protocol.lastRotation.getYaw());
         l.setPitch(protocol.lastRotation.getPitch());
     }

@@ -226,6 +226,10 @@ public class SpartanBukkit {
         return SpartanScheduler.schedule(null, runnable, start, repetition);
     }
 
+    public static void runTask(Player player, Runnable runnable) {
+        SpartanScheduler.run(player, runnable, false);
+    }
+
     public static void runTask(SpartanPlayer player, Runnable runnable) {
         SpartanScheduler.run(player, runnable, false);
     }
@@ -235,6 +239,10 @@ public class SpartanBukkit {
     }
 
     public static void transferTask(SpartanPlayer player, Runnable runnable) {
+        SpartanScheduler.run(player, runnable, true);
+    }
+
+    public static void transferTask(Player player, Runnable runnable) {
         SpartanScheduler.run(player, runnable, true);
     }
 

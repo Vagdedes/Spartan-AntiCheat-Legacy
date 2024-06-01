@@ -37,6 +37,8 @@ public class EntityAction extends PacketAdapter {
             if (type == AbilitiesEnum.STOP_SPRINTING) protocol.abilities.setSprinting(false);
             if (type == AbilitiesEnum.PRESS_SHIFT_KEY) protocol.abilities.setSneaking(true);
             if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) protocol.abilities.setSneaking(false);
+            if (type == AbilitiesEnum.START_SNEAKING) protocol.abilities.setSneaking(true);
+            if (type == AbilitiesEnum.STOP_SNEAKING) protocol.abilities.setSneaking(false);
         }
     }
 

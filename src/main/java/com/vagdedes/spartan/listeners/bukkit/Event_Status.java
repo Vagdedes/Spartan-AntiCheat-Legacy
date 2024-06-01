@@ -32,18 +32,17 @@ public class Event_Status implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent e) {
-        SpartanPlayer p = SpartanBukkit.removePlayer(e.getPlayer());
+        Player n = e.getPlayer();
+        SpartanPlayer p = SpartanBukkit.removePlayer(n);
+
+        // Features
+        PlayerLimitPerIP.remove(n);
 
         if (p == null) {
             return;
         }
         // Features
         MaximumCheckedPlayers.remove(p);
-
-        // Utils
-        PlayerLimitPerIP.remove(p);
-
-        // Features
         ChatProtection.remove(p);
     }
 

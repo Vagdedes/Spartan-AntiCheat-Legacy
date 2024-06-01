@@ -21,17 +21,15 @@ public class Velocity extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();
+        PacketContainer packet = event.getPacket();
+        int id = packet.getIntegers().getValues().get(0);
 
-        if (SpartanBukkit.packetsEnabled(player)) {
-            PacketContainer packet = event.getPacket();
-            int id = packet.getIntegers().getValues().get(0);
-
-            if (player.getEntityId() == id) {
-                double x = MathHelper.floor_double(packet.getIntegers().read(1).doubleValue()) / 8000.0D,
-                        y = MathHelper.floor_double(packet.getIntegers().read(2).doubleValue()) / 8000.0D,
-                        z = MathHelper.floor_double(packet.getIntegers().read(3).doubleValue()) / 8000.0D;
-                Shared.velocity(new PlayerVelocityEvent(player, new Vector(x, y, z)));
-            }
+        if (player.getEntityId() == id
+                && SpartanBukkit.packetsEnabled(player)) {
+            double x = MathHelper.floor_double(packet.getIntegers().read(1).doubleValue()) / 8000.0D,
+                    y = MathHelper.floor_double(packet.getIntegers().read(2).doubleValue()) / 8000.0D,
+                    z = MathHelper.floor_double(packet.getIntegers().read(3).doubleValue()) / 8000.0D;
+            Shared.velocity(new PlayerVelocityEvent(player, new Vector(x, y, z)));
         }
     }
 

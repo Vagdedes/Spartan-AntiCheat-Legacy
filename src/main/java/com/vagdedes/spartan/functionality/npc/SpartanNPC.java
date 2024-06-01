@@ -39,24 +39,11 @@ public class SpartanNPC {
                 EntityType.ARMOR_STAND
         );
         armorStand.setGravity(false);
-        armorStand.setCanMove(false);
         armorStand.setSmall(false);
-        armorStand.setCanTick(false);
         armorStand.setVisible(false);
         armorStand.setCustomName("§2Spartan §cAnti§4Cheat");
         armorStand.setCustomNameVisible(true);
         armorStand.setArms(true);
-
-        armorStand.setRightLegPose(new EulerAngle(
-                0,
-                0,
-                Math.toRadians(5.0)
-        ));
-        armorStand.setLeftLegPose(new EulerAngle(
-                0,
-                0,
-                -Math.toRadians(5.0)
-        ));
 
         armorStand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
         armorStand.addEquipmentLock(EquipmentSlot.CHEST, ArmorStand.LockType.REMOVING_OR_CHANGING);
@@ -68,6 +55,7 @@ public class SpartanNPC {
             armorStand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
             armorStand.getEquipment().setItemInOffHand(new ItemStack(Material.SHIELD));
         }
+        this.updateBodyAndLegs();
         this.updateHead();
 
         ItemStack itemStack = new ItemStack(Material.LEATHER_CHESTPLATE);
@@ -89,10 +77,29 @@ public class SpartanNPC {
         armorStand.getEquipment().setItemInHand(itemStack);
     }
 
+    private void updateBodyAndLegs() {
+        armorStand.setBodyPose(new EulerAngle(
+                0,
+                0,
+                0
+        ));
+        armorStand.setRightLegPose(new EulerAngle(
+                0,
+                0,
+                Math.toRadians(5.0)
+        ));
+        armorStand.setLeftLegPose(new EulerAngle(
+                0,
+                0,
+                -Math.toRadians(5.0)
+        ));
+    }
+
     boolean animate(List<SpartanPlayer> players) {
         if (armorStand.isDead()) {
             return false;
         } else {
+            this.updateBodyAndLegs();
             double headMax = 5.0, handMax = 15.0;
 
             if (headPose >= headMax) {

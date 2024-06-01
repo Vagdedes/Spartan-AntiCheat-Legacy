@@ -121,15 +121,7 @@ public class PlayerLimitPerIP {
         return storage != null && storage.kickTicks >= 0;
     }
 
-    public static void remove(SpartanPlayer p) {
-        String ip = p.getIpAddress();
-
-        if (ip != null) {
-            Player n = p.getInstance();
-
-            if (n != null) {
-                memory.remove(n);
-            }
-        }
+    public static void remove(Player p) {
+        memory.remove(p);
     }
 }

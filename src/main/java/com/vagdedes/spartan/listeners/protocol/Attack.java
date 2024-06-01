@@ -27,12 +27,13 @@ public class Attack extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
 
-        if (SpartanBukkit.packetsEnabled(player)) {
+        SpartanBukkit.runTask(player, () -> {
             Entity entity = ProtocolLibrary.getProtocolManager().
-                    getEntityFromID(event.getPlayer().getWorld(), event.getPacket().getIntegers().read(0));
+                    getEntityFromID(player.getWorld(), event.getPacket().getIntegers().read(0));
             PacketContainer packet = event.getPacket();
 
-            if (entity instanceof LivingEntity) {
+            if (entity instanceof LivingEntity
+                    && SpartanBukkit.packetsEnabled(player)) {
                 Shared.attack(
                         new PlayerAttackEvent(
                                 player,
@@ -41,7 +42,7 @@ public class Attack extends PacketAdapter {
                         )
                 );
             }
-        }
+        });
     }
 
     public Vector2f calculate(final Vector3d from, final Vector3d to) {
