@@ -9,7 +9,7 @@ public class HitDirectionML extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void run() {
+    void runDamage() {
         // todo
     }
 

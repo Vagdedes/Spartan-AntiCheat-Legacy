@@ -10,7 +10,7 @@ public class HitDirection extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void run() {
+    void runDamage() {
         for (Entity target : player.getNearbyEntities(1, 1, 1)) {
             // todo
         }

@@ -12,7 +12,7 @@ public class Irregular extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void run() {
+    void runDamage() {
         if (player.isDead()) {
             cancel("type: irregular, scenario: death");
         } else if (player.isSleeping()) {

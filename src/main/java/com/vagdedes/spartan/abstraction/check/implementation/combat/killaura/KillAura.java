@@ -103,54 +103,54 @@ public class KillAura extends CheckExecutor {
             if (object instanceof PlayerMoveEvent) {
                 PlayerMoveEvent event = (PlayerMoveEvent) object;
                 runDetection(
-                                "check_move_direction",
-                                () -> moveDirection.runMove(null, false),
-                                false
+                        "check_move_direction",
+                        moveDirection::runMove,
+                        false
                 );
-            }
-            if (object instanceof PlayerAttackEvent) {
+            } else if (object instanceof PlayerAttackEvent) {
                 PlayerAttackEvent event = (PlayerAttackEvent) object;
+                LivingEntity target = event.getTarget();
 
-                if (canRunEntity(event.getTarget())) {
+                if (canRunEntity(target)) {
                     runDetection(
-                                    "check_irregular",
-                                    irregular::run,
-                                    true
+                            "check_irregular",
+                            irregular::runDamage,
+                            true
                     );
                     runDetection(
-                                    "check_block_raytrace",
-                                    blockRaytrace::run,
-                                    true
+                            "check_block_raytrace",
+                            blockRaytrace::runDamage,
+                            true
                     );
                     runDetection(
-                                    "check_entity_raytrace",
-                                    entityRaytrace::run,
-                                    true
+                            "check_entity_raytrace",
+                            entityRaytrace::runDamage,
+                            true
                     );
                     runDetection(
-                                    "check_move_direction",
-                                    () -> moveDirection.runMove(event.getTarget(), true),
-                                    false
+                            "check_move_direction",
+                            () -> moveDirection.runDamage(target),
+                            false
                     );
                     runDetection(
-                                    "check_hit_time",
-                                    hitTime::run,
-                                    true
+                            "check_hit_time",
+                            hitTime::runDamage,
+                            true
                     );
                     runDetection(
-                                    "check_hit_direction",
-                                    hitDirection::run,
-                                    true
+                            "check_hit_direction",
+                            hitDirection::runDamage,
+                            true
                     );
                     runDetection(
-                                    "check_hit_direction_machine_learning",
-                                    hitDirectionML::run,
-                                    true
+                            "check_hit_direction_machine_learning",
+                            hitDirectionML::runDamage,
+                            true
                     );
                     runDetection(
-                                    "check_response_time",
-                                    responseTime::run,
-                                    true
+                            "check_response_time",
+                            responseTime::runDamage,
+                            true
                     );
                 }
             }

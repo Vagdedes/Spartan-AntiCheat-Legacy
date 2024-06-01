@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.server;
 
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -14,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryUtils {
+
+    private static final boolean paperProfile = ReflectionUtils.classExists(
+            "com.destroystokyo.paper.profile.PlayerProfile"
+    );
 
     public static void prepareDescription(List<String> array, String title) {
         array.clear();
@@ -62,26 +67,34 @@ public class InventoryUtils {
         SkullMeta meta;
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            boolean notNull = offlinePlayer != null;
-
             if (create
-                    && notNull
+                    && offlinePlayer != null
                     && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)) {
                 String name = offlinePlayer.getName();
 
                 if (name == null) {
                     name = backupName;
-                }
-                if (name == null) {
-                    Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
-                } else {
-                    Bukkit.createPlayerProfile(offlinePlayer.getUniqueId(), name);
+
+                    if (paperProfile) {
+                        if (name == null) {
+                            Bukkit.createProfile(offlinePlayer.getUniqueId());
+                        } else {
+                            Bukkit.createProfileExact(offlinePlayer.getUniqueId(), name);
+                        }
+                        offlinePlayer = Bukkit.getOfflinePlayer(offlinePlayer.getUniqueId());
+                    } else if (name == null) {
+                        Bukkit.createPlayerProfile(offlinePlayer.getUniqueId());
+                        offlinePlayer = Bukkit.getOfflinePlayer(offlinePlayer.getUniqueId());
+                    } else {
+                        Bukkit.createPlayerProfile(offlinePlayer.getUniqueId(), name);
+                        offlinePlayer = Bukkit.getOfflinePlayer(offlinePlayer.getUniqueId());
+                    }
                 }
             }
             skull = new ItemStack(Material.PLAYER_HEAD);
             meta = (SkullMeta) skull.getItemMeta();
 
-            if (notNull) {
+            if (offlinePlayer != null) {
                 meta.setOwningPlayer(offlinePlayer);
             }
         } else {
@@ -105,4 +118,5 @@ public class InventoryUtils {
         skull.setItemMeta(meta);
         return skull;
     }
+
 }
