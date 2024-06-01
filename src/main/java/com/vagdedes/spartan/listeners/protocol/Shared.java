@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.listeners.protocol;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -16,7 +15,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -114,7 +112,7 @@ public class Shared {
         MovementProcessing.run(p, to, ver, box);
 
         // Patterns
-        Bukkit.getScheduler().runTask(Register.plugin, () -> {
+        SpartanBukkit.transferTask(p, () -> {
             for (Enums.HackType hackType : handledMovementChecks) {
                 if (p.getViolations(hackType).prevent()) {
                     break;

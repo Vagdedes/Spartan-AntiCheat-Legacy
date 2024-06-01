@@ -174,7 +174,7 @@ public class SpartanBukkit {
 
     // Separator
 
-    private static boolean packetsEnabled() {
+    public static boolean packetsEnabled() {
         return testMode && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
@@ -191,8 +191,12 @@ public class SpartanBukkit {
         }
     }
 
+    public static boolean packetsEnabled(SpartanProtocol protocol) {
+        return packetsEnabled() && protocol.timePassed() > packetsGracePeriod;
+    }
+
     public static boolean packetsEnabled(Player player) {
-        return packetsEnabled() && getProtocol(player).timePassed() > packetsGracePeriod;
+        return packetsEnabled(getProtocol(player));
     }
 
     public static SpartanProtocol getProtocol(Player player) {

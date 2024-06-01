@@ -81,6 +81,7 @@ public class MainMenu extends InventoryMenu {
         InventoryUtils.prepareDescription(lore, "Plugin Management");
         int slots = CloudBase.getDetectionSlots();
 
+        lore.add("§7Packets Enabled§8: §a" + SpartanBukkit.packetsEnabled(player.uuid));
         if (slots <= 0) {
             lore.add("§7Detection Slots§8: §aUnlimited");
         } else {

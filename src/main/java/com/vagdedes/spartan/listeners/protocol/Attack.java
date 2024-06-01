@@ -8,7 +8,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
-import org.bukkit.Bukkit;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,27 +20,28 @@ import static java.lang.Math.PI;
 public class Attack extends PacketAdapter {
 
     public Attack() {
-        super(Register.plugin, ListenerPriority.MONITOR,
-                PacketType.Play.Client.USE_ENTITY);
+        super(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.USE_ENTITY);
     }
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
+        Player player = event.getPlayer();
 
-        Bukkit.getScheduler().runTask(Register.plugin, () -> {
-            Player player = event.getPlayer();
+        if (SpartanBukkit.packetsEnabled(player)) {
             Entity entity = ProtocolLibrary.getProtocolManager().
                     getEntityFromID(event.getPlayer().getWorld(), event.getPacket().getIntegers().read(0));
             PacketContainer packet = event.getPacket();
 
             if (entity instanceof LivingEntity) {
-                Shared.attack(new PlayerAttackEvent(player, (LivingEntity) entity, false));
+                Shared.attack(
+                        new PlayerAttackEvent(
+                                player,
+                                (LivingEntity) entity,
+                                false
+                        )
+                );
             }
-            //player.sendMessage(RayUtils.castTo360(player.getLocation().getYaw())
-            //                + " " + getRotation(player, entity)[0]);
-
-        });
-
+        }
     }
 
     public Vector2f calculate(final Vector3d from, final Vector3d to) {

@@ -26,16 +26,18 @@ public class Move {
                 Player player = event.getPlayer();
                 SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-                if (protocol.hasDataFor(protocol.position) && !protocol.spawnStatus) {
-                    if (protocol.position == protocol.verifiedPosition) {
-                        protocol.position = protocol.position.clone().add(
-                                        readMovePacket(event, protocol)
-                        );
-                        Shared.teleport(new PlayerTeleportEvent(
-                                player,
-                                protocol.lastTeleport,
-                                protocol.position)
-                        );
+                if (SpartanBukkit.packetsEnabled(protocol)) {
+                    if (protocol.hasDataFor(protocol.position) && !protocol.spawnStatus) {
+                        if (protocol.position == protocol.verifiedPosition) {
+                            protocol.position = protocol.position.clone().add(
+                                    readMovePacket(event, protocol)
+                            );
+                            Shared.teleport(new PlayerTeleportEvent(
+                                    player,
+                                    protocol.lastTeleport,
+                                    protocol.position)
+                            );
+                        }
                     }
                 }
             }

@@ -28,6 +28,7 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
+        plugin.setNaggable(false);
         Config.create();
 
         // Version
@@ -96,6 +97,7 @@ public class Register extends JavaPlugin {
 
     public static void disablePlugin() {
         if (isPluginEnabled()) {
+            plugin.setNaggable(false);
             manager.disablePlugin(plugin);
         }
     }

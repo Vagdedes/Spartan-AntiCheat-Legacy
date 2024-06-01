@@ -62,6 +62,10 @@ public class SpartanLocation {
         }, 1L, clearanceTick);
     }
 
+    public static int getChunkPos(int pos) {
+        return pos >> 4;
+    }
+
     // Object
 
     public final long creation;
@@ -165,14 +169,14 @@ public class SpartanLocation {
     public void setX(double x) {
         if (this.block != null) {
             if (this.chunk != null) {
-                int currentX = getBlockX(), chunkX = (currentX >> 4);
+                int currentX = getBlockX(), chunkX = getChunkPos(currentX);
                 this.x = x;
                 int newX = getBlockX();
 
                 if (currentX != newX) {
                     this.block = null;
 
-                    if (chunkX != (newX >> 4)) {
+                    if (chunkX != getChunkPos(newX)) {
                         this.chunk = null;
                     }
                 }
@@ -212,14 +216,14 @@ public class SpartanLocation {
     public void setZ(double z) {
         if (this.block != null) {
             if (this.chunk != null) {
-                int currentZ = getBlockZ(), chunkZ = (currentZ >> 4);
+                int currentZ = getBlockZ(), chunkZ = getChunkPos(currentZ);
                 this.z = z;
                 int newZ = getBlockZ();
 
                 if (currentZ != newZ) {
                     this.block = null;
 
-                    if (chunkZ != (newZ >> 4)) {
+                    if (chunkZ != getChunkPos(newZ)) {
                         this.chunk = null;
                     }
                 }
@@ -278,11 +282,11 @@ public class SpartanLocation {
     }
 
     public int getChunkX() {
-        return getBlockX() >> 4;
+        return getChunkPos(getBlockX());
     }
 
     public int getChunkZ() {
-        return getBlockZ() >> 4;
+        return getChunkPos(getBlockZ());
     }
 
     public int getLocalX() {
@@ -360,7 +364,7 @@ public class SpartanLocation {
             if (blockX != startX || blockY != startY || blockZ != startZ) {
                 this.block = null;
 
-                if ((startX >> 4) != getChunkX() || (startZ >> 4) != getChunkZ()) {
+                if (getChunkPos(startX) != getChunkX() || getChunkPos(startZ) != getChunkZ()) {
                     this.chunk = null;
                 }
                 this.identifier = Chunks.locationIdentifier(world.hashCode(), blockX, blockY, blockZ);
@@ -404,7 +408,7 @@ public class SpartanLocation {
                     blockY >= 0 && blockY <= PlayerUtils.height) {
                 if (MultiVersion.folia
                         || SpartanBukkit.isSynchronised()
-                        || Chunks.isLoaded(world, getBlockX() >> 4, getBlockZ() >> 4)) {
+                        || Chunks.isLoaded(world, getChunkX(), getChunkZ())) {
                     BlockCache cache;
 
                     synchronized (memory) {
@@ -472,8 +476,8 @@ public class SpartanLocation {
     }
 
     public boolean isNearbyChunk(Location loc) {
-        return Math.abs(getChunkX() - (loc.getBlockX() >> 4)) <= 1
-                && Math.abs(getChunkZ() - (loc.getBlockZ() >> 4)) <= 1;
+        return Math.abs(getChunkX() - getChunkPos(loc.getBlockX())) <= 1
+                && Math.abs(getChunkZ() - getChunkPos(loc.getBlockZ())) <= 1;
     }
 
     public double distance(SpartanLocation loc) {
