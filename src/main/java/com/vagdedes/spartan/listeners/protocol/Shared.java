@@ -26,13 +26,19 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class Shared {
 
-    public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
+    public static final Enums.HackType[]
+            handledMovementChecks = new Enums.HackType[]{
             Enums.HackType.NoFall,
             Enums.HackType.IrregularMovements,
             Enums.HackType.Speed,
             Enums.HackType.MorePackets,
             Enums.HackType.ImpossibleInventory,
             Enums.HackType.Exploits
+    }, handledCombatChecks = new Enums.HackType[]{
+            Enums.HackType.KillAura,
+            Enums.HackType.HitReach,
+            Enums.HackType.Criticals,
+            Enums.HackType.NoSwing
     };
 
     public static void join(PlayerJoinEvent e) {
@@ -109,7 +115,7 @@ public class Shared {
 
         // Patterns
         Bukkit.getScheduler().runTask(Register.plugin, () -> {
-            for (Enums.HackType hackType : handledChecks) {
+            for (Enums.HackType hackType : handledMovementChecks) {
                 if (p.getViolations(hackType).prevent()) {
                     break;
                 }
@@ -165,11 +171,9 @@ public class Shared {
         p.addReceivedVelocity(e);
 
         // Detections
-        p.getExecutor(Enums.HackType.Speed).handle(e.isCancelled(), e);
-
-        if (p.getViolations(Enums.HackType.Velocity).prevent()) {
-            e.setCancelled(true);
-        }
+        boolean cancelled = e.isCancelled();
+        p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
     }
 
     public static void stay(PlayerStayEvent e) { // Packets Only
@@ -188,12 +192,11 @@ public class Shared {
         if (p == null) {
             return;
         }
-        boolean cancelled = e.isCancelled(); // todo fix executor calls
-        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
+        boolean cancelled = e.isCancelled();
+
+        for (Enums.HackType hackType : Shared.handledCombatChecks) {
+            p.getExecutor(hackType).handle(cancelled, e);
+        }
     }
 
 }

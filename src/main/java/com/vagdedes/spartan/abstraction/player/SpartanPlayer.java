@@ -111,7 +111,7 @@ public class SpartanPlayer {
                             }
 
                             // Preventions
-                            for (Enums.HackType hackType : Shared.handledChecks) {
+                            for (Enums.HackType hackType : Shared.handledMovementChecks) {
                                 if (p.getViolations(hackType).prevent()) {
                                     break;
                                 }

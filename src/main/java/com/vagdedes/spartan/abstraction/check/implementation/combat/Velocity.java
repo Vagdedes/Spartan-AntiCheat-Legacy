@@ -4,6 +4,8 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class Velocity extends CheckExecutor {
 
@@ -12,8 +14,12 @@ public class Velocity extends CheckExecutor {
     }
 
     @Override
-    protected void runInternal(boolean cancelled) {
-        // todo
+    protected void handleInternal(boolean cancelled, Object object) {
+        if (object instanceof EntityDamageByEntityEvent) {
+            // todo
+        } else if (object instanceof PlayerVelocityEvent) {
+            // todo
+        }
     }
 
     @Override
