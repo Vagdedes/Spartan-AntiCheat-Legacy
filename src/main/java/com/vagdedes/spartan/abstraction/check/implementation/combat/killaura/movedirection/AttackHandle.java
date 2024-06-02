@@ -7,16 +7,16 @@ public class AttackHandle {
     private final Entity target;
     private final long timeMillis;
 
-    public AttackHandle(Entity target, long timeMillis) {
+    AttackHandle(Entity target, long timeMillis) {
         this.timeMillis = timeMillis;
         this.target = target;
     }
 
-    public Entity getTarget() {
+    Entity getTarget() {
         return target;
     }
 
-    public long getTimeMillis() {
+    long getTimeMillis() {
         return timeMillis;
     }
 }

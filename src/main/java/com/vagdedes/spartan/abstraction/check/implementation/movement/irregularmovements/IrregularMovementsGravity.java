@@ -31,7 +31,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             boolean liquid = player.movement.wasInLiquids(),
                     velocity = player.trackers.has(Trackers.TrackerFamily.VELOCITY),
                     motion = player.trackers.has(Trackers.TrackerFamily.MOTION),
-                    ground = player.isOnGround(),
+                    ground = player.isOnGround(null, true),
                     sneaking = player.movement.isSneaking(),
                     noNearbyEntities = player.getNearbyEntities(1.0, 1.0, 1.0).isEmpty();
             SpartanLocation to = player.movement.getEventToLocation(),
@@ -109,7 +109,10 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     predictions.add(-PlayerUtils.webBlockDownDefault);
                 } else if (climb) {
                     if (vertical == 0.0) {
-                        if (!ground && !sneaking && noNearbyEntities
+                        if (!ground
+                                && !player.isOnGround(to, false)
+                                && !sneaking
+                                && noNearbyEntities
                                 && !BlockPatternUtils.isBlockPattern(
                                 new double[]{
                                         GroundUtils.boundingBox,

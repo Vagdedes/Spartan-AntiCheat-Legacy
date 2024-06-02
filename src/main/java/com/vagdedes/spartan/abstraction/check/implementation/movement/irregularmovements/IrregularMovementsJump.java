@@ -47,12 +47,12 @@ public class IrregularMovementsJump extends DetectionExecutor {
 
     void run(double vertical, double box) {
         if (hackType.getCheck().getBooleanOption("check_jump", true)) {
-            SpartanLocation to = player.movement.getEventToLocation();
+            SpartanLocation to = player.movement.getEventToLocation(),
+                    from = player.movement.getEventFromLocation();
             int airTicks = player.movement.getTicksOnAir(),
                     jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;
             boolean liquids = player.movement.wasInLiquids(),
-                    toGround = player.isOnGround(),
-                    fromGround = player.isOnGround(player.movement.getEventFromLocation(), true),
+                    toGround = player.isOnGround(null, true),
                     velocity = player.trackers.has(Trackers.TrackerFamily.VELOCITY);
 
             runAsync(() -> {
@@ -101,7 +101,8 @@ public class IrregularMovementsJump extends DetectionExecutor {
                         double limit = Math.max(PlayerUtils.getJumpTicks(jumpEffect), TPS.maximum);
 
                         if (!toGround
-                                && !fromGround
+                                && !player.isOnGround(to, false)
+                                && !player.isOnGround(from, false)
                                 && !liquids
                                 && airTicks > limit) {
                             cancel("type: jump(ticks)"

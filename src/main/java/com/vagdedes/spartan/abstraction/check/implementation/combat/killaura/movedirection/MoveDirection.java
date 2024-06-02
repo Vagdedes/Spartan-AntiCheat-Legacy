@@ -15,11 +15,12 @@ import static java.lang.Math.PI;
 public class MoveDirection extends DetectionExecutor {
 
     private AttackHandle attackHandle;
-    private LinkedList<AttackData> aimAnalysis = new LinkedList<>();
+    private final LinkedList<AttackData> aimAnalysis;
     private float vl;
 
     public MoveDirection(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
+        aimAnalysis = new LinkedList<>();
         attackHandle = new AttackHandle(null, System.currentTimeMillis());
     }
 
@@ -32,21 +33,23 @@ public class MoveDirection extends DetectionExecutor {
             if (target != null) {
                 float yaw = RayUtils.castTo360(player.movement.getLocation().getYaw());
                 float predYaw = RayUtils.castTo360(calculate(player.movement.getLocation().toVector().toVector3d(),
-                                target.getLocation().toVector().toVector3d()).x);
+                        target.getLocation().toVector().toVector3d()).x);
                 double diff = Math.abs(yaw - predYaw);
                 aimAnalysis.addFirst(new AttackData(diff, yaw, player.movement.getLocation().getPitch()));
-                if (aimAnalysis.size() >= 10) analys(player.movement.getEventFromLocation());
+                if (aimAnalysis.size() >= 10) analyze(player.movement.getEventFromLocation());
                 //player.sendMessage("diff: " + diff + " yaw: " + yaw + " predYaw: " + predYaw);
             }
         }
     }
-    public void analys(SpartanLocation to) {
-        float yawChange = Math.abs(aimAnalysis.getLast().getYaw() - aimAnalysis.getFirst().getYaw());
-        float yawChangeBasic = 0;
-        float oldYaw = aimAnalysis.getFirst().getYaw();
-        float addVl = 0;
+
+    public void analyze(SpartanLocation to) {
+        float yawChange = Math.abs(aimAnalysis.getLast().getYaw() - aimAnalysis.getFirst().getYaw()),
+                yawChangeBasic = 0,
+                oldYaw = aimAnalysis.getFirst().getYaw(),
+                addVl = 0;
         double accuracy = 0;
         String punishment = null;
+
         for (AttackData data : aimAnalysis) {
             accuracy += data.getAccuracy();
             yawChangeBasic += Math.abs(data.getYaw() - oldYaw);
@@ -56,15 +59,21 @@ public class MoveDirection extends DetectionExecutor {
         //player.sendMessage("yaw: " + yawChange + " accuracy: " + accuracy);
         aimAnalysis.clear();
         double factor = yawChange / accuracy;
+
         if (accuracy < 10 && yawChangeBasic > 50) {
-           punishment = "heuristic(smart)";
-           addVl = 205;
+            punishment = "heuristic(smart)";
+            addVl = 205;
         }
         if (punishment != null) {
             vl += addVl;
+
             if (vl > 200) {
-                cancel("type: move-direction, module: "
-                                + punishment + ", accuracy: " + accuracy + ", factor: " + factor, 2, to);
+                cancel(
+                        "type: move-direction, module: "
+                                + punishment + ", accuracy: " + accuracy + ", factor: " + factor,
+                        1.0,
+                        to
+                );
             }
         } else {
             if (vl > 0) vl -= 30;
@@ -76,12 +85,11 @@ public class MoveDirection extends DetectionExecutor {
         attackHandle = new AttackHandle(targetHandle, System.currentTimeMillis());
     }
 
-
     public Vector2f calculate(final Vector3d from, final Vector3d to) {
-        final Vector3d diff = to.sub(from);
-        final double distance = Math.hypot(diff.x(), diff.z());
-        final float yaw = (float) (Math.atan2(diff.z(), diff.x()) * 180.0F / PI) - 90.0F;
-        final float pitch = (float) (-(Math.atan2(diff.y(), distance) * 180.0F / PI));
+        Vector3d diff = to.sub(from);
+        double distance = Math.hypot(diff.x(), diff.z());
+        float yaw = (float) (Math.atan2(diff.z(), diff.x()) * 180.0F / PI) - 90.0F,
+                pitch = (float) (-(Math.atan2(diff.y(), distance) * 180.0F / PI));
         return new Vector2f(yaw, pitch);
     }
 

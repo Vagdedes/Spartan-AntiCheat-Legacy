@@ -3,24 +3,23 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 public class AttackData {
 
     private final double accuracy;
-    private final float yaw;
-    private final float pitch;
+    private final float yaw, pitch;
 
-    public AttackData(double accuracy, float yaw, float pitch) {
+    AttackData(double accuracy, float yaw, float pitch) {
         this.accuracy = accuracy;
         this.yaw = yaw;
         this.pitch = pitch;
     }
 
-    public double getAccuracy() {
+    double getAccuracy() {
         return accuracy;
     }
 
-    public float getYaw() {
+    float getYaw() {
         return yaw;
     }
 
-    public float getPitch() {
+    float getPitch() {
         return pitch;
     }
 }

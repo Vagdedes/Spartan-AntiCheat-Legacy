@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -71,12 +72,13 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         if (hackType.getCheck().getBooleanOption("check_step", true)) {
+            SpartanLocation to = player.movement.getEventToLocation();
             Entity vehicle = player.getVehicle();
             boolean slime = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime"),
                     bed = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed"),
                     vehicleEnter = player.trackers.has(Trackers.TrackerType.VEHICLE, "enter"),
                     vehicleExit = player.trackers.has(Trackers.TrackerType.VEHICLE, "exit");
-            boolean ground = player.isOnGround();
+            boolean ground = player.isOnGround(null, true);
 
             runAsync(() -> {
                 if (knownBox && knownOldBox) {
@@ -226,7 +228,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                             true
                                     );
                                 }
-                            } else if (!ground) {
+                            } else if (!ground
+                                    && !player.isOnGround(to, false)) {
                                 double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                         + PlayerUtils.airAcceleration;
 
