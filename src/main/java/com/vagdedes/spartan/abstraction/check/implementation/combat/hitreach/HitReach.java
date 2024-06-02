@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat;
+package com.vagdedes.spartan.abstraction.check.implementation.combat.hitreach;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
