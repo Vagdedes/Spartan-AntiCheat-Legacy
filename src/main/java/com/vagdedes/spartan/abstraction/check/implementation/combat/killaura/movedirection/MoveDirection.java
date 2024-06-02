@@ -61,7 +61,7 @@ public class MoveDirection extends DetectionExecutor {
         for (int i = 0; i < aimAnalysis.size(); i++) {
             double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
 
-            if (rayTraceAnalysis.get(i) < 0.1 && changeYaw > 4) {
+            if (rayTraceAnalysis.get(i) < 0.1 && changeYaw > 7) {
                 basicHeuristic++;
             }
 
