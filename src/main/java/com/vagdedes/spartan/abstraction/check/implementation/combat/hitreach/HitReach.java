@@ -49,7 +49,7 @@ public class HitReach extends CheckExecutor {
         if (punish != null) {
             cancel(
                     "type: " + punish + ", hitbox-size-analysis: "
-                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviantity: " + percent + "%",
+                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: " + percent + "%",
                     1.0,
                     to
             );
