@@ -17,6 +17,7 @@ public class MoveDirection extends DetectionExecutor {
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
     private float vl;
+    private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
 
     public MoveDirection(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
@@ -31,54 +32,54 @@ public class MoveDirection extends DetectionExecutor {
             Entity target = attackHandle.getTarget();
 
             if (target != null) {
-                float yaw = RayUtils.castTo360(player.movement.getLocation().getYaw());
-                float predYaw = RayUtils.castTo360(calculate(player.movement.getLocation().toVector().toVector3d(),
-                        target.getLocation().toVector().toVector3d()).x);
-                double diff = Math.abs(yaw - predYaw);
-                aimAnalysis.addFirst(new AttackData(diff, yaw, player.movement.getLocation().getPitch()));
-                if (aimAnalysis.size() >= 10) analyze(player.movement.getEventFromLocation());
-                //player.sendMessage("diff: " + diff + " yaw: " + yaw + " predYaw: " + predYaw);
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target);
+                double diff = bruteforceRayTrace - 0.4;
+                rayTraceAnalysis.addLast(bruteforceRayTrace);
+                aimAnalysis.addLast(new AttackData(diff,
+                                player.movement.getLocation().getYaw(),
+                                player.movement.getLocation().getPitch()));
+                if (rayTraceAnalysis.size() >= 10) {
+                    analyze(player.movement.getLocation(), bruteforceRayTrace);
+                }
             }
         }
     }
-
-    public void analyze(SpartanLocation to) {
-        float yawChange = Math.abs(aimAnalysis.getLast().getYaw() - aimAnalysis.getFirst().getYaw()),
-                yawChangeBasic = 0,
-                oldYaw = aimAnalysis.getFirst().getYaw(),
-                addVl = 0;
-        double accuracy = 0;
-        String punishment = null;
-
-        for (AttackData data : aimAnalysis) {
-            accuracy += data.getAccuracy();
-            yawChangeBasic += Math.abs(data.getYaw() - oldYaw);
-            oldYaw = data.getYaw();
+    public void analyze(SpartanLocation to, double bruteForce) {
+        String punish = null;
+        double globalValue = 0;
+        double changeYaw = 0;
+        double oldYaw = aimAnalysis.getFirst().getYaw();
+        double oldYawResult = aimAnalysis.getFirst().getYaw();
+        int basicHeuristic = 0;
+        for (Double value : rayTraceAnalysis) {
+            globalValue += value;
         }
-        accuracy /= 10;
-        //player.sendMessage("yaw: " + yawChange + " accuracy: " + accuracy);
-        aimAnalysis.clear();
-        double factor = yawChange / accuracy;
-
-        if (accuracy < 10 && yawChangeBasic > 50) {
-            punishment = "heuristic(smart)";
-            addVl = 205;
+        for (AttackData value : aimAnalysis) {
+            changeYaw += Math.abs(value.getYaw() - oldYaw);
+            oldYaw = value.getYaw();
         }
-        if (punishment != null) {
-            vl += addVl;
+        for (int i = 0; i < aimAnalysis.size(); i++) {
+            double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
 
-            if (vl > 200) {
-                cancel(
-                        "type: move-direction, module: "
-                                + punishment + ", accuracy: " + accuracy + ", factor: " + factor,
-                        1.0,
-                        to
-                );
+            if (rayTraceAnalysis.get(i) < 0.1 && changeYaw > 4) {
+                basicHeuristic++;
             }
-        } else {
-            if (vl > 0) vl -= 30;
+
+            oldYawResult = aimAnalysis.get(i).getYaw();
         }
-        // player.sendMessage("accuracy: " + accuracy + ", factor: " + factor + ", yaw: " + yawChange);
+        double result = globalValue / rayTraceAnalysis.size();
+        if (basicHeuristic > 6) punish = "heuristic(basic)";
+        if (punish != null) {
+            cancel(
+                            "type: " + punish + ", hitbox-size-analysis: "
+                                            + result + ", hitbox-size-last: " + bruteForce,
+                            1.0,
+                            to
+            );
+        }
+        rayTraceAnalysis.clear();
+        aimAnalysis.clear();
+
     }
 
     public void runDamage(Entity targetHandle) {

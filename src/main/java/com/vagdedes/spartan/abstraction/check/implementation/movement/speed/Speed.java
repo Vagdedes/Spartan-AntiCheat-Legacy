@@ -378,7 +378,6 @@ public class Speed extends CheckExecutor {
             }
             collideMinecraftShitMathFactor = false;
             double limit = 0.3D * (speedMultiply * 1.2) * ((speedModify > 0) ? 2 : 1);
-
             if (keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut() && !player.movement.isSprinting()) {
                 sprintVl = sprintVl + 2;
 

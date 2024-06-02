@@ -3,10 +3,12 @@ package com.vagdedes.spartan.utils.math;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.mcp.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.mcp.MathHelper;
 import com.vagdedes.spartan.utils.minecraft.mcp.MovingObjectPosition;
 import com.vagdedes.spartan.utils.minecraft.mcp.Vec3;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -175,22 +177,38 @@ public class RayUtils {
     public static boolean inHitbox(SpartanPlayer player, Entity target, float size) {
         SpartanLocation location = player.movement.getLocation();
         boolean intersection = false;
+        boolean exempt = false;
+        if (target instanceof Player) {
+            SpartanPlayer targetSpartan = SpartanBukkit.getPlayer(target.getUniqueId());
+            assert targetSpartan != null;
+            double targetX = targetSpartan.movement.getLocation().getX();
+            double targetY = targetSpartan.movement.getLocation().getY();
+            double targetZ = targetSpartan.movement.getLocation().getZ();
 
-        double targetX = target.getLocation().getX();
-        double targetY = target.getLocation().getY();
-        double targetZ = target.getLocation().getZ();
+            AxisAlignedBB boundingBox = new AxisAlignedBB(
+                            targetX - size, targetY - 0.1F, targetZ - size,
+                            targetX + size, targetY + 1.9F, targetZ + size
+            );
+            // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
 
-        AxisAlignedBB boundingBox = new AxisAlignedBB(
-                        targetX - size, targetY - 0.1F, targetZ - size,
-                        targetX + size, targetY + 1.9F, targetZ + size
-        );
-        // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
+            intersection = isIntersection(player, location, intersection, boundingBox);
 
-        intersection = isIntersection(player, location, intersection, boundingBox);
+            exempt = target.isInsideVehicle();
+        } else {
+            double targetX = target.getLocation().getX();
+            double targetY = target.getLocation().getY();
+            double targetZ = target.getLocation().getZ();
 
-        final boolean exempt = target.isInsideVehicle()
-                        || !(target instanceof Player || target instanceof Villager
-                        || target instanceof Zombie || target instanceof Skeleton || target instanceof Creeper);
+            AxisAlignedBB boundingBox = new AxisAlignedBB(
+                            targetX - size, targetY - 0.1F, targetZ - size,
+                            targetX + size, targetY + 1.9F, targetZ + size
+            );
+            // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
+
+            intersection = isIntersection(player, location, intersection, boundingBox);
+
+            exempt = target.isInsideVehicle() || !(target instanceof Villager || target instanceof Zombie || target instanceof Skeleton || target instanceof Creeper);
+        }
 
         return intersection || exempt;
     }
@@ -246,5 +264,35 @@ public class RayUtils {
 
     public static double getOnlyScale(double value) {
         return value - Math.floor(value);
+    }
+
+    public static float bruteforceRayTrace(Player player, Entity target) {
+        SpartanPlayer spartanPlayer = SpartanBukkit.getPlayer(player);
+        float bruteForce = 0.01F;
+        float bruteForceStart = 0.01F;
+        boolean checked = false;
+        for (int i = 0; i < 40; i++) {
+            if (inHitbox(spartanPlayer, target, bruteForceStart)) {
+                bruteForce = bruteForceStart;
+                checked = true;
+            } else {
+                bruteForceStart += 0.01F;
+            }
+        }
+        return  (checked) ? bruteForce : 0.4F;
+    }
+    public static float bruteforceRayTrace(SpartanPlayer spartanPlayer, Entity target) {
+        float bruteForce = 0.01F;
+        float bruteForceStart = 0.01F;
+        boolean checked = false;
+        for (int i = 0; i < 60; i++) {
+            if (inHitbox(spartanPlayer, target, bruteForceStart)) {
+                bruteForce = bruteForceStart;
+                checked = true;
+            } else {
+                bruteForceStart += 0.01F;
+            }
+        }
+        return  (checked) ? bruteForce : 0.6F;
     }
 }

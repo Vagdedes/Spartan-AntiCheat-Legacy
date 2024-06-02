@@ -140,7 +140,7 @@ public class KillAura extends CheckExecutor {
                     );
                     runDetection(
                             "check_hit_direction",
-                            hitDirection::runDamage,
+                            () -> hitDirection.runDamage(target),
                             true
                     );
                     runDetection(
