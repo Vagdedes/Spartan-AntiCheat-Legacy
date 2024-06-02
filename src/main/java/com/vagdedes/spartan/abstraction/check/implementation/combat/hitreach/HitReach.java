@@ -44,7 +44,7 @@ public class HitReach extends CheckExecutor {
         }
         double result = globalValue / rayTraceAnalysis.size();
 
-        if (result > 0.4) punish = "simple";
+        if (result > 0.44) punish = "simple";
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             cancel(
