@@ -7,27 +7,28 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.LinkedList;
 
 public class HitReach extends CheckExecutor {
 
+    private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
+
     public HitReach(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
     }
 
-    private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         LivingEntity target = event.getTarget();
 
         if (CombatProcessing.canCheck(player, target)) {
-            double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target);
-            double diff = bruteforceRayTrace - 0.4;
+            double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target),
+                    diff = bruteforceRayTrace - 0.4;
             rayTraceAnalysis.addLast(bruteforceRayTrace);
+
             if (rayTraceAnalysis.size() >= 10) {
                 analyze(player.movement.getLocation(), bruteforceRayTrace);
             }
@@ -37,17 +38,19 @@ public class HitReach extends CheckExecutor {
     public void analyze(SpartanLocation to, double bruteForce) {
         String punish = null;
         double globalValue = 0;
+
         for (Double value : rayTraceAnalysis) {
             globalValue += value;
         }
         double result = globalValue / rayTraceAnalysis.size();
+
         if (result > 0.4) punish = "simple";
         if (punish != null) {
             cancel(
-                            "type: " + punish + ", hitbox-size-analysis: "
-                                            + result + ", hitbox-size-last: " + bruteForce,
-                            1.0,
-                            to
+                    "type: " + punish + ", hitbox-size-analysis: "
+                            + result + ", hitbox-size-last: " + bruteForce,
+                    1.0,
+                    to
             );
         }
         rayTraceAnalysis.clear();
