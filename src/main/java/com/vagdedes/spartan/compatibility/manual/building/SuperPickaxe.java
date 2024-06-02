@@ -6,7 +6,7 @@ import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 
 public class SuperPickaxe {
 
-    public static boolean canCancel(SpartanPlayer p) {
+    public static boolean isUsing(SpartanPlayer p) {
         return Compatibility.CompatibilityType.SUPER_PICKAXE.isFunctional()
                 && PlayerUtils.isPickaxeItem(p.getItemInHand().getType());
     }

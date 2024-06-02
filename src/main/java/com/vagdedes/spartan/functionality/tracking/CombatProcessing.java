@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.functionality.tracking;
 
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayerDamage;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -48,6 +49,7 @@ public class CombatProcessing {
     public static boolean canCheck(SpartanPlayer player) {
         if (!player.movement.isCrawling()
                 && !player.movement.isFlying()
+                && !player.trackers.has(Trackers.TrackerType.FLYING)
                 && !player.movement.isGliding()
                 && player.getVehicle() == null
                 && !mcMMO.hasGeneralAbility(player)

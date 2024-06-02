@@ -143,7 +143,7 @@ public class NoSwing extends CheckExecutor {
 
     @Override
     public boolean canRun() {
-        return !Vehicles.has(player, "drill")
+        return !Vehicles.has(player, Vehicles.DRILL)
                 && !mcMMO.hasGeneralAbility(player);
     }
 

@@ -14,6 +14,9 @@ import org.bukkit.event.Listener;
 public class Vehicles implements Listener {
 
     private static final String key = Compatibility.CompatibilityType.VEHICLES + "=compatibility=";
+    public static final String
+            DRILL = "drill",
+            TRACTOR = "tractor";
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Enter(VehicleEnterEvent e) {
@@ -24,9 +27,9 @@ public class Vehicles implements Listener {
                 VehicleType vehicleType = e.getVehicleType();
 
                 if (vehicleType == VehicleType.DRILL) {
-                    add(p, "drill");
+                    add(p, Vehicles.DRILL);
                 } else if (vehicleType == VehicleType.TRACTOR) {
-                    add(p, "tractor");
+                    add(p, Vehicles.TRACTOR);
                 }
             }
         }

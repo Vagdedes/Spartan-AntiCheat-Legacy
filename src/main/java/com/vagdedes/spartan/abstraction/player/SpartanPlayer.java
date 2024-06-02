@@ -86,6 +86,9 @@ public class SpartanPlayer {
                     if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                         Elytra.judge(p, false);
                     }
+                    if (p.movement.isFlying()) {
+                        p.trackers.add(Trackers.TrackerType.FLYING, (int) TPS.maximum);
+                    }
                     p.playerProfile.playerCombat.track();
                     p.movement.setDetectionLocation(false);
 

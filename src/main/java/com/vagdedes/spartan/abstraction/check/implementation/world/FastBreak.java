@@ -12,6 +12,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
@@ -44,7 +45,10 @@ public class FastBreak extends CheckExecutor {
             GameMode gameMode = player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                long time = interactTime.getOrDefault(Objects.hash(block.getWorld().getName(), block.material, block.x, block.y, block.z), 0L);
+                long time = interactTime.getOrDefault(
+                        Objects.hash(block.getWorld().getName(), block.material, block.x, block.y, block.z),
+                        0L
+                );
 
                 if (time > 0L) {
                     time = System.currentTimeMillis() - time;
@@ -55,31 +59,33 @@ public class FastBreak extends CheckExecutor {
                             limit = originalLimit;
 
                     if (limit > -1L) { // Make sure the limit can be calculated on this specific server
-                        limit -= 250L; // Subtract ms for software/connection inconsistencies
+                        limit -= Math.min(
+                                (long) (Latency.getDelay(player) * TPS.tickTime),
+                                BlockUtils.sensitiveBlockBreakTime
+                        );
 
                         if (player.bedrockPlayer) {
                             limit = AlgebraUtils.integerRound(limit * 0.8);
                         }
 
-                        if (limit > 100L && time < limit) { // Do not check blocks that take equal or less than 1/10th of a second to break
+                        if (limit > (TPS.tickTime * 2L) && time < limit) {
                             boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
                             Collection<SpartanPotionEffect> potionEffects = player.getStoredPotionEffects();
                             Set<Map.Entry<Enchantment, Integer>> enchantments =
-                                    !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants() ?
-                                            itemStack.getEnchantments().entrySet() : new HashSet<>();
+                                    !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants()
+                                            ? itemStack.getEnchantments().entrySet()
+                                            : new HashSet<>();
                             StringBuilder enchantmentsString = new StringBuilder(),
                                     effectsString = new StringBuilder();
-                            boolean hasEnchantments = !enchantments.isEmpty(),
-                                    hasEffects = !potionEffects.isEmpty();
 
-                            if (hasEnchantments) {
+                            if (!enchantments.isEmpty()) {
                                 for (Map.Entry<Enchantment, Integer> enchantment : enchantments) {
                                     String name = enchantment.getKey().getName().toLowerCase().replace("_", "/");
                                     enchantmentsString.append(name).append("-").append(enchantment.getValue()).append(", ");
                                 }
                                 enchantmentsString = new StringBuilder(enchantmentsString.substring(0, enchantmentsString.length() - 2));
                             }
-                            if (hasEffects) {
+                            if (!potionEffects.isEmpty()) {
                                 for (SpartanPotionEffect effect : potionEffects) {
                                     if (effect.isActive()) {
                                         String name = effect.bukkitEffect.getType().getName().toLowerCase().replace("_", "/");
@@ -88,9 +94,13 @@ public class FastBreak extends CheckExecutor {
                                 }
                             }
                             int length = effectsString.length();
+                            boolean hasEffects;
 
-                            if (hasEffects = (length > 0)) {
+                            if (length > 0) {
+                                hasEffects = true;
                                 effectsString = new StringBuilder(effectsString.substring(0, length - 2));
+                            } else {
+                                hasEffects = false;
                             }
                             String prevention = "type: delay"
                                     + ", time: " + time
@@ -100,7 +110,7 @@ public class FastBreak extends CheckExecutor {
                                     + ", difference: " + (limit - time)
                                     + ", block: " + BlockUtils.materialToString(block.material)
                                     + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
-                                    + ", enchantments: " + (!hasEnchantments ? "none" : "[" + enchantmentsString + "]")
+                                    + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
                                     + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
                             cancel(prevention, 1.0, null, seconds);
                         }
@@ -137,12 +147,16 @@ public class FastBreak extends CheckExecutor {
     private void checkIndirectSurroundingsPerSecond(int seconds, SpartanBlock block) {
         GameMode gameMode = player.getGameMode();
 
-        if (gameMode != GameMode.CREATIVE) {
-            int limit = hackType.getCheck().getNumericalOption("indirect_surroundings_per_second", 15);
+        if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
+                && !BlockUtils.isSensitive(player, block.material)) {
+            int bufferTicks = (int) TPS.maximum,
+                    limit = hackType.getCheck().getNumericalOption(
+                            "indirect_surroundings_per_second",
+                            AlgebraUtils.integerRound(bufferTicks * 0.75)
+                    );
 
             if (limit > 0) {
                 String key = "indirect-surroundings";
-                int bufferTime = 20;
                 double bufferThreshold;
 
                 if (lastBlock != null) {
@@ -157,12 +171,12 @@ public class FastBreak extends CheckExecutor {
                             || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Back-Diagonal
                             || block.x == lastBlock.x && block.y == (lastBlock.y + 1) && block.z == lastBlock.z // Up
                             || block.x == lastBlock.x && block.y == (lastBlock.y - 1) && block.z == lastBlock.z)) { // Down
-                        bufferThreshold = buffer.count(key, bufferTime);
+                        bufferThreshold = buffer.count(key, bufferTicks);
                     } else {
                         return;
                     }
                 } else {
-                    bufferThreshold = buffer.count(key, bufferTime);
+                    bufferThreshold = buffer.count(key, bufferTicks);
                 }
 
                 if (bufferThreshold == limit) {
@@ -196,7 +210,7 @@ public class FastBreak extends CheckExecutor {
             SpartanBlock b = new SpartanBlock(((BlockBreakEvent) object).getBlock());
 
             if (!TreeFeller.canCancel(this.player, b)) {
-                int seconds = 20; // 1 second in ticks
+                int seconds = (int) TPS.maximum;
                 checkDelay(b, seconds);
                 checkBreaksPerSecond(seconds, b);
                 checkIndirectSurroundingsPerSecond(seconds, b);
@@ -207,10 +221,11 @@ public class FastBreak extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return !MineBomb.isUsing(player)
-                && !Vehicles.has(player, "drill")
-                && !SuperPickaxe.canCancel(player)
+                && !Vehicles.has(player, Vehicles.DRILL)
+                && !SuperPickaxe.isUsing(player)
                 && !AureliumSkills.isUsing(player)
                 && !mcMMO.hasGeneralAbility(player)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
     }
+
 }
