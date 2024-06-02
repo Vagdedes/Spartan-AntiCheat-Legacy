@@ -277,6 +277,11 @@ public class SpartanPlayerMovement {
         ) != -1;
     }
 
+    public boolean justLanded(double now, double before, double acceleration, double drag, double precision) {
+        return !isFalling(now, acceleration, drag, precision)
+                && isFalling(before, acceleration, drag, precision);
+    }
+
     // Separator
 
     public boolean isGliding() {

@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
@@ -64,9 +65,10 @@ public class NoFall extends CheckExecutor {
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
         double vertical = player.movement.getValueOrDefault(player.movement.getEventVertical(), 0.0),
+                oldVertical = player.movement.getValueOrDefault(player.movement.getPreviousEventVertical(), 0.0),
                 fallDistance = player.getFallDistance();
         int fallDistanceTick = getFallTicks(previousFallDistance);
-        boolean toGround = player.isOnGround(null, true);
+        boolean ground = player.isOnGround(to, true);
 
         if (previousFallTick < maxFallTicks
                 && (fallDistance > 0.0 || previousFallDistance > 0.0)) {
@@ -75,14 +77,17 @@ public class NoFall extends CheckExecutor {
                         difference = Math.abs(fallDistance - prediction),
                         limit = vertical >= 0.0
                                 ? PlayerUtils.airAcceleration
-                                : Math.max(
-                                ((0.0 - vertical) / terminalVelocity) * terminalVelocity,
-                                PlayerUtils.airAcceleration
-                        );
+                                : Math.max(0.0 - vertical, PlayerUtils.airAcceleration);
 
                 if (difference >= limit
+                        && !player.movement.justLanded(
+                        vertical,
+                        oldVertical,
+                        -PlayerUtils.airAcceleration,
+                        PlayerUtils.airDrag,
+                        GroundUtils.maxHeightLengthRatio)
                         && (difference != prediction
-                        || !toGround
+                        || !ground
                         && !player.isOnGround(to, false)
                         && !player.isOnGround(from, false))) {
                     double damage = AlgebraUtils.integerCeil(
@@ -95,7 +100,8 @@ public class NoFall extends CheckExecutor {
                                     + ", fall-tick: " + fallDistanceTick
                                     + ", prediction: " + prediction
                                     + ", difference: " + difference
-                                    + ", limit: " + limit,
+                                    + ", limit: " + limit
+                                    + ", vertical: " + vertical,
                             difference,
                             null,
                             0,
