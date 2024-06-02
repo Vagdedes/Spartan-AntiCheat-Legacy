@@ -45,10 +45,11 @@ public class HitReach extends CheckExecutor {
         double result = globalValue / rayTraceAnalysis.size();
 
         if (result > 0.4) punish = "simple";
+        int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             cancel(
                     "type: " + punish + ", hitbox-size-analysis: "
-                            + result + ", hitbox-size-last: " + bruteForce,
+                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviantity: " + percent + "%",
                     1.0,
                     to
             );
