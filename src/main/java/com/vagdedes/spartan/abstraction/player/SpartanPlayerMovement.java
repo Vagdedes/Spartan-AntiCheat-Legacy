@@ -277,6 +277,10 @@ public class SpartanPlayerMovement {
         ) != -1;
     }
 
+    public boolean justFell(double d) {
+        return Math.abs(d - (PlayerUtils.airAcceleration * PlayerUtils.airDrag)) <= GroundUtils.maxHeightLengthRatio;
+    }
+
     public boolean justLanded(double now, double before, double acceleration, double drag, double precision) {
         return !isFalling(now, acceleration, drag, precision)
                 && isFalling(before, acceleration, drag, precision);

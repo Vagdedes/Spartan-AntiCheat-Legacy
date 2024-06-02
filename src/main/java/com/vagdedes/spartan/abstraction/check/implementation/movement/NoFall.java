@@ -20,7 +20,8 @@ public class NoFall extends CheckExecutor {
 
     private static final double
             drag = 0.98,
-            acceleration = PlayerUtils.airAcceleration * drag;
+            acceleration = PlayerUtils.airAcceleration * drag,
+            exactAcceleration = PlayerUtils.airAcceleration * PlayerUtils.airDrag;
     private static final int maxFallTicks = 500;
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
@@ -77,6 +78,7 @@ public class NoFall extends CheckExecutor {
 
                 if (difference >= limit
                         && !player.movement.justJumped(vertical)
+                        && !player.movement.justFell(vertical)
                         && !player.movement.justLanded(
                         vertical,
                         oldVertical,
