@@ -51,6 +51,7 @@ public class MoveDirection extends DetectionExecutor {
         double oldYaw = aimAnalysis.getFirst().getYaw();
         double oldYawResult = aimAnalysis.getFirst().getYaw();
         int basicHeuristic = 0;
+        int lowHeuristic = 0;
         for (Double value : rayTraceAnalysis) {
             globalValue += value;
         }
@@ -60,15 +61,19 @@ public class MoveDirection extends DetectionExecutor {
         }
         for (int i = 0; i < aimAnalysis.size(); i++) {
             double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
-
+            //player.sendMessage("ray: " + rayTraceAnalysis.get(i) + ", yaw: " + yawChange);
             if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) {
                 basicHeuristic++;
+            }
+            if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) {
+                lowHeuristic++;
             }
 
             oldYawResult = aimAnalysis.get(i).getYaw();
         }
         double result = globalValue / rayTraceAnalysis.size();
         if (basicHeuristic > 6) punish = "heuristic(basic)";
+        if (lowHeuristic > 7) punish = "heuristic(low)";
         if (punish != null) {
             cancel(
                             "type: " + punish + ", hitbox-size-analysis: "
