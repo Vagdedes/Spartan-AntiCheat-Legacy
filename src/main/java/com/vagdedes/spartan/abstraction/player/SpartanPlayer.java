@@ -145,17 +145,17 @@ public class SpartanPlayer {
         this.damageReceived = Collections.synchronizedMap(new LinkedHashMap<>());
         this.damageDealt = Collections.synchronizedMap(new LinkedHashMap<>());
         this.lastDamageReceived = new SpartanPlayerDamage(this);
-        this.lastDamageDealt = this.lastDamageReceived;
+        this.lastDamageDealt = new SpartanPlayerDamage(this);
 
         // Load them all to keep their order
         for (EntityDamageEvent.DamageCause damageCause : EntityDamageEvent.DamageCause.values()) {
             this.damageReceived.put(
                     damageCause,
-                    this.lastDamageReceived
+                    new SpartanPlayerDamage(this)
             );
             this.damageDealt.put(
                     damageCause,
-                    this.lastDamageReceived
+                    new SpartanPlayerDamage(this)
             );
         }
         this.creationTime = System.currentTimeMillis();

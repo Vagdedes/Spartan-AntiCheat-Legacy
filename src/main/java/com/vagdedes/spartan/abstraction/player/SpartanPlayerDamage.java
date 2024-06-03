@@ -125,13 +125,13 @@ public class SpartanPlayerDamage {
     }
 
     public EntityDamageByEntityEvent getEntityDamageByEntityEvent() {
-        return event instanceof EntityDamageByEntityEvent
+        return this.event != null && this.event instanceof EntityDamageByEntityEvent
                 ? (EntityDamageByEntityEvent) this.event
                 : null;
     }
 
     public long ticksPassed() {
-        return TPS.getTick(this.parent) - tick;
+        return TPS.getTick(this.parent) - this.tick;
     }
 
     public ItemStack getActiveItem() {
@@ -141,7 +141,8 @@ public class SpartanPlayerDamage {
     }
 
     public boolean isPropellingProjectile() {
-        if (!this.event.isCancelled()
+        if (this.event != null
+                && !this.event.isCancelled()
                 && this.ticksPassed() <= TPS.maximum
                 && this.parent.movement.getTicksOnAir() <= TPS.maximum
                 && this.location.getPitch() <= -60.0f
@@ -157,7 +158,7 @@ public class SpartanPlayerDamage {
     }
 
     public boolean hasBigKnockBack() {
-        if (this.event.isCancelled()) {
+        if (this.event == null || this.event.isCancelled()) {
             return false;
         } else {
             int time = AlgebraUtils.integerRound(TPS.maximum * 2.0);
@@ -171,7 +172,7 @@ public class SpartanPlayerDamage {
     }
 
     public boolean isSignificant() {
-        if (this.event.isCancelled()) {
+        if (this.event == null || this.event.isCancelled()) {
             return false;
         } else if (this.hasBigKnockBack()) {
             return true;
@@ -192,7 +193,7 @@ public class SpartanPlayerDamage {
     }
 
     public boolean isSubtle() {
-        if (this.event.isCancelled()) {
+        if (this.event == null || this.event.isCancelled()) {
             return false;
         } else {
             EntityDamageEvent.DamageCause cause = this.event.getCause();
