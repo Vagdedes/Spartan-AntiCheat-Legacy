@@ -34,16 +34,23 @@ public class SpartanPlayerDamage {
     private final ItemStack activeItem;
     public final boolean boss, explosive;
 
-    SpartanPlayerDamage(SpartanPlayer player,
-                        EntityDamageEvent event,
-                        SpartanLocation location,
-                        long tick) {
+    SpartanPlayerDamage(SpartanPlayer player) {
+        this.parent = player;
+        this.tick = 0L;
+        this.event = null;
+        this.location = player.movement.getLocation();
+        this.activeItem = null;
+        this.boss = false;
+        this.explosive = false;
+    }
+
+    SpartanPlayerDamage(SpartanPlayer player, EntityDamageEvent event) {
         boolean abstractVelocity = false;
         player.trackers.add(Trackers.TrackerType.DAMAGE, (int) TPS.maximum);
         this.parent = player;
-        this.tick = tick;
+        this.tick = TPS.getTick(player);
         this.event = event;
-        this.location = location.clone();
+        this.location = player.movement.getLocation();
 
         if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent actualEvent = (EntityDamageByEntityEvent) this.event;
@@ -115,12 +122,6 @@ public class SpartanPlayerDamage {
         if (!abstractVelocity && !event.isCancelled()) {
             player.trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 2);
         }
-    }
-
-    SpartanPlayerDamage(SpartanPlayer player,
-                        EntityDamageEvent event,
-                        SpartanLocation location) {
-        this(player, event, location, TPS.getTick(player));
     }
 
     public EntityDamageByEntityEvent getEntityDamageByEntityEvent() {

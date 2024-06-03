@@ -144,12 +144,7 @@ public class SpartanPlayer {
         this.velocityReceived = Collections.synchronizedList(new LinkedList<>());
         this.damageReceived = Collections.synchronizedMap(new LinkedHashMap<>());
         this.damageDealt = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.lastDamageReceived = new SpartanPlayerDamage(
-                this,
-                null,
-                this.movement.getLocation(),
-                0L
-        );
+        this.lastDamageReceived = new SpartanPlayerDamage(this);
         this.lastDamageDealt = this.lastDamageReceived;
 
         // Load them all to keep their order
@@ -327,7 +322,10 @@ public class SpartanPlayer {
             Player p = getInstance();
 
             if (p != null) {
-                p.openInventory(inventory);
+                SpartanBukkit.transferTask(
+                        p,
+                        () -> p.openInventory(inventory)
+                );
             }
         }
     }
@@ -603,7 +601,7 @@ public class SpartanPlayer {
     }
 
     public void addReceivedDamage(EntityDamageEvent event) {
-        this.lastDamageReceived = new SpartanPlayerDamage(this, event, this.movement.getLocation());
+        this.lastDamageReceived = new SpartanPlayerDamage(this, event);
 
         synchronized (this.damageReceived) {
             this.damageReceived.put(
@@ -614,7 +612,7 @@ public class SpartanPlayer {
     }
 
     public void addDealtDamage(EntityDamageByEntityEvent event) {
-        this.lastDamageDealt = new SpartanPlayerDamage(this, event, this.movement.getLocation());
+        this.lastDamageDealt = new SpartanPlayerDamage(this, event);
 
         synchronized (this.damageDealt) {
             this.damageDealt.put(
