@@ -121,10 +121,13 @@ public class MoveDirection extends DetectionExecutor {
         }
         if (aggressivePatternI > 3 && aggressivePatternD > 3) {
             punish = "pattern(random)";
-            vl += 100;
+            vl += 135;
         }
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
-                        && (aggressivePatternI2 + aggressivePatternD2) > 8) punish = "pattern(snap)";
+                        && (aggressivePatternI2 + aggressivePatternD2) > 8) {
+            punish = "pattern(snap)";
+            vl += 120;
+        }
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
 
         if (punish != null && vl > 200) {
@@ -136,7 +139,7 @@ public class MoveDirection extends DetectionExecutor {
             );
             vl -= 10;
         }
-        if (vl > 0) vl -= 2;
+        if (vl > 0) vl -= 3;
         rayTraceAnalysis.clear();
         aimAnalysis.clear();
 
