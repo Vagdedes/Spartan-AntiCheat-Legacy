@@ -62,7 +62,7 @@ public class SpartanPlayer {
     public final Trackers trackers;
     public final Clicks clicks;
 
-    private final long creationTime;
+    private final long tick;
     private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage>
             damageReceived,
             damageDealt;
@@ -125,10 +125,10 @@ public class SpartanPlayer {
 
     // Object
 
-    public SpartanPlayer(Player p, UUID uuid) {
+    public SpartanPlayer(Player p) {
         Enums.HackType[] hackTypes = Enums.HackType.values();
 
-        this.uuid = uuid;
+        this.uuid = p.getUniqueId();
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
         this.trackers = new Trackers(this);
@@ -158,7 +158,7 @@ public class SpartanPlayer {
                     new SpartanPlayerDamage(this)
             );
         }
-        this.creationTime = System.currentTimeMillis();
+        this.tick = System.currentTimeMillis();
 
         this.buffer = new Buffer(this);
         this.cooldowns = new Cooldowns(this);
@@ -370,8 +370,8 @@ public class SpartanPlayer {
         return SpartanBukkit.getRealPlayer(uuid);
     }
 
-    public long timePassedSinceCreation() {
-        return System.currentTimeMillis() - creationTime;
+    public long ticksPassed() {
+        return TPS.getTick(this) - this.tick;
     }
 
     // Separator

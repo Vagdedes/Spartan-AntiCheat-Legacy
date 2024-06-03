@@ -1,11 +1,13 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class SpartanProtocol {
 
     public final Player player;
+    public final SpartanPlayer spartanPlayer;
     public final AbilitiesContainer abilities;
     public final RotationData lastRotation;
     public Boolean
@@ -20,6 +22,7 @@ public class SpartanProtocol {
 
     public SpartanProtocol(Player player) {
         this.creationTime = System.currentTimeMillis();
+        this.spartanPlayer = new SpartanPlayer(player);
         this.player = player;
         this.abilities = new AbilitiesContainer(false, false, false);
         this.lastRotation = new RotationData();

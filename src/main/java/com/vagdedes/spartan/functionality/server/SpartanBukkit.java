@@ -34,8 +34,6 @@ public class SpartanBukkit {
 
     public static final int hashCodeMultiplier = 31;
     private static final long packetsGracePeriod = 5_000L;
-    private static final Map<UUID, SpartanPlayer> players =
-            Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     private static final Map<UUID, SpartanProtocol> playerProtocol =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     public static final Class<?> craftPlayer = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
@@ -46,28 +44,25 @@ public class SpartanBukkit {
     );
 
     public static void clear() {
-        synchronized (players) {
-            players.clear();
-        }
         synchronized (playerProtocol) {
             playerProtocol.clear();
         }
     }
 
     public static boolean isPlayer(UUID uuid) {
-        synchronized (players) {
-            return players.containsKey(uuid);
+        synchronized (playerProtocol) {
+            return playerProtocol.containsKey(uuid);
         }
     }
 
     public static SpartanPlayer getPlayer(String name) {
-        if (!players.isEmpty()) {
+        if (!playerProtocol.isEmpty()) {
             name = name.toLowerCase();
 
-            synchronized (players) {
-                for (SpartanPlayer p : players.values()) {
-                    if (p.name.toLowerCase().equals(name)) {
-                        return p;
+            synchronized (playerProtocol) {
+                for (SpartanProtocol protocol : playerProtocol.values()) {
+                    if (protocol.spartanPlayer.name.toLowerCase().equals(name)) {
+                        return protocol.spartanPlayer;
                     }
                 }
             }
@@ -102,55 +97,56 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer getPlayer(Player real) {
-        UUID uuid = real.getUniqueId();
+        SpartanProtocol protocol;
 
         synchronized (playerProtocol) {
-            playerProtocol.computeIfAbsent(
+            protocol = playerProtocol.computeIfAbsent(
                     real.getUniqueId(),
                     k -> new SpartanProtocol(real)
             );
         }
-        SpartanPlayer player;
-
-        synchronized (players) {
-            player = players.get(uuid);
-
-            if (player == null) {
-                players.put(uuid, player = new SpartanPlayer(real, uuid));
-            }
-        }
-        return player;
+        return protocol.spartanPlayer;
     }
 
     public static SpartanPlayer removePlayer(Player real) {
+        SpartanProtocol protocol;
+
         synchronized (playerProtocol) {
-            synchronized (players) {
-                playerProtocol.remove(real.getUniqueId());
-                return players.remove(real.getUniqueId());
-            }
+            protocol = playerProtocol.remove(real.getUniqueId());
         }
+        return protocol == null ? null : protocol.spartanPlayer;
     }
 
     public static int getPlayerCount() {
-        return players.size();
+        return playerProtocol.size();
     }
 
     public static Set<UUID> getUUIDs() {
-        synchronized (players) {
-            return new HashSet<>(players.keySet());
+        synchronized (playerProtocol) {
+            return new HashSet<>(playerProtocol.keySet());
         }
     }
 
     public static List<SpartanPlayer> getPlayers() {
-        synchronized (players) {
-            return new ArrayList<>(players.values());
+        List< SpartanPlayer> list = new ArrayList<>(playerProtocol.size());
+
+        synchronized (playerProtocol) {
+            for (SpartanProtocol protocol : playerProtocol.values()) {
+                list.add(protocol.spartanPlayer);
+            }
         }
+        return list;
     }
 
     public static Set<Map.Entry<UUID, SpartanPlayer>> getPlayerEntries() {
-        synchronized (players) {
-            return new HashSet<>(players.entrySet());
+        Map<UUID, SpartanPlayer> map = new LinkedHashMap<>(playerProtocol.size() + 1, 1.0f);
+
+        synchronized (playerProtocol) {
+            for (Map.Entry<UUID, SpartanProtocol> entry : playerProtocol.entrySet()) {
+                map.put(entry.getKey(), entry.getValue().spartanPlayer);
+            }
         }
+        return map.entrySet();
     }
 
     // Separator
