@@ -200,7 +200,7 @@ public class SpartanLocation {
     }
 
     public SpartanLocation add(double x, double y, double z) {
-        Location bukkit = new Location(this.world, this.x, this.y, this.z);
+        Location bukkit = new Location(this.world, this.x, this.y, this.z).add(x, y, z);
 
         if (Math.abs(x) >= 1.0
                 || Math.abs(y) >= 1.0
