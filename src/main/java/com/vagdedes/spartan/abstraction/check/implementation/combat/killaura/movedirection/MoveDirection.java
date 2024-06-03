@@ -57,7 +57,7 @@ public class MoveDirection extends DetectionExecutor {
         double yawChangeFirst = Math.abs(aimAnalysis.get(0).getYaw() - aimAnalysis.get(1).getYaw());
         int basicHeuristic = 0;
         int lowHeuristic = 0;
-        int hugeMoveAmount = 0;
+        int machineKnownMovement = 0;
         int gcd = 0;
         int aggressivePatternI = 0;
         int aggressivePatternD = 0;
@@ -79,18 +79,17 @@ public class MoveDirection extends DetectionExecutor {
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
-            // player.sendMessage("ray: " + rayTraceAnalysis.get(i) + ", yaw: " + yawChange);
-            // player.sendMessage("d: " + RayUtils.scaleVal(diffBetweenYawChanges, 2));
             if (robotized < 2 && yawChange > 2.5 && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
-            if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) {
-                basicHeuristic++;
-            }
-            if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) {
-                lowHeuristic++;
-            }
+
+            if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) basicHeuristic++;
+
+            if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) lowHeuristic++;
+
+            if (robotized < 0.99 && yawChange > 3) machineKnownMovement++;
+
             if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
             if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
-            if ((diffBetweenYawChanges < -0.01 && diffBetweenYawChanges > -2)) aggressivePatternI++;
+            if ((diffBetweenYawChanges < -0.01 && diffBetweenYawChanges > -2)) aggressivePatternD++;
             if (diffBetweenYawChanges > 2) aggressivePatternI2++;
             if (diffBetweenYawChanges < -2) aggressivePatternD2++;
             oldYawResult = aimAnalysis.get(i).getYaw();
@@ -103,6 +102,7 @@ public class MoveDirection extends DetectionExecutor {
         if (basicHeuristic > 6) punish = "heuristic(basic)";
         if (lowHeuristic > 7) punish = "heuristic(low)";
         if (robotizedAmount > 7) punish = "heuristic(sync)";
+        if (machineKnownMovement > 4) punish = "heuristic(aim)";
         if (gcd > 2) punish = "pattern(gcd)";
         if (aggressivePatternI > 3 && aggressivePatternD > 3) punish = "pattern(random)";
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
