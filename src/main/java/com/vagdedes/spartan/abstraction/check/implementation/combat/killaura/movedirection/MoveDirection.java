@@ -16,7 +16,7 @@ public class MoveDirection extends DetectionExecutor {
 
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
-    private float vl;
+    private float vl = 0;
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
 
     public MoveDirection(CheckExecutor executor) {
@@ -99,23 +99,44 @@ public class MoveDirection extends DetectionExecutor {
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
-        if (basicHeuristic > 6) punish = "heuristic(basic)";
-        if (lowHeuristic > 7) punish = "heuristic(low)";
-        if (robotizedAmount > 7) punish = "heuristic(sync)";
-        if (machineKnownMovement > 4) punish = "heuristic(aim)";
-        if (gcd > 2) punish = "pattern(gcd)";
-        if (aggressivePatternI > 3 && aggressivePatternD > 3) punish = "pattern(random)";
+        if (basicHeuristic > 6) {
+            punish = "heuristic(basic)";
+            vl += 201;
+        }
+        if (lowHeuristic > 7) {
+            punish = "heuristic(low)";
+            vl += 201;
+        }
+        if (robotizedAmount > 7) {
+            punish = "heuristic(sync)";
+            vl += 201;
+        }
+        if (machineKnownMovement > 4) {
+            punish = "heuristic(aim)";
+            vl += 150;
+        }
+        if (gcd > 2) {
+            punish = "pattern(gcd)";
+            vl += 210;
+        }
+        if (aggressivePatternI > 3 && aggressivePatternD > 3) {
+            punish = "pattern(random)";
+            vl += 100;
+        }
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
                         && (aggressivePatternI2 + aggressivePatternD2) > 8) punish = "pattern(snap)";
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
-        if (punish != null) {
+
+        if (punish != null && vl > 200) {
             cancel(
                             "type: " + punish + ", hitbox-size-analysis: "
                                             + result + ", hitbox-size-last: " + bruteForce,
                             1.0,
                             to
             );
+            vl -= 10;
         }
+        if (vl > 0) vl -= 2;
         rayTraceAnalysis.clear();
         aimAnalysis.clear();
 
