@@ -146,7 +146,7 @@ public class SpartanPlayer {
         this.damageDealt = Collections.synchronizedMap(new LinkedHashMap<>());
         this.lastDamageReceived = new SpartanPlayerDamage(
                 this,
-                new EntityDamageEvent(p, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.0),
+                null,
                 this.movement.getLocation(),
                 0L
         );
