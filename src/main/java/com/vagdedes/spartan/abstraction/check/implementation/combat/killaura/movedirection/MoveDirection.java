@@ -53,6 +53,7 @@ public class MoveDirection extends DetectionExecutor {
         double changeYaw = 0;
         double oldYaw = aimAnalysis.getFirst().getYaw();
         double oldYawResult = aimAnalysis.getFirst().getYaw();
+        double oldPitchResult = aimAnalysis.getFirst().getPitch();
         double yawChangeFirst = Math.abs(aimAnalysis.get(0).getYaw() - aimAnalysis.get(1).getYaw());
         int basicHeuristic = 0;
         int lowHeuristic = 0;
@@ -71,10 +72,13 @@ public class MoveDirection extends DetectionExecutor {
             oldYaw = value.getYaw();
         }
         double oldYawChange = Math.abs(aimAnalysis.get(0).getYaw() - oldYawResult);
+        double oldPitchChange = Math.abs(aimAnalysis.get(0).getPitch() - oldPitchResult);
         for (int i = 0; i < aimAnalysis.size(); i++) {
             double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
+            double pitchChange = Math.abs(aimAnalysis.get(i).getPitch() - oldPitchResult);
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
+            double diffBetweenPitchChanges = pitchChange - oldPitchChange;
             // player.sendMessage("ray: " + rayTraceAnalysis.get(i) + ", yaw: " + yawChange);
             // player.sendMessage("d: " + RayUtils.scaleVal(diffBetweenYawChanges, 2));
             if (robotized < 2 && yawChange > 2.5 && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
@@ -84,14 +88,15 @@ public class MoveDirection extends DetectionExecutor {
             if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) {
                 lowHeuristic++;
             }
-            if (yawChange == 0.1) gcd++;
-            if (diffBetweenYawChanges > 0.1 && diffBetweenYawChanges < 2) aggressivePatternI++;
-            if (diffBetweenYawChanges < -0.1 && diffBetweenYawChanges > -2) aggressivePatternD++;
+            if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
+            if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
+            if ((diffBetweenYawChanges < -0.01 && diffBetweenYawChanges > -2)) aggressivePatternI++;
             if (diffBetweenYawChanges > 2) aggressivePatternI2++;
             if (diffBetweenYawChanges < -2) aggressivePatternD2++;
-
             oldYawResult = aimAnalysis.get(i).getYaw();
+            oldPitchResult = aimAnalysis.get(i).getPitch();
             oldYawChange = yawChange;
+            oldPitchChange = pitchChange;
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
