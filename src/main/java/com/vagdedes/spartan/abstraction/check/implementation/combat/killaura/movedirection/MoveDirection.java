@@ -34,8 +34,11 @@ public class MoveDirection extends DetectionExecutor {
             if (target != null) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target);
                 double diff = bruteforceRayTrace - 0.4;
+                double predict = RayUtils.castTo360(calculate(player.movement.getLocation().toVector().toVector3d(),
+                                target.getLocation().toVector().toVector3d()).x);
+                double yaw360 = RayUtils.castTo360(player.movement.getLocation().getYaw());
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
-                aimAnalysis.addLast(new AttackData(diff,
+                aimAnalysis.addLast(new AttackData(Math.abs(predict - yaw360),
                                 player.movement.getLocation().getYaw(),
                                 player.movement.getLocation().getPitch()));
                 if (rayTraceAnalysis.size() >= 10) {
@@ -50,8 +53,11 @@ public class MoveDirection extends DetectionExecutor {
         double changeYaw = 0;
         double oldYaw = aimAnalysis.getFirst().getYaw();
         double oldYawResult = aimAnalysis.getFirst().getYaw();
+        double yawChangeFirst = Math.abs(aimAnalysis.get(0).getYaw() - aimAnalysis.get(1).getYaw());
         int basicHeuristic = 0;
         int lowHeuristic = 0;
+        int hugeMoveAmount = 0;
+        int robotizedAmount = 0;
         for (Double value : rayTraceAnalysis) {
             globalValue += value;
         }
@@ -61,7 +67,9 @@ public class MoveDirection extends DetectionExecutor {
         }
         for (int i = 0; i < aimAnalysis.size(); i++) {
             double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
-            //player.sendMessage("ray: " + rayTraceAnalysis.get(i) + ", yaw: " + yawChange);
+            double robotized = Math.abs(yawChange - yawChangeFirst);
+            // player.sendMessage("ray: " + rayTraceAnalysis.get(i) + ", yaw: " + yawChange);
+            if (robotized < 2 && yawChange > 2.5 && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
             if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) {
                 basicHeuristic++;
             }
@@ -71,9 +79,11 @@ public class MoveDirection extends DetectionExecutor {
 
             oldYawResult = aimAnalysis.get(i).getYaw();
         }
+        // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
         if (basicHeuristic > 6) punish = "heuristic(basic)";
         if (lowHeuristic > 7) punish = "heuristic(low)";
+        if (robotizedAmount > 7) punish = "heuristic(sync)";
         if (punish != null) {
             cancel(
                             "type: " + punish + ", hitbox-size-analysis: "
