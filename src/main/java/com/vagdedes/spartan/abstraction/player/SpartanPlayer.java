@@ -305,7 +305,7 @@ public class SpartanPlayer {
             if (message != null) {
                 p.sendMessage(message);
             }
-            p.closeInventory();
+            SpartanBukkit.transferTask(p, p::closeInventory);
         }
     }
 
@@ -316,7 +316,7 @@ public class SpartanPlayer {
             p.sendMessage("");
             p.sendMessage(message);
             p.sendMessage("");
-            p.closeInventory();
+            SpartanBukkit.transferTask(p, p::closeInventory);
         }
     }
 
