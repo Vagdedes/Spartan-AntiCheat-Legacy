@@ -55,8 +55,7 @@ public class ImpossibleInventory extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        if (!player.movement.isSwimming()
-                && player.getVehicle() == null && player.getOpenInventory() != null) {
+        if (!player.movement.isSwimming() && player.getVehicle() == null) {
             InventoryView view = player.getOpenInventory();
 
             if (view != null) {
