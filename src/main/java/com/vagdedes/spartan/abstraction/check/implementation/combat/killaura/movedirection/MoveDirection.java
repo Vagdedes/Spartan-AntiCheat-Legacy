@@ -18,6 +18,10 @@ public class MoveDirection extends DetectionExecutor {
     private final LinkedList<AttackData> aimAnalysis;
     private float vl = 0;
     private String punish = "";
+    private double lastSwitchYaw = 0;
+    private double lastSwitchPitch = 0;
+    private double switchYaw = 0;
+    private double switchPitch = 0;
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
 
     public MoveDirection(CheckExecutor executor) {
@@ -41,7 +45,7 @@ public class MoveDirection extends DetectionExecutor {
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 aimAnalysis.addLast(new AttackData(Math.abs(predict - yaw360),
                                 player.movement.getLocation().getYaw(),
-                                player.movement.getLocation().getPitch()));
+                                player.movement.getLocation().getPitch(), System.currentTimeMillis()));
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(player.movement.getLocation(), bruteforceRayTrace);
                 }
@@ -77,6 +81,18 @@ public class MoveDirection extends DetectionExecutor {
         for (int i = 0; i < aimAnalysis.size(); i++) {
             double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
             double pitchChange = Math.abs(aimAnalysis.get(i).getPitch() - oldPitchResult);
+            double expectedYaw = yawChange * 1.073742f + (float) (yawChange + 0.15);
+            double expectedPitch = pitchChange * 1.073742f - (float) (pitchChange - 0.15);
+            double yawDiff = Math.abs(yawChange - expectedYaw);
+            double pitchDiff = Math.abs(pitchChange - expectedPitch);
+            switchYaw = Math.abs(yawChange - yawDiff);
+            switchPitch = Math.abs(pitchChange - pitchDiff);
+            double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
+            /*
+            if (switchDiffOnYaw > 20 && (aimAnalysis.get(i).getTime()
+                            + 100 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 155);
+
+             */
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
@@ -97,6 +113,8 @@ public class MoveDirection extends DetectionExecutor {
             oldPitchResult = aimAnalysis.get(i).getPitch();
             oldYawChange = yawChange;
             oldPitchChange = pitchChange;
+            lastSwitchYaw = switchYaw;
+            lastSwitchPitch = switchPitch;
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
