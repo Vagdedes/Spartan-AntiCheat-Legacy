@@ -17,6 +17,7 @@ public class MoveDirection extends DetectionExecutor {
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
     private float vl = 0;
+    private String punish = "";
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
 
     public MoveDirection(CheckExecutor executor) {
@@ -48,7 +49,7 @@ public class MoveDirection extends DetectionExecutor {
         }
     }
     public void analyze(SpartanLocation to, double bruteForce) {
-        String punish = null;
+        punish = "";
         double globalValue = 0;
         double changeYaw = 0;
         double oldYaw = aimAnalysis.getFirst().getYaw();
@@ -99,47 +100,30 @@ public class MoveDirection extends DetectionExecutor {
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
-        if (basicHeuristic > 6) {
-            punish = "heuristic(basic)";
-            vl += 201;
-        }
-        if (lowHeuristic > 7) {
-            punish = "heuristic(low)";
-            vl += 201;
-        }
-        if (robotizedAmount > 7) {
-            punish = "heuristic(sync)";
-            vl += 201;
-        }
-        if (machineKnownMovement > 4) {
-            punish = "heuristic(aim)";
-            vl += 150;
-        }
-        if (gcd > 2) {
-            punish = "pattern(gcd)";
-            vl += 210;
-        }
-        if (aggressivePatternI > 3 && aggressivePatternD > 3) {
-            punish = "pattern(random)";
-            vl += 135;
-        }
+        if (basicHeuristic > 6) addNewPunish("heuristic(basic)", 210);
+        if (lowHeuristic > 7) addNewPunish("heuristic(low)", 210);
+        if (robotizedAmount > 7) addNewPunish("heuristic(sync)", 210);
+        if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 110);
+        if (gcd > 2) addNewPunish("pattern(gcd)", 210);
+        if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 60);
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
                         && (aggressivePatternI2 + aggressivePatternD2) > 8) {
-            punish = "pattern(snap)";
-            vl += 120;
+            addNewPunish("pattern(snap)", 60);
         }
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
 
-        if (punish != null && vl > 200) {
+        double punishValue = Math.floor(vl / 200);
+        if (!punish.isEmpty() && vl > 200) {
             cancel(
                             "type: " + punish + ", hitbox-size-analysis: "
                                             + result + ", hitbox-size-last: " + bruteForce,
-                            1.0,
+                            punishValue,
                             to
             );
             vl -= 10;
         }
-        if (vl > 0) vl -= 3;
+        if (vl > 0) vl -= 4;
+        if (vl > 300) vl -= 15;
         rayTraceAnalysis.clear();
         aimAnalysis.clear();
 
@@ -155,6 +139,14 @@ public class MoveDirection extends DetectionExecutor {
         float yaw = (float) (Math.atan2(diff.z(), diff.x()) * 180.0F / PI) - 90.0F,
                 pitch = (float) (-(Math.atan2(diff.y(), distance) * 180.0F / PI));
         return new Vector2f(yaw, pitch);
+    }
+    public void addNewPunish(String reason, float vlAdd) {
+        vl += vlAdd;
+        if (punish.isEmpty()) {
+            punish = reason;
+        } else {
+            punish += ", " + reason;
+        }
     }
 
 }
