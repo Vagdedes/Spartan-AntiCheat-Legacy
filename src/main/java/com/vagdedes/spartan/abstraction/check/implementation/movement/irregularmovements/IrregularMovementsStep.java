@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -72,185 +71,176 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         if (hackType.getCheck().getBooleanOption("check_step", true)) {
-            SpartanLocation to = player.movement.getEventToLocation();
             Entity vehicle = player.getVehicle();
-            boolean slime = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime"),
-                    bed = player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed"),
-                    vehicleEnter = player.trackers.has(Trackers.TrackerType.VEHICLE, "enter"),
-                    vehicleExit = player.trackers.has(Trackers.TrackerType.VEHICLE, "exit");
-            boolean ground = player.isOnGround(null, true);
 
-            runAsync(() -> {
-                if (knownBox && knownOldBox) {
-                    int hash = hash(oldBox, box);
+            if (knownBox && knownOldBox) {
+                int hash = hash(oldBox, box);
 
-                    if (vehicle == null) {
-                        if (stepCombination.get(hash)) {
-                            double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                    + (vehicleExit ? 1.0 : 0.0)
-                                    + GroundUtils.maxPlayerStep;
+                if (vehicle == null) {
+                    if (stepCombination.get(hash)) {
+                        double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                + (player.trackers.has(Trackers.TrackerType.VEHICLE, "exit") ? 1.0 : 0.0)
+                                + GroundUtils.maxPlayerStep;
 
-                            if (vertical > limit) {
+                        if (vertical > limit) {
+                            cancel(
+                                    "type: step(high)"
+                                            + ", box: " + box
+                                            + ", old-box: " + oldBox
+                                            + ", vertical: " + vertical
+                                            + ", limit: " + limit,
+                                    vertical,
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
+                        }
+                    } else {
+                        double extra = player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0,
+                                downLimit = extra + PlayerUtils.airAcceleration,
+                                upLimit = extra + GroundUtils.maxPlayerStep;
+
+                        if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
+                                || !player.trackers.has(Trackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
+                            cancel(
+                                    "type: step(combination)"
+                                            + ", box: " + box
+                                            + ", old-box: " + oldBox
+                                            + ", vertical: " + vertical
+                                            + ", down-limit: " + downLimit
+                                            + ", up-limit: " + upLimit,
+                                    Math.abs(vertical),
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
+                        }
+                    }
+                } else if (vertical > 1.0) {
+                    cancel(
+                            "type: step(entity)"
+                                    + ", box: " + box
+                                    + ", old-box: " + oldBox
+                                    + ", vertical: " + vertical,
+                            vertical - 1.0,
+                            player.movement.getDetectionLocation(),
+                            0,
+                            true
+                    );
+                }
+            } else {
+                if (vertical > 0.0) {
+                    if (!player.movement.isJumping(vertical)) {
+                        double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                + PlayerUtils.getJumpMotion(
+                                PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+                                0
+                        );
+
+                        if (vehicle != null) {
+                            double vehicleLimit = 0.0;
+
+                            if (abstractHorseClass) {
+                                if (vehicle instanceof AbstractHorse) {
+                                    vehicleLimit = ((AbstractHorse) vehicle).getJumpStrength()
+                                            + GroundUtils.maxHeightLengthRatio;
+                                }
+                            } else if (vehicle instanceof Horse) {
+                                vehicleLimit = ((Horse) vehicle).getJumpStrength()
+                                        + GroundUtils.maxHeightLengthRatio;
+                            }
+
+                            if (vehicleLimit > 0.0) {
+                                if (player.bedrockPlayer) {
+                                    limit = Math.max(limit, vehicleLimit);
+                                } else {
+                                    limit = vehicleLimit;
+                                }
+                            }
+                        }
+
+                        if (vertical > limit) {
+                            double predictedHeight = box - oldBox;
+
+                            if (predictedHeight < 0.0) {
+                                predictedHeight += 1.0;
+                            }
+
+                            if ((predictedHeight != vertical
+                                    || vertical > GroundUtils.maxPlayerStep)
+                                    && (!player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
+                                    && (!player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
                                 cancel(
-                                        "type: step(high)"
+                                        "type: step(abstract-up)"
                                                 + ", box: " + box
                                                 + ", old-box: " + oldBox
                                                 + ", vertical: " + vertical
                                                 + ", limit: " + limit,
-                                        vertical,
+                                        vertical / limit,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
                                 );
                             }
-                        } else {
-                            double extra = player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0,
-                                    downLimit = extra + PlayerUtils.airAcceleration,
-                                    upLimit = extra + GroundUtils.maxPlayerStep;
+                        }
+                    }
+                } else {
+                    if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
+                        if (vertical < -PlayerUtils.airAcceleration) {
+                            cancel(
+                                    "type: step(high-first-fall)"
+                                            + ", box: " + box
+                                            + ", old-box: " + oldBox
+                                            + ", vertical: " + vertical,
+                                    0.0d - vertical,
+                                    player.movement.getDetectionLocation(),
+                                    0,
+                                    true
+                            );
+                        }
+                    } else if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "enter")) {
+                        if (knownBox) {
+                            double verticalPrediction = oldBox - box,
+                                    motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
 
-                            if (!vehicleExit && vertical < -downLimit
-                                    || !vehicleEnter && vertical > upLimit) {
+                            if (verticalPrediction < 0.0) {
+                                verticalPrediction += 1.0;
+                            }
+                            if (verticalPrediction != motionRemainder) {
                                 cancel(
-                                        "type: step(combination)"
+                                        "type: step(landing)"
                                                 + ", box: " + box
                                                 + ", old-box: " + oldBox
                                                 + ", vertical: " + vertical
-                                                + ", down-limit: " + downLimit
-                                                + ", up-limit: " + upLimit,
-                                        Math.abs(vertical),
+                                                + ", vertical-prediction: " + verticalPrediction
+                                                + ", motion-remainder: " + motionRemainder,
+                                        1.0,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
                                 );
                             }
-                        }
-                    } else if (vertical > 1.0) {
-                        cancel(
-                                "type: step(entity)"
-                                        + ", box: " + box
-                                        + ", old-box: " + oldBox
-                                        + ", vertical: " + vertical,
-                                vertical - 1.0,
-                                player.movement.getDetectionLocation(),
-                                0,
-                                true
-                        );
-                    }
-                } else {
-                    if (vertical > 0.0) {
-                        if (!player.movement.isJumping(vertical)) {
+                        } else if (!player.isOnGround(player.movement.getEventToLocation(), true)) {
                             double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                    + PlayerUtils.getJumpMotion(
-                                    PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
-                                    0
-                            );
+                                    + PlayerUtils.airAcceleration;
 
-                            if (vehicle != null) {
-                                double vehicleLimit = 0.0;
-
-                                if (abstractHorseClass) {
-                                    if (vehicle instanceof AbstractHorse) {
-                                        vehicleLimit = ((AbstractHorse) vehicle).getJumpStrength()
-                                                + GroundUtils.maxHeightLengthRatio;
-                                    }
-                                } else if (vehicle instanceof Horse) {
-                                    vehicleLimit = ((Horse) vehicle).getJumpStrength()
-                                            + GroundUtils.maxHeightLengthRatio;
-                                }
-
-                                if (vehicleLimit > 0.0) {
-                                    if (player.bedrockPlayer) {
-                                        limit = Math.max(limit, vehicleLimit);
-                                    } else {
-                                        limit = vehicleLimit;
-                                    }
-                                }
-                            }
-
-                            if (vertical > limit) {
-                                double predictedHeight = box - oldBox;
-
-                                if (predictedHeight < 0.0) {
-                                    predictedHeight += 1.0;
-                                }
-
-                                if ((predictedHeight != vertical
-                                        || vertical > GroundUtils.maxPlayerStep)
-                                        && (!slime || oldBox != 0.0)
-                                        && (!bed || oldBox != 0.5625)) {
-                                    cancel(
-                                            "type: step(abstract-up)"
-                                                    + ", box: " + box
-                                                    + ", old-box: " + oldBox
-                                                    + ", vertical: " + vertical
-                                                    + ", limit: " + limit,
-                                            vertical / limit,
-                                            player.movement.getDetectionLocation(),
-                                            0,
-                                            true
-                                    );
-                                }
-                            }
-                        }
-                    } else {
-                        if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
-                            if (vertical < -PlayerUtils.airAcceleration) {
+                            if (vertical <= -limit) {
                                 cancel(
-                                        "type: step(high-first-fall)"
+                                        "type: step(abstract-down)"
                                                 + ", box: " + box
                                                 + ", old-box: " + oldBox
-                                                + ", vertical: " + vertical,
+                                                + ", vertical: " + vertical
+                                                + ", limit: " + limit,
                                         0.0d - vertical,
                                         player.movement.getDetectionLocation(),
                                         0,
                                         true
                                 );
                             }
-                        } else if (!vehicleEnter) {
-                            if (knownBox) {
-                                double verticalPrediction = oldBox - box,
-                                        motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
-
-                                if (verticalPrediction < 0.0) {
-                                    verticalPrediction += 1.0;
-                                }
-                                if (verticalPrediction != motionRemainder) {
-                                    cancel(
-                                            "type: step(landing)"
-                                                    + ", box: " + box
-                                                    + ", old-box: " + oldBox
-                                                    + ", vertical: " + vertical
-                                                    + ", vertical-prediction: " + verticalPrediction
-                                                    + ", motion-remainder: " + motionRemainder,
-                                            1.0,
-                                            player.movement.getDetectionLocation(),
-                                            0,
-                                            true
-                                    );
-                                }
-                            } else if (!ground
-                                    && !player.isOnGround(to, false)) {
-                                double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                        + PlayerUtils.airAcceleration;
-
-                                if (vertical <= -limit) {
-                                    cancel(
-                                            "type: step(abstract-down)"
-                                                    + ", box: " + box
-                                                    + ", old-box: " + oldBox
-                                                    + ", vertical: " + vertical
-                                                    + ", limit: " + limit,
-                                            0.0d - vertical,
-                                            player.movement.getDetectionLocation(),
-                                            0,
-                                            true
-                                    );
-                                }
-                            }
                         }
                     }
                 }
-            });
+            }
         }
     }
 

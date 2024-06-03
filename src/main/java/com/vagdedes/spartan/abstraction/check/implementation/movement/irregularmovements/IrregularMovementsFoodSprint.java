@@ -11,26 +11,24 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
     }
 
     void run() {
-        if (hackType.getCheck().getBooleanOption("check_sprint", true)) {
+        if (hackType.getCheck().getBooleanOption("check_sprint", true)
+                && player.movement.isSprinting()) {
             GameMode gameMode = player.getGameMode();
-            boolean sprinting = player.movement.isSprinting();
             int food = player.getFoodLevel();
 
-            runAsync(() -> {
-                if (sprinting && food <= 6
-                        && (gameMode == GameMode.SURVIVAL
-                        || gameMode == GameMode.ADVENTURE)) {
-                    cancel(
-                            "type: food-sprint"
-                                    + ", game-mode: " + gameMode
-                                    + ", food: " + food,
-                            1.0,
-                            player.movement.getDetectionLocation(),
-                            0,
-                            true
-                    );
-                }
-            });
+            if (food <= 6
+                    && (gameMode == GameMode.SURVIVAL
+                    || gameMode == GameMode.ADVENTURE)) {
+                cancel(
+                        "type: food-sprint"
+                                + ", game-mode: " + gameMode
+                                + ", food: " + food,
+                        1.0,
+                        player.movement.getDetectionLocation(),
+                        0,
+                        true
+                );
+            }
         }
     }
 }

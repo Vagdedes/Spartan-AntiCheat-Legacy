@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class ItemDrops extends CheckExecutor {
     public ItemDrops(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.buffer = new Buffer(player);
-        this.times = Collections.synchronizedList(new LinkedList<>());
+        this.times = new LinkedList<>();
     }
 
     @Override

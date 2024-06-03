@@ -49,13 +49,9 @@ public class KillAura extends CheckExecutor {
 
     static final long pastDamageMilliseconds = 1_000L;
 
-    private void runDetection(String option, Runnable runnable, boolean sync) {
+    private void runDetection(String option, Runnable runnable) {
         if (hackType.getCheck().getBooleanOption(option, true)) {
-            if (sync) {
-                runnable.run();
-            } else {
-                runAsync(runnable);
-            }
+            runnable.run();
         }
     }
 
@@ -76,18 +72,15 @@ public class KillAura extends CheckExecutor {
     protected void runInternal(boolean cancelled) {
         runDetection(
                 "check_move_length",
-                moveLength::runMove,
-                false
+                moveLength::runMove
         );
         runDetection(
                 "check_response_time",
-                responseTime::runMove,
-                false
+                responseTime::runMove
         );
         runDetection(
                 "check_move_direction_machine_learning",
-                moveDirectionML::runMove,
-                false
+                moveDirectionML::runMove
         );
     }
 
@@ -105,8 +98,7 @@ public class KillAura extends CheckExecutor {
                 PlayerMoveEvent event = (PlayerMoveEvent) object;
                 runDetection(
                         "check_move_direction",
-                        moveDirection::runMove,
-                        false
+                        moveDirection::runMove
                 );
             } else if (object instanceof PlayerAttackEvent) {
                 PlayerAttackEvent event = (PlayerAttackEvent) object;
@@ -115,43 +107,35 @@ public class KillAura extends CheckExecutor {
                 if (canRunEntity(target)) {
                     runDetection(
                             "check_irregular",
-                            irregular::runDamage,
-                            true
+                            irregular::runDamage
                     );
                     runDetection(
                             "check_block_raytrace",
-                            blockRaytrace::runDamage,
-                            true
+                            blockRaytrace::runDamage
                     );
                     runDetection(
                             "check_entity_raytrace",
-                            entityRaytrace::runDamage,
-                            true
+                            entityRaytrace::runDamage
                     );
                     runDetection(
                             "check_move_direction",
-                            () -> moveDirection.runDamage(target),
-                            false
+                            () -> moveDirection.runDamage(target)
                     );
                     runDetection(
                             "check_hit_time",
-                            hitTime::runDamage,
-                            true
+                            hitTime::runDamage
                     );
                     runDetection(
                             "check_hit_direction",
-                            () -> hitDirection.runDamage(target),
-                            true
+                            () -> hitDirection.runDamage(target)
                     );
                     runDetection(
                             "check_hit_direction_machine_learning",
-                            hitDirectionML::runDamage,
-                            true
+                            hitDirectionML::runDamage
                     );
                     runDetection(
                             "check_response_time",
-                            responseTime::runDamage,
-                            true
+                            responseTime::runDamage
                     );
                 }
             }

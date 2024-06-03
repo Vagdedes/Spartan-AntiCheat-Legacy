@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
@@ -91,7 +90,7 @@ public class ImpossibleActions extends CheckExecutor {
                                         while (iterator.hasNext()) {
                                             SpartanLocation loopLocation = iterator.next();
 
-                                            if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
+                                            if (loopLocation.ticksPassed() <= requiredComparisons * 2) {
                                                 double diff = Math.abs(previousLocation.getYaw() - loopLocation.getYaw());
                                                 yawDeviation += diff * diff;
                                                 previousLocation = loopLocation;
@@ -115,7 +114,7 @@ public class ImpossibleActions extends CheckExecutor {
                         case UP:
                             if (AlgebraUtils.getHorizontalDistance(
                                     playerLocation.getBlockLocation(),
-                                    block.getLocation()
+                                    block.location
                             ) <= 1.0) {
                                 ItemStack handItem = player.getItemInHand();
                                 int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
@@ -133,7 +132,7 @@ public class ImpossibleActions extends CheckExecutor {
                                 if (deltaXZ > 0.1) {
                                     possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
                                 }
-                                int hash = (block.x * SpartanBukkit.hashCodeMultiplier) + block.z;
+                                int hash = (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ();
 
                                 if (buffer.count("tower" + hash, motionTicks) > possiblePlacements) {
                                     buffer.remove("tower" + hash);

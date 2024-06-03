@@ -557,7 +557,7 @@ public class Speed extends CheckExecutor {
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    SpartanBlock block = new SpartanLocation(world, null, x, y2, z, 0.0f, 0.0f).getBlock();
+                    SpartanBlock block = new SpartanLocation(world, x, y2, z, 0.0f, 0.0f).getBlock();
 
                     if (BlockUtils.areSlimeBlocks(block.material)
                             || BlockUtils.arePistons(block.material)) {

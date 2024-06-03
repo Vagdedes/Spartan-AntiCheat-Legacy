@@ -56,7 +56,7 @@ public class NoSwing extends CheckExecutor {
             }
             SpartanBlock block = new SpartanBlock(((BlockBreakEvent) object).getBlock());
 
-            if (!BlockUtils.isSensitive(player, block.getLocation().getBlock().material)
+            if (!BlockUtils.isSensitive(player, block.material)
                     && !TreeFeller.canCancel(player, block)
                     && System.currentTimeMillis() - breakTime > TPS.tickTime) {
                 if (this.animationTime == Long.MAX_VALUE) {

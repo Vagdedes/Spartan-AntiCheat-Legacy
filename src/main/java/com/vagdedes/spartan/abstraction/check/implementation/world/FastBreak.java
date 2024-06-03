@@ -36,7 +36,7 @@ public class FastBreak extends CheckExecutor {
 
     public FastBreak(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.interactTime = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.interactTime = new LinkedHashMap<>();
         this.buffer = new Buffer(player);
     }
 
@@ -46,7 +46,7 @@ public class FastBreak extends CheckExecutor {
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 long time = interactTime.getOrDefault(
-                        Objects.hash(block.getWorld().getName(), block.material, block.x, block.y, block.z),
+                        Objects.hash(block.getWorld().getName(), block.material, block.getX(), block.getY(), block.getZ()),
                         0L
                 );
 
@@ -160,17 +160,17 @@ public class FastBreak extends CheckExecutor {
                 double bufferThreshold;
 
                 if (lastBlock != null) {
-                    if (!(block.x == lastBlock.x && block.y == lastBlock.y && block.z == lastBlock.z // Same
-                            || block.x == (lastBlock.x + 1) && block.y == lastBlock.y && block.z == lastBlock.z // Left
-                            || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == lastBlock.z // Right
-                            || block.x == lastBlock.x && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Front
-                            || block.x == lastBlock.x && block.y == lastBlock.y && block.z == (lastBlock.z - 1) // Back
-                            || block.x == (lastBlock.x + 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Left-Diagonal
-                            || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z - 1) // Right-Diagonal
-                            || block.x == (lastBlock.x + 1) && block.y == lastBlock.y && block.z == (lastBlock.z - 1) // Front-Diagonal
-                            || block.x == (lastBlock.x - 1) && block.y == lastBlock.y && block.z == (lastBlock.z + 1) // Back-Diagonal
-                            || block.x == lastBlock.x && block.y == (lastBlock.y + 1) && block.z == lastBlock.z // Up
-                            || block.x == lastBlock.x && block.y == (lastBlock.y - 1) && block.z == lastBlock.z)) { // Down
+                    if (!(block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ() // Same
+                            || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ() // Left
+                            || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ() // Right
+                            || block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1) // Front
+                            || block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1) // Back
+                            || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1) // Left-Diagonal
+                            || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1) // Right-Diagonal
+                            || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1) // Front-Diagonal
+                            || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1) // Back-Diagonal
+                            || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() + 1) && block.getZ() == lastBlock.getZ() // Up
+                            || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() - 1) && block.getZ() == lastBlock.getZ())) { // Down
                         bufferThreshold = buffer.count(key, bufferTicks);
                     } else {
                         return;
@@ -204,7 +204,7 @@ public class FastBreak extends CheckExecutor {
                     iterator.next();
                     iterator.remove();
                 }
-                interactTime.put(Objects.hash(b.getWorld().getName(), b.material, b.x, b.y, b.z), System.currentTimeMillis());
+                interactTime.put(Objects.hash(b.getWorld().getName(), b.material, b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
             }
         } else {
             SpartanBlock b = new SpartanBlock(((BlockBreakEvent) object).getBlock());

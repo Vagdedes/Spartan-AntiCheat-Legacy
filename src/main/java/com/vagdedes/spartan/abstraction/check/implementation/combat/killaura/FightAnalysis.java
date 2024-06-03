@@ -12,9 +12,7 @@ public class FightAnalysis extends DetectionExecutor {
 
     void run(PlayerFight fight) {
         if (hackType.getCheck().getBooleanOption("check_fight_analysis", true)) {
-            runAsync(() -> {
-                // todo
-            });
+            // todo
         }
     }
 }

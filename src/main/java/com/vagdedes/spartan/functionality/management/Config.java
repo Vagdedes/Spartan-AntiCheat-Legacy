@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
-import com.vagdedes.spartan.functionality.server.Chunks;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.SpartanReloadEvent;
@@ -177,7 +176,6 @@ public class Config {
 
         // System
         Cache.clearStorage(!enabledPlugin);
-        Chunks.reload(enabledPlugin);
         ResearchEngine.refresh(enabledPlugin);
     }
 

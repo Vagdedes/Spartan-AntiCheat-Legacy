@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
@@ -20,8 +19,7 @@ public class NoFall extends CheckExecutor {
 
     private static final double
             drag = 0.98,
-            acceleration = PlayerUtils.airAcceleration * drag,
-            exactAcceleration = PlayerUtils.airAcceleration * PlayerUtils.airDrag;
+            acceleration = PlayerUtils.airAcceleration * drag;
     private static final int maxFallTicks = 500;
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
@@ -43,13 +41,14 @@ public class NoFall extends CheckExecutor {
 
     public NoFall(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.handleInternal(false, null);
     }
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        this.previousFallDistance = player.getFallDistance();
         this.distance = 0.0;
-        this.previousFallTick = 0;
+        this.previousFallTick = getFallTicks(previousFallDistance);
+        this.previousFallDistance = player.getFallDistance();
     }
 
     @Override
@@ -59,56 +58,57 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        SpartanLocation to = player.movement.getEventToLocation(),
-                from = player.movement.getEventFromLocation();
-        double vertical = player.movement.getValueOrDefault(player.movement.getEventVertical(), 0.0),
-                oldVertical = player.movement.getValueOrDefault(player.movement.getPreviousEventVertical(), 0.0),
-                fallDistance = player.getFallDistance();
+        Double vertical = player.movement.getEventVertical(),
+                oldVertical = player.movement.getPreviousEventVertical();
+
+        if (vertical == null
+                || oldVertical == null) {
+            this.distance = 0.0;
+            this.previousFallTick = 0;
+            return;
+        }
+        double fallDistance = player.getFallDistance();
         int fallDistanceTick = getFallTicks(previousFallDistance);
-        boolean ground = player.isOnGround(to, true);
 
         if (previousFallTick < maxFallTicks
                 && (fallDistance > 0.0 || previousFallDistance > 0.0)) {
-            runAsync(() -> {
-                double prediction = (this.previousFallDistance * drag) + (fallDistanceTick * acceleration),
-                        difference = Math.abs(fallDistance - prediction),
-                        limit = vertical >= 0.0
-                                ? PlayerUtils.airAcceleration
-                                : Math.max(0.0 - vertical, PlayerUtils.airAcceleration);
+            double prediction = (this.previousFallDistance * drag) + (fallDistanceTick * acceleration),
+                    difference = Math.abs(fallDistance - prediction),
+                    limit = vertical >= 0.0
+                            ? PlayerUtils.airAcceleration
+                            : Math.max(0.0 - vertical, PlayerUtils.airAcceleration);
 
-                if (difference >= limit
-                        && !player.movement.justJumped(vertical)
-                        && !player.movement.justFell(vertical)
-                        && !player.movement.justLanded(
-                        vertical,
-                        oldVertical,
-                        -PlayerUtils.airAcceleration,
-                        PlayerUtils.airDrag,
-                        GroundUtils.maxHeightLengthRatio)
-                        && (difference != prediction
-                        || !ground
-                        && !player.isOnGround(to, false)
-                        && !player.isOnGround(from, false))) {
-                    double damage = AlgebraUtils.integerCeil(
-                            this.distance - 3.0f
-                                    - (PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1.0f)
-                    );
-                    cancel(
-                            "type: motion"
-                                    + ", fall-distance: " + fallDistance
-                                    + ", fall-tick: " + fallDistanceTick
-                                    + ", prediction: " + prediction
-                                    + ", difference: " + difference
-                                    + ", limit: " + limit
-                                    + ", vertical: " + vertical,
-                            difference,
-                            player.movement.getDetectionLocation(),
-                            0,
-                            false,
-                            damage
-                    );
-                }
-            });
+            if (difference >= limit
+                    && !player.movement.justJumped(vertical)
+                    && !player.movement.justFell(vertical)
+                    && !player.movement.justLanded(
+                    vertical,
+                    oldVertical,
+                    -PlayerUtils.airAcceleration,
+                    PlayerUtils.airDrag,
+                    GroundUtils.maxHeightLengthRatio)
+                    && (difference != prediction
+                    || !player.isOnGround(player.movement.getEventToLocation(), true)
+                    && !player.isOnGround(player.movement.getEventFromLocation(), false))) {
+                double damage = AlgebraUtils.integerCeil(
+                        this.distance - 3.0f
+                                - (PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1.0f)
+                );
+                cancel(
+                        "type: motion"
+                                + ", fall-distance: " + fallDistance
+                                + ", fall-tick: " + fallDistanceTick
+                                + ", prediction: " + prediction
+                                + ", difference: " + difference
+                                + ", limit: " + limit
+                                + ", vertical: " + vertical,
+                        difference,
+                        player.movement.getDetectionLocation(),
+                        0,
+                        false,
+                        damage
+                );
+            }
         }
         this.previousFallDistance = fallDistance;
         this.distance += Math.abs(vertical);

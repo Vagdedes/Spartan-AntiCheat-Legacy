@@ -27,11 +27,11 @@ public class GhostHand extends CheckExecutor {
             if (canDo(b)
                     && hackType.getCheck().getBooleanOption("check_block_breaking", true)) {
                 SpartanLocation location = player.movement.getLocation();
-                double bDistance = location.distance(b.getLocation());
+                double bDistance = location.distance(b);
                 SpartanBlock t = player.getTargetBlock(bDistance);
 
                 if (t != null) {
-                    double tDistance = location.distance(t.getLocation());
+                    double tDistance = location.distance(t);
 
                     if (tDistance < bDistance) {
                         cancel(
@@ -55,13 +55,13 @@ public class GhostHand extends CheckExecutor {
 
                 if (canDo(b)
                         && hackType.getCheck().getBooleanOption("check_block_interactions", true)
-                        && BlockUtils.isChangeable(b.getLocation().getBlock().material)) {
+                        && BlockUtils.isChangeable(b.material)) {
                     SpartanLocation location = player.movement.getLocation();
-                    double bDistance = location.distance(b.getLocation());
+                    double bDistance = location.distance(b);
                     SpartanBlock t = player.getTargetBlock(bDistance);
 
                     if (t != null) {
-                        double tDistance = location.distance(t.getLocation());
+                        double tDistance = location.distance(t);
 
                         if (tDistance < bDistance) {
                             cancel(

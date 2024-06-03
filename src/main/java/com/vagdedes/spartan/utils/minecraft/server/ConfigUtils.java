@@ -70,7 +70,7 @@ public class ConfigUtils {
     public static String replaceWithSyntax(String message, HackType hackType) {
         message = replace(message, "%%", " ");
         message = replace(message, "{space}", " ");
-        message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(null, false), 2)));
+        message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get((SpartanPlayer) null, false), 2)));
         message = replace(message, "{online}", String.valueOf(SpartanBukkit.getPlayerCount()));
         message = replace(message, "{staff}", String.valueOf(Permissions.getStaff().size()));
         message = replace(message, "{motd}", Bukkit.getMotd());

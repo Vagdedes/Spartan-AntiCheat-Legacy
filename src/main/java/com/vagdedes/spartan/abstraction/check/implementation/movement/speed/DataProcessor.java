@@ -8,9 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DataProcessor implements Listener {
 
@@ -18,8 +18,8 @@ public class DataProcessor implements Listener {
         Register.enable(new DataProcessor(), DataProcessor.class);
     }
 
-    static final Map<UUID, KeepSprint> keepSprint = new ConcurrentHashMap<>();
-    static final Map<UUID, Entity> target = new ConcurrentHashMap<>();
+    static final Map<UUID, KeepSprint> keepSprint = new LinkedHashMap<>();
+    static final Map<UUID, Entity> target = new LinkedHashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Death(EntityDeathEvent event) {

@@ -25,7 +25,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     private boolean canDo(SpartanBlock b) {
-        return player.getWorld().equals(b.getLocation().world);
+        return player.getWorld().equals(b.getWorld());
     }
 
     private double getLimit() {
@@ -42,7 +42,7 @@ public class BlockReach extends CheckExecutor {
 
             if (canDo(block)
                     && !TreeFeller.canCancel(player, block)) {
-                double distance = player.movement.getLocation().distance(block.getLocation()),
+                double distance = player.movement.getLocation().distance(block),
                         limit = getLimit();
 
                 if (distance >= limit) {
@@ -52,16 +52,13 @@ public class BlockReach extends CheckExecutor {
         } else if (object instanceof PlayerInteractEvent) {
             SpartanBlock block = new SpartanBlock(((PlayerInteractEvent) object).getClickedBlock());
 
-            if (canDo(block)) {
-                SpartanLocation bloc = block.getLocation();
+            if (canDo(block)
+                    && BlockUtils.isChangeable(block.material)) {
+                double distance = player.movement.getLocation().distance(block),
+                        limit = getLimit();
 
-                if (BlockUtils.isChangeable(bloc.getBlock().material)) {
-                    double distance = player.movement.getLocation().distance(bloc),
-                            limit = getLimit();
-
-                    if (distance >= limit) {
-                        cancel("type: interact, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
-                    }
+                if (distance >= limit) {
+                    cancel("type: interact, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
                 }
             }
         } else {
@@ -75,8 +72,8 @@ public class BlockReach extends CheckExecutor {
                         && BlockUtils.isSolid(block.material)
                         && !BlockUtils.isScaffoldingBlock(block.material)) {
                     SpartanLocation to = player.movement.getLocation();
-                    double distance = to.distance(block.getLocation()),
-                            ab_distance = to.distance(blockAgainst.getLocation());
+                    double distance = to.distance(block),
+                            ab_distance = to.distance(blockAgainst);
 
                     if (!player.bedrockPlayer
                             && player.getVehicle() == null
