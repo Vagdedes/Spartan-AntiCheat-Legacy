@@ -57,6 +57,11 @@ public class MoveDirection extends DetectionExecutor {
         int basicHeuristic = 0;
         int lowHeuristic = 0;
         int hugeMoveAmount = 0;
+        int gcd = 0;
+        int aggressivePatternI = 0;
+        int aggressivePatternD = 0;
+        int aggressivePatternI2 = 0;
+        int aggressivePatternD2 = 0;
         int robotizedAmount = 0;
         for (Double value : rayTraceAnalysis) {
             globalValue += value;
@@ -65,10 +70,13 @@ public class MoveDirection extends DetectionExecutor {
             changeYaw += Math.abs(value.getYaw() - oldYaw);
             oldYaw = value.getYaw();
         }
+        double oldYawChange = Math.abs(aimAnalysis.get(0).getYaw() - oldYawResult);
         for (int i = 0; i < aimAnalysis.size(); i++) {
             double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
             double robotized = Math.abs(yawChange - yawChangeFirst);
+            double diffBetweenYawChanges = yawChange - oldYawChange;
             // player.sendMessage("ray: " + rayTraceAnalysis.get(i) + ", yaw: " + yawChange);
+            // player.sendMessage("d: " + RayUtils.scaleVal(diffBetweenYawChanges, 2));
             if (robotized < 2 && yawChange > 2.5 && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
             if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) {
                 basicHeuristic++;
@@ -76,14 +84,25 @@ public class MoveDirection extends DetectionExecutor {
             if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) {
                 lowHeuristic++;
             }
+            if (yawChange == 0.1) gcd++;
+            if (diffBetweenYawChanges > 0.1 && diffBetweenYawChanges < 2) aggressivePatternI++;
+            if (diffBetweenYawChanges < -0.1 && diffBetweenYawChanges > -2) aggressivePatternD++;
+            if (diffBetweenYawChanges > 2) aggressivePatternI2++;
+            if (diffBetweenYawChanges < -2) aggressivePatternD2++;
 
             oldYawResult = aimAnalysis.get(i).getYaw();
+            oldYawChange = yawChange;
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
         if (basicHeuristic > 6) punish = "heuristic(basic)";
         if (lowHeuristic > 7) punish = "heuristic(low)";
         if (robotizedAmount > 7) punish = "heuristic(sync)";
+        if (gcd > 2) punish = "pattern(gcd)";
+        if (aggressivePatternI > 3 && aggressivePatternD > 3) punish = "pattern(random)";
+        if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
+                        && (aggressivePatternI2 + aggressivePatternD2) > 8) punish = "pattern(snap)";
+        // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
         if (punish != null) {
             cancel(
                             "type: " + punish + ", hitbox-size-analysis: "
