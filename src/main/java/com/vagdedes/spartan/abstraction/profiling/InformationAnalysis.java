@@ -58,24 +58,26 @@ public class InformationAnalysis {
 
             synchronized (map) {
                 data = map.get(this.hash);
+            }
 
-                if (data == null) {
-                    List<String> foundDetections = new ArrayList<>(configKeyCount);
+            if (data == null) {
+                List<String> foundDetections = new ArrayList<>(configKeyCount);
 
-                    for (String keyword : this.removeDetectionDetails(detection).split("-")) {
-                        for (String configKey : configKeys) {
-                            if (this.containsDetection(configKey, keyword)) {
-                                foundDetections.add(configKey);
-                            }
+                for (String keyword : this.removeDetectionDetails(detection).split("-")) {
+                    for (String configKey : configKeys) {
+                        if (this.containsDetection(configKey, keyword)) {
+                            foundDetections.add(configKey);
                         }
                     }
+                }
 
-                    data = new StoredInformation(foundDetections.size() == 1);
-                    Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
-                    data.positions.put(array.length, positionsAndNumbers.keySet());
-                    this.numbers = positionsAndNumbers.values();
-                    int delete = map.size() - max;
+                data = new StoredInformation(foundDetections.size() == 1);
+                Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
+                data.positions.put(array.length, positionsAndNumbers.keySet());
+                this.numbers = positionsAndNumbers.values();
+                int delete = map.size() - max;
 
+                synchronized (map) {
                     if (delete > 0) {
                         Iterator<Integer> iterator = map.keySet().iterator();
 
@@ -89,16 +91,16 @@ public class InformationAnalysis {
                         }
                     }
                     map.put(this.hash, data);
-                } else {
-                    Set<Integer> positions = data.positions.get(array.length);
+                }
+            } else {
+                Set<Integer> positions = data.positions.get(array.length);
 
-                    if (positions != null) {
-                        this.numbers = this.showNumbers(array, array.length, positions);
-                    } else {
-                        Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
-                        data.positions.put(array.length, positionsAndNumbers.keySet());
-                        this.numbers = positionsAndNumbers.values();
-                    }
+                if (positions != null) {
+                    this.numbers = this.showNumbers(array, array.length, positions);
+                } else {
+                    Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
+                    data.positions.put(array.length, positionsAndNumbers.keySet());
+                    this.numbers = positionsAndNumbers.values();
                 }
             }
             this.isOption = data.isOption;
