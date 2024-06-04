@@ -7,10 +7,6 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 
-import java.util.LinkedHashMap;
-
-import static com.vagdedes.spartan.compatibility.manual.entity.Vehicles.key;
-
 public class MoveLength extends DetectionExecutor {
 
     private static final double

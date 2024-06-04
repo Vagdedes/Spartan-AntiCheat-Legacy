@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.spartan.abstraction.check.CancelCause;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
@@ -32,7 +31,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerInfo extends InventoryMenu {
 

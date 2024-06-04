@@ -272,7 +272,12 @@ public class SpartanLocation {
                     cache = setBlock();
 
                     synchronized (SpartanLocation.memory) {
-                        SpartanLocation.memory.put(this.identifier, cache);
+                        if (SpartanLocation.memory.put(this.identifier, cache) == null
+                                && SpartanLocation.memory.size() > 1_000) {
+                            Iterator<Integer> iterator = memory.keySet().iterator();
+                            iterator.next();
+                            iterator.remove();
+                        }
                     }
                     return cache;
                 } else {

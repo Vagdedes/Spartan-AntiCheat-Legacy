@@ -1,9 +1,6 @@
 package com.vagdedes.spartan.abstraction.data;
 
-import com.vagdedes.spartan.functionality.server.TPS;
-
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Clicks {
 

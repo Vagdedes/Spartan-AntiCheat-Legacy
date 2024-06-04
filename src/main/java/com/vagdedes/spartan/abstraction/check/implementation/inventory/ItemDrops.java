@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
