@@ -89,7 +89,7 @@ public class MoveDirection extends DetectionExecutor {
             switchPitch = Math.abs(pitchChange - pitchDiff);
             double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
             if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).getTime()
-                            + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 60);
+                            + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 35);
 
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
@@ -119,12 +119,12 @@ public class MoveDirection extends DetectionExecutor {
         if (basicHeuristic > 6) addNewPunish("heuristic(basic)", 210);
         if (lowHeuristic > 7) addNewPunish("heuristic(low)", 210);
         if (robotizedAmount > 7) addNewPunish("heuristic(sync)", 210);
-        if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 110);
+        if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
         if (gcd > 2) addNewPunish("pattern(gcd)", 210);
-        if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 60);
+        if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
                         && (aggressivePatternI2 + aggressivePatternD2) > 8) {
-            addNewPunish("pattern(snap)", 60);
+            addNewPunish("pattern(snap)", 40);
         }
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
 
