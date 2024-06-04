@@ -4,11 +4,13 @@ public class AttackData {
 
     private final double accuracy;
     private final float yaw, pitch;
+    private final long time;
 
-    AttackData(double accuracy, float yaw, float pitch) {
+    AttackData(double accuracy, float yaw, float pitch, long time) {
         this.accuracy = accuracy;
         this.yaw = yaw;
         this.pitch = pitch;
+        this.time = time;
     }
 
     double getAccuracy() {
@@ -22,4 +24,5 @@ public class AttackData {
     float getPitch() {
         return pitch;
     }
+    long getTime() { return time; }
 }
