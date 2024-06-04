@@ -32,6 +32,7 @@ public class SQLFeature extends ConfigurationBuilder {
     }
 
     private static boolean enabled = false;
+    public static final int maxSQLRows = SpartanBukkit.maxBytes / 1024;
 
     private static Connection con = null;
     private static final List<String> list = Collections.synchronizedList(new ArrayList<>());

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.java.StringUtils;
@@ -8,12 +7,12 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InformationAnalysis {
 
-    private static final int max = 10_000;
-    private static final Map<Integer, StoredInformation>
-            map = Cache.store(Collections.synchronizedMap(new LinkedHashMap<>(max)));
+    private static final int max = 16_384;
+    private static final Map<Integer, StoredInformation> map = new ConcurrentHashMap<>(2, 1.0f);
 
     // Separator
 
@@ -54,11 +53,7 @@ public class InformationAnalysis {
 
             Collection<String> configKeys = hackType.getCheck().getOptionKeys();
             int configKeyCount = configKeys.size();
-            StoredInformation data;
-
-            synchronized (map) {
-                data = map.get(this.hash);
-            }
+            StoredInformation data = map.get(this.hash);
 
             if (data == null) {
                 List<String> foundDetections = new ArrayList<>(configKeyCount);
@@ -77,21 +72,19 @@ public class InformationAnalysis {
                 this.numbers = positionsAndNumbers.values();
                 int delete = map.size() - max;
 
-                synchronized (map) {
-                    if (delete > 0) {
-                        Iterator<Integer> iterator = map.keySet().iterator();
+                if (delete > 0) {
+                    Iterator<Integer> iterator = map.keySet().iterator();
 
-                        while (iterator.hasNext()) {
-                            iterator.next();
-                            iterator.remove();
+                    while (iterator.hasNext()) {
+                        iterator.next();
+                        iterator.remove();
 
-                            if (--delete == 0) {
-                                break;
-                            }
+                        if (--delete == 0) {
+                            break;
                         }
                     }
-                    map.put(this.hash, data);
                 }
+                map.put(this.hash, data);
             } else {
                 Set<Integer> positions = data.positions.get(array.length);
 

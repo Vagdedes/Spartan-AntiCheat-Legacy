@@ -5,11 +5,13 @@ import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
-import com.vagdedes.spartan.functionality.connection.cloud.IDs;
-import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
+import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.connection.cloud.*;
 import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -32,7 +34,9 @@ public class SpartanBukkit {
             dataThread = new Threads.ThreadPool(1L),
             analysisThread = new Threads.ThreadPool(1L);
 
-    public static final int hashCodeMultiplier = 31;
+    public static final int
+            hashCodeMultiplier = 31,
+            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05);
     private static final long packetsGracePeriod = 5_000L;
     private static final Map<UUID, SpartanProtocol> playerProtocol =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
@@ -42,12 +46,6 @@ public class SpartanBukkit {
             ReflectionUtils.class.getPackage().getName().substring(0, 19) // Package
                     + "org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".entity.CraftPlayer" // Version
     );
-
-    public static void clear() {
-        synchronized (playerProtocol) {
-            playerProtocol.clear();
-        }
-    }
 
     public static boolean isPlayer(UUID uuid) {
         synchronized (playerProtocol) {
@@ -123,7 +121,7 @@ public class SpartanBukkit {
     }
 
     public static List<SpartanPlayer> getPlayers() {
-        List< SpartanPlayer> list = new ArrayList<>(playerProtocol.size());
+        List<SpartanPlayer> list = new ArrayList<>(playerProtocol.size());
 
         synchronized (playerProtocol) {
             for (SpartanProtocol protocol : playerProtocol.values()) {
@@ -254,5 +252,21 @@ public class SpartanBukkit {
 
     public static void cancelTask(Object task) {
         SpartanScheduler.cancel(task);
+    }
+
+    // Separator
+
+    public static void disable() {
+        AutoUpdater.complete();
+
+        synchronized (playerProtocol) {
+            playerProtocol.clear();
+        }
+        TPS.clear();
+        Threads.disable();
+        CrossServerInformation.clear();
+        PlayerLimitPerIP.clear();
+        NPCManager.clear();
+        Config.create();
     }
 }

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.data;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.Map;
@@ -15,10 +14,6 @@ public class Cooldowns {
     public Cooldowns(SpartanPlayer player) {
         this.storage = new ConcurrentHashMap<>();
         this.player = player;
-
-        if (player == null) {
-            Cache.store(this.storage);
-        }
     }
 
     public int get(String name) {
