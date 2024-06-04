@@ -50,6 +50,7 @@ import java.util.*;
 
 public class SpartanPlayer {
 
+    public final SpartanProtocol protocol;
     public final boolean bedrockPlayer;
     public final String name;
     public final UUID uuid;
@@ -125,9 +126,10 @@ public class SpartanPlayer {
 
     // Object
 
-    public SpartanPlayer(Player p) {
+    public SpartanPlayer(SpartanProtocol protocol, Player p) {
         Enums.HackType[] hackTypes = Enums.HackType.values();
 
+        this.protocol = protocol;
         this.uuid = p.getUniqueId();
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
@@ -364,7 +366,7 @@ public class SpartanPlayer {
     // Separator
 
     public Player getInstance() {
-        return SpartanBukkit.getRealPlayer(uuid);
+        return this.protocol.player;
     }
 
     public long ticksPassed() {
@@ -388,7 +390,7 @@ public class SpartanPlayer {
 
         if (vehicle != null) {
             return vehicle.isOnGround();
-        } else if (SpartanBukkit.packetsEnabled(this.uuid)) {
+        } else if (SpartanBukkit.packetsEnabled(this)) {
             Player p = this.getInstance();
             SpartanProtocol protocol = p == null ? null : SpartanBukkit.getProtocol(p);
             return protocol != null && protocol.trueOrFalse(protocol.onGround)

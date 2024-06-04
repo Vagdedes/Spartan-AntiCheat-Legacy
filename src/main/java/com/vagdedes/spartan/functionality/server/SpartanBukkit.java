@@ -71,11 +71,6 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer getPlayer(UUID uuid) {
-        Player player = getRealPlayer(uuid);
-        return player == null ? null : getPlayer(player);
-    }
-
-    public static Player getRealPlayer(UUID uuid) {
         SpartanProtocol protocol;
 
         if (isSynchronised()) {
@@ -93,7 +88,7 @@ public class SpartanBukkit {
                 protocol = playerProtocol.get(uuid);
             }
         }
-        return protocol == null ? null : protocol.player;
+        return protocol == null ? null : protocol.spartanPlayer;
     }
 
     public static SpartanPlayer getPlayer(Player real) {
@@ -188,6 +183,10 @@ public class SpartanBukkit {
         } else {
             return false;
         }
+    }
+
+    public static boolean packetsEnabled(SpartanPlayer player) {
+        return packetsEnabled(player.protocol);
     }
 
     public static boolean packetsEnabled(SpartanProtocol protocol) {

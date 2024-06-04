@@ -22,10 +22,10 @@ public class SpartanProtocol {
 
     public SpartanProtocol(Player player) {
         this.creationTime = System.currentTimeMillis();
-        this.spartanPlayer = new SpartanPlayer(player);
         this.player = player;
         this.abilities = new AbilitiesContainer(false, false, false);
         this.lastRotation = new RotationData();
+        this.spartanPlayer = new SpartanPlayer(this, player);
     }
 
     // Utilities
