@@ -7,6 +7,8 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 
+import java.util.LinkedHashMap;
+
 public class MoveLength extends DetectionExecutor {
 
     private static final double
@@ -24,7 +26,7 @@ public class MoveLength extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
         previousPitch = executor.player.movement.getEventFromLocation().getPitch();
         previousPitchDifference = 0.0f;
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
     }
 
     void runMove() {

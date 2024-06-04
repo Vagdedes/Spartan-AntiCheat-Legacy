@@ -13,7 +13,7 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.performance.MaximumCheckedPlayers;
+import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -32,12 +32,12 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerInfo extends InventoryMenu {
 
     private static final String menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
     private static final String documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
-    private static final Cooldowns cooldowns = new Cooldowns(null);
 
     public PlayerInfo() {
         super(menu, 45, new Permission[]{Permission.MANAGE, Permission.INFO});
@@ -163,7 +163,7 @@ public class PlayerInfo extends InventoryMenu {
 
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         boolean serverLag = isOnline && TPS.areLow(player),
-                notChecked = isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
+                notChecked = isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 detectionsNotAvailable = !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
@@ -219,7 +219,7 @@ public class PlayerInfo extends InventoryMenu {
                 isOnline ? player.getCancellableCompatibility() : null,
                 isOnline,
                 isOnline && TPS.areLow(player),
-                isOnline && !MaximumCheckedPlayers.isChecked(player.uuid),
+                isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 !SpartanEdition.hasDetectionsPurchased(dataType),
                 !hasViolations && !hasData);
 
@@ -266,20 +266,19 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        if (cooldowns.canDo("")) {
-            cooldowns.add("", 1);
-            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-            if (!players.isEmpty()) {
-                for (SpartanPlayer o : players) {
-                    Player no = o.getInstance();
+        if (!players.isEmpty()) {
+            for (SpartanPlayer o : players) {
+                Player no = o.getInstance();
 
-                    if (no != null) {
-                        InventoryView inventoryView = no.getOpenInventory();
+                if (no != null) {
+                    InventoryView inventoryView = no.getOpenInventory();
 
-                        if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)) {
-                            InteractiveInventory.playerInfo.open(o, targetName);
-                        }
+                    if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
+                            && o.cooldowns.canDo("player-info")) {
+                        o.cooldowns.add("player-info", 1);
+                        InteractiveInventory.playerInfo.open(o, targetName);
                     }
                 }
             }

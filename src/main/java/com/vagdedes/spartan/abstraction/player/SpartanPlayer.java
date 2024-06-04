@@ -47,6 +47,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanPlayer {
 
@@ -160,8 +161,8 @@ public class SpartanPlayer {
         }
         this.tick = System.currentTimeMillis();
 
-        this.buffer = new Buffer(this);
-        this.cooldowns = new Cooldowns(this);
+        this.buffer = new Buffer(this, new ConcurrentHashMap<>());
+        this.cooldowns = new Cooldowns(this, new ConcurrentHashMap<>());
         this.executors = new CheckExecutor[hackTypes.length];
         this.violations = new LiveViolation[hackTypes.length];
 
@@ -268,10 +269,7 @@ public class SpartanPlayer {
                 && (action == null || action == Action.LEFT_CLICK_AIR)) {
             clicks.calculate();
             this.getExecutor(Enums.HackType.FastClicks).run(false);
-
-            if (clicks.canDistributeInformation()) {
-                InteractiveInventory.playerInfo.refresh(name);
-            }
+            InteractiveInventory.playerInfo.refresh(name);
         }
     }
 

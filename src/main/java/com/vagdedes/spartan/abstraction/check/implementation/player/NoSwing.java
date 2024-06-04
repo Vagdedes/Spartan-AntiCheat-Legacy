@@ -23,19 +23,20 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.LinkedHashMap;
+
 public class NoSwing extends CheckExecutor {
 
     private static final int refreshTime = 30 * 20;
     private long breakTime, animationTime;
-    private final Cooldowns cooldowns;
     private final Buffer buffer;
+    private long checkDamage;
 
     public NoSwing(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
-        this.cooldowns = new Cooldowns(player);
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
     }
 
     @Override
@@ -79,16 +80,18 @@ public class NoSwing extends CheckExecutor {
             if (!CombatProcessing.canCheck(player, entity)) {
                 return;
             }
-            if (cooldowns.canDo("damage")) {
-                cooldowns.add("damage", 20);
+            long tick = TPS.getTick(player);
+
+            if (checkDamage < tick) {
+                checkDamage = tick + 20L;
 
                 if (this.animationTime == Long.MAX_VALUE) {
                     if (buffer.count("damage", refreshTime) >= 3) {
                         buffer.remove("damage");
                         cancel(
                                 "type: damage"
-                                + ", entity: " + CombatUtils.entityToString(entity)
-                                + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType())
+                                        + ", entity: " + CombatUtils.entityToString(entity)
+                                        + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType())
                         );
                     }
                 } else {
@@ -107,29 +110,7 @@ public class NoSwing extends CheckExecutor {
                 this.resetBreakData();
             }
         } else if (object instanceof PlayerAnimationEvent) {
-           this.resetAnimationData();
-        }
-    }
-
-    private void runDamage(LivingEntity entity) {
-        if (!hackType.getCheck().getBooleanOption("check_damage", true)
-                || player.hasAttackCooldown()
-                || player.trackers.has(Trackers.TrackerType.TRIDENT)) {
-            return;
-        }
-        if (cooldowns.canDo("damage")) {
-            cooldowns.add("damage", 20);
-
-            if (this.animationTime == Long.MAX_VALUE) {
-                if (buffer.count("damage", refreshTime) >= 3) {
-                    buffer.remove("damage");
-                    cancel("type: damage"
-                            + ", entity: " + CombatUtils.entityToString(entity)
-                            + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
-                }
-            } else {
-                resetAnimationData();
-            }
+            this.resetAnimationData();
         }
     }
 

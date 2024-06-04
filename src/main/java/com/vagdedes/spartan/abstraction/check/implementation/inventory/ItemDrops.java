@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class ItemDrops extends CheckExecutor {
 
     public ItemDrops(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
         this.times = new LinkedList<>();
     }
 

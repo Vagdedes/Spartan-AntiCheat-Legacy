@@ -3,15 +3,14 @@ package com.vagdedes.spartan.abstraction.data;
 import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Clicks {
 
     private final Collection<Long> clicks;
-    private final Cooldowns cooldowns;
 
     public Clicks() {
         this.clicks = Collections.synchronizedList(new LinkedList<>());
-        this.cooldowns = new Cooldowns(null);
     }
 
     public void calculate() {
@@ -23,15 +22,6 @@ public class Clicks {
 
     public int getCount() {
         return this.getRawData().size();
-    }
-
-    public boolean canDistributeInformation() {
-        if (cooldowns.canDo("")) {
-            cooldowns.add("", (int) TPS.maximum);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void remove() {

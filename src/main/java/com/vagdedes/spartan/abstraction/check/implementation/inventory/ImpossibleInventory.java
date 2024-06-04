@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.MaterialUtils;
@@ -16,6 +17,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.LinkedHashMap;
 
 public class ImpossibleInventory extends CheckExecutor {
 
@@ -29,19 +32,18 @@ public class ImpossibleInventory extends CheckExecutor {
             1, -1, 1
     };
 
-    private final Cooldowns cooldowns;
+    private long autoTotem;
 
     public ImpossibleInventory(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        cooldowns = new Cooldowns(player);
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object == null) {
-            int ticks = cooldowns.get("auto-totem");
+            long ticks = TPS.getTick(player) - this.autoTotem;
 
-            if (ticks > 0) {
+            if (ticks > 0L) {
                 cancel("type: auto-totem, remaining-ticks: " + ticks);
             }
         } else {
@@ -82,7 +84,7 @@ public class ImpossibleInventory extends CheckExecutor {
         if (totem_of_undying != null
                 && itemStack != null
                 && itemStack.getType() == totem_of_undying) {
-            cooldowns.add("auto-totem", 3);
+            this.autoTotem = TPS.getTick(player) + 3L;
         }
     }
 

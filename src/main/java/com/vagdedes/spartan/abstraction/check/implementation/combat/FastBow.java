@@ -10,6 +10,8 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.LinkedHashMap;
+
 public class FastBow extends CheckExecutor {
 
     private long interactTime;
@@ -17,7 +19,7 @@ public class FastBow extends CheckExecutor {
 
     public FastBow(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
     }
 
     @Override
@@ -59,4 +61,5 @@ public class FastBow extends CheckExecutor {
             }
         }
     }
+
 }

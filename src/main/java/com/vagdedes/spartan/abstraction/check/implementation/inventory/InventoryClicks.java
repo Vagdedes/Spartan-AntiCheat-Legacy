@@ -11,6 +11,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.LinkedHashMap;
+
 public class InventoryClicks extends CheckExecutor {
 
     private long time;
@@ -18,7 +20,7 @@ public class InventoryClicks extends CheckExecutor {
 
     public InventoryClicks(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
     }
 
     @Override

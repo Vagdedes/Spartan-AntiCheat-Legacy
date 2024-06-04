@@ -3,9 +3,7 @@ package com.vagdedes.spartan.abstraction.data;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Buffer {
@@ -13,7 +11,7 @@ public class Buffer {
     private final Map<String, BufferChild> storage;
     private final SpartanPlayer player;
 
-    private static class BufferChild {
+    public static class BufferChild {
 
         private final Buffer parent;
         private int count;
@@ -49,70 +47,42 @@ public class Buffer {
         }
     }
 
-    public Buffer(SpartanPlayer player) {
+    public Buffer(SpartanPlayer player, Map<String, BufferChild> map) {
         this.player = player;
-        this.storage = Collections.synchronizedMap(new LinkedHashMap<>());
-    }
-
-    // Implementation
-
-    public void clear() {
-        synchronized (storage) {
-            storage.clear();
-        }
+        this.storage = map;
     }
 
     public int get(String name) {
-        BufferChild obj;
-
-        synchronized (storage) {
-            obj = storage.get(name);
-        }
+        BufferChild obj = storage.get(name);
         return obj != null ? obj.count : 0;
     }
 
     public void set(String name, int amount) {
-        BufferChild obj;
+        BufferChild obj = storage.get(name);
 
-        synchronized (storage) {
-            obj = storage.get(name);
-
-            if (obj == null) {
-                obj = new BufferChild(this);
-                storage.put(name, obj);
-            }
+        if (obj == null) {
+            obj = new BufferChild(this);
+            storage.put(name, obj);
         }
         obj.reset();
         obj.increase(amount);
     }
 
     public int increase(String name, int amount) {
-        BufferChild obj;
-
-        synchronized (storage) {
-            obj = storage.computeIfAbsent(
-                    name,
-                    k -> new BufferChild(this)
-            );
-        }
-        return obj.increase(amount);
+        return storage.computeIfAbsent(
+                name,
+                k -> new BufferChild(this)
+        ).increase(amount);
     }
 
     public int decrease(String name, int amount) {
-        BufferChild obj;
-
-        synchronized (storage) {
-            obj = storage.get(name);
-        }
+        BufferChild obj = storage.get(name);
         return obj != null ? obj.decrease(amount) : 0;
     }
 
     public int getRemainingTicks(String name, int maxTicks) {
-        BufferChild obj;
+        BufferChild obj = storage.get(name);
 
-        synchronized (storage) {
-            obj = storage.get(name);
-        }
         if (obj == null) {
             return 0;
         } else {
@@ -122,11 +92,8 @@ public class Buffer {
     }
 
     public int count(String name, int maxTicks) {
-        BufferChild obj;
+        BufferChild obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
 
-        synchronized (storage) {
-            obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
-        }
         if (obj.ticksPassed() > maxTicks) {
             obj.reset();
         }
@@ -134,11 +101,7 @@ public class Buffer {
     }
 
     public double ratio(String name, int minimumTicks, int maxTicks) {
-        BufferChild obj;
-
-        synchronized (storage) {
-            obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
-        }
+        BufferChild obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
         double ticksPassed = obj.ticksPassed();
         int count;
 
@@ -156,28 +119,22 @@ public class Buffer {
     }
 
     public void remove(String name) {
-        synchronized (storage) {
-            storage.remove(name);
-        }
+        storage.remove(name);
     }
 
     public void remove(String[] names) {
-        synchronized (storage) {
-            for (String name : names) {
-                storage.remove(name);
-            }
+        for (String name : names) {
+            storage.remove(name);
         }
     }
 
     public void clear(String s) {
         if (!storage.isEmpty()) {
-            synchronized (storage) {
-                Iterator<String> iterator = storage.keySet().iterator();
+            Iterator<String> iterator = storage.keySet().iterator();
 
-                while (iterator.hasNext()) {
-                    if (iterator.next().contains(s)) {
-                        iterator.remove();
-                    }
+            while (iterator.hasNext()) {
+                if (iterator.next().contains(s)) {
+                    iterator.remove();
                 }
             }
         }

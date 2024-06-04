@@ -13,6 +13,8 @@ import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import java.util.LinkedHashMap;
+
 public class FastPlace extends CheckExecutor {
 
     private long time;
@@ -20,7 +22,7 @@ public class FastPlace extends CheckExecutor {
 
     public FastPlace(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
     }
 
     @Override

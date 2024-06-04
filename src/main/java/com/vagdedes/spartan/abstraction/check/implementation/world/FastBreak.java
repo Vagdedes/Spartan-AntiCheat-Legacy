@@ -37,7 +37,7 @@ public class FastBreak extends CheckExecutor {
     public FastBreak(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.interactTime = new LinkedHashMap<>();
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
     }
 
     private void checkDelay(SpartanBlock block, int seconds) {

@@ -14,6 +14,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.LinkedHashMap;
+
 public class FastHeal extends CheckExecutor {
 
     private double previousHealth;
@@ -23,7 +25,7 @@ public class FastHeal extends CheckExecutor {
     public FastHeal(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.previousHealth = player.getHealth();
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer(player, new LinkedHashMap<>());
     }
 
     private long calculate() {
