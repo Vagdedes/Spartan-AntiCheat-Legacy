@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
-import com.vagdedes.spartan.abstraction.configuration.implementation.SQLFeature;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -409,7 +408,7 @@ public class ResearchEngine {
         if (Config.sql.isEnabled()) {
             if (!isFull) {
                 try {
-                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + SQLFeature.maxSQLRows + ";");
+                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + SpartanBukkit.maxSQLRows + ";");
 
                     if (rs != null) {
                         while (rs.next()) {

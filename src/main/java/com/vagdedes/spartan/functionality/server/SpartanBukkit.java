@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.*;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -36,7 +35,8 @@ public class SpartanBukkit {
 
     public static final int
             hashCodeMultiplier = 31,
-            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05);
+            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
+            maxSQLRows = maxBytes / 1024;
     private static final long packetsGracePeriod = 5_000L;
     private static final Map<UUID, SpartanProtocol> playerProtocol =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
