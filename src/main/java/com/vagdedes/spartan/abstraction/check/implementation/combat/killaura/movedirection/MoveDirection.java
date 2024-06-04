@@ -88,11 +88,9 @@ public class MoveDirection extends DetectionExecutor {
             switchYaw = Math.abs(yawChange - yawDiff);
             switchPitch = Math.abs(pitchChange - pitchDiff);
             double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
-            /*
-            if (switchDiffOnYaw > 20 && (aimAnalysis.get(i).getTime()
-                            + 100 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 155);
+            if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).getTime()
+                            + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 60);
 
-             */
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
@@ -131,7 +129,7 @@ public class MoveDirection extends DetectionExecutor {
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
 
         double punishValue = Math.floor(vl / 200);
-        if (!punish.isEmpty() && vl > 200) {
+        if (!punish.isEmpty() && vl > priorityData(priorityType()).getVlLimit()) {
             cancel(
                             "type: " + punish + ", hitbox-size-analysis: "
                                             + result + ", hitbox-size-last: " + bruteForce,
@@ -140,8 +138,8 @@ public class MoveDirection extends DetectionExecutor {
             );
             vl -= 10;
         }
-        if (vl > 0) vl -= 4;
-        if (vl > 300) vl -= 15;
+        if (vl > 0) vl -= priorityData(priorityType()).getVlFader();
+        if (vl > priorityData(priorityType()).getVlLimit()) vl -= 10;
         rayTraceAnalysis.clear();
         aimAnalysis.clear();
 
@@ -166,5 +164,23 @@ public class MoveDirection extends DetectionExecutor {
             punish += ", " + reason;
         }
     }
+    public PriorityType priorityType() {
+        return PriorityType.CAREFUL;
+    }
+    public PriorityData priorityData(PriorityType priorityType) {
+        switch(priorityType) {
+            case AGGRESSIVE:
+                return new PriorityData(200, 4);
+            case CAREFUL:
+                return new PriorityData(400, 5);
+            case LENIENT:
+                return new PriorityData(900, 6);
+            case SILENT:
+                return new PriorityData(1500, 8);
+            default:
+                return new PriorityData(400, 5);
+        }
+    }
+
 
 }
