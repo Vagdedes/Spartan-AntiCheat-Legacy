@@ -56,10 +56,10 @@ public class Attributes {
                             inventory.getItemInHand(),
                             MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? inventory.getItemInOffHand() : null
                     }) {
-                        if (itemStack != null) {
+                        if (itemStack != null && itemStack.hasItemMeta()) {
                             ItemMeta meta = itemStack.getItemMeta();
 
-                            if (meta != null) {
+                            if (meta != null && meta.hasAttributeModifiers()) {
                                 Collection<AttributeModifier> modifiers = meta.getAttributeModifiers(attribute);
 
                                 if (modifiers != null && !modifiers.isEmpty()) {
