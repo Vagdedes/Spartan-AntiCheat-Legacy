@@ -165,7 +165,7 @@ public class MoveDirection extends DetectionExecutor {
         }
     }
     public PriorityType priorityType() {
-        return PriorityType.CAREFUL;
+        return PriorityType.AGGRESSIVE;
     }
     public PriorityData priorityData(PriorityType priorityType) {
         switch(priorityType) {

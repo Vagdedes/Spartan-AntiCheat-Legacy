@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.LinkedList;
@@ -24,7 +25,7 @@ public class HitReach extends CheckExecutor {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         LivingEntity target = event.getTarget();
 
-        if (CombatProcessing.canCheck(player, target)) {
+        if (CombatProcessing.canCheck(player, target) && !player.getGameMode().equals(GameMode.CREATIVE)) {
             double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target),
                     diff = bruteforceRayTrace - 0.4;
             rayTraceAnalysis.addLast(bruteforceRayTrace);
