@@ -5,14 +5,15 @@ import com.vagdedes.spartan.functionality.management.Cache;
 import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Cooldowns {
 
     private final Map<String, Long> storage;
     private final SpartanPlayer player;
 
-    public Cooldowns(SpartanPlayer player, Map<String, Long> map) {
-        this.storage = map;
+    public Cooldowns(SpartanPlayer player) {
+        this.storage = new ConcurrentHashMap<>();
         this.player = player;
 
         if (player == null) {

@@ -22,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ImpossibleActions extends CheckExecutor {
@@ -31,7 +30,7 @@ public class ImpossibleActions extends CheckExecutor {
 
     public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.buffer = new Buffer(player);
     }
 
     @Override

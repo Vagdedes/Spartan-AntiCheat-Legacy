@@ -13,12 +13,12 @@ import java.util.List;
 public class ItemDrops extends CheckExecutor {
 
     private long time;
-    private final Buffer buffer;
+    private final Buffer.IndividualBuffer buffer;
     private final List<Long> times;
 
     public ItemDrops(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.buffer = new Buffer.IndividualBuffer(player);
         this.times = new LinkedList<>();
     }
 
@@ -28,7 +28,7 @@ public class ItemDrops extends CheckExecutor {
         this.time = System.currentTimeMillis();
 
         if (timePassed <= TPS.tickTime) {
-            int count = buffer.count("", 10);
+            int count = buffer.count(1, 10);
 
             if (count == 1) {
                 this.times.clear();

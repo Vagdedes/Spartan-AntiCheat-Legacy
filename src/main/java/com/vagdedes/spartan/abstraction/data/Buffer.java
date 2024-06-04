@@ -5,33 +5,38 @@ import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Buffer {
 
-    private final Map<String, BufferChild> storage;
+    private final Map<String, IndividualBuffer> storage;
     private final SpartanPlayer player;
 
-    public static class BufferChild {
+    public static class IndividualBuffer {
 
-        private final Buffer parent;
+        private final SpartanPlayer parent;
         private int count;
         private long start;
 
-        private BufferChild(Buffer buffer) {
-            this.parent = buffer;
+        public IndividualBuffer(SpartanPlayer player) {
+            this.parent = player;
             this.reset();
         }
 
-        private long ticksPassed() {
-            return TPS.getTick(this.parent.player) - this.start;
+        public long ticksPassed() {
+            return TPS.getTick(this.parent) - this.start;
         }
 
-        private int increase(int amount) {
+        public int set(int amount) {
+            return this.count = amount;
+        }
+
+        public int increase(int amount) {
             this.count += amount;
             return this.count;
         }
 
-        private int decrease(int amount) {
+        public int decrease(int amount) {
             if (this.count > amount) {
                 this.count -= amount;
                 return this.count;
@@ -41,27 +46,35 @@ public class Buffer {
             }
         }
 
-        private void reset() {
+        public void reset() {
             this.count = 0;
-            this.start = TPS.getTick(this.parent.player);
+            this.start = TPS.getTick(this.parent);
         }
+
+        public int count(int amount, int maxTicks) {
+            if (this.ticksPassed() > maxTicks) {
+                this.reset();
+            }
+            return this.increase(amount);
+        }
+
     }
 
-    public Buffer(SpartanPlayer player, Map<String, BufferChild> map) {
+    public Buffer(SpartanPlayer player) {
         this.player = player;
-        this.storage = map;
+        this.storage = new ConcurrentHashMap<>();
     }
 
     public int get(String name) {
-        BufferChild obj = storage.get(name);
+        IndividualBuffer obj = storage.get(name);
         return obj != null ? obj.count : 0;
     }
 
     public void set(String name, int amount) {
-        BufferChild obj = storage.get(name);
+        IndividualBuffer obj = storage.get(name);
 
         if (obj == null) {
-            obj = new BufferChild(this);
+            obj = new IndividualBuffer(this.player);
             storage.put(name, obj);
         }
         obj.reset();
@@ -71,17 +84,17 @@ public class Buffer {
     public int increase(String name, int amount) {
         return storage.computeIfAbsent(
                 name,
-                k -> new BufferChild(this)
+                k -> new IndividualBuffer(this.player)
         ).increase(amount);
     }
 
     public int decrease(String name, int amount) {
-        BufferChild obj = storage.get(name);
+        IndividualBuffer obj = storage.get(name);
         return obj != null ? obj.decrease(amount) : 0;
     }
 
     public int getRemainingTicks(String name, int maxTicks) {
-        BufferChild obj = storage.get(name);
+        IndividualBuffer obj = storage.get(name);
 
         if (obj == null) {
             return 0;
@@ -92,16 +105,14 @@ public class Buffer {
     }
 
     public int count(String name, int maxTicks) {
-        BufferChild obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
-
-        if (obj.ticksPassed() > maxTicks) {
-            obj.reset();
-        }
-        return obj.increase(1);
+        return storage.computeIfAbsent(
+                name,
+                k -> new IndividualBuffer(this.player)
+        ).count(1, maxTicks);
     }
 
     public double ratio(String name, int minimumTicks, int maxTicks) {
-        BufferChild obj = storage.computeIfAbsent(name, k -> new BufferChild(this));
+        IndividualBuffer obj = storage.computeIfAbsent(name, k -> new IndividualBuffer(this.player));
         double ticksPassed = obj.ticksPassed();
         int count;
 

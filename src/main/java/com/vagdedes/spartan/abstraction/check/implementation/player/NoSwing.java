@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -23,20 +22,18 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.LinkedHashMap;
-
 public class NoSwing extends CheckExecutor {
 
     private static final int refreshTime = 30 * 20;
     private long breakTime, animationTime;
-    private final Buffer buffer;
+    private final Buffer.IndividualBuffer damageBuffer;
     private long checkDamage;
 
     public NoSwing(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.damageBuffer = new Buffer.IndividualBuffer(player);
     }
 
     @Override
@@ -86,8 +83,8 @@ public class NoSwing extends CheckExecutor {
                 checkDamage = tick + 20L;
 
                 if (this.animationTime == Long.MAX_VALUE) {
-                    if (buffer.count("damage", refreshTime) >= 3) {
-                        buffer.remove("damage");
+                    if (damageBuffer.count(1, refreshTime) >= 3) {
+                        damageBuffer.reset();
                         cancel(
                                 "type: damage"
                                         + ", entity: " + CombatUtils.entityToString(entity)

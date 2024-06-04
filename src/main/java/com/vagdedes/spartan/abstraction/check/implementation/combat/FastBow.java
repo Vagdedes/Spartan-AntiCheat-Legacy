@@ -10,16 +10,15 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.LinkedHashMap;
-
 public class FastBow extends CheckExecutor {
 
     private long interactTime;
-    private final Buffer buffer;
+    private final Buffer.IndividualBuffer bowForce, bowShots;
 
     public FastBow(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.bowForce = new Buffer.IndividualBuffer(player);
+        this.bowShots = new Buffer.IndividualBuffer(player);
     }
 
     @Override
@@ -47,18 +46,17 @@ public class FastBow extends CheckExecutor {
                 || timePassed > 500L) {
             return;
         }
-        if (buffer.count("bow-force", 20) == 2) {
-            buffer.remove("bow-force");
+        if (bowForce.count(1, 20) == 2) {
+            bowForce.reset();
             cancel("type: bow-force, ms: " + timePassed);
         }
     }
 
     private void checkBowShots() {
-        if (hackType.getCheck().getBooleanOption("check_bow_shots", true)) {
-            if (buffer.count("bow-shots", 10) == 7) {
-                buffer.remove("bow-shots");
-                cancel("type: bow-shots");
-            }
+        if (hackType.getCheck().getBooleanOption("check_bow_shots", true)
+                && bowShots.count(1, 10) == 7) {
+            bowShots.reset();
+            cancel("type: bow-shots");
         }
     }
 

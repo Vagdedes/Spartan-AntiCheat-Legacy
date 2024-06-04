@@ -14,18 +14,16 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.LinkedHashMap;
-
 public class FastHeal extends CheckExecutor {
 
     private double previousHealth;
     private long time;
-    private final Buffer buffer;
+    private final Buffer.IndividualBuffer buffer;
 
     public FastHeal(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.previousHealth = player.getHealth();
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.buffer = new Buffer.IndividualBuffer(player);
     }
 
     private long calculate() {
@@ -60,8 +58,8 @@ public class FastHeal extends CheckExecutor {
 
                     if (limit > 0L) {
                         if (timePassed < limit
-                                && buffer.count("", 10) == 3) {
-                            buffer.remove("");
+                                && buffer.count(1, 10) == 3) {
+                            buffer.reset();
                             cancel("type: default, ms: " + timePassed + ", limit: " + limit);
                         }
                     }

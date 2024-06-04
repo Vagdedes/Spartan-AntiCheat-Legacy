@@ -47,7 +47,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanPlayer {
 
@@ -161,8 +160,8 @@ public class SpartanPlayer {
         }
         this.tick = System.currentTimeMillis();
 
-        this.buffer = new Buffer(this, new ConcurrentHashMap<>());
-        this.cooldowns = new Cooldowns(this, new ConcurrentHashMap<>());
+        this.buffer = new Buffer(this);
+        this.cooldowns = new Cooldowns(this);
         this.executors = new CheckExecutor[hackTypes.length];
         this.violations = new LiveViolation[hackTypes.length];
 

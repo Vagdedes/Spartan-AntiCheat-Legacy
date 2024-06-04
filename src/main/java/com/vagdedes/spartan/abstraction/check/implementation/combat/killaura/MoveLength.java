@@ -9,6 +9,8 @@ import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 
 import java.util.LinkedHashMap;
 
+import static com.vagdedes.spartan.compatibility.manual.entity.Vehicles.key;
+
 public class MoveLength extends DetectionExecutor {
 
     private static final double
@@ -20,13 +22,14 @@ public class MoveLength extends DetectionExecutor {
     private Float
             previousPitch,
             previousPitchDifference;
-    private final Buffer buffer;
+    private final Buffer.IndividualBuffer buffer, safeBuffer;
 
     MoveLength(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         previousPitch = executor.player.movement.getEventFromLocation().getPitch();
         previousPitchDifference = 0.0f;
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.buffer = new Buffer.IndividualBuffer(player);
+        this.safeBuffer = new Buffer.IndividualBuffer(player);
     }
 
     void runMove() {
@@ -45,12 +48,11 @@ public class MoveLength extends DetectionExecutor {
                 ) / gcdMultiplier;
 
                 if (gcd <= minimumGCD) {
-                    String key = gcd <= safeGCD ? "safe" : "default";
+                    boolean safe = gcd <= safeGCD;
+                    Buffer.IndividualBuffer buffer = safe ? safeBuffer : this.buffer;
 
-                    if (gcd <= safeGCD ?
-                            buffer.count(key, 20) >= 5 :
-                            buffer.count(key, 20) >= 13) {
-                        buffer.remove(key);
+                    if (buffer.count(1, 20) >= (safe ? 5 : 13)) {
+                        buffer.reset();
                         cancel(
                                 "type: move-length"
                                 + ", pitch: " + pitch
@@ -65,7 +67,7 @@ public class MoveLength extends DetectionExecutor {
                         );
                     }
                 } else { // Some players may false this due to their client, so this helps prevent it
-                    buffer.decrease("default", 1);
+                    buffer.decrease(1);
                 }
             }
             previousPitchDifference = pitchDifference;

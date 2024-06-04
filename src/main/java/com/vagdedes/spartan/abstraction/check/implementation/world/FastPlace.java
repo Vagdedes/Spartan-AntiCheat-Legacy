@@ -13,16 +13,16 @@ import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import java.util.LinkedHashMap;
-
 public class FastPlace extends CheckExecutor {
 
     private long time;
-    private final Buffer buffer;
+    private final Buffer.IndividualBuffer fastBuffer, mediumBuffer, slowBuffer;
 
     public FastPlace(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.fastBuffer = new Buffer.IndividualBuffer(player);
+        this.mediumBuffer = new Buffer.IndividualBuffer(player);
+        this.slowBuffer = new Buffer.IndividualBuffer(player);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class FastPlace extends CheckExecutor {
                 int ticks = 20;
 
                 if (timePassed <= 150L) {
-                    if (buffer.count("slow", ticks) >= 8) {
+                    if (slowBuffer.count(1, ticks) >= 8) {
                         cancel(
                                 "type: slow"
                                         + ", ms: " + timePassed
@@ -54,7 +54,7 @@ public class FastPlace extends CheckExecutor {
                         );
                     }
                     if (timePassed <= 100L) {
-                        if (buffer.count("medium", ticks) >= 7) {
+                        if (mediumBuffer.count(1, ticks) >= 7) {
                             cancel(
                                     "type: medium"
                                             + ", ms: " + timePassed
@@ -70,7 +70,7 @@ public class FastPlace extends CheckExecutor {
                             if (!player.bedrockPlayer
                                     && hackType.getCheck().getBooleanOption("check_fast", true)
                                     && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                    && buffer.count("fast", ticks) >= 4) {
+                                    && fastBuffer.count(1, ticks) >= 4) {
                                 cancel(
                                         detection
                                                 + ", ms: " + timePassed

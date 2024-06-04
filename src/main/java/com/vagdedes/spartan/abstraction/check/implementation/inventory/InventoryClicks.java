@@ -11,16 +11,22 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.LinkedHashMap;
-
 public class InventoryClicks extends CheckExecutor {
 
     private long time;
-    private final Buffer buffer;
+    private int oldHash;
+    private final Buffer.IndividualBuffer
+            slowBuffer,
+            mediumBuffer,
+            fastBuffer,
+            shiftBuffer;
 
     public InventoryClicks(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.slowBuffer = new Buffer.IndividualBuffer(player);
+        this.mediumBuffer = new Buffer.IndividualBuffer(player);
+        this.fastBuffer = new Buffer.IndividualBuffer(player);
+        this.shiftBuffer = new Buffer.IndividualBuffer(player);
     }
 
     @Override
@@ -36,20 +42,19 @@ public class InventoryClicks extends CheckExecutor {
             Material material = item.getType();
 
             if (!BlockUtils.isSensitive(player, material)) {
-                String key = "";
                 boolean quick = player.getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
                         shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);
 
-                int newHash = type.hashCode();
-                int oldHash = buffer.get(key + "hash");
-                buffer.set(key + "hash", newHash);
+                int newHash = type.hashCode(),
+                        oldHash = this.oldHash;
+                this.oldHash = newHash;
 
                 if (shift
                         && !quick
                         && !BlockUtils.hasMaterial(player.getOpenInventory().getCursor())
-                        && buffer.count(key + "shift", 5) == 3) { // Inventory
-                    buffer.remove(key + "shift");
+                        && shiftBuffer.count(1, 5) == 3) { // Inventory
+                    shiftBuffer.reset();
                     cancel("type: shift, item: " + type);
                 } else {
                     long timePassed = System.currentTimeMillis() - time;
@@ -57,14 +62,14 @@ public class InventoryClicks extends CheckExecutor {
 
                     if ((!shift && !quick || newHash != oldHash)) {
                         if (timePassed < 150L) {
-                            if (buffer.count("slow", 10) >= 8) {
+                            if (slowBuffer.count(1, 10) >= 8) {
                                 cancel("type: slow, ms: " + timePassed + ", item: " + type);
                             }
                             if (timePassed < 100L) {
-                                if (buffer.count("medium", 5) >= 4) {
+                                if (mediumBuffer.count(1, 5) >= 4) {
                                     cancel("type: medium, ms: " + timePassed + ", item: " + type);
                                 }
-                                if (timePassed < 50L && buffer.count("fast", 5) >= 4) {
+                                if (timePassed < 50L && fastBuffer.count(1, 5) >= 4) {
                                     cancel("type: fast, ms: " + timePassed + ", item: " + type);
                                 }
                             }

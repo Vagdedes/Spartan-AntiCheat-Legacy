@@ -32,12 +32,15 @@ public class FastBreak extends CheckExecutor {
 
     private SpartanBlock lastBlock = null;
     private final Map<Integer, Long> interactTime;
-    private final Buffer buffer;
+    private final Buffer.IndividualBuffer
+            breaksPerSecondBuffer,
+            individualSurroundingsPerSecondBuffer;
 
     public FastBreak(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.interactTime = new LinkedHashMap<>();
-        this.buffer = new Buffer(player, new LinkedHashMap<>());
+        this.breaksPerSecondBuffer = new Buffer.IndividualBuffer(player);
+        this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer(player);
     }
 
     private void checkDelay(SpartanBlock block, int seconds) {
@@ -129,8 +132,8 @@ public class FastBreak extends CheckExecutor {
             if (limit > 0) {
                 String key = "breaks-per-second";
 
-                if (buffer.count(key, 20) == limit) {
-                    buffer.remove(key);
+                if (breaksPerSecondBuffer.count(1, 20) == limit) {
+                    breaksPerSecondBuffer.reset();
                     cancel(
                             "type: breaks-per-second"
                                     + ", type: " + BlockUtils.blockToString(block)
@@ -171,16 +174,16 @@ public class FastBreak extends CheckExecutor {
                             || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1) // Back-Diagonal
                             || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() + 1) && block.getZ() == lastBlock.getZ() // Up
                             || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() - 1) && block.getZ() == lastBlock.getZ())) { // Down
-                        bufferThreshold = buffer.count(key, bufferTicks);
+                        bufferThreshold = individualSurroundingsPerSecondBuffer.count(1, bufferTicks);
                     } else {
                         return;
                     }
                 } else {
-                    bufferThreshold = buffer.count(key, bufferTicks);
+                    bufferThreshold = individualSurroundingsPerSecondBuffer.count(1, bufferTicks);
                 }
 
                 if (bufferThreshold == limit) {
-                    buffer.remove(key);
+                    individualSurroundingsPerSecondBuffer.reset();
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)
                             + ", limit: " + limit;
