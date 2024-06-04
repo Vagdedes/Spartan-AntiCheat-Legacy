@@ -11,9 +11,11 @@ public class Clicks {
     }
 
     public void calculate() {
+        long time = System.currentTimeMillis();
+        
         synchronized (this.clicks) {
             this.remove();
-            this.clicks.add(System.currentTimeMillis());
+            this.clicks.add(time);
         }
     }
 
