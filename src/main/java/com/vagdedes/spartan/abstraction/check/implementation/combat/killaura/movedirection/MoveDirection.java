@@ -8,7 +8,10 @@ import org.bukkit.entity.Entity;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 import static java.lang.Math.PI;
 
@@ -22,6 +25,7 @@ public class MoveDirection extends DetectionExecutor {
     private double lastSwitchPitch = 0;
     private double switchYaw = 0;
     private double switchPitch = 0;
+    private List<UUID> targetsOnTheRow = new ArrayList<>();
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
 
     public MoveDirection(CheckExecutor executor) {
@@ -53,6 +57,7 @@ public class MoveDirection extends DetectionExecutor {
         }
     }
     public void analyze(SpartanLocation to, double bruteForce) {
+        targetsOnTheRow.clear();
         punish = "";
         double globalValue = 0;
         double changeYaw = 0;
@@ -79,6 +84,8 @@ public class MoveDirection extends DetectionExecutor {
         double oldYawChange = Math.abs(aimAnalysis.get(0).getYaw() - oldYawResult);
         double oldPitchChange = Math.abs(aimAnalysis.get(0).getPitch() - oldPitchResult);
         for (int i = 0; i < aimAnalysis.size(); i++) {
+            if (!targetsOnTheRow.contains(aimAnalysis.get(i).getTarget()))
+                targetsOnTheRow.add(aimAnalysis.get(i).getTarget());
             double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
             double pitchChange = Math.abs(aimAnalysis.get(i).getPitch() - oldPitchResult);
             double expectedYaw = yawChange * 1.073742f + (float) (yawChange + 0.15);
@@ -95,14 +102,13 @@ public class MoveDirection extends DetectionExecutor {
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
             if (robotized < 2 && yawChange > 2.5
-                            && rayTraceAnalysis.get(i) < 0.55
                             && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
 
             if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) basicHeuristic++;
 
             if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) lowHeuristic++;
 
-            if (rayTraceAnalysis.get(i) < 0.55 && robotized < 0.99 && yawChange > 3) machineKnownMovement++;
+            if (robotized < 0.99 && yawChange > 3) machineKnownMovement++;
 
             if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
             if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
@@ -159,7 +165,7 @@ public class MoveDirection extends DetectionExecutor {
         return new Vector2f(yaw, pitch);
     }
     public void addNewPunish(String reason, float vlAdd) {
-        vl += vlAdd;
+        vl += vlAdd / targetsOnTheRow.size();
         if (punish.isEmpty()) {
             punish = reason;
         } else {
