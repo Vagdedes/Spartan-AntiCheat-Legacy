@@ -20,31 +20,31 @@ import java.util.*;
 public class SpartanBukkit {
 
     public static final boolean
-            // Change it when testing and put it to false if not ready for production
-            // before pushing on the repository
-            packetsForcedState = false,
-            testMode = !JarVerification.enabled && !CloudBase.hasToken()
-                    && !IDs.isBuiltByBit() && !IDs.isPolymart()
-                    && Bukkit.getMotd().contains(Register.plugin.getName()),
-            canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
+                    // Change it when testing and put it to false if not ready for production
+                    // before pushing on the repository
+                    packetsForcedState = true,
+                    testMode = !JarVerification.enabled && !CloudBase.hasToken()
+                                    && !IDs.isBuiltByBit() && !IDs.isPolymart()
+                                    && Bukkit.getMotd().contains(Register.plugin.getName()),
+                    canAdvertise = !JarVerification.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
 
     public static final Threads.ThreadPool
-            connectionThread = new Threads.ThreadPool(TPS.tickTime),
-            dataThread = new Threads.ThreadPool(1L),
-            analysisThread = new Threads.ThreadPool(1L);
+                    connectionThread = new Threads.ThreadPool(TPS.tickTime),
+                    dataThread = new Threads.ThreadPool(1L),
+                    analysisThread = new Threads.ThreadPool(1L);
 
     public static final int
-            hashCodeMultiplier = 31,
-            maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
-            maxSQLRows = maxBytes / 1024;
+                    hashCodeMultiplier = 31,
+                    maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
+                    maxSQLRows = maxBytes / 1024;
     private static final long packetsGracePeriod = 5_000L;
     private static final Map<UUID, SpartanProtocol> playerProtocol =
-            Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
+                    Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     public static final Class<?> craftPlayer = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-            ? null
-            : ReflectionUtils.getClass(
-            ReflectionUtils.class.getPackage().getName().substring(0, 19) // Package
-                    + "org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".entity.CraftPlayer" // Version
+                    ? null
+                    : ReflectionUtils.getClass(
+                    ReflectionUtils.class.getPackage().getName().substring(0, 19) // Package
+                                    + "org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".entity.CraftPlayer" // Version
     );
 
     public static boolean isPlayer(UUID uuid) {
@@ -94,8 +94,8 @@ public class SpartanBukkit {
 
         synchronized (playerProtocol) {
             protocol = playerProtocol.computeIfAbsent(
-                    real.getUniqueId(),
-                    k -> new SpartanProtocol(real)
+                            real.getUniqueId(),
+                            k -> new SpartanProtocol(real)
             );
         }
         return protocol.spartanPlayer;
@@ -146,7 +146,7 @@ public class SpartanBukkit {
 
     public static boolean isSynchronised() {
         return Bukkit.isPrimaryThread()
-                || !Register.isPluginEnabled();
+                        || !Register.isPluginEnabled();
     }
 
     // Separator
@@ -166,8 +166,8 @@ public class SpartanBukkit {
 
     public static boolean packetsEnabled() {
         return testMode
-                && packetsForcedState
-                && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+                        && packetsForcedState
+                        && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
     public static boolean packetsEnabled(UUID uuid) {
@@ -198,8 +198,8 @@ public class SpartanBukkit {
     public static SpartanProtocol getProtocol(Player player) {
         synchronized (playerProtocol) {
             return playerProtocol.computeIfAbsent(
-                    player.getUniqueId(),
-                    k -> new SpartanProtocol(player)
+                            player.getUniqueId(),
+                            k -> new SpartanProtocol(player)
             );
         }
     }

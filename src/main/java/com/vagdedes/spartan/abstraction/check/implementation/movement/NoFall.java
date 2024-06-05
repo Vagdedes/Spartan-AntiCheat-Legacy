@@ -38,6 +38,7 @@ public class NoFall extends CheckExecutor {
 
     private double previousFallDistance, distance;
     private int previousFallTick;
+    private boolean ignore = true;
 
     public NoFall(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
@@ -58,6 +59,8 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
+        if (player.isOnGround(false)) ignore = false;
+        if (ignore) return;
         Double vertical = player.movement.getEventVertical(),
                 oldVertical = player.movement.getPreviousEventVertical();
 
