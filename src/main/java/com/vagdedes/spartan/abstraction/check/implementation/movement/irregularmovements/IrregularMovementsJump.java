@@ -66,7 +66,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                 double[][] patterns = new double[blocks][3];
 
                 for (int current = 1; current <= blocks; current++) {
-                    int position = AlgebraUtils.integerFloor(current);
+                    int position = current - 1;
                     patterns[position][0] = GroundUtils.boundingBox;
                     patterns[position][1] = -current;
                     patterns[position][2] = GroundUtils.boundingBox;
