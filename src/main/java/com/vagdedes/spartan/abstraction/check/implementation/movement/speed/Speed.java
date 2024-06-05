@@ -72,13 +72,13 @@ public class Speed extends CheckExecutor {
             onDamage,
             ignoreBasicChecks,
             collideMinecraftShitMathFactor,
-            newRayRequest,
+            newRayRequest, oldOnGround,
             needToCheckAura,
             isJump;
     private float jumpRotation;
     private LinkedList<Aura> auraAnalysis;
     private int
-            antiAbuseProcessor,
+            antiAbuseProcessor, groundSwitches,
             collideMinecraftShitMathFactorValue,
             wrappedOnAir,
             wrappedOnFly,
@@ -88,7 +88,8 @@ public class Speed extends CheckExecutor {
             sprintVl;
     private double yDiff,
             onGroundMinecraftShitMathFactor,
-            oldYaw,
+            oldYaw, oldY,
+            multiplyGround,
             multiply;
 
     public Speed(Enums.HackType hackType, SpartanPlayer player) {
@@ -159,6 +160,7 @@ public class Speed extends CheckExecutor {
         double deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
 
 
+        if (onAir == 3) multiplyGround = 0.5;
         if (RayUtils.onBlock(player, to, BlockUtils.ice)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
             if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
@@ -179,6 +181,12 @@ public class Speed extends CheckExecutor {
         if (player.movement.isSwimming()) {
             newRayRequest = true;
         }
+        if (to.getY() == oldY && onGround != oldOnGround) groundSwitches++;
+        if (to.getY() != oldY) groundSwitches = 0;
+        if (groundSwitches > 2) {
+            flag = "type: ground-invalid, onGround: " + onGround;
+            groundSwitches--;
+        }
         if (inventory != null
                 && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
                 && inventory.getBoots() != null) {
@@ -196,6 +204,7 @@ public class Speed extends CheckExecutor {
         if (solidBlockOnTop) {
             if (multiply < 0.07) multiply = 0.07;
             yDiff = 0D;
+            multiplyGround = 0.2;
             wrappedOnFly = wrappedOnFly + 1;
         } else if (!onBlock) {
             if (multiply < 0.08 && !onGround && vertical != -0.09
@@ -378,28 +387,25 @@ public class Speed extends CheckExecutor {
             }
             collideMinecraftShitMathFactor = false;
             double limit = 0.3D * (speedMultiply * 1.2) * ((speedModify > 0) ? 2 : 1);
+            double limitStraight = 0.3D * (speedMultiply) * ((speedModify > 0) ? 2 : 1);
             if (keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut() && !player.movement.isSprinting()) {
                 sprintVl = sprintVl + 2;
 
                 if (sprintVl > 4) {
                     limit = RayUtils.scaleVal(limit / 1.15, 2);
+                    limitStraight = RayUtils.scaleVal(limitStraight / 1.15, 2);
                 }
             }
             if (sprintVl > 0) sprintVl = sprintVl - 1;
 
-            limit = RayUtils.scaleVal(limit * (1 + multiply), 2);
-
-            if (onGroundMinecraftShitMathFactor > 0) {
-                onGroundMinecraftShitMathFactor = onGroundMinecraftShitMathFactor / 1.33;
-                limit = RayUtils.scaleVal(limit * (1 + onGroundMinecraftShitMathFactor), 2);
-                if (onGroundMinecraftShitMathFactor < 0.01) onGroundMinecraftShitMathFactor = 0D;
-            }
-            if (horizontal > limit) {
+            limit = RayUtils.scaleVal(limit * (1 + multiply) * (1 + multiplyGround), 2);
+            limitStraight = RayUtils.scaleVal(limitStraight * (1 + multiply) * (1 + multiplyGround), 2);
+            if (horizontal > ((ticksOnGround > 4) ? limitStraight : limit)) {
                 antiAbuseProcessor = antiAbuseProcessor + 110;
                 if (hackType.getCheck().getBooleanOption("check_simulation_ground", true)
                         && antiAbuseProcessor > 200) {
                     flag = "type: simulation-ground, speed: " + horizontal
-                            + ", speed-limit: " + limit;
+                            + ", speed-limit: " + ((ticksOnGround > 4) ? limitStraight : limit);
                 }
             }
             if (horizontal > limit / 1.35
@@ -439,7 +445,11 @@ public class Speed extends CheckExecutor {
 
             onDamage = false;
             multiply = multiply / 2;
+            oldOnGround = onGround;
+            oldY = to.getY();
+            multiplyGround = multiplyGround / 1.8;
             if (multiply < 0.04) multiply = 0D;
+            if (multiplyGround < 0.04) multiplyGround = 0D;
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
@@ -538,6 +548,10 @@ public class Speed extends CheckExecutor {
             ticksOnGround = 0;
             oldWrappedOnFly = 0;
             oldYaw = 0;
+            oldY = player.movement.getLocation().getY();
+            oldOnGround = false;
+            groundSwitches = 0;
+            multiplyGround = 0;
         } else if (object == SpeedAction.RIPTIDE) {
             newRayRequest = true;
             wrappedOnAir = 1;
