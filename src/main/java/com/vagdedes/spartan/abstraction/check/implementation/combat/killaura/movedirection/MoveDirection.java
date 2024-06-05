@@ -45,7 +45,7 @@ public class MoveDirection extends DetectionExecutor {
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 aimAnalysis.addLast(new AttackData(Math.abs(predict - yaw360),
                                 player.movement.getLocation().getYaw(),
-                                player.movement.getLocation().getPitch(), System.currentTimeMillis()));
+                                player.movement.getLocation().getPitch(), System.currentTimeMillis(), target.getUniqueId()));
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(player.movement.getLocation(), bruteforceRayTrace);
                 }
@@ -94,13 +94,15 @@ public class MoveDirection extends DetectionExecutor {
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
-            if (robotized < 2 && yawChange > 2.5 && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
+            if (robotized < 2 && yawChange > 2.5
+                            && rayTraceAnalysis.get(i) < 0.55
+                            && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
 
             if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) basicHeuristic++;
 
             if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) lowHeuristic++;
 
-            if (robotized < 0.99 && yawChange > 3) machineKnownMovement++;
+            if (rayTraceAnalysis.get(i) < 0.55 && robotized < 0.99 && yawChange > 3) machineKnownMovement++;
 
             if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
             if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
