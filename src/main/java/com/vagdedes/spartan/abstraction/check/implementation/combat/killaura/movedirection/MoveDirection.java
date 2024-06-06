@@ -68,12 +68,14 @@ public class MoveDirection extends DetectionExecutor {
         int basicHeuristic = 0;
         int lowHeuristic = 0;
         int machineKnownMovement = 0;
+        int constantRotations = 0;
         int gcd = 0;
         int aggressivePatternI = 0;
         int aggressivePatternD = 0;
         int aggressivePatternI2 = 0;
         int aggressivePatternD2 = 0;
         int robotizedAmount = 0;
+        int aggressiveAim = 0;
         for (Double value : rayTraceAnalysis) {
             globalValue += value;
         }
@@ -109,6 +111,8 @@ public class MoveDirection extends DetectionExecutor {
             if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) lowHeuristic++;
 
             if (robotized < 0.99 && yawChange > 3) machineKnownMovement++;
+            if (robotized < 0.02 && yawChange > 2) constantRotations++;
+            if (robotized < 2 && yawChange > 3) aggressiveAim++;
 
             if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
             if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
@@ -126,12 +130,14 @@ public class MoveDirection extends DetectionExecutor {
         double result = globalValue / rayTraceAnalysis.size();
         if (basicHeuristic > 6) addNewPunish("heuristic(basic)", 210);
         if (lowHeuristic > 7) addNewPunish("heuristic(low)", 210);
-        if (robotizedAmount > 7) addNewPunish("heuristic(sync)", 210);
+        if (robotizedAmount > 7) addNewPunish("heuristic(sync)", 170);
         if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
+        if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
+        if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
         if (gcd > 2) addNewPunish("pattern(gcd)", 210);
         if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
-                        && (aggressivePatternI2 + aggressivePatternD2) > 8) {
+                        && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
             addNewPunish("pattern(snap)", 40);
         }
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
