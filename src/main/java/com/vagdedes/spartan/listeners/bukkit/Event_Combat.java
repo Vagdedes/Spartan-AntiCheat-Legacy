@@ -83,7 +83,6 @@ public class Event_Combat implements Listener {
 
             // Detections
             p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])

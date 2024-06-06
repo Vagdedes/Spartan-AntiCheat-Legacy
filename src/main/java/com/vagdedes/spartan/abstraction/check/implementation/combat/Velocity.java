@@ -6,8 +6,6 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Location;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
@@ -29,13 +27,13 @@ public class Velocity extends CheckExecutor {
             velo = true;
             array = 0;
             verticalSended = RayUtils.scaleVal(event.getVelocity().getY(), 2);
-        }
-        if (object instanceof PlayerMoveEvent) {
+        } else if (object instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) object;
             SpartanLocation to = player.movement.getEventToLocation();
             SpartanLocation from = player.movement.getEventFromLocation();
             boolean blockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0));
             double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2);
+
             if (velo) {
                 if (blockOnTop || verticalSended < 0 || vertical < 0) {
                     velo = false;
@@ -48,7 +46,7 @@ public class Velocity extends CheckExecutor {
                         velo = false;
                         if (vl > 200) {
                             cancel("type: vertical, speed-vertical: "
-                                            + vertical + ", sended-vertical: " + verticalSended, 1, from);
+                                    + vertical + ", sended-vertical: " + verticalSended, 1, from);
                         }
                     }
                 } else {
@@ -64,4 +62,5 @@ public class Velocity extends CheckExecutor {
         return CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0);
     }
+
 }
