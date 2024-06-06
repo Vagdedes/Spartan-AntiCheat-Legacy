@@ -282,14 +282,14 @@ public class SpartanLocation {
                     return cache;
                 } else {
                     SpartanBlock[] block = new SpartanBlock[1];
+                    int x = getChunkX(), z = getChunkZ();
 
-                    if (SpartanBukkit.isSynchronised()
-                            || isChunkLoaded()) {
+                    if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
                         block[0] = setBlock();
                     } else {
                         Thread thread = Thread.currentThread();
 
-                        SpartanBukkit.transferTask(this.world, getChunkX(), getChunkZ(), () -> {
+                        SpartanBukkit.transferTask(this.world, x, z, () -> {
                             block[0] = setBlock();
 
                             synchronized (thread) {
@@ -328,10 +328,7 @@ public class SpartanLocation {
         }
     }
 
-    private boolean isChunkLoaded() {
-        int x = getChunkX(),
-                z = getChunkZ();
-
+    private boolean isChunkLoaded(int x, int z) {
         for (Chunk chunk : this.world.getLoadedChunks()) {
             if (chunk.getX() == x && chunk.getZ() == z) {
                 return true;
