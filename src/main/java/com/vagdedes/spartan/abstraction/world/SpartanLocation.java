@@ -302,12 +302,7 @@ public class SpartanLocation {
                                     thread.wait();
                                 } catch (Exception ex) {
                                     block[0] = new SpartanBlock(this, Material.AIR, false, false);
-                                    SpartanBukkit.transferTask(
-                                            this.world,
-                                            getChunkX(),
-                                            getChunkZ(),
-                                            () -> block[0] = setBlock()
-                                    );
+                                    SpartanBukkit.transferTask(this.world, x, z, () -> block[0] = setBlock());
                                 }
                             }
                         }
