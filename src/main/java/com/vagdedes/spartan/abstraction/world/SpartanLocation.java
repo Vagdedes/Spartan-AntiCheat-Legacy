@@ -282,13 +282,35 @@ public class SpartanLocation {
                     return cache;
                 } else {
                     SpartanBlock[] block = new SpartanBlock[1];
-                    Runnable runnable = () -> block[0] = setBlock();
 
                     if (SpartanBukkit.isSynchronised()
                             || isChunkLoaded()) {
-                        runnable.run();
+                        block[0] = setBlock();
                     } else {
-                        SpartanBukkit.transferTask(this.world, getChunkX(), getChunkZ(), runnable);
+                        Thread thread = Thread.currentThread();
+
+                        SpartanBukkit.transferTask(this.world, getChunkX(), getChunkZ(), () -> {
+                            block[0] = setBlock();
+
+                            synchronized (thread) {
+                                thread.notifyAll();
+                            }
+                        });
+                        synchronized (thread) {
+                            if (block[0] == null) {
+                                try {
+                                    thread.wait();
+                                } catch (Exception ex) {
+                                    block[0] = new SpartanBlock(this, Material.AIR, false, false);
+                                    SpartanBukkit.transferTask(
+                                            this.world,
+                                            getChunkX(),
+                                            getChunkZ(),
+                                            () -> block[0] = setBlock()
+                                    );
+                                }
+                            }
+                        }
                     }
                     synchronized (SpartanLocation.memory) {
                         if (SpartanLocation.memory.put(this.identifier, block[0]) == null
