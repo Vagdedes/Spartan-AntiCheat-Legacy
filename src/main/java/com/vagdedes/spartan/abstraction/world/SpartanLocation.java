@@ -20,10 +20,11 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanLocation {
 
-    static final Map<Integer, SpartanBlock> memory = Collections.synchronizedMap(new LinkedHashMap<>());
+    static final Map<Integer, SpartanBlock> memory = new ConcurrentHashMap<>();
     private static final boolean
             v_1_13 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
             v_1_17 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
@@ -269,11 +270,7 @@ public class SpartanLocation {
         if (SpartanLocation.v_1_17 ?
                 blockY >= this.world.getMinHeight() && blockY <= this.world.getMaxHeight() :
                 blockY >= 0 && blockY <= PlayerUtils.height) {
-            SpartanBlock cache;
-
-            synchronized (SpartanLocation.memory) {
-                cache = SpartanLocation.memory.get(this.identifier);
-            }
+            SpartanBlock cache = SpartanLocation.memory.get(this.identifier);
 
             if (cache != null && cache.ticksPassed() == 0L) {
                 return cache;
@@ -281,13 +278,11 @@ public class SpartanLocation {
                 if (MultiVersion.folia) {
                     cache = setBlock();
 
-                    synchronized (SpartanLocation.memory) {
-                        if (SpartanLocation.memory.put(this.identifier, cache) == null
-                                && SpartanLocation.memory.size() > 1_000) {
-                            Iterator<Integer> iterator = memory.keySet().iterator();
-                            iterator.next();
-                            iterator.remove();
-                        }
+                    if (SpartanLocation.memory.put(this.identifier, cache) == null
+                            && SpartanLocation.memory.size() > 1_000) {
+                        Iterator<Integer> iterator = memory.keySet().iterator();
+                        iterator.next();
+                        iterator.remove();
                     }
                     return cache;
                 } else {
@@ -317,13 +312,11 @@ public class SpartanLocation {
                             }
                         }
                     }
-                    synchronized (SpartanLocation.memory) {
-                        if (SpartanLocation.memory.put(this.identifier, block[0]) == null
-                                && SpartanLocation.memory.size() > 1_000) {
-                            Iterator<Integer> iterator = memory.keySet().iterator();
-                            iterator.next();
-                            iterator.remove();
-                        }
+                    if (SpartanLocation.memory.put(this.identifier, block[0]) == null
+                            && SpartanLocation.memory.size() > 1_000) {
+                        Iterator<Integer> iterator = memory.keySet().iterator();
+                        iterator.next();
+                        iterator.remove();
                     }
                     return block[0];
                 }

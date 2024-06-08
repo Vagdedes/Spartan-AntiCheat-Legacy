@@ -77,12 +77,10 @@ public class Shared {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
         Location nto = e.getTo();
-        n.sendMessage("1");
 
         if (nto == null) {
             return;
         }
-        n.sendMessage("2");
         SpartanLocation vehicle = p.movement.getVehicleLocation(n);
         SpartanLocation
                 to = vehicle != null ? vehicle : new SpartanLocation(nto),
@@ -100,8 +98,9 @@ public class Shared {
         if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
             return;
         }
-        n.sendMessage("3");
-        MovementProcessing.run(p, to, ver, box);
+        if (true) {
+            MovementProcessing.run(p, to, ver, box);
+        }
 
         for (Enums.HackType hackType : handledMovementChecks) {
             if (p.getViolations(hackType).prevent()) {
@@ -109,16 +108,18 @@ public class Shared {
             }
         }
 
-        // Detections
-        boolean cancelled = e.isCancelled();
-        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
-        p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
-        p.getExecutor(Enums.HackType.NoFall).run(cancelled);
-        p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
-        p.getExecutor(Enums.HackType.Speed).run(cancelled);
-        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
+        if (true) {
+            // Detections
+            boolean cancelled = e.isCancelled();
+            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
+            p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
+            p.getExecutor(Enums.HackType.NoFall).run(cancelled);
+            p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
+            p.getExecutor(Enums.HackType.Speed).run(cancelled);
+            p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
+        }
     }
 
     public static void teleport(PlayerTeleportEvent e) {

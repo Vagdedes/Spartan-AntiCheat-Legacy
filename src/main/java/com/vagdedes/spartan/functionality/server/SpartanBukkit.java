@@ -22,7 +22,7 @@ public class SpartanBukkit {
     public static final boolean
             // Change it when testing and put it to false if not ready for production
             // before pushing on the repository
-            packetsForcedState = true,
+            packetsForcedState = false,
             testMode = !JarVerification.enabled && !CloudBase.hasToken()
                     && !IDs.isBuiltByBit() && !IDs.isPolymart()
                     && Bukkit.getMotd().contains(Register.plugin.getName()),
@@ -90,15 +90,7 @@ public class SpartanBukkit {
     }
 
     public static SpartanPlayer getPlayer(Player real) {
-        SpartanProtocol protocol;
-
-        synchronized (playerProtocol) {
-            protocol = playerProtocol.computeIfAbsent(
-                    real.getUniqueId(),
-                    k -> new SpartanProtocol(real)
-            );
-        }
-        return protocol.spartanPlayer;
+        return getProtocol(real).spartanPlayer;
     }
 
     public static SpartanPlayer removePlayer(Player real) {
@@ -171,24 +163,11 @@ public class SpartanBukkit {
     }
 
     public static SpartanProtocol getProtocol(Player player) {
-        if (packetsEnabled()) {
-            SpartanProtocol protocol;
-
-            synchronized (playerProtocol) {
-                protocol = playerProtocol.computeIfAbsent(
-                        player.getUniqueId(),
-                        k -> new SpartanProtocol(player)
-                );
-            }
-            protocol.reset();
-            return protocol;
-        } else {
-            synchronized (playerProtocol) {
-                return playerProtocol.computeIfAbsent(
-                        player.getUniqueId(),
-                        k -> new SpartanProtocol(player)
-                );
-            }
+        synchronized (playerProtocol) {
+            return playerProtocol.computeIfAbsent(
+                    player.getUniqueId(),
+                    k -> new SpartanProtocol(player)
+            );
         }
     }
 

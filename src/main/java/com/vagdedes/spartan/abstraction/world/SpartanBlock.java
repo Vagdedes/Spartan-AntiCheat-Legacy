@@ -52,9 +52,7 @@ public class SpartanBlock {
     }
 
     public void removeBlockCache() {
-        synchronized (SpartanLocation.memory) {
-            SpartanLocation.memory.remove(this.location.identifier);
-        }
+        SpartanLocation.memory.remove(this.location.identifier);
     }
 
     public World getWorld() {

@@ -177,11 +177,9 @@ public class RayUtils {
         boolean exempt;
 
         if (target instanceof Player) {
-            SpartanPlayer targetSpartan = SpartanBukkit.getPlayer(target.getUniqueId());
-            assert targetSpartan != null;
-            double targetX = targetSpartan.movement.getLocation().getX();
-            double targetY = targetSpartan.movement.getLocation().getY();
-            double targetZ = targetSpartan.movement.getLocation().getZ();
+            double targetX = target.getLocation().getX();
+            double targetY = target.getLocation().getY();
+            double targetZ = target.getLocation().getZ();
 
             AxisAlignedBB boundingBox = new AxisAlignedBB(
                     targetX - size, targetY - 0.1F, targetZ - size,

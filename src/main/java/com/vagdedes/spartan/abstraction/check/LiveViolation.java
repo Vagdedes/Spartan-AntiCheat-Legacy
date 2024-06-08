@@ -111,7 +111,7 @@ public class LiveViolation {
     }
 
     public boolean prevent() {
-        synchronized (this) {
+        synchronized (this) { // todo fix async event call
             if (this.prevention.canPrevent
                     && !this.prevention.hasExpired(TPS.getTick(player))) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {

@@ -15,11 +15,6 @@ public class SpartanProtocol {
 
     public SpartanProtocol(Player player) {
         this.player = player;
-        this.reset();
-        this.spartanPlayer = new SpartanPlayer(this, player);
-    }
-
-    public void reset() {
         this.isOnGround = false;
         this.location = new Location(player.getWorld(), 0, 0, 0);
         this.from = this.location;
@@ -27,6 +22,7 @@ public class SpartanProtocol {
         this.isSneaking = false;
         this.onLoadStatus = true;
         this.velocity = new Vector(0, 0, 0);
+        this.spartanPlayer = new SpartanPlayer(this, player);
     }
 
     public boolean isOnGround() {
