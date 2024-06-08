@@ -3,6 +3,8 @@ package com.vagdedes.spartan.compatibility.necessary.protocollib;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.vagdedes.spartan.listeners.protocol.*;
+import com.vagdedes.spartan.listeners.protocol.move.Move;
+import com.vagdedes.spartan.listeners.protocol.move.Move_Deprecated;
 
 public class BackgroundProtocolLib {
 
@@ -13,6 +15,8 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new Velocity());
         p.addPacketListener(new Attack());
         p.addPacketListener(new Move());
+        p.addPacketListener(new Move_Deprecated());
         p.addPacketListener(new ServerPosition());
     }
+
 }

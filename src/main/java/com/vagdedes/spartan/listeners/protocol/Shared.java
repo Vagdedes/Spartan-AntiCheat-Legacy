@@ -128,7 +128,6 @@ public class Shared {
             return;
         }
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-        SpartanLocation to = new SpartanLocation(nto);
 
         // Object
         p.movement.judgeGround();

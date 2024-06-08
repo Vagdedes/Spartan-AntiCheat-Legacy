@@ -1,33 +1,18 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.move;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.protocol.Shared;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class Move extends PacketAdapter {
+public class BackgroundMove {
 
-    public Move() {
-        super(
-                Register.plugin,
-                ListenerPriority.LOWEST,
-                PacketType.Play.Client.POSITION,
-                PacketType.Play.Client.POSITION_LOOK,
-                PacketType.Play.Client.LOOK,
-                PacketType.Play.Client.FLYING,
-                PacketType.Play.Client.GROUND
-        );
-    }
-
-    @Override
-    public void onPacketReceiving(PacketEvent event) {
+    static void run(PacketEvent event) {
         Player player = event.getPlayer();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         movePacket(event, protocol);
@@ -75,7 +60,7 @@ public class Move extends PacketAdapter {
         );
     }
 
-    public static boolean onGroundPacketLevel(PacketEvent event) {
+    private static boolean onGroundPacketLevel(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         return packet.getBooleans().read(0);
     }
@@ -83,5 +68,4 @@ public class Move extends PacketAdapter {
     private static boolean invalidTeleport(Location location) {
         return location.getX() + location.getZ() == 17;
     }
-
 }
