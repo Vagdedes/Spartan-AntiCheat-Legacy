@@ -12,6 +12,7 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new EntityAction());
         p.addPacketListener(new Velocity());
         p.addPacketListener(new Attack());
-        Move.registerPacketListeners(p);
+        p.addPacketListener(new Move());
+        p.addPacketListener(new ServerPosition());
     }
 }

@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.player;
 
+import com.vagdedes.spartan.abstraction.player.packets.Container;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -177,7 +178,7 @@ public class SpartanPlayerMovement {
 
     public boolean isSneaking() {
         if (SpartanBukkit.packetsEnabled()) {
-            return this.parent.protocol.abilities.isSneaking();
+            return Container.getIPlayer(this.parent.getInstance()).isSneaking();
         } else {
             return this.parent.getInstance().isSneaking();
         }
@@ -197,7 +198,7 @@ public class SpartanPlayerMovement {
 
     public boolean isSprinting() {
         if (SpartanBukkit.packetsEnabled()) {
-            return this.parent.protocol.abilities.isSprinting();
+            return Container.getIPlayer(this.parent.getInstance()).isSprinting();
         } else {
             return this.parent.getInstance().isSprinting();
         }
@@ -369,7 +370,7 @@ public class SpartanPlayerMovement {
             Location actualLocation;
 
             if (SpartanBukkit.packetsEnabled()) {
-                actualLocation = this.parent.protocol.getLocation();
+                actualLocation = Container.getIPlayer(this.parent.getInstance()).getLocation();
             } else {
                 actualLocation = this.parent.getInstance().getLocation();
             }

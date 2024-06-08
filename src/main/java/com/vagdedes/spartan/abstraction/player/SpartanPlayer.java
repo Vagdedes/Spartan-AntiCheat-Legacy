@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.player.packets.Container;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
@@ -363,7 +364,7 @@ public class SpartanPlayer {
         if (vehicle != null) {
             return vehicle.isOnGround();
         } else if (SpartanBukkit.packetsEnabled()) {
-            return this.protocol.trueOrFalse(this.protocol.onGround)
+            return this.protocol.trueOrFalse(Container.getIPlayer(this.getInstance()).isOnGround())
                     || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         } else {

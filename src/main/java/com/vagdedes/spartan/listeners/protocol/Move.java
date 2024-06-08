@@ -1,139 +1,76 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.protocol.modules.DeprecateTypes;
+import com.vagdedes.spartan.abstraction.player.packets.Container;
+import com.vagdedes.spartan.abstraction.player.packets.IPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+public class Move extends PacketAdapter {
 
-public class Move {
-
-    public static void registerPacketListeners(ProtocolManager protocolManager) {
-        PacketListener serverSideListener = new PacketAdapter(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Server.POSITION) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                Player player = event.getPlayer();
-                SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
-
-                if (protocol.hasDataFor(protocol.position) && !protocol.spawnStatus
-                        && protocol.position == protocol.verifiedPosition) {
-                    protocol.position = protocol.position.clone().add(
-                            readMovePacket(event, protocol)
-                    );
-                    Shared.teleport(new PlayerTeleportEvent(
-                            player,
-                            protocol.lastTeleport,
-                            protocol.position)
-                    );
-                }
-            }
-        };
-        protocolManager.addPacketListener(serverSideListener);
-
-        Set<PacketType> packetTypes = new HashSet<>();
-        packetTypes.add(PacketType.Play.Client.POSITION);
-        packetTypes.add(PacketType.Play.Client.POSITION_LOOK);
-        packetTypes.add(PacketType.Play.Client.LOOK);
-
-        for (DeprecateTypes type : DeprecateTypes.values()) {
-            for (PacketType packetType : PacketType.values()) {
-                if (packetType.name().equals(type.name())) {
-                    packetTypes.add(packetType);
-                    break;
-                }
-            }
-        }
-
-        for (PacketType packetType : packetTypes) {
-            PacketListener clientSideListener = new PacketAdapter(Register.plugin, ListenerPriority.LOWEST, packetType) {
-                @Override
-                public void onPacketReceiving(PacketEvent event) {
-                    moving(event);
-                }
-            };
-            protocolManager.addPacketListener(clientSideListener);
-        }
+    public Move() {
+        super(Register.plugin, ListenerPriority.LOWEST,
+                        PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK,
+                        PacketType.Play.Client.LOOK, PacketType.Play.Client.FLYING, PacketType.Play.Client.GROUND);
     }
-
-    private static void moving(PacketEvent event) {
+    @Override
+    public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
-        PacketContainer packet = event.getPacket();
+        IPlayer iPlayer = Container.getIPlayer(player);
+        movePacket(event, iPlayer);
 
-        if (packet.getType().equals(PacketType.Play.Client.POSITION)
-                || packet.getType().equals(PacketType.Play.Client.POSITION_LOOK)
-                || packet.getType().equals(PacketType.Play.Client.LOOK)) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
-            Location to = readMovePacket(event, protocol);
-            protocol.verifiedPosition = to;
-            double xz = to.getX() + to.getZ();
-
-            if (xz == 17) {
-                if (protocol.trueOrFalse(protocol.spawnStatus)) {
-                    return;
-                }
-            } else if (xz == 0) {
-                if (protocol.trueOrFalse(protocol.spawnStatus)) {
-                    return;
-                }
-            } else if (protocol.trueOrFalse(protocol.spawnStatus)) {
-                protocol.spawnStatus = false;
-                protocol.position = to;
-                return;
-            }
-            // Register.plugin.getLogger().info(to.getX() + " " + to.getY() + " " + to.getZ());
-            importRotation(protocol, to);
-            Location from = protocol.position == null ? to : protocol.position;
-            importRotation(protocol, from);
-            boolean ground = packet.getBooleans().read(0);
-            protocol.onGround = ground;
-            protocol.position = to;
-            Shared.move(new PlayerMoveEvent(
-                    player, from, to
-            ));
-        } else if (Objects.equals(packet.getType().name(), DeprecateTypes.GROUND.name())
-                || Objects.equals(packet.getType().name(), DeprecateTypes.FLYING.name())) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
-            boolean ground = packet.getBooleans().read(0);
-            protocol.onGround = ground;
-            Shared.stay(new PlayerStayEvent(ground, player));
+        if (!invalidTeleport(iPlayer.getLocation()) && iPlayer.isOnLoadStatus()) {
+            iPlayer.setOnLoadStatus(false);
+        } else if (!invalidTeleport(iPlayer.getLocation())
+                        || (invalidTeleport(iPlayer.getLocation()) && !iPlayer.isOnLoadStatus())) {
+            Shared.move(new PlayerMoveEvent(player, iPlayer.getFrom(), iPlayer.getLocation()));
         }
-    }
 
-    private static Location readMovePacket(PacketEvent event, SpartanProtocol protocol) {
+    }
+    private static void movePacket(PacketEvent event, IPlayer iPlayer) {
         PacketContainer packet = event.getPacket();
+        PacketType type = event.getPacket().getType();
         Player player = event.getPlayer();
 
-        if (event.getPacket().getType().equals(PacketType.Play.Client.LOOK)
-                || event.getPacket().getType().equals(PacketType.Play.Client.POSITION_LOOK)) {
-            protocol.lastRotation.setYaw(packet.getFloat().read(0));
-            protocol.lastRotation.setPitch(packet.getFloat().read(1));
-        }
-        if (event.getPacket().getType().equals(PacketType.Play.Client.LOOK)) {
-            return protocol.position;
-        } else {
-            return new Location(
-                    player.getWorld(),
-                    packet.getDoubles().read(0),
-                    packet.getDoubles().read(1),
-                    packet.getDoubles().read(2)
-            );
-        }
-    }
+        iPlayer.setFrom(iPlayer.getLocation());
 
-    private static void importRotation(SpartanProtocol protocol, Location l) {
-        l.setYaw(protocol.lastRotation.getYaw());
-        l.setPitch(protocol.lastRotation.getPitch());
+        if (type == PacketType.Play.Client.LOOK) {
+            Location location = iPlayer.getLocation();
+            location.setYaw(packet.getFloat().read(0));
+            location.setPitch(packet.getFloat().read(1));
+            iPlayer.setLocation(location);
+        } else if (type == PacketType.Play.Client.POSITION_LOOK) {
+            Location location = readLocation(event);
+            location.setYaw(packet.getFloat().read(0));
+            location.setPitch(packet.getFloat().read(1));
+            iPlayer.setLocation(location);
+        } else if (type == PacketType.Play.Client.POSITION) {
+            Location location = readLocation(event);
+            Location iPlayerLocation = iPlayer.getLocation();
+            location.setYaw(iPlayerLocation.getYaw());
+            location.setPitch(iPlayerLocation.getPitch());
+            iPlayer.setLocation(location);
+        }
+        iPlayer.setOnGround(onGroundPacketLevel(event));
+    }
+    public static Location readLocation(PacketEvent event) {
+        PacketContainer packet = event.getPacket();
+        return new Location(
+                        event.getPlayer().getWorld(),
+                        packet.getDoubles().read(0),
+                        packet.getDoubles().read(1),
+                        packet.getDoubles().read(2)
+        );
+    }
+    public static boolean onGroundPacketLevel(PacketEvent event) {
+        PacketContainer packet = event.getPacket();
+        return packet.getBooleans().read(0);
+    }
+    private static boolean invalidTeleport(Location location) {
+        return location.getX() + location.getZ() == 17;
     }
 
 }
