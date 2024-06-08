@@ -49,7 +49,7 @@ public class NoFall extends CheckExecutor {
     public void handleInternal(boolean cancelled, Object object) {
         this.distance = 0.0;
         this.previousFallTick = getFallTicks(previousFallDistance);
-        this.previousFallDistance = player.getFallDistance();
+        this.previousFallDistance = player.getInstance().getFallDistance();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class NoFall extends CheckExecutor {
             this.previousFallTick = 0;
             return;
         }
-        double fallDistance = player.getFallDistance();
+        double fallDistance = player.getInstance().getFallDistance();
         int fallDistanceTick = getFallTicks(previousFallDistance);
 
         if (previousFallTick < maxFallTicks
@@ -143,7 +143,7 @@ public class NoFall extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return MovementProcessing.canCheck(player, false, false, false, true)
-                && player.getVehicle() == null
+                && player.getInstance().getVehicle() == null
                 && !player.movement.isInVoid()
                 && !player.movement.wasInLiquids()
                 && !player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS)

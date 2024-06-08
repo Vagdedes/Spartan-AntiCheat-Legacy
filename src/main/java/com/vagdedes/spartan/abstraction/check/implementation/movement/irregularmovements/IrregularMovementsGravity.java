@@ -50,7 +50,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             new double[][]{
                                     {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                     {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                    {GroundUtils.contactBoundingBox, Math.ceil(player.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                    {GroundUtils.contactBoundingBox, Math.ceil(player.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
                             },
                             to,
                             true,
@@ -59,7 +59,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             new double[][]{
                                     {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                     {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                    {GroundUtils.contactBoundingBox, Math.ceil(player.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                    {GroundUtils.contactBoundingBox, Math.ceil(player.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
                             },
                             from,
                             true,
@@ -109,7 +109,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             && !BlockPatternUtils.isBlockPattern(
                             new double[]{
                                     GroundUtils.boundingBox,
-                                    Math.ceil(player.getEyeHeight()),
+                                    Math.ceil(player.getInstance().getEyeHeight()),
                                     GroundUtils.boundingBox
                             },
                             to,

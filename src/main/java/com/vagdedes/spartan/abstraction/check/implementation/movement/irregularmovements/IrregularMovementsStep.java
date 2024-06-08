@@ -71,7 +71,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         if (hackType.getCheck().getBooleanOption("check_step", true)) {
-            Entity vehicle = player.getVehicle();
+            Entity vehicle = player.getInstance().getVehicle();
 
             if (knownBox && knownOldBox) {
                 int hash = hash(oldBox, box);

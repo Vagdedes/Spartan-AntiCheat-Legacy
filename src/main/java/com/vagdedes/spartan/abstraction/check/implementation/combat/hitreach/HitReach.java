@@ -25,7 +25,8 @@ public class HitReach extends CheckExecutor {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         LivingEntity target = event.getTarget();
 
-        if (CombatProcessing.canCheck(player, target) && !player.getGameMode().equals(GameMode.CREATIVE)) {
+        if (CombatProcessing.canCheck(player, target)
+                && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
             double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target),
                     diff = bruteforceRayTrace - 0.4;
             rayTraceAnalysis.addLast(bruteforceRayTrace);

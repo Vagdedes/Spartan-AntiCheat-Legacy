@@ -163,7 +163,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isLowEyeHeight() {
-        return this.parent.getEyeHeight() < 1.0;
+        return this.parent.getInstance().getEyeHeight() < 1.0;
     }
 
     public boolean isCrawling() {
@@ -187,7 +187,7 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isFlying() {
-        Entity vehicle = this.parent.getVehicle();
+        Entity vehicle = this.parent.getInstance().getVehicle();
 
         if (vehicle != null) {
             return vehicle instanceof Player && ((Player) vehicle).isFlying();

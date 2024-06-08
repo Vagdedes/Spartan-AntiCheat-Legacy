@@ -58,7 +58,7 @@ public class MovementProcessing {
                                                     double vertical, double box) {
         if (player.isOnGround(true)
                 && player.movement.getTicksOnAir() == 0
-                && player.getVehicle() == null
+                && player.getInstance().getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
             player.trackers.removeMany(Trackers.TrackerFamily.MOTION);
@@ -101,7 +101,7 @@ public class MovementProcessing {
             player.movement.setLastLiquid(LAVA);
             return true;
         } else {
-            for (double i = 0.0; i < player.getEyeHeight(); i++) {
+            for (double i = 0.0; i < player.getInstance().getEyeHeight(); i++) {
                 for (SpartanLocation locationModified : location.getSurroundingLocations(GroundUtils.boundingBox, i, GroundUtils.boundingBox)) {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
                         player.movement.setLastLiquid(WATER);

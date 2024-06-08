@@ -91,7 +91,7 @@ public class GhostHand extends CheckExecutor {
                 && !Vehicles.has(player, Vehicles.DRILL)
                 && !PrinterMode.isUsing(player)
                 && !mcMMO.hasGeneralAbility(player)) {
-            GameMode gameMode = player.getGameMode();
+            GameMode gameMode = player.getInstance().getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;
         }

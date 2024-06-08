@@ -54,6 +54,6 @@ public class ItemDrops extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !player.isDead();
+        return !player.getInstance().isDead();
     }
 }

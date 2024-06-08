@@ -76,7 +76,7 @@ public class BlockReach extends CheckExecutor {
                             ab_distance = to.distance(blockAgainst);
 
                     if (!player.bedrockPlayer
-                            && player.getVehicle() == null
+                            && player.getInstance().getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox)) {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
                     } else {

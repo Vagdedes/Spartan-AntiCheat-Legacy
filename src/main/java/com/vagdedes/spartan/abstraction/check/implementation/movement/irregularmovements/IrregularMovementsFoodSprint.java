@@ -13,8 +13,8 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
     void run() {
         if (hackType.getCheck().getBooleanOption("check_sprint", true)
                 && player.movement.isSprinting()) {
-            GameMode gameMode = player.getGameMode();
-            int food = player.getFoodLevel();
+            GameMode gameMode = player.getInstance().getGameMode();
+            int food = player.getInstance().getFoodLevel();
 
             if (food <= 6
                     && (gameMode == GameMode.SURVIVAL

@@ -155,7 +155,7 @@ public class CombatUtils {
     public static double[] get_X_Y_Distance(SpartanPlayer player, LivingEntity entity) {
         SpartanLocation
                 playerFeetLocation = player.movement.getLocation(),
-                playerEyeLocation = playerFeetLocation.clone().add(0, player.getEyeHeight(), 0);
+                playerEyeLocation = playerFeetLocation.clone().add(0, player.getInstance().getEyeHeight(), 0);
         Location entityFeetLocation = entity.getLocation();
         double directionalDistance = playerEyeLocation.distance(entityFeetLocation);
         Vector vector = playerFeetLocation.getDirection();

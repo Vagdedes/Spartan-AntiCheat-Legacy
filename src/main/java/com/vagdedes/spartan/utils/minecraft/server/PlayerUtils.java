@@ -14,7 +14,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 
@@ -134,8 +133,7 @@ public class PlayerUtils {
         if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             return 0;
         }
-        PlayerInventory inventory = p.getInventory();
-        ItemStack b = inventory == null ? null : inventory.getBoots();
+        ItemStack b = p.getInventory().getBoots();
         return b != null ? b.getEnchantmentLevel(Enchantment.DEPTH_STRIDER) : 0;
     }
 

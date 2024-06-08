@@ -21,7 +21,7 @@ public class FastEat extends CheckExecutor {
             delay = 1_000L,
             driedKelp = 550L;
 
-    private  long delayTime, eatTime;
+    private long delayTime, eatTime;
 
     public FastEat(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
@@ -31,17 +31,15 @@ public class FastEat extends CheckExecutor {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             PlayerInventory inventory = player.getInventory();
 
-            if (inventory != null) {
-                for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
-                    if (itemStack != null) {
-                        Material type = itemStack.getType();
+            for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
+                if (itemStack != null) {
+                    Material type = itemStack.getType();
 
-                        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && type == Material.DRIED_KELP) {
-                            return driedKelp;
-                        }
-                        if (type.isEdible()) {
-                            return delay;
-                        }
+                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && type == Material.DRIED_KELP) {
+                        return driedKelp;
+                    }
+                    if (type.isEdible()) {
+                        return delay;
                     }
                 }
             }
@@ -90,12 +88,12 @@ public class FastEat extends CheckExecutor {
         if (object instanceof FoodLevelChangeEvent) {
             int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
 
-            if (lvl > player.getFoodLevel()
+            if (lvl > player.getInstance().getFoodLevel()
                     && (checkDelay() || checkEating())) {
                 Player p = player.getInstance();
 
                 if (p != null) {
-                    p.setFoodLevel(player.getFoodLevel() - (lvl - player.getFoodLevel()));
+                    p.setFoodLevel(player.getInstance().getFoodLevel() - (lvl - player.getInstance().getFoodLevel()));
                 }
             }
         } else if (!player.bedrockPlayer) {

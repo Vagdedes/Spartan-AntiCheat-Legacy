@@ -27,7 +27,7 @@ public class AutoRespawn extends CheckExecutor {
         long time = System.currentTimeMillis() - memory,
                 limit = 750L;
 
-        if (time <= limit && !player.isDead()) {
+        if (time <= limit && !player.getInstance().isDead()) {
             memory = 0L;
             cancel(
                     "type: default, ms: " + time,

@@ -240,7 +240,7 @@ public class RayUtils {
     public static float getEyeHeight(final boolean sneak, SpartanPlayer player) {
         float f2 = 1.62F;
 
-        if (player.isSleeping()) {
+        if (player.getInstance().isSleeping()) {
             f2 = 0.2F;
         }
         if (sneak) {

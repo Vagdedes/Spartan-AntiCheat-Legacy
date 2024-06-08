@@ -112,7 +112,7 @@ public class Speed extends CheckExecutor {
                 : null;
         double speedModify = getMaxSpeedAmplifier();
         PlayerInventory inventory = player.getInventory();
-        Entity vehicle = player.getVehicle();
+        Entity vehicle = player.getInstance().getVehicle();
 
         String flag = null;
         double dx = to.getX() - from.getX(),
@@ -125,7 +125,7 @@ public class Speed extends CheckExecutor {
         }
         double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2),
                 horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
-        float speedMultiply = (player.getWalkSpeed() * 5) < 1 ? 1 : (player.getWalkSpeed() * 5);
+        float speedMultiply = (player.getInstance().getWalkSpeed() * 5) < 1 ? 1 : (player.getInstance().getWalkSpeed() * 5);
         if (onGround && wrappedOnFly > 0) oldAir = wrappedOnFly;
         wrappedOnAir = onGround ? 0 : wrappedOnAir + 1;
         wrappedOnFly = onGround ? 0 : wrappedOnFly + 1;
@@ -185,8 +185,7 @@ public class Speed extends CheckExecutor {
             flag = "type: ground-invalid, onGround: " + onGround;
             groundSwitches--;
         }
-        if (inventory != null
-                && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
                 && inventory.getBoots() != null) {
             int e = inventory.getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
             double v = (e + 1) * 0.4;

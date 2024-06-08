@@ -22,7 +22,7 @@ public class FastHeal extends CheckExecutor {
 
     public FastHeal(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.previousHealth = player.getHealth();
+        this.previousHealth = player.getInstance().getHealth();
         this.buffer = new Buffer.IndividualBuffer(player);
     }
 
@@ -49,7 +49,7 @@ public class FastHeal extends CheckExecutor {
 
             if (reason != RegainReason.CUSTOM
                     && reason != RegainReason.MAGIC) {
-                double health = player.getHealth();
+                double health = player.getInstance().getHealth();
                 long timePassed = System.currentTimeMillis() - time;
                 time = System.currentTimeMillis();
 
@@ -66,7 +66,7 @@ public class FastHeal extends CheckExecutor {
                 }
                 previousHealth = health;
             }
-        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > player.getFoodLevel()
+        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > player.getInstance().getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 || player.getItemInHand().getType() != Material.DRIED_KELP)) {
             player.getViolations(hackType).addDisableCause(hackType.toString(), null, 10);
@@ -76,7 +76,7 @@ public class FastHeal extends CheckExecutor {
     @Override
     protected boolean canRun() {
         if (player.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
-            GameMode gameMode = player.getGameMode();
+            GameMode gameMode = player.getInstance().getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {
             return false;

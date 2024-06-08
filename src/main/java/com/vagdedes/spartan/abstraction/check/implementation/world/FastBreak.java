@@ -45,7 +45,7 @@ public class FastBreak extends CheckExecutor {
 
     private void checkDelay(SpartanBlock block, int seconds) {
         if (hackType.getCheck().getBooleanOption("check_delay", true)) {
-            GameMode gameMode = player.getGameMode();
+            GameMode gameMode = player.getInstance().getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 long time = interactTime.getOrDefault(
@@ -124,31 +124,27 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkBreaksPerSecond(int seconds, SpartanBlock block) {
-        GameMode gameMode = player.getGameMode();
+        GameMode gameMode = player.getInstance().getGameMode();
 
         if (gameMode == GameMode.CREATIVE) {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
 
-            if (limit > 0) {
-                String key = "breaks-per-second";
-
-                if (breaksPerSecondBuffer.count(1, 20) == limit) {
-                    breaksPerSecondBuffer.reset();
-                    cancel(
-                            "type: breaks-per-second"
-                                    + ", type: " + BlockUtils.blockToString(block)
-                                    + ", limit: " + limit,
-                            1.0,
-                            null,
-                            seconds
-                    );
-                }
+            if (limit > 0 && breaksPerSecondBuffer.count(1, 20) == limit) {
+                breaksPerSecondBuffer.reset();
+                cancel(
+                        "type: breaks-per-second"
+                                + ", type: " + BlockUtils.blockToString(block)
+                                + ", limit: " + limit,
+                        1.0,
+                        null,
+                        seconds
+                );
             }
         }
     }
 
     private void checkIndirectSurroundingsPerSecond(int seconds, SpartanBlock block) {
-        GameMode gameMode = player.getGameMode();
+        GameMode gameMode = player.getInstance().getGameMode();
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
                 && !BlockUtils.isSensitive(player, block.material)) {

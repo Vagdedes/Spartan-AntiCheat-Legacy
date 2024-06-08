@@ -110,7 +110,7 @@ public class AntiCheatLogs {
     }
 
     public static void logMining(SpartanPlayer player, SpartanBlock block, boolean cancelled) {
-        if (player.getGameMode() == GameMode.SURVIVAL
+        if (player.getInstance().getGameMode() == GameMode.SURVIVAL
                 && PlayerUtils.isPickaxeItem(player.getItemInHand().getType())) {
             MiningHistory.MiningOre ore = MiningHistory.getMiningOre(block.material);
 

@@ -189,7 +189,7 @@ public class CloudConnections {
             SpartanPlayer player = playerProfile.getSpartanPlayer();
             boolean isNull = player == null;
 
-            if (isNull || !Permissions.isStaff(player) && !player.isOp()) {
+            if (isNull || !Permissions.isStaff(player) && !player.getInstance().isOp()) {
                 OfflinePlayer offlinePlayer = playerProfile.getOfflinePlayer();
 
                 if (offlinePlayer != null && !offlinePlayer.isOp()) {

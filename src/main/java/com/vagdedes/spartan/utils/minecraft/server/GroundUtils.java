@@ -204,7 +204,7 @@ public class GroundUtils {
                     return true;
                 }
             }
-            Entity vehicle = p.getVehicle();
+            Entity vehicle = p.getInstance().getVehicle();
             boolean hasVehicle = vehicle != null;
 
             if (hasVehicle) {

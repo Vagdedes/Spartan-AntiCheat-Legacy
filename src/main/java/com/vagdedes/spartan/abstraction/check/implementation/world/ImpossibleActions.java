@@ -166,9 +166,9 @@ public class ImpossibleActions extends CheckExecutor {
                     && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
                 int cases;
 
-                if (player.isSleeping()) {
+                if (player.getInstance().isSleeping()) {
                     cases = 1;
-                } else if (player.isDead()) {
+                } else if (player.getInstance().isDead()) {
                     cases = 2;
                 } else if (BlockUtils.hasMaterial(player.getOpenInventory().getCursor())) {
                     cases = 3;

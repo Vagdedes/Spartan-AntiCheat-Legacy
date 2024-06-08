@@ -13,19 +13,17 @@ public class Irregular extends DetectionExecutor {
     }
 
     void runDamage() {
-        if (player.isDead()) {
+        if (player.getInstance().isDead()) {
             cancel("type: irregular, scenario: death");
-        } else if (player.isSleeping()) {
+        } else if (player.getInstance().isSleeping()) {
             cancel("type: irregular, scenario: sleeping");
         } else {
             InventoryView inventoryView = player.getOpenInventory();
 
-            if (inventoryView != null) {
-                if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
-                    cancel("type: irregular, scenario: cursor");
-                } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots) {
-                    cancel("type: irregular, scenario: inventory");
-                }
+            if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
+                cancel("type: irregular, scenario: cursor");
+            } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots) {
+                cancel("type: irregular, scenario: inventory");
             }
         }
     }
