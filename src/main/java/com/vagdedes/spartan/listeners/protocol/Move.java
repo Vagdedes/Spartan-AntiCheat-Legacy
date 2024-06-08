@@ -43,8 +43,6 @@ public class Move extends PacketAdapter {
     private static void movePacket(PacketEvent event, SpartanProtocol protocol) {
         PacketContainer packet = event.getPacket();
         PacketType type = event.getPacket().getType();
-        Player player = event.getPlayer();
-
         protocol.setFrom(protocol.getLocation());
 
         if (type == PacketType.Play.Client.LOOK) {

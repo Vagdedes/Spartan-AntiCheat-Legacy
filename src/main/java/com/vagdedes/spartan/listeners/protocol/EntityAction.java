@@ -12,15 +12,19 @@ import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesEnum;
 public class EntityAction extends PacketAdapter {
 
     public EntityAction() {
-        super(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.ENTITY_ACTION);
+        super(
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.ENTITY_ACTION
+        );
     }
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
-
         String typeString = event.getPacket().getModifier().getValues().get(1).toString();
         AbilitiesEnum type = getEnum(typeString);
+
         if (typeString != null) {
             if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
                 protocol.setSneaking(true);
