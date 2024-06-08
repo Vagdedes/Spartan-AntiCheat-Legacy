@@ -362,8 +362,7 @@ public class SpartanPlayer {
 
         if (vehicle != null) {
             return vehicle.isOnGround();
-        } else if (SpartanBukkit.packetsEnabled(this)) {
-            Player p = this.getInstance();
+        } else if (SpartanBukkit.packetsEnabled()) {
             return this.protocol.trueOrFalse(this.protocol.onGround)
                     || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);

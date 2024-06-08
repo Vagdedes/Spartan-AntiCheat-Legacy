@@ -494,7 +494,7 @@ public class Speed extends CheckExecutor {
                 // player.sendMessage(String.valueOf(horizontal));
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
-            if (SpartanBukkit.packetsEnabled(player)) return;
+            if (SpartanBukkit.packetsEnabled()) return;
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) object;
             Entity damager = e.getDamager();
 

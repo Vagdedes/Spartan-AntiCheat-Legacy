@@ -21,30 +21,20 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     IrregularMovementsGravity(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
-        this.ignore = false;
-        this.sensitive = false;
     }
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
             int airTicks = player.movement.getTicksOnAir();
-            boolean liquid = player.movement.wasInLiquids();
             SpartanLocation to = player.movement.getEventToLocation(),
                     from = player.movement.getEventFromLocation();
             int levitationLevel = PlayerUtils.levitation
                     ? PlayerUtils.getPotionLevel(player, PotionEffectType.LEVITATION)
                     : -1;
-
             List<Double> predictions = new ArrayList<>(5);
-            double acceleration = liquid
-                    ? PlayerUtils.liquidAcceleration
-                    : PlayerUtils.slowFall && player.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0)
-                    ? PlayerUtils.slowFallAcceleration
-                    : PlayerUtils.airAcceleration,
-                    drag = liquid
-                            ? player.movement.getLastLiquidMaterial() == Material.LAVA
-                            ? PlayerUtils.lavaDrag : PlayerUtils.waterDrag : PlayerUtils.airDrag;
             boolean levitation = levitationLevel != -1,
+                    slowFall = PlayerUtils.slowFall && player.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
+                    liquid = player.movement.wasInLiquids(),
                     climb = canClimb(to) || canClimb(from),
                     web = BlockPatternUtils.isBlockPattern(
                             new double[][]{
@@ -91,17 +81,37 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             predictions.add( // Always second
                     PlayerUtils.calculateNextFallMotion(
                             oldVertical,
-                            -acceleration,
-                            drag
+                            -PlayerUtils.airAcceleration,
+                            PlayerUtils.airDrag
                     )
             );
 
             if (web) {
                 if (levitation) {
-                    predictions.set(0, predictions.get(0) - PlayerUtils.webBlockDownDefault);
+                    predictions.add(predictions.get(0) - PlayerUtils.webBlockDownDefault);
                 }
                 predictions.add(-PlayerUtils.webBlockDownDefault);
-            } else if (climb) {
+            }
+            if (liquid) {
+                double calculation = PlayerUtils.calculateNextFallMotion(
+                        oldVertical,
+                        -PlayerUtils.liquidAcceleration,
+                        player.movement.getLastLiquidMaterial() == Material.LAVA
+                                ? PlayerUtils.lavaDrag
+                                : PlayerUtils.waterDrag
+                );
+                if (levitation) {
+                    predictions.add(predictions.get(0) - calculation);
+                }
+                predictions.add(-calculation);
+            }
+            if (slowFall) {
+                if (levitation) {
+                    predictions.add(predictions.get(0) - PlayerUtils.slowFallAcceleration);
+                }
+                predictions.add(-PlayerUtils.slowFallAcceleration);
+            }
+            if (climb) {
                 if (vertical == 0.0) {
                     if (!player.isOnGround(to, true)
                             && !player.movement.isSneaking()
@@ -137,17 +147,15 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     predictions.set(0, PlayerUtils.climbingUpDefault);
                     predictions.add(-PlayerUtils.climbingDownDefault);
                 }
-            } else if (honey) {
+            }
+            if (honey) {
                 if (levitation) {
-                    predictions.set(0, predictions.get(0) - PlayerUtils.honeyBlockDownDefault);
+                    predictions.add(predictions.get(0) - PlayerUtils.honeyBlockDownDefault);
                 }
                 predictions.add(-PlayerUtils.honeyBlockDownDefault);
             }
             boolean sensitive = predictions.size() > 1;
-
-            if (sensitive && !this.sensitive) {
-                this.ignore = true;
-            }
+            this.ignore |= sensitive && !this.sensitive;
             this.sensitive = sensitive;
             String violation = null;
 
@@ -163,8 +171,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     } else {
                         product = !sensitive
                                 && !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
-                                && !player.movement.isFalling(vertical, -acceleration, drag, GroundUtils.maxHeightLengthRatio)
-                                && !player.movement.isFalling(oldVertical, -acceleration, drag, GroundUtils.maxHeightLengthRatio)
+                                && !player.movement.isFalling(vertical, -PlayerUtils.airAcceleration, PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                                && !player.movement.isFalling(oldVertical, -PlayerUtils.airAcceleration, PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                                 ? GroundUtils.maxPlayerStep
                                 : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1);
                     }

@@ -176,7 +176,7 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isSneaking() {
-        if (SpartanBukkit.packetsEnabled(this.parent)) {
+        if (SpartanBukkit.packetsEnabled()) {
             return this.parent.protocol.abilities.isSneaking();
         } else {
             return this.parent.getInstance().isSneaking();
@@ -196,7 +196,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isSprinting() {
-        if (SpartanBukkit.packetsEnabled(this.parent)) {
+        if (SpartanBukkit.packetsEnabled()) {
             return this.parent.protocol.abilities.isSprinting();
         } else {
             return this.parent.getInstance().isSprinting();
@@ -349,7 +349,7 @@ public class SpartanPlayerMovement {
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             Location playerLocation;
 
-            if (SpartanBukkit.packetsEnabled(this.parent)) {
+            if (SpartanBukkit.packetsEnabled()) {
                 playerLocation = this.parent.protocol.getLocation();
             } else {
                 playerLocation = player.getLocation();
@@ -368,7 +368,7 @@ public class SpartanPlayerMovement {
         if (spartanLocation == null) {
             Location actualLocation;
 
-            if (SpartanBukkit.packetsEnabled(this.parent)) {
+            if (SpartanBukkit.packetsEnabled()) {
                 actualLocation = this.parent.protocol.getLocation();
             } else {
                 actualLocation = this.parent.getInstance().getLocation();

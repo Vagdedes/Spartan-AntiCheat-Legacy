@@ -24,13 +24,10 @@ public class Join extends PacketAdapter implements Listener {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         protocol.spawnStatus = true;
         protocol.position = new Location(event.getPlayer().getWorld(), 0, 0, 0);
-
-        if (SpartanBukkit.packetsEnabled(protocol)) {
-            Shared.join(new PlayerJoinEvent(
-                    player,
-                    (String) null
-            ));
-        }
+        Shared.join(new PlayerJoinEvent(
+                player,
+                (String) null
+        ));
     }
 
 
