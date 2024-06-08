@@ -7,6 +7,8 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.server.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3D;
+import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3F;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -173,6 +175,14 @@ public class SpartanLocation {
 
     public Vector toVector() {
         return new Vector(this.x, this.y, this.z);
+    }
+
+    public SpartanVector3D toVector3D() {
+        return new SpartanVector3D(this.x, this.y, this.z);
+    }
+
+    public SpartanVector3F toVector3F() {
+        return new SpartanVector3F((float) this.x, (float) this.y, (float) this.z);
     }
 
     public SpartanLocation subtract(double x, double y, double z) {

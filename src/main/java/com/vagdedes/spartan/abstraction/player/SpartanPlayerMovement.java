@@ -460,4 +460,13 @@ public class SpartanPlayerMovement {
     public void judgeGround() {
         this.judgeGround(false);
     }
+
+    // Separator
+
+    public boolean isInVoid() {
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                ? this.location.getY() < this.location.world.getMinHeight()
+                : this.location.getY() < 0;
+    }
+
 }

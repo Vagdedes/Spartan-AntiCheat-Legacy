@@ -38,7 +38,7 @@ public class ImpossibleInventory extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object == null) {
-            long ticks = TPS.getTick(player) - this.autoTotem;
+            long ticks = this.autoTotem - TPS.getTick(player);
 
             if (ticks > 0L) {
                 cancel("type: auto-totem, remaining-ticks: " + ticks);

@@ -4,9 +4,9 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
+import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3D;
 import org.bukkit.entity.Entity;
-import org.joml.Vector2f;
-import org.joml.Vector3d;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -43,19 +43,24 @@ public class MoveDirection extends DetectionExecutor {
             if (target != null) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target);
                 double diff = bruteforceRayTrace - 0.4;
-                double predict = RayUtils.castTo360(calculate(player.movement.getLocation().toVector().toVector3d(),
-                                target.getLocation().toVector().toVector3d()).x);
+                double predict = RayUtils.castTo360(
+                        calculate(
+                                player.movement.getLocation().toVector3D(),
+                                new SpartanLocation(target.getLocation()).toVector3D()
+                        ).x
+                );
                 double yaw360 = RayUtils.castTo360(player.movement.getLocation().getYaw());
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 aimAnalysis.addLast(new AttackData(Math.abs(predict - yaw360),
-                                player.movement.getLocation().getYaw(),
-                                player.movement.getLocation().getPitch(), System.currentTimeMillis(), target.getUniqueId()));
+                        player.movement.getLocation().getYaw(),
+                        player.movement.getLocation().getPitch(), System.currentTimeMillis(), target.getUniqueId()));
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(player.movement.getLocation(), bruteforceRayTrace);
                 }
             }
         }
     }
+
     public void analyze(SpartanLocation to, double bruteForce) {
         targetsOnTheRow.clear();
         punish = "";
@@ -98,13 +103,13 @@ public class MoveDirection extends DetectionExecutor {
             switchPitch = Math.abs(pitchChange - pitchDiff);
             double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
             if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).getTime()
-                            + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 35);
+                    + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 35);
 
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
             if (robotized < 2 && yawChange > 2.5
-                            && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
+                    && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
 
             if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) basicHeuristic++;
 
@@ -137,7 +142,7 @@ public class MoveDirection extends DetectionExecutor {
         if (gcd > 2) addNewPunish("pattern(gcd)", 210);
         if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
-                        && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
+                && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
             addNewPunish("pattern(snap)", 40);
         }
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
@@ -145,10 +150,10 @@ public class MoveDirection extends DetectionExecutor {
         double punishValue = Math.floor(vl / 200);
         if (!punish.isEmpty() && vl > priorityData(priorityType()).getVlLimit()) {
             cancel(
-                            "type: " + punish + ", hitbox-size-analysis: "
-                                            + result + ", hitbox-size-last: " + bruteForce,
-                            punishValue,
-                            to
+                    "type: " + punish + ", hitbox-size-analysis: "
+                            + result + ", hitbox-size-last: " + bruteForce,
+                    punishValue,
+                    to
             );
             vl -= 10;
         }
@@ -163,13 +168,14 @@ public class MoveDirection extends DetectionExecutor {
         attackHandle = new AttackHandle(targetHandle, System.currentTimeMillis());
     }
 
-    public Vector2f calculate(final Vector3d from, final Vector3d to) {
-        Vector3d diff = to.sub(from);
-        double distance = Math.hypot(diff.x(), diff.z());
-        float yaw = (float) (Math.atan2(diff.z(), diff.x()) * 180.0F / PI) - 90.0F,
-                pitch = (float) (-(Math.atan2(diff.y(), distance) * 180.0F / PI));
-        return new Vector2f(yaw, pitch);
+    public SpartanVector2F calculate(final SpartanVector3D from, final SpartanVector3D to) {
+        SpartanVector3D diff = to.sub(from);
+        double distance = Math.hypot(diff.x, diff.z);
+        float yaw = (float) (Math.atan2(diff.z, diff.x) * 180.0F / PI) - 90.0F,
+                pitch = (float) (-(Math.atan2(diff.y, distance) * 180.0F / PI));
+        return new SpartanVector2F(yaw, pitch);
     }
+
     public void addNewPunish(String reason, float vlAdd) {
         vl += vlAdd / targetsOnTheRow.size();
         if (punish.isEmpty()) {
@@ -178,11 +184,13 @@ public class MoveDirection extends DetectionExecutor {
             punish += ", " + reason;
         }
     }
+
     public PriorityType priorityType() {
         return PriorityType.CAREFUL;
     }
+
     public PriorityData priorityData(PriorityType priorityType) {
-        switch(priorityType) {
+        switch (priorityType) {
             case AGGRESSIVE:
                 return new PriorityData(200, 4);
             case CAREFUL:

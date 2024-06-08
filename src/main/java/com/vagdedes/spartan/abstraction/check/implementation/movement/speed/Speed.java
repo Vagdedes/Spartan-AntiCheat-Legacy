@@ -30,8 +30,6 @@ import org.bukkit.util.Vector;
 
 import java.util.LinkedList;
 
-import static com.vagdedes.spartan.abstraction.check.implementation.movement.speed.DataProcessor.keepSprint;
-
 public class Speed extends CheckExecutor {
 
     /*
@@ -287,7 +285,9 @@ public class Speed extends CheckExecutor {
                             + ", speed-limit: " + limit + ", air-tick: " + onAir;
                 }
             }
-            if (horizontal > wrapLimit && keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut()) {
+            if (horizontal > wrapLimit
+                    && DataProcessor.keepSprint.containsKey(player.uuid)
+                    && !DataProcessor.getKeepSprint(player.uuid).isTimedOut()) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
                 if (hackType.getCheck().getBooleanOption("check_keepsprint_silent", true)
                         && antiAbuseProcessor > 200) {
@@ -303,7 +303,7 @@ public class Speed extends CheckExecutor {
                 jumpRayLine = new RayLine(dx, dz);
                 jumpRotation = to.getYaw();
                 yDiff = 0D;
-                keepSprint.put(player.uuid, new KeepSprint(0, false, 0, System.currentTimeMillis()));
+                DataProcessor.keepSprint.put(player.uuid, new KeepSprint());
                 isJump = (vertical >= -0.04);
 
                 // player.sendMessage(String.valueOf(horizontal));
@@ -323,17 +323,19 @@ public class Speed extends CheckExecutor {
                         muchThanAllowedStrafe = horizontal > limit / 1.4,
                         muchThanAllowedRotation = horizontal > limit / 1.5;
                 if (!player.movement.isSprinting()) {
-                    keepSprint.get(player.uuid).sprint();
+                    DataProcessor.getKeepSprint(player.uuid).sprint();
                 }
 
-                if (keepSprint.get(player.uuid).hits() > 0 && !keepSprint.get(player.uuid).sprinted()
+                if (DataProcessor.getKeepSprint(player.uuid).hits() > 0
+                        && !DataProcessor.getKeepSprint(player.uuid).sprinted()
                         && onAir > 2 && muchThanAllowedRotation) {
-                    keepSprint.get(player.uuid).newFlag();
-                    if (keepSprint.get(player.uuid).flags() > 2) {
+                    DataProcessor.getKeepSprint(player.uuid).newFlag();
+
+                    if (DataProcessor.getKeepSprint(player.uuid).flags() > 2) {
                         antiAbuseProcessor = antiAbuseProcessor + 210;
                         if (hackType.getCheck().getBooleanOption("check_keepsprint", true)
                                 && antiAbuseProcessor > 200) {
-                            flag = "type: keepsprint, hits: " + keepSprint.get(player.uuid).hits();
+                            flag = "type: keepsprint, hits: " + DataProcessor.getKeepSprint(player.uuid).hits();
                         }
                     }
                 }
@@ -388,7 +390,9 @@ public class Speed extends CheckExecutor {
             collideMinecraftShitMathFactor = false;
             double limit = 0.3D * (speedMultiply * 1.2) * ((speedModify > 0) ? 2 : 1);
             double limitStraight = 0.3D * (speedMultiply) * ((speedModify > 0) ? 2 : 1);
-            if (keepSprint.containsKey(player.uuid) && !keepSprint.get(player.uuid).isTimedOut() && !player.movement.isSprinting()) {
+            if (DataProcessor.keepSprint.containsKey(player.uuid)
+                    && !DataProcessor.getKeepSprint(player.uuid).isTimedOut()
+                    && !player.movement.isSprinting()) {
                 sprintVl = sprintVl + 2;
 
                 if (sprintVl > 4) {
@@ -494,12 +498,10 @@ public class Speed extends CheckExecutor {
             if (SpartanBukkit.packetsEnabled(player)) return;
             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) object;
             Entity damager = e.getDamager();
-            DataProcessor.target.put(e.getEntity().getUniqueId(), damager);
-            DataProcessor.target.put(damager.getUniqueId(), e.getEntity());
 
             if (damager instanceof Player && e.getEntity() instanceof Player) {
-                keepSprint.get(damager.getUniqueId()).newHit();
-                keepSprint.get(damager.getUniqueId()).setTimedOut(System.currentTimeMillis());
+                DataProcessor.getKeepSprint(damager.getUniqueId()).newHit();
+                DataProcessor.getKeepSprint(damager.getUniqueId()).setTimedOut(System.currentTimeMillis());
             }
 
             needToCheckAura = false;
@@ -535,7 +537,7 @@ public class Speed extends CheckExecutor {
             collideMinecraftShitMathFactor = false;
             newRayRequest = true;
             onGroundMinecraftShitMathFactor = 1.6;
-            keepSprint.put(player.uuid, new KeepSprint(0, false, 0, System.currentTimeMillis()));
+            DataProcessor.keepSprint.put(player.uuid, new KeepSprint());
             onDamage = false;
             yDiff = 0D;
             isJump = false;

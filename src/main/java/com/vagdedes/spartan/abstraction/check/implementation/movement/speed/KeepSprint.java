@@ -7,6 +7,10 @@ public class KeepSprint {
     private int flags;
     private long timedOut;
 
+    KeepSprint() {
+        this(0, false, 0, System.currentTimeMillis());
+    }
+
     KeepSprint(int hits, boolean sprinted, int flags, long timedOut) {
         this.hits = hits;
         this.sprinted = sprinted;

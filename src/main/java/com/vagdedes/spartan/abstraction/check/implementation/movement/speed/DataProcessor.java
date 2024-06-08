@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
 import com.vagdedes.spartan.Register;
-import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,20 +18,23 @@ public class DataProcessor implements Listener {
     }
 
     static final Map<UUID, KeepSprint> keepSprint = new LinkedHashMap<>();
-    static final Map<UUID, Entity> target = new LinkedHashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Death(EntityDeathEvent event) {
         UUID uuid = event.getEntity().getUniqueId();
         keepSprint.remove(uuid);
-        target.remove(uuid);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         keepSprint.remove(uuid);
-        target.remove(uuid);
     }
 
+    static KeepSprint getKeepSprint(UUID uuid) {
+        return keepSprint.getOrDefault(
+                uuid,
+                new KeepSprint()
+        );
+    }
 }
