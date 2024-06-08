@@ -20,7 +20,7 @@ public class NoFall extends CheckExecutor {
     private static final double
             drag = 0.98,
             acceleration = PlayerUtils.airAcceleration * drag;
-    private static final int maxFallTicks = 500;
+    private static final int maxFallTicks = 1_000;
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
     static {
