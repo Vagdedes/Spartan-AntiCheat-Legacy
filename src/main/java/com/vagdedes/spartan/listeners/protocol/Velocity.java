@@ -14,7 +14,11 @@ import org.bukkit.util.Vector;
 public class Velocity extends PacketAdapter {
 
     public Velocity() {
-        super(Register.plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_VELOCITY);
+        super(
+                Register.plugin,
+                ListenerPriority.NORMAL,
+                PacketType.Play.Server.ENTITY_VELOCITY
+        );
     }
 
     @Override

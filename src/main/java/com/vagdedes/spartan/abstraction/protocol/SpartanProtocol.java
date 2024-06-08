@@ -3,28 +3,25 @@ package com.vagdedes.spartan.abstraction.protocol;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 public class SpartanProtocol {
 
     public final Player player;
     public final SpartanPlayer spartanPlayer;
-    public final AbilitiesContainer abilities;
-    public final RotationData lastRotation;
-    public Boolean
-            onGround,
-            spawnStatus,
-            canCheck;
-    public Location
-            position,
-            verifiedPosition,
-            lastTeleport;
-    private final long creationTime;
+    private boolean isOnGround, isSprinting, isSneaking, onLoadStatus;
+    private Location location, from;
+    private Vector velocity;
 
     public SpartanProtocol(Player player) {
-        this.creationTime = System.currentTimeMillis();
         this.player = player;
-        this.abilities = new AbilitiesContainer(false, false, false);
-        this.lastRotation = new RotationData();
+        this.isOnGround = false;
+        this.location = new Location(player.getWorld(), 0, 0, 0);
+        this.from = this.location;
+        this.isSprinting = false;
+        this.isSneaking = false;
+        this.onLoadStatus = true;
+        this.velocity = new Vector(0, 0, 0);
         this.spartanPlayer = new SpartanPlayer(this, player);
     }
 
@@ -40,22 +37,63 @@ public class SpartanProtocol {
         return bool != null && bool;
     }
 
-    // Implementations
+    // Separator
 
-    public long timePassed() {
-        return System.currentTimeMillis() - creationTime;
+    public boolean isOnGround() {
+        return this.isOnGround;
+    }
+
+    public boolean isSprinting() {
+        return this.isSprinting;
+    }
+
+    public boolean isSneaking() {
+        return this.isSneaking;
+    }
+
+    public boolean isOnLoadStatus() {
+        return this.onLoadStatus;
     }
 
     public Location getLocation() {
-        if (hasDataFor(position)) {
-            if (hasDataFor(lastRotation)) {
-                position.setYaw(lastRotation.getYaw());
-                position.setPitch(lastRotation.getPitch());
-            }
-            return position;
-        } else {
-            return player.getLocation();
-        }
+        return this.location;
+    }
+
+    public Location getFrom() {
+        return this.from;
+    }
+
+
+    public Vector getVelocity() {
+        return this.velocity;
+    }
+
+    public void setOnGround(boolean isOnGround) {
+        this.isOnGround = isOnGround;
+    }
+
+    public void setSprinting(boolean isSprinting) {
+        this.isSprinting = isSprinting;
+    }
+
+    public void setSneaking(boolean isSneaking) {
+        this.isSneaking = isSneaking;
+    }
+
+    public void setOnLoadStatus(boolean onLoadStatus) {
+        this.onLoadStatus = onLoadStatus;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public void setFrom(Location from) {
+        this.from = from;
+    }
+
+    public void setVelocity(Vector velocity) {
+        this.velocity = velocity;
     }
 
 }

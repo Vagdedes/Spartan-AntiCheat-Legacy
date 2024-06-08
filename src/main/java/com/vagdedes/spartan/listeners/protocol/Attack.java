@@ -16,7 +16,11 @@ import org.bukkit.entity.Player;
 public class Attack extends PacketAdapter {
 
     public Attack() {
-        super(Register.plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.USE_ENTITY);
+        super(
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.USE_ENTITY
+        );
     }
 
     @Override

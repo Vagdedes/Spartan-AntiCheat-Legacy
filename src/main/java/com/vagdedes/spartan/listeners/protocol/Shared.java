@@ -71,9 +71,6 @@ public class Shared {
                 CloudBase.announce(p);
             }
         }, 10);
-
-        // Trackers
-        p.protocol.canCheck = true;
     }
 
     public static void move(PlayerMoveEvent e) {
@@ -135,12 +132,6 @@ public class Shared {
 
         // Object
         p.movement.judgeGround();
-
-        // Trackers
-        p.protocol.position = nto;
-        p.protocol.lastRotation.setYaw(to.getYaw());
-        p.protocol.lastRotation.setPitch(to.getPitch());
-        p.protocol.lastTeleport = nto;
 
         // Detections
         p.getExecutor(Enums.HackType.NoFall).handle(false, null);

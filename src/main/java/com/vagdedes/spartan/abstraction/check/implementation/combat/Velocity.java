@@ -6,8 +6,6 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Location;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 

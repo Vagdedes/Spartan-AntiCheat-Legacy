@@ -171,10 +171,28 @@ public class SpartanBukkit {
     }
 
     public static SpartanProtocol getProtocol(Player player) {
+        if (packetsEnabled()) {
+            synchronized (playerProtocol) {
+                return playerProtocol.getOrDefault(
+                        player.getUniqueId(),
+                        new SpartanProtocol(player)
+                );
+            }
+        } else {
+            synchronized (playerProtocol) {
+                return playerProtocol.computeIfAbsent(
+                        player.getUniqueId(),
+                        k -> new SpartanProtocol(player)
+                );
+            }
+        }
+    }
+
+    public static void createProtocol(Player player) {
         synchronized (playerProtocol) {
-            return playerProtocol.computeIfAbsent(
+            playerProtocol.put(
                     player.getUniqueId(),
-                    k -> new SpartanProtocol(player)
+                    new SpartanProtocol(player)
             );
         }
     }
