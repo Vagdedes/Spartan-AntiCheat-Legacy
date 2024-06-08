@@ -32,11 +32,7 @@ public class MovementProcessing {
             LAVA = MaterialUtils.get("lava");
     public static final int
             motionPrecision = 4,
-            heightPrecision = 3,
-            quantumPrecision = AlgebraUtils.integerRound(
-                    Math.sqrt(((motionPrecision * motionPrecision) + (heightPrecision * heightPrecision)) / 2.0)
-            );
-    public static final double maxPrecisionHeightLengthRatio = 1.0 / Math.pow(10, heightPrecision);
+            heightPrecision = 3;
 
     public static void run(SpartanPlayer player,
                            SpartanLocation to,

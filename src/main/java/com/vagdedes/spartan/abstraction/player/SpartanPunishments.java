@@ -24,43 +24,40 @@ public class SpartanPunishments {
         if (kickCooldown < System.currentTimeMillis()) {
             kickCooldown = System.currentTimeMillis() + 1_000L;
             Player target = this.parent.getInstance();
+            String punisherName = punisher instanceof ConsoleCommandSender
+                    ? Config.messages.getColorfulString("console_name")
+                    : punisher.getName(),
+                    kick = ConfigUtils.replaceWithSyntax(target,
+                            Config.messages.getColorfulString("kick_reason")
+                                    .replace("{reason}", reason)
+                                    .replace("{punisher}", punisherName),
+                            null),
+                    announcement = ConfigUtils.replaceWithSyntax(target,
+                            Config.messages.getColorfulString("kick_broadcast_message")
+                                    .replace("{reason}", reason)
+                                    .replace("{punisher}", punisherName),
+                            null);
 
-            if (target != null) {
-                String punisherName = punisher instanceof ConsoleCommandSender
-                        ? Config.messages.getColorfulString("console_name")
-                        : punisher.getName(),
-                        kick = ConfigUtils.replaceWithSyntax(target,
-                                Config.messages.getColorfulString("kick_reason")
-                                        .replace("{reason}", reason)
-                                        .replace("{punisher}", punisherName),
-                                null),
-                        announcement = ConfigUtils.replaceWithSyntax(target,
-                                Config.messages.getColorfulString("kick_broadcast_message")
-                                        .replace("{reason}", reason)
-                                        .replace("{punisher}", punisherName),
-                                null);
+            if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
+                Bukkit.broadcastMessage(announcement);
+            } else {
+                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-                if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
-                    Bukkit.broadcastMessage(announcement);
-                } else {
-                    List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-                    if (!players.isEmpty()) {
-                        for (SpartanPlayer o : players) {
-                            if (DetectionNotifications.hasPermission(o)) {
-                                o.sendMessage(announcement);
-                            }
+                if (!players.isEmpty()) {
+                    for (SpartanPlayer o : players) {
+                        if (DetectionNotifications.hasPermission(o)) {
+                            o.sendMessage(announcement);
                         }
                     }
                 }
-
-                this.parent.getProfile().punishmentHistory.increaseKicks(this.parent, kick);
-
-                SpartanBukkit.transferTask(
-                        this.parent,
-                        () -> target.kickPlayer(kick)
-                );
             }
+
+            this.parent.getProfile().punishmentHistory.increaseKicks(this.parent, kick);
+
+            SpartanBukkit.transferTask(
+                    this.parent,
+                    () -> target.kickPlayer(kick)
+            );
             return true;
         } else {
             return false;

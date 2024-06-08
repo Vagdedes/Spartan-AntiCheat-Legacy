@@ -405,7 +405,8 @@ public class SpartanPlayerMovement {
 
     public boolean processLastMoveEvent(SpartanLocation to, SpartanLocation from,
                                         double distance, double horizontal, double vertical, double box) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+        if (!SpartanBukkit.packetsEnabled()
+                && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
                     y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
                     z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);

@@ -70,17 +70,19 @@ public class Shared {
                 Config.settings.runOnLogin(p);
                 CloudBase.announce(p);
             }
-        }, 10);
+        }, 10L);
     }
 
     public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
         Location nto = e.getTo();
+        n.sendMessage("1");
 
         if (nto == null) {
             return;
         }
+        n.sendMessage("2");
         SpartanLocation vehicle = p.movement.getVehicleLocation(n);
         SpartanLocation
                 to = vehicle != null ? vehicle : new SpartanLocation(nto),
@@ -98,16 +100,14 @@ public class Shared {
         if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
             return;
         }
+        n.sendMessage("3");
         MovementProcessing.run(p, to, ver, box);
 
-        // Patterns
-        SpartanBukkit.transferTask(p, () -> {
-            for (Enums.HackType hackType : handledMovementChecks) {
-                if (p.getViolations(hackType).prevent()) {
-                    break;
-                }
+        for (Enums.HackType hackType : handledMovementChecks) {
+            if (p.getViolations(hackType).prevent()) {
+                break;
             }
-        });
+        }
 
         // Detections
         boolean cancelled = e.isCancelled();

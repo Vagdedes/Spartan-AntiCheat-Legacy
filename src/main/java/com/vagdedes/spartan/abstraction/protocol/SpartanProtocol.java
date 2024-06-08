@@ -15,6 +15,11 @@ public class SpartanProtocol {
 
     public SpartanProtocol(Player player) {
         this.player = player;
+        this.reset();
+        this.spartanPlayer = new SpartanPlayer(this, player);
+    }
+
+    public void reset() {
         this.isOnGround = false;
         this.location = new Location(player.getWorld(), 0, 0, 0);
         this.from = this.location;
@@ -22,22 +27,7 @@ public class SpartanProtocol {
         this.isSneaking = false;
         this.onLoadStatus = true;
         this.velocity = new Vector(0, 0, 0);
-        this.spartanPlayer = new SpartanPlayer(this, player);
     }
-
-    // Utilities
-
-    public boolean hasDataFor(Object object) {
-        return object != null
-                && (!(object instanceof SpartanProtocolField)
-                || ((SpartanProtocolField) object).hasData());
-    }
-
-    public boolean trueOrFalse(Boolean bool) {
-        return bool != null && bool;
-    }
-
-    // Separator
 
     public boolean isOnGround() {
         return this.isOnGround;
@@ -62,7 +52,6 @@ public class SpartanProtocol {
     public Location getFrom() {
         return this.from;
     }
-
 
     public Vector getVelocity() {
         return this.velocity;

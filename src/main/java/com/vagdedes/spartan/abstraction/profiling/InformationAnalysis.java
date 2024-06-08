@@ -4,6 +4,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.*;
@@ -106,7 +107,7 @@ public class InformationAnalysis {
                 for (Number number : this.numbers) {
                     if (number instanceof Double) {
                         identity = (identity * SpartanBukkit.hashCodeMultiplier)
-                                + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), MovementProcessing.quantumPrecision));
+                                + Double.hashCode(AlgebraUtils.cut(number.doubleValue(), GroundUtils.maxHeightLength));
                     } else {
                         identity = (identity * SpartanBukkit.hashCodeMultiplier) + number.intValue();
                     }

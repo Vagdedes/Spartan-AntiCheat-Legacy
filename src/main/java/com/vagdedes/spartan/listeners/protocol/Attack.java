@@ -30,7 +30,6 @@ public class Attack extends PacketAdapter {
         SpartanBukkit.transferTask(player, () -> {
             Entity entity = ProtocolLibrary.getProtocolManager().
                     getEntityFromID(player.getWorld(), event.getPacket().getIntegers().read(0));
-            PacketContainer packet = event.getPacket();
 
             if (entity instanceof LivingEntity) {
                 Shared.attack(

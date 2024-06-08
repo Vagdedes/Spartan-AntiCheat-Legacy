@@ -284,29 +284,23 @@ public class SpartanPlayer {
         if (message != null) {
             this.getInstance().sendMessage(message);
         }
-        SpartanBukkit.transferTask(this.getInstance(), this.getInstance()::closeInventory);
+        SpartanBukkit.transferTask(this, this.getInstance()::closeInventory);
     }
 
     public void sendImportantMessage(String message) {
         this.getInstance().sendMessage("");
         this.getInstance().sendMessage(message);
         this.getInstance().sendMessage("");
-        SpartanBukkit.transferTask(this.getInstance(), this.getInstance()::closeInventory);
+        SpartanBukkit.transferTask(this, this.getInstance()::closeInventory);
     }
 
     // Separator
 
     public void openInventory(Inventory inventory) {
-        if (inventory != null) {
-            Player p = getInstance();
-
-            if (p != null) {
-                SpartanBukkit.transferTask(
-                        p,
-                        () -> p.openInventory(inventory)
-                );
-            }
-        }
+        SpartanBukkit.transferTask(
+                this,
+                () -> this.getInstance().openInventory(inventory)
+        );
     }
 
     public Inventory createInventory(int size, String title) {
@@ -363,7 +357,7 @@ public class SpartanPlayer {
         if (vehicle != null) {
             return vehicle.isOnGround();
         } else if (SpartanBukkit.packetsEnabled()) {
-            return this.protocol.trueOrFalse(this.protocol.isOnGround())
+            return this.protocol.isOnGround()
                     || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         } else {

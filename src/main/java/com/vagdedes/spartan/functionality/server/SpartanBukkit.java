@@ -172,12 +172,16 @@ public class SpartanBukkit {
 
     public static SpartanProtocol getProtocol(Player player) {
         if (packetsEnabled()) {
+            SpartanProtocol protocol;
+
             synchronized (playerProtocol) {
-                return playerProtocol.getOrDefault(
+                protocol = playerProtocol.computeIfAbsent(
                         player.getUniqueId(),
-                        new SpartanProtocol(player)
+                        k -> new SpartanProtocol(player)
                 );
             }
+            protocol.reset();
+            return protocol;
         } else {
             synchronized (playerProtocol) {
                 return playerProtocol.computeIfAbsent(
