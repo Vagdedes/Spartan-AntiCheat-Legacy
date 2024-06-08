@@ -15,10 +15,6 @@ public class RampenDrills implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Event(DrillBreakEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
         Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.RAMPEN_DRILLS;
 
         if (compatibilityType.isFunctional()) {

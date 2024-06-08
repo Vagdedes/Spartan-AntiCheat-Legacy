@@ -46,10 +46,6 @@ public class Event_Chat implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Command(PlayerCommandPreprocessEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
         String msg = e.getMessage();
 
         if (ChatProtection.runCommand(p, msg, false)) {

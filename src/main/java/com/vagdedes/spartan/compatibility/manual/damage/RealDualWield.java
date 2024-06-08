@@ -15,10 +15,6 @@ public class RealDualWield implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Event(PlayerOffhandAnimationEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
         Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.REAL_DUAL_WIELD;
 
         if (compatibilityType.isFunctional()) {

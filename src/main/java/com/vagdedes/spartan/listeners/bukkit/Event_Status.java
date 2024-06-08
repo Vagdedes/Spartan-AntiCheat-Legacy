@@ -51,9 +51,6 @@ public class Event_Status implements Listener {
         Player n = e.getEntity();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
 
-        if (p == null) {
-            return;
-        }
         // Detections
         p.getExecutor(Enums.HackType.AutoRespawn).run(false);
         p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
@@ -79,12 +76,7 @@ public class Event_Status implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Respawn(PlayerRespawnEvent e) {
-        Player n = e.getPlayer();
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-        if (p == null) {
-            return;
-        }
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         // Objects
         p.movement.setDetectionLocation(true);

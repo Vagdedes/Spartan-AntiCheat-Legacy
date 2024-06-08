@@ -21,12 +21,7 @@ public class Event_Inventory implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemDrop(PlayerDropItemEvent e) {
-        Player n = e.getPlayer();
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-        if (p == null) {
-            return;
-        }
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
         // Detections
         p.getExecutor(Enums.HackType.ItemDrops).run(e.isCancelled());

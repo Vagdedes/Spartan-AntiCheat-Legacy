@@ -149,8 +149,7 @@ public class SpartanPlayerMovement {
         if (artificialSwimming >= TPS.getTick(this.parent)) {
             return true;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            Player p = this.parent.getInstance();
-            return p != null && p.isSwimming();
+            return this.parent.getInstance().isSwimming();
         } else {
             return false;
         }
@@ -177,12 +176,10 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isSneaking() {
-        Player p = this.parent.getInstance();
-
         if (SpartanBukkit.packetsEnabled(this.parent)) {
-            return p != null && SpartanBukkit.getProtocol(p).abilities.isSneaking();
+            return this.parent.protocol.abilities.isSneaking();
         } else {
-            return p != null && p.isSneaking();
+            return this.parent.getInstance().isSneaking();
         }
     }
 
@@ -192,20 +189,17 @@ public class SpartanPlayerMovement {
         if (vehicle != null) {
             return vehicle instanceof Player && ((Player) vehicle).isFlying();
         } else {
-            Player p = this.parent.getInstance();
-            return p != null && p.isFlying();
+            return this.parent.getInstance().isFlying();
         }
     }
 
     // Separator
 
     public boolean isSprinting() {
-        Player p = this.parent.getInstance();
-
         if (SpartanBukkit.packetsEnabled(this.parent)) {
-            return p != null && SpartanBukkit.getProtocol(p).abilities.isSprinting();
+            return this.parent.protocol.abilities.isSprinting();
         } else {
-            return p != null && p.isSprinting();
+            return this.parent.getInstance().isSprinting();
         }
     }
 
@@ -267,8 +261,7 @@ public class SpartanPlayerMovement {
 
     public boolean isGliding() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            Player p = this.parent.getInstance();
-            return p != null && p.isGliding();
+            return this.parent.getInstance().isGliding();
         } else {
             return false;
         }
@@ -357,7 +350,7 @@ public class SpartanPlayerMovement {
             Location playerLocation;
 
             if (SpartanBukkit.packetsEnabled(this.parent)) {
-                playerLocation = SpartanBukkit.getProtocol(player).getLocation();
+                playerLocation = this.parent.protocol.getLocation();
             } else {
                 playerLocation = player.getLocation();
             }
@@ -370,26 +363,22 @@ public class SpartanPlayerMovement {
     }
 
     public SpartanLocation getLocation() {
-        Player p = this.parent.getInstance();
+        SpartanLocation spartanLocation = getVehicleLocation(this.parent.getInstance());
 
-        if (p != null) {
-            SpartanLocation spartanLocation = getVehicleLocation(p);
+        if (spartanLocation == null) {
+            Location actualLocation;
 
-            if (spartanLocation == null) {
-                Location actualLocation;
-
-                if (SpartanBukkit.packetsEnabled(this.parent)) {
-                    actualLocation = SpartanBukkit.getProtocol(p).getLocation();
-                } else {
-                    actualLocation = p.getLocation();
-                }
-                if (this.location.getX() != actualLocation.getX()
-                        || this.location.getY() != actualLocation.getY()
-                        || this.location.getZ() != actualLocation.getZ()
-                        || this.location.getYaw() != actualLocation.getYaw()
-                        || this.location.getPitch() != actualLocation.getPitch()) {
-                    this.setLocation(new SpartanLocation(actualLocation), false);
-                }
+            if (SpartanBukkit.packetsEnabled(this.parent)) {
+                actualLocation = this.parent.protocol.getLocation();
+            } else {
+                actualLocation = this.parent.getInstance().getLocation();
+            }
+            if (this.location.getX() != actualLocation.getX()
+                    || this.location.getY() != actualLocation.getY()
+                    || this.location.getZ() != actualLocation.getZ()
+                    || this.location.getYaw() != actualLocation.getYaw()
+                    || this.location.getPitch() != actualLocation.getPitch()) {
+                this.setLocation(new SpartanLocation(actualLocation), false);
             }
         }
         return location;

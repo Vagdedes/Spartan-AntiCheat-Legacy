@@ -62,9 +62,6 @@ public class Events_Player implements Listener {
     private void Animation(PlayerAnimationEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
-        if (p == null) {
-            return;
-        }
         // Detections
         p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
     }

@@ -17,9 +17,6 @@ public class EventsHandler_1_13 implements Listener {
     private void TridentShoot(PlayerRiptideEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
-        if (p == null) {
-            return;
-        }
         // Handlers
         TridentUse.run(p);
     }

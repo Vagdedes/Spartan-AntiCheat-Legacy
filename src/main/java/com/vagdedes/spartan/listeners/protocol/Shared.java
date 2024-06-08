@@ -3,7 +3,6 @@ package com.vagdedes.spartan.listeners.protocol;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -49,9 +48,6 @@ public class Shared {
         }
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
 
-        if (p == null) {
-            return;
-        }
         // System
         PlayerDetectionSlots.add(p);
 
@@ -77,15 +73,12 @@ public class Shared {
         }, 10);
 
         // Trackers
-        SpartanBukkit.getProtocol(n).canCheck = true;
+        p.protocol.canCheck = true;
     }
 
     public static void move(PlayerMoveEvent e) {
         Player n = e.getPlayer();
         SpartanPlayer p = SpartanBukkit.getPlayer(n);
-        if (p == null) {
-            return;
-        }
         Location nto = e.getTo();
 
         if (nto == null) {
@@ -137,23 +130,17 @@ public class Shared {
         if (nto == null) {
             return;
         }
-        Player n = e.getPlayer();
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
-
-        if (p == null) {
-            return;
-        }
+        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
         SpartanLocation to = new SpartanLocation(nto);
 
         // Object
         p.movement.judgeGround();
 
         // Trackers
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(n);
-        protocol.position = nto;
-        protocol.lastRotation.setYaw(to.getYaw());
-        protocol.lastRotation.setPitch(to.getPitch());
-        protocol.lastTeleport = nto;
+        p.protocol.position = nto;
+        p.protocol.lastRotation.setYaw(to.getYaw());
+        p.protocol.lastRotation.setPitch(to.getPitch());
+        p.protocol.lastTeleport = nto;
 
         // Detections
         p.getExecutor(Enums.HackType.NoFall).handle(false, null);
@@ -162,9 +149,6 @@ public class Shared {
     public static void velocity(PlayerVelocityEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
-        if (p == null) {
-            return;
-        }
         // Object
         p.addReceivedVelocity(e);
 
@@ -177,19 +161,12 @@ public class Shared {
     public static void stay(PlayerStayEvent e) { // Packets Only
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
 
-        if (p == null) {
-            return;
-        }
         // Detections
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
 
     public static void attack(PlayerAttackEvent e) {
         SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        if (p == null) {
-            return;
-        }
         boolean cancelled = e.isCancelled();
 
         for (Enums.HackType hackType : Shared.handledCombatChecks) {
