@@ -144,7 +144,12 @@ public class CombatUtils {
             case OCELOT:
                 return new double[]{0.6, 0.7};
             default:
-                return new double[]{0.0, !(entity instanceof LivingEntity) || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11) ? entity.getHeight() : ((LivingEntity) entity).getEyeHeight()};
+                return new double[]{
+                        0.0,
+                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
+                                ? entity.getHeight()
+                                : ((LivingEntity) entity).getEyeHeight()
+                };
         }
     }
 
