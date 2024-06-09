@@ -343,8 +343,8 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public SpartanLocation getVehicleLocation(Player player) {
-        Entity vehicle = player.getVehicle();
+    public SpartanLocation getVehicleLocation() {
+        Entity vehicle = this.parent.getInstance().getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             Location playerLocation;
@@ -352,7 +352,7 @@ public class SpartanPlayerMovement {
             if (SpartanBukkit.packetsEnabled()) {
                 playerLocation = this.parent.protocol.getLocation();
             } else {
-                playerLocation = player.getLocation();
+                playerLocation = this.parent.getInstance().getLocation();
             }
             return new SpartanLocation(
                     vehicle.getLocation(),
@@ -363,7 +363,7 @@ public class SpartanPlayerMovement {
     }
 
     public SpartanLocation getLocation() {
-        SpartanLocation spartanLocation = getVehicleLocation(this.parent.getInstance());
+        SpartanLocation spartanLocation = getVehicleLocation();
 
         if (spartanLocation == null) {
             Location actualLocation;
@@ -405,8 +405,7 @@ public class SpartanPlayerMovement {
 
     public boolean processLastMoveEvent(SpartanLocation to, SpartanLocation from,
                                         double distance, double horizontal, double vertical, double box) {
-        if (!SpartanBukkit.packetsEnabled()
-                && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
                     y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
                     z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);

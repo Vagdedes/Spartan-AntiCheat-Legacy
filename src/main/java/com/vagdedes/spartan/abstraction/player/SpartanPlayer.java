@@ -25,7 +25,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.protocol.Shared;
+import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.*;
@@ -109,7 +109,7 @@ public class SpartanPlayer {
                         }
 
                         // Preventions
-                        for (Enums.HackType hackType : Shared.handledMovementChecks) {
+                        for (Enums.HackType hackType : Event_Movement.handledChecks) {
                             if (p.getViolations(hackType).prevent()) {
                                 break;
                             }
@@ -289,19 +289,11 @@ public class SpartanPlayer {
 
     public void sendImportantMessage(String message) {
         this.getInstance().sendMessage("");
-        this.getInstance().sendMessage(message);
+        this.sendInventoryCloseMessage(message);
         this.getInstance().sendMessage("");
-        SpartanBukkit.transferTask(this, this.getInstance()::closeInventory);
     }
 
     // Separator
-
-    public void openInventory(Inventory inventory) {
-        SpartanBukkit.transferTask(
-                this,
-                () -> this.getInstance().openInventory(inventory)
-        );
-    }
 
     public Inventory createInventory(int size, String title) {
         return Bukkit.createInventory(this.getInstance(), size, title);
@@ -318,8 +310,7 @@ public class SpartanPlayer {
     }
 
     public ItemStack getItemInHand() {
-        PlayerInventory inventory = getInventory();
-        return inventory == null ? new ItemStack(Material.AIR) : inventory.getItemInHand();
+        return this.getInventory().getItemInHand();
     }
 
     // Separator

@@ -156,9 +156,7 @@ public class SpartanBukkit {
     // Separator
 
     public static boolean packetsEnabled() {
-        return testMode
-                && packetsForcedState
-                && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+        return packetsForcedState && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
     public static SpartanProtocol getProtocol(Player player) {

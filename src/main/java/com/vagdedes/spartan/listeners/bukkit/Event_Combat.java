@@ -18,6 +18,13 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 
 public class Event_Combat implements Listener {
 
+    public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
+            Enums.HackType.KillAura,
+            Enums.HackType.HitReach,
+            Enums.HackType.Criticals,
+            Enums.HackType.NoSwing
+    };
+
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Damage(EntityDamageByEntityEvent e) {
         Entity damager = e.getDamager(),
@@ -45,7 +52,7 @@ public class Event_Combat implements Listener {
                             }
                         }
 
-                        for (Enums.HackType hackType : Shared.handledCombatChecks) {
+                        for (Enums.HackType hackType : handledChecks) {
                             if (p.getViolations(hackType).prevent()) {
                                 e.setCancelled(true);
                             }

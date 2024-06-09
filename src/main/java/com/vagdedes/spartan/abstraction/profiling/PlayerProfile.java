@@ -236,20 +236,6 @@ public class PlayerProfile {
         return evidence.has(PlayerEvidence.EvidenceType.SUSPECTED);
     }
 
-    public boolean isSuspected(Enums.HackType[] hackTypes) {
-        synchronized (evidence.live) {
-            if (evidence.has(PlayerEvidence.EvidenceType.SUSPECTED)) {
-                for (Enums.HackType hackType : hackTypes) {
-                    if (evidence.live.containsKey(hackType)
-                            || evidence.historical.containsKey(hackType)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    }
-
     public boolean isSuspected(Enums.HackType hackType) {
         synchronized (evidence.live) {
             return evidence.has(PlayerEvidence.EvidenceType.SUSPECTED)
@@ -260,10 +246,6 @@ public class PlayerProfile {
 
     public boolean isSuspectedOrHacker() {
         return isSuspected() || isHacker();
-    }
-
-    public boolean isSuspectedOrHacker(Enums.HackType[] hackTypes) {
-        return isHacker() || isSuspected(hackTypes);
     }
 
     public boolean isSuspectedOrHacker(Enums.HackType hackType) {

@@ -5,10 +5,8 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.protocol.Shared;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 public class BackgroundMove {
 
@@ -21,7 +19,7 @@ public class BackgroundMove {
             protocol.setOnLoadStatus(false);
         } else if (!invalidTeleport(protocol.getLocation())
                 || (invalidTeleport(protocol.getLocation()) && !protocol.isOnLoadStatus())) {
-            Shared.move(new PlayerMoveEvent(player, protocol.getFrom(), protocol.getLocation()));
+            // DO NOT RUN THE MOVE EVENT REPLICATE IN PACKETS ANYMORE, IT'S NOT OPTIMIZED
         }
     }
 

@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanLocation {
 
+    private static final Map<Integer, Boolean> loadedChunk = new ConcurrentHashMap<>();
     static final Map<Integer, SpartanBlock> memory = new ConcurrentHashMap<>();
     private static final boolean
             v_1_13 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
@@ -37,6 +38,10 @@ public class SpartanLocation {
         world = (SpartanBukkit.hashCodeMultiplier * world) + x;
         world = (SpartanBukkit.hashCodeMultiplier * world) + y;
         return (SpartanBukkit.hashCodeMultiplier * world) + z;
+    }
+
+    static {
+        SpartanBukkit.runRepeatingTask(loadedChunk::clear, 1L, 1L);
     }
 
     // Object
@@ -245,6 +250,7 @@ public class SpartanLocation {
         if (block != null) {
             if (SpartanLocation.v_1_13) {
                 BlockData blockData = block.getBlockData();
+                this.setChunkLoaded();
                 return new SpartanBlock(
                         this,
                         blockData.getMaterial(),
@@ -252,6 +258,7 @@ public class SpartanLocation {
                         blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged()
                 );
             } else {
+                this.setChunkLoaded();
                 return new SpartanBlock(
                         this,
                         block.getType(),
@@ -327,12 +334,28 @@ public class SpartanLocation {
     }
 
     private boolean isChunkLoaded(int x, int z) {
-        for (Chunk chunk : this.world.getLoadedChunks()) {
-            if (chunk.getX() == x && chunk.getZ() == z) {
-                return true;
+        int hash = (x * SpartanBukkit.hashCodeMultiplier) + z;
+        Boolean cache = loadedChunk.get(hash);
+
+        if (cache != null) {
+            return cache;
+        } else {
+            for (Chunk chunk : this.world.getLoadedChunks()) {
+                if (chunk.getX() == x && chunk.getZ() == z) {
+                    loadedChunk.put(hash, true);
+                    return true;
+                }
             }
+            loadedChunk.put(hash, false);
+            return false;
         }
-        return false;
+    }
+
+    private void setChunkLoaded() {
+        loadedChunk.put(
+                (getChunkX() * SpartanBukkit.hashCodeMultiplier) + getChunkZ(),
+                true
+        );
     }
 
     public SpartanLocation getBlockLocation() {
