@@ -19,13 +19,6 @@ public class Event_Shared implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Teleport(PlayerTeleportEvent e) {
-        if (!SpartanBukkit.packetsEnabled()) {
-            Shared.teleport(e);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     private void Velocity(PlayerVelocityEvent e) {
         if (!SpartanBukkit.packetsEnabled()) {
             Shared.velocity(e);

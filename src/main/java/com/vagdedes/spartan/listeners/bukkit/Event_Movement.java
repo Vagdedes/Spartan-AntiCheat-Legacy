@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.Shared;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class Event_Movement implements Listener {
 
@@ -68,4 +70,10 @@ public class Event_Movement implements Listener {
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Teleport(PlayerTeleportEvent e) {
+        if (!SpartanBukkit.packetsEnabled()) {
+            Shared.teleport(e);
+        }
+    }
 }

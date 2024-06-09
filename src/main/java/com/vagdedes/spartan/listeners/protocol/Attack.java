@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -32,12 +33,11 @@ public class Attack extends PacketAdapter {
 
             if (entity instanceof LivingEntity) {
                 Shared.attack(
-                        new PlayerAttackEvent(
-                                player,
-                                (LivingEntity) entity,
-                                false
-                        )
-                );
+                                new PlayerAttackEvent(
+                                                player,
+                                                (LivingEntity) entity,
+                                                false
+                                ));
             }
         });
     }
