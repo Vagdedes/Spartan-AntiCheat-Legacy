@@ -37,7 +37,6 @@ public class SpartanBukkit {
             hashCodeMultiplier = 31,
             maxBytes = AlgebraUtils.integerRound(Runtime.getRuntime().maxMemory() * 0.05),
             maxSQLRows = maxBytes / 1024;
-    private static final long packetsGracePeriod = 5_000L;
     private static final Map<UUID, SpartanProtocol> playerProtocol =
             Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
     public static final Class<?> craftPlayer = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)

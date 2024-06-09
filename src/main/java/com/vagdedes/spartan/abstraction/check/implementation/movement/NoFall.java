@@ -77,9 +77,10 @@ public class NoFall extends CheckExecutor {
                 && (fallDistance > 0.0 || previousFallDistance > 0.0)) {
             double prediction = (this.previousFallDistance * drag) + (fallDistanceTick * acceleration),
                     difference = Math.abs(fallDistance - prediction),
-                    limit = vertical >= 0.0
+                    limit = (vertical >= 0.0
                             ? PlayerUtils.airAcceleration
-                            : Math.max(0.0 - vertical, PlayerUtils.airAcceleration);
+                            : Math.max(0.0 - vertical, PlayerUtils.airAcceleration))
+                            * (player.bedrockPlayer ? 2.0 : 1.0);
 
             if (difference >= limit
                     && !player.movement.justJumped(vertical)
@@ -91,7 +92,8 @@ public class NoFall extends CheckExecutor {
                     PlayerUtils.airDrag,
                     GroundUtils.maxHeightLengthRatio)
                     && (difference != prediction
-                    || !player.isOnGround(player.movement.getEventToLocation(), true)
+                    || (!player.bedrockPlayer || vertical != 0.0)
+                    && !player.isOnGround(player.movement.getEventToLocation(), true)
                     && !player.isOnGround(player.movement.getEventFromLocation(), false))) {
                 double damage = AlgebraUtils.integerCeil(
                         this.distance - 3.0f
