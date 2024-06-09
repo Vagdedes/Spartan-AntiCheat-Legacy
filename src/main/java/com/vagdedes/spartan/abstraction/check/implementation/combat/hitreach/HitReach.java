@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -15,6 +16,7 @@ import java.util.LinkedList;
 public class HitReach extends CheckExecutor {
 
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
+    private int vl = 0;
 
     public HitReach(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
@@ -46,15 +48,18 @@ public class HitReach extends CheckExecutor {
         }
         double result = globalValue / rayTraceAnalysis.size();
 
-        if (result > 0.44) punish = "simple";
+        if (result > (SpartanBukkit.packetsEnabled() ? 0.4 : 0.45)) punish = "simple";
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
+            vl += 100;
             cancel(
                     "type: " + punish + ", hitbox-size-analysis: "
                             + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: " + percent + "%",
-                    1.0,
+                     vl / 100D,
                     to
             );
+        } else {
+            if (vl > 0) vl -= 50;
         }
         rayTraceAnalysis.clear();
 

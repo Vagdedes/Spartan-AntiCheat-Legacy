@@ -115,6 +115,7 @@ public class Speed extends CheckExecutor {
         Entity vehicle = player.getInstance().getVehicle();
 
         String flag = null;
+        boolean checkDirection = !player.bedrockPlayer;
         double dx = to.getX() - from.getX(),
                 dz = to.getZ() - from.getZ();
         int oldAir = -1;
@@ -312,7 +313,7 @@ public class Speed extends CheckExecutor {
                         && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
                         && horizontal > RayUtils.scaleVal(wrappedLimit, 2)
                         && speedModify < 1.0
-                        && !ignoreBasicChecks) {
+                        && !ignoreBasicChecks && checkDirection) {
                     flag = "type: simulation-air-direction(basic), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(wrappedLimit, 2)
                             + ", diff: " + RayUtils.scaleVal(diffRayLines, 2);
@@ -349,7 +350,7 @@ public class Speed extends CheckExecutor {
                 }
 
                 if (horizontal > limit / 1.2 && !RayUtils.validRayLines(a, b, 90)
-                        && speedModify < 1.0 && !onDamage) {
+                        && speedModify < 1.0 && !onDamage && checkDirection) {
                     antiAbuseProcessor = antiAbuseProcessor + 60;
                     if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_blatant", true)
                             && antiAbuseProcessor > 200) {
@@ -359,7 +360,7 @@ public class Speed extends CheckExecutor {
                 }
                 if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
                         && !player.movement.isSprinting() && !ignoreBasicChecks
-                        && speedModify < 1.0) {
+                        && speedModify < 1.0 && checkDirection) {
                     double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                     if (calcDiff > 10 && !allowedAngle(calcDiff)) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
@@ -416,7 +417,7 @@ public class Speed extends CheckExecutor {
                     && speedModify < 1.0) {
                 antiAbuseProcessor = antiAbuseProcessor + 60;
                 if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_basic", true)
-                        && antiAbuseProcessor > 200) {
+                        && antiAbuseProcessor > 200 && checkDirection) {
                     flag = "type: simulation-ground-direction(basic), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
@@ -428,7 +429,7 @@ public class Speed extends CheckExecutor {
                 if (calcDiff > 10 && !allowedAngle(calcDiff)) {
                     antiAbuseProcessor = antiAbuseProcessor + 60;
                     if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_profound", true)
-                            && antiAbuseProcessor > 200) {
+                            && antiAbuseProcessor > 200 && checkDirection) {
                         flag = "type: simulation-ground-direction(profound), speed: " + horizontal
                                 + ", speed-limit: " + RayUtils.scaleVal(limit / 1.7, 2)
                                 + ", angle: " + calcDiff;
@@ -440,7 +441,7 @@ public class Speed extends CheckExecutor {
                     && speedModify < 1.0) {
                 antiAbuseProcessor = antiAbuseProcessor + 90;
                 if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_blatant", true)
-                        && antiAbuseProcessor > 200) {
+                        && antiAbuseProcessor > 200 && checkDirection) {
                     flag = "type: simulation-ground-direction(blatant), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
                 }
