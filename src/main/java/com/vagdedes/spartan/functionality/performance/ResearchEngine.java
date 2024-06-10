@@ -127,40 +127,6 @@ public class ResearchEngine {
 
     // Separator
 
-    public static List<PlayerProfile> getHackers() {
-        if (!playerProfiles.isEmpty()) {
-            List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
-
-            synchronized (playerProfiles) {
-                for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    if (playerProfile.isHacker()) {
-                        list.add(playerProfile);
-                    }
-                }
-            }
-            return list;
-        } else {
-            return new ArrayList<>(0);
-        }
-    }
-
-    public static List<PlayerProfile> getSuspectedPlayers() {
-        if (!playerProfiles.isEmpty()) {
-            List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
-
-            synchronized (playerProfiles) {
-                for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    if (playerProfile.isSuspected()) {
-                        list.add(playerProfile);
-                    }
-                }
-            }
-            return list;
-        } else {
-            return new ArrayList<>(0);
-        }
-    }
-
     public static List<PlayerProfile> getLegitimatePlayers() {
         if (!playerProfiles.isEmpty()) {
             List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());

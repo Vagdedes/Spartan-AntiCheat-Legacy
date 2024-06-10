@@ -160,7 +160,7 @@ public class PlayerEvidence {
 
     // Separator
 
-    boolean has(EvidenceType type) {
+    public boolean has(EvidenceType type) {
         return this.type == type;
     }
 
@@ -185,8 +185,8 @@ public class PlayerEvidence {
 
         if (check.supportsLiveEvidence) {
             double violationCount = player.getViolations(playerViolation.hackType).getLevel(playerViolation.identity)
-                            - AlgebraUtils.integerCeil(Latency.getDelay(player))
-                            - playerViolation.getIgnoredViolations(player);
+                    - AlgebraUtils.integerCeil(Latency.getDelay(player))
+                    - playerViolation.getIgnoredViolations(player);
 
             if (violationCount > 0.0) {
                 double ratio = violationCount / Check.standardIgnoredViolations;

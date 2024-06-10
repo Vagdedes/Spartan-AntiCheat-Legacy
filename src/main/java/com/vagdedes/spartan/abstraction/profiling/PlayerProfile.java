@@ -228,12 +228,4 @@ public class PlayerProfile {
         return evidence.has(PlayerEvidence.EvidenceType.LEGITIMATE);
     }
 
-    public boolean isHacker() {
-        return evidence.has(PlayerEvidence.EvidenceType.HACKER);
-    }
-
-    public boolean isSuspected() {
-        return evidence.has(PlayerEvidence.EvidenceType.SUSPECTED);
-    }
-
 }

@@ -83,14 +83,30 @@ public class PlayerStateLists {
         return false;
     }
 
+    private static List<PlayerProfile> getProfiles() {
+        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+
+        if (!playerProfiles.isEmpty()) {
+            List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
+
+            for (PlayerProfile playerProfile : playerProfiles) {
+                if (!playerProfile.isLegitimate()) {
+                    list.add(playerProfile);
+                }
+            }
+            return list;
+        } else {
+            return new ArrayList<>(0);
+        }
+    }
+
     public static void fill(UUID uuid, Inventory inventory) {
         List<String> lore = new ArrayList<>(20);
         int slotPosition = 0, limit = 15;
         Integer[] freeSlots = getFreeSlots(inventory);
 
         int listSize, page = getPage(uuid), skip = ((page - 1) * limit);
-        List<PlayerProfile> hackers = ResearchEngine.getHackers();
-        List<PlayerProfile> playerProfiles = subList(hackers, skip, skip + limit);
+        List<PlayerProfile> playerProfiles = subList(getProfiles(), skip, skip + limit);
 
         if ((listSize = playerProfiles.size()) > 0) {
             for (PlayerProfile playerProfile : playerProfiles) {
