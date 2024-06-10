@@ -119,7 +119,7 @@ public class MoveDirection extends DetectionExecutor {
             if (robotized < 0.02 && yawChange > 2) constantRotations++;
             if (robotized < 2 && yawChange > 3) aggressiveAim++;
 
-            if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
+            if (RayUtils.scaleVal(yawChange, 2) == 0.1F || RayUtils.scaleVal(pitchChange, 2) == 0.1F) gcd++;
             if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
             if ((diffBetweenYawChanges < -0.01 && diffBetweenYawChanges > -2)) aggressivePatternD++;
             if (diffBetweenYawChanges > 2) aggressivePatternI2++;
@@ -133,25 +133,32 @@ public class MoveDirection extends DetectionExecutor {
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
-        if (basicHeuristic > 6) addNewPunish("heuristic(basic)", 210);
-        if (lowHeuristic > 7) addNewPunish("heuristic(low)", 210);
-        if (robotizedAmount > 7) addNewPunish("heuristic(sync)", 170);
-        if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
-        if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
-        if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
-        if (gcd > 2) addNewPunish("pattern(gcd)", 210);
-        if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
-        if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
-                && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
-            addNewPunish("pattern(snap)", 40);
+        if (targetsOnTheRow.size() < 3)  {
+            if (basicHeuristic > 6) addNewPunish("heuristic(basic)", 210);
+            if (lowHeuristic > 7) addNewPunish("heuristic(low)", 210);
+            if (robotizedAmount > 7) addNewPunish("heuristic(sync)", 170);
+            if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
+            if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
+            if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
+            if (gcd > 2) addNewPunish("pattern(gcd)", 210);
+            if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
+            if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
+                            && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
+                addNewPunish("pattern(snap)", 40);
+            }
         }
         // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
 
         double punishValue = Math.floor(vl / 200);
         if (!punish.isEmpty() && vl > priorityData(priorityType()).getVlLimit()) {
             cancel(
-                    "type: " + punish + ", hitbox-size-analysis: "
-                            + result + ", hitbox-size-last: " + bruteForce,
+                    "type: " + punish + ", bH: " + basicHeuristic
+                                    + ", lH: " + lowHeuristic + ", rA: "
+                                    + robotizedAmount + ", mKM: " + machineKnownMovement
+                                    + ", aA: " + aggressiveAim + ", cR: " + constantRotations
+                                    + ", gcd: " + gcd + ", aPI: " + aggressivePatternI
+                                    + ", aPD: " + aggressivePatternD + ", aPI2: " + aggressivePatternI2
+                                    + ", aPD2: " + aggressivePatternD2,
                     punishValue,
                     to
             );
