@@ -12,10 +12,8 @@ import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Combat;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class Shared {
@@ -53,21 +51,6 @@ public class Shared {
                 CloudBase.announce(p);
             }
         }, 10L);
-    }
-
-    public static void teleport(PlayerTeleportEvent e) {
-        Location nto = e.getTo();
-
-        if (nto == null) {
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
-
-        // Object
-        p.movement.judgeGround();
-
-        // Detections
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
     public static void velocity(PlayerVelocityEvent e) {

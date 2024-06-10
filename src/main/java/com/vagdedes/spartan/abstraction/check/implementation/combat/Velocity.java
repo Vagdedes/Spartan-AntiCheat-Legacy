@@ -10,8 +10,6 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
-import java.awt.*;
-
 public class Velocity extends CheckExecutor {
 
     public Velocity(Enums.HackType hackType, SpartanPlayer player) {

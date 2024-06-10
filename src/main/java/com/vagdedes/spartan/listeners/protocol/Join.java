@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -22,8 +21,9 @@ public class Join extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        Bukkit.getScheduler().runTask(Register.plugin, () -> {
-            Player player = event.getPlayer();
+        Player player = event.getPlayer();
+
+        SpartanBukkit.transferTask(player, () -> {
             SpartanBukkit.createProtocol(player);
             Shared.join(new PlayerJoinEvent(player, (String) null));
         });
