@@ -54,7 +54,8 @@ public class HitReach extends CheckExecutor {
             vl += 100;
             cancel(
                     "type: " + punish + ", hitbox-size-analysis: "
-                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: " + percent + "%",
+                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: "
+                                    + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
                      vl / 100D,
                     to
             );

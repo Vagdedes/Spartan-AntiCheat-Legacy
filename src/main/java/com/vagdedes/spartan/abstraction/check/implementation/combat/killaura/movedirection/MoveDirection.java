@@ -119,7 +119,8 @@ public class MoveDirection extends DetectionExecutor {
             if (robotized < 0.02 && yawChange > 2) constantRotations++;
             if (robotized < 2 && yawChange > 3) aggressiveAim++;
 
-            if (RayUtils.scaleVal(yawChange, 2) == 0.1F || RayUtils.scaleVal(pitchChange, 2) == 0.1F) gcd++;
+            if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
+            if (RayUtils.scaleVal(yawChange, 2) == 0.01 || RayUtils.scaleVal(pitchChange, 2) == 0.01) gcd++;
             if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
             if ((diffBetweenYawChanges < -0.01 && diffBetweenYawChanges > -2)) aggressivePatternD++;
             if (diffBetweenYawChanges > 2) aggressivePatternI2++;
