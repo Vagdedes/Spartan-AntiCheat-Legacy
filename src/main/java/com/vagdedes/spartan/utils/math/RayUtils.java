@@ -223,7 +223,7 @@ public class RayUtils {
                 lastZ = position.getZ();
         Vec3 vec3 = new Vec3(lastX, lastY + getEyeHeight(sneak, player), lastZ),
                 vec31 = getVectorForRotation(pitch, yaw),
-                vec32 = vec3.add(new Vec3(vec31.xCoord * 4.5D, vec31.yCoord * 4.5D, vec31.zCoord * 4.5D));
+                vec32 = vec3.add(new Vec3(vec31.xCoord * 3D, vec31.yCoord * 3D, vec31.zCoord * 3D));
         return bb.calculateIntercept(vec3, vec32);
     }
 
