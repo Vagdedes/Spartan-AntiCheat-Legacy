@@ -37,8 +37,6 @@ public class ResearchEngine {
     private static final int cacheRefreshTicks = 1200;
     private static int schedulerTicks = 0;
 
-    private static boolean enoughData = false;
-
     public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.JAVA, Enums.DataType.BEDROCK};
 
     private static final Map<String, PlayerProfile> playerProfiles
@@ -103,24 +101,7 @@ public class ResearchEngine {
     // Separator
 
     public static boolean enoughData() {
-        if (enoughData) {
-            return true;
-        } else if (playerProfiles.size() >= requiredProfiles) {
-            int profiles = 0;
-
-            synchronized (playerProfiles) {
-                for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    if (playerProfile.isLegitimate()) {
-                        profiles++;
-
-                        if (profiles >= requiredProfiles) {
-                            return enoughData = true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return playerProfiles.size() >= requiredProfiles;
     }
 
     // Separator
@@ -362,7 +343,6 @@ public class ResearchEngine {
                 p.setProfile(getPlayerProfile(p));
             }
         }
-        enoughData = false;
         MainMenu.refresh();
         InteractiveInventory.playerInfo.refresh(playerName);
     }
@@ -583,7 +563,6 @@ public class ResearchEngine {
                             }
                         }
                     }
-                    enoughData = false;
                     updateCache();
                     MainMenu.refresh();
                 } catch (Exception ex) {
@@ -656,20 +635,20 @@ public class ResearchEngine {
                             }
 
                             if (!averages.isEmpty()) {
-                                Map<Integer, Double> violationAverages = new LinkedHashMap<>();
-                                Map<Integer, Integer> violationAveragesDivisor = new LinkedHashMap<>();
+                                Map<Integer, Double> violationCount = new LinkedHashMap<>();
+                                Map<Integer, Integer> violationDivisor = new LinkedHashMap<>();
 
                                 // Add the average violations for the executed detections based on each time period
                                 for (ViolationAnalysis.TimePeriod timePeriod : averages.values()) {
                                     for (Map.Entry<Integer, Double> individualViolationAverages : timePeriod.getAverageViolations().entrySet()) {
                                         int hash = individualViolationAverages.getKey();
-                                        violationAverages.put(
+                                        violationCount.put(
                                                 hash,
-                                                violationAverages.getOrDefault(hash, 0.0) + individualViolationAverages.getValue()
+                                                violationCount.getOrDefault(hash, 0.0) + individualViolationAverages.getValue()
                                         );
-                                        violationAveragesDivisor.put(
+                                        violationDivisor.put(
                                                 hash,
-                                                violationAveragesDivisor.getOrDefault(hash, 0) + 1
+                                                violationDivisor.getOrDefault(hash, 0) + 1
                                         );
                                     }
                                 }
@@ -677,10 +656,10 @@ public class ResearchEngine {
                                 // Calculate the average violations for each executed detection and multiply to get the bigger image
                                 analysisDuration = violationsMeasurementDuration / analysisDuration;
 
-                                for (Map.Entry<Integer, Double> entry : violationAverages.entrySet()) {
-                                    entry.setValue(entry.getValue() / violationAveragesDivisor.get(entry.getKey()) * analysisDuration);
+                                for (Map.Entry<Integer, Double> entry : violationCount.entrySet()) {
+                                    entry.setValue(entry.getValue() / violationDivisor.get(entry.getKey()) * analysisDuration);
                                 }
-                                hackType.getCheck().setIgnoredViolations(dataType, violationAverages);
+                                hackType.getCheck().setIgnoredViolations(dataType, violationCount);
                             } else {
                                 hackType.getCheck().clearIgnoredViolations();
                             }

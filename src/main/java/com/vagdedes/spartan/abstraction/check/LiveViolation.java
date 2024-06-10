@@ -97,8 +97,7 @@ public class LiveViolation {
                             && (silentCause == null
                             || silentCause.hasExpired()
                             || !silentCause.pointerMatches(information))
-                            && (player.getProfile().isSuspectedOrHacker(hackType)
-                            || playerViolation.level >= playerViolation.getIgnoredViolations(player));
+                            && playerViolation.level >= playerViolation.getIgnoredViolations(player);
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {
@@ -366,8 +365,7 @@ public class LiveViolation {
         SpartanLocation location = player.movement.getLocation();
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + ") "
-                + "[(Version: " + MultiVersion.versionString() + " "
-                + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
+                + "[(Version: " + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
                 + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
                 + "(Ping: " + player.getPing() + "ms), (TPS: "
                 + AlgebraUtils.cut(TPS.get(player, false), 3) + "), " +

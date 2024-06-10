@@ -54,7 +54,8 @@ public class PlayerInfo extends InventoryMenu {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
             return false;
         } else {
-            boolean legitimate = profile.evidence.getType() == PlayerEvidence.EvidenceType.LEGITIMATE;
+            PlayerEvidence.EvidenceType evidenceType = profile.evidence.getType();
+            boolean legitimate = evidenceType == PlayerEvidence.EvidenceType.LEGITIMATE;
             Collection<HackType> evidenceDetails = profile.evidence.getKnowledgeList(legitimate);
             PunishmentHistory punishmentHistory = profile.punishmentHistory;
             int miningHistoryMines = profile.getOverallMiningHistory().getMines();
@@ -65,10 +66,7 @@ public class PlayerInfo extends InventoryMenu {
 
             InventoryUtils.prepareDescription(
                     lore,
-                    legitimate ? PlayerStateLists.legitimatePlayers
-                            : profile.isHacker()
-                            ? PlayerStateLists.hackerPlayers
-                            : PlayerStateLists.suspectedPlayers
+                    evidenceType.toString()
             );
             if (!evidenceDetails.isEmpty()) {
                 lore.add(legitimate ? "§7Evaluated for§8:" : "§7Detected for§8:");

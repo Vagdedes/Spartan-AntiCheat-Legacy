@@ -236,19 +236,4 @@ public class PlayerProfile {
         return evidence.has(PlayerEvidence.EvidenceType.SUSPECTED);
     }
 
-    public boolean isSuspected(Enums.HackType hackType) {
-        synchronized (evidence.live) {
-            return evidence.has(PlayerEvidence.EvidenceType.SUSPECTED)
-                    && (evidence.live.containsKey(hackType)
-                    || evidence.historical.containsKey(hackType));
-        }
-    }
-
-    public boolean isSuspectedOrHacker() {
-        return isSuspected() || isHacker();
-    }
-
-    public boolean isSuspectedOrHacker(Enums.HackType hackType) {
-        return isHacker() || isSuspected(hackType);
-    }
 }

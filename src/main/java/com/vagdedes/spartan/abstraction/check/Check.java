@@ -592,33 +592,10 @@ public class Check {
             } else {
                 Integer integer = map.get(hash);
                 return integer == null
-                        ? this.getAverageIgnoredViolations(dataType)
-                        : Math.max(integer, this.getAverageIgnoredViolations(dataType));
+                        ? standardIgnoredViolations
+                        : Math.max(integer, standardIgnoredViolations);
             }
         }
     }
 
-    public int getAverageIgnoredViolations(Enums.DataType dataType) {
-        if (ignoredViolations.isEmpty()) {
-            return standardIgnoredViolations;
-        } else {
-            synchronized (ignoredViolations) {
-                Map<Integer, Integer> map = ignoredViolations.get(dataType);
-
-                if (map == null) {
-                    return standardIgnoredViolations;
-                } else {
-                    int sum = 0;
-
-                    for (int violations : map.values()) {
-                        sum += violations;
-                    }
-                    return Math.max(
-                            standardIgnoredViolations,
-                            AlgebraUtils.integerRound(sum / (double) ignoredViolations.size())
-                    );
-                }
-            }
-        }
-    }
 }

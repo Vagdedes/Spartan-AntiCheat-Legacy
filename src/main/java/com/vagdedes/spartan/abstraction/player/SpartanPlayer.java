@@ -678,8 +678,7 @@ public class SpartanPlayer {
             this.getInstance().setFallDistance(0.0f);
 
             if (Config.settings.getBoolean("Detections.fall_damage_on_teleport")
-                    && iterations > PlayerUtils.fallDamageAboveBlocks
-                    && playerProfile.isSuspectedOrHacker()) { // Damage
+                    && iterations > PlayerUtils.fallDamageAboveBlocks) { // Damage
                 damage(Math.max(this.getInstance().getFallDistance(), iterations));
             }
         }

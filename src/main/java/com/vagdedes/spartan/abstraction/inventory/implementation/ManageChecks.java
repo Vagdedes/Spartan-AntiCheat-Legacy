@@ -148,11 +148,6 @@ public class ManageChecks extends InventoryMenu {
                 lore.addAll(extra);
             }
         }
-        lore.add("");
-
-        for (Enums.DataType dataType : ResearchEngine.getDynamicUsableDataTypes(false)) {
-            lore.add("§7§l" + dataType.toString() + " §r§7Average Ignored Violations§8:§c " + check.getAverageIgnoredViolations(dataType));
-        }
 
         // Separator
         lore.add("");

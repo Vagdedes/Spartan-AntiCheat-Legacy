@@ -328,14 +328,16 @@ public class BackgroundAPI {
         return null;
     }
 
+    @Deprecated
     static boolean isHacker(Player p) {
-        SpartanPlayer player = SpartanBukkit.getPlayer(p);
-        return player != null && player.getProfile().isHacker();
+        AwarenessNotifications.forcefullySend("The API method 'isHacker' has been removed.");
+        return false;
     }
 
+    @Deprecated
     static boolean isLegitimate(Player p) {
-        SpartanPlayer player = SpartanBukkit.getPlayer(p);
-        return player != null && player.getProfile().isLegitimate();
+        AwarenessNotifications.forcefullySend("The API method 'isLegitimate' has been removed.");
+        return false;
     }
 
     @Deprecated
