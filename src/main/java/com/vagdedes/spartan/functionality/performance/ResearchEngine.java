@@ -31,7 +31,6 @@ import java.util.*;
 public class ResearchEngine {
 
     public static final double requiredProfiles = 10;
-    public static final int violationsMeasurementDuration = 60_000;
     private static final double minimumAverageMining = 16.0;
 
     private static final int cacheRefreshTicks = 1200;
@@ -601,8 +600,6 @@ public class ResearchEngine {
             // Separator
 
             if (enoughData()) {
-                double analysisDuration = 1_000.0; // 1 second
-
                 for (Enums.HackType hackType : hackTypes) {
                     hackType.getCheck().clearIgnoredViolations();
 
@@ -619,49 +616,45 @@ public class ResearchEngine {
                                     // Organize the violations into time period pieces
                                     if (!list.isEmpty()) {
                                         for (PlayerViolation playerViolation : list) {
-                                            int timeMoment = AlgebraUtils.integerFloor(playerViolation.time / analysisDuration);
-                                            ViolationAnalysis.TimePeriod timePeriod = averages.get(timeMoment);
-
-                                            if (timePeriod == null) {
-                                                timePeriod = new ViolationAnalysis.TimePeriod();
-                                                timePeriod.add(playerProfile, playerViolation);
-                                                averages.put(timeMoment, timePeriod);
-                                            } else {
-                                                timePeriod.add(playerProfile, playerViolation);
-                                            }
+                                            averages.computeIfAbsent(
+                                                    AlgebraUtils.integerFloor(playerViolation.time / (double) LiveViolation.violationTimeWorth),
+                                                    k -> new ViolationAnalysis.TimePeriod()
+                                            ).add(playerProfile, playerViolation);
                                         }
                                     }
                                 }
                             }
 
                             if (!averages.isEmpty()) {
-                                Map<Integer, Double> violationCount = new LinkedHashMap<>();
-                                Map<Integer, Integer> violationDivisor = new LinkedHashMap<>();
+                                Map<Integer, Double>
+                                        sum = new LinkedHashMap<>(),
+                                        count = new LinkedHashMap<>();
 
                                 // Add the average violations for the executed detections based on each time period
                                 for (ViolationAnalysis.TimePeriod timePeriod : averages.values()) {
-                                    for (Map.Entry<Integer, Double> individualViolationAverages : timePeriod.getAverageViolations().entrySet()) {
-                                        int hash = individualViolationAverages.getKey();
-                                        violationCount.put(
-                                                hash,
-                                                violationCount.getOrDefault(hash, 0.0) + individualViolationAverages.getValue()
-                                        );
-                                        violationDivisor.put(
-                                                hash,
-                                                violationDivisor.getOrDefault(hash, 0) + 1
-                                        );
+                                    Map<Integer, Double> averageViolations = timePeriod.getAverageViolations();
+
+                                    if (!averageViolations.isEmpty()) {
+                                        for (Map.Entry<Integer, Double> averageViolationsEntry : averageViolations.entrySet()) {
+                                            sum.put(
+                                                    averageViolationsEntry.getKey(),
+                                                    sum.getOrDefault(averageViolationsEntry.getKey(), 0.0)
+                                                            + averageViolationsEntry.getValue()
+                                            );
+                                            count.put(
+                                                    averageViolationsEntry.getKey(),
+                                                    count.getOrDefault(averageViolationsEntry.getKey(), 0.0)
+                                                            + 1.0
+                                            );
+                                        }
                                     }
                                 }
 
-                                // Calculate the average violations for each executed detection and multiply to get the bigger image
-                                analysisDuration = violationsMeasurementDuration / analysisDuration;
-
-                                for (Map.Entry<Integer, Double> entry : violationCount.entrySet()) {
-                                    entry.setValue(entry.getValue() / violationDivisor.get(entry.getKey()) * analysisDuration);
+                                // Calculate the average violations for each
+                                for (Map.Entry<Integer, Double> entry : sum.entrySet()) {
+                                    entry.setValue(entry.getValue() / count.get(entry.getKey()));
                                 }
-                                hackType.getCheck().setIgnoredViolations(dataType, violationCount);
-                            } else {
-                                hackType.getCheck().clearIgnoredViolations();
+                                hackType.getCheck().setIgnoredViolations(dataType, sum);
                             }
                         }
                     }

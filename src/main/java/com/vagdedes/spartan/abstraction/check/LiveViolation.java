@@ -36,7 +36,7 @@ import java.util.*;
 public class LiveViolation {
 
     public static final String violationLevelIdentifier = "VL:";
-    private static final long violationTimeWorth = 2_000L;
+    public static final long violationTimeWorth = 2_000L;
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
@@ -110,7 +110,7 @@ public class LiveViolation {
     }
 
     public boolean prevent() {
-        synchronized (this) { // todo fix async event call
+        synchronized (this) {
             if (this.prevention.canPrevent
                     && !this.prevention.hasExpired(TPS.getTick(player))) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {

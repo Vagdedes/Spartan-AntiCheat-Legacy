@@ -12,27 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InformationAnalysis {
 
     private static final int max = 16_384;
-    private static final Map<Integer, StoredInformation> map = new ConcurrentHashMap<>(2, 1.0f);
-
-    // Separator
-
-    private static final class StoredInformation {
-
-        private final Map<Integer, Set<Integer>> positions;
-        private final boolean isOption;
-
-        private StoredInformation(boolean isOption) {
-            this.positions = new LinkedHashMap<>();
-            this.isOption = isOption;
-        }
-    }
+    private static final Map<Integer, Map<Integer, Set<Integer>>> map = new ConcurrentHashMap<>(2, 1.0f);
 
     // Orientation
 
     final int hash;
     public final int identity;
     final String detection;
-    final boolean isOption;
     final Collection<Number> numbers;
 
     public InformationAnalysis(Enums.HackType hackType, String information) {
@@ -41,7 +27,6 @@ public class InformationAnalysis {
         if (array.length == 1) {
             this.detection = array[0];
             this.hash = (hackType.hashCode() * SpartanBukkit.hashCodeMultiplier) + detection.hashCode();
-            this.isOption = false;
             this.numbers = new ArrayList<>(0);
             this.identity = this.hash;
         } else {
@@ -51,24 +36,12 @@ public class InformationAnalysis {
 
             // Separator
 
-            Collection<String> configKeys = hackType.getCheck().getOptionKeys();
-            int configKeyCount = configKeys.size();
-            StoredInformation data = map.get(this.hash);
+            Map<Integer, Set<Integer>> data = map.get(this.hash);
 
             if (data == null) {
-                List<String> foundDetections = new ArrayList<>(configKeyCount);
-
-                for (String keyword : this.removeDetectionDetails(detection).split("-")) {
-                    for (String configKey : configKeys) {
-                        if (this.containsDetection(configKey, keyword)) {
-                            foundDetections.add(configKey);
-                        }
-                    }
-                }
-
-                data = new StoredInformation(foundDetections.size() == 1);
+                data = new LinkedHashMap<>();
                 Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
-                data.positions.put(array.length, positionsAndNumbers.keySet());
+                data.put(array.length, positionsAndNumbers.keySet());
                 this.numbers = positionsAndNumbers.values();
                 int delete = map.size() - max;
 
@@ -86,17 +59,16 @@ public class InformationAnalysis {
                 }
                 map.put(this.hash, data);
             } else {
-                Set<Integer> positions = data.positions.get(array.length);
+                Set<Integer> positions = data.get(array.length);
 
                 if (positions != null) {
                     this.numbers = this.showNumbers(array, array.length, positions);
                 } else {
                     Map<Integer, Number> positionsAndNumbers = this.identifyAndShowNumbers(array, array.length);
-                    data.positions.put(array.length, positionsAndNumbers.keySet());
+                    data.put(array.length, positionsAndNumbers.keySet());
                     this.numbers = positionsAndNumbers.values();
                 }
             }
-            this.isOption = data.isOption;
 
             // Separator
 
