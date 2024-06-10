@@ -62,6 +62,10 @@ public class NoFall extends CheckExecutor {
     public void runInternal(boolean cancelled) {
         if (player.isOnGround(false)) ignore = false;
         if (ignore || player.isOnGround(false)) return;
+        if (player.movement.wasInLiquids()) {
+            ignore = true;
+            return;
+        }
         Double vertical = player.movement.getEventVertical(),
                 oldVertical = player.movement.getPreviousEventVertical();
 
