@@ -15,6 +15,7 @@ public class HitTime extends DetectionExecutor {
     private int nullPacket = 0;
     private int devianceTotal = 0;
     private int packets = 0;
+    private int lowPackets = 0;
 
     private long lastHitTime = 0;
     private long oldHitTiming = 0;
@@ -24,6 +25,7 @@ public class HitTime extends DetectionExecutor {
         int deviance = (int) Math.abs(hitTime - oldHitTiming);
         devianceTotal += deviance;
         packets += 1;
+        if (deviance < 10) lowPackets++;
         if (hitTime == 0) {
             nullPacket = 2;
         }
@@ -35,7 +37,7 @@ public class HitTime extends DetectionExecutor {
         }
         if (packets >= 5) {
             if (devianceTotal < 35) {
-                vlAnalysis += (devianceTotal < 5) ? 500 : 100;
+                vlAnalysis += (devianceTotal < 10) ? 500 : 100;
                 if (vlAnalysis >= 300) {
                     cancel("type: post(linear-analysis)", (vl - 200) / 100D, player.movement.getEventFromLocation());
                 }
@@ -44,11 +46,21 @@ public class HitTime extends DetectionExecutor {
                 if (vlAnalysis >= 300) {
                     cancel("type: post(default)", (vl - 200) / 100D, player.movement.getEventFromLocation());
                 }
+            } else if (lowPackets >= 3) {
+                vlAnalysis += 150;
+                if (vlAnalysis >= 300) {
+                    cancel("type: post(low)", (vl - 200) / 100D, player.movement.getEventFromLocation());
+                }
             } else {
                 if (vlAnalysis > 0) vlAnalysis -= 50;
             }
+            if (vlAnalysis >= 300) {
+                cancel("type: post(improbable)", vl / 100D, player.movement.getEventFromLocation());
+                vlAnalysis -= 50;
+            }
             packets = 0;
             devianceTotal = 0;
+            lowPackets = 0;
         }
         if (vl > 0) vl -= 5;
 
