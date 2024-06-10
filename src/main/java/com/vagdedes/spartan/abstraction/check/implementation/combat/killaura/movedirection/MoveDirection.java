@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3D;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -172,7 +172,12 @@ public class MoveDirection extends DetectionExecutor {
     }
 
     public void runDamage(Entity targetHandle) {
-        attackHandle = new AttackHandle(targetHandle, System.currentTimeMillis());
+        if (targetHandle instanceof Player
+                        || targetHandle instanceof Zombie
+                        || targetHandle instanceof Creeper
+                        || targetHandle instanceof Skeleton) {
+            attackHandle = new AttackHandle(targetHandle, System.currentTimeMillis());
+        }
     }
 
     public SpartanVector2F calculate(final SpartanVector3D from, final SpartanVector3D to) {
