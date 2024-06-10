@@ -60,7 +60,7 @@ public class NoFall extends CheckExecutor {
     @Override
     public void runInternal(boolean cancelled) {
         if (player.isOnGround(false)) ignore = false;
-        if (ignore) return;
+        if (ignore || player.isOnGround(false)) return;
         Double vertical = player.movement.getEventVertical(),
                 oldVertical = player.movement.getPreviousEventVertical();
 

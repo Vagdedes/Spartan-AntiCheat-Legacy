@@ -44,6 +44,7 @@ public class Shared {
 
         // Detections
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
+        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
 
         SpartanBukkit.runDelayedTask(p, () -> {
             if (p != null) {
