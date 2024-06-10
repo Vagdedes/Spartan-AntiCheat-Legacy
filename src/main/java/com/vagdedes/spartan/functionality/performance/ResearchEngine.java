@@ -127,30 +127,11 @@ public class ResearchEngine {
 
     // Separator
 
-    public static List<PlayerProfile> getLegitimatePlayers() {
-        if (!playerProfiles.isEmpty()) {
-            List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
-
-            synchronized (playerProfiles) {
-                for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    if (playerProfile.isLegitimate()) {
-                        list.add(playerProfile);
-                    }
-                }
-            }
-            return list;
-        } else {
-            return new ArrayList<>(0);
-        }
-    }
-
     public static List<PlayerProfile> getPlayerProfiles() {
         synchronized (playerProfiles) {
             return new ArrayList<>(playerProfiles.values());
         }
     }
-
-    // Separator
 
     public static PlayerProfile getPlayerProfile(String name) {
         synchronized (playerProfiles) {
@@ -546,7 +527,6 @@ public class ResearchEngine {
             }
             Enums.HackType[] hackTypes = Enums.HackType.values();
             Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
-            List<PlayerProfile> legitimatePlayers = getLegitimatePlayers();
             int mines = 0;
             ViolationAnalysis.calculateData(playerProfiles);
 
@@ -633,11 +613,11 @@ public class ResearchEngine {
 
             // Separator
 
-            if (!legitimatePlayers.isEmpty()) {
-                for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
-                    double average = 0.0, total = 0.0;
+            for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
+                double average = 0.0, total = 0.0;
 
-                    for (PlayerProfile playerProfile : legitimatePlayers) {
+                for (PlayerProfile playerProfile : playerProfiles) {
+                    if (playerProfile.isLegitimate()) {
                         MiningHistory miningHistory = playerProfile.getMiningHistory(ore);
                         mines = miningHistory.getMines();
 
@@ -654,8 +634,6 @@ public class ResearchEngine {
                         averageMining.remove(ore);
                     }
                 }
-            } else {
-                averageMining.clear();
             }
         } else { // We clear because there are no players
             averageMining.clear();
