@@ -71,6 +71,7 @@ public class Speed extends CheckExecutor {
             ignoreBasicChecks,
             collideMinecraftShitMathFactor,
             newRayRequest, oldOnGround,
+            ignoreP,
             needToCheckAura,
             isJump;
     private float jumpRotation;
@@ -238,6 +239,7 @@ public class Speed extends CheckExecutor {
         }
         if (slimeBlockCause(player, to)) {
             if (multiply < 3) multiply = 3D;
+            ignoreP = true;
             return;
         }
         if (speedEffect != null) {
@@ -313,7 +315,7 @@ public class Speed extends CheckExecutor {
                         && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
                         && horizontal > RayUtils.scaleVal(wrappedLimit, 2)
                         && speedModify < 1.0
-                        && !ignoreBasicChecks && checkDirection) {
+                        && !ignoreBasicChecks && checkDirection && !ignoreP) {
                     flag = "type: simulation-air-direction(basic), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(wrappedLimit, 2)
                             + ", diff: " + RayUtils.scaleVal(diffRayLines, 2);
@@ -340,7 +342,7 @@ public class Speed extends CheckExecutor {
                     }
                 }
 
-                if (!validPsychic && muchThanAllowedStrafe) {
+                if (!validPsychic && muchThanAllowedStrafe && !ignoreP) {
                     antiAbuseProcessor = antiAbuseProcessor + 50;
                     if (hackType.getCheck().getBooleanOption("check_simulation_air_physics", true)
                             && antiAbuseProcessor > 200) {
@@ -350,7 +352,7 @@ public class Speed extends CheckExecutor {
                 }
 
                 if (horizontal > limit / 1.2 && !RayUtils.validRayLines(a, b, 90)
-                        && speedModify < 1.0 && !onDamage && checkDirection) {
+                        && speedModify < 1.0 && !onDamage && checkDirection && !ignoreP) {
                     antiAbuseProcessor = antiAbuseProcessor + 60;
                     if (hackType.getCheck().getBooleanOption("check_simulation_air_direction_blatant", true)
                             && antiAbuseProcessor > 200) {
@@ -360,7 +362,7 @@ public class Speed extends CheckExecutor {
                 }
                 if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
                         && !player.movement.isSprinting() && !ignoreBasicChecks
-                        && speedModify < 1.0 && checkDirection) {
+                        && speedModify < 1.0 && checkDirection && !ignoreP) {
                     double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                     if (calcDiff > 10 && !allowedAngle(calcDiff)) {
                         antiAbuseProcessor = antiAbuseProcessor + 60;
@@ -414,7 +416,7 @@ public class Speed extends CheckExecutor {
             }
             if (horizontal > limit / 1.35
                     && !RayUtils.validRayLines(a, b, 88)
-                    && speedModify < 1.0) {
+                    && speedModify < 1.0 && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 60;
                 if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_basic", true)
                         && antiAbuseProcessor > 200 && checkDirection) {
@@ -426,7 +428,7 @@ public class Speed extends CheckExecutor {
                     && !player.movement.isSprinting()
                     && speedModify < 1.0) {
                 double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
-                if (calcDiff > 10 && !allowedAngle(calcDiff)) {
+                if (calcDiff > 10 && !allowedAngle(calcDiff) && !ignoreP) {
                     antiAbuseProcessor = antiAbuseProcessor + 60;
                     if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_profound", true)
                             && antiAbuseProcessor > 200 && checkDirection) {
@@ -438,7 +440,7 @@ public class Speed extends CheckExecutor {
             }
             if (horizontal > limit / 1.1
                     && !RayUtils.validRayLines(a, b, 25)
-                    && speedModify < 1.0) {
+                    && speedModify < 1.0 && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 90;
                 if (hackType.getCheck().getBooleanOption("check_simulation_ground_direction_blatant", true)
                         && antiAbuseProcessor > 200 && checkDirection) {
@@ -452,7 +454,10 @@ public class Speed extends CheckExecutor {
             oldOnGround = onGround;
             oldY = to.getY();
             multiplyGround = multiplyGround / 1.8;
-            if (multiply < 0.04) multiply = 0D;
+            if (multiply < 0.04) {
+                multiply = 0D;
+                ignoreP = false;
+            }
             if (multiplyGround < 0.04) multiplyGround = 0D;
         }
         if (flag == null && antiAbuseProcessor > 0)
@@ -492,6 +497,7 @@ public class Speed extends CheckExecutor {
                 ignoreBasicChecks = true;
                 onDamage = true;
                 needToCheckAura = false;
+                ignoreP = true;
                 // player.sendMessage(String.valueOf(horizontal));
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
@@ -554,6 +560,7 @@ public class Speed extends CheckExecutor {
             oldOnGround = false;
             groundSwitches = 0;
             multiplyGround = 0;
+            ignoreP = false;
         } else if (object == SpeedAction.RIPTIDE) {
             newRayRequest = true;
             wrappedOnAir = 1;
