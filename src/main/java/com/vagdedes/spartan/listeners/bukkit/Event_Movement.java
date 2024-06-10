@@ -67,6 +67,7 @@ public class Event_Movement implements Listener {
         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
         p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
+        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

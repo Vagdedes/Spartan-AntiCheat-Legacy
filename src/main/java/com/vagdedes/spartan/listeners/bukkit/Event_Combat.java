@@ -21,7 +21,6 @@ public class Event_Combat implements Listener {
     public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
             Enums.HackType.KillAura,
             Enums.HackType.HitReach,
-            Enums.HackType.Criticals,
             Enums.HackType.NoSwing
     };
 
