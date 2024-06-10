@@ -48,6 +48,7 @@ public class NoFall extends CheckExecutor {
     @Override
     public void handleInternal(boolean cancelled, Object object) {
         this.distance = 0.0;
+        this.ignore = true;
         this.previousFallTick = getFallTicks(previousFallDistance);
         this.previousFallDistance = player.getInstance().getFallDistance();
     }
