@@ -23,7 +23,7 @@ public class StratoCache {
         pushNewPacket(id);
     }
     public static void pushNewMovement(int id, Player player, Location location) {
-        cache.get(id).addFirst(location);
+        cache.getOrDefault(id, new LinkedList<>()).addFirst(location);
         cachePlayer.put(id, player);
         pushNewPacket(id);
     }
