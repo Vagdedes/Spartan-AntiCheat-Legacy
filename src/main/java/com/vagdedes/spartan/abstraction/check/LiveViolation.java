@@ -155,8 +155,10 @@ public class LiveViolation {
         if (!this.level.isEmpty()) {
             int total = 0;
 
-            for (Long level : this.level.values()) {
-                total += this.calculateLevel(level);
+            synchronized (this.level) {
+                for (Long level : this.level.values()) {
+                    total += this.calculateLevel(level);
+                }
             }
             return total;
         } else {
@@ -166,9 +168,11 @@ public class LiveViolation {
 
     public boolean hasLevel() {
         if (!this.level.isEmpty()) {
-            for (Long level : this.level.values()) {
-                if (this.calculateLevel(level) > 0) {
-                    return true;
+            synchronized (this.level) {
+                for (Long level : this.level.values()) {
+                    if (this.calculateLevel(level) > 0) {
+                        return true;
+                    }
                 }
             }
         }
@@ -384,7 +388,7 @@ public class LiveViolation {
                 Player realPlayer = player.getInstance();
 
                 if (realPlayer != null) {
-                    ClickableMessage.sendCommand(realPlayer, message, "Command: " + command, command);
+                    ClickableMessage.sendCommand(realPlayer, message, "/" + command, command);
                 }
             }
         } else {
@@ -407,7 +411,7 @@ public class LiveViolation {
                             ClickableMessage.sendCommand(
                                     realPlayer,
                                     message,
-                                    "Command: " + command,
+                                    "/" + command,
                                     command
                             );
                         }
