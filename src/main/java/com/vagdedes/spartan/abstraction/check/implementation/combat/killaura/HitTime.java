@@ -27,7 +27,7 @@ public class HitTime extends DetectionExecutor {
         devianceTotal += deviance;
         packets += 1;
         if (player.getPing() > 1000 || SendTransaction.getTransactionDelay(player.getInstance()) > 1000) return;
-        if (deviance < 10 && deviance != 0) lowPackets++;
+        if (deviance < 5 && deviance != 0) lowPackets++;
         if (hitTime == 0) {
             nullPacket = 2;
         }
