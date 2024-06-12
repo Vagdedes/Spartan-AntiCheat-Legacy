@@ -7,6 +7,8 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
@@ -28,6 +30,7 @@ public class Velocity extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (!SpartanBukkit.packetsEnabled()) return;
+        if (blockCause(player)) return;
         if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;
             veloV = true;
@@ -94,6 +97,20 @@ public class Velocity extends CheckExecutor {
     protected boolean canRun() {
         return CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0);
+    }
+    private boolean blockCause(SpartanPlayer player) {
+        Location location = player.protocol.getLocation();
+        if (location.getBlock().getType() != Material.AIR) return true;
+        for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
+            for (int y = location.getBlockY(); y <= location.getBlockY() + 2; y++) {
+                for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
+                    if (location.getWorld().getBlockAt(x, y, z).getType().isSolid()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

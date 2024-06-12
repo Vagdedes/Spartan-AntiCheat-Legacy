@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.protocol.async.StratoCache;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,7 @@ public class BackgroundMove {
             protocol.setOnLoadStatus(false);
         } else if (!invalidTeleport(protocol.getLocation())
                 || (invalidTeleport(protocol.getLocation()) && !protocol.isOnLoadStatus())) {
-            // DO NOT RUN THE MOVE EVENT REPLICATE IN PACKETS ANYMORE, IT'S NOT OPTIMIZED
+            StratoCache.pushNewMovement(player.getEntityId(), player, protocol.getLocation());
         }
     }
 
@@ -46,6 +47,7 @@ public class BackgroundMove {
             protocol.setLocation(location);
         }
         protocol.setOnGround(onGroundPacketLevel(event));
+        StratoCache.pushNewPacket(event.getPlayer().getEntityId());
     }
 
     public static Location readLocation(PacketEvent event) {

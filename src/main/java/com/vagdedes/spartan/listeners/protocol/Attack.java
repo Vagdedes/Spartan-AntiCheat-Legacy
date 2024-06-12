@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -9,9 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
+import com.vagdedes.spartan.listeners.protocol.async.StratoCache;
 import org.bukkit.entity.Player;
 
 public class Attack extends PacketAdapter {
@@ -28,19 +25,16 @@ public class Attack extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
         PacketContainer packet = event.getPacket();
+        int id = packet.getIntegers().read(0);
         if (packet.getEnumEntityUseActions().read(0).getAction() == EnumWrappers.EntityUseAction.ATTACK) {
-            SpartanBukkit.transferTask(player, () -> {
-                Entity entity = ProtocolLibrary.getProtocolManager()
-                                .getEntityFromID(player.getWorld(), packet.getIntegers().read(0));
-                if (entity instanceof LivingEntity) {
-                    Shared.attack(
-                                    new PlayerAttackEvent(
-                                                    player,
-                                                    (LivingEntity) entity,
-                                                    false
-                                    ));
-                }
-            });
+            if (StratoCache.getPlayerByID(id) != null) {
+                Shared.attack(
+                                new PlayerAttackEvent(
+                                                player,
+                                                StratoCache.getPlayerByID(id),
+                                                false
+                                ));
+            }
         }
     }
 }

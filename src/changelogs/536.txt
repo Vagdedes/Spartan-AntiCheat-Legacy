@@ -1,1 +1,26 @@
-Corrected false positives in the NoFall and IrregularMovements checks.
+
+[+] Spartan now work on PacketEvents (Optional). You need ProtocolLib for this.
+[+] Meet new MoveDirection Killaura Checks with this modules:
+ - heuristic (basic)
+ - heuristic (low)
+ - heuristic (sync)
+ - heuristic (aim)
+ - heuristic (constant)
+ - heuristic (aggressive)
+ - heuristic (switch)
+ - pattern (random)
+ - pattern (snap)
+ - pattern (gcd)
+[+] new Criticals checks
+[+] new Velocity checks [WORK ONLY WITH PROTOCOLLIB]
+[+] StratoCache (lag compensation technology, like for reach checks) [ONLY WITH PROTOCOLLIB, BETA]
+[+] new HitReach (3.01+ reach) checks [WORK FULLY ONLY WITH PROTOCOLLIB]
+[+] Post UseEntity packets check (Killaura HitTime) [WORK ONLY WITH PROTOCOLLIB]
+[+] More info in HitReach and Killaura (MoveDirection) notifications.
+[#] Corrected false positives in the NoFall and IrregularMovements checks.
+[#] Corrected false positives in the Killaura (MoveDirection) checks.
+[#] Fix many Speed falses
+
+[!] Many combat checks with PacketEvents works only with players... Sorry!
+
+

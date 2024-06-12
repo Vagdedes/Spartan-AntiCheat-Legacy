@@ -6,10 +6,13 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
+import com.vagdedes.spartan.listeners.protocol.async.StratoCache;
+import com.vagdedes.spartan.listeners.protocol.async.transactions.SendTransaction;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
 
@@ -26,15 +29,43 @@ public class HitReach extends CheckExecutor {
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         LivingEntity target = event.getTarget();
+        if (SpartanBukkit.packetsEnabled()) {
+            if (CombatProcessing.canCheck(player, target)
+                            && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
+                int targetId = target.getEntityId();
+                int playerId = event.getPlayer().getEntityId();
 
-        if (CombatProcessing.canCheck(player, target)
-                && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
-            double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target),
-                    diff = bruteforceRayTrace - 0.4;
-            rayTraceAnalysis.addLast(bruteforceRayTrace);
-
-            if (rayTraceAnalysis.size() >= 10) {
-                analyze(player.movement.getLocation(), bruteforceRayTrace);
+                double bruteforceRayTraceDefault = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                player, SpartanBukkit.getPlayer((Player) target).protocol.getLocation(), target);
+                double bruteforceRayTraceMinDelay = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                player, StratoCache.getLocationWithTickRollback(targetId, 1), target);
+                double bruteforceRayTraceMinDelay3 = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                player, StratoCache.getLocationWithTickRollback(targetId, 3), target);
+                double bruteforceRayTraceLagCalculate = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                player, StratoCache.getLocationWithTickRollback(targetId, StratoCache.getPlayerTicksDelay(playerId)), target);
+                double bruteforceRayTraceTransactionCalculate = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                player, StratoCache.getLocationWithTickRollback(targetId, SendTransaction.getTransactionDelay(player.getInstance())), target);
+                double bruteforceRayTracePingCalculate = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                player, StratoCache.getLocationWithTickRollback(targetId, player.getPing()), target);
+                double bruteforceRayTrace = Math.min(bruteforceRayTraceDefault
+                                , Math.min(bruteforceRayTraceMinDelay, Math.min(bruteforceRayTraceMinDelay3,
+                                                Math.min(bruteforceRayTracePingCalculate,
+                                                                Math.min(bruteforceRayTraceTransactionCalculate, bruteforceRayTraceLagCalculate))))
+                                );
+                rayTraceAnalysis.addLast(bruteforceRayTrace);
+                if (rayTraceAnalysis.size() >= 10) {
+                    analyze(player.movement.getLocation(), bruteforceRayTrace);
+                }
+            }
+        } else {
+            if (CombatProcessing.canCheck(player, target)
+                            && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target),
+                                diff = bruteforceRayTrace - 0.4;
+                rayTraceAnalysis.addLast(bruteforceRayTrace);
+                if (rayTraceAnalysis.size() >= 10) {
+                    analyze(player.movement.getLocation(), bruteforceRayTrace);
+                }
             }
         }
     }

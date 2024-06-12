@@ -8,6 +8,7 @@ import com.vagdedes.spartan.utils.minecraft.mcp.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.mcp.MathHelper;
 import com.vagdedes.spartan.utils.minecraft.mcp.MovingObjectPosition;
 import com.vagdedes.spartan.utils.minecraft.mcp.Vec3;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -203,6 +204,25 @@ public class RayUtils {
         }
         return intersection || exempt;
     }
+    public static boolean inHitbox(SpartanPlayer player, Location locationIn, Entity target, float size) {
+        SpartanLocation location = new SpartanLocation(player.protocol.getLocation());
+        Location targetLocation = locationIn;
+
+        boolean intersection = false;
+        boolean exempt;
+        double targetX = targetLocation.getX();
+        double targetY = targetLocation.getY();
+        double targetZ = targetLocation.getZ();
+
+        AxisAlignedBB boundingBox = new AxisAlignedBB(
+                        targetX - size, targetY - 0.1F, targetZ - size,
+                        targetX + size, targetY + 1.9F, targetZ + size
+        );
+        // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
+        intersection = isIntersection(player, location, intersection, boundingBox);
+        exempt = target.isInsideVehicle();
+        return intersection || exempt;
+    }
 
     private static boolean isIntersection(SpartanPlayer player, SpartanLocation location, boolean intersection, AxisAlignedBB boundingBox) {
         for (final boolean rotation : BOOLEANS) {
@@ -275,6 +295,21 @@ public class RayUtils {
 
         for (int i = 0; i < 60; i++) {
             if (inHitbox(spartanPlayer, target, bruteForceStart)) {
+                bruteForce = bruteForceStart;
+                checked = true;
+            } else {
+                bruteForceStart += 0.01F;
+            }
+        }
+        return (checked) ? bruteForce : 0.6F;
+    }
+    public static float bruteforceRayTraceWithCustomLocation(SpartanPlayer spartanPlayer, Location location, Entity target) {
+        float bruteForce = 0.01F;
+        float bruteForceStart = 0.01F;
+        boolean checked = false;
+
+        for (int i = 0; i < 60; i++) {
+            if (inHitbox(spartanPlayer, location, target, bruteForceStart)) {
                 bruteForce = bruteForceStart;
                 checked = true;
             } else {

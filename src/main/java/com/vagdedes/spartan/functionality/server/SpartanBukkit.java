@@ -22,7 +22,7 @@ public class SpartanBukkit {
     public static final boolean
             // Change it when testing and put it to false if not ready for production
             // before pushing on the repository
-            packetsForcedState = false,
+            packetsForcedState = true,
             testMode = !JarVerification.enabled && !CloudBase.hasToken()
                     && !IDs.isBuiltByBit() && !IDs.isPolymart()
                     && Bukkit.getMotd().contains(Register.plugin.getName()),

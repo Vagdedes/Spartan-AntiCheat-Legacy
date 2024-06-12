@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.protocol.async.transactions.SendTransaction;
 
 public class HitTime extends DetectionExecutor {
 
@@ -25,7 +26,8 @@ public class HitTime extends DetectionExecutor {
         int deviance = (int) Math.abs(hitTime - oldHitTiming);
         devianceTotal += deviance;
         packets += 1;
-        if (deviance < 10) lowPackets++;
+        if (player.getPing() > 1000 || SendTransaction.getTransactionDelay(player.getInstance()) > 1000) return;
+        if (deviance < 10 && deviance != 0) lowPackets++;
         if (hitTime == 0) {
             nullPacket = 2;
         }
@@ -63,7 +65,6 @@ public class HitTime extends DetectionExecutor {
             lowPackets = 0;
         }
         if (vl > 0) vl -= 5;
-
 
         if (nullPacket > 0) nullPacket -= 1;
         lastHitTime = System.currentTimeMillis();
