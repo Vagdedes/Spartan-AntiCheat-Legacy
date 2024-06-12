@@ -38,11 +38,12 @@ public class NoFall extends CheckExecutor {
 
     private double previousFallDistance, distance;
     private int previousFallTick;
-    private boolean ignore = true;
+    private boolean ignore;
 
     public NoFall(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.handleInternal(false, null);
+        this.ignore = true;
     }
 
     @Override
@@ -60,10 +61,11 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public void runInternal(boolean cancelled) {
-        if (player.isOnGround(false)) ignore = false;
-        if (ignore || player.isOnGround(false)) return;
-        if (player.movement.wasInLiquids()) {
-            ignore = true;
+        if (player.isOnGround(false)) {
+            ignore = false;
+            return;
+        }
+        if (ignore) {
             return;
         }
         Double vertical = player.movement.getEventVertical(),

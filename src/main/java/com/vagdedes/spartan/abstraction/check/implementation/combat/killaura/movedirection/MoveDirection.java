@@ -19,19 +19,19 @@ public class MoveDirection extends DetectionExecutor {
 
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
-    private float vl = 0;
-    private String punish = "";
-    private double lastSwitchYaw = 0;
-    private double lastSwitchPitch = 0;
-    private double switchYaw = 0;
-    private double switchPitch = 0;
-    private List<UUID> targetsOnTheRow = new ArrayList<>();
-    private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
+    private float vl;
+    private String punish;
+    private double lastSwitchYaw, lastSwitchPitch;
+    private final List<UUID> targetsOnTheRow;
+    private final LinkedList<Double> rayTraceAnalysis;
 
     public MoveDirection(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         aimAnalysis = new LinkedList<>();
         attackHandle = new AttackHandle(null, System.currentTimeMillis());
+        this.punish = "";
+        this.targetsOnTheRow = new ArrayList<>();
+        this.rayTraceAnalysis = new LinkedList<>();
     }
 
     public void runMove() {
@@ -99,8 +99,8 @@ public class MoveDirection extends DetectionExecutor {
             double expectedPitch = pitchChange * 1.073742f - (float) (pitchChange - 0.15);
             double yawDiff = Math.abs(yawChange - expectedYaw);
             double pitchDiff = Math.abs(pitchChange - expectedPitch);
-            switchYaw = Math.abs(yawChange - yawDiff);
-            switchPitch = Math.abs(pitchChange - pitchDiff);
+            double switchYaw = Math.abs(yawChange - yawDiff);
+            double switchPitch = Math.abs(pitchChange - pitchDiff);
             double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
             if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).getTime()
                     + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 35);
@@ -108,6 +108,7 @@ public class MoveDirection extends DetectionExecutor {
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
+
             if (robotized < 2 && yawChange > 2.5
                     && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
 
@@ -134,6 +135,7 @@ public class MoveDirection extends DetectionExecutor {
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
+
         if (targetsOnTheRow.size() < 3)  {
             if (basicHeuristic > 6) addNewPunish("heuristic(basic)", 210);
             if (lowHeuristic > 7) addNewPunish("heuristic(low)", 210);
@@ -206,13 +208,11 @@ public class MoveDirection extends DetectionExecutor {
         switch (priorityType) {
             case AGGRESSIVE:
                 return new PriorityData(200, 4);
-            case CAREFUL:
-                return new PriorityData(400, 5);
             case LENIENT:
                 return new PriorityData(900, 6);
             case SILENT:
                 return new PriorityData(1500, 8);
-            default:
+            default: // CAREFUL
                 return new PriorityData(400, 5);
         }
     }

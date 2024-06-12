@@ -749,10 +749,6 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean canSee(Player target) {
-        return this.getInstance().canSee(target);
-    }
-
     public int getPing() {
         return Latency.ping(this.getInstance());
     }

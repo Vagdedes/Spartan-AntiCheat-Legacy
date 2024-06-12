@@ -2,19 +2,18 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 
 public class PriorityData {
 
-    private final float vlLimit;
-    private final float vlFader;
+    private final float vlLimit, vlFader;
 
-    public PriorityData(float vlLimit, float vlFader) {
+    PriorityData(float vlLimit, float vlFader) {
         this.vlLimit = vlLimit;
         this.vlFader = vlFader;
     }
 
-    public float getVlLimit() {
+    float getVlLimit() {
         return vlLimit;
     }
 
-    public float getVlFader() {
+    float getVlFader() {
         return vlFader;
     }
 }

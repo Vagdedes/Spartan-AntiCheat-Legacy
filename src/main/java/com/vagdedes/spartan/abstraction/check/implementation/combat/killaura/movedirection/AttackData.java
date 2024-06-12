@@ -28,7 +28,11 @@ public class AttackData {
     float getPitch() {
         return pitch;
     }
-    long getTime() { return time; }
+
+    long getTime() {
+        return time;
+    }
+
     UUID getTarget() {
         return target;
     }

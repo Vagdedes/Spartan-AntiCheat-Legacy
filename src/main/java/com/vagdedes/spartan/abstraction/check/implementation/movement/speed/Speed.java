@@ -65,7 +65,6 @@ public class Speed extends CheckExecutor {
 
 
     private RayLine jumpRayLine;
-    private Entity target;
     private boolean
             onDamage,
             ignoreBasicChecks,
@@ -133,31 +132,19 @@ public class Speed extends CheckExecutor {
         wrappedOnFly = onGround ? 0 : wrappedOnFly + 1;
         int onAir = wrappedOnAir,
                 onAirID = wrappedOnAir - 1,
-                onFly = wrappedOnFly,
-                onFlyID = wrappedOnFly - 1;
-
-
+                onFly = wrappedOnFly;
         double predictedVertical = (onAir > 76) ? FLY_SPEED[76] : (onAir < 0) ? FLY_SPEED[0] : FLY_SPEED[onAir];
         double verticalDiff = (predictedVertical < vertical) ? 0 : predictedVertical - vertical;
         boolean solidBlockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0)),
                 inLiquid = RayUtils.onBlock(player, to, BlockUtils.liquid),
                 onBlock = RayUtils.onBlock(player, to, BlockUtils.solid, BlockUtils.semi_solid);
         double multiplexSpecify = solidBlockOnTop ? 2.65 : 1;
-
-        // 2
-        //player.getInstance().sendMessage(onGround + " " + onAir + " fly: " + vertical + " | " + predictedVertical);
-
         float yaw = to.getYaw(),
                 yR = (float) Math.toRadians(yaw);
         RayLine a = new RayLine(-Math.sin(yR), Math.cos(yR));
         RayLine b = new RayLine(dx, dz);
-
-        //1
-        //Register.plugin.getLogger().info(yaw + " " + horizontal + " "
-        //                + onAirID + " " + onGround + " " + Move.groundManager.get(player.getInstance()));
-
-        double wrappedYaw = Math.toDegrees(RayUtils.calculateRayLine(a));
-        double deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
+        double wrappedYaw = Math.toDegrees(RayUtils.calculateRayLine(a)),
+                deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
 
 
         if (onAir == 3) multiplyGround = 0.5;
@@ -270,8 +257,6 @@ public class Speed extends CheckExecutor {
             newRayRequest = true;
         }
         if (!onGround) {
-            // player.sendMessage("nigger " + horizontal);
-            // player.sendMessage("My tick check: " + onAir + " Vagdedes tick check: " + player.movement.getTicksOnAir());
             double limit = (onAirID > 12 ? BASIC_SPEED[12] : BASIC_SPEED[onAirID]) * speedMultiply,
                     limitNonSprint = RayUtils.scaleVal(0.19 * speedMultiply, 2);
             limit += ((speedEffect != null) ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2D : 0);
@@ -481,11 +466,9 @@ public class Speed extends CheckExecutor {
                 PlayerVelocityEvent event = (PlayerVelocityEvent) object;
                 RayLine line = new RayLine(event.getVelocity().getX(), event.getVelocity().getZ());
                 Vector to = event.getVelocity();
-                double dx = to.getX();
-                double dz = to.getZ();
-                double speedModify = getMaxSpeedAmplifier();
                 newRayRequest = true;
                 double horizontal = RayUtils.scaleVal(to.distance(new Vector(0, to.getY(), 0)), 2);
+
                 if (horizontal > 0.05) {
                     horizontal += 0.2;
                     horizontal *= 1.5;
@@ -552,7 +535,6 @@ public class Speed extends CheckExecutor {
             sprintVl = 0;
             auraAnalysis = new LinkedList<>();
             needToCheckAura = false;
-            target = null;
             ticksOnGround = 0;
             oldWrappedOnFly = 0;
             oldYaw = 0;
@@ -610,7 +592,6 @@ public class Speed extends CheckExecutor {
         float yaw = auraAnalysis.get(0).yaw();
         double raySim = RayUtils.calculateRayLine(auraAnalysis.get(0).simRayLine());
         boolean oldInTarget = false;
-        int tooFactRotationCause = 0;
 
         for (Aura a : auraAnalysis) {
             double angleLocal = Math.toDegrees(RayUtils.calculateRayLine(a.rayLine()));
@@ -633,17 +614,13 @@ public class Speed extends CheckExecutor {
         rayDiff = RayUtils.scaleVal(RayUtils.set360Limit((float) rayDiff), 2);
         raySimDiff = RayUtils.scaleVal(Math.toDegrees(raySimDiff), 2);
 
-        // player.sendMessage(raySimDiff + " " + rayDiff + " " + yawDiff + " " + yawDiffFromFirst);
-
-        /*
-                if (rayDiff * 6.5 < raySimDiff && rayDiff < 16 && raySimDiff < 75 && rayDiff > 0.5 && yawDiffFromFirst > 9.8) {
+        /*if (rayDiff * 6.5 < raySimDiff && rayDiff < 16 && raySimDiff < 75 && rayDiff > 0.5 && yawDiffFromFirst > 9.8) {
             for (int i = 0; i < 5; i++) {
                 flag = "type: aura(direction), final-rayDiff: "
                                 + rayDiff + ", final-raySimDiff: " + raySimDiff + ", count: " + (i + 1);
                 cancel(flag, player.movement.getLocation(), 9);
             }
-        }
-         */
+        }*/
 
 
     }

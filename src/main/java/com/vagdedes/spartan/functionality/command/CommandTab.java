@@ -81,7 +81,7 @@ public class CommandTab implements TabCompleter {
                 for (SpartanPlayer o : players) {
                     Player on = o.getInstance();
 
-                    if (on != null && (!player || p.canSee(on))) {
+                    if (on != null && (!player || p.getInstance().canSee(on))) {
                         String name = o.name;
 
                         if (name.toLowerCase().contains(argAbstract)) {

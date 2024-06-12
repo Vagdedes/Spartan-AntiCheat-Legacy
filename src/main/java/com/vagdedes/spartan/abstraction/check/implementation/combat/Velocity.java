@@ -95,4 +95,5 @@ public class Velocity extends CheckExecutor {
         return CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0);
     }
+
 }
