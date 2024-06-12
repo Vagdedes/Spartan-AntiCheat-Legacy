@@ -180,9 +180,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             product / (double) airTicks,
                             player.trackers.has(Trackers.TrackerFamily.VELOCITY)
                                     ? GroundUtils.maxBoundingBox :
-                                    liquid
-                                            || player.trackers.has(Trackers.TrackerFamily.MOTION)
-                                            ? GroundUtils.maxPlayerStep :
+                                    liquid || player.trackers.has(Trackers.TrackerFamily.MOTION) ? GroundUtils.maxPlayerStep :
                                             player.bedrockPlayer || sensitive ? PlayerUtils.climbingDownDefault :
                                                     GroundUtils.maxHeightLengthRatio
                     );
