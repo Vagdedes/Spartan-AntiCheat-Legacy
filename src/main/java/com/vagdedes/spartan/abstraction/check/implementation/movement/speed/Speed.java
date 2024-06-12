@@ -212,7 +212,7 @@ public class Speed extends CheckExecutor {
                 } else if (verticalVl > 0) verticalVl = verticalVl - 1;
             }
             if (oldAir < 3 && oldAir != -1 && isJump && vehicle == null
-                    && !RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
+                    && !RayUtils.onBlock(player, to, BlockUtils.climbableOriginal) && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
 
                 if (hackType.getCheck().getBooleanOption("check_landing", true)
@@ -274,7 +274,7 @@ public class Speed extends CheckExecutor {
             }
             if (horizontal > wrapLimit
                     && DataProcessor.keepSprint.containsKey(player.uuid)
-                    && !DataProcessor.getKeepSprint(player.uuid).isTimedOut()) {
+                    && !DataProcessor.getKeepSprint(player.uuid).isTimedOut() && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
                 if (hackType.getCheck().getBooleanOption("check_keepsprint_silent", true)
                         && antiAbuseProcessor > 200) {
@@ -366,7 +366,7 @@ public class Speed extends CheckExecutor {
 
             if (ticksOnGround == 1
                     && oldWrappedOnFly < 16 && vertical < -0.23 && !solidBlockOnTop
-                    && !ignoreBasicChecks && jumpEffect == null) {
+                    && !ignoreBasicChecks && jumpEffect == null && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 75;
                 if (hackType.getCheck().getBooleanOption("check_landing_end", true)
                         && antiAbuseProcessor > 200) {
