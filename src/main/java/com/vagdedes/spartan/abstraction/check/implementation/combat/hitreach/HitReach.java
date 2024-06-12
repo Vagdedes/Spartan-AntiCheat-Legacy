@@ -34,24 +34,13 @@ public class HitReach extends CheckExecutor {
                             && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
                 int playerId = event.getPlayer().getEntityId();
-
-                double bruteforceRayTraceDefault = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                player, SpartanBukkit.getPlayer((Player) target).protocol.getLocation(), target);
-                double bruteforceRayTraceMinDelay = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                player, StratoCache.getLocationWithTickRollback(targetId, 1), target);
-                double bruteforceRayTraceMinDelay3 = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                player, StratoCache.getLocationWithTickRollback(targetId, 3), target);
-                double bruteforceRayTraceLagCalculate = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                player, StratoCache.getLocationWithTickRollback(targetId, StratoCache.getPlayerTicksDelay(playerId)), target);
-                double bruteforceRayTraceTransactionCalculate = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                player, StratoCache.getLocationWithTickRollback(targetId, SendTransaction.getTransactionDelay(player.getInstance())), target);
-                double bruteforceRayTracePingCalculate = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                player, StratoCache.getLocationWithTickRollback(targetId, player.getPing()), target);
-                double bruteforceRayTrace = Math.min(bruteforceRayTraceDefault
-                                , Math.min(bruteforceRayTraceMinDelay, Math.min(bruteforceRayTraceMinDelay3,
-                                                Math.min(bruteforceRayTracePingCalculate,
-                                                                Math.min(bruteforceRayTraceTransactionCalculate, bruteforceRayTraceLagCalculate))))
-                                );
+                double bruteforceRayTrace = 0.7;
+                double value;
+                for (int i = 0; i < 5 + StratoCache.getPlayerTicksDelay(playerId); i++) {
+                    value = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                    player, StratoCache.getLocationWithTickRollback(targetId, i), target);
+                    if (value < bruteforceRayTrace) bruteforceRayTrace = value;
+                }
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(player.movement.getLocation(), bruteforceRayTrace);
