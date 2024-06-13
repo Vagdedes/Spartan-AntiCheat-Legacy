@@ -3,7 +3,6 @@ package com.vagdedes.spartan.listeners.protocol.async;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;

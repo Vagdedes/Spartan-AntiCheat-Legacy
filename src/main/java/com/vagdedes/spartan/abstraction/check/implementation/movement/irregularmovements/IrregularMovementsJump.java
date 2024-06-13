@@ -6,9 +6,9 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.server.BlockPatternUtils;
-import com.vagdedes.spartan.utils.minecraft.server.GroundUtils;
-import com.vagdedes.spartan.utils.minecraft.server.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
+import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
