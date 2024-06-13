@@ -116,6 +116,7 @@ public class Speed extends CheckExecutor {
 
         String flag = null;
         boolean checkDirection = !player.bedrockPlayer;
+        double punishMultiply = 1;
         double dx = to.getX() - from.getX(),
                 dz = to.getZ() - from.getZ();
         int oldAir = -1;
@@ -265,11 +266,12 @@ public class Speed extends CheckExecutor {
             double wrapLimit = !player.movement.isSprinting() ? RayUtils.scaleVal(limit / 1.2, 2) : limit;
             ticksOnGround = 0;
             if (horizontal > limit) {
-                antiAbuseProcessor = antiAbuseProcessor + 75;
+                antiAbuseProcessor = (int) (antiAbuseProcessor + (60 * horizontal / limit));
                 if (hackType.getCheck().getBooleanOption("check_simulation_air_limit", true)
                         && antiAbuseProcessor > 200) {
                     flag = "type: simulation-air-limit, speed: " + horizontal
                             + ", speed-limit: " + limit + ", air-tick: " + onAir;
+                    punishMultiply = (horizontal / limit);
                 }
             }
             if (horizontal > wrapLimit
@@ -397,6 +399,7 @@ public class Speed extends CheckExecutor {
                         && antiAbuseProcessor > 200) {
                     flag = "type: simulation-ground, speed: " + horizontal
                             + ", speed-limit: " + ((ticksOnGround > 4) ? limitStraight : limit);
+                    punishMultiply = limit / horizontal;
                 }
             }
             if (horizontal > limit / 1.35
@@ -407,6 +410,7 @@ public class Speed extends CheckExecutor {
                         && antiAbuseProcessor > 200 && checkDirection) {
                     flag = "type: simulation-ground-direction(basic), speed: " + horizontal
                             + ", speed-limit: " + RayUtils.scaleVal(limit / 1.35, 2);
+                    punishMultiply = 2;
                 }
             }
             if (horizontal >= limit / 1.7
@@ -447,7 +451,7 @@ public class Speed extends CheckExecutor {
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
-        if (flag != null) cancel(flag, horizontal, to);
+        if (flag != null) cancel(flag, punishMultiply, to);
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
         oldWrappedOnFly = wrappedOnFly;
