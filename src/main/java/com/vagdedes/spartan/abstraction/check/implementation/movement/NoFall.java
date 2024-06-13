@@ -18,7 +18,7 @@ import java.util.Map;
 public class NoFall extends CheckExecutor {
 
     private static final double
-            drag = 0.98,
+            drag = AlgebraUtils.cut(PlayerUtils.airDrag, 2),
             acceleration = PlayerUtils.airAcceleration * drag;
     private static final int maxFallTicks = 1_000;
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
