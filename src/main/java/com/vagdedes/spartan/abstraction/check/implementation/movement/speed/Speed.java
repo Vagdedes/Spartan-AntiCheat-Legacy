@@ -226,6 +226,7 @@ public class Speed extends CheckExecutor {
         }
         if (slimeBlockCause(player, to)) {
             if (multiply < 3) multiply = 3D;
+            multiplyGround = 0.9;
             ignoreP = true;
             return;
         }
