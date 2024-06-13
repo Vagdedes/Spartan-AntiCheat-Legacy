@@ -35,7 +35,7 @@ public class StratoCache {
         pushNewPacket(id);
         if (delays.get(id).size() >= 10) {
             LinkedList<Integer> l = new LinkedList<>();
-            l.add(Collections.min(delays.get(id)) / 2);
+            l.add(Collections.max(delays.get(id)) / 2);
             delays.put(id, l);
         }
     }
@@ -49,7 +49,7 @@ public class StratoCache {
         return locationStack.get((ticks >= locationStack.size()) ? locationStack.size() - 1 : ticks);
     }
     public static int getPlayerTicksDelay(int id) {
-        return delays.containsKey(id) ? Collections.min(delays.get(id)) / 50 : 0;
+        return delays.containsKey(id) ? Collections.max(delays.get(id)) / 50 : 0;
     }
 
 }

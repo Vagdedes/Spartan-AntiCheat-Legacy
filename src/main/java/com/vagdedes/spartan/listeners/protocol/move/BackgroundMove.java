@@ -47,7 +47,6 @@ public class BackgroundMove {
             protocol.setLocation(location);
         }
         protocol.setOnGround(onGroundPacketLevel(event));
-        StratoCache.pushNewPacket(event.getPlayer().getEntityId());
     }
 
     public static Location readLocation(PacketEvent event) {

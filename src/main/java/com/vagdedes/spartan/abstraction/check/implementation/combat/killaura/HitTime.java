@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.protocol.async.StratoCache;
 import com.vagdedes.spartan.listeners.protocol.async.transactions.SendTransaction;
 
 public class HitTime extends DetectionExecutor {
@@ -37,7 +38,7 @@ public class HitTime extends DetectionExecutor {
                 cancel("type: impact user <skill issue>", (vl - 200) / 100D, player.movement.getEventFromLocation());
             }
         }
-        if (packets >= 5) {
+        if (packets >= 5 && StratoCache.getPlayerTicksDelay(player.getInstance().getEntityId()) < 2) {
             if (devianceTotal < 35) {
                 vlAnalysis += (devianceTotal < 10) ? 500 : 100;
                 if (vlAnalysis >= 300) {
@@ -49,7 +50,7 @@ public class HitTime extends DetectionExecutor {
                     cancel("type: post(default)", (vl - 200) / 100D, player.movement.getEventFromLocation());
                 }
             } else if (lowPackets >= 3) {
-                vlAnalysis += 150;
+                vlAnalysis += 100;
                 if (vlAnalysis >= 300) {
                     cancel("type: post(low)", (vl - 200) / 100D, player.movement.getEventFromLocation());
                 }

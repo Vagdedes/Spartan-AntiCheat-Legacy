@@ -11,6 +11,7 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.async.StratoCache;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -146,8 +147,6 @@ public class Speed extends CheckExecutor {
         RayLine b = new RayLine(dx, dz);
         double wrappedYaw = Math.toDegrees(RayUtils.calculateRayLine(a)),
                 deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
-
-
         if (onAir == 3) multiplyGround = 0.5;
         if (RayUtils.onBlock(player, to, BlockUtils.ice)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
@@ -275,7 +274,7 @@ public class Speed extends CheckExecutor {
                 }
             }
             if (horizontal > wrapLimit
-                    && DataProcessor.keepSprint.containsKey(player.uuid)
+                    && DataProcessor.keepSprint.containsKey(player.uuid) && !player.movement.isSprinting()
                     && !DataProcessor.getKeepSprint(player.uuid).isTimedOut() && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
                 if (hackType.getCheck().getBooleanOption("check_keepsprint_silent", true)
