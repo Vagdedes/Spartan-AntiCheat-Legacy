@@ -388,7 +388,7 @@ public class LiveViolation {
                 Player realPlayer = player.getInstance();
 
                 if (realPlayer != null) {
-                    ClickableMessage.sendCommand(realPlayer, message, "/" + command, command);
+                    ClickableMessage.sendCommand(realPlayer, message, command, command);
                 }
             }
         } else {
@@ -411,7 +411,7 @@ public class LiveViolation {
                             ClickableMessage.sendCommand(
                                     realPlayer,
                                     message,
-                                    "/" + command,
+                                    command,
                                     command
                             );
                         }
