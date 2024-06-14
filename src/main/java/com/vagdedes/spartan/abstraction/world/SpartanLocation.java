@@ -351,6 +351,10 @@ public class SpartanLocation {
         }
     }
 
+    public boolean isChunkLoaded() {
+        return isChunkLoaded(getChunkX(), getChunkZ());
+    }
+
     private void setChunkLoaded() {
         loadedChunk.put(
                 (getChunkX() * SpartanBukkit.hashCodeMultiplier) + getChunkZ(),

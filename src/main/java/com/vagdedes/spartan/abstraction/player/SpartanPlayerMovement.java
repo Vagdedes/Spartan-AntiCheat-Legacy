@@ -227,6 +227,12 @@ public class SpartanPlayerMovement {
 
     // Separator
 
+    public double getAirAcceleration() {
+        return this.location.isChunkLoaded()
+                ? PlayerUtils.airAcceleration
+                : PlayerUtils.airAccelerationUnloaded;
+    }
+
     public int getFallTick(double d, double acceleration, double drag, double precision) {
         return PlayerUtils.getFallTick(
                 d,
@@ -248,7 +254,7 @@ public class SpartanPlayerMovement {
 
     public boolean justFell(double d) {
         return d < 0.0
-                && Math.abs((0.0 - d) - (PlayerUtils.airAcceleration * PlayerUtils.airDrag))
+                && Math.abs((0.0 - d) - (this.getAirAcceleration() * PlayerUtils.airDrag))
                 <= GroundUtils.maxHeightLengthRatio;
     }
 

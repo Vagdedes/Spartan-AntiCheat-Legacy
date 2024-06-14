@@ -29,7 +29,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                     collectionBedrock = new HashSet<>();
 
             for (double height : GroundUtils.getHeights()) {
-                for (double motion : PlayerUtils.getJumpMotions(jumpEffect)) {
+                for (double motion : PlayerUtils.getJumpMotions(jumpEffect)) { // todo unloaded
                     height += motion;
                     collection.add(AlgebraUtils.cut(AlgebraUtils.removeBase(height), MovementProcessing.heightPrecision));
                     collectionBedrock.add(AlgebraUtils.removeBase(height));
