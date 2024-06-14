@@ -10,10 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class StratoCache {
 
-    private static Map<Integer, LinkedList<Location>> cache = new ConcurrentHashMap<>();
-    private static Map<Integer, Player> cachePlayer = new ConcurrentHashMap<>();
-    private static Map<Integer, Long> lastPacket = new ConcurrentHashMap<>();
-    private static Map<Integer, LinkedList<Integer>> delays = new ConcurrentHashMap<>();
+    private StratoCache() {
+        // stub!
+    }
+
+    private static final Map<Integer, LinkedList<Location>> cache = new ConcurrentHashMap<>();
+    private static final Map<Integer, Player> cachePlayer = new ConcurrentHashMap<>();
+    private static final Map<Integer, Long> lastPacket = new ConcurrentHashMap<>();
+    private static final Map<Integer, LinkedList<Integer>> delays = new ConcurrentHashMap<>();
     public static Map<Integer, LinkedList<Location>> getCache() {
         return cache;
     }
@@ -33,7 +37,7 @@ public class StratoCache {
                                 - lastPacket.getOrDefault(id, System.currentTimeMillis())));
         lastPacket.put(id, System.currentTimeMillis());
         pushNewPacket(id);
-        if (delays.get(id).size() >= 10) {
+        if (delays.getOrDefault(id, new LinkedList<>()).size() >= 10) {
             LinkedList<Integer> l = new LinkedList<>();
             l.add(Collections.max(delays.get(id)) / 2);
             delays.put(id, l);

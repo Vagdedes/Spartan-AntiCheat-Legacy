@@ -26,6 +26,7 @@ public class Join extends PacketAdapter {
         Player player = event.getPlayer();
         StratoCache.commitNewCache(player.getEntityId());
         SendTransaction.initializeTransaction(player);
+        WorldListener.commitNewWorldListener(player);
         SpartanBukkit.transferTask(player, () -> {
             SpartanBukkit.createProtocol(player);
             Shared.join(new PlayerJoinEvent(player, (String) null));

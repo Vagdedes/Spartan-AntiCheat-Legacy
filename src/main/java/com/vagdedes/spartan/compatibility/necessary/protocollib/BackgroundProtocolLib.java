@@ -19,6 +19,7 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new Move_Deprecated());
         p.addPacketListener(new ServerPosition());
         p.addPacketListener(new SendTransaction());
+        p.addPacketListener(new WorldListener());
         //p.addPacketListener(new Debug());
     }
 
