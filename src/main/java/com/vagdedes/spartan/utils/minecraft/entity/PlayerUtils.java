@@ -51,6 +51,7 @@ public class PlayerUtils {
             lavaDrag = 0.5,
             jumpAcceleration = AlgebraUtils.floatDouble(0.42),
             airAcceleration = 0.08,
+            airAccelerationUnloaded = AlgebraUtils.floatDouble(0.098),
             slowFallAcceleration = 0.01,
             liquidAcceleration = 0.02,
             chunk = 16.0,
@@ -91,7 +92,7 @@ public class PlayerUtils {
 
             while (jump > 0.0) {
                 jumps.add(jump);
-                jump = (jump - airAcceleration) * airDrag;
+                jump = (jump - airAcceleration) * airDrag; // todo unloaded
             }
             jumpsValues.put((byte) jumpEffect, jumps);
         }

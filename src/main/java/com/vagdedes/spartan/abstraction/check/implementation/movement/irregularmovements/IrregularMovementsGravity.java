@@ -81,7 +81,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             predictions.add( // Always second
                     PlayerUtils.calculateNextFallMotion(
                             oldVertical,
-                            -PlayerUtils.airAcceleration,
+                            -player.movement.getAirAcceleration(),
                             PlayerUtils.airDrag
                     )
             );
@@ -166,13 +166,13 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     if (player.bedrockPlayer) {
                         product = PlayerUtils.calculateTerminalVelocity(
                                 PlayerUtils.airDrag,
-                                PlayerUtils.airAcceleration
+                                player.movement.getAirAcceleration()
                         );
                     } else {
                         product = !sensitive
                                 && !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
-                                && !player.movement.isFalling(vertical, -PlayerUtils.airAcceleration, PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
-                                && !player.movement.isFalling(oldVertical, -PlayerUtils.airAcceleration, PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                                && !player.movement.isFalling(vertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                                && !player.movement.isFalling(oldVertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                                 ? GroundUtils.maxPlayerStep
                                 : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1);
                     }

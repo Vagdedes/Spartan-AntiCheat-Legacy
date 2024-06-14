@@ -182,8 +182,7 @@ public class Speed extends CheckExecutor {
             flag = "type: ground-invalid, onGround: " + onGround;
             groundSwitches--;
         }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)
-                && inventory.getBoots() != null) {
+        if (PlayerUtils.soulSpeed && inventory.getBoots() != null) {
             int e = inventory.getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
             double v = (e + 1) * 0.4;
             if (e > 0) {

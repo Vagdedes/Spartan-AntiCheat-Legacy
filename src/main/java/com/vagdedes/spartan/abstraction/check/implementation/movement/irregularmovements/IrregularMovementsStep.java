@@ -34,6 +34,10 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     GroundUtils.maxHeightLength
             ));
             firstFallingBox.add(AlgebraUtils.cut(
+                    AlgebraUtils.removeBase(before - (PlayerUtils.airAccelerationUnloaded * PlayerUtils.airDrag)),
+                    GroundUtils.maxHeightLength
+            ));
+            firstFallingBox.add(AlgebraUtils.cut(
                     AlgebraUtils.removeBase(before - (PlayerUtils.slowFallAcceleration * PlayerUtils.airDrag)),
                     GroundUtils.maxHeightLength
             ));
@@ -97,7 +101,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         }
                     } else {
                         double extra = player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0,
-                                downLimit = extra + PlayerUtils.airAcceleration,
+                                downLimit = extra + player.movement.getAirAcceleration(),
                                 upLimit = extra + GroundUtils.maxPlayerStep;
 
                         if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
@@ -186,7 +190,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     }
                 } else {
                     if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
-                        if (vertical < -PlayerUtils.airAcceleration) {
+                        if (vertical < -player.movement.getAirAcceleration()) {
                             cancel(
                                     "type: step(high-first-fall)"
                                             + ", box: " + box
@@ -222,7 +226,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             }
                         } else if (!player.isOnGround(player.movement.getEventToLocation(), true)) {
                             double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                    + PlayerUtils.airAcceleration;
+                                    + player.movement.getAirAcceleration();
 
                             if (vertical <= -limit) {
                                 cancel(

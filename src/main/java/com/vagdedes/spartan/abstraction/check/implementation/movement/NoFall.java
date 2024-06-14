@@ -24,7 +24,7 @@ public class NoFall extends CheckExecutor {
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
     static {
-        double previous = 0.0;
+        double previous = 0.0; // todo unloaded
 
         for (int fallTick = 0; fallTick <= maxFallTicks; fallTick++) {
             double prediction = (previous * drag) + (fallTick * acceleration);
@@ -85,8 +85,8 @@ public class NoFall extends CheckExecutor {
             double prediction = (this.previousFallDistance * drag) + (fallDistanceTick * acceleration),
                     difference = Math.abs(fallDistance - prediction),
                     limit = (vertical >= 0.0
-                            ? PlayerUtils.airAcceleration
-                            : Math.max(0.0 - vertical, PlayerUtils.airAcceleration))
+                            ? player.movement.getAirAcceleration()
+                            : Math.max(0.0 - vertical, player.movement.getAirAcceleration()))
                             * (player.bedrockPlayer ? 2.0 : 1.0);
 
             if (difference >= limit
@@ -95,7 +95,7 @@ public class NoFall extends CheckExecutor {
                     && !player.movement.justLanded(
                     vertical,
                     oldVertical,
-                    -PlayerUtils.airAcceleration,
+                    -player.movement.getAirAcceleration(),
                     PlayerUtils.airDrag,
                     GroundUtils.maxHeightLengthRatio)
                     && (difference != prediction
