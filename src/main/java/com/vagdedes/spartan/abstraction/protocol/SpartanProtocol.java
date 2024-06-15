@@ -55,6 +55,10 @@ public class SpartanProtocol {
 
     public void setOnGround(boolean isOnGround) {
         this.isOnGround = isOnGround;
+
+        if (this.isOnGround) {
+            this.spartanPlayer.movement.resetAirTicks();
+        }
     }
 
     public void setSprinting(boolean isSprinting) {

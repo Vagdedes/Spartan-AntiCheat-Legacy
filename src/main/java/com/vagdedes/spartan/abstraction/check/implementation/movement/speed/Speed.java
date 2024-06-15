@@ -1,8 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.WrappedLevelChunkData;
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
@@ -11,18 +8,14 @@ import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.listeners.protocol.WorldListener;
-import com.vagdedes.spartan.listeners.protocol.async.StratoCache;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -34,7 +27,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Speed extends CheckExecutor {
