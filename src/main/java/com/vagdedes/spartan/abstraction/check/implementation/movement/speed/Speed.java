@@ -97,7 +97,7 @@ public class Speed extends CheckExecutor {
     protected void runInternal(boolean cancelled) {
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
-        boolean onGround = player.isOnGround(false);
+        boolean onGround = player.isOnGroundOnlyBukkit(false);
 
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
         SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 0);
@@ -170,7 +170,7 @@ public class Speed extends CheckExecutor {
         }
         if (to.getY() == oldY && onGround != oldOnGround) groundSwitches++;
         if (to.getY() != oldY) groundSwitches = 0;
-        if (groundSwitches > 2) {
+        if (groundSwitches > 4) {
             flag = "type: ground-invalid, onGround: " + onGround;
             groundSwitches--;
         }

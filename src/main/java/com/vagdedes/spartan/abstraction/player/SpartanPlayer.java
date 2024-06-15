@@ -345,6 +345,17 @@ public class SpartanPlayer {
                 checkEntities
         );
     }
+    public boolean isOnGroundOnlyBukkit(boolean custom) {
+        Entity vehicle = this.getInstance().getVehicle();
+
+        if (vehicle != null) {
+            return vehicle.isOnGround();
+        } else {
+            return this.getInstance().isOnGround()
+                            || custom
+                            && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
+        }
+    }
 
     public boolean isOnGround(boolean custom) {
         Entity vehicle = this.getInstance().getVehicle();

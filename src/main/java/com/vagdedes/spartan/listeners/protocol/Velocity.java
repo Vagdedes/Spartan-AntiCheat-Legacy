@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
 public class Velocity extends PacketAdapter {
+    
 
     public Velocity() {
         super(
