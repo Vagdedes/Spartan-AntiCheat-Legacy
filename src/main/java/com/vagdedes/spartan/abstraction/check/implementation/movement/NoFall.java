@@ -24,7 +24,7 @@ public class NoFall extends CheckExecutor {
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
     static {
-        double previous = 0.0; // todo unloaded
+        double previous = 0.0;
 
         for (int fallTick = 0; fallTick <= maxFallTicks; fallTick++) {
             double prediction = (previous * drag) + (fallTick * acceleration);

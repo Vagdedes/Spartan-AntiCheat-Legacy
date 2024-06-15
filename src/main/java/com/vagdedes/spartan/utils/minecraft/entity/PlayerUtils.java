@@ -92,7 +92,7 @@ public class PlayerUtils {
 
             while (jump > 0.0) {
                 jumps.add(jump);
-                jump = (jump - airAcceleration) * airDrag; // todo unloaded
+                jump = (jump - airAcceleration) * airDrag;
             }
             jumpsValues.put((byte) jumpEffect, jumps);
         }
