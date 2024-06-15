@@ -97,7 +97,7 @@ public class Speed extends CheckExecutor {
     protected void runInternal(boolean cancelled) {
         SpartanLocation to = player.movement.getEventToLocation(),
                 from = player.movement.getEventFromLocation();
-        boolean onGround = player.isOnGroundOnlyBukkit(false);
+        boolean onGround = player.isOnGround(false);
 
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
         SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 0);

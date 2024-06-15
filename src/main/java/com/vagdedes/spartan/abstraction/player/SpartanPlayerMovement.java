@@ -176,11 +176,8 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isSneaking() {
-        if (SpartanBukkit.packetsEnabled()) {
-            return this.parent.protocol.isSneaking();
-        } else {
-            return this.parent.getInstance().isSneaking();
-        }
+        return this.parent.getInstance().isSneaking()
+                || this.parent.protocol.isSneaking();
     }
 
     public boolean isFlying() {
@@ -196,11 +193,8 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isSprinting() {
-        if (SpartanBukkit.packetsEnabled()) {
-            return this.parent.protocol.isSprinting();
-        } else {
-            return this.parent.getInstance().isSprinting();
-        }
+        return this.parent.getInstance().isSprinting()
+                || this.parent.protocol.isSprinting();
     }
 
     public boolean isSprintJumping(double vertical) {
@@ -445,7 +439,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     private void judgeGround(boolean increase) {
-        if (this.parent.isOnGroundOnlyBukkit(false)) {
+        if (this.parent.isOnGround(false)) {
             this.resetAirTicks();
         } else if (increase) {
             this.airTicks++;

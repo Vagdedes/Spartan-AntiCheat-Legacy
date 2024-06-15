@@ -341,20 +341,10 @@ public class SpartanPlayer {
         return GroundUtils.isOnGround(
                 this,
                 location,
-                this.getInstance().isOnGround(),
+                this.getInstance().isOnGround()
+                        || this.protocol.isOnGround(),
                 checkEntities
         );
-    }
-    public boolean isOnGroundOnlyBukkit(boolean custom) {
-        Entity vehicle = this.getInstance().getVehicle();
-
-        if (vehicle != null) {
-            return vehicle.isOnGround();
-        } else {
-            return this.getInstance().isOnGround()
-                            || custom
-                            && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
-        }
     }
 
     public boolean isOnGround(boolean custom) {
