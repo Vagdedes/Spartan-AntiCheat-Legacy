@@ -2,26 +2,23 @@ package com.vagdedes.spartan.listeners.protocol.async.transactions;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SendTransaction extends PacketAdapter {
 
-    private static Map<Player, Short> id = new ConcurrentHashMap<>();
-    private static Map<Player, Long> delay = new ConcurrentHashMap<>();
-    private static Map<Player, Integer> ping = new ConcurrentHashMap<>();
-    private static final boolean isModernVersion = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
+    private static final short def = 1488;
+    private static final Map<UUID, Short> id = new ConcurrentHashMap<>();
 
     public SendTransaction() {
         super(
@@ -35,36 +32,24 @@ public class SendTransaction extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         Player player = event.getPlayer();
-        if (Objects.equals(packet.getShorts().read(0), id.get(player))) {
-            id.put(player, (short) (id.get(player) + 1));
-            if (id.get(player) > 1500) id.put(player, (short) 1488);
-            ping.put(player, (int) (System.currentTimeMillis() - delay.get(player)));
-            sendTransaction(player);
+        short current = id.getOrDefault(player.getUniqueId(), def);
+
+        if (Objects.equals(packet.getShorts().read(0), current)) {
+            current++;
+
+            if (current > 1500) {
+                id.put(player.getUniqueId(), current = def);
+            } else {
+                id.put(player.getUniqueId(), current);
+            }
+            SpartanBukkit.getProtocol(player).setLastTransaction();
+            PacketContainer transaction = new PacketContainer(PacketType.Play.Server.TRANSACTION);
+            transaction.getShorts().write(0, current);
+            SpartanBukkit.transferTask(
+                    player,
+                    () -> ProtocolLibrary.getProtocolManager().sendServerPacket(player, transaction)
+            );
         }
     }
 
-    public static void sendTransaction(Player player) {
-        ProtocolManager p = ProtocolLibrary.getProtocolManager();
-        PacketContainer transaction;
-
-        if (isModernVersion) {
-            ping.put(player, player.getPing());
-            SpartanBukkit.runDelayedTask(() -> sendTransaction(player), 500);
-        } else {
-            delay.put(player, System.currentTimeMillis());
-            transaction = new PacketContainer(PacketType.Play.Server.TRANSACTION);
-            transaction.getShorts().write(0, id.get(player));
-            SpartanBukkit.transferTask(player, () -> p.sendServerPacket(player, transaction));
-        }
-    }
-
-    public static void initializeTransaction(Player player) {
-        id.put(player, (short) 1488);
-        ping.put(player, 0);
-        sendTransaction(player);
-    }
-
-    public static Integer getTransactionDelay(Player player) {
-        return ping.get(player);
-    }
 }

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,7 +18,7 @@ public class DataProcessor implements Listener {
         Register.enable(new DataProcessor(), DataProcessor.class);
     }
 
-    static final Map<UUID, KeepSprint> keepSprint = new LinkedHashMap<>();
+    static final Map<UUID, KeepSprint> keepSprint = new OverflowMap<>(new LinkedHashMap<>(), 1_000);
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Death(EntityDeathEvent event) {

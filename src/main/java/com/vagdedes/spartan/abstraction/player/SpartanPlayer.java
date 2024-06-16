@@ -755,6 +755,9 @@ public class SpartanPlayer {
     // Separator
 
     public int getPing() {
-        return Latency.ping(this.getInstance());
+        return Math.max(
+                Latency.ping(this.getInstance()),
+                this.protocol.getPing()
+        );
     }
 }

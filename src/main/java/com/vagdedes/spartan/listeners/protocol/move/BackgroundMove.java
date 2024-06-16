@@ -20,7 +20,7 @@ public class BackgroundMove {
             protocol.setOnLoadStatus(false);
         } else if (!invalidTeleport(protocol.getLocation())
                 || (invalidTeleport(protocol.getLocation()) && !protocol.isOnLoadStatus())) {
-            StratoCache.pushNewMovement(player.getEntityId(), player, protocol.getLocation());
+            StratoCache.add(player.getEntityId(), player, protocol.getLocation());
         }
     }
 

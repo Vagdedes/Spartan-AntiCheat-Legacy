@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.async.StratoCache;
-import com.vagdedes.spartan.listeners.protocol.async.transactions.SendTransaction;
 
 public class HitTime extends DetectionExecutor {
 
@@ -27,7 +26,7 @@ public class HitTime extends DetectionExecutor {
         int deviance = (int) Math.abs(hitTime - oldHitTiming);
         devianceTotal += deviance;
         packets += 1;
-        if (player.getPing() > 1000 || SendTransaction.getTransactionDelay(player.getInstance()) > 1000) return;
+        if (player.getPing() > 1_000) return;
         if (deviance < 5 && deviance != 0) lowPackets++;
         if (hitTime == 0) {
             nullPacket = 2;
