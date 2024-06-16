@@ -1,4 +1,3 @@
-
 [+] Spartan now optionally works with Packets. You need ProtocolLib for this.
 [+] KillAura MoveDirection detection with the heuristics:
  - basic
@@ -14,7 +13,7 @@
 [+] Rewritten Criticals check
 [+] Rewritten Velocity check (ProtocolLib Only)
 [+] Rewritten HitReach check (Covers 3.01+ Distance) (ProtocolLib Only)
-[+] Killaura HitTime detection (ProtocolLib Only)
+[+] KillAura HitTime detection (ProtocolLib Only)
 [#] Fixed many false positives caused by several checks.
 [#] Improved detection information in the KillAura & HitReach checks.
 
