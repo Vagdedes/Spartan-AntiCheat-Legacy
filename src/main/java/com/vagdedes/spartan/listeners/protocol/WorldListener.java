@@ -19,8 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldListener extends PacketAdapter {
 
-    private static final Map<UUID, Map<Integer,
-            StructureModifier<WrappedLevelChunkData.ChunkData>>>
+    private static final Map<UUID, Map<Integer, StructureModifier<WrappedLevelChunkData.ChunkData>>>
             chunkContainer = new ConcurrentHashMap<>();
 
     public WorldListener() {
@@ -28,7 +27,8 @@ public class WorldListener extends PacketAdapter {
                 Register.plugin,
                 ListenerPriority.HIGHEST,
                 PacketType.Play.Server.MAP_CHUNK,
-                PacketType.Play.Server.CHUNK_BATCH_START, PacketType.Play.Server.UNLOAD_CHUNK
+                PacketType.Play.Server.CHUNK_BATCH_START,
+                PacketType.Play.Server.UNLOAD_CHUNK
         );
     }
 
