@@ -33,7 +33,7 @@ public class Event_Combat implements Listener {
 
         if (damager instanceof Player) {
             boolean entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) damager);
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) damager).spartanPlayer;
 
             if (p != null) {
                 // Object
@@ -45,7 +45,7 @@ public class Event_Combat implements Listener {
 
                     if (entityIsPlayer || entity instanceof LivingEntity) {
                         if (entityIsPlayer && !e.isCancelled()) {
-                            SpartanPlayer target = SpartanBukkit.getPlayer((Player) entity);
+                            SpartanPlayer target = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
 
                             if (target != null) {
                                 p.getProfile().playerCombat.getFight(target).update(p);
@@ -78,7 +78,7 @@ public class Event_Combat implements Listener {
         }
 
         if (entityIsPlayer) {
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) entity);
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
 
             if (p == null) {
                 return;
@@ -98,7 +98,7 @@ public class Event_Combat implements Listener {
             if (passengers.length > 0) {
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
-                        SpartanPlayer p = SpartanBukkit.getPlayer((Player) passenger);
+                        SpartanPlayer p = SpartanBukkit.getProtocol((Player) passenger).spartanPlayer;
 
                         if (p != null) {
                             // Objects
@@ -116,7 +116,7 @@ public class Event_Combat implements Listener {
 
         if (entity instanceof Player) {
             Player n = (Player) entity;
-            SpartanPlayer p = SpartanBukkit.getPlayer(n);
+            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
             if (p == null) {
                 return;
@@ -132,7 +132,7 @@ public class Event_Combat implements Listener {
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
                         Player n = (Player) passenger;
-                        SpartanPlayer p = SpartanBukkit.getPlayer(n);
+                        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
                         if (p != null) {
                             // Objects
@@ -149,7 +149,7 @@ public class Event_Combat implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) e.getEntity());
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) e.getEntity()).spartanPlayer;
 
             if (p == null) {
                 return;

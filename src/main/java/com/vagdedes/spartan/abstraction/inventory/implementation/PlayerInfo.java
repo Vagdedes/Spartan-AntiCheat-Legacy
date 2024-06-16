@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
@@ -44,10 +45,10 @@ public class PlayerInfo extends InventoryMenu {
     @Override
     public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
         boolean back = !permissionMessage;
-        SpartanPlayer target = SpartanBukkit.getPlayer(object.toString());
+        SpartanProtocol target = SpartanBukkit.getProtocol(object.toString());
         boolean isOnline = target != null;
         PlayerProfile profile = isOnline
-                ? target.getProfile()
+                ? target.spartanPlayer.getProfile()
                 : ResearchEngine.getPlayerProfileAdvanced(object.toString(), true);
 
         if (profile == null) {
@@ -62,7 +63,7 @@ public class PlayerInfo extends InventoryMenu {
             List<String> lore = new ArrayList<>(20);
             int i = 19;
 
-            setTitle(player, menu + (isOnline ? target.name : profile.getName()));
+            setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
 
             InventoryUtils.prepareDescription(
                     lore,
@@ -80,9 +81,9 @@ public class PlayerInfo extends InventoryMenu {
             lore.add("§7Kicks§8:§c " + punishmentHistory.getKicks());
 
             if (isOnline) {
-                lore.add("§7CPS (Clicks Per Second)§8:§c " + target.clicks.getCount());
+                lore.add("§7CPS (Clicks Per Second)§8:§c " + target.spartanPlayer.clicks.getCount());
                 lore.add("§7Latency§8:§c " + target.getPing() + "ms");
-                lore.add("§7Edition§8:§c " + target.dataType);
+                lore.add("§7Edition§8:§c " + target.spartanPlayer.dataType);
                 lore.add("");
                 lore.add("§eLeft click to reset the player's live violations.");
             } else {
@@ -96,12 +97,13 @@ public class PlayerInfo extends InventoryMenu {
                     profile.getSkull(true),
                     4
             );
+            SpartanPlayer sp = isOnline ? target.spartanPlayer : null;
 
             for (Enums.HackCategoryType checkType : Enums.HackCategoryType.values()) {
                 if (checkType == Enums.HackCategoryType.EXPLOITS) {
-                    addCheck(HackType.Exploits, 24, isOnline, target, profile, lore);
+                    addCheck(HackType.Exploits, 24, isOnline, sp, profile, lore);
                 } else {
-                    addChecks(i, isOnline, target, profile, lore, checkType);
+                    addChecks(i, isOnline, sp, profile, lore, checkType);
                     i++;
                 }
             }
@@ -291,13 +293,13 @@ public class PlayerInfo extends InventoryMenu {
             if (!Permissions.has(player, Permission.MANAGE)) {
                 player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
             } else {
-                SpartanPlayer t = SpartanBukkit.getPlayer(playerName);
+                SpartanProtocol t = SpartanBukkit.getProtocol(playerName);
 
                 if (t != null && clickType.isLeftClick()) {
                     for (HackType hackType : Enums.HackType.values()) {
-                        t.getViolations(hackType).reset();
+                        t.spartanPlayer.getViolations(hackType).reset();
                     }
-                    String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.name);
+                    String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.spartanPlayer.name);
                     player.sendMessage(message);
                 } else {
                     String name = Bukkit.getOfflinePlayer(playerName).getName();

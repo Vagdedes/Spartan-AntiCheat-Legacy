@@ -9,6 +9,7 @@ import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -234,15 +235,15 @@ public class ResearchEngine {
 
     public static void resetData(String playerName) {
         // Clear Violations
-        SpartanPlayer p = SpartanBukkit.getPlayer(playerName);
+        SpartanProtocol p = SpartanBukkit.getProtocol(playerName);
         boolean foundPlayer = p != null;
         PlayerProfile profile;
 
         if (foundPlayer) {
-            profile = p.getProfile();
+            profile = p.spartanPlayer.getProfile();
 
             for (Enums.HackType hackType : Enums.HackType.values()) {
-                p.getViolations(hackType).reset();
+                p.spartanPlayer.getViolations(hackType).reset();
             }
         } else {
             profile = getPlayerProfile(playerName);
@@ -256,7 +257,7 @@ public class ResearchEngine {
                     playerProfiles.remove(playerName);
                 }
                 if (foundPlayer) {
-                    p.setProfile(getPlayerProfile(p));
+                    p.spartanPlayer.setProfile(getPlayerProfile(p.spartanPlayer));
                 }
                 if (Config.sql.isEnabled()) {
                     Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
@@ -286,7 +287,7 @@ public class ResearchEngine {
                 playerProfiles.remove(playerName);
             }
             if (foundPlayer) {
-                p.setProfile(getPlayerProfile(p));
+                p.spartanPlayer.setProfile(getPlayerProfile(p.spartanPlayer));
             }
         }
         MainMenu.refresh();

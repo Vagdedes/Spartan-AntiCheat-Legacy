@@ -15,8 +15,6 @@ public class LagCompensation {
 
     private static final Map<Integer, LinkedList<Location>> cache =
             new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
-    private static final Map<Integer, Player> cachePlayer =
-            new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
     private static final Map<Integer, Long> lastPacket =
             new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
     private static final Map<Integer, List<Integer>> delays =
@@ -26,16 +24,11 @@ public class LagCompensation {
         return cache;
     }
 
-    public static Player getPlayerByID(int id) {
-        return cachePlayer.get(id);
-    }
-
     public static void add(int id, Player player, Location location) {
         cache.computeIfAbsent(
                 id,
                 k -> new LinkedList<>()
         ).addFirst(location);
-        cachePlayer.put(id, player);
         List<Integer> delaysList = delays.computeIfAbsent(
                 id,
                 k -> new LinkedList<>()

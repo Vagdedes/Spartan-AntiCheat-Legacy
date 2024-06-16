@@ -271,7 +271,7 @@ public class RayUtils {
     }
 
     public static float bruteforceRayTrace(Player player, Entity target) {
-        SpartanPlayer spartanPlayer = SpartanBukkit.getPlayer(player);
+        SpartanPlayer spartanPlayer = SpartanBukkit.getProtocol(player).spartanPlayer;
         float bruteForce = 0.01F,
                 bruteForceStart = 0.01F;
         boolean checked = false;

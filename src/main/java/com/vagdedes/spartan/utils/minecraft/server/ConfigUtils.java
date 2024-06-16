@@ -100,7 +100,7 @@ public class ConfigUtils {
         message = replace(message, "{uuid}", uuid.toString());
 
         if (off.isOnline()) {
-            SpartanPlayer p = SpartanBukkit.getPlayer((Player) off);
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) off).spartanPlayer;
 
             if (p != null) {
                 SpartanLocation loc = p.movement.getLocation();

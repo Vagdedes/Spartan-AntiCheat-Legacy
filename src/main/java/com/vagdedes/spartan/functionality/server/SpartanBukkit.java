@@ -52,55 +52,6 @@ public class SpartanBukkit {
         }
     }
 
-    public static SpartanPlayer getPlayer(String name) {
-        if (!playerProtocol.isEmpty()) {
-            name = name.toLowerCase();
-
-            synchronized (playerProtocol) {
-                for (SpartanProtocol protocol : playerProtocol.values()) {
-                    if (protocol.spartanPlayer.name.toLowerCase().equals(name)) {
-                        return protocol.spartanPlayer;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static SpartanPlayer getPlayer(UUID uuid) {
-        SpartanProtocol protocol;
-
-        if (isSynchronised()) {
-            Player player = Bukkit.getPlayer(uuid);
-
-            if (player != null) {
-                protocol = getProtocol(player);
-            } else {
-                synchronized (playerProtocol) {
-                    protocol = playerProtocol.get(uuid);
-                }
-            }
-        } else {
-            synchronized (playerProtocol) {
-                protocol = playerProtocol.get(uuid);
-            }
-        }
-        return protocol == null ? null : protocol.spartanPlayer;
-    }
-
-    public static SpartanPlayer getPlayer(Player real) {
-        return getProtocol(real).spartanPlayer;
-    }
-
-    public static SpartanPlayer removePlayer(Player real) {
-        SpartanProtocol protocol;
-
-        synchronized (playerProtocol) {
-            protocol = playerProtocol.remove(real.getUniqueId());
-        }
-        return protocol == null ? null : protocol.spartanPlayer;
-    }
-
     public static int getPlayerCount() {
         return playerProtocol.size();
     }
@@ -168,12 +119,65 @@ public class SpartanBukkit {
         }
     }
 
+    public static SpartanProtocol getProtocol(String name) {
+        if (!playerProtocol.isEmpty()) {
+            name = name.toLowerCase();
+
+            synchronized (playerProtocol) {
+                for (SpartanProtocol protocol : playerProtocol.values()) {
+                    if (protocol.spartanPlayer.name.toLowerCase().equals(name)) {
+                        return protocol;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static SpartanProtocol getProtocol(int entityID) {
+        synchronized (playerProtocol) {
+            for (SpartanProtocol value : playerProtocol.values()) {
+                if (value.player.getEntityId() == entityID) {
+                    return value;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static SpartanProtocol getProtocol(UUID uuid) {
+        SpartanProtocol protocol;
+
+        if (isSynchronised()) {
+            Player player = Bukkit.getPlayer(uuid);
+
+            if (player != null) {
+                protocol = getProtocol(player);
+            } else {
+                synchronized (playerProtocol) {
+                    protocol = playerProtocol.get(uuid);
+                }
+            }
+        } else {
+            synchronized (playerProtocol) {
+                protocol = playerProtocol.get(uuid);
+            }
+        }
+        return protocol;
+    }
+
     public static void createProtocol(Player player) {
         synchronized (playerProtocol) {
             playerProtocol.put(
                     player.getUniqueId(),
                     new SpartanProtocol(player)
             );
+        }
+    }
+
+    public static SpartanProtocol deleteProtocol(Player real) {
+        synchronized (playerProtocol) {
+            return playerProtocol.remove(real.getUniqueId());
         }
     }
 

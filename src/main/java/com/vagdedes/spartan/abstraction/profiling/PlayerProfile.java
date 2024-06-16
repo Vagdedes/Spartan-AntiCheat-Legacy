@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
@@ -183,9 +184,14 @@ public class PlayerProfile {
     }
 
     public SpartanPlayer getSpartanPlayer() {
-        return uuid != null
-                ? SpartanBukkit.getPlayer(uuid)
-                : SpartanBukkit.getPlayer(name);
+        SpartanProtocol protocol;
+
+        if (uuid != null) {
+            protocol = SpartanBukkit.getProtocol(uuid);
+        } else {
+            protocol = SpartanBukkit.getProtocol(name);
+        }
+        return protocol != null ? protocol.spartanPlayer : null;
     }
 
     public boolean isOnline() {

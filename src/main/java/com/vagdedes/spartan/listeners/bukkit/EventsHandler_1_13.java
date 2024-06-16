@@ -15,7 +15,7 @@ public class EventsHandler_1_13 implements Listener {
 
     @EventHandler
     private void TridentShoot(PlayerRiptideEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Handlers
         TridentUse.run(p);
@@ -29,7 +29,7 @@ public class EventsHandler_1_13 implements Listener {
 
             if (entity instanceof Player) {
                 Player n = (Player) entity;
-                SpartanPlayer p = SpartanBukkit.getPlayer(n);
+                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
                 if (p == null) {
                     return;

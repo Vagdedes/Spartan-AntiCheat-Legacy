@@ -14,7 +14,7 @@ public class MineTinker implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Enter(MTPlayerInteractEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Compatibility.CompatibilityType compatibilityType = Compatibility.CompatibilityType.MINE_TINKER;
 
         if (compatibilityType.isFunctional()) {

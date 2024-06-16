@@ -26,7 +26,7 @@ public class Shared {
             e.setJoinMessage(null);
             return;
         }
-        SpartanPlayer p = SpartanBukkit.getPlayer(n);
+        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
         // System
         PlayerDetectionSlots.add(p);
@@ -55,7 +55,7 @@ public class Shared {
     }
 
     public static void velocity(PlayerVelocityEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Object
         p.addReceivedVelocity(e);
@@ -68,14 +68,14 @@ public class Shared {
     }
 
     public static void stay(PlayerStayEvent e) { // Packets Only
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Detections
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
     }
 
     public static void attack(PlayerAttackEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         boolean cancelled = e.isCancelled();
 
         for (Enums.HackType hackType : Event_Combat.handledChecks) {

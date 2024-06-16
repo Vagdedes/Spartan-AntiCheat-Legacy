@@ -26,7 +26,7 @@ public class Event_Movement implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Move(PlayerMoveEvent e) {
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Location nto = e.getTo();
 
         if (nto == null) {
@@ -77,7 +77,7 @@ public class Event_Movement implements Listener {
         if (nto == null) {
             return;
         }
-        SpartanPlayer p = SpartanBukkit.getPlayer(e.getPlayer());
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Object
         p.movement.judgeGround();
