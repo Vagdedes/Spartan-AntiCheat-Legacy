@@ -77,7 +77,7 @@ public class WorldListener extends PacketAdapter {
     }
 
     public static void handleMapChunkPacket(PacketEvent event, Player player) {
-        byte[] compressedData = event.getPacket().getByteArrays().read(0);
+        byte[] compressedData = event.getPacket().getLevelChunkData().read(0).getBuffer();
         int chunkX = event.getPacket().getIntegers().read(0);
         int chunkZ = event.getPacket().getIntegers().read(1);
         int primaryBitMask = event.getPacket().getIntegers().read(2);
