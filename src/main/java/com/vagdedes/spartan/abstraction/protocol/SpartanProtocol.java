@@ -10,7 +10,7 @@ public class SpartanProtocol {
     public final Player player;
     public final SpartanPlayer spartanPlayer;
     private boolean isOnGround, isSprinting, isSneaking, onLoadStatus;
-    private Location location, from;
+    private final Location location;
     private Vector velocity;
     private long lastTransaction;
     private int ping;
@@ -19,13 +19,12 @@ public class SpartanProtocol {
     public SpartanProtocol(Player player) {
         this.player = player;
         this.isOnGround = false;
-        this.location = new Location(player.getWorld(), 0, 0, 0);
-        this.from = this.location;
+        this.location = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
         this.onLoadStatus = true;
         this.velocity = new Vector(0, 0, 0);
-        this.spartanPlayer = new SpartanPlayer(this, player);
+        this.spartanPlayer = new SpartanPlayer(this);
         this.lastTransaction = Long.MIN_VALUE;
     }
 
@@ -47,10 +46,6 @@ public class SpartanProtocol {
 
     public Location getLocation() {
         return this.location;
-    }
-
-    public Location getFrom() {
-        return this.from;
     }
 
     public Vector getVelocity() {
@@ -85,14 +80,6 @@ public class SpartanProtocol {
 
     public void setOnLoadStatus(boolean onLoadStatus) {
         this.onLoadStatus = onLoadStatus;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public void setFrom(Location from) {
-        this.from = from;
     }
 
     public void setVelocity(Vector velocity) {

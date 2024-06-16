@@ -27,29 +27,30 @@ public class BackgroundMove {
     private static void movePacket(PacketEvent event, SpartanProtocol protocol) {
         PacketContainer packet = event.getPacket();
         PacketType type = event.getPacket().getType();
-        protocol.setFrom(protocol.getLocation());
 
         if (type == PacketType.Play.Client.LOOK) {
-            Location location = protocol.getLocation();
-            location.setYaw(packet.getFloat().read(0));
-            location.setPitch(packet.getFloat().read(1));
-            protocol.setLocation(location);
+            protocol.getLocation().setYaw(packet.getFloat().read(0));
+            protocol.getLocation().setPitch(packet.getFloat().read(1));
+            protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
         } else if (type == PacketType.Play.Client.POSITION_LOOK) {
             Location location = readLocation(event);
-            location.setYaw(packet.getFloat().read(0));
-            location.setPitch(packet.getFloat().read(1));
-            protocol.setLocation(location);
+            protocol.getLocation().setX(location.getX());
+            protocol.getLocation().setY(location.getY());
+            protocol.getLocation().setZ(location.getZ());
+            protocol.getLocation().setYaw(packet.getFloat().read(0));
+            protocol.getLocation().setPitch(packet.getFloat().read(1));
+            protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
         } else if (type == PacketType.Play.Client.POSITION) {
             Location location = readLocation(event);
-            Location iPlayerLocation = protocol.getLocation();
-            location.setYaw(iPlayerLocation.getYaw());
-            location.setPitch(iPlayerLocation.getPitch());
-            protocol.setLocation(location);
+            protocol.getLocation().setX(location.getX());
+            protocol.getLocation().setY(location.getY());
+            protocol.getLocation().setZ(location.getZ());
+            protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
         }
         protocol.setOnGround(onGroundPacketLevel(event));
     }
 
-    public static Location readLocation(PacketEvent event) {
+    private static Location readLocation(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         return new Location(
                 event.getPlayer().getWorld(),

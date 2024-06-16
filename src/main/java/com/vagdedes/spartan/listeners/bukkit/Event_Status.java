@@ -74,7 +74,7 @@ public class Event_Status implements Listener {
             }
         }
         p.resetTrackers();
-        p.movement.setDetectionLocation(true);
+        p.movement.setDetectionLocation();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -82,7 +82,7 @@ public class Event_Status implements Listener {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Objects
-        p.movement.setDetectionLocation(true);
+        p.movement.setDetectionLocation();
 
         // Protections
         p.resetTrackers();

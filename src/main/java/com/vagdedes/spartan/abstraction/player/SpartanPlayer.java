@@ -95,7 +95,6 @@ public class SpartanPlayer {
                         p.trackers.add(Trackers.TrackerType.FLYING, (int) TPS.maximum);
                     }
                     p.playerProfile.playerCombat.track();
-                    p.movement.setDetectionLocation(false);
 
                     // Separator
                     SpartanBukkit.runTask(p, () -> {
@@ -126,7 +125,8 @@ public class SpartanPlayer {
 
     // Object
 
-    public SpartanPlayer(SpartanProtocol protocol, Player p) {
+    public SpartanPlayer(SpartanProtocol protocol) {
+        Player p = protocol.player;
         Enums.HackType[] hackTypes = Enums.HackType.values();
 
         this.protocol = protocol;

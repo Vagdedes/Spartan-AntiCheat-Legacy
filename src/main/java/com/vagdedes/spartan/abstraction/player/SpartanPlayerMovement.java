@@ -312,7 +312,11 @@ public class SpartanPlayerMovement {
         return detectionLocation;
     }
 
-    public void setDetectionLocation(boolean force) {
+    public void setDetectionLocation() {
+        this.setDetectionLocation(true);
+    }
+
+    private void setDetectionLocation(boolean force) {
         SpartanLocation location = this.getLocation();
 
         if (force
@@ -370,16 +374,18 @@ public class SpartanPlayerMovement {
     }
 
     public SpartanLocation getRawLocation() {
-        Location actualLocation = this.getBukkitLocation();
-
-        if (this.location.getX() != actualLocation.getX()
-                || this.location.getY() != actualLocation.getY()
-                || this.location.getZ() != actualLocation.getZ()
-                || this.location.getYaw() != actualLocation.getYaw()
-                || this.location.getPitch() != actualLocation.getPitch()) {
-            this.setLocation(new SpartanLocation(actualLocation), false);
-        }
+        this.refreshLocation(this.getBukkitLocation());
         return location;
+    }
+
+    public void refreshLocation(Location location) {
+        if (this.location.getX() != location.getX()
+                || this.location.getY() != location.getY()
+                || this.location.getZ() != location.getZ()
+                || this.location.getYaw() != location.getYaw()
+                || this.location.getPitch() != location.getPitch()) {
+            this.setLocation(new SpartanLocation(location), false);
+        }
     }
 
     private void setLocation(SpartanLocation location, boolean queue) {
@@ -397,6 +403,7 @@ public class SpartanPlayerMovement {
             this.parent.resetTrackers();
         }
         this.location = location;
+        this.setDetectionLocation(false);
     }
 
     // Separator
