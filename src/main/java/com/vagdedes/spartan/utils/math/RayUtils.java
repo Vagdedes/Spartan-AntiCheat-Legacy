@@ -172,7 +172,7 @@ public class RayUtils {
     }
 
     public static boolean inHitbox(SpartanPlayer player, Entity target, float size) {
-        SpartanLocation location = player.movement.getLocation();
+        SpartanLocation location = player.movement.getRawLocation();
         boolean intersection = false;
         boolean exempt;
 
@@ -204,7 +204,7 @@ public class RayUtils {
         return intersection || exempt;
     }
     public static boolean inHitbox(SpartanPlayer player, Location locationIn, Entity target, float size) {
-        SpartanLocation location = new SpartanLocation(player.protocol.getLocation());
+        SpartanLocation location = player.movement.getRawLocation();
         Location targetLocation = locationIn;
 
         boolean intersection = false;
@@ -236,7 +236,7 @@ public class RayUtils {
     }
 
     private static MovingObjectPosition rayCast(final float yaw, final float pitch, final boolean sneak, final AxisAlignedBB bb, SpartanPlayer player) {
-        SpartanLocation position = player.movement.getLocation();
+        SpartanLocation position = player.movement.getRawLocation();
         double lastX = position.getX(),
                 lastY = position.getY(),
                 lastZ = position.getZ();

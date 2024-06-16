@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
@@ -64,7 +63,7 @@ public class Velocity extends CheckExecutor {
                         veloV = false;
                         if (vl > 300) {
                             cancel("type: vertical, speed-vertical: "
-                                            + vertical + ", sended-vertical: " + verticalSended, 1, from);
+                                    + vertical + ", sended-vertical: " + verticalSended, 1, from);
                         }
                     }
                 } else {
@@ -83,7 +82,7 @@ public class Velocity extends CheckExecutor {
                     vl += 100;
                     if (vl > 300) {
                         cancel("type: horizontal, x: " + x + ", z: " + z
-                                        + ", sended-x: " + xSended + ", sended-z: " + zSended, 1, from);
+                                + ", sended-x: " + xSended + ", sended-z: " + zSended, 1, from);
                     }
                 } else {
                     if (vl > 0) vl -= 25;
@@ -98,13 +97,24 @@ public class Velocity extends CheckExecutor {
         return CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0);
     }
+
     private boolean blockCause(SpartanPlayer player) {
-        Location location = player.protocol.getLocation();
-        if (location.getBlock().getType() != Material.AIR) return true;
+        SpartanLocation location = player.movement.getRawLocation();
+
+        if (location.getBlock().material != Material.AIR) {
+            return true;
+        }
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y = location.getBlockY(); y <= location.getBlockY() + 2; y++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    if (location.getWorld().getBlockAt(x, y, z).getType().isSolid()) {
+                    if (new SpartanLocation(
+                            location.world,
+                            location.getX(),
+                            location.getY(),
+                            location.getZ(),
+                            0.0f,
+                            0.0f
+                    ).getBlock().material.isSolid()) {
                         return true;
                     }
                 }
