@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class StratoCache {
+public class LagCompensation {
 
     private static final Map<Integer, LinkedList<Location>> cache =
             new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
