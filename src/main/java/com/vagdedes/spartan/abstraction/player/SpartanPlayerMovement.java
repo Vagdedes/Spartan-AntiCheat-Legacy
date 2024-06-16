@@ -172,7 +172,7 @@ public class SpartanPlayerMovement {
     public boolean isWalkJumping(double vertical) {
         return !this.isSprinting()
                 && this.getValueOrDefault(this.getEventDistance(), 0.0) > 0.0
-                && this.isJumping(vertical);
+                && this.justJumped(vertical);
     }
 
     public boolean isSneaking() {
