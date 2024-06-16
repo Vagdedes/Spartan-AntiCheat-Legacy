@@ -20,7 +20,7 @@ public class BackgroundMove {
             protocol.setOnLoadStatus(false);
         } else if (!invalidTeleport(protocol.getLocation())
                 || (invalidTeleport(protocol.getLocation()) && !protocol.isOnLoadStatus())) {
-            LagCompensation.add(player.getEntityId(), player, protocol.getLocation());
+            LagCompensation.add(player.getEntityId(), protocol.getLocation());
         }
     }
 

@@ -7,18 +7,13 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SendTransaction extends PacketAdapter {
-
-    private static final short def = 1488;
-    private static final Map<UUID, Short> id = new ConcurrentHashMap<>();
 
     public SendTransaction() {
         super(
@@ -32,19 +27,12 @@ public class SendTransaction extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         Player player = event.getPlayer();
-        short current = id.getOrDefault(player.getUniqueId(), def);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-        if (Objects.equals(packet.getShorts().read(0), current)) {
-            current++;
-
-            if (current > 1500) {
-                id.put(player.getUniqueId(), current = def);
-            } else {
-                id.put(player.getUniqueId(), current);
-            }
-            SpartanBukkit.getProtocol(player).setLastTransaction();
+        if (Objects.equals(packet.getShorts().read(0), protocol.getTransactionID())) {
+            protocol.setLastTransaction();
             PacketContainer transaction = new PacketContainer(PacketType.Play.Server.TRANSACTION);
-            transaction.getShorts().write(0, current);
+            transaction.getShorts().write(0, protocol.increaseTransactionID());
             SpartanBukkit.transferTask(
                     player,
                     () -> ProtocolLibrary.getProtocolManager().sendServerPacket(player, transaction)

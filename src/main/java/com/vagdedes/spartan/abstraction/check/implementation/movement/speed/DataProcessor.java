@@ -22,14 +22,12 @@ public class DataProcessor implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Death(EntityDeathEvent event) {
-        UUID uuid = event.getEntity().getUniqueId();
-        keepSprint.remove(uuid);
+        keepSprint.remove(event.getEntity().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-        keepSprint.remove(uuid);
+        keepSprint.remove(event.getPlayer().getUniqueId());
     }
 
     static KeepSprint getKeepSprint(UUID uuid) {

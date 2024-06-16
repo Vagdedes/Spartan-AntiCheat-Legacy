@@ -14,6 +14,7 @@ public class SpartanProtocol {
     private Vector velocity;
     private long lastTransaction;
     private int ping;
+    private short transactionID;
 
     public SpartanProtocol(Player player) {
         this.player = player;
@@ -60,6 +61,10 @@ public class SpartanProtocol {
         return this.ping;
     }
 
+    public short getTransactionID() {
+        return this.transactionID;
+    }
+
     // Separator
 
     public void setOnGround(boolean isOnGround) {
@@ -99,6 +104,15 @@ public class SpartanProtocol {
             this.ping = (int) (System.currentTimeMillis() - this.lastTransaction);
         }
         this.lastTransaction = System.currentTimeMillis();
+    }
+
+    public short increaseTransactionID() {
+        this.transactionID++;
+
+        if (this.transactionID > 1500) {
+            this.transactionID = 1488;
+        }
+        return this.transactionID;
     }
 
 }

@@ -3,7 +3,6 @@ package com.vagdedes.spartan.listeners.protocol.async;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -24,7 +23,7 @@ public class LagCompensation {
         return cache;
     }
 
-    public static void add(int id, Player player, Location location) {
+    public static void add(int id, Location location) {
         cache.computeIfAbsent(
                 id,
                 k -> new LinkedList<>()
