@@ -80,7 +80,7 @@ public class WorldListener extends PacketAdapter {
         byte[] compressedData = event.getPacket().getLevelChunkData().read(0).getBuffer();
         int chunkX = event.getPacket().getIntegers().read(0);
         int chunkZ = event.getPacket().getIntegers().read(1);
-        int primaryBitMask = event.getPacket().getIntegers().read(2);
+        int primaryBitMask = event.getPacket().getIntegers().read(1);
 
         Inflater inflater = new Inflater();
         inflater.setInput(compressedData);
