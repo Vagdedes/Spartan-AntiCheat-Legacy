@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.listeners.protocol.async;
 
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -10,21 +12,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class StratoCache {
 
-    private StratoCache() {
-        // stub!
-    }
-
-    private static final Map<Integer, LinkedList<Location>> cache = new ConcurrentHashMap<>();
-    private static final Map<Integer, Player> cachePlayer = new ConcurrentHashMap<>();
-    private static final Map<Integer, Long> lastPacket = new ConcurrentHashMap<>();
-    private static final Map<Integer, LinkedList<Integer>> delays = new ConcurrentHashMap<>();
+    private static final Map<Integer, LinkedList<Location>> cache = new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
+    private static final Map<Integer, Player> cachePlayer = new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
+    private static final Map<Integer, Long> lastPacket = new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
+    private static final Map<Integer, LinkedList<Integer>> delays = new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
 
     public static Map<Integer, LinkedList<Location>> getCache() {
         return cache;
     }
 
     public static Player getPlayerByID(int id) {
-        return (cachePlayer.getOrDefault(id, null));
+        return cachePlayer.get(id);
     }
 
     public static void commitNewCache(int id) {
@@ -41,6 +39,7 @@ public class StratoCache {
                 - lastPacket.getOrDefault(id, System.currentTimeMillis())));
         lastPacket.put(id, System.currentTimeMillis());
         pushNewPacket(id);
+
         if (delays.getOrDefault(id, new LinkedList<>()).size() >= 10) {
             LinkedList<Integer> l = new LinkedList<>();
             l.add(Collections.max(delays.get(id)) / 2);
@@ -53,14 +52,19 @@ public class StratoCache {
     }
 
     public static Location getLocationWithTickRollback(int id, int ticks) {
-        if (!cache.containsKey(id)) return null;
         LinkedList<Location> locationStack = cache.get(id);
-        if (locationStack.isEmpty()) return null;
-        return locationStack.get((ticks >= locationStack.size()) ? locationStack.size() - 1 : ticks);
+
+        if (locationStack == null || locationStack.isEmpty()) {
+            return null;
+        } else {
+            return locationStack.get((ticks >= locationStack.size()) ? locationStack.size() - 1 : ticks);
+        }
     }
 
     public static int getPlayerTicksDelay(int id) {
-        return delays.containsKey(id) ? Collections.max(delays.get(id)) / 50 : 0;
+        return delays.containsKey(id)
+                ? Collections.max(delays.get(id)) / TPS.tickTimeInteger
+                : 0;
     }
 
 }

@@ -21,16 +21,14 @@ public class SendTransaction extends PacketAdapter {
     private static Map<Player, Short> id = new ConcurrentHashMap<>();
     private static Map<Player, Long> delay = new ConcurrentHashMap<>();
     private static Map<Player, Integer> ping = new ConcurrentHashMap<>();
-    private static boolean isModernVersion;
+    private static final boolean isModernVersion = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
     public SendTransaction() {
         super(
-                        Register.plugin,
-                        ListenerPriority.HIGHEST,
-                        PacketType.Play.Client.TRANSACTION
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.TRANSACTION
         );
-
-        isModernVersion = (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17));
     }
 
     @Override

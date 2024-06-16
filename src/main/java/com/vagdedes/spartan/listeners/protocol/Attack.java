@@ -15,9 +15,9 @@ public class Attack extends PacketAdapter {
 
     public Attack() {
         super(
-                        Register.plugin,
-                        ListenerPriority.HIGHEST,
-                        PacketType.Play.Client.USE_ENTITY
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.USE_ENTITY
         );
     }
 
@@ -26,14 +26,16 @@ public class Attack extends PacketAdapter {
         Player player = event.getPlayer();
         PacketContainer packet = event.getPacket();
         int id = packet.getIntegers().read(0);
+
         if (packet.getEnumEntityUseActions().read(0).getAction() == EnumWrappers.EntityUseAction.ATTACK) {
             if (StratoCache.getPlayerByID(id) != null) {
                 Shared.attack(
-                                new PlayerAttackEvent(
-                                                player,
-                                                StratoCache.getPlayerByID(id),
-                                                false
-                                ));
+                        new PlayerAttackEvent(
+                                player,
+                                StratoCache.getPlayerByID(id),
+                                false
+                        )
+                );
             }
         }
     }

@@ -18,7 +18,7 @@ public class DetectionNotifications {
     public static final int defaultFrequency = Integer.MIN_VALUE;
 
     private static final Map<UUID, Integer> notifications = Collections.synchronizedMap(
-            new LinkedHashMap<>(Config.getMaxPlayers())
+            new LinkedHashMap<>()
     );
 
     public static List<SpartanPlayer> getPlayers(boolean all) {

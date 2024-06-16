@@ -39,7 +39,7 @@ public class ResearchEngine {
     public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.JAVA, Enums.DataType.BEDROCK};
 
     private static final Map<String, PlayerProfile> playerProfiles
-            = Collections.synchronizedMap(new LinkedHashMap<>(Config.getMaxPlayers()));
+            = Collections.synchronizedMap(new LinkedHashMap<>());
     private static final Map<MiningHistory.MiningOre, Double> averageMining = new LinkedHashMap<>(MiningHistory.MiningOre.values().length);
     private static final double[] defaultAverageMining = new double[MiningHistory.MiningOre.values().length];
 
