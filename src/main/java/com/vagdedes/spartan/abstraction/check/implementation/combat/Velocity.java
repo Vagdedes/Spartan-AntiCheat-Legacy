@@ -56,7 +56,7 @@ public class Velocity extends CheckExecutor {
                     veloV = false;
                     return;
                 }
-                if (vertical != verticalSended) {
+                if (verticalSended != vertical) {
                     arrayV++;
                     if (arrayV > 2) {
                         vl += 100;
@@ -77,7 +77,7 @@ public class Velocity extends CheckExecutor {
                     veloH = false;
                     return;
                 }
-                double decreace = player.protocol.isSprinting() ? 2.35 : 1.325;
+                double decreace = player.protocol.isSprinting() ? 2.5 : 1.5;
                 if (x < xSended / decreace && z < zSended / decreace) {
                     vl += 100;
                     if (vl > 300) {
