@@ -10,6 +10,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.WorldListener;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -230,7 +231,7 @@ public class Speed extends CheckExecutor {
             return;
         }
         if (speedEffect != null) {
-            double increaceValue = (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.1D;
+            double increaceValue = (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.15D;
             if (multiply < increaceValue) multiply = increaceValue;
         }
         if (glideEffect != null || levitationEffect != null) {
