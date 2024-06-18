@@ -174,6 +174,7 @@ public class RayUtils {
     public static boolean inHitbox(SpartanPlayer player, Entity target, float size) {
         SpartanLocation location = player.movement.getRawLocation();
         boolean intersection = false;
+        boolean intersection2 = false;
         boolean exempt;
 
         if (target instanceof Player) {
@@ -199,9 +200,10 @@ public class RayUtils {
             );
             // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
             intersection = isIntersection(player, location, intersection, boundingBox);
+            intersection2 = isIntersection(player, player.movement.getEventFromLocation(), intersection2, boundingBox);
             exempt = target.isInsideVehicle() || !(target instanceof Villager || target instanceof Zombie || target instanceof Skeleton || target instanceof Creeper);
         }
-        return intersection || exempt;
+        return intersection || intersection2 || exempt;
     }
     public static boolean inHitbox(SpartanPlayer player, Location locationIn, Entity target, float size) {
         SpartanLocation location = player.movement.getRawLocation();
