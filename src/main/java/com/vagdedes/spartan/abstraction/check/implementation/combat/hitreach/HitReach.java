@@ -66,7 +66,7 @@ public class HitReach extends CheckExecutor {
         }
         double result = globalValue / rayTraceAnalysis.size();
 
-        if (result > (SpartanBukkit.packetsEnabled() ? 0.4 : 0.45)) punish = "simple";
+        if (result > (SpartanBukkit.packetsEnabled() ? 0.43 : 0.5)) punish = "simple";
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             vl += 100;
