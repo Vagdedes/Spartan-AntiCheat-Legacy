@@ -112,7 +112,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 predictions.add(-PlayerUtils.slowFallAcceleration);
             }
             if (climb) {
-                if (vertical == 0.0) {
+                if (vertical == 0.0 && oldVertical == 0.0) {
                     if (!player.isOnGround(to, true)
                             && !player.movement.isSneaking()
                             && player.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
