@@ -43,14 +43,13 @@ public class NoFall extends CheckExecutor {
     public NoFall(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.handleInternal(false, null);
-        this.ignore = true;
     }
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
         this.distance = 0.0;
         this.ignore = true;
-        this.previousFallTick = getFallTicks(previousFallDistance);
+        this.previousFallTick = Integer.MIN_VALUE;
         this.previousFallDistance = player.getInstance().getFallDistance();
     }
 
@@ -80,7 +79,8 @@ public class NoFall extends CheckExecutor {
         double fallDistance = player.getInstance().getFallDistance();
         int fallDistanceTick = getFallTicks(previousFallDistance);
 
-        if (previousFallTick < maxFallTicks
+        if (previousFallTick != Integer.MIN_VALUE
+                && previousFallTick < maxFallTicks
                 && (fallDistance > 0.0 || previousFallDistance > 0.0)) {
             double prediction = (this.previousFallDistance * drag) + (fallDistanceTick * acceleration),
                     difference = Math.abs(fallDistance - prediction),
