@@ -202,7 +202,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                     true
                             );
                         }
-                    } else if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "enter")) {
+                    } else if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "enter")
+                            && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")) {
                         if (knownBox) {
                             double verticalPrediction = oldBox - box,
                                     motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
