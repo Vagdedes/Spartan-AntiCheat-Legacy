@@ -32,9 +32,9 @@ public class HitTime extends DetectionExecutor {
             nullPacket = 2;
         }
         if (nullPacket > 1) {
-            vl += 100;
+            vl += 55;
             if (vl >= 300) {
-                cancel("type: impact user <skill issue>", (vl - 200) / 100D, player.movement.getEventFromLocation());
+                cancel("type: switch", (vl - 200) / 100D, player.movement.getEventFromLocation());
             }
         }
         if (packets >= 5 && LagCompensation.getPlayerTicksDelay(player.getInstance().getEntityId()) < 2) {
