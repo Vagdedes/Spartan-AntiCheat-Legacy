@@ -18,6 +18,7 @@ public class HitReach extends CheckExecutor {
 
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
     private int vl = 0;
+    private int localVl = 0;
 
     public HitReach(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
@@ -34,16 +35,28 @@ public class HitReach extends CheckExecutor {
                 int playerId = event.getPlayer().getEntityId();
                 double bruteforceRayTrace = 0.7;
                 double value;
-                for (int i = 0; i < 5 + LagCompensation.getPlayerTicksDelay(playerId); i++) {
+                for (int i = 0; i < 3 + LagCompensation.getPlayerTicksDelay(playerId); i++) {
                     value = RayUtils.bruteforceRayTraceWithCustomLocation(
                                     player, LagCompensation.getLocationWithTickRollback(targetId, i), target);
                     if (value < bruteforceRayTrace) bruteforceRayTrace = value;
                 }
-                rayTraceAnalysis.addLast(bruteforceRayTrace);
-                if (rayTraceAnalysis.size() >= 10) {
-                    analyze(player.movement.getLocation(), bruteforceRayTrace);
+                if (bruteforceRayTrace > 0.43) {
+                    localVl += 100;
+                    if (localVl > 300) {
+                        cancel(
+                                        "type: hitbox-raytrace, reach: " + (bruteforceRayTrace / 0.4) * 3,
+                                        vl / 100D,
+                                        player.movement.getEventFromLocation()
+                        );
+                    }
+                    localVl -= 60;
+                } else if (localVl > 0) {
+                    localVl -= 60;
                 }
+
+
                 /*
+
                 double d = RayUtils.hitBoxRay(
                                 player.getInstance(), player.movement.getEventToLocation().getBukkitLocation(),
                                 LagCompensation.getLocationWithTickRollback(targetId, 0), 0.8, player.movement.isSneaking());

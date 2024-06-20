@@ -78,9 +78,15 @@ public class Shared {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         boolean cancelled = e.isCancelled();
 
-        for (Enums.HackType hackType : Event_Combat.handledChecks) {
-            p.getExecutor(hackType).handle(cancelled, e);
-        }
+        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
+    }
+    public static void useentity(PlayerAttackEvent e) {
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        boolean cancelled = e.isCancelled();
+
+        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.FastClicks).handle(cancelled, e);
     }
 
 }
