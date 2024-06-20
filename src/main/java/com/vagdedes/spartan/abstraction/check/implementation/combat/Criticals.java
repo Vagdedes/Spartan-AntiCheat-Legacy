@@ -26,6 +26,8 @@ public class Criticals extends CheckExecutor {
         if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
                 && verticalMaxAccuracy > 0
                 && player.movement.getTicksOnAir() == 1
+                        && !player.getWorld().getBlockAt(
+                                        player.movement.getLocation().getBukkitLocation()).getType().isBlock()
                 && !RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0))) {
             cancel("type: packet", 1);
         }

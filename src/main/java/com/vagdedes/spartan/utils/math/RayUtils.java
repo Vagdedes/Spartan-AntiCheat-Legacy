@@ -319,4 +319,44 @@ public class RayUtils {
         }
         return (checked) ? bruteForce : 0.6F;
     }
+
+    public static double hitBoxRay(Player instance, Location player, Location target, double size, boolean sneak) {
+        double d = 0.0;
+        double increment = 0.1;
+        int maxSteps = 60;
+        float yaw = player.getYaw();
+        double yR = Math.toRadians(yaw);
+        RayLine ray = new RayLine(-Math.sin(yR), Math.cos(yR));
+        double eyeHeight = getEyeHeight(sneak, instance);
+
+        for (int i = 0; i < maxSteps; i++) {
+            double newX = player.getX() + ray.x() * d;
+            double newY = player.getY() + eyeHeight - 1;
+            double newZ = player.getZ() + ray.z() * d;
+            Location newLocation = new Location(instance.getWorld(), newX, newY, newZ);
+            if (onBound(newLocation, target, size, 2, size)) {
+                return d;
+            }
+            d += increment;
+        }
+        return d;
+    }
+
+    public static boolean onBound(Location point, Location target, double x, double y, double z) {
+        boolean xB = (point.getX() >= (target.getX() - (x / 2)) && point.getX() <= (target.getX() + (x / 2)));
+        boolean yB = (point.getY() >= (target.getY() - (y / 2)) && point.getY() <= (target.getY() + (y / 2)));
+        boolean zB = (point.getZ() >= (target.getZ() - (z / 2)) && point.getZ() <= (target.getZ() + (z / 2)));
+        return xB && yB && zB;
+    }
+    public static float getEyeHeight(final boolean sneak, Player player) {
+        float f2 = 1.62F;
+
+        if (player.isSleeping()) {
+            f2 = 0.2F;
+        }
+        if (sneak) {
+            f2 -= 0.08F;
+        }
+        return f2;
+    }
 }

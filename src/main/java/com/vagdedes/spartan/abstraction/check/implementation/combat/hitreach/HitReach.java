@@ -43,6 +43,12 @@ public class HitReach extends CheckExecutor {
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(player.movement.getLocation(), bruteforceRayTrace);
                 }
+                /*
+                double d = RayUtils.hitBoxRay(
+                                player.getInstance(), player.movement.getEventToLocation().getBukkitLocation(),
+                                LagCompensation.getLocationWithTickRollback(targetId, 0), 0.8, player.movement.isSneaking());
+
+                 */
             }
         } else {
             if (CombatProcessing.canCheck(player, target)
