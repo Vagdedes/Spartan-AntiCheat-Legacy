@@ -83,7 +83,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 if (vehicle == null) {
                     if (stepCombination.get(hash)) {
                         double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                + (player.trackers.has(Trackers.TrackerType.VEHICLE, "exit") ? 1.0 : 0.0)
+                                + (player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
+                                || player.trackers.has(Trackers.TrackerFamily.VELOCITY)? 1.0 : 0.0)
                                 + GroundUtils.maxPlayerStep;
 
                         if (vertical > limit) {
