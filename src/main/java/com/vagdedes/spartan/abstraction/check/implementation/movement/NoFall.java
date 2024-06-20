@@ -49,7 +49,7 @@ public class NoFall extends CheckExecutor {
     public void handleInternal(boolean cancelled, Object object) {
         this.distance = 0.0;
         this.ignore = true;
-        this.previousFallTick = Integer.MIN_VALUE;
+        this.previousFallTick = Integer.MAX_VALUE;
         this.previousFallDistance = player.getInstance().getFallDistance();
     }
 
@@ -79,8 +79,7 @@ public class NoFall extends CheckExecutor {
         double fallDistance = player.getInstance().getFallDistance();
         int fallDistanceTick = getFallTicks(previousFallDistance);
 
-        if (previousFallTick != Integer.MIN_VALUE
-                && previousFallTick < maxFallTicks
+        if (previousFallTick < maxFallTicks
                 && (fallDistance > 0.0 || previousFallDistance > 0.0)) {
             double prediction = (this.previousFallDistance * drag) + (fallDistanceTick * acceleration),
                     difference = Math.abs(fallDistance - prediction),
@@ -153,6 +152,7 @@ public class NoFall extends CheckExecutor {
     protected boolean canRun() {
         return MovementProcessing.canCheck(player, false, false, false, true)
                 && player.getInstance().getVehicle() == null
+                && !player.isFrozen()
                 && !player.movement.isInVoid()
                 && !player.movement.wasInLiquids()
                 && !player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS)
@@ -165,7 +165,15 @@ public class NoFall extends CheckExecutor {
                 },
                 player.movement.getEventToLocation(),
                 true,
-                BlockUtils.climbable, BlockUtils.liquid)
+                BlockUtils.climbable, BlockUtils.interactive_and_passable, BlockUtils.liquid)
+                && !BlockPatternUtils.isBlockPattern(new double[]{
+                        1,
+                        -1.0,
+                        1
+                },
+                player.movement.getEventToLocation(),
+                true,
+                BlockUtils.interactive_and_passable)
                 && !BlockPatternUtils.isLiquidPattern(new double[]{
                         1,
                         0.0,

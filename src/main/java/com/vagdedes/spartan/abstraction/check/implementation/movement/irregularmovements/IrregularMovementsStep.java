@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
@@ -84,7 +85,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     if (stepCombination.get(hash)) {
                         double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                 + (player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
-                                || player.trackers.has(Trackers.TrackerFamily.VELOCITY)? 1.0 : 0.0)
+                                || player.trackers.has(Trackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + GroundUtils.maxPlayerStep;
 
                         if (vertical > limit) {
@@ -135,7 +136,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 }
             } else {
                 if (vertical > 0.0) {
-                    if (!player.movement.isJumping(vertical)) {
+                    if (!player.movement.isJumping(vertical)
+                            && !BlockUtils.isInteractiveAndPassable(player, player.movement.getEventToLocation().getBlock().material)) {
                         double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                 + PlayerUtils.getJumpMotion(
                                 PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
@@ -226,7 +228,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (!player.isOnGround(player.movement.getEventToLocation(), true)) {
+                        } else if (!player.isOnGround(player.movement.getEventToLocation(), true)
+                                && !BlockUtils.isInteractiveAndPassable(player, player.movement.getEventToLocation().getBlock().material)) {
                             double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                     + player.movement.getAirAcceleration();
 
