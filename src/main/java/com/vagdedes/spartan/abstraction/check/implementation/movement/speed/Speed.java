@@ -455,7 +455,7 @@ public class Speed extends CheckExecutor {
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
-        if (flag != null) cancel(flag, punishMultiply, to);
+        if (flag != null) cancel(flag, punishMultiply, player.movement.getDetectionLocation());
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
         oldWrappedOnFly = wrappedOnFly;
