@@ -35,7 +35,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             boolean levitation = levitationLevel != -1,
                     slowFall = PlayerUtils.slowFall && player.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
                     liquid = player.movement.wasInLiquids(),
-                    climb = canClimb(to) || canClimb(from),
+                    climb = player.isFrozen() || canClimb(to) || canClimb(from),
                     web = BlockPatternUtils.isBlockPattern(
                             new double[][]{
                                     {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
@@ -112,7 +112,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 predictions.add(-PlayerUtils.slowFallAcceleration);
             }
             if (climb) {
-                if (vertical == 0.0) {
+                if (vertical == 0.0 && oldVertical == 0.0) {
                     if (!player.isOnGround(to, true)
                             && !player.movement.isSneaking()
                             && player.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()

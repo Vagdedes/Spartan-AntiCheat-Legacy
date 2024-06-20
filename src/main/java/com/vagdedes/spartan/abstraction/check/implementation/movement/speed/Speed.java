@@ -10,7 +10,6 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.listeners.protocol.WorldListener;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -172,7 +171,9 @@ public class Speed extends CheckExecutor {
         if (to.getY() == oldY && onGround != oldOnGround) groundSwitches++;
         if (to.getY() != oldY) groundSwitches = 0;
         if (groundSwitches > 4) {
-            flag = "type: ground-invalid, onGround: " + onGround;
+            if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")) {
+                flag = "type: ground-invalid, onGround: " + onGround;
+            }
             groundSwitches--;
         }
         if (PlayerUtils.soulSpeed && inventory.getBoots() != null) {
@@ -216,6 +217,7 @@ public class Speed extends CheckExecutor {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
 
                 if (hackType.getCheck().getBooleanOption("check_landing", true)
+                        && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
                         && antiAbuseProcessor > 200) {
                     flag = "type: landing, air: " + oldAir;
                 }
@@ -268,6 +270,7 @@ public class Speed extends CheckExecutor {
             if (horizontal > limit) {
                 antiAbuseProcessor = (int) (antiAbuseProcessor + (60 * horizontal / limit));
                 if (hackType.getCheck().getBooleanOption("check_simulation_air_limit", true)
+                        && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
                         && antiAbuseProcessor > 200) {
                     flag = "type: simulation-air-limit, speed: " + horizontal
                             + ", speed-limit: " + limit + ", air-tick: " + onAir;
@@ -371,6 +374,7 @@ public class Speed extends CheckExecutor {
                     && !ignoreBasicChecks && jumpEffect == null && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 75;
                 if (hackType.getCheck().getBooleanOption("check_landing_end", true)
+                        && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
                         && antiAbuseProcessor > 200) {
                     flag = "type: landing-end, speed: " + vertical
                             + ", air: " + oldWrappedOnFly;
@@ -451,7 +455,7 @@ public class Speed extends CheckExecutor {
         }
         if (flag == null && antiAbuseProcessor > 0)
             antiAbuseProcessor = antiAbuseProcessor - 8;
-        if (flag != null) cancel(flag, punishMultiply, to);
+        if (flag != null) cancel(flag, punishMultiply, player.movement.getDetectionLocation());
         ignoreBasicChecks = false;
         needToCheckAura = (multiply < 2);
         oldWrappedOnFly = wrappedOnFly;
