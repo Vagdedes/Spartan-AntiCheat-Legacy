@@ -19,7 +19,8 @@ public class NoFall extends CheckExecutor {
 
     private static final double
             drag = AlgebraUtils.cut(PlayerUtils.airDrag, 2),
-            acceleration = PlayerUtils.airAcceleration * drag;
+            acceleration = PlayerUtils.airAcceleration * drag,
+            terminalVelocity = PlayerUtils.calculateTerminalVelocity(PlayerUtils.airDrag, PlayerUtils.airAcceleration);
     private static final int maxFallTicks = 1_000;
     private static final Map<Double, Integer> fallTicksLibrary = new LinkedHashMap<>();
 
@@ -86,7 +87,7 @@ public class NoFall extends CheckExecutor {
                     limit = (vertical >= 0.0
                             ? player.movement.getAirAcceleration()
                             : Math.max(0.0 - vertical, player.movement.getAirAcceleration()))
-                            * (player.bedrockPlayer ? 2.0 : 1.0);
+                            * (player.bedrockPlayer ? terminalVelocity : 1.0);
 
             if (difference >= limit
                     && !player.movement.justJumped(vertical)
