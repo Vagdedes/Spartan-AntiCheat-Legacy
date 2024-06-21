@@ -16,6 +16,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -151,6 +152,7 @@ public class Speed extends CheckExecutor {
         if (RayUtils.onBlock(player, to, BlockUtils.ice)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
             if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
+            if (multiplyGround < 0.8 * multiplexSpecify) multiplyGround = 0.8 * multiplexSpecify;
         }
         if (RayUtils.onBlock(player, to, BlockUtils.slime_block)
                 || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.slime_block)) {
@@ -563,26 +565,20 @@ public class Speed extends CheckExecutor {
     }
 
     private boolean slimeBlockCause(SpartanPlayer player, SpartanLocation location) {
-        boolean slime = false,
-                piston = false;
+        boolean slime = false;
         World world = player.getWorld();
 
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y2, z, 0.0f, 0.0f).getBlock();
-
-                    if (BlockUtils.areSlimeBlocks(block.material)
-                            || BlockUtils.arePistons(block.material)) {
-                        piston = true;
-                    }
                     if (BlockUtils.areSlimeBlocks(block.material)) {
                         slime = true;
                     }
                 }
             }
         }
-        return piston && slime;
+        return slime;
     }
 
     private double getMaxSpeedAmplifier() {
