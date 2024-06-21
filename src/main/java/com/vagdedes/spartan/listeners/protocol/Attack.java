@@ -10,7 +10,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import net.mineland.core.api.AsyncScheduler;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -45,7 +44,7 @@ public class Attack extends PacketAdapter {
     }
 
     private void handleUseEntity(PacketEvent event) {
-        AsyncScheduler.run(() -> {
+        SpartanBukkit.packetsThread.execute(() -> {
             Player player = event.getPlayer();
             PacketContainer packet = event.getPacket();
             int entityId = packet.getIntegers().read(0);
@@ -70,7 +69,7 @@ public class Attack extends PacketAdapter {
     }
 
     private void handleEntityDamage(PacketEvent event) {
-        AsyncScheduler.run(() -> {
+        SpartanBukkit.packetsThread.execute(() -> {
             PacketContainer packet = event.getPacket();
             int entityId = packet.getIntegers().read(0);
 

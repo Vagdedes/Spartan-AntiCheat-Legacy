@@ -2,16 +2,16 @@ package com.vagdedes.spartan.compatibility.necessary.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.*;
 import com.vagdedes.spartan.listeners.protocol.async.transactions.SendTransaction;
 import com.vagdedes.spartan.listeners.protocol.move.Move;
 import com.vagdedes.spartan.listeners.protocol.move.Move_Deprecated;
-import net.mineland.core.api.AsyncScheduler;
 
 public class BackgroundProtocolLib {
 
     static void run() {
-        AsyncScheduler.run(() -> {
+        SpartanBukkit.packetsThread.execute(() -> {
             ProtocolManager p = ProtocolLibrary.getProtocolManager();
             p.addPacketListener(new Join());
             p.addPacketListener(new EntityAction());
