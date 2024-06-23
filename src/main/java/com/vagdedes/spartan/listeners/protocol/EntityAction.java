@@ -26,6 +26,7 @@ public class EntityAction extends PacketAdapter {
         AbilitiesEnum type = getEnum(typeString);
 
         if (typeString != null) {
+            protocol.player.sendMessage(typeString);
             if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
                 protocol.setSneaking(true);
             }
@@ -35,7 +36,7 @@ public class EntityAction extends PacketAdapter {
             if (type == AbilitiesEnum.START_SPRINTING) {
                 protocol.setSprinting(true);
             }
-            if (type == AbilitiesEnum.STOP_SNEAKING) {
+            if (type == AbilitiesEnum.STOP_SPRINTING) {
                 protocol.setSprinting(false);
             }
         }
