@@ -34,6 +34,10 @@ public class SpartanLocation {
         return pos >> 4;
     }
 
+    public static boolean isWaterLogged(BlockData blockData) {
+        return blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
+    }
+
     private static int locationIdentifier(int world, int x, int y, int z) {
         world = (SpartanBukkit.hashCodeMultiplier * world) + x;
         world = (SpartanBukkit.hashCodeMultiplier * world) + y;
@@ -255,7 +259,7 @@ public class SpartanLocation {
                         this,
                         blockData.getMaterial(),
                         BlockUtils.isLiquid(block),
-                        blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged()
+                        isWaterLogged(blockData)
                 );
             } else {
                 this.setChunkLoaded();
@@ -298,6 +302,8 @@ public class SpartanLocation {
 
                     if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
                         block[0] = setBlock();
+                    } else if (SpartanBukkit.packetsEnabled()) {
+
                     } else {
                         Thread thread = Thread.currentThread();
 
