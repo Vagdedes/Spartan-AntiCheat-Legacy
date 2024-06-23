@@ -8,7 +8,6 @@ import com.vagdedes.spartan.utils.java.RequestUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -61,13 +60,9 @@ public class JarVerification {
     }
 
     private static boolean isValid(String site, String spigot, String nonce) {
-        PluginDescriptionFile description;
         boolean b = valid
                 && name.equalsIgnoreCase("Spartan")
-                && (description = Register.plugin.getDescription()).getVersion().startsWith("Phase " + description.getVersion().substring(6))
-                && description.getDescription().equals("In the mission to create & maintain the best Minecraft anti-cheat, powered by Machine Learning.")
-                && description.getWebsite().startsWith("https://www.vagdedes.com")
-                && description.getAuthors().toString().equalsIgnoreCase("[Evangelos Dedes @Vagdedes]");
+                && Register.plugin.getDescription().getAuthors().toString().startsWith("[Evangelos Dedes @Vagdedes");
 
         try {
             int number = site.length() - 7;
