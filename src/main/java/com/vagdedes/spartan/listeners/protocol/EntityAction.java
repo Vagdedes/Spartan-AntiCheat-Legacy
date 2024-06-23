@@ -26,17 +26,13 @@ public class EntityAction extends PacketAdapter {
         AbilitiesEnum type = getEnum(typeString);
 
         if (typeString != null) {
-            protocol.player.sendMessage(typeString);
             if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
                 protocol.setSneaking(true);
-            }
-            if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
+            } else if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
                 protocol.setSneaking(false);
-            }
-            if (type == AbilitiesEnum.START_SPRINTING) {
+            } else if (type == AbilitiesEnum.START_SPRINTING) {
                 protocol.setSprinting(true);
-            }
-            if (type == AbilitiesEnum.STOP_SPRINTING) {
+            } else if (type == AbilitiesEnum.STOP_SPRINTING) {
                 protocol.setSprinting(false);
             }
         }
