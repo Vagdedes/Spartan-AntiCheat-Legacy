@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.bukkit.Event_Chunks;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class ProtocolLib {
 
     public static void otherwise() {
         if (SpartanBukkit.packetsForcedState) {
+            Event_Chunks.clear();
             String message = AwarenessNotifications.getOptionalNotification(
                     "Anti-Cheat checks work significantly better with ProtocolLib installed "
                             + "as it allows the use of packets which helps identify information earlier "

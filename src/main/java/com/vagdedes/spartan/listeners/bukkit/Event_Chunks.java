@@ -3,6 +3,7 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.world.SpartanBlockData;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -31,6 +32,10 @@ public class Event_Chunks implements Listener {
 
     private static int hashWorld(World world) {
         return world.getName().hashCode();
+    }
+
+    public static void clear() {
+        map.clear();
     }
 
     public static SpartanBlockData get(World world, int x, int y, int z) {
@@ -90,26 +95,30 @@ public class Event_Chunks implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Load(ChunkLoadEvent e) {
-        Chunk chunk = e.getChunk();
+        if (SpartanBukkit.packetsEnabled()) {
+            Chunk chunk = e.getChunk();
 
-        for (Entity entity : chunk.getEntities()) {
-            if (entity instanceof Player) {
-                cache(chunk);
-                break;
+            for (Entity entity : chunk.getEntities()) {
+                if (entity instanceof Player) {
+                    cache(chunk);
+                    break;
+                }
             }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Unload(ChunkUnloadEvent e) {
-        Chunk chunk = e.getChunk();
-        int worldHash = hashWorld(chunk.getWorld());
-        Map<Long, SpartanBlockData[][][]> subMap = map.get(worldHash);
+        if (SpartanBukkit.packetsEnabled()) {
+            Chunk chunk = e.getChunk();
+            int worldHash = hashWorld(chunk.getWorld());
+            Map<Long, SpartanBlockData[][][]> subMap = map.get(worldHash);
 
-        if (subMap != null
-                && subMap.remove(hashChunk(chunk.getX(), chunk.getZ())) != null
-                && subMap.isEmpty()) {
-            map.remove(worldHash);
+            if (subMap != null
+                    && subMap.remove(hashChunk(chunk.getX(), chunk.getZ())) != null
+                    && subMap.isEmpty()) {
+                map.remove(worldHash);
+            }
         }
     }
 

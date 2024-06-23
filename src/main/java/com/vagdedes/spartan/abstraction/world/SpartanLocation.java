@@ -302,8 +302,8 @@ public class SpartanLocation {
 
                     if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
                         block[0] = setBlock();
-                    } else if (SpartanBukkit.packetsEnabled()) {
-
+                    } else if (false && SpartanBukkit.packetsEnabled()) {
+                        // todo
                     } else {
                         Thread thread = Thread.currentThread();
 
