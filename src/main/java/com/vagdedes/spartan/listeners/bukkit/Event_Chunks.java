@@ -65,14 +65,42 @@ public class Event_Chunks implements Listener {
         return blockDataList[Math.abs(x) % chunkSize][y][Math.abs(z) % chunkSize];
     }
 
-    public static void check(World world, int x, int z) { // todo
-        x = SpartanLocation.getChunkPos(x);
-        z = SpartanLocation.getChunkPos(z);
+    public static void check(World world, int x, int z) {
         Map<Long, SpartanBlockData[][][]> subMap = map.get(hashWorld(world));
 
         if (subMap == null
-                || !subMap.containsKey(hashChunk(x, z))) {
+                || !subMap.containsKey(hashChunk(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)))) {
             cache(world.getChunkAt(x, z));
+        }
+    }
+
+    public static void set(World world, int x, int y, int z, BlockData blockData) { // todo
+        int chunkX = SpartanLocation.getChunkPos(x),
+                chunkZ = SpartanLocation.getChunkPos(z);
+        Map<Long, SpartanBlockData[][][]> subMap = map.get(hashWorld(world));
+
+        if (subMap == null) {
+            cache(world.getChunkAt(x, z));
+        } else {
+            SpartanBlockData[][][] blockDataList = subMap.get(hashChunk(x, z));
+
+            if (blockDataList == null) {
+                cache(world.getChunkAt(x, z));
+            } else {
+                int minHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMinHeight() : 0,
+                        maxHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMaxHeight() : PlayerUtils.height;
+
+                if (minHeight < 0) {
+                    y += Math.abs(minHeight);
+                }
+                if (y >= maxHeight) {
+                    return;
+                }
+                blockDataList[Math.abs(x) % chunkSize][y][Math.abs(z) % chunkSize] = new SpartanBlockData(
+                        blockData.getMaterial(),
+                        SpartanLocation.isWaterLogged(blockData)
+                );
+            }
         }
     }
 
