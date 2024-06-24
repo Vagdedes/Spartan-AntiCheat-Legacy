@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Player;
 
@@ -23,9 +24,13 @@ public class ServerPosition extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        PacketContainer packetContainer = event.getPacket();
         Player player = event.getPlayer();
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+        if (ProtocolLib.isTemporary(player)) {
+            return;
+        }
+        //PacketContainer packetContainer = event.getPacket();
+        //SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
         /*
         if (packetContainer.getType() == PacketType.Play.Server.POSITION) {

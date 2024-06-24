@@ -3,6 +3,7 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
@@ -34,6 +35,10 @@ public class Event_Status implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent e) {
         Player n = e.getPlayer();
+
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
         SpartanProtocol protocol = SpartanBukkit.deleteProtocol(n);
 
         // Features
@@ -52,6 +57,10 @@ public class Event_Status implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Death(PlayerDeathEvent e) {
         Player n = e.getEntity();
+
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
         SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
         // Detections
@@ -79,7 +88,12 @@ public class Event_Status implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Respawn(PlayerRespawnEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        Player n = e.getPlayer();
+
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
+        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
         // Objects
         p.movement.setDetectionLocation();

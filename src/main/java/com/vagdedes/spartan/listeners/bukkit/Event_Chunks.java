@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Event_Chunks implements Listener {
 
+    // todo extend with block place and block break
     private static final Map<Integer, Map<Long, SpartanBlockData[][][]>> map = new ConcurrentHashMap<>();
     private static final int chunkSize = (int) PlayerUtils.chunk;
     private static final SpartanBlockData empty = new SpartanBlockData(Material.AIR, false);
@@ -39,7 +40,9 @@ public class Event_Chunks implements Listener {
     }
 
     public static SpartanBlockData get(World world, int x, int y, int z) {
-        if (y < (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMinHeight() : 0)
+        int minHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMinHeight() : 0;
+
+        if (y < minHeight
                 || y >= (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMaxHeight() : PlayerUtils.height)) {
             return empty;
         }
@@ -51,9 +54,15 @@ public class Event_Chunks implements Listener {
             return empty;
         }
         SpartanBlockData[][][] blockDataList = subMap.get(hashChunk(x, z));
-        return blockDataList == null
-                ? empty
-                : blockDataList[x % chunkSize][y][z % chunkSize];
+
+        if (blockDataList == null || y >= blockDataList[0].length) {
+            return empty;
+        }
+
+        if (minHeight < 0) {
+            y += Math.abs(minHeight);
+        }
+        return blockDataList[Math.abs(x) % chunkSize][y][Math.abs(z) % chunkSize];
     }
 
     public static void check(World world, int x, int z) { // todo
@@ -74,12 +83,21 @@ public class Event_Chunks implements Listener {
                 hashWorld(chunk.getWorld()),
                 k -> new ConcurrentHashMap<>()
         );
-        SpartanBlockData[][][] blockDataList = new SpartanBlockData[chunkSize][PlayerUtils.height][chunkSize];
+        int subtract;
+
+        if (minHeight < 0) {
+            subtract = Math.abs(minHeight);
+            maxHeight += subtract;
+            minHeight = 0;
+        } else {
+            subtract = 0;
+        }
+        SpartanBlockData[][][] blockDataList = new SpartanBlockData[chunkSize][maxHeight][chunkSize];
 
         for (int x = 0; x < chunkSize; x++) {
             for (int z = 0; z < chunkSize; z++) {
                 for (int y = minHeight; y < maxHeight; y++) {
-                    BlockData blockData = chunk.getBlock(x, y, z).getBlockData();
+                    BlockData blockData = chunk.getBlock(x, y - subtract, z).getBlockData();
                     blockDataList[x][y][z] = new SpartanBlockData(
                             blockData.getMaterial(),
                             SpartanLocation.isWaterLogged(blockData)

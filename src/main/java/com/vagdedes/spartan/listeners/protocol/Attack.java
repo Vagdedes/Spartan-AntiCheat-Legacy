@@ -9,6 +9,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Player;
 
@@ -22,10 +23,10 @@ public class Attack extends PacketAdapter {
 
     public Attack() {
         super(
-                        Register.plugin,
-                        ListenerPriority.HIGHEST,
-                        PacketType.Play.Client.USE_ENTITY,
-                        PacketType.Play.Server.DAMAGE_EVENT
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.USE_ENTITY,
+                PacketType.Play.Server.DAMAGE_EVENT
         );
     }
 
@@ -46,22 +47,26 @@ public class Attack extends PacketAdapter {
     private void handleUseEntity(PacketEvent event) {
         SpartanBukkit.packetsThread.execute(() -> {
             Player player = event.getPlayer();
+
+            if (ProtocolLib.isTemporary(player)) {
+                return;
+            }
             PacketContainer packet = event.getPacket();
             int entityId = packet.getIntegers().read(0);
 
             if (packet.getEnumEntityUseActions().read(0).getAction().equals(
-                            EnumWrappers.EntityUseAction.ATTACK
+                    EnumWrappers.EntityUseAction.ATTACK
             )) {
                 SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
 
                 if (protocol != null) {
                     pendingAttacks.put(player.getUniqueId(), entityId);
                     Shared.useEntity(
-                                    new PlayerAttackEvent(
-                                                    player,
-                                                    protocol.player,
-                                                    false
-                                    )
+                            new PlayerAttackEvent(
+                                    player,
+                                    protocol.player,
+                                    false
+                            )
                     );
                 }
             }
@@ -69,6 +74,9 @@ public class Attack extends PacketAdapter {
     }
 
     private void handleEntityDamage(PacketEvent event) {
+        if (ProtocolLib.isTemporary(event.getPlayer())) {
+            return;
+        }
         SpartanBukkit.packetsThread.execute(() -> {
             PacketContainer packet = event.getPacket();
             int entityId = packet.getIntegers().read(0);
@@ -85,11 +93,11 @@ public class Attack extends PacketAdapter {
 
                         if (protocol != null) {
                             Shared.attack(
-                                            new PlayerAttackEvent(
-                                                            attacker,
-                                                            protocol.player,
-                                                            false
-                                            )
+                                    new PlayerAttackEvent(
+                                            attacker,
+                                            protocol.player,
+                                            false
+                                    )
                             );
                         }
                     }

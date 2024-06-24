@@ -3,6 +3,7 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
@@ -20,7 +21,12 @@ public class Event_World implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void BlockBreak(BlockBreakEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        Player n = e.getPlayer();
+
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
+        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
         Block nb = e.getBlock();
         SpartanBlock b = new SpartanBlock(nb);
         boolean cancelled = e.isCancelled();
@@ -47,7 +53,12 @@ public class Event_World implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void BlockPlace(BlockPlaceEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        Player n = e.getPlayer();
+
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
+        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
         Block nb = e.getBlock();
         SpartanBlock b = new SpartanBlock(nb);
         b.removeBlockCache();
@@ -74,7 +85,12 @@ public class Event_World implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Sign(SignChangeEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        Player n = e.getPlayer();
+
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
+        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
         // Detections
         p.getExecutor(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
@@ -88,6 +104,9 @@ public class Event_World implements Listener {
     private void Interact(PlayerInteractEvent e) {
         Player n = e.getPlayer();
 
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
         if (PlayerLimitPerIP.isLimited(n)) {
             e.setCancelled(true);
         } else {

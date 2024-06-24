@@ -4,15 +4,22 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.protocol.Shared;
 import com.vagdedes.spartan.listeners.protocol.async.LagCompensation;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class BackgroundMove {
 
     static void run(PacketEvent event) {
         Player player = event.getPlayer();
+
+        if (ProtocolLib.isTemporary(player)) {
+            return;
+        }
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         movePacket(event, protocol);
 
@@ -30,23 +37,41 @@ public class BackgroundMove {
         PacketType type = event.getPacket().getType();
 
         if (type.equals(PacketType.Play.Client.LOOK)) {
+            Location from = protocol.getLocation().clone();
             protocol.getLocation().setYaw(packet.getFloat().read(0));
             protocol.getLocation().setPitch(packet.getFloat().read(1));
             protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
+            Shared.movement(new PlayerMoveEvent(
+                    event.getPlayer(),
+                    from,
+                    protocol.getLocation()
+            ));
         } else if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
-            Location location = readLocation(event);
+            Location from = protocol.getLocation().clone(),
+                    location = readLocation(event);
             protocol.getLocation().setX(location.getX());
             protocol.getLocation().setY(location.getY());
             protocol.getLocation().setZ(location.getZ());
             protocol.getLocation().setYaw(packet.getFloat().read(0));
             protocol.getLocation().setPitch(packet.getFloat().read(1));
             protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
+            Shared.movement(new PlayerMoveEvent(
+                    event.getPlayer(),
+                    from,
+                    protocol.getLocation()
+            ));
         } else if (type.equals(PacketType.Play.Client.POSITION)) {
-            Location location = readLocation(event);
+            Location from = protocol.getLocation().clone(),
+                    location = readLocation(event);
             protocol.getLocation().setX(location.getX());
             protocol.getLocation().setY(location.getY());
             protocol.getLocation().setZ(location.getZ());
             protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
+            Shared.movement(new PlayerMoveEvent(
+                    event.getPlayer(),
+                    from,
+                    protocol.getLocation()
+            ));
         }
         protocol.setOnGround(onGroundPacketLevel(event));
     }

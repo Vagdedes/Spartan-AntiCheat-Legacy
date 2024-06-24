@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.world;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.bukkit.Event_Chunks;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -275,6 +276,16 @@ public class SpartanLocation {
         }
     }
 
+    private SpartanBlock setAsyncBlock() {
+        SpartanBlockData data = Event_Chunks.get(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
+        return new SpartanBlock(
+                this,
+                data.material,
+                BlockUtils.isLiquid(data.material),
+                data.waterLogged
+        );
+    }
+
     public SpartanBlock getBlock() {
         int blockY = getBlockY();
 
@@ -300,10 +311,10 @@ public class SpartanLocation {
                     SpartanBlock[] block = new SpartanBlock[1];
                     int x = getChunkX(), z = getChunkZ();
 
-                    if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
+                    if (SpartanBukkit.packetsEnabled()) {
+                        block[0] = setAsyncBlock();
+                    } else if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
                         block[0] = setBlock();
-                    } else if (false && SpartanBukkit.packetsEnabled()) {
-                        // todo
                     } else {
                         Thread thread = Thread.currentThread();
 

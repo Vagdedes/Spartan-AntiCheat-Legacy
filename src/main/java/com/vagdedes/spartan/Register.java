@@ -56,12 +56,10 @@ public class Register extends JavaPlugin {
         enable(new Events_Player(), Events_Player.class);
         enable(new Event_Movement(), Event_Movement.class);
         enable(new Event_Shared(), Event_Shared.class);
-        //enable(new Event_Chunks(), Event_Shared.class); todo
+        enable(new Event_Chunks(), Event_Chunks.class);
 
         if (NPCManager.supported) {
             enable(new NPCManager(), NPCManager.class);
-        }
-        if (!MultiVersion.folia) {
         }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             enable(new EventsHandler_1_9(), EventsHandler_1_9.class);

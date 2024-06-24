@@ -1,22 +1,37 @@
 package com.vagdedes.spartan.compatibility.necessary.protocollib;
 
+import com.comphenix.protocol.injector.temporary.TemporaryPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Chunks;
+import com.vagdedes.spartan.utils.java.ReflectionUtils;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public class ProtocolLib {
 
+    private static boolean temporaryClass = false;
+
+    private static void checkClass() {
+        temporaryClass = ReflectionUtils.classExists(
+                "com.comphenix.protocol.injector.temporary.TemporaryPlayer"
+        );
+    }
+
     public static void run() {
+        checkClass();
+
         if (SpartanBukkit.packetsForcedState) {
             BackgroundProtocolLib.run();
         }
     }
 
     public static void otherwise() {
+        checkClass();
+
         if (SpartanBukkit.packetsForcedState) {
             Event_Chunks.clear();
             String message = AwarenessNotifications.getOptionalNotification(
@@ -37,5 +52,9 @@ public class ProtocolLib {
                 }
             }
         }
+    }
+
+    public static boolean isTemporary(Player player) {
+        return temporaryClass && player instanceof TemporaryPlayer;
     }
 }
