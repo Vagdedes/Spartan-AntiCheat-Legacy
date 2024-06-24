@@ -56,7 +56,7 @@ public class Event_Chunks implements Listener {
                 : blockDataList[x % chunkSize][y][z % chunkSize];
     }
 
-    public static void check(World world, int x, int z) {
+    public static void check(World world, int x, int z) { // todo
         x = SpartanLocation.getChunkPos(x);
         z = SpartanLocation.getChunkPos(z);
         Map<Long, SpartanBlockData[][][]> subMap = map.get(hashWorld(world));

@@ -56,7 +56,7 @@ public class Attack extends PacketAdapter {
 
                 if (protocol != null) {
                     pendingAttacks.put(player.getUniqueId(), entityId);
-                    Shared.useentity(
+                    Shared.useEntity(
                                     new PlayerAttackEvent(
                                                     player,
                                                     protocol.player,

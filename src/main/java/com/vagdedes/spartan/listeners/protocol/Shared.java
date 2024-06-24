@@ -80,7 +80,8 @@ public class Shared {
         p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
         p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
     }
-    public static void useentity(PlayerAttackEvent e) {
+
+    public static void useEntity(PlayerAttackEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         boolean cancelled = e.isCancelled();
 

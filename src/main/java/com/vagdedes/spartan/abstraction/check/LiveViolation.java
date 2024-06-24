@@ -397,23 +397,28 @@ public class LiveViolation {
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
                     if (staff.cooldowns.canDo("notification")) {
-                        staff.cooldowns.add(
-                                "notification",
-                                getNotificationTicksCooldown(
-                                        staff,
-                                        player,
-                                        ignoredViolations * TPS.tickTimeInteger
-                                )
+                        int frequency = getNotificationTicksCooldown(
+                                staff,
+                                player,
+                                ignoredViolations
                         );
-                        Player realPlayer = staff.getInstance();
+                        boolean def = frequency < 0;
 
-                        if (realPlayer != null) {
-                            ClickableMessage.sendCommand(
-                                    realPlayer,
-                                    message,
-                                    command,
-                                    command
+                        if (def || playerViolation.level >= frequency) {
+                            staff.cooldowns.add(
+                                    "notification",
+                                    def ? Math.abs(frequency) * TPS.tickTimeInteger : frequency
                             );
+                            Player realPlayer = staff.getInstance();
+
+                            if (realPlayer != null) {
+                                ClickableMessage.sendCommand(
+                                        realPlayer,
+                                        message,
+                                        command,
+                                        command
+                                );
+                            }
                         }
                     }
                 }
@@ -434,7 +439,7 @@ public class LiveViolation {
                 && AlgebraUtils.getHorizontalDistance(staff.movement.getLocation(), detectedPlayer.movement.getLocation()) <= PlayerUtils.chunk) {
             return 0;
         } else {
-            return def;
+            return -def;
         }
     }
 
