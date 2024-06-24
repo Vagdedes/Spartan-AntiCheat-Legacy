@@ -360,14 +360,22 @@ public class SpartanPlayerMovement {
     public SpartanLocation getLocation() {
         SpartanLocation vehicleLocation = getVehicleLocation();
         return vehicleLocation == null
-                ? this.getRawLocation()
+                ? this.getRawLocation(true)
                 : vehicleLocation;
     }
 
-    public SpartanLocation getRawLocation() {
-        this.refreshLocation(this.getBukkitLocation());
+    private SpartanLocation getRawLocation(boolean refresh) {
+        if (refresh) {
+            this.refreshLocation(this.getBukkitLocation());
+        }
         return location;
     }
+
+    public SpartanLocation getRawLocation() {
+        return this.getRawLocation(false);
+    }
+
+    // Separator
 
     public void refreshLocation(Location location) {
         if (this.location.getX() != location.getX()

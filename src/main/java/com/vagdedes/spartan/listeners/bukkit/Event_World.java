@@ -62,11 +62,9 @@ public class Event_World implements Listener {
         SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
         Block nb = e.getBlock();
         Event_Chunks.updateBlock(nb, nb.getBlockData());
-        SpartanBlock b = new SpartanBlock(nb);
-        b.removeBlockCache();
         p.movement.judgeGround();
 
-        if (p.getWorld() != b.getWorld()) {
+        if (p.getWorld() != nb.getWorld()) {
             return;
         }
         boolean cancelled = e.isCancelled();

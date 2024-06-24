@@ -1272,7 +1272,8 @@ public class BlockUtils {
     }
 
     public static boolean isWaterLogged(BlockData blockData) {
-        return blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                && blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
     }
 
     public static boolean isLiquid(Material m) {

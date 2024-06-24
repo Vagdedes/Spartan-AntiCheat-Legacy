@@ -119,8 +119,8 @@ public class Shared {
         if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
             return;
         }
-
         if (true) {
+            //p.sendMessage(to.getBlock().material.toString());
             return;
         }
         MovementProcessing.run(p, to, ver, box);

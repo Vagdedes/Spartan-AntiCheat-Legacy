@@ -51,10 +51,6 @@ public class SpartanBlock {
         return TPS.getTick(this.location) - this.tick;
     }
 
-    public void removeBlockCache() {
-        SpartanLocation.memory.remove(this.location.identifier);
-    }
-
     public World getWorld() {
         return this.location.world;
     }
