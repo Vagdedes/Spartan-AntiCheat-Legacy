@@ -11,6 +11,7 @@ import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Attack extends PacketAdapter {
 
-    private final Map<UUID, Integer> pendingAttacks = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> pendingAttacks = new OverflowMap<>(new ConcurrentHashMap<>(), 1_024);
 
     public Attack() {
         super(

@@ -10,11 +10,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LagCompensation {
 
     private static final Map<Integer, LinkedList<Location>> cache =
-            new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
+            new OverflowMap<>(new ConcurrentHashMap<>(), 1_024);
     private static final Map<Integer, Long> lastPacket =
-            new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
+            new OverflowMap<>(new ConcurrentHashMap<>(), 1_024);
     private static final Map<Integer, List<Integer>> delays =
-            new OverflowMap<>(new ConcurrentHashMap<>(), 1_000);
+            new OverflowMap<>(new ConcurrentHashMap<>(), 1_024);
 
     public static Map<Integer, LinkedList<Location>> getCache() {
         return cache;

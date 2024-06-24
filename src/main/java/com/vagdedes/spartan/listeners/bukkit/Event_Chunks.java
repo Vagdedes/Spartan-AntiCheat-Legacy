@@ -277,7 +277,7 @@ public class Event_Chunks implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void WorldUnload(WorldUnloadEvent e) {
         World world = e.getWorld();
         Map<Long, ChunkData> subMap = map.remove(world);

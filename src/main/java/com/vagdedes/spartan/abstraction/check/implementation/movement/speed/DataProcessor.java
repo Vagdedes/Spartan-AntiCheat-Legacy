@@ -18,7 +18,7 @@ public class DataProcessor implements Listener {
         Register.enable(new DataProcessor(), DataProcessor.class);
     }
 
-    static final Map<UUID, KeepSprint> keepSprint = new OverflowMap<>(new LinkedHashMap<>(), 1_000);
+    static final Map<UUID, KeepSprint> keepSprint = new OverflowMap<>(new LinkedHashMap<>(), 1_024);
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Death(EntityDeathEvent event) {
