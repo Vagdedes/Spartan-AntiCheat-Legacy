@@ -120,7 +120,7 @@ public class Shared {
             return;
         }
         if (true) {
-            //p.sendMessage(to.getBlock().material.toString());
+            p.sendMessage(to.getBlock().material.toString());
             return;
         }
         MovementProcessing.run(p, to, ver, box);

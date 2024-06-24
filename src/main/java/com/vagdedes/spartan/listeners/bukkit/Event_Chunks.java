@@ -18,6 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -103,10 +104,8 @@ public class Event_Chunks implements Listener {
                     if (!players.isEmpty()) {
                         for (SpartanPlayer player : players) {
                             SpartanLocation location = player.movement.getRawLocation();
-                            int chunkX = location.getChunkX(),
-                                    chunkZ = location.getChunkZ();
 
-                            if (isLoaded(location.world, chunkX, chunkZ)) {
+                            if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())) {
                                 cache(location.getBukkitLocation().getChunk(), true);
                             }
                         }
@@ -252,7 +251,7 @@ public class Event_Chunks implements Listener {
     // Separator
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Load(ChunkLoadEvent e) {
+    private void ChunkLoad(ChunkLoadEvent e) {
         Chunk chunk = e.getChunk();
         loaded.put(totalHash(chunk.getWorld(), chunk.getX(), chunk.getZ()), true);
 
@@ -262,7 +261,7 @@ public class Event_Chunks implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Unload(ChunkUnloadEvent e) {
+    private void ChunkUnload(ChunkUnloadEvent e) {
         Chunk chunk = e.getChunk();
         loaded.remove(totalHash(chunk.getWorld(), chunk.getX(), chunk.getZ()));
 
@@ -275,6 +274,19 @@ public class Event_Chunks implements Listener {
                     && subMap.isEmpty()) {
                 map.remove(world);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void WorldUnload(WorldUnloadEvent e) {
+        World world = e.getWorld();
+        Map<Long, ChunkData> subMap = map.remove(world);
+
+        for (ChunkData data : subMap.values()) {
+            loaded.remove(totalHash(world, data.x, data.z));
+        }
+        for (Chunk chunk : world.getLoadedChunks()) {
+            loaded.remove(totalHash(world, chunk.getX(), chunk.getZ()));
         }
     }
 
