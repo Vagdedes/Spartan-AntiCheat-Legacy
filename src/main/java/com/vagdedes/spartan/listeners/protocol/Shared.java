@@ -119,11 +119,12 @@ public class Shared {
         if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
             return;
         }
-        MovementProcessing.run(p, to, ver, box);
 
         if (true) {
             return;
         }
+        MovementProcessing.run(p, to, ver, box);
+
         for (Enums.HackType hackType : Event_Movement.handledChecks) {
             if (p.getViolations(hackType).prevent()) {
                 break;

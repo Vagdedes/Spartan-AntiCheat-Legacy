@@ -10,14 +10,12 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3D;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3F;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Waterlogged;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -25,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanLocation {
 
-    private static final Map<Integer, Boolean> loadedChunk = new ConcurrentHashMap<>();
     static final Map<Integer, SpartanBlock> memory = new ConcurrentHashMap<>();
     private static final boolean
             v_1_13 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
@@ -35,18 +32,10 @@ public class SpartanLocation {
         return pos >> 4;
     }
 
-    public static boolean isWaterLogged(BlockData blockData) {
-        return blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
-    }
-
     private static int locationIdentifier(int world, int x, int y, int z) {
         world = (SpartanBukkit.hashCodeMultiplier * world) + x;
         world = (SpartanBukkit.hashCodeMultiplier * world) + y;
         return (SpartanBukkit.hashCodeMultiplier * world) + z;
-    }
-
-    static {
-        SpartanBukkit.runRepeatingTask(loadedChunk::clear, 1L, 1L);
     }
 
     // Object
@@ -255,15 +244,13 @@ public class SpartanLocation {
         if (block != null) {
             if (SpartanLocation.v_1_13) {
                 BlockData blockData = block.getBlockData();
-                this.setChunkLoaded();
                 return new SpartanBlock(
                         this,
                         blockData.getMaterial(),
                         BlockUtils.isLiquid(block),
-                        isWaterLogged(blockData)
+                        BlockUtils.isWaterLogged(blockData)
                 );
             } else {
-                this.setChunkLoaded();
                 return new SpartanBlock(
                         this,
                         block.getType(),
@@ -311,10 +298,10 @@ public class SpartanLocation {
                     SpartanBlock[] block = new SpartanBlock[1];
                     int x = getChunkX(), z = getChunkZ();
 
-                    if (SpartanBukkit.packetsEnabled()) {
-                        block[0] = setAsyncBlock();
-                    } else if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
+                    if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
                         block[0] = setBlock();
+                    } else if (SpartanBukkit.packetsEnabled()) {
+                        block[0] = setAsyncBlock();
                     } else {
                         Thread thread = Thread.currentThread();
 
@@ -351,32 +338,11 @@ public class SpartanLocation {
     }
 
     private boolean isChunkLoaded(int x, int z) {
-        int hash = (x * SpartanBukkit.hashCodeMultiplier) + z;
-        Boolean cache = loadedChunk.get(hash);
-
-        if (cache != null) {
-            return cache;
-        } else {
-            for (Chunk chunk : this.world.getLoadedChunks()) {
-                if (chunk.getX() == x && chunk.getZ() == z) {
-                    loadedChunk.put(hash, true);
-                    return true;
-                }
-            }
-            loadedChunk.put(hash, false);
-            return false;
-        }
+        return Event_Chunks.isLoaded(this.world, x, z);
     }
 
     public boolean isChunkLoaded() {
         return isChunkLoaded(getChunkX(), getChunkZ());
-    }
-
-    private void setChunkLoaded() {
-        loadedChunk.put(
-                (getChunkX() * SpartanBukkit.hashCodeMultiplier) + getChunkZ(),
-                true
-        );
     }
 
     public SpartanLocation getBlockLocation() {

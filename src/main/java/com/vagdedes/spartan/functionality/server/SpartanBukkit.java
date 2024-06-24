@@ -20,8 +20,6 @@ import java.util.*;
 public class SpartanBukkit {
 
     public static final boolean
-            // Change it when testing and put it to false if not ready for production
-            // before pushing on the repository
             packetsForcedState = true,
             testMode = !JarVerification.enabled && !CloudBase.hasToken()
                     && !IDs.isBuiltByBit() && !IDs.isPolymart()
@@ -31,6 +29,7 @@ public class SpartanBukkit {
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
             packetsThread = packetsForcedState ? new Threads.ThreadPool(1L) : null,
+            chunksThread = packetsForcedState ? new Threads.ThreadPool(1L) : null,
             dataThread = new Threads.ThreadPool(1L),
             analysisThread = new Threads.ThreadPool(1L);
 

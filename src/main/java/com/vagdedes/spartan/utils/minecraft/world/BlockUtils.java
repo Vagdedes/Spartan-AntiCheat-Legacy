@@ -7,6 +7,8 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
@@ -1267,6 +1269,10 @@ public class BlockUtils {
 
     public static boolean isLiquid(Block block) {
         return isLiquid(block.getType()) || block.isLiquid();
+    }
+
+    public static boolean isWaterLogged(BlockData blockData) {
+        return blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
     }
 
     public static boolean isLiquid(Material m) {

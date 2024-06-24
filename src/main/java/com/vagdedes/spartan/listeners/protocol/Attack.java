@@ -45,66 +45,63 @@ public class Attack extends PacketAdapter {
     }
 
     private void handleUseEntity(PacketEvent event) {
-        SpartanBukkit.packetsThread.execute(() -> {
-            Player player = event.getPlayer();
+        Player player = event.getPlayer();
 
-            if (ProtocolLib.isTemporary(player)) {
-                return;
+        if (ProtocolLib.isTemporary(player)) {
+            return;
+        }
+        PacketContainer packet = event.getPacket();
+        int entityId = packet.getIntegers().read(0);
+
+        if (packet.getEnumEntityUseActions().read(0).getAction().equals(
+                EnumWrappers.EntityUseAction.ATTACK
+        )) {
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
+
+            if (protocol != null) {
+                pendingAttacks.put(player.getUniqueId(), entityId);
+                Shared.useEntity(
+                        new PlayerAttackEvent(
+                                player,
+                                protocol.player,
+                                false
+                        )
+                );
             }
-            PacketContainer packet = event.getPacket();
-            int entityId = packet.getIntegers().read(0);
-
-            if (packet.getEnumEntityUseActions().read(0).getAction().equals(
-                    EnumWrappers.EntityUseAction.ATTACK
-            )) {
-                SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
-
-                if (protocol != null) {
-                    pendingAttacks.put(player.getUniqueId(), entityId);
-                    Shared.useEntity(
-                            new PlayerAttackEvent(
-                                    player,
-                                    protocol.player,
-                                    false
-                            )
-                    );
-                }
-            }
-        });
+        }
     }
 
     private void handleEntityDamage(PacketEvent event) {
         if (ProtocolLib.isTemporary(event.getPlayer())) {
             return;
         }
-        SpartanBukkit.packetsThread.execute(() -> {
-            PacketContainer packet = event.getPacket();
-            int entityId = packet.getIntegers().read(0);
+        PacketContainer packet = event.getPacket();
+        int entityId = packet.getIntegers().read(0);
 
-            pendingAttacks.entrySet().removeIf(entry -> {
-                UUID playerUUID = entry.getKey();
-                int pendingEntityId = entry.getValue();
+        pendingAttacks.entrySet().removeIf(entry -> {
+            UUID playerUUID = entry.getKey();
+            int pendingEntityId = entry.getValue();
 
-                if (pendingEntityId == entityId) {
-                    Player attacker = plugin.getServer().getPlayer(playerUUID);
+            if (pendingEntityId == entityId) {
+                Player attacker = plugin.getServer().getPlayer(playerUUID);
 
-                    if (attacker != null) {
-                        SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
+                if (attacker != null) {
+                    SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
 
-                        if (protocol != null) {
-                            Shared.attack(
-                                    new PlayerAttackEvent(
-                                            attacker,
-                                            protocol.player,
-                                            false
-                                    )
-                            );
-                        }
+                    if (protocol != null) {
+                        Shared.attack(
+                                new PlayerAttackEvent(
+                                        attacker,
+                                        protocol.player,
+                                        false
+                                )
+                        );
                     }
-                    return true;
                 }
-                return false;
-            });
+                return true;
+            }
+            return false;
         });
     }
+
 }
