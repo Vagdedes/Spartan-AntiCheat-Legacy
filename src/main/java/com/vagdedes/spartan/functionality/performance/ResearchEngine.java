@@ -28,6 +28,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchEngine {
 
@@ -39,8 +40,7 @@ public class ResearchEngine {
 
     public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.JAVA, Enums.DataType.BEDROCK};
 
-    private static final Map<String, PlayerProfile> playerProfiles
-            = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
     private static final Map<MiningHistory.MiningOre, Double> averageMining = new LinkedHashMap<>(MiningHistory.MiningOre.values().length);
     private static final double[] defaultAverageMining = new double[MiningHistory.MiningOre.values().length];
 
@@ -129,50 +129,40 @@ public class ResearchEngine {
     // Separator
 
     public static List<PlayerProfile> getPlayerProfiles() {
-        synchronized (playerProfiles) {
-            return new ArrayList<>(playerProfiles.values());
-        }
+        return new ArrayList<>(playerProfiles.values());
     }
 
     public static PlayerProfile getPlayerProfile(String name) {
-        synchronized (playerProfiles) {
-            PlayerProfile playerProfile = playerProfiles.get(name);
+        PlayerProfile playerProfile = playerProfiles.get(name);
 
-            if (playerProfile != null) {
-                return playerProfile;
-            }
-            playerProfile = new PlayerProfile(name);
-            playerProfiles.put(name, playerProfile);
+        if (playerProfile != null) {
             return playerProfile;
         }
+        playerProfile = new PlayerProfile(name);
+        playerProfiles.put(name, playerProfile);
+        return playerProfile;
     }
 
     public static PlayerProfile getPlayerProfile(SpartanPlayer player) {
-        PlayerProfile playerProfile;
-
-        synchronized (playerProfiles) {
-            playerProfile = new PlayerProfile(player);
-            playerProfiles.put(player.name, playerProfile);
-        }
+        PlayerProfile playerProfile = new PlayerProfile(player);
+        playerProfiles.put(player.name, playerProfile);
         return playerProfile;
     }
 
     public static PlayerProfile getPlayerProfileAdvanced(String name, boolean deep) {
-        synchronized (playerProfiles) {
-            PlayerProfile profile = playerProfiles.get(name);
+        PlayerProfile profile = playerProfiles.get(name);
 
-            if (profile != null) {
-                return profile;
-            }
-            if (deep && !playerProfiles.isEmpty()) {
-                for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    if (playerProfile.getName().equalsIgnoreCase(name)) {
-                        return playerProfile;
-                    }
+        if (profile != null) {
+            return profile;
+        }
+        if (deep && !playerProfiles.isEmpty()) {
+            for (PlayerProfile playerProfile : playerProfiles.values()) {
+                if (playerProfile.getName().equalsIgnoreCase(name)) {
+                    return playerProfile;
                 }
             }
-            return null;
         }
+        return null;
     }
 
     // Separator
@@ -192,11 +182,9 @@ public class ResearchEngine {
             // Separator
 
             if (!playerProfiles.isEmpty()) {
-                synchronized (playerProfiles) {
-                    for (PlayerProfile playerProfile : playerProfiles.values()) {
-                        playerProfile.getViolationHistory(hackType).clear();
-                        playerProfile.evidence.remove(hackType, true, true, true);
-                    }
+                for (PlayerProfile playerProfile : playerProfiles.values()) {
+                    playerProfile.getViolationHistory(hackType).clear();
+                    playerProfile.evidence.remove(hackType, true, true, true);
                 }
             }
 
@@ -253,9 +241,8 @@ public class ResearchEngine {
         if (isStorageMode()) {
             // Clear Files/Database
             SpartanBukkit.analysisThread.executeWithPriority(() -> {
-                synchronized (playerProfiles) {
-                    playerProfiles.remove(playerName);
-                }
+                playerProfiles.remove(playerName);
+
                 if (foundPlayer) {
                     p.spartanPlayer.setProfile(getPlayerProfile(p.spartanPlayer));
                 }
@@ -283,9 +270,8 @@ public class ResearchEngine {
                 }
             });
         } else {
-            synchronized (playerProfiles) {
-                playerProfiles.remove(playerName);
-            }
+            playerProfiles.remove(playerName);
+
             if (foundPlayer) {
                 p.spartanPlayer.setProfile(getPlayerProfile(p.spartanPlayer));
             }
@@ -521,11 +507,7 @@ public class ResearchEngine {
 
     private static void updateCache() {
         if (!playerProfiles.isEmpty()) {
-            Collection<PlayerProfile> playerProfiles;
-
-            synchronized (ResearchEngine.playerProfiles) {
-                playerProfiles = new ArrayList<>(ResearchEngine.playerProfiles.values());
-            }
+            Collection<PlayerProfile> playerProfiles = new ArrayList<>(ResearchEngine.playerProfiles.values());
             Enums.HackType[] hackTypes = Enums.HackType.values();
             Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
             int mines = 0;

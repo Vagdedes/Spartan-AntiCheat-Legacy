@@ -31,7 +31,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LiveViolation {
 
@@ -47,7 +51,7 @@ public class LiveViolation {
     public LiveViolation(SpartanPlayer player, Enums.HackType hackType) {
         this.player = player;
         this.hackType = hackType;
-        this.level = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.level = new ConcurrentHashMap<>();
         this.prevention = new HackPrevention();
     }
 
@@ -135,12 +139,8 @@ public class LiveViolation {
 
     // Separator
 
-    public int getLevel(int hash) {
-        Long time;
-
-        synchronized (this.level) {
-            time = this.level.get(hash);
-        }
+    private int getLevel(int hash) {
+        Long time = this.level.get(hash);
         return time != null ? this.calculateLevel(time) : 0;
     }
 
@@ -155,10 +155,8 @@ public class LiveViolation {
         if (!this.level.isEmpty()) {
             int total = 0;
 
-            synchronized (this.level) {
-                for (Long level : this.level.values()) {
-                    total += this.calculateLevel(level);
-                }
+            for (Long level : this.level.values()) {
+                total += this.calculateLevel(level);
             }
             return total;
         } else {
@@ -168,11 +166,15 @@ public class LiveViolation {
 
     public boolean hasLevel() {
         if (!this.level.isEmpty()) {
-            synchronized (this.level) {
-                for (Long level : this.level.values()) {
-                    if (this.calculateLevel(level) > 0) {
-                        return true;
-                    }
+            Iterator<Long> iterator = this.level.values().iterator();
+
+            while (iterator.hasNext()) {
+                long level = iterator.next();
+
+                if (this.calculateLevel(level) > 0) {
+                    return true;
+                } else {
+                    iterator.remove();
                 }
             }
         }
@@ -181,20 +183,17 @@ public class LiveViolation {
 
     private void increaseLevel(int hash, int amount) {
         int multiplier = amount * (player.getProfile().evidence.getKnowledgeList(false).size() + 1);
+        Long time = this.level.get(hash);
 
-        synchronized (this.level) {
-            Long time = this.level.get(hash);
+        if (time == null) {
+            this.level.put(hash, System.currentTimeMillis() + (violationTimeWorth * multiplier));
+        } else {
+            long current = System.currentTimeMillis();
 
-            if (time == null) {
-                this.level.put(hash, System.currentTimeMillis() + (violationTimeWorth * multiplier));
+            if (time < current) {
+                this.level.put(hash, current + (violationTimeWorth * multiplier));
             } else {
-                long current = System.currentTimeMillis();
-
-                if (time < current) {
-                    this.level.put(hash, current + (violationTimeWorth * multiplier));
-                } else {
-                    this.level.put(hash, time + (violationTimeWorth * multiplier));
-                }
+                this.level.put(hash, time + (violationTimeWorth * multiplier));
             }
         }
         InteractiveInventory.playerInfo.refresh(player.name);
@@ -223,9 +222,7 @@ public class LiveViolation {
         }
 
         if (event == null || !event.isCancelled()) {
-            synchronized (this.level) {
-                this.level.clear();
-            }
+            this.level.clear();
         }
 
         // Always last
