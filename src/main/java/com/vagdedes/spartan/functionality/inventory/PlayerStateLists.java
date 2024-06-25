@@ -135,8 +135,7 @@ public class PlayerStateLists {
         if (listSize != limit) {
             InventoryUtils.prepareDescription(lore, noDataAvailable);
             lore.add("§cEmpty items like this will be filled with");
-            lore.add("§cuseful information about your players");
-            lore.add("§cas Spartan learns more about your server.");
+            lore.add("§csuspected players as they are found.");
 
             for (int i = listSize; i < limit; i++) {
                 InventoryUtils.add(inventory, inactiveColour + "Empty", lore, InventoryUtils.getHead(), freeSlots[slotPosition]);
