@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
-import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
 
 public class Criticals extends CheckExecutor {
