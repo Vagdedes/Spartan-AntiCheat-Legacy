@@ -48,9 +48,9 @@ public class SpartanPlayerDamage {
         boolean abstractVelocity = false;
         player.trackers.add(Trackers.TrackerType.DAMAGE, (int) TPS.maximum);
         this.parent = player;
-        this.tick = TPS.getTick(player);
-        this.event = event;
         this.location = player.movement.getLocation();
+        this.tick = TPS.getTick(this.location);
+        this.event = event;
 
         if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent actualEvent = (EntityDamageByEntityEvent) this.event;
@@ -131,7 +131,7 @@ public class SpartanPlayerDamage {
     }
 
     public long ticksPassed() {
-        return TPS.getTick(this.parent) - this.tick;
+        return TPS.getTick(this.location) - this.tick;
     }
 
     public ItemStack getActiveItem() {

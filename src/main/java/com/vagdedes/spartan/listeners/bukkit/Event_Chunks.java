@@ -1,17 +1,13 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanBlockData;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
-import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,65 +24,32 @@ public class Event_Chunks implements Listener {
 
     private static final Map<Long, Boolean> loaded = new ConcurrentHashMap<>();
     private static final Map<World, Map<Long, ChunkData>> map = new ConcurrentHashMap<>();
-    private static final int chunkSize = (int) PlayerUtils.chunk;
-    private static final SpartanBlockData empty = new SpartanBlockData(Material.AIR, false);
+    private static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
     // Separator
 
     private static final class ChunkData {
 
         private long creation;
-        private final int x, z;
-        private final SpartanBlockData[][][] blocks;
+        private boolean queued;
+        private ChunkSnapshot snapshot;
 
-        private ChunkData(World world, ChunkSnapshot snapshot) {
-            int minHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                    ? world.getMinHeight()
-                    : 0,
-                    maxHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                            ? world.getMaxHeight()
-                            : PlayerUtils.height;
+        private ChunkData(ChunkSnapshot snapshot) {
             this.creation = System.currentTimeMillis();
-            this.x = snapshot.getX();
-            this.z = snapshot.getZ();
-            this.blocks = new SpartanBlockData[chunkSize][maxHeight + Math.abs(minHeight)][chunkSize];
-            SpartanBukkit.chunksThread.execute(() -> this.set(world, snapshot));
+            this.snapshot = snapshot;
         }
 
         private void refresh(World world) {
-            if (System.currentTimeMillis() - this.creation > 1_000L) {
-                SpartanBukkit.chunksThread.executeIfFree(() -> {
-                    this.creation = System.currentTimeMillis();
-                    this.set(world, world.getChunkAt(this.x, this.z).getChunkSnapshot());
-                });
-            }
-        }
+            synchronized (this) {
+                if (!this.queued
+                        && System.currentTimeMillis() - this.creation > 500L) {
+                    this.queued = true;
 
-        private void set(World world, ChunkSnapshot snapshot) {
-            int minHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                    ? world.getMinHeight()
-                    : 0,
-                    maxHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                            ? world.getMaxHeight()
-                            : PlayerUtils.height,
-                    subtract;
-
-            if (minHeight < 0) {
-                subtract = Math.abs(minHeight);
-                maxHeight += subtract;
-                minHeight = 0;
-            } else {
-                subtract = 0;
-            }
-            for (int x = 0; x < chunkSize; x++) {
-                for (int z = 0; z < chunkSize; z++) {
-                    for (int y = minHeight; y < maxHeight; y++) {
-                        BlockData blockData = snapshot.getBlockData(x, y - subtract, z);
-                        this.blocks[x][y][z] = new SpartanBlockData(
-                                blockData.getMaterial(),
-                                BlockUtils.isWaterLogged(blockData)
-                        );
-                    }
+                    SpartanBukkit.chunksThread.execute(() -> {
+                        this.creation = System.currentTimeMillis();
+                        this.snapshot = world.getChunkAt(this.snapshot.getX(), this.snapshot.getZ()).getChunkSnapshot();
+                        this.queued = false;
+                    });
                 }
             }
         }
@@ -103,7 +66,7 @@ public class Event_Chunks implements Listener {
 
                     if (!players.isEmpty()) {
                         for (SpartanPlayer player : players) {
-                            SpartanLocation location = player.movement.getRawLocation();
+                            SpartanLocation location = player.movement.getLocation();
 
                             if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())) {
                                 cache(location.getBukkitLocation().getChunk(), true);
@@ -144,79 +107,30 @@ public class Event_Chunks implements Listener {
         return false;
     }
 
-    public static SpartanBlockData get(World world, int x, int y, int z) {
-        int minHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                ? world.getMinHeight()
-                : 0;
-
-        if (y < minHeight
-                || y >= (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                ? world.getMaxHeight()
-                : PlayerUtils.height)) {
-            return empty;
+    public static BlockData get(World world, int x, int y, int z) {
+        if (y < (heightSupport ? world.getMinHeight() : 0)
+                || y >= (heightSupport ? world.getMaxHeight() : PlayerUtils.height)) {
+            return null;
         }
         Map<Long, ChunkData> subMap = map.get(world);
 
         if (subMap == null) {
-            return empty;
+            return null;
         }
-        ChunkData blockDataList = subMap.get(hashChunk(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)));
+        ChunkData data = subMap.get(hashChunk(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)));
 
-        if (blockDataList == null
-                || y >= blockDataList.blocks[0].length) {
-            return empty;
+        if (data == null) {
+            return null;
         }
-        if (minHeight < 0) {
-            y += Math.abs(minHeight);
-        }
-        return blockDataList.blocks[Math.abs(x) % chunkSize][y][Math.abs(z) % chunkSize];
+        return data.snapshot.getBlockData(x & 0xF, y, z & 0xF);
     }
-
-    // Separator
-
-    static void updateBlock(Block block, BlockData blockData) {
-        World world = block.getWorld();
-        int x = block.getX(),
-                z = block.getZ();
-        Map<Long, ChunkData> subMap = map.get(world);
-
-        if (subMap == null) {
-            cache(block.getChunk(), true);
-        } else {
-            ChunkData chunkData = subMap.get(hashChunk(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)));
-
-            if (chunkData == null) {
-                cache(block.getChunk(), true);
-            } else {
-                int y = block.getY(),
-                        minHeight = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17) ? world.getMinHeight() : 0;
-
-                if (minHeight < 0) {
-                    y += Math.abs(minHeight);
-                }
-                if (blockData == null) {
-                    chunkData.blocks[Math.abs(x) % chunkSize][y][Math.abs(z) % chunkSize] = new SpartanBlockData(
-                            Material.AIR,
-                            false
-                    );
-                } else {
-                    chunkData.blocks[Math.abs(x) % chunkSize][y][Math.abs(z) % chunkSize] = new SpartanBlockData(
-                            blockData.getMaterial(),
-                            BlockUtils.isWaterLogged(blockData)
-                    );
-                }
-            }
-        }
-    }
-
-    // Separator
 
     private static boolean hasPlayers(World world, int x, int z) {
         List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
         if (!players.isEmpty()) {
             for (SpartanPlayer player : players) {
-                SpartanLocation location = player.movement.getRawLocation();
+                SpartanLocation location = player.movement.getLocation();
 
                 if (location.world.equals(world)
                         && location.getChunkX() == x
@@ -228,7 +142,7 @@ public class Event_Chunks implements Listener {
         return false;
     }
 
-    private static void cache(Chunk chunk, boolean force) {
+    static void cache(Chunk chunk, boolean force) {
         World world = chunk.getWorld();
 
         if (!force && !hasPlayers(world, chunk.getX(), chunk.getZ())) {
@@ -242,7 +156,7 @@ public class Event_Chunks implements Listener {
         ChunkData chunkData = subMap.get(hash);
 
         if (chunkData == null) {
-            subMap.put(hash, new ChunkData(world, chunk.getChunkSnapshot()));
+            subMap.put(hash, new ChunkData(chunk.getChunkSnapshot()));
         } else {
             chunkData.refresh(world);
         }
@@ -283,7 +197,7 @@ public class Event_Chunks implements Listener {
         Map<Long, ChunkData> subMap = map.remove(world);
 
         for (ChunkData data : subMap.values()) {
-            loaded.remove(totalHash(world, data.x, data.z));
+            loaded.remove(totalHash(world, data.snapshot.getX(), data.snapshot.getZ()));
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             loaded.remove(totalHash(world, chunk.getX(), chunk.getZ()));

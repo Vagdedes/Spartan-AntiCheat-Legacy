@@ -238,13 +238,18 @@ public class SpartanLocation {
     }
 
     private SpartanBlock setAsyncBlock() {
-        SpartanBlockData data = Event_Chunks.get(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
-        return new SpartanBlock(
-                this,
-                data.material,
-                BlockUtils.isLiquid(data.material),
-                data.waterLogged
-        );
+        BlockData data = Event_Chunks.get(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
+
+        if (data != null) {
+            return new SpartanBlock(
+                    this,
+                    data.getMaterial(),
+                    BlockUtils.isLiquid(data.getMaterial()),
+                    BlockUtils.isWaterLogged(data)
+            );
+        } else {
+            return new SpartanBlock(this, Material.AIR, false, false);
+        }
     }
 
     public SpartanBlock getBlock() {
@@ -253,18 +258,19 @@ public class SpartanLocation {
         if (SpartanLocation.v_1_17 ?
                 blockY >= this.world.getMinHeight() && blockY <= this.world.getMaxHeight() :
                 blockY >= 0 && blockY <= PlayerUtils.height) {
-            if (MultiVersion.folia) {
-                return setBlock();
-            } else if (SpartanBukkit.packetsEnabled()) {
+            if (SpartanBukkit.packetsEnabled()) {
                 if (SpartanBukkit.isSynchronised()) {
                     return setBlock();
                 } else {
                     return setAsyncBlock();
                 }
+            } else if (MultiVersion.folia
+                    || SpartanBukkit.isSynchronised()) {
+                return setBlock();
             } else {
                 int x = getChunkX(), z = getChunkZ();
 
-                if (SpartanBukkit.isSynchronised() || isChunkLoaded(x, z)) {
+                if (isChunkLoaded(x, z)) {
                     return setBlock();
                 } else {
                     SpartanBlock[] block = new SpartanBlock[1];

@@ -40,11 +40,10 @@ public class BackgroundMove {
             Location from = protocol.getLocation().clone();
             protocol.getLocation().setYaw(packet.getFloat().read(0));
             protocol.getLocation().setPitch(packet.getFloat().read(1));
-            protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
             Shared.movement(new PlayerMoveEvent(
                     event.getPlayer(),
                     from,
-                    protocol.getLocation()
+                    protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation())
             ));
         } else if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
             Location from = protocol.getLocation().clone(),
@@ -54,11 +53,10 @@ public class BackgroundMove {
             protocol.getLocation().setZ(location.getZ());
             protocol.getLocation().setYaw(packet.getFloat().read(0));
             protocol.getLocation().setPitch(packet.getFloat().read(1));
-            protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
             Shared.movement(new PlayerMoveEvent(
                     event.getPlayer(),
                     from,
-                    protocol.getLocation()
+                    protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation())
             ));
         } else if (type.equals(PacketType.Play.Client.POSITION)) {
             Location from = protocol.getLocation().clone(),
@@ -66,11 +64,10 @@ public class BackgroundMove {
             protocol.getLocation().setX(location.getX());
             protocol.getLocation().setY(location.getY());
             protocol.getLocation().setZ(location.getZ());
-            protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation());
             Shared.movement(new PlayerMoveEvent(
                     event.getPlayer(),
                     from,
-                    protocol.getLocation()
+                    protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation())
             ));
         }
         protocol.setOnGround(onGroundPacketLevel(event));

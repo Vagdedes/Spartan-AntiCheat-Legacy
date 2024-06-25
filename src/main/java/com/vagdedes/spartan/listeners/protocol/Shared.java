@@ -116,11 +116,13 @@ public class Shared {
                 ver = toY - fromY,
                 hor = Math.sqrt(preXZ);
 
-        if (!p.movement.processLastMoveEvent(to, from, dis, hor, ver, box)) {
+        if (!p.movement.processLastMoveEvent(nto, vehicle, to, from, dis, hor, ver, box)) {
             return;
         }
         if (true) {
             p.sendMessage(to.getBlock().material.toString());
+            p.sendMessage(to.getBukkitLocation().getBlock().getType().toString());
+            p.sendMessage("-");
             return;
         }
         MovementProcessing.run(p, to, ver, box);

@@ -7,7 +7,6 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class SpartanPlayerVelocity {
 
-    private final SpartanPlayer parent;
     public final long tick;
     public final PlayerVelocityEvent event;
     public final SpartanLocation location;
@@ -15,8 +14,7 @@ public class SpartanPlayerVelocity {
     SpartanPlayerVelocity(SpartanPlayer player,
                           PlayerVelocityEvent event,
                           SpartanLocation location) {
-        this.parent = player;
-        this.tick = TPS.getTick(player);
+        this.tick = TPS.getTick(location);
         this.event = event;
         this.location = location.clone();
 
@@ -29,7 +27,7 @@ public class SpartanPlayerVelocity {
     }
 
     public long ticksPassed() {
-        return TPS.getTick(this.parent) - tick;
+        return TPS.getTick(this.location) - tick;
     }
 
 }

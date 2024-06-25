@@ -141,7 +141,7 @@ public class SpartanPlayer {
         );
         this.playerProfile = ResearchEngine.getPlayerProfile(this);
         this.clicks = new Clicks();
-        this.movement = new SpartanPlayerMovement(this, p);
+        this.movement = new SpartanPlayerMovement(this);
         this.punishments = new SpartanPunishments(this);
         this.velocityReceived = Collections.synchronizedList(new LinkedList<>());
         this.damageReceived = Collections.synchronizedMap(new LinkedHashMap<>());
