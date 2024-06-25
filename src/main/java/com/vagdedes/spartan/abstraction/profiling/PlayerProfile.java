@@ -231,7 +231,7 @@ public class PlayerProfile {
     // Separator
 
     public boolean isLegitimate() {
-        return evidence.has(PlayerEvidence.EvidenceType.LEGITIMATE);
+        return evidence.getKnowledgeList(false).isEmpty();
     }
 
 }

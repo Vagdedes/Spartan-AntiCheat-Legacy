@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -55,8 +54,7 @@ public class PlayerInfo extends InventoryMenu {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
             return false;
         } else {
-            PlayerEvidence.EvidenceType evidenceType = profile.evidence.getType();
-            boolean legitimate = evidenceType == PlayerEvidence.EvidenceType.LEGITIMATE;
+            boolean legitimate = profile.isLegitimate();
             Collection<HackType> evidenceDetails = profile.evidence.getKnowledgeList(legitimate);
             PunishmentHistory punishmentHistory = profile.punishmentHistory;
             int miningHistoryMines = profile.getOverallMiningHistory().getMines();
@@ -67,7 +65,7 @@ public class PlayerInfo extends InventoryMenu {
 
             InventoryUtils.prepareDescription(
                     lore,
-                    evidenceType.toString()
+                    PlayerStateLists.suspected
             );
             if (!evidenceDetails.isEmpty()) {
                 lore.add(legitimate ? "§7Evaluated for§8:" : "§7Detected for§8:");

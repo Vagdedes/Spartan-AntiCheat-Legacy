@@ -127,10 +127,6 @@ public class Shared {
             }
         }
 
-        if (true) {
-            return;
-        }
-
         // Detections
         boolean cancelled = e.isCancelled();
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);

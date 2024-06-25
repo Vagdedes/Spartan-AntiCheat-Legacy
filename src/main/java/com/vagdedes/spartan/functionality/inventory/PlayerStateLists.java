@@ -15,7 +15,8 @@ public class PlayerStateLists {
 
     public static final String
             inactiveColour = "§8",
-            noDataAvailable = "No data available at this time";
+            noDataAvailable = "No data available at this time",
+            suspected = "Suspected For Hacking";
     private static final int[] ignoredSlots = new int[]{
             0, 1, 2, 3, 4, 5, 6, 7, 8,
             9, 10, 16, 17,
@@ -36,7 +37,7 @@ public class PlayerStateLists {
         List<String> lore = new ArrayList<>(description.size() + 10);
         InventoryUtils.prepareDescription(
                 lore,
-                profile.evidence.getType().toString()
+                suspected
         );
 
         if (!description.isEmpty()) {
@@ -105,7 +106,8 @@ public class PlayerStateLists {
         int slotPosition = 0,
                 limit = 15,
                 page = getPage(uuid),
-                skip = ((page - 1) * limit);;
+                skip = ((page - 1) * limit);
+        ;
         Integer[] freeSlots = getFreeSlots(inventory);
 
         List<PlayerProfile> playerProfiles = subList(getProfiles(), skip, skip + limit);

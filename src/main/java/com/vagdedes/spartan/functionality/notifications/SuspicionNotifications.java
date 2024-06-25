@@ -66,7 +66,7 @@ public class SuspicionNotifications {
                             "checks",
                             player.uuid, player.name,
                             location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-                            profile.evidence.getType().toString(), evidence.toString()
+                            "Suspected For Hacking", evidence.toString()
                     );
                 }
             }

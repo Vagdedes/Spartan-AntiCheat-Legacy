@@ -432,7 +432,7 @@ public class Pattern {
                         "Parts of Spartan's Machine Learning algorithm have insufficient data to check you. "
                                 + (player.getProfile().isLegitimate()
                                 ? "Continue playing LEGITIMATELY to train the algorithm and get better results."
-                                : "Since you are " + player.getProfile().evidence.getType().toString() + ", either clear your data via '/spartan info'"
+                                : "Since may be hacking, either clear your data via '/spartan info'"
                                 + " and play LEGITIMATELY or find a legitimate player to help train the algorithm and get better results.")
                 );
 

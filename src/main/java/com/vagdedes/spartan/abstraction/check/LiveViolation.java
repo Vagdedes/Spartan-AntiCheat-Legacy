@@ -229,7 +229,7 @@ public class LiveViolation {
         }
 
         // Always last
-        player.getProfile().evidence.remove(hackType, true, false, false, true);
+        player.getProfile().evidence.remove(hackType, true, false, false);
         InteractiveInventory.playerInfo.refresh(player.name);
     }
 

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.connection.cloud;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -187,7 +186,7 @@ public class CloudConnections {
         StringBuilder value = new StringBuilder();
 
         for (PlayerProfile playerProfile : ResearchEngine.getPlayerProfiles()) {
-            if (playerProfile.evidence.has(PlayerEvidence.EvidenceType.HACKER)) {
+            if (!playerProfile.evidence.getKnowledgeList(false).isEmpty()) {
                 SpartanPlayer player = playerProfile.getSpartanPlayer();
                 boolean isNull = player == null;
 

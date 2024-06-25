@@ -12,38 +12,9 @@ import java.util.*;
 
 public class PlayerEvidence {
 
-    public enum EvidenceType {
-        LEGITIMATE, SUSPECTED, HACKER;
-        private final String string;
-
-        EvidenceType() {
-            switch (this.ordinal()) {
-                case 0:
-                    this.string = "Legitimate";
-                    break;
-                case 1:
-                    this.string = "Suspected";
-                    break;
-                default:
-                    this.string = "Hacker";
-                    break;
-
-            }
-        }
-
-        @Override
-        public String toString() {
-            return string;
-        }
-    }
-
-    // Object
-
-    private EvidenceType type;
     final Map<Enums.HackType, String> live, historical, informational; // Live object is used for synchronization
 
     PlayerEvidence() {
-        this.type = EvidenceType.LEGITIMATE;
         this.live = Collections.synchronizedMap(new LinkedHashMap<>(Enums.HackType.values().length));
         this.historical = new LinkedHashMap<>(Enums.HackType.values().length);
         this.informational = new LinkedHashMap<>(Enums.HackType.values().length);
@@ -51,16 +22,9 @@ public class PlayerEvidence {
 
     // Separator
 
-    public EvidenceType getType() {
-        return type;
-    }
-
-    // Separator
-
     public void clear(boolean live,
                       boolean historical,
-                      boolean informational,
-                      boolean judge) {
+                      boolean informational) {
         synchronized (this.live) {
             if (live) {
                 this.live.clear();
@@ -71,17 +35,13 @@ public class PlayerEvidence {
             if (informational) {
                 this.informational.clear();
             }
-            if (judge) {
-                this.judgeLocal();
-            }
         }
     }
 
     public void remove(Enums.HackType hackType,
                        boolean live,
                        boolean historical,
-                       boolean informational,
-                       boolean judge) {
+                       boolean informational) {
         synchronized (this.live) {
             if (live) {
                 this.live.remove(hackType);
@@ -92,17 +52,13 @@ public class PlayerEvidence {
             if (informational) {
                 this.informational.remove(hackType);
             }
-            if (judge) {
-                this.judgeLocal();
-            }
         }
     }
 
     public void add(Enums.HackType hackType, String info,
                     boolean live,
                     boolean historical,
-                    boolean informational,
-                    boolean judge) {
+                    boolean informational) {
         synchronized (this.live) {
             if (live) {
                 this.live.put(hackType, info);
@@ -112,9 +68,6 @@ public class PlayerEvidence {
             }
             if (informational) {
                 this.informational.put(hackType, info);
-            }
-            if (judge) {
-                this.judgeLocal();
             }
         }
     }
@@ -160,10 +113,6 @@ public class PlayerEvidence {
 
     // Separator
 
-    public boolean has(EvidenceType type) {
-        return this.type == type;
-    }
-
     public boolean has(Enums.HackType hackType, boolean informational) {
         synchronized (this.live) {
             return live.containsKey(hackType)
@@ -196,7 +145,6 @@ public class PlayerEvidence {
                         this.live.put(playerViolation.hackType,
                                 "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
                         );
-                        this.judgeLocal();
                     }
                     InteractiveInventory.playerInfo.refresh(player.name);
                     MainMenu.refresh();
@@ -205,26 +153,6 @@ public class PlayerEvidence {
             }
         }
         return new ArrayList<>(0);
-    }
-
-    // Separator
-
-    void judgeLocal() {
-        int count = this.getRawKnowledgeList(false).size();
-        EvidenceType type = this.type;
-
-        for (EvidenceType evidenceType : EvidenceType.values()) {
-            if (count >= evidenceType.ordinal()) {
-                type = evidenceType;
-            }
-        }
-        this.type = type;
-    }
-
-    public void judge() {
-        synchronized (this.live) {
-            this.judgeLocal();
-        }
     }
 
 }

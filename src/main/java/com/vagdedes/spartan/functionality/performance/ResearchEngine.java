@@ -195,7 +195,7 @@ public class ResearchEngine {
                 synchronized (playerProfiles) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
                         playerProfile.getViolationHistory(hackType).clear();
-                        playerProfile.evidence.remove(hackType, true, true, true, true);
+                        playerProfile.evidence.remove(hackType, true, true, true);
                     }
                 }
             }
@@ -532,7 +532,6 @@ public class ResearchEngine {
             ViolationAnalysis.calculateData(playerProfiles);
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                playerProfile.evidence.judge();
                 mines += playerProfile.getOverallMiningHistory().getMines();
             }
 
