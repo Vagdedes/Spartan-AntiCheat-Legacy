@@ -68,7 +68,7 @@ public class MiningHistory {
             this.mines[environment.ordinal()] = mines;
         }
         this.ore = ore;
-        this.days = new ConcurrentHashMap<>();
+        this.days = new ConcurrentHashMap<>(2, 1.0f);
     }
 
     public int getMines() {

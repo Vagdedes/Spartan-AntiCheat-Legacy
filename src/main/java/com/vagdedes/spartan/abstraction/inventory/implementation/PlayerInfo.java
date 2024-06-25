@@ -68,7 +68,7 @@ public class PlayerInfo extends InventoryMenu {
                     PlayerStateLists.suspected
             );
             if (!evidenceDetails.isEmpty()) {
-                lore.add(legitimate ? "§7Evaluated for§8:" : "§7Detected for§8:");
+                lore.add(legitimate ? "§7Evaluated for§8:" : "§7Suspected for§8:");
 
                 for (Enums.HackType hackType : evidenceDetails) {
                     lore.add("§4" + hackType.getCheck().getName());

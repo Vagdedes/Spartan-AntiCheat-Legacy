@@ -8,16 +8,20 @@ import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerEvidence {
 
-    final Map<Enums.HackType, String> live, historical, informational; // Live object is used for synchronization
+    private final Map<Enums.HackType, String> live, historical, informational; // Live object is used for synchronization
 
     PlayerEvidence() {
-        this.live = Collections.synchronizedMap(new LinkedHashMap<>(Enums.HackType.values().length));
-        this.historical = new LinkedHashMap<>(Enums.HackType.values().length);
-        this.informational = new LinkedHashMap<>(Enums.HackType.values().length);
+        this.live = new ConcurrentHashMap<>(2, 1.0f);
+        this.historical = new ConcurrentHashMap<>(2, 1.0f);
+        this.informational = new ConcurrentHashMap<>(2, 1.0f);
     }
 
     // Separator
@@ -25,16 +29,14 @@ public class PlayerEvidence {
     public void clear(boolean live,
                       boolean historical,
                       boolean informational) {
-        synchronized (this.live) {
-            if (live) {
-                this.live.clear();
-            }
-            if (historical) {
-                this.historical.clear();
-            }
-            if (informational) {
-                this.informational.clear();
-            }
+        if (live) {
+            this.live.clear();
+        }
+        if (historical) {
+            this.historical.clear();
+        }
+        if (informational) {
+            this.informational.clear();
         }
     }
 
@@ -42,16 +44,14 @@ public class PlayerEvidence {
                        boolean live,
                        boolean historical,
                        boolean informational) {
-        synchronized (this.live) {
-            if (live) {
-                this.live.remove(hackType);
-            }
-            if (historical) {
-                this.historical.remove(hackType);
-            }
-            if (informational) {
-                this.informational.remove(hackType);
-            }
+        if (live) {
+            this.live.remove(hackType);
+        }
+        if (historical) {
+            this.historical.remove(hackType);
+        }
+        if (informational) {
+            this.informational.remove(hackType);
         }
     }
 
@@ -59,28 +59,20 @@ public class PlayerEvidence {
                     boolean live,
                     boolean historical,
                     boolean informational) {
-        synchronized (this.live) {
-            if (live) {
-                this.live.put(hackType, info);
-            }
-            if (historical) {
-                this.historical.put(hackType, info);
-            }
-            if (informational) {
-                this.informational.put(hackType, info);
-            }
+        if (live) {
+            this.live.put(hackType, info);
+        }
+        if (historical) {
+            this.historical.put(hackType, info);
+        }
+        if (informational) {
+            this.informational.put(hackType, info);
         }
     }
 
     // Separator
 
     public Collection<Enums.HackType> getKnowledgeList(boolean informational) {
-        synchronized (this.live) {
-            return getRawKnowledgeList(informational);
-        }
-    }
-
-    private Collection<Enums.HackType> getRawKnowledgeList(boolean informational) {
         Collection<Enums.HackType> set = new HashSet<>(live.keySet());
         set.addAll(historical.keySet());
 
@@ -93,18 +85,16 @@ public class PlayerEvidence {
     // Separator
 
     public String getKnowledge(Enums.HackType hackType, String color, boolean informational) {
-        synchronized (this.live) {
-            String knowledge = historical.get(hackType);
+        String knowledge = historical.get(hackType);
 
-            if (knowledge == null) {
-                knowledge = live.get(hackType);
+        if (knowledge == null) {
+            knowledge = live.get(hackType);
 
-                if (knowledge == null && informational) {
-                    knowledge = this.informational.get(hackType);
-                }
+            if (knowledge == null && informational) {
+                knowledge = this.informational.get(hackType);
             }
-            return knowledge == null ? null : addColor(knowledge, color);
         }
+        return knowledge == null ? null : addColor(knowledge, color);
     }
 
     private String addColor(String knowledge, String color) {
@@ -114,21 +104,17 @@ public class PlayerEvidence {
     // Separator
 
     public boolean has(Enums.HackType hackType, boolean informational) {
-        synchronized (this.live) {
-            return live.containsKey(hackType)
-                    || historical.containsKey(hackType)
-                    || informational && this.informational.containsKey(hackType);
-        }
+        return live.containsKey(hackType)
+                || historical.containsKey(hackType)
+                || informational && this.informational.containsKey(hackType);
     }
 
     // Separator
 
     public Collection<Enums.HackType> calculate(SpartanPlayer player, PlayerViolation playerViolation) {
-        synchronized (this.live) {
-            if (this.live.containsKey(playerViolation.hackType)
-                    || this.historical.containsKey(playerViolation.hackType)) {
-                return this.getRawKnowledgeList(false);
-            }
+        if (this.live.containsKey(playerViolation.hackType)
+                || this.historical.containsKey(playerViolation.hackType)) {
+            return this.getKnowledgeList(false);
         }
         Check check = playerViolation.hackType.getCheck();
 
@@ -141,14 +127,12 @@ public class PlayerEvidence {
                 double ratio = violationCount / Check.standardIgnoredViolations;
 
                 if (ratio >= Check.standardIgnoredViolations) {
-                    synchronized (this.live) {
-                        this.live.put(playerViolation.hackType,
-                                "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
-                        );
-                    }
+                    this.live.put(playerViolation.hackType,
+                            "Ratio: " + AlgebraUtils.cut(ratio, 2) + "%"
+                    );
                     InteractiveInventory.playerInfo.refresh(player.name);
                     MainMenu.refresh();
-                    return this.getRawKnowledgeList(false);
+                    return this.getKnowledgeList(false);
                 }
             }
         }
