@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
@@ -119,18 +119,16 @@ public class Shared {
         if (!p.movement.processLastMoveEvent(nto, vehicle, to, from, dis, hor, ver, box)) {
             return;
         }
-        if (true) {
-            p.sendMessage(to.getBlock().material.toString());
-            p.sendMessage(to.getBukkitLocation().getBlock().getType().toString());
-            p.sendMessage("-");
-            return;
-        }
         MovementProcessing.run(p, to, ver, box);
 
         for (Enums.HackType hackType : Event_Movement.handledChecks) {
             if (p.getViolations(hackType).prevent()) {
                 break;
             }
+        }
+
+        if (true) {
+            return;
         }
 
         // Detections

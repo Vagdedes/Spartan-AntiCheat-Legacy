@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
@@ -21,7 +22,7 @@ public class Criticals extends CheckExecutor {
                 from = player.movement.getEventFromLocation();
         double verticalMaxAccuracy = to.getY() - from.getY();
 
-        if (RayUtils.onBlock(player, player.movement.getLocation(), Material.COBWEB)) return;
+        if (RayUtils.onBlock(player, player.movement.getLocation(), BlockUtils.web)) return;
 
         if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
                 && verticalMaxAccuracy > 0

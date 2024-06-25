@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.Shared;
 import com.vagdedes.spartan.listeners.protocol.async.LagCompensation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
