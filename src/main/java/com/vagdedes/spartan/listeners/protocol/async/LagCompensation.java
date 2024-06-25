@@ -27,14 +27,14 @@ public class LagCompensation {
         ).addFirst(location);
         List<Integer> delaysList = delays.computeIfAbsent(
                 id,
-                k -> new LinkedList<>()
+                k -> Collections.synchronizedList(new LinkedList<>())
         );
         delaysList.add((int) (System.currentTimeMillis() - lastPacket.getOrDefault(id, System.currentTimeMillis())));
         lastPacket.put(id, System.currentTimeMillis());
         newPacket(id);
 
         if (delaysList.size() == 10) {
-            LinkedList<Integer> l = new LinkedList<>();
+            List<Integer> l = Collections.synchronizedList(new LinkedList<>());
             l.add(Collections.max(delaysList) / 2);
             delays.put(id, l);
         }
@@ -56,8 +56,10 @@ public class LagCompensation {
 
     public static int getPlayerTicksDelay(int id) {
         List<Integer> delaysList = delays.get(id);
+
         if (delaysList != null) {
             List<Integer> snapshot;
+
             synchronized (delaysList) {
                 snapshot = new ArrayList<>(delaysList);
             }
