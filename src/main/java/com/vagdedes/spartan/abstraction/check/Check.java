@@ -56,7 +56,7 @@ public class Check {
 
         // Separator
 
-        Object silent = hackType == Enums.HackType.AutoRespawn ? null : getOption("silent", false, false),
+        Object silent = getOption("silent", false, false),
                 handleCancelledEvents = getOption("cancelled_event", false, false);
 
         String name = getOption("name", this.hackType.toString(), false).toString(),

@@ -1,0 +1,4 @@
+[+] Implemented way to properly load data from block asynchronously. (off the main thread)
+[+] All checks now support silent mode with the help of smarter preventions.
+[#] Improved the use of memory relative to its synchronization requirements
+[#] Simplified existing objects for less memory use and faster processing times.

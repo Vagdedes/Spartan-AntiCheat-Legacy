@@ -31,7 +31,9 @@ public class AutoRespawn extends CheckExecutor {
             memory = 0L;
             cancel(
                     "type: default, ms: " + time,
-                    (limit - time) / TPS.tickTimeDecimal
+                    (limit - time) / TPS.tickTimeDecimal,
+                    player.movement.getDetectionLocation(),
+                    (int) TPS.maximum
             );
         }
     }

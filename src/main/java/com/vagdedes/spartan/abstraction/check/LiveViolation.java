@@ -359,10 +359,8 @@ public class LiveViolation {
                         .replace("{info}", playerViolation.information),
                 hackType
         );
+        CrossServerInformation.queueNotification(message, true);
 
-        if (canPrevent || !hackType.getCheck().supportsLiveEvidence) {
-            CrossServerInformation.queueNotification(message, true);
-        }
         SpartanLocation location = player.movement.getLocation();
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + ") "

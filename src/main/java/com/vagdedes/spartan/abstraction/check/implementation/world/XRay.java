@@ -34,15 +34,15 @@ public class XRay extends CheckExecutor {
 
             if (points > 0.0) {
                 cancel(
-                        "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points"));
+                        "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points")
+                );
             }
         }
     }
 
     @Override
     protected boolean canRun() {
-        return player.getWorld().getWorldType() != WorldType.FLAT
-                && !player.getViolations(hackType).hasLevel();
+        return player.getWorld().getWorldType() != WorldType.FLAT;
     }
 
 }
