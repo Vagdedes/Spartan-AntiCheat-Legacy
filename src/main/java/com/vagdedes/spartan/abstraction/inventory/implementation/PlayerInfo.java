@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -29,8 +28,9 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PlayerInfo extends InventoryMenu {
 
@@ -47,16 +47,15 @@ public class PlayerInfo extends InventoryMenu {
         SpartanProtocol target = SpartanBukkit.getProtocol(object.toString());
         boolean isOnline = target != null;
         PlayerProfile profile = isOnline
-                ? target.spartanPlayer.getProfile()
-                : ResearchEngine.getPlayerProfileAdvanced(object.toString(), true);
+                ? target.getProfile()
+                : ResearchEngine.getPlayerProfileAdvanced(object.toString());
 
         if (profile == null) {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
             return false;
         } else {
             boolean legitimate = profile.isLegitimate();
-            Collection<HackType> evidenceDetails = profile.evidence.getKnowledgeList(legitimate);
-            PunishmentHistory punishmentHistory = profile.punishmentHistory;
+            Set<Map.Entry<HackType, String>> evidenceDetails = profile.evidence.getKnowledgeEntries(legitimate);
             int miningHistoryMines = profile.getOverallMiningHistory().getMines();
             List<String> lore = new ArrayList<>(20);
             int i = 19;
@@ -70,13 +69,14 @@ public class PlayerInfo extends InventoryMenu {
             if (!evidenceDetails.isEmpty()) {
                 lore.add(legitimate ? "§7Evaluated for§8:" : "§7Suspected for§8:");
 
-                for (Enums.HackType hackType : evidenceDetails) {
-                    lore.add("§4" + hackType.getCheck().getName());
+                for (Map.Entry<HackType, String> entry : evidenceDetails) {
+                    lore.add(
+                            "§4" + entry.getKey().getCheck().getName()
+                                    + (legitimate ? "" : "§8: §c" + entry.getValue())
+                    );
                 }
                 lore.add("");
             }
-            lore.add("§7Warnings§8:§c " + punishmentHistory.getWarnings());
-            lore.add("§7Kicks§8:§c " + punishmentHistory.getKicks());
 
             if (isOnline) {
                 lore.add("§7CPS (Clicks Per Second)§8:§c " + target.spartanPlayer.clicks.getCount());
@@ -167,8 +167,7 @@ public class PlayerInfo extends InventoryMenu {
         for (HackType hackType : hackTypes) {
             if (hackType.category == checkType) {
                 violations = isOnline ? player.getViolations(hackType).getTotalLevel() : 0;
-                boolean hasViolations = violations > 0,
-                        hasData = playerProfile.evidence.has(hackType, true);
+                boolean hasViolations = violations > 0;
                 String state = getDetectionState(
                         player,
                         hackType,
@@ -178,15 +177,14 @@ public class PlayerInfo extends InventoryMenu {
                         serverLag,
                         notChecked,
                         detectionsNotAvailable,
-                        !hasViolations && !hasData
+                        !hasViolations
                 );
 
-                if (hasViolations || hasData || state != null) {
+                if (hasViolations || state != null) {
                     String color = "§c";
-                    String data = playerProfile.evidence.getKnowledge(hackType, color, true);
                     listedChecks = true;
                     lore.add("§6" + hackType.getCheck().getName() + "§8[§e" + state + "§8] " + color
-                            + (hasData ? data : hasViolations ? violations + " " + (violations == 1 ? "violation" : "violations") : "")
+                            + (hasViolations ? violations + " " + (violations == 1 ? "violation" : "violations") : "")
                     );
                 }
             }
@@ -206,8 +204,7 @@ public class PlayerInfo extends InventoryMenu {
         ItemStack item = isOnline && violations > 0 ?
                 new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(violations, 64), (short) 14) :
                 new ItemStack(Material.QUARTZ_BLOCK);
-        boolean hasViolations = violations > 0,
-                hasData = playerProfile.evidence.has(hackType, true);
+        boolean hasViolations = violations > 0;
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
         String state = getDetectionState(player,
                 hackType,
@@ -217,16 +214,11 @@ public class PlayerInfo extends InventoryMenu {
                 isOnline && TPS.areLow(player),
                 isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 !SpartanEdition.hasDetectionsPurchased(dataType),
-                !hasViolations && !hasData);
+                !hasViolations);
 
-        if (hasViolations || hasData || state != null) {
+        if (hasViolations || state != null) {
             lore.add("§a" + violations + " §7violations");
             lore.add("§e" + state);
-
-            if (hasData) {
-                String color = "§c";
-                lore.add(color + playerProfile.evidence.getKnowledge(hackType, color, true));
-            }
         } else {
             lore.add("§c" + PlayerStateLists.noDataAvailable);
         }
@@ -320,4 +312,5 @@ public class PlayerInfo extends InventoryMenu {
         }
         return true;
     }
+
 }

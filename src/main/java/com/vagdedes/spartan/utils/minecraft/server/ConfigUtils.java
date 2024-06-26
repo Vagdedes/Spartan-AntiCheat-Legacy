@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -78,10 +77,6 @@ public class ConfigUtils {
         message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
         message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
 
-        PunishmentHistory punishmentHistory = p.getProfile().punishmentHistory;
-        message = replace(message, "{kicks}", String.valueOf(punishmentHistory.getKicks()));
-        message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
-
         if (hackType != null) {
             message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
             message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getTotalLevel()));
@@ -118,16 +113,12 @@ public class ConfigUtils {
                 message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
                 message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
 
-                PunishmentHistory punishmentHistory = p.getProfile().punishmentHistory;
-                message = replace(message, "{kicks}", String.valueOf(punishmentHistory.getKicks()));
-                message = replace(message, "{warnings}", String.valueOf(punishmentHistory.getWarnings()));
-
                 if (hasHackType) {
                     message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
                     message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getTotalLevel()));
                 }
             } else if (hasHackType) {
-                PlayerProfile profile = ResearchEngine.getPlayerProfileAdvanced(name, false);
+                PlayerProfile profile = ResearchEngine.getPlayerProfile(name);
 
                 if (profile != null) {
                     message = replace(message, "{player:type}", profile.getDataType().toString().toLowerCase());

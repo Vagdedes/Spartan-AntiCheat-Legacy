@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -15,6 +17,7 @@ public class SpartanProtocol {
     private long lastTransaction;
     private int ping;
     private short transactionID;
+    private PlayerProfile profile;
 
     public SpartanProtocol(Player player) {
         this.player = player;
@@ -26,6 +29,7 @@ public class SpartanProtocol {
         this.velocity = new Vector(0, 0, 0);
         this.spartanPlayer = new SpartanPlayer(this);
         this.lastTransaction = Long.MIN_VALUE;
+        this.profile = ResearchEngine.getPlayerProfile(this.spartanPlayer, false);
     }
 
     public boolean isOnGround() {
@@ -58,6 +62,10 @@ public class SpartanProtocol {
 
     public short getTransactionID() {
         return this.transactionID;
+    }
+
+    public PlayerProfile getProfile() {
+        return this.profile;
     }
 
     // Separator
@@ -100,6 +108,10 @@ public class SpartanProtocol {
             this.transactionID = 1488;
         }
         return this.transactionID;
+    }
+
+    public void setProfile(PlayerProfile profile) {
+        this.profile = profile;
     }
 
 }

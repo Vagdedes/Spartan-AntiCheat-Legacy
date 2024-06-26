@@ -186,11 +186,11 @@ public class CloudConnections {
         StringBuilder value = new StringBuilder();
 
         for (PlayerProfile playerProfile : ResearchEngine.getPlayerProfiles()) {
-            if (!playerProfile.evidence.getKnowledgeList(false).isEmpty()) {
+            if (!playerProfile.isLegitimate()) {
                 SpartanPlayer player = playerProfile.getSpartanPlayer();
                 boolean isNull = player == null;
 
-                if (isNull || !Permissions.isStaff(player) && !player.getInstance().isOp()) {
+                if (isNull || !Permissions.isStaff(player)) {
                     OfflinePlayer offlinePlayer = playerProfile.getOfflinePlayer();
 
                     if (offlinePlayer != null && !offlinePlayer.isOp()) {

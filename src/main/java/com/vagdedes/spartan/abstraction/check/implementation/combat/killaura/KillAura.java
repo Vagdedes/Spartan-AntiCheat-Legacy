@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
@@ -90,56 +89,53 @@ public class KillAura extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerFight) {
-            analysis.run((PlayerFight) object);
-        } else {
+        if (object instanceof PlayerMoveEvent) {
+            runDetection(
+                    "check_move_direction",
+                    moveDirection::runMove
+            );
+        } else if (object instanceof PlayerAttackEvent) {
+            PlayerAttackEvent event = (PlayerAttackEvent) object;
+            LivingEntity target = event.getTarget();
 
-            if (object instanceof PlayerMoveEvent) {
-                PlayerMoveEvent event = (PlayerMoveEvent) object;
+            if (canRunEntity(target)) {
+                runDetection(
+                        "check_irregular",
+                        irregular::runDamage
+                );
+                runDetection(
+                        "check_block_raytrace",
+                        blockRaytrace::runDamage
+                );
+                runDetection(
+                        "check_entity_raytrace",
+                        entityRaytrace::runDamage
+                );
                 runDetection(
                         "check_move_direction",
-                        moveDirection::runMove
+                        () -> moveDirection.runDamage(target)
                 );
-            } else if (object instanceof PlayerAttackEvent) {
-                PlayerAttackEvent event = (PlayerAttackEvent) object;
-                LivingEntity target = event.getTarget();
-
-                if (canRunEntity(target)) {
-                    runDetection(
-                            "check_irregular",
-                            irregular::runDamage
-                    );
-                    runDetection(
-                            "check_block_raytrace",
-                            blockRaytrace::runDamage
-                    );
-                    runDetection(
-                            "check_entity_raytrace",
-                            entityRaytrace::runDamage
-                    );
-                    runDetection(
-                            "check_move_direction",
-                            () -> moveDirection.runDamage(target)
-                    );
-                    runDetection(
-                            "check_hit_time",
-                            hitTime::runDamage
-                    );
-                    runDetection(
-                            "check_hit_direction",
-                            () -> hitDirection.runDamage(target)
-                    );
-                    runDetection(
-                            "check_hit_direction_machine_learning",
-                            hitDirectionML::runDamage
-                    );
-                    runDetection(
-                            "check_response_time",
-                            responseTime::runDamage
-                    );
-                }
+                runDetection(
+                        "check_hit_time",
+                        hitTime::runDamage
+                );
+                runDetection(
+                        "check_hit_direction",
+                        () -> hitDirection.runDamage(target)
+                );
+                runDetection(
+                        "check_hit_direction_machine_learning",
+                        hitDirectionML::runDamage
+                );
+                runDetection(
+                        "check_response_time",
+                        responseTime::runDamage
+                );
+                runDetection(
+                        "check_response_time",
+                        analysis::runDamage
+                );
             }
-
         }
     }
 

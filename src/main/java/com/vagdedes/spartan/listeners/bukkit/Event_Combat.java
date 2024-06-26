@@ -45,21 +45,9 @@ public class Event_Combat implements Listener {
 
                     // Detections
                     if (entityAttack) {
-                        p.calculateClicks(null, true);
+                        p.calculateClicks(true);
 
                         if (entityIsPlayer || entity instanceof LivingEntity) {
-                            if (entityIsPlayer && !e.isCancelled()) {
-                                Player t = (Player) entity;
-
-                                if (!ProtocolLib.isTemporary(t)) {
-                                    SpartanPlayer target = SpartanBukkit.getProtocol(t).spartanPlayer;
-
-                                    if (target != null) {
-                                        p.getProfile().playerCombat.getFight(target).update(p);
-                                    }
-                                }
-                            }
-
                             for (Enums.HackType hackType : handledChecks) {
                                 if (p.getViolations(hackType).prevent()) {
                                     e.setCancelled(true);

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Location;
@@ -126,7 +127,7 @@ public class SpartanPlayerMovement {
     public boolean wasInLiquids() {
         return this.isSwimming()
                 || TPS.getTick(this.location) - this.lastLiquidTicks <=
-                Math.max(Latency.getRoundedDelay(this.parent), 5L);
+                Math.max(AlgebraUtils.integerCeil(Latency.getDelay(this.parent)), 5L);
     }
 
     public Material getLastLiquidMaterial() {

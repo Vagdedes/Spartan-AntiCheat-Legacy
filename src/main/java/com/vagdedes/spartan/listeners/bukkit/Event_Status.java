@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerFight;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
@@ -69,19 +68,6 @@ public class Event_Status implements Listener {
         p.getExecutor(Enums.HackType.NoFall).handle(false, null);
 
         // Objects
-        Player killer = n.getKiller();
-
-        if (killer != null && killer.isOnline()) {
-            SpartanPlayer p2 = SpartanBukkit.getProtocol(killer).spartanPlayer;
-
-            if (p2 != null) {
-                PlayerFight fight = p.getProfile().playerCombat.getFight(p2);
-
-                if (fight != null) {
-                    fight.setWinner(p2);
-                }
-            }
-        }
         p.resetTrackers();
         p.movement.setDetectionLocation();
     }

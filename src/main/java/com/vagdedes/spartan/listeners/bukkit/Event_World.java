@@ -117,7 +117,7 @@ public class Event_World implements Listener {
                     customBlock = notNull && ItemsAdder.is(nb);
 
             // Object
-            p.calculateClicks(action, false);
+            p.calculateClicks(action == Action.LEFT_CLICK_AIR);
 
             if (notNull) {
                 // Detections

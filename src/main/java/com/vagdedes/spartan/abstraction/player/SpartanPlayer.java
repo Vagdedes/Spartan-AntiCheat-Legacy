@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -20,7 +19,6 @@ import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -28,7 +26,6 @@ import com.vagdedes.spartan.functionality.tracking.Elytra;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -39,7 +36,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
@@ -78,7 +74,6 @@ public class SpartanPlayer {
     private SpartanPlayerDamage
             lastDamageReceived,
             lastDamageDealt;
-    private PlayerProfile playerProfile;
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
@@ -94,7 +89,6 @@ public class SpartanPlayer {
                     if (p.movement.isFlying()) {
                         p.trackers.add(Trackers.TrackerType.FLYING, (int) TPS.maximum);
                     }
-                    p.playerProfile.playerCombat.track();
 
                     // Separator
                     SpartanBukkit.runTask(p, () -> {
@@ -139,7 +133,6 @@ public class SpartanPlayer {
         this.potionEffects = Collections.synchronizedMap(
                 SpartanPotionEffect.mapFromBukkit(this, p.getActivePotionEffects())
         );
-        this.playerProfile = ResearchEngine.getPlayerProfile(this);
         this.clicks = new Clicks();
         this.movement = new SpartanPlayerMovement(this);
         this.punishments = new SpartanPunishments(this);
@@ -252,18 +245,8 @@ public class SpartanPlayer {
 
     // Separator
 
-    public void calculateClicks(Action action, boolean runRegardless) {
-        if (!runRegardless) {
-            if (playerProfile.playerCombat.isActivelyFighting(null, true, true, false)) {
-                runRegardless = true;
-            } else {
-                SpartanBlock block = getTargetBlock(CombatUtils.maxHitDistance);
-                runRegardless = block == null || BlockUtils.areAir(block.material);
-            }
-        }
-
-        if (runRegardless
-                && (action == null || action == Action.LEFT_CLICK_AIR)) {
+    public void calculateClicks(boolean run) {
+        if (run) {
             clicks.calculate();
             this.getExecutor(Enums.HackType.FastClicks).run(false);
             InteractiveInventory.playerInfo.refresh(name);
@@ -361,16 +344,6 @@ public class SpartanPlayer {
                     || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         }
-    }
-
-    // Separator
-
-    public PlayerProfile getProfile() {
-        return playerProfile;
-    }
-
-    public void setProfile(PlayerProfile playerProfile) {
-        this.playerProfile = playerProfile;
     }
 
     // Separator

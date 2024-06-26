@@ -24,10 +24,6 @@ public class Latency {
         }
     }
 
-    public static int getRoundedDelay(SpartanPlayer player) {
-        return AlgebraUtils.integerCeil(getDelay(player)); // Ceil because latency is more important than precision
-    }
-
     public static double getDelay(SpartanPlayer player) {
         double pingDelay;
         int max = Config.settings.getInteger("Protections.max_supported_player_latency");

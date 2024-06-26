@@ -35,7 +35,6 @@ public class Check {
     private final boolean[] enabled;
     public final boolean
             canPunish,
-            supportsLiveEvidence,
             supportsSilent;
     private final String[]
             disabledWorlds,
@@ -84,17 +83,12 @@ public class Check {
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
         }
-        this.supportsLiveEvidence = hackType != Enums.HackType.XRay;
-
-        if (this.supportsLiveEvidence) {
-            Object punish = getOption("punish", hackType != Enums.HackType.GhostHand, false); // GhostHand: can punish by default
-            this.canPunish = punish instanceof Boolean ? (boolean) punish :
-                    punish instanceof Long || punish instanceof Integer || punish instanceof Short ? ((long) punish) > 0L :
-                            punish instanceof Double || punish instanceof Float ? ((double) punish) > 0.0 :
-                                    Boolean.parseBoolean(punish.toString().toLowerCase());
-        } else {
-            this.canPunish = false;
-        }
+        
+        Object punish = getOption("punish", hackType != Enums.HackType.GhostHand, false); // GhostHand: can punish by default
+        this.canPunish = punish instanceof Boolean ? (boolean) punish :
+                punish instanceof Long || punish instanceof Integer || punish instanceof Short ? ((long) punish) > 0L :
+                        punish instanceof Double || punish instanceof Float ? ((double) punish) > 0.0 :
+                                Boolean.parseBoolean(punish.toString().toLowerCase());
 
         // Separator
 

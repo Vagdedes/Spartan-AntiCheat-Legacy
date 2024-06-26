@@ -20,20 +20,16 @@ public class PlayerProfile {
     public final String name;
     private final ViolationHistory[] violationHistory;
     private final MiningHistory[] miningHistory;
-    public final PunishmentHistory punishmentHistory;
     public final PlayerEvidence evidence;
     private boolean bedrockPlayer, bedrockPlayerCheck;
     private ItemStack skull;
     private OfflinePlayer offlinePlayer;
-    public final PlayerCombat playerCombat;
 
     // Separator
 
     public PlayerProfile() {
         this.uuid = null;
         this.name = Double.toString(new Random().nextDouble());
-        this.punishmentHistory = null;
-        this.playerCombat = null;
         this.evidence = null;
         this.skull = null;
         this.offlinePlayer = null;
@@ -47,11 +43,8 @@ public class PlayerProfile {
         Enums.HackType[] hackTypes = Enums.HackType.values();
 
         // Separator
-        this.uuid = null;
         this.name = name;
-        this.punishmentHistory = new PunishmentHistory();
-        this.playerCombat = new PlayerCombat(this);
-        this.evidence = new PlayerEvidence();
+        this.evidence = new PlayerEvidence(this);
         this.skull = null;
         this.offlinePlayer = null;
 
@@ -59,11 +52,13 @@ public class PlayerProfile {
         SpartanPlayer player = this.getSpartanPlayer();
 
         if (player != null) {
+            this.uuid = player.uuid;
             this.bedrockPlayer = player.bedrockPlayer;
             this.bedrockPlayerCheck = true;
         } else {
+            this.uuid = null;
             this.bedrockPlayer = BedrockCompatibility.isPlayer(name);
-            this.bedrockPlayerCheck = bedrockPlayer;
+            this.bedrockPlayerCheck = this.bedrockPlayer;
         }
 
         // Separator
@@ -83,9 +78,7 @@ public class PlayerProfile {
         this.uuid = player.uuid;
         this.name = player.name;
         this.offlinePlayer = player.getInstance(); // Attention
-        this.punishmentHistory = new PunishmentHistory();
-        this.playerCombat = new PlayerCombat(this);
-        this.evidence = new PlayerEvidence();
+        this.evidence = new PlayerEvidence(this);
         this.skull = null;
         this.offlinePlayer = null;
         this.bedrockPlayer = player.bedrockPlayer; // Attention
@@ -100,6 +93,12 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore, 0);
         }
+    }
+
+    public void update(SpartanPlayer player) {
+        this.uuid = player.uuid;
+        this.bedrockPlayer = player.bedrockPlayer;
+        this.bedrockPlayerCheck = true;
     }
 
     // Separator
@@ -192,10 +191,6 @@ public class PlayerProfile {
             protocol = SpartanBukkit.getProtocol(name);
         }
         return protocol != null ? protocol.spartanPlayer : null;
-    }
-
-    public boolean isOnline() {
-        return getSpartanPlayer() != null;
     }
 
     // Separator

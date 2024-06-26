@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.functionality.notifications;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.management.Config;
@@ -41,8 +40,7 @@ public class SuspicionNotifications {
         int size = 0, commaLength = comma.length();
 
         for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
-            PlayerProfile profile = player.getProfile();
-            Collection<Enums.HackType> list = profile.evidence.getKnowledgeList(false);
+            Collection<Enums.HackType> list = player.protocol.getProfile().evidence.getKnowledgeList(false);
 
             if (!list.isEmpty()) {
                 StringBuilder evidence = new StringBuilder();

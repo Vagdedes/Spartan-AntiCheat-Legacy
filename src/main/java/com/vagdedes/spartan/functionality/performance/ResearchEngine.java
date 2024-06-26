@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
-import com.vagdedes.spartan.abstraction.profiling.PunishmentHistory;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -143,19 +142,29 @@ public class ResearchEngine {
         return playerProfile;
     }
 
-    public static PlayerProfile getPlayerProfile(SpartanPlayer player) {
-        PlayerProfile playerProfile = new PlayerProfile(player);
+    public static PlayerProfile getPlayerProfile(SpartanPlayer player, boolean force) {
+        PlayerProfile playerProfile;
+
+        if (!force) {
+             playerProfile = playerProfiles.get(player.name);
+
+            if (playerProfile != null) {
+                playerProfile.update(player);
+                return playerProfile;
+            }
+        }
+        playerProfile = new PlayerProfile(player);
         playerProfiles.put(player.name, playerProfile);
         return playerProfile;
     }
 
-    public static PlayerProfile getPlayerProfileAdvanced(String name, boolean deep) {
+    public static PlayerProfile getPlayerProfileAdvanced(String name) {
         PlayerProfile profile = playerProfiles.get(name);
 
         if (profile != null) {
             return profile;
         }
-        if (deep && !playerProfiles.isEmpty()) {
+        if (!playerProfiles.isEmpty()) {
             for (PlayerProfile playerProfile : playerProfiles.values()) {
                 if (playerProfile.getName().equalsIgnoreCase(name)) {
                     return playerProfile;
@@ -184,7 +193,7 @@ public class ResearchEngine {
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles.values()) {
                     playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.evidence.remove(hackType, true, true, true);
+                    playerProfile.evidence.remove(hackType, true, true);
                 }
             }
 
@@ -228,7 +237,7 @@ public class ResearchEngine {
         PlayerProfile profile;
 
         if (foundPlayer) {
-            profile = p.spartanPlayer.getProfile();
+            profile = p.getProfile();
 
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 p.spartanPlayer.getViolations(hackType).reset();
@@ -244,7 +253,7 @@ public class ResearchEngine {
                 playerProfiles.remove(playerName);
 
                 if (foundPlayer) {
-                    p.spartanPlayer.setProfile(getPlayerProfile(p.spartanPlayer));
+                    p.setProfile(getPlayerProfile(p.spartanPlayer, true));
                 }
                 if (Config.sql.isEnabled()) {
                     Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
@@ -273,7 +282,7 @@ public class ResearchEngine {
             playerProfiles.remove(playerName);
 
             if (foundPlayer) {
-                p.spartanPlayer.setProfile(getPlayerProfile(p.spartanPlayer));
+                p.setProfile(getPlayerProfile(p.spartanPlayer, true));
             }
         }
         MainMenu.refresh();
@@ -434,13 +443,7 @@ public class ResearchEngine {
                             int greatestSplitPosition = 10; // Attention
                             String[] split = data.split(" ", greatestSplitPosition + 1);
 
-                            if (data.contains(PunishmentHistory.warningMessage)) {
-                                getPlayerProfile(split[0]).punishmentHistory.increaseWarnings(null, null);
-                            } else if (data.contains(PunishmentHistory.kickMessage)) {
-                                getPlayerProfile(split[0]).punishmentHistory.increaseKicks(null, null);
-                            } else if (data.contains(PunishmentHistory.punishmentMessage)) {
-                                getPlayerProfile(split[0]).punishmentHistory.increasePunishments(null, null);
-                            } else if (data.contains(" failed ")) {
+                            if (data.contains(" failed ")) {
                                 if (split.length >= 3) {
                                     String name = split[0];
                                     String hackTypeString = split[2];
