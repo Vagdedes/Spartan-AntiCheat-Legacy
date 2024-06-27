@@ -83,7 +83,7 @@ public class Check {
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
         }
-        
+
         Object punish = getOption("punish", hackType != Enums.HackType.GhostHand, false); // GhostHand: can punish by default
         this.canPunish = punish instanceof Boolean ? (boolean) punish :
                 punish instanceof Long || punish instanceof Integer || punish instanceof Short ? ((long) punish) > 0L :

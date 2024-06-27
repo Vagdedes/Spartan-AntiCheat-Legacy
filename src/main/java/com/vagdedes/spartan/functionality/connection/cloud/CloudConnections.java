@@ -53,8 +53,10 @@ public class CloudConnections {
                                         String line = reply[0];
 
                                         if (AlgebraUtils.validInteger(line)) {
+                                            int id = Integer.parseInt(line);
                                             CloudBase.token = name;
-                                            return Integer.parseInt(line);
+                                            IDs.set(id, name.hashCode());
+                                            return id;
                                         }
                                     }
                                 }

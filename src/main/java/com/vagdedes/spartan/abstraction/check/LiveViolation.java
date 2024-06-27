@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.InformationAnalysis;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
@@ -433,29 +432,16 @@ public class LiveViolation {
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
-                    if (staff.cooldowns.canDo("notification")) {
-                        int frequency = getNotificationTicksCooldown(
-                                staff,
-                                player,
-                                ignoredViolations
-                        );
-                        boolean def = frequency < 0;
+                    if (!hasNotificationCooldown(staff, player, playerViolation)) {
+                        Player realPlayer = staff.getInstance();
 
-                        if (def || playerViolation.level >= frequency) {
-                            staff.cooldowns.add(
-                                    "notification",
-                                    def ? Math.abs(frequency) * TPS.tickTimeInteger : frequency
+                        if (realPlayer != null) {
+                            ClickableMessage.sendCommand(
+                                    realPlayer,
+                                    message,
+                                    command,
+                                    command
                             );
-                            Player realPlayer = staff.getInstance();
-
-                            if (realPlayer != null) {
-                                ClickableMessage.sendCommand(
-                                        realPlayer,
-                                        message,
-                                        command,
-                                        command
-                                );
-                            }
                         }
                     }
                 }
@@ -463,21 +449,46 @@ public class LiveViolation {
         }
     }
 
-    private int getNotificationTicksCooldown(SpartanPlayer staff,
-                                             SpartanPlayer detectedPlayer,
-                                             int def) {
+    // Separator
+
+    private static int getNotificationTicksCooldown(SpartanPlayer staff,
+                                                    SpartanPlayer detectedPlayer,
+                                                    int def) {
         Integer frequency = DetectionNotifications.getFrequency(staff, true);
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
-        } else if (staff.uuid.equals(detectedPlayer.uuid)
+        } else if (detectedPlayer != null
+                && (staff.uuid.equals(detectedPlayer.uuid)
                 || staff.getWorld().equals(detectedPlayer.getWorld())
-                && AlgebraUtils.getHorizontalDistance(staff.movement.getLocation(), detectedPlayer.movement.getLocation()) <= PlayerUtils.chunk) {
+                && AlgebraUtils.getHorizontalDistance(staff.movement.getLocation(), detectedPlayer.movement.getLocation()) <= PlayerUtils.chunk)) {
             return 0;
         } else {
             return -def;
         }
+    }
+
+    public static boolean hasNotificationCooldown(SpartanPlayer staff, SpartanPlayer player, PlayerViolation violation) {
+        if (staff.cooldowns.canDo("notification")) {
+            boolean hasViolations = violation != null;
+            int frequency = getNotificationTicksCooldown(
+                    staff,
+                    player,
+                    hasViolations
+                            ? violation.getIgnoredViolations(player.dataType)
+                            : Check.standardIgnoredViolations
+            );
+            boolean def = !hasViolations || frequency < 0;
+
+            if (def || violation.level >= frequency) {
+                staff.cooldowns.add(
+                        "notification",
+                        def ? Math.abs(frequency) * TPS.tickTimeInteger : frequency
+                );
+            }
+        }
+        return false;
     }
 
 }

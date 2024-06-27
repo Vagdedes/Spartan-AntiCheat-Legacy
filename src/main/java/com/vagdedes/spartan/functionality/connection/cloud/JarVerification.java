@@ -28,8 +28,6 @@ public class JarVerification {
 
                 if (userID <= 0) {
                     valid = false;
-                } else {
-                    IDs.setUserID(userID);
                 }
             });
         }
@@ -66,7 +64,7 @@ public class JarVerification {
 
         try {
             int number = site.length() - 7;
-            String platformName = IDs.getPlatform(false),
+            String platformName = IDs.platform(),
                     platform = platformName != null ? ("&platform=" + platformName) : "",
                     port = "&port=" + Bukkit.getPort(),
                     website = site.substring(0, number) + spigot + site.substring(number) + nonce + platform + port;

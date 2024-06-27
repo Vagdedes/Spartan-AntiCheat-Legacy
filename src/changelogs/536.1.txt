@@ -2,3 +2,8 @@
 [+] All checks now support silent mode with the help of smarter preventions.
 [#] Improved the use of memory relative to its synchronization requirements
 [#] Simplified existing objects for less memory use and faster processing times.
+[#] Fixed an issue that prevented the plugin to load on servers based on the Folia fork.
+[#] Better synchronized notifications to reduce spam including cross-server ones.
+[#] Largely improved the way evidence is calculated by calculating on the spot.
+[#] Improved the object hierarchy to help objects communicate with each other faster.
+[-] Removed tracking of kicks and warnings as they did not help any of the statistics.
