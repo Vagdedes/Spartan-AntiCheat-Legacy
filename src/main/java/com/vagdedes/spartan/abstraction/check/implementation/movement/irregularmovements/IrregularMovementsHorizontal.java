@@ -22,7 +22,8 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
                 if (knownBox || knownOldBox) {
                     int limit = PlayerUtils.getJumpTicks(0) * (player.bedrockPlayer ? PlayerUtils.getJumpTicks(0) : 1);
 
-                    if (airTicks > limit) {
+                    if (airTicks > limit
+                            && !player.isOnGround(true)) {
                         cancel(
                                 "type: horizontal(known)"
                                         + ", box: " + box
