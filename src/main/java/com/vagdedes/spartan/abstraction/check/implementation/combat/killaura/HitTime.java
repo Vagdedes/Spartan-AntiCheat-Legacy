@@ -56,10 +56,6 @@ public class HitTime extends DetectionExecutor {
             } else {
                 if (vlAnalysis > 0) vlAnalysis -= 50;
             }
-            if (vlAnalysis >= 300) {
-                cancel("type: post(improbable)", vl / 100D, player.movement.getEventFromLocation());
-                vlAnalysis -= 50;
-            }
             packets = 0;
             devianceTotal = 0;
             lowPackets = 0;
