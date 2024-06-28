@@ -167,7 +167,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                         product = PlayerUtils.calculateTerminalVelocity(
                                 PlayerUtils.airDrag,
                                 player.movement.getAirAcceleration()
-                        );
+                        ) * 2;
                     } else {
                         product = !sensitive
                                 && !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
