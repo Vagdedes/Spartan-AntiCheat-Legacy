@@ -62,7 +62,7 @@ public class NoFall extends CheckExecutor {
     @Override
     public void runInternal(boolean cancelled) {
         if (player.isOnGround(false)) {
-            ignore = false;
+            this.ignore = false;
             return;
         }
         if (ignore) {
@@ -74,7 +74,8 @@ public class NoFall extends CheckExecutor {
         if (vertical == null
                 || oldVertical == null) {
             this.distance = 0.0;
-            this.previousFallTick = 0;
+            this.previousFallTick = Integer.MAX_VALUE;
+            this.previousFallDistance = player.getInstance().getFallDistance();
             return;
         }
         double fallDistance = player.getInstance().getFallDistance();

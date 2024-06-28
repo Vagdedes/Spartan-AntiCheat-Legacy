@@ -1,4 +1,4 @@
-[+] Implemented way to properly load data from block asynchronously. (off the main thread)
+[+] Implemented ways to properly load data from blocks and worlds asynchronously. (off the main thread)
 [+] All checks now support silent mode with the help of smarter preventions.
 [+] When packets are enabled, movement checks will now run on packet events instead of bukkit events.
 [#] Improved the use of memory relative to its synchronization requirements
@@ -7,4 +7,5 @@
 [#] Better synchronized notifications to reduce spam including cross-server ones.
 [#] Largely improved the way evidence is calculated by calculating on the spot.
 [#] Improved the object hierarchy to help objects communicate with each other faster.
+[#] Rewrote the statistics of the XRay check so to serve you more reliably.
 [-] Removed tracking of kicks and warnings as they did not help any of the statistics.
