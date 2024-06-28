@@ -23,6 +23,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
+import com.vagdedes.spartan.listeners.bukkit.Event_Chunks;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -51,6 +52,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpartanPlayer {
+
+    private static final Map<Integer, Map<Long, List<Entity>>> entities = new ConcurrentHashMap<>();
 
     public final SpartanProtocol protocol;
     public final boolean bedrockPlayer;
@@ -82,6 +85,38 @@ public class SpartanPlayer {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (!players.isEmpty()) {
+                if (SpartanBukkit.packetsEnabled()) {
+                    Set<Integer> worldHashes = new HashSet<>();
+
+                    for (World world : Bukkit.getWorlds()) {
+                        Map<Long, List<Entity>> perChunk = new ConcurrentHashMap<>();
+
+                        for (Entity entity : world.getEntities()) {
+                            Location location = entity.getLocation();
+                            perChunk.computeIfAbsent(
+                                    Event_Chunks.hashChunk(
+                                            SpartanLocation.getChunkPos(location.getBlockX()),
+                                            SpartanLocation.getChunkPos(location.getBlockZ())
+                                    ),
+                                    k -> new CopyOnWriteArrayList<>()
+                            ).add(entity);
+                        }
+                        int hash = world.getName().hashCode();
+                        worldHashes.add(hash);
+                        entities.put(hash, perChunk);
+                    }
+                    Iterator<Integer> iterator = entities.keySet().iterator();
+
+                    while (iterator.hasNext()) {
+                        int hash = iterator.next();
+
+                        if (!worldHashes.contains(hash)) {
+                            iterator.remove();
+                        }
+                    }
+                } else {
+                    entities.clear();
+                }
                 for (SpartanPlayer p : players) {
                     p.movement.judgeGround();
 
@@ -542,32 +577,60 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (true) { // todo
-            return new ArrayList<>(0);
-        }
-        Thread thread = Thread.currentThread();
-        List<Entity> nearbyEntities = new ArrayList<>();
-        boolean[] booleans = new boolean[1];
-        SpartanBukkit.transferTask(
-                this,
-                () -> {
-                    nearbyEntities.addAll(this.getInstance().getNearbyEntities(x, y, z));
-                    booleans[0] = true;
+        if (SpartanBukkit.packetsEnabled()) {
+            Map<Long, List<Entity>> perChunk = entities.get(this.getWorld().getName().hashCode());
 
-                    synchronized (thread) {
-                        thread.notifyAll();
+            if (perChunk != null) {
+                List<Entity> nearbyEntities = new ArrayList<>();
+                SpartanLocation current = this.movement.getLocation();
+                Collection<SpartanLocation> locations = current.getSurroundingLocations(x, y, z);
+                locations.add(current);
+
+                for (SpartanLocation location : locations) {
+                    List<Entity> list = perChunk.get(Event_Chunks.hashChunk(
+                            SpartanLocation.getChunkPos(location.getBlockX()),
+                            SpartanLocation.getChunkPos(location.getBlockZ())
+                    ));
+
+                    if (list != null) {
+                        for (Entity entity : list) {
+                            if (Math.abs(entity.getLocation().getX() - current.getX()) <= x
+                                    && Math.abs(entity.getLocation().getY() - current.getY()) <= y
+                                    && Math.abs(entity.getLocation().getZ() - current.getZ()) <= z) {
+                                nearbyEntities.add(entity);
+                            }
+                        }
                     }
                 }
-        );
-        synchronized (thread) {
-            if (!booleans[0]) {
-                try {
-                    thread.wait();
-                } catch (Exception ignored) {
+                return nearbyEntities;
+            } else {
+                return new ArrayList<>(0);
+            }
+        } else {
+            Thread thread = Thread.currentThread();
+            List<Entity> nearbyEntities = new ArrayList<>();
+            boolean[] booleans = new boolean[1];
+            SpartanBukkit.transferTask(
+                    this,
+                    () -> {
+                        nearbyEntities.addAll(this.getInstance().getNearbyEntities(x, y, z));
+                        booleans[0] = true;
+
+                        synchronized (thread) {
+                            thread.notifyAll();
+                        }
+                    }
+            );
+            synchronized (thread) {
+                if (!booleans[0]) {
+                    try {
+                        thread.wait();
+                    } catch (Exception ignored) {
+                    }
                 }
             }
+            return nearbyEntities;
         }
-        return nearbyEntities;
     }
 
     // Teleport

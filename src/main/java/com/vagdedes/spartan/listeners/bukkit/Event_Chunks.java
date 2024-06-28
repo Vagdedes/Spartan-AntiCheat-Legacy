@@ -80,7 +80,7 @@ public class Event_Chunks implements Listener {
 
     // Separator
 
-    private static long hashChunk(int x, int z) {
+    public static long hashChunk(int x, int z) {
         return (31L * x) + z;
     }
 

@@ -20,7 +20,6 @@ import java.io.File;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -361,15 +360,10 @@ public class SQLFeature extends ConfigurationBuilder {
 
             if (list.size() >= 10) {
                 SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
-                    List<String> newList;
-
-                    synchronized (list) {
-                        newList = new ArrayList<>(list);
-                        list.clear();
-                    }
-                    for (String insert : newList) {
+                    for (String insert : list) {
                         update(insert);
                     }
+                    list.clear();
                 });
             }
         }

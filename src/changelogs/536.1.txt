@@ -1,5 +1,6 @@
 [+] Implemented way to properly load data from block asynchronously. (off the main thread)
 [+] All checks now support silent mode with the help of smarter preventions.
+[+] When packets are enabled, movement checks will now run on packet events instead of bukkit events.
 [#] Improved the use of memory relative to its synchronization requirements
 [#] Simplified existing objects for less memory use and faster processing times.
 [#] Fixed an issue that prevented the plugin to load on servers based on the Folia fork.
