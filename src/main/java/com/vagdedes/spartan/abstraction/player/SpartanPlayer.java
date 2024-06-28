@@ -47,6 +47,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpartanPlayer {
 
@@ -130,15 +132,18 @@ public class SpartanPlayer {
         this.trackers = new Trackers(this);
 
         this.name = p.getName();
-        this.potionEffects = Collections.synchronizedMap(
-                SpartanPotionEffect.mapFromBukkit(this, p.getActivePotionEffects())
+        Collection<PotionEffect> collection = p.getActivePotionEffects();
+        this.potionEffects = SpartanPotionEffect.mapFromBukkit(
+                new ConcurrentHashMap<>(collection.size() + 1, 1.0f),
+                this,
+                collection
         );
         this.clicks = new Clicks();
         this.movement = new SpartanPlayerMovement(this);
         this.punishments = new SpartanPunishments(this);
-        this.velocityReceived = Collections.synchronizedList(new LinkedList<>());
-        this.damageReceived = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.damageDealt = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.velocityReceived = new CopyOnWriteArrayList<>();
+        this.damageReceived = new ConcurrentHashMap<>();
+        this.damageDealt = new ConcurrentHashMap<>();
         this.lastDamageReceived = new SpartanPlayerDamage(this);
         this.lastDamageDealt = new SpartanPlayerDamage(this);
 
@@ -386,41 +391,30 @@ public class SpartanPlayer {
         if (velocityReceived.isEmpty()) {
             return null;
         } else {
-            SpartanPlayerVelocity velocity;
-
-            synchronized (this.velocityReceived) {
-                velocity = this.velocityReceived.get(this.velocityReceived.size() - 1);
-            }
-            return velocity;
+            return this.velocityReceived.get(this.velocityReceived.size() - 1);
         }
     }
 
     public List<SpartanPlayerVelocity> getVelocitiesReceived() {
-        synchronized (this.velocityReceived) {
-            return new ArrayList<>(this.velocityReceived);
-        }
+        return new ArrayList<>(this.velocityReceived);
     }
 
     public void addReceivedVelocity(PlayerVelocityEvent event) {
         if (this.velocityReceived.size() == TPS.maximum) {
-            synchronized (this.velocityReceived) {
-                this.velocityReceived.remove(0);
-                this.velocityReceived.add(new SpartanPlayerVelocity(
-                        this,
-                        event,
-                        this.movement.getLocation()
-                ));
-            }
+            this.velocityReceived.remove(0);
+            this.velocityReceived.add(new SpartanPlayerVelocity(
+                    this,
+                    event,
+                    this.movement.getLocation()
+            ));
         } else {
-            synchronized (this.velocityReceived) {
-                this.velocityReceived.add(
-                        new SpartanPlayerVelocity(
-                                this,
-                                event,
-                                this.movement.getLocation()
-                        )
-                );
-            }
+            this.velocityReceived.add(
+                    new SpartanPlayerVelocity(
+                            this,
+                            event,
+                            this.movement.getLocation()
+                    )
+            );
         }
     }
 
@@ -435,61 +429,43 @@ public class SpartanPlayer {
     }
 
     public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getRawReceivedDamages() {
-        synchronized (this.damageReceived) {
-            return new HashSet<>(this.damageReceived.entrySet());
-        }
+        return new HashSet<>(this.damageReceived.entrySet());
     }
 
     public Collection<SpartanPlayerDamage> getReceivedDamages() {
-        synchronized (this.damageReceived) {
-            return new ArrayList<>(this.damageReceived.values());
-        }
+        return new ArrayList<>(this.damageReceived.values());
     }
 
     public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getRawDealtDamages() {
-        synchronized (this.damageDealt) {
-            return new HashSet<>(this.damageDealt.entrySet());
-        }
+        return new HashSet<>(this.damageDealt.entrySet());
     }
 
     public Collection<SpartanPlayerDamage> getDealtDamages() {
-        synchronized (this.damageDealt) {
-            return new ArrayList<>(this.damageDealt.values());
-        }
+        return new ArrayList<>(this.damageDealt.values());
     }
 
     public SpartanPlayerDamage getDamageReceived(EntityDamageEvent.DamageCause cause) {
-        synchronized (this.damageReceived) {
-            return this.damageReceived.get(cause);
-        }
+        return this.damageReceived.get(cause);
     }
 
     public SpartanPlayerDamage getDamageDealt(EntityDamageEvent.DamageCause cause) {
-        synchronized (this.damageDealt) {
-            return this.damageDealt.get(cause);
-        }
+        return this.damageDealt.get(cause);
     }
 
     public void addReceivedDamage(EntityDamageEvent event) {
         this.lastDamageReceived = new SpartanPlayerDamage(this, event);
-
-        synchronized (this.damageReceived) {
-            this.damageReceived.put(
-                    event.getCause(),
-                    this.lastDamageReceived
-            );
-        }
+        this.damageReceived.put(
+                event.getCause(),
+                this.lastDamageReceived
+        );
     }
 
     public void addDealtDamage(EntityDamageByEntityEvent event) {
         this.lastDamageDealt = new SpartanPlayerDamage(this, event);
-
-        synchronized (this.damageDealt) {
-            this.damageDealt.put(
-                    event.getCause(),
-                    this.lastDamageDealt
-            );
-        }
+        this.damageDealt.put(
+                event.getCause(),
+                this.lastDamageDealt
+        );
     }
 
     // Separator
@@ -518,10 +494,8 @@ public class SpartanPlayer {
                 return false;
             }
         } else {
-            synchronized (this.potionEffects) {
-                return !this.potionEffects.isEmpty()
-                        && this.potionEffects.values().stream().anyMatch(SpartanPotionEffect::isActive);
-            }
+            return !this.potionEffects.isEmpty()
+                    && this.potionEffects.values().stream().anyMatch(SpartanPotionEffect::isActive);
         }
     }
 
@@ -530,31 +504,25 @@ public class SpartanPlayer {
 
         if (vehicle != null) {
             if (vehicle instanceof LivingEntity) {
-                return SpartanPotionEffect.listFromBukkit(this, ((LivingEntity) vehicle).getActivePotionEffects());
+                Collection<PotionEffect> collection = ((LivingEntity) vehicle).getActivePotionEffects();
+                return SpartanPotionEffect.listFromBukkit(new ArrayList<>(collection.size()), this, collection);
             } else {
                 return new ArrayList<>(0);
             }
         } else {
-            synchronized (this.potionEffects) {
-                return this.potionEffects.values();
-            }
+            return this.potionEffects.values();
         }
     }
 
     public void setStoredPotionEffects(Collection<PotionEffect> effects) {
-        synchronized (this.potionEffects) {
-            for (PotionEffect effect : effects) {
-                this.potionEffects.put(effect.getType(), new SpartanPotionEffect(this, effect));
-            }
+        for (PotionEffect effect : effects) {
+            this.potionEffects.put(effect.getType(), new SpartanPotionEffect(this, effect));
         }
     }
 
     public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
-        SpartanPotionEffect potionEffect;
+        SpartanPotionEffect potionEffect = this.potionEffects.get(type);
 
-        synchronized (this.potionEffects) {
-            potionEffect = this.potionEffects.get(type);
-        }
         if (potionEffect != null
                 && potionEffect.ticksPassed() <= lastActive
                 && potionEffect.bukkitEffect.getType().equals(type)) {
@@ -565,11 +533,7 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType type, long lastActive) {
-        SpartanPotionEffect potionEffect;
-
-        synchronized (this.potionEffects) {
-            potionEffect = this.potionEffects.get(type);
-        }
+        SpartanPotionEffect potionEffect = this.potionEffects.get(type);
         return potionEffect != null
                 && potionEffect.ticksPassed() <= lastActive
                 && potionEffect.bukkitEffect.getType().equals(type);
@@ -578,6 +542,9 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
+        if (true) { // todo
+            return new ArrayList<>(0);
+        }
         Thread thread = Thread.currentThread();
         List<Entity> nearbyEntities = new ArrayList<>();
         boolean[] booleans = new boolean[1];

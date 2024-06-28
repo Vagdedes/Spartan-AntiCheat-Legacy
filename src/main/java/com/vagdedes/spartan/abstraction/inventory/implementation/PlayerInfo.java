@@ -64,7 +64,7 @@ public class PlayerInfo extends InventoryMenu {
 
             InventoryUtils.prepareDescription(
                     lore,
-                    PlayerStateLists.suspected
+                    legitimate ? "Legitimate Player" : PlayerStateLists.suspected
             );
             if (!evidenceDetails.isEmpty()) {
                 lore.add(legitimate ? "§7Evaluated for§8:" : "§7Suspected for§8:");

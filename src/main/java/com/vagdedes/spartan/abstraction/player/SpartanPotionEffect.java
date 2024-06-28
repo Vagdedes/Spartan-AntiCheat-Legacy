@@ -4,24 +4,24 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class SpartanPotionEffect {
 
-    static Map<PotionEffectType, SpartanPotionEffect> mapFromBukkit(SpartanPlayer player,
+    static Map<PotionEffectType, SpartanPotionEffect> mapFromBukkit(Map<PotionEffectType, SpartanPotionEffect> map,
+                                                                    SpartanPlayer player,
                                                                     Collection<PotionEffect> collection) {
-        Map<PotionEffectType, SpartanPotionEffect> map = new LinkedHashMap<>(collection.size() + 1, 1.0f);
-
         for (PotionEffect effect : collection) {
             map.put(effect.getType(), new SpartanPotionEffect(player, effect));
         }
         return map;
     }
 
-    static List<SpartanPotionEffect> listFromBukkit(SpartanPlayer player,
+    static List<SpartanPotionEffect> listFromBukkit(List<SpartanPotionEffect> list,
+                                                    SpartanPlayer player,
                                                     Collection<PotionEffect> collection) {
-        List<SpartanPotionEffect> list = new ArrayList<>(collection.size());
-
         for (PotionEffect effect : collection) {
             list.add(new SpartanPotionEffect(player, effect));
         }

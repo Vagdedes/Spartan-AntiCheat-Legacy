@@ -68,9 +68,13 @@ public class IDs {
     }
 
     public static String hide(String id) {
-        double version = Double.parseDouble(API.getVersion().substring(6));
-        double number = AlgebraUtils.cut(Integer.parseInt(id) / version, 6);
-        return String.valueOf(number).replace("-", "*").replace(".", "-");
+        try {
+            double version = Double.parseDouble(API.getVersion().substring(6));
+            double number = AlgebraUtils.cut(Integer.parseInt(id) / version, 6);
+            return String.valueOf(number).replace("-", "*").replace(".", "-");
+        } catch (Exception ex) {
+            return "0";
+        }
     }
 
 }

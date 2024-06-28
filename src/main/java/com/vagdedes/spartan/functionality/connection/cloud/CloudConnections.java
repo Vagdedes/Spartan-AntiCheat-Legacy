@@ -78,7 +78,9 @@ public class CloudConnections {
                 String line = reply[0];
 
                 if (AlgebraUtils.validInteger(line)) {
-                    return Integer.parseInt(line);
+                    int id = Integer.parseInt(line);
+                    IDs.set(id, id);
+                    return id;
                 }
             }
         } catch (Exception e) {

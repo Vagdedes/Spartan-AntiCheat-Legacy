@@ -407,7 +407,7 @@ public class LiveViolation {
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + ") "
                 + "[(Version: " + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
                 + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
-                + "(Ping: " + player.getPing() + "ms), (TPS: "
+                + ", (Packets: " + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), (TPS: "
                 + AlgebraUtils.cut(TPS.get(player, false), 3) + "), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
                 + location.getBlockZ() + "), (" + playerViolation.information + ")]";
