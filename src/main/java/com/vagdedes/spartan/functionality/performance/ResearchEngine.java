@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ResearchEngine {
 
     public static final double requiredProfiles = 10;
-    private static final double minimumAverageMining = 16.0;
 
     private static final int cacheRefreshTicks = 1200;
     private static int schedulerTicks = 0;
@@ -41,26 +40,8 @@ public class ResearchEngine {
 
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
     private static final Map<MiningHistory.MiningOre, Double> averageMining = new LinkedHashMap<>(MiningHistory.MiningOre.values().length);
-    private static final double[] defaultAverageMining = new double[MiningHistory.MiningOre.values().length];
 
     static {
-        for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
-            switch (ore) {
-                case DIAMOND:
-                    defaultAverageMining[ore.ordinal()] = -32.0;
-                    break;
-                case EMERALD:
-                case ANCIENT_DEBRIS:
-                    defaultAverageMining[ore.ordinal()] = -minimumAverageMining;
-                    break;
-                case GOLD:
-                    defaultAverageMining[ore.ordinal()] = -64.0;
-                    break;
-                default:
-                    break;
-            }
-        }
-
         SpartanBukkit.runRepeatingTask(() -> {
             if (schedulerTicks == 0) {
                 schedulerTicks = cacheRefreshTicks * 10;
@@ -172,13 +153,6 @@ public class ResearchEngine {
             }
         }
         return null;
-    }
-
-    // Separator
-
-    public static double getMiningHistoryAverage(MiningHistory.MiningOre ore) {
-        Double average = averageMining.get(ore);
-        return average == null ? defaultAverageMining[ore.ordinal()] : average;
     }
 
     // Separator
@@ -513,12 +487,7 @@ public class ResearchEngine {
             Collection<PlayerProfile> playerProfiles = new ArrayList<>(ResearchEngine.playerProfiles.values());
             Enums.HackType[] hackTypes = Enums.HackType.values();
             Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
-            int mines = 0;
             ViolationAnalysis.calculateData(playerProfiles);
-
-            for (PlayerProfile playerProfile : playerProfiles) {
-                mines += playerProfile.getOverallMiningHistory().getMines();
-            }
 
             // Separator
 
@@ -593,31 +562,6 @@ public class ResearchEngine {
             } else {
                 for (Enums.HackType hackType : hackTypes) {
                     hackType.getCheck().clearIgnoredViolations();
-                }
-            }
-
-            // Separator
-
-            for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
-                double average = 0.0, total = 0.0;
-
-                for (PlayerProfile playerProfile : playerProfiles) {
-                    if (playerProfile.isLegitimate()) {
-                        MiningHistory miningHistory = playerProfile.getMiningHistory(ore);
-                        mines = miningHistory.getMines();
-
-                        if (mines > 0) {
-                            average += mines / ((double) miningHistory.getDays());
-                            total++;
-                        }
-                    }
-
-                    if (total > 0) {
-                        average = Math.max(average / total, minimumAverageMining);
-                        averageMining.put(ore, average);
-                    } else {
-                        averageMining.remove(ore);
-                    }
                 }
             }
         } else { // We clear because there are no players

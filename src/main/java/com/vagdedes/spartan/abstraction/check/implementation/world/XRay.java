@@ -3,13 +3,55 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
-import org.bukkit.WorldType;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class XRay extends CheckExecutor {
+
+    private static double getAverageDeviation(World.Environment environment, MiningHistory.MiningOre ore) {
+        Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+
+        if (profiles.size() <= ResearchEngine.requiredProfiles) {
+            return 0.0;
+        } else {
+            int profileCount = 0;
+            Map<String, Integer> count = new HashMap<>();
+
+            for (PlayerProfile profile : profiles) {
+                if (profile.isLegitimate()) {
+                    Set<Map.Entry<String, Integer>> entries = profile.getMiningHistory(ore).getMinesEntry(environment);
+
+                    if (!entries.isEmpty()) {
+                        profileCount++;
+
+                        for (Map.Entry<String, Integer> entry : entries) {
+                            count.put(entry.getKey(), count.getOrDefault(entry.getKey(), 0) + entry.getValue());
+                        }
+                    }
+                }
+            }
+            if (profileCount >= ResearchEngine.requiredProfiles) {
+                int mines = 0;
+
+                for (Map.Entry<String, Integer> entry : count.entrySet()) {
+                    mines += entry.getValue() * entry.getValue();
+                }
+                return Math.sqrt(mines / ((double) count.size()));
+            } else {
+                return 0.0;
+            }
+        }
+    }
+
+    // Separator
 
     public XRay(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
@@ -19,18 +61,18 @@ public class XRay extends CheckExecutor {
     protected void handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
         MiningHistory miningHistory = (MiningHistory) objects[1];
-        int mines = miningHistory.getMines(World.Environment.valueOf(objects[0].toString()));
+        World.Environment environment = World.Environment.valueOf(objects[0].toString());
+        double minesDeviation = miningHistory.getMinesDeviation(environment);
 
-        if (mines > 0) {
-            double globalAverage = ResearchEngine.getMiningHistoryAverage((MiningHistory.MiningOre) objects[2]),
-                    average = mines / ((double) miningHistory.getDays());
+        if (minesDeviation > 0.0) {
+            double averageDeviation = getAverageDeviation(environment, (MiningHistory.MiningOre) objects[2]);
 
-            if (globalAverage < 0.0) {
-                globalAverage = Math.abs(globalAverage);
+            if (averageDeviation < 0.0) {
+                averageDeviation = Math.abs(averageDeviation);
             } else {
-                globalAverage = globalAverage * 1.5;
+                averageDeviation = averageDeviation * 1.5;
             }
-            double points = AlgebraUtils.cut(average - globalAverage, 2);
+            double points = AlgebraUtils.cut(minesDeviation - averageDeviation, 2);
 
             if (points > 0.0) {
                 cancel(
@@ -38,11 +80,6 @@ public class XRay extends CheckExecutor {
                 );
             }
         }
-    }
-
-    @Override
-    protected boolean canRun() {
-        return player.getWorld().getWorldType() != WorldType.FLAT;
     }
 
 }

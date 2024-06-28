@@ -69,7 +69,7 @@ public class PlayerProfile {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory();
         }
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
-            this.miningHistory[ore.ordinal()] = new MiningHistory(ore, 0);
+            this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
     }
 
@@ -91,7 +91,7 @@ public class PlayerProfile {
             this.violationHistory[hackType.ordinal()] = new ViolationHistory();
         }
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
-            this.miningHistory[ore.ordinal()] = new MiningHistory(ore, 0);
+            this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
     }
 
@@ -195,28 +195,8 @@ public class PlayerProfile {
 
     // Separator
 
-    public ViolationHistory[] getViolationHistory() {
-        return violationHistory;
-    }
-
     public ViolationHistory getViolationHistory(Enums.HackType hackType) {
         return violationHistory[hackType.ordinal()];
-    }
-
-    // Separator
-
-    public MiningHistory[] getMiningHistory() {
-        return miningHistory;
-    }
-
-    public MiningHistory getOverallMiningHistory() {
-        int mines = 0, days = 0;
-
-        for (MiningHistory miningHistory : getMiningHistory()) {
-            mines += miningHistory.getMines();
-            days = Math.max(miningHistory.getDays(), days);
-        }
-        return new MiningHistory(null, mines);
     }
 
     public MiningHistory getMiningHistory(MiningHistory.MiningOre ore) {

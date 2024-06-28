@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.CancelCause;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -36,9 +35,13 @@ public class PlayerInfo extends InventoryMenu {
 
     private static final String menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
     private static final String documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
+    private static final int[] slots = new int[]{
+            21, 22, 23,
+            30, 31, 32
+    };
 
     public PlayerInfo() {
-        super(menu, 45, new Permission[]{Permission.MANAGE, Permission.INFO});
+        super(menu, 54, new Permission[]{Permission.MANAGE, Permission.INFO});
     }
 
     @Override
@@ -56,9 +59,7 @@ public class PlayerInfo extends InventoryMenu {
         } else {
             boolean legitimate = profile.isLegitimate();
             Set<Map.Entry<HackType, String>> evidenceDetails = profile.evidence.getKnowledgeEntries(legitimate);
-            int miningHistoryMines = profile.getOverallMiningHistory().getMines();
             List<String> lore = new ArrayList<>(20);
-            int i = 19;
 
             setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
 
@@ -99,36 +100,13 @@ public class PlayerInfo extends InventoryMenu {
 
             for (Enums.HackCategoryType checkType : Enums.HackCategoryType.values()) {
                 if (checkType == Enums.HackCategoryType.EXPLOITS) {
-                    addCheck(HackType.Exploits, 24, isOnline, sp, profile, lore);
+                    addCheck(HackType.Exploits, slots[checkType.ordinal()], isOnline, sp, profile, lore);
                 } else {
-                    addChecks(i, isOnline, sp, profile, lore, checkType);
-                    i++;
+                    addChecks(slots[checkType.ordinal()], isOnline, sp, profile, lore, checkType);
                 }
             }
 
-            lore.clear();
-            lore.add("");
-            boolean added = false;
-
-            for (MiningHistory history : profile.getMiningHistory()) {
-                int mines = history.getMines();
-
-                if (mines > 0) {
-                    added = true;
-                    String ore = history.ore.toString();
-                    int days = history.getDays();
-                    lore.add("§c" + mines + " §7" + ore + (mines == 1 ? "" : (ore.endsWith("s") ? "es" : "s"))
-                            + " in §c" + days + " §7" + (days == 1 ? "day" : "days"));
-                }
-            }
-            if (!added) {
-                lore.add("§c" + PlayerStateLists.noDataAvailable);
-            }
-            ItemStack item = miningHistoryMines > 0 ?
-                    new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), Math.min(miningHistoryMines, 64), (short) 14) :
-                    new ItemStack(Material.QUARTZ_BLOCK);
-            add("§2Mining History", lore, item, 25);
-            add("§c" + (back ? "Back" : "Close"), null, new ItemStack(Material.ARROW), 40);
+            add("§c" + (back ? "Back" : "Close"), null, new ItemStack(Material.ARROW), 49);
             return true;
         }
     }
