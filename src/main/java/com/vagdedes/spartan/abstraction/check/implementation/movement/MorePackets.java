@@ -25,7 +25,7 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        nmsMap.put(TPS.getTick(player), nmsMap.getOrDefault(TPS.getTick(player), 0) + 1);
+        nmsMap.put(TPS.tick(), nmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
         if (nmsMap.size() > configuredTicks()) {
             Iterator<Long> iterator = nmsMap.keySet().iterator();
@@ -37,7 +37,7 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected void schedulerInternal() {
         if (!nmsMap.isEmpty()) {
-            long currentTick = TPS.getTick(player),
+            long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();
             int period = 0, collections = 0;
             Map<Integer, Integer> positives = new HashMap<>(),

@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -34,7 +33,6 @@ public class ConfigUtils {
     public static String replaceWithSyntax(String message, HackType hackType) {
         message = replace(message, "%%", " ");
         message = replace(message, "{space}", " ");
-        message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get((SpartanPlayer) null, false), 2)));
         message = replace(message, "{online}", String.valueOf(SpartanBukkit.getPlayerCount()));
         message = replace(message, "{staff}", String.valueOf(Permissions.getStaff().size()));
         message = replace(message, "{motd}", Bukkit.getMotd());
@@ -62,7 +60,6 @@ public class ConfigUtils {
         UUID uuid = p.uuid;
         SpartanLocation loc = p.movement.getLocation();
         String worldName = p.getWorld().getName();
-        message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(p, false), 2)));
         message = replace(message, "{player}", p.name);
         message = replace(message, "{player:type}", p.dataType.toString().toLowerCase());
         message = replace(message, "{uuid}", uuid.toString());
@@ -101,7 +98,6 @@ public class ConfigUtils {
                 SpartanLocation loc = p.movement.getLocation();
                 String worldName = p.getWorld().getName();
                 message = replace(message, "{player:type}", p.dataType.toString().toLowerCase());
-                message = replace(message, "{tps}", String.valueOf(AlgebraUtils.cut(TPS.get(p, false), 2)));
                 message = replace(message, "{ping}", String.valueOf(p.getPing()));
                 message = replace(message, "{world}", worldName);
                 message = replace(message, "{health}", String.valueOf(p.getInstance().getHealth()));

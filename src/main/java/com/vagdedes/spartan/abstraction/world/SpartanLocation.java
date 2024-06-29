@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.world;
 
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.bukkit.Event_Chunks;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -20,7 +19,7 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class SpartanLocation {
+public class SpartanLocation implements Cloneable {
 
     private static final boolean
             v_1_13 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
@@ -37,7 +36,7 @@ public class SpartanLocation {
 
     // Object
 
-    private final long tick;
+    private final long time;
     public final World world;
     private double x, y, z;
     private float yaw, pitch;
@@ -54,7 +53,7 @@ public class SpartanLocation {
         this.z = z;
         this.yaw = yaw;
         this.pitch = pitch;
-        this.tick = TPS.getTick(this);
+        this.time = System.currentTimeMillis();
     }
 
     public SpartanLocation(Location loc, float yaw, float pitch) { // Used for vehicles
@@ -65,19 +64,18 @@ public class SpartanLocation {
         this(loc, loc.getYaw(), loc.getPitch());
     }
 
-    private SpartanLocation(SpartanLocation loc) { // Used for copying
-        this(loc.world, loc.x, loc.y, loc.z, loc.yaw, loc.pitch);
-        this.vector = loc.vector;
-    }
-
     // Methods
 
     public SpartanLocation clone() {
-        return new SpartanLocation(this);
+        try {
+            return (SpartanLocation) super.clone();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
-    public long ticksPassed() {
-        return TPS.getTick(this) - this.tick;
+    public long timePassed() {
+        return System.currentTimeMillis() - this.time;
     }
 
     public double getX() {

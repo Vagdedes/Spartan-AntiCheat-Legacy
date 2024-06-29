@@ -77,10 +77,10 @@ public class NoSwing extends CheckExecutor {
             if (!CombatProcessing.canCheck(player, entity)) {
                 return;
             }
-            long tick = TPS.getTick(player);
+            long time = System.currentTimeMillis();
 
-            if (checkDamage < tick) {
-                checkDamage = tick + 20L;
+            if (checkDamage < time) {
+                checkDamage = time + (20L * TPS.tickTime);
 
                 if (this.animationTime == Long.MAX_VALUE) {
                     if (damageBuffer.count(1, refreshTime) >= 3) {

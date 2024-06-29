@@ -30,7 +30,7 @@ public class MoveLength extends DetectionExecutor {
 
     void runMove() {
         if (!player.bedrockPlayer
-                && player.getLastDamageDealt().ticksPassed() <= KillAura.pastDamageMilliseconds
+                && player.getLastDamageDealt().timePassed() <= KillAura.pastDamageMilliseconds
                 && !player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance).isEmpty()) {
             float pitch = player.movement.getLocation().getPitch(),
                     pitchDifference = Math.abs(pitch - previousPitch);

@@ -61,7 +61,7 @@ public class SpartanPlayerMovement {
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         List<SpartanLocation> list = new ArrayList<>();
         list.add(location);
-        this.locations.put(TPS.getTick(location), list);
+        this.locations.put(TPS.tick(), list);
 
         this.location = location;
         this.eventTo = location;
@@ -126,7 +126,7 @@ public class SpartanPlayerMovement {
 
     public boolean wasInLiquids() {
         return this.isSwimming()
-                || TPS.getTick(this.location) - this.lastLiquidTicks <=
+                || TPS.tick() - this.lastLiquidTicks <=
                 Math.max(AlgebraUtils.integerCeil(Latency.getDelay(this.parent)), 5L);
     }
 
@@ -135,7 +135,7 @@ public class SpartanPlayerMovement {
     }
 
     public void setLastLiquid(Material material) {
-        lastLiquidTicks = TPS.getTick(this.location);
+        lastLiquidTicks = TPS.tick();
         lastLiquidMaterial = material;
     }
 
@@ -146,7 +146,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isSwimming() {
-        if (artificialSwimming >= TPS.getTick(this.location)) {
+        if (artificialSwimming >= TPS.tick()) {
             return true;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             return this.parent.getInstance().isSwimming();
@@ -156,7 +156,7 @@ public class SpartanPlayerMovement {
     }
 
     public void setArtificialSwimming() {
-        this.artificialSwimming = TPS.getTick(this.location) + 1;
+        this.artificialSwimming = TPS.tick() + 1;
     }
 
     // Separator
@@ -389,7 +389,7 @@ public class SpartanPlayerMovement {
                     iterator.next();
                     iterator.remove();
                 }
-                this.locations.computeIfAbsent(TPS.getTick(this.location), k -> new ArrayList<>()).add(spartanLocation);
+                this.locations.computeIfAbsent(TPS.tick(), k -> new ArrayList<>()).add(spartanLocation);
             }
             if (!this.location.world.equals(location.getWorld())) {
                 this.parent.resetTrackers();

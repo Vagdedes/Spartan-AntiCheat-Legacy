@@ -11,41 +11,37 @@ import java.util.Map;
 public class SpartanPotionEffect {
 
     static Map<PotionEffectType, SpartanPotionEffect> mapFromBukkit(Map<PotionEffectType, SpartanPotionEffect> map,
-                                                                    SpartanPlayer player,
                                                                     Collection<PotionEffect> collection) {
         for (PotionEffect effect : collection) {
-            map.put(effect.getType(), new SpartanPotionEffect(player, effect));
+            map.put(effect.getType(), new SpartanPotionEffect(effect));
         }
         return map;
     }
 
     static List<SpartanPotionEffect> listFromBukkit(List<SpartanPotionEffect> list,
-                                                    SpartanPlayer player,
                                                     Collection<PotionEffect> collection) {
         for (PotionEffect effect : collection) {
-            list.add(new SpartanPotionEffect(player, effect));
+            list.add(new SpartanPotionEffect(effect));
         }
         return list;
     }
 
     // Separator
 
-    private final SpartanPlayer parent;
     public final PotionEffect bukkitEffect;
     private final long expiration;
 
-    public SpartanPotionEffect(SpartanPlayer player, PotionEffect effect) {
-        this.parent = player;
+    public SpartanPotionEffect(PotionEffect effect) {
         this.bukkitEffect = effect;
-        this.expiration = TPS.getTick(player) + effect.getDuration();
+        this.expiration = System.currentTimeMillis() + (effect.getDuration() * TPS.tickTime);
     }
 
-    public long ticksPassed() {
-        long remaining = this.expiration - TPS.getTick(this.parent);
+    public long timePassed() {
+        long remaining = this.expiration - System.currentTimeMillis();
         return remaining >= 0 ? 0 : Math.abs(remaining);
     }
 
     public boolean isActive() {
-        return this.expiration - TPS.getTick(this.parent) >= 0;
+        return this.expiration - System.currentTimeMillis() >= 0;
     }
 }

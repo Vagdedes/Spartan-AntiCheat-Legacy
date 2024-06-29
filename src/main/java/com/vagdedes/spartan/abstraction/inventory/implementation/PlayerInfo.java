@@ -131,7 +131,7 @@ public class PlayerInfo extends InventoryMenu {
         // Separator
 
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
-        boolean serverLag = isOnline && TPS.areLow(player),
+        boolean serverLag = isOnline && TPS.areLow(),
                 notChecked = isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 detectionsNotAvailable = !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
@@ -185,7 +185,7 @@ public class PlayerInfo extends InventoryMenu {
                 dataType,
                 isOnline ? player.getCancellableCompatibility() : null,
                 isOnline,
-                isOnline && TPS.areLow(player),
+                isOnline && TPS.areLow(),
                 isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 !SpartanEdition.hasDetectionsPurchased(dataType),
                 !hasViolations

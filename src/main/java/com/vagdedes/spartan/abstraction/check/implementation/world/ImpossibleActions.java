@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -90,7 +91,7 @@ public class ImpossibleActions extends CheckExecutor {
                                         while (iterator.hasNext()) {
                                             SpartanLocation loopLocation = iterator.next();
 
-                                            if (loopLocation.ticksPassed() <= requiredComparisons * 2) {
+                                            if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
                                                 double diff = Math.abs(previousLocation.getYaw() - loopLocation.getYaw());
                                                 yawDeviation += diff * diff;
                                                 previousLocation = loopLocation;

@@ -114,7 +114,7 @@ public class LiveViolation {
     public boolean prevent() {
         synchronized (this) {
             if (this.prevention.canPrevent
-                    && !this.prevention.hasExpired(TPS.getTick(player))) {
+                    && !this.prevention.hasExpired()) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     if (SpartanBukkit.isSynchronised()) {
                         CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
@@ -391,8 +391,7 @@ public class LiveViolation {
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + ") "
                 + "[(Version: " + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
                 + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
-                + ", (Packets: " + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), (TPS: "
-                + AlgebraUtils.cut(TPS.get(player, false), 3) + "), " +
+                + ", (Packets: " + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
                 + location.getBlockZ() + "), (" + playerViolation.information + ")]";
         AntiCheatLogs.logInfo(player, information, true, null, playerViolation);

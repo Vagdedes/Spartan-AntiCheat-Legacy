@@ -39,7 +39,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -68,11 +67,10 @@ public class SpartanPlayer {
     public final Trackers trackers;
     public final Clicks clicks;
 
-    private final long tick;
+    private final long time;
     private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage>
             damageReceived,
             damageDealt;
-    private final List<SpartanPlayerVelocity> velocityReceived;
     private final CheckExecutor[] executors;
     private final LiveViolation[] violations;
 
@@ -170,13 +168,11 @@ public class SpartanPlayer {
         Collection<PotionEffect> collection = p.getActivePotionEffects();
         this.potionEffects = SpartanPotionEffect.mapFromBukkit(
                 new ConcurrentHashMap<>(collection.size() + 1, 1.0f),
-                this,
                 collection
         );
         this.clicks = new Clicks();
         this.movement = new SpartanPlayerMovement(this);
         this.punishments = new SpartanPunishments(this);
-        this.velocityReceived = new CopyOnWriteArrayList<>();
         this.damageReceived = new ConcurrentHashMap<>();
         this.damageDealt = new ConcurrentHashMap<>();
         this.lastDamageReceived = new SpartanPlayerDamage(this);
@@ -193,7 +189,7 @@ public class SpartanPlayer {
                     new SpartanPlayerDamage(this)
             );
         }
-        this.tick = System.currentTimeMillis();
+        this.time = System.currentTimeMillis();
 
         this.buffer = new Buffer(this);
         this.cooldowns = new Cooldowns(this);
@@ -344,8 +340,8 @@ public class SpartanPlayer {
 
     public boolean isOnFire() {
         return !this.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE, 0)
-                && (this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE).ticksPassed() <= 5
-                || this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE_TICK).ticksPassed() <= 5);
+                && (this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE).timePassed() <= 5 * TPS.tickTime
+                || this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE_TICK).timePassed() <= 5 * TPS.tickTime);
     }
 
     // Separator
@@ -355,7 +351,7 @@ public class SpartanPlayer {
     }
 
     public long ticksPassed() {
-        return TPS.getTick(this) - this.tick;
+        return System.currentTimeMillis() - this.time;
     }
 
     // Separator
@@ -417,39 +413,6 @@ public class SpartanPlayer {
             return this.getInstance().isFrozen();
         } else {
             return false;
-        }
-    }
-
-    // Separator
-
-    public SpartanPlayerVelocity getLastVelocityReceived() {
-        if (velocityReceived.isEmpty()) {
-            return null;
-        } else {
-            return this.velocityReceived.get(this.velocityReceived.size() - 1);
-        }
-    }
-
-    public List<SpartanPlayerVelocity> getVelocitiesReceived() {
-        return new ArrayList<>(this.velocityReceived);
-    }
-
-    public void addReceivedVelocity(PlayerVelocityEvent event) {
-        if (this.velocityReceived.size() == TPS.maximum) {
-            this.velocityReceived.remove(0);
-            this.velocityReceived.add(new SpartanPlayerVelocity(
-                    this,
-                    event,
-                    this.movement.getLocation()
-            ));
-        } else {
-            this.velocityReceived.add(
-                    new SpartanPlayerVelocity(
-                            this,
-                            event,
-                            this.movement.getLocation()
-                    )
-            );
         }
     }
 
@@ -540,7 +503,7 @@ public class SpartanPlayer {
         if (vehicle != null) {
             if (vehicle instanceof LivingEntity) {
                 Collection<PotionEffect> collection = ((LivingEntity) vehicle).getActivePotionEffects();
-                return SpartanPotionEffect.listFromBukkit(new ArrayList<>(collection.size()), this, collection);
+                return SpartanPotionEffect.listFromBukkit(new ArrayList<>(collection.size()), collection);
             } else {
                 return new ArrayList<>(0);
             }
@@ -551,7 +514,7 @@ public class SpartanPlayer {
 
     public void setStoredPotionEffects(Collection<PotionEffect> effects) {
         for (PotionEffect effect : effects) {
-            this.potionEffects.put(effect.getType(), new SpartanPotionEffect(this, effect));
+            this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
         }
     }
 
@@ -559,7 +522,7 @@ public class SpartanPlayer {
         SpartanPotionEffect potionEffect = this.potionEffects.get(type);
 
         if (potionEffect != null
-                && potionEffect.ticksPassed() <= lastActive
+                && potionEffect.timePassed() <= lastActive
                 && potionEffect.bukkitEffect.getType().equals(type)) {
             return potionEffect;
         } else {
@@ -570,7 +533,7 @@ public class SpartanPlayer {
     public boolean hasPotionEffect(PotionEffectType type, long lastActive) {
         SpartanPotionEffect potionEffect = this.potionEffects.get(type);
         return potionEffect != null
-                && potionEffect.ticksPassed() <= lastActive
+                && potionEffect.timePassed() <= lastActive
                 && potionEffect.bukkitEffect.getType().equals(type);
     }
 

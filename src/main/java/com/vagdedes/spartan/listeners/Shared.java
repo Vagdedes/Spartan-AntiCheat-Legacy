@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -11,6 +12,7 @@ import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -63,7 +65,12 @@ public class Shared {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Object
-        p.addReceivedVelocity(e);
+        if (!e.isCancelled()) {
+            p.trackers.add(
+                    Trackers.TrackerType.ABSTRACT_VELOCITY,
+                    (int) (Math.ceil(e.getVelocity().length()) * TPS.maximum)
+            );
+        }
 
         // Detections
         boolean cancelled = e.isCancelled();

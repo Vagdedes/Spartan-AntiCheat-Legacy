@@ -45,7 +45,7 @@ public class Latency {
         if (!Config.settings.getBoolean(Settings.tpsProtectionOption)) {
             tpsDelay = 0.0;
         } else {
-            double tps = TPS.get(player, false);
+            double tps = TPS.get();
 
             if (tps >= TPS.excellent) {
                 tpsDelay = 0.0;

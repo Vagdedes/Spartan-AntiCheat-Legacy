@@ -214,7 +214,6 @@ public class SpartanBukkit {
     public static void disable() {
         AutoUpdater.complete();
         playerProtocol.clear();
-        TPS.clear();
         Threads.disable();
         CrossServerInformation.clear();
         PlayerLimitPerIP.clear();
