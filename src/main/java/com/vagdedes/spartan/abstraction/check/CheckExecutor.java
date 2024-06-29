@@ -47,6 +47,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
         function = !TPS.areLow()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
+                && !player.protocol.isOnLoadStatus()
                 && player.getCancellableCompatibility() == null
                 && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
                 && canRun();
@@ -87,10 +88,11 @@ public abstract class CheckExecutor extends DetectionExecutor {
     }
 
     private boolean canFunctionOrJustImplemented() {
-        return function || player.ticksPassed() <= TPS.maximum * TPS.tickTime;
+        return function || player.timePassed() <= TPS.maximum * TPS.tickTime;
     }
 
     final boolean canFunction() {
         return function;
     }
+
 }

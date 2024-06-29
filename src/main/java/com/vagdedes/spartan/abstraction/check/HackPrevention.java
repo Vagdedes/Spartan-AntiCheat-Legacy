@@ -32,7 +32,7 @@ public class HackPrevention {
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
-        this.expiration = System.currentTimeMillis() + (cancelTicks * TPS.tickTime);
+        this.expiration = System.currentTimeMillis() + (Math.max(1, cancelTicks) * TPS.tickTime);
         player.getViolations(hackType).run(this, information, violations, time);
     }
 

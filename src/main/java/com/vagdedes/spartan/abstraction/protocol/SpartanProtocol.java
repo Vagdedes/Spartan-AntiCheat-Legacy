@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.protocol;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -25,7 +26,7 @@ public class SpartanProtocol {
         this.location = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
-        this.onLoadStatus = true;
+        this.onLoadStatus = SpartanBukkit.packetsEnabled();
         this.velocity = new Vector(0, 0, 0);
         this.spartanPlayer = new SpartanPlayer(this);
         this.lastTransaction = Long.MIN_VALUE;

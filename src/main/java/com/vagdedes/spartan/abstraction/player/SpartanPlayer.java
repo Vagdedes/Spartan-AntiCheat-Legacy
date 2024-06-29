@@ -350,7 +350,7 @@ public class SpartanPlayer {
         return this.protocol.player;
     }
 
-    public long ticksPassed() {
+    public long timePassed() {
         return System.currentTimeMillis() - this.time;
     }
 

@@ -76,7 +76,7 @@ public class ImpossibleInventory extends CheckExecutor {
         if (totem_of_undying != null
                 && itemStack != null
                 && itemStack.getType() == totem_of_undying) {
-            this.autoTotem = TPS.tick() + (3L * TPS.tickTime);
+            this.autoTotem = System.currentTimeMillis() + (3L * TPS.tickTime);
         }
     }
 
