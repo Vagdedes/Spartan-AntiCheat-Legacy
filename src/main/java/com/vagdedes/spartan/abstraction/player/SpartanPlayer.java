@@ -583,8 +583,10 @@ public class SpartanPlayer {
             if (perChunk != null) {
                 List<Entity> nearbyEntities = new ArrayList<>();
                 SpartanLocation current = this.movement.getLocation();
-                Collection<SpartanLocation> locations = current.getSurroundingLocations(x, y, z);
+                Collection<SpartanLocation> surrounding = current.getSurroundingLocations(x, y, z),
+                        locations = new ArrayList<>(surrounding.size() + 1);
                 locations.add(current);
+                locations.addAll(surrounding);
 
                 for (SpartanLocation location : locations) {
                     List<Entity> list = perChunk.get(Event_Chunks.hashChunk(

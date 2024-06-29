@@ -24,19 +24,12 @@ public class Pattern {
             individualDataLimit = 8_192,
             individualDataBase = 2;
     static final double individualPotentialContribution = 0.1;
-    static final PlayerProfile[] artificialProfiles = new PlayerProfile[10];
     static final String
             profileOption = "profile",
             patternOption = "pattern",
             situationOption = "situation";
     private static final String[] options = {profileOption, patternOption, situationOption};
     private static final Collection<Pattern> instances = Collections.synchronizedList(new ArrayList<>(individualDataBase));
-
-    static {
-        for (int i = 0; i < artificialProfiles.length; i++) {
-            artificialProfiles[i] = new PlayerProfile();
-        }
-    }
 
     static int hashProfile(PlayerProfile playerProfile) {
         return playerProfile.getName().hashCode();
@@ -338,7 +331,6 @@ public class Pattern {
                                                 profile,
                                                 new int[]{(int) situation},
                                                 (double) pattern,
-                                                true,
                                                 true
                                         );
                                     }
@@ -416,8 +408,7 @@ public class Pattern {
                             profile,
                             situation,
                             pattern.doubleValue(),
-                            false,
-                            true
+                            false
                     )) {
                         store |= include;
                     }

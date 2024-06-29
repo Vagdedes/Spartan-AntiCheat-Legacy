@@ -11,7 +11,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
 import java.util.UUID;
 
 public class PlayerProfile {
@@ -26,18 +25,6 @@ public class PlayerProfile {
     private OfflinePlayer offlinePlayer;
 
     // Separator
-
-    public PlayerProfile() {
-        this.uuid = null;
-        this.name = Double.toString(new Random().nextDouble());
-        this.evidence = null;
-        this.skull = null;
-        this.offlinePlayer = null;
-        this.bedrockPlayer = false;
-        this.bedrockPlayerCheck = true;
-        this.violationHistory = null;
-        this.miningHistory = null;
-    }
 
     public PlayerProfile(String name) {
         Enums.HackType[] hackTypes = Enums.HackType.values();

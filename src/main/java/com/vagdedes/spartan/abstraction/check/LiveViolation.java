@@ -11,7 +11,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.management.Config;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
@@ -23,15 +22,12 @@ import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
-import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
-import me.vagdedes.spartan.api.ViolationResetEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -120,14 +116,46 @@ public class LiveViolation {
             if (this.prevention.canPrevent
                     && !this.prevention.hasExpired(TPS.getTick(player))) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
-                    Register.manager.callEvent(checkCancelEvent);
+                    if (SpartanBukkit.isSynchronised()) {
+                        CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
+                        Register.manager.callEvent(checkCancelEvent);
 
-                    if (!checkCancelEvent.isCancelled()) {
+                        if (!checkCancelEvent.isCancelled()) {
+                            this.prevention.handle(player);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else if (SpartanBukkit.packetsEnabled()) {
                         this.prevention.handle(player);
                         return true;
                     } else {
-                        return false;
+                        Thread thread = Thread.currentThread();
+                        Boolean[] cancelled = new Boolean[1];
+
+                        SpartanBukkit.transferTask(this.player, () -> {
+                            CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
+                            Register.manager.callEvent(checkCancelEvent);
+                            cancelled[0] = checkCancelEvent.isCancelled();
+
+                            synchronized (thread) {
+                                thread.notifyAll();
+                            }
+                        });
+                        synchronized (thread) {
+                            if (cancelled[0] == null) {
+                                try {
+                                    thread.wait();
+                                } catch (Exception ex) {
+                                }
+                            }
+                        }
+                        if (!cancelled[0]) {
+                            this.prevention.handle(player);
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
                 } else {
                     this.prevention.handle(player);
@@ -203,30 +231,7 @@ public class LiveViolation {
     // Separator
 
     public void reset() {
-        ViolationResetEvent event;
-
-        if (SpartanBukkit.isSynchronised()) {
-            Player player = this.player.getInstance();
-
-            if (player != null) {
-                if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    event = new ViolationResetEvent(player, this.hackType);
-                    Register.manager.callEvent(event);
-                } else {
-                    event = null;
-                }
-            } else {
-                event = null;
-            }
-        } else {
-            event = null;
-        }
-
-        if (event == null || !event.isCancelled()) {
-            this.level.clear();
-        }
-
-        // Always last
+        this.level.clear();
         InteractiveInventory.playerInfo.refresh(player.name);
     }
 
@@ -308,84 +313,63 @@ public class LiveViolation {
             List<String> commands = Config.settings.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
-                Player n = player.getInstance();
+                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(false);
+                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish);
 
-                if (n != null) {
-                    boolean performed = false, found = false;
+                if (!detectedHacks.isEmpty()) {
                     int index = 0;
+                    boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                    Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(false);
-                    detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish);
-
-                    if (!detectedHacks.isEmpty()) {
-                        boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
-                        StringBuilder stringBuilder = new StringBuilder();
-
-                        for (Enums.HackType detectedHack : detectedHacks) {
-                            stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
-                        }
-                        String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
-
-                        for (String command : commands) {
-                            if (command != null) {
-                                found = true;
-                                String modifiedCommand = ConfigUtils.replaceWithSyntax(
-                                        player,
-                                        command.replaceAll("\\{detections}|\\{detection}", detections),
-                                        null
-                                );
-                                commands.set(index, modifiedCommand);
-
-                                if (enabledDeveloperAPI) {
-                                    PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(n, hackType, detectedHacks, modifiedCommand);
-                                    Register.manager.callEvent(event);
-
-                                    if (event.isCancelled()) {
-                                        continue;
-                                    }
-                                }
-
-                                performed = true;
-                                SpartanBukkit.runDelayedTask(player, () -> {
-                                    if (player != null) {
-                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
-                                    }
-                                }, 1);
-                            }
-                            index++;
-                        }
+                    for (Enums.HackType detectedHack : detectedHacks) {
+                        stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
                     }
+                    String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
 
-                    if (performed) {
-                        SpartanLocation location = player.movement.getLocation();
-                        CloudConnections.executeDiscordWebhook(
-                                "punishments",
-                                player.uuid,
-                                player.name,
-                                location.getBlockX(),
-                                location.getBlockY(),
-                                location.getBlockZ(),
-                                "Punishment",
-                                StringUtils.toString(commands, "\n")
+                    for (String command : commands) {
+                        String modifiedCommand = ConfigUtils.replaceWithSyntax(
+                                player,
+                                command.replaceAll("\\{detections}|\\{detection}", detections),
+                                null
                         );
-                    } else if (found && AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-cancelled-punishment-event", 60 * 60)) {
-                        String notification = "Just a reminder that the punishments of the '" + hackType + "' check were just cancelled via code by a third-party plugin."
-                                + " Please do not reach support for this as it relates only to your server.";
-                        List<Plugin> dependentPlugins = PluginUtils.getDependentPlugins(Register.plugin.getName());
+                        commands.set(index++, modifiedCommand);
 
-                        if (!dependentPlugins.isEmpty()) {
-                            StringBuilder dependentPluginNames = new StringBuilder();
+                        if (enabledDeveloperAPI) {
+                            Runnable runnable = () -> {
+                                PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
+                                        player.getInstance(),
+                                        hackType,
+                                        detectedHacks,
+                                        modifiedCommand
+                                );
+                                Register.manager.callEvent(event);
 
-                            for (Plugin plugin : dependentPlugins) {
-                                dependentPluginNames.append(dependentPluginNames.length() == 0 ? "" : ", ").append(plugin.getName());
+                                if (!event.isCancelled()) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
+                                }
+                            };
+
+                            if (SpartanBukkit.isSynchronised()) {
+                                runnable.run();
+                            } else {
+                                SpartanBukkit.transferTask(player, runnable);
                             }
-                            notification += " Here are possible plugins that could be doing this:\n" + dependentPluginNames;
+                        } else {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
                         }
-                        AwarenessNotifications.forcefullySend(notification);
                     }
+                    SpartanLocation location = player.movement.getLocation();
+                    CloudConnections.executeDiscordWebhook(
+                            "punishments",
+                            player.uuid,
+                            player.name,
+                            location.getBlockX(),
+                            location.getBlockY(),
+                            location.getBlockZ(),
+                            "Punishment",
+                            StringUtils.toString(commands, "\n")
+                    );
                 }
-            } else if (AwarenessNotifications.canSend(AwarenessNotifications.uuid, hackType + "-no-punishment-commands", 60 * 60)) {
-                AwarenessNotifications.forcefullySend("Just a reminder that you have set no punishment commands for the '" + hackType + "' check.");
             }
         }
     }

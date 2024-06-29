@@ -9,3 +9,4 @@
 [#] Improved the object hierarchy to help objects communicate with each other faster.
 [#] Rewrote the statistics of the XRay check so to serve you more reliably.
 [-] Removed tracking of kicks and warnings as they did not help any of the statistics.
+[-] Deprecated the 'ViolationResetEvent' API event as it is no longer needed.
