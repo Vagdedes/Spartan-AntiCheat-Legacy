@@ -13,10 +13,7 @@ import java.util.*;
 
 public class PlayerStateLists {
 
-    public static final String
-            inactiveColour = "§8",
-            noDataAvailable = "No data available at this time",
-            suspected = "Suspected For Hacking";
+    public static final String inactiveColour = "§8";
     private static final int[] ignoredSlots = new int[]{
             0, 1, 2, 3, 4, 5, 6, 7, 8,
             9, 10, 16, 17,
@@ -34,16 +31,10 @@ public class PlayerStateLists {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§c" + profile.getName());
 
-        List<String> lore = new ArrayList<>(description.size() + 10);
-        InventoryUtils.prepareDescription(
-                lore,
-                suspected
-        );
-
-        if (!description.isEmpty()) {
-            lore.addAll(description);
-            lore.add("");
-        }
+        List<String> lore = new ArrayList<>(description.size() + 4);
+        lore.add("");
+        lore.addAll(description);
+        lore.add("");
         lore.add("§7Click this item to §eview the player's information§7.");
 
         meta.setLore(lore);
@@ -133,7 +124,8 @@ public class PlayerStateLists {
         }
 
         if (listSize != limit) {
-            InventoryUtils.prepareDescription(lore, noDataAvailable);
+            lore.clear();
+            lore.add("");
             lore.add("§cEmpty items like this will be filled with");
             lore.add("§csuspected players as they are found.");
 

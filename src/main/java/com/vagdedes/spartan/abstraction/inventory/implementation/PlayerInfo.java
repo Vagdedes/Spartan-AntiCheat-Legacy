@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
-import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
@@ -16,7 +15,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -33,8 +31,9 @@ import java.util.Set;
 
 public class PlayerInfo extends InventoryMenu {
 
-    private static final String menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
-    private static final String documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
+    private static final String menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0),
+            documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub",
+            noDataAvailable = "Player is offline or has no violations.";
     private static final int[] slots = new int[]{
             21, 22, 23,
             30, 31, 32
@@ -57,16 +56,12 @@ public class PlayerInfo extends InventoryMenu {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
             return false;
         } else {
+            setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
             boolean legitimate = profile.isLegitimate();
             Set<Map.Entry<HackType, String>> evidenceDetails = profile.evidence.getKnowledgeEntries(legitimate);
             List<String> lore = new ArrayList<>(20);
+            lore.add("");
 
-            setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
-
-            InventoryUtils.prepareDescription(
-                    lore,
-                    legitimate ? "Legitimate Player" : PlayerStateLists.suspected
-            );
             if (!evidenceDetails.isEmpty()) {
                 lore.add(legitimate ? "§7Evaluated for§8:" : "§7Suspected for§8:");
 
@@ -168,7 +163,7 @@ public class PlayerInfo extends InventoryMenu {
             }
         }
         if (!listedChecks) {
-            lore.add("§c" + PlayerStateLists.noDataAvailable);
+            lore.add("§c" + noDataAvailable);
         }
         add("§2" + checkType.toString() + " Checks", lore, item, slot);
     }
@@ -184,7 +179,8 @@ public class PlayerInfo extends InventoryMenu {
                 new ItemStack(Material.QUARTZ_BLOCK);
         boolean hasViolations = violations > 0;
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
-        String state = getDetectionState(player,
+        String state = getDetectionState(
+                player,
                 hackType,
                 dataType,
                 isOnline ? player.getCancellableCompatibility() : null,
@@ -192,13 +188,14 @@ public class PlayerInfo extends InventoryMenu {
                 isOnline && TPS.areLow(player),
                 isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 !SpartanEdition.hasDetectionsPurchased(dataType),
-                !hasViolations);
+                !hasViolations
+        );
 
         if (hasViolations || state != null) {
             lore.add("§a" + violations + " §7violations");
             lore.add("§e" + state);
         } else {
-            lore.add("§c" + PlayerStateLists.noDataAvailable);
+            lore.add("§c" + noDataAvailable);
         }
         add("§2" + hackType.getCheck().getName() + " Check", lore, item, slot);
     }
