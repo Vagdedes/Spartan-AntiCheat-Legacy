@@ -671,7 +671,7 @@ public class SpartanPlayer {
                 if (MultiVersion.folia) {
                     p.teleportAsync(location.getBukkitLocation());
                 } else {
-                    p.teleport(location.getBukkitLocation());
+                    SpartanBukkit.transferTask(this, () -> p.teleport(location.getBukkitLocation()));
                 }
                 return true;
             } else {
