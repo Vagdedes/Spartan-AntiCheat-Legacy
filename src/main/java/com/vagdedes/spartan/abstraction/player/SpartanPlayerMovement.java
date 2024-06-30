@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.player;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -176,8 +175,7 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isSneaking() {
-        return this.parent.getInstance().isSneaking()
-                || this.parent.protocol.isSneaking();
+        return this.parent.protocol.isSneaking();
     }
 
     public boolean isFlying() {
@@ -193,8 +191,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isSprinting() {
-        return this.parent.getInstance().isSprinting()
-                || this.parent.protocol.isSprinting();
+        return this.parent.protocol.isSprinting();
     }
 
     public boolean isSprintJumping(double vertical) {
@@ -339,17 +336,11 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    private Location getBukkitLocation() {
-        return SpartanBukkit.packetsEnabled()
-                ? this.parent.protocol.getLocation()
-                : this.parent.getInstance().getLocation();
-    }
-
     public SpartanLocation getVehicleLocation() {
         Entity vehicle = this.parent.getInstance().getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            Location playerLocation = this.getBukkitLocation();
+            Location playerLocation = this.parent.protocol.getLocation();
             return new SpartanLocation(
                     vehicle.getLocation(),
                     playerLocation.getYaw(),
@@ -362,7 +353,7 @@ public class SpartanPlayerMovement {
         SpartanLocation vehicleLocation = getVehicleLocation();
 
         if (vehicleLocation == null) {
-            this.refreshLocation(this.getBukkitLocation());
+            this.refreshLocation(this.parent.protocol.getLocation());
             return this.location;
         } else {
             return vehicleLocation;

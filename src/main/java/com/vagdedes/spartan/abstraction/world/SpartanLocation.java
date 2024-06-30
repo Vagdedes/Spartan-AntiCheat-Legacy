@@ -256,7 +256,7 @@ public class SpartanLocation implements Cloneable {
         if (SpartanLocation.v_1_17 ?
                 blockY >= this.world.getMinHeight() && blockY <= this.world.getMaxHeight() :
                 blockY >= 0 && blockY <= PlayerUtils.height) {
-            if (SpartanBukkit.packetsEnabled()) {
+            if (Event_Chunks.enabled()) {
                 if (SpartanBukkit.isSynchronised()) {
                     return setBlock();
                 } else {

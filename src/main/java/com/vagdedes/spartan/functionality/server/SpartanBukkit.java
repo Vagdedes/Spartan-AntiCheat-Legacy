@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpartanBukkit {
 
     public static final boolean
-            packetsForcedState = true,
+            movementPacketsForcedState = false,
             testMode = !JarVerification.enabled && !CloudBase.hasToken()
                     && !IDs.isBuiltByBit() && !IDs.isPolymart()
                     && Bukkit.getMotd().contains(Register.plugin.getName()),
@@ -29,8 +29,8 @@ public class SpartanBukkit {
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
-            packetsThread = packetsForcedState ? new Threads.ThreadPool(1L) : null,
-            chunksThread = packetsForcedState ? new Threads.ThreadPool(1L) : null,
+            packetsThread = new Threads.ThreadPool(1L),
+            chunksThread = new Threads.ThreadPool(1L),
             dataThread = new Threads.ThreadPool(1L),
             analysisThread = new Threads.ThreadPool(1L);
 
@@ -99,7 +99,11 @@ public class SpartanBukkit {
     // Separator
 
     public static boolean packetsEnabled() {
-        return packetsForcedState && Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+        return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+    }
+
+    public static boolean packetsEnabled_Movement() {
+        return movementPacketsForcedState && packetsEnabled();
     }
 
     public static SpartanProtocol getProtocol(Player player) {

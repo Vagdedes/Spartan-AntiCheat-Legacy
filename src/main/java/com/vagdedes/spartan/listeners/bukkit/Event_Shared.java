@@ -34,7 +34,10 @@ public class Event_Shared implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Move(PlayerMoveEvent e) {
-        if (!SpartanBukkit.packetsEnabled()) {
+        if (!SpartanBukkit.packetsEnabled_Movement()) {
+            if (ProtocolLib.isTemporary(e.getPlayer()) ) {
+                return;
+            }
             Shared.movement(e);
         }
     }

@@ -42,15 +42,21 @@ public class SpartanProtocol {
     }
 
     public boolean isOnGround() {
-        return this.isOnGround;
+        return SpartanBukkit.packetsEnabled_Movement()
+                ? this.isOnGround
+                : this.player.isOnGround();
     }
 
     public boolean isSprinting() {
-        return this.isSprinting;
+        return SpartanBukkit.packetsEnabled_Movement()
+                ? this.isSprinting
+                : this.player.isSprinting();
     }
 
     public boolean isSneaking() {
-        return this.isSneaking;
+        return SpartanBukkit.packetsEnabled_Movement()
+                ? this.isSneaking
+                : this.player.isSneaking();
     }
 
     public boolean isOnLoadStatus() {
@@ -58,7 +64,9 @@ public class SpartanProtocol {
     }
 
     public Location getLocation() {
-        return this.location;
+        return SpartanBukkit.packetsEnabled_Movement()
+                ? this.location
+                : this.player.getLocation();
     }
 
     public Vector getVelocity() {

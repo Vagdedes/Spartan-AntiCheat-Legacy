@@ -83,7 +83,7 @@ public class SpartanPlayer {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (!players.isEmpty()) {
-                if (SpartanBukkit.packetsEnabled()) {
+                if (Event_Chunks.enabled()) {
                     Set<Integer> worldHashes = new HashSet<>();
 
                     for (World world : Bukkit.getWorlds()) {
@@ -367,12 +367,8 @@ public class SpartanPlayer {
 
         if (vehicle != null) {
             return vehicle.isOnGround();
-        } else if (SpartanBukkit.packetsEnabled()) {
-            return this.protocol.isOnGround()
-                    || custom
-                    && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         } else {
-            return this.getInstance().isOnGround()
+            return this.protocol.isOnGround()
                     || custom
                     && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
         }
@@ -536,7 +532,7 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (SpartanBukkit.packetsEnabled()) {
+        if (Event_Chunks.enabled()) {
             Map<Long, List<Entity>> perChunk = entities.get(this.getWorld().getName().hashCode());
 
             if (perChunk != null) {
