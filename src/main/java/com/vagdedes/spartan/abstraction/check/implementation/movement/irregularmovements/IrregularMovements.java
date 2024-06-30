@@ -17,7 +17,7 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsFoodSprint foodSprint;
 
     public IrregularMovements(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 5);
+        super(hackType, player, 5, false);
         this.addDetections(new DetectionExecutor[]{
                 step = new IrregularMovementsStep(this),
                 gravity = new IrregularMovementsGravity(this),

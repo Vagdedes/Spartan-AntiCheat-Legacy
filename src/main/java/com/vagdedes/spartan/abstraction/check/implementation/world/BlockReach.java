@@ -21,7 +21,7 @@ public class BlockReach extends CheckExecutor {
     private static final double minimumLimit = 6.0;
 
     public BlockReach(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, false);
     }
 
     private boolean canDo(SpartanBlock b) {

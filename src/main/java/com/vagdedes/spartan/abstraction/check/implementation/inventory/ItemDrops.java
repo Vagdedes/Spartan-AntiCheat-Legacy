@@ -16,7 +16,7 @@ public class ItemDrops extends CheckExecutor {
     private final List<Long> times;
 
     public ItemDrops(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, false);
         this.buffer = new Buffer.IndividualBuffer(player);
         this.times = new LinkedList<>();
     }

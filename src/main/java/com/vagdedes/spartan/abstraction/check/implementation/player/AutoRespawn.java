@@ -13,7 +13,7 @@ public class AutoRespawn extends CheckExecutor {
     private long memory;
 
     public AutoRespawn(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, true);
         this.memory = 0L;
     }
 
@@ -23,7 +23,7 @@ public class AutoRespawn extends CheckExecutor {
     }
 
     @Override
-    public void schedulerInternal() {
+    public void scheduler() {
         long time = System.currentTimeMillis() - memory,
                 limit = 750L;
 

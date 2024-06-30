@@ -30,7 +30,7 @@ public class ImpossibleActions extends CheckExecutor {
     private final Buffer buffer;
 
     public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, false);
         this.buffer = new Buffer(player);
     }
 

@@ -7,7 +7,7 @@ import me.vagdedes.spartan.system.Enums.HackType;
 public class Simulation extends CheckExecutor {
 
     public Simulation(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, false);
     }
 
     @Override

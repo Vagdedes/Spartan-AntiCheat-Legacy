@@ -30,7 +30,7 @@ public class KillAura extends CheckExecutor {
     private final FightAnalysis analysis;
 
     public KillAura(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 11);
+        super(hackType, player, 11, false);
         this.addDetections(new DetectionExecutor[]{
                 irregular = new Irregular(this),
                 entityRaytrace = new EntityRaytrace(this),
@@ -81,10 +81,6 @@ public class KillAura extends CheckExecutor {
                 "check_move_direction_machine_learning",
                 moveDirectionML::runMove
         );
-    }
-
-    @Override
-    public void schedulerInternal() {
     }
 
     @Override

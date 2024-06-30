@@ -136,10 +136,6 @@ public class SpartanPlayer {
                         }
                         p.movement.schedulerFrom = to;
 
-                        for (CheckExecutor executor : p.executors) {
-                            executor.scheduler();
-                        }
-
                         // Preventions
                         for (Enums.HackType hackType : Event_Movement.handledChecks) {
                             if (p.getViolations(hackType).prevent()) {

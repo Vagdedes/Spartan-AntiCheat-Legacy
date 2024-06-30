@@ -18,7 +18,7 @@ public class MorePackets extends CheckExecutor {
     private int buffer;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, true);
         this.nmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
         this.buffer = 0;
     }
@@ -35,7 +35,7 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    protected void schedulerInternal() {
+    protected void scheduler() {
         if (!nmsMap.isEmpty()) {
             long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();

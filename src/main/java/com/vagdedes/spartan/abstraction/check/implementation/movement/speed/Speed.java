@@ -90,7 +90,7 @@ public class Speed extends CheckExecutor {
             multiply;
 
     public Speed(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, false);
     }
 
     @Override

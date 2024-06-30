@@ -22,7 +22,7 @@ public class InventoryClicks extends CheckExecutor {
             shiftBuffer;
 
     public InventoryClicks(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+        super(hackType, player, 0, false);
         this.slowBuffer = new Buffer.IndividualBuffer(player);
         this.mediumBuffer = new Buffer.IndividualBuffer(player);
         this.fastBuffer = new Buffer.IndividualBuffer(player);
