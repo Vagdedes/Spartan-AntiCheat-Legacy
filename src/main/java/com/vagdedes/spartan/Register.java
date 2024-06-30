@@ -50,7 +50,7 @@ public class Register extends JavaPlugin {
         enable(new Event_Vehicle(), Event_Vehicle.class);
         enable(new Event_Chat(), Event_Chat.class);
         enable(new Event_Plugin(), Event_Plugin.class);
-        enable(new Event_World(), Event_Plugin.class);
+        enable(new Event_World(), Event_World.class);
         enable(new Event_Inventory(), Event_Inventory.class);
         enable(new Event_Combat(), Event_Combat.class);
         enable(new Events_Player(), Events_Player.class);

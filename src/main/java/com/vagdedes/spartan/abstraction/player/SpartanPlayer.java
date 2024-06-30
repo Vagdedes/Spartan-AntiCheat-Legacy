@@ -356,8 +356,7 @@ public class SpartanPlayer {
         return GroundUtils.isOnGround(
                 this,
                 location,
-                this.getInstance().isOnGround()
-                        || this.protocol.isOnGround(),
+                this.protocol.isOnGround(),
                 checkEntities
         );
     }

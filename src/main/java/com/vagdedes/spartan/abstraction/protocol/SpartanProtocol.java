@@ -32,7 +32,7 @@ public class SpartanProtocol {
         this.location = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
-        this.onLoadStatus = SpartanBukkit.packetsEnabled();
+        this.onLoadStatus = SpartanBukkit.packetsEnabled_Movement();
         this.velocity = new Vector(0, 0, 0);
         this.spartanPlayer = new SpartanPlayer(this);
         this.lastTransaction = Long.MIN_VALUE;
