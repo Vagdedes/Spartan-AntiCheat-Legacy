@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.simulatio
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class Simulation extends CheckExecutor {
 
@@ -12,7 +13,10 @@ public class Simulation extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
+        if (object instanceof PlayerMoveEvent) {
+            PlayerMoveEvent event = (PlayerMoveEvent) object;
 
+        }
     }
 
     @Override

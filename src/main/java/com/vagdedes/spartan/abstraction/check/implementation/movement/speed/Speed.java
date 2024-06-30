@@ -234,7 +234,7 @@ public class Speed extends CheckExecutor {
             return;
         }
         if (speedEffect != null) {
-            double increaceValue = (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.15D;
+            double increaceValue = (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.3D;
             if (multiply < increaceValue) multiply = increaceValue;
         }
         if (glideEffect != null || levitationEffect != null) {

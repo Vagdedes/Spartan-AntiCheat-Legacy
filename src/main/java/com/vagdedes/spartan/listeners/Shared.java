@@ -145,6 +145,7 @@ public class Shared {
         p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
         p.getExecutor(Enums.HackType.MorePackets).run(cancelled);
         p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
     }
 
 }
