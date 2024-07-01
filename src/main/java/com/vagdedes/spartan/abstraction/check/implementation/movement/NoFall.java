@@ -165,7 +165,11 @@ public class NoFall extends CheckExecutor {
                 },
                 player.movement.getEventToLocation(),
                 true,
-                BlockUtils.climbable, BlockUtils.interactive_and_passable, BlockUtils.liquid)
+                BlockUtils.climbable,
+                BlockUtils.interactive_and_passable,
+                BlockUtils.slime_block,
+                BlockUtils.bed,
+                BlockUtils.liquid)
                 && !BlockPatternUtils.isBlockPattern(new double[]{
                         1,
                         -1.0,
@@ -173,7 +177,9 @@ public class NoFall extends CheckExecutor {
                 },
                 player.movement.getEventToLocation(),
                 true,
-                BlockUtils.interactive_and_passable)
+                BlockUtils.interactive_and_passable,
+                BlockUtils.slime_block,
+                BlockUtils.bed)
                 && !BlockPatternUtils.isLiquidPattern(new double[]{
                         1,
                         0.0,

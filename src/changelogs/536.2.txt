@@ -10,3 +10,4 @@
 [#] Fixed an InventoryClicks shift clicking false positive.
 [#] Fixed an IrregularMovements jump(height) low-ground false positive.
 [#] Fixed an Exploits ground-spoof nearby-entities false positive.
+[#] Fixed a NoFall bouncing blocks false positive related mostly to beds.
