@@ -30,10 +30,7 @@ public class NoFall extends CheckExecutor {
         for (int fallTick = 0; fallTick <= maxFallTicks; fallTick++) {
             double prediction = (previous * drag) + (fallTick * acceleration);
             previous = prediction;
-            fallTicksLibrary.put(
-                    AlgebraUtils.cut(prediction, MovementProcessing.heightPrecision),
-                    fallTick
-            );
+            fallTicksLibrary.put(prediction, fallTick);
         }
     }
 
@@ -114,7 +111,8 @@ public class NoFall extends CheckExecutor {
                                 + ", prediction: " + prediction
                                 + ", difference: " + difference
                                 + ", limit: " + limit
-                                + ", vertical: " + vertical,
+                                + ", vertical: " + vertical
+                                + ", box: " + player.movement.getEventBox(),
                         difference,
                         player.movement.getDetectionLocation(),
                         0,

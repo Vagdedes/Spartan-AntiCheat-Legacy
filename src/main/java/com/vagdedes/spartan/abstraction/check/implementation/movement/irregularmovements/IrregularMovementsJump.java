@@ -49,7 +49,8 @@ public class IrregularMovementsJump extends DetectionExecutor {
                 && player.trackers.has(Trackers.TrackerFamily.VELOCITY)
                 ? player.movement.justJumped(vertical)
                 : player.movement.isJumping(vertical)) {
-            int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1;
+            int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+                    jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
             boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
 
             if (!contains && player.bedrockPlayer) {
@@ -62,35 +63,38 @@ public class IrregularMovementsJump extends DetectionExecutor {
             }
 
             if (!contains) {
-                int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
-                double[][] patterns = new double[blocks][3];
+                int airTicks = player.movement.getTicksOnAir();
 
-                for (int current = 1; current <= blocks; current++) {
-                    int position = current - 1;
-                    patterns[position][0] = GroundUtils.boundingBox;
-                    patterns[position][1] = -current;
-                    patterns[position][2] = GroundUtils.boundingBox;
-                }
-                if (!BlockPatternUtils.isBlockPattern(
-                        patterns,
-                        player.movement.getEventToLocation(),
-                        true,
-                        GroundUtils.abstractMaterials
-                )) {
-                    int airTicks = player.movement.getTicksOnAir();
-                    cancel("type: jump(height)"
-                                    + ", box: " + box
-                                    + ", vertical: " + vertical
-                                    + ", jump-effect: " + jumpEffect
-                                    + ", air-ticks: " + airTicks,
-                            airTicks / TPS.tickTimeDecimal,
-                            player.movement.getDetectionLocation(),
-                            0,
-                            true
-                    );
+                if (airTicks > jumpTicks) {
+                    int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
+                    double[][] patterns = new double[blocks][3];
+
+                    for (int current = 1; current <= blocks; current++) {
+                        int position = current - 1;
+                        patterns[position][0] = GroundUtils.boundingBox;
+                        patterns[position][1] = -current;
+                        patterns[position][2] = GroundUtils.boundingBox;
+                    }
+                    if (!BlockPatternUtils.isBlockPattern(
+                            patterns,
+                            player.movement.getEventToLocation(),
+                            true,
+                            GroundUtils.abstractMaterials
+                    )) {
+                        cancel("type: jump(height)"
+                                        + ", box: " + box
+                                        + ", vertical: " + vertical
+                                        + ", jump-effect: " + jumpEffect
+                                        + ", air-ticks: " + airTicks,
+                                airTicks / TPS.tickTimeDecimal,
+                                player.movement.getDetectionLocation(),
+                                0,
+                                true
+                        );
+                    }
                 }
             } else {
-                double limit = Math.max(PlayerUtils.getJumpTicks(jumpEffect), TPS.maximum);
+                double limit = Math.max(jumpTicks, TPS.maximum);
 
                 if (!player.isOnGround(player.movement.getEventToLocation(), true)
                         && !player.isOnGround(player.movement.getEventFromLocation(), false)

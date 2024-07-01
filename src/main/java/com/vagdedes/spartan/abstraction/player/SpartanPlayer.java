@@ -159,7 +159,7 @@ public class SpartanPlayer {
         this.uuid = p.getUniqueId();
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
-        this.trackers = new Trackers(this);
+        this.trackers = new Trackers();
 
         this.name = p.getName();
         Collection<PotionEffect> collection = p.getActivePotionEffects();

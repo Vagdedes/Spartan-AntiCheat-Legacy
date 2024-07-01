@@ -4,7 +4,9 @@
 [#] Fixed an error when using the Floodgate compatibility with only Geyser.
 [#] Removed unnecessary code from the Speed check.
 [#] Fixed an Exploits movement(spoof) repeating false positive.
-[#] Fixed XRay false positives caused by bad statistics.
-[#] Improved the violation information of the IrregularMovements check.
+[#] Fixed a XRay false positive caused by wrongly implemented statistics.
+[#] Improved the violation information of the IrregularMovements and NoFall checks.
 [#] Fixed an IrregularMovements food-sprint false positive.
 [#] Fixed an InventoryClicks shift clicking false positive.
+[#] Fixed an IrregularMovements jump(height) low-ground false positive.
+[#] Fixed an Exploits ground-spoof nearby-entities false positive.
