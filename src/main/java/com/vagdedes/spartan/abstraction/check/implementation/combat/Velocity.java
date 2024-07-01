@@ -107,14 +107,14 @@ public class Velocity extends CheckExecutor {
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y = location.getBlockY(); y <= location.getBlockY() + 2; y++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    if (new SpartanLocation(
+                    if (!new SpartanLocation(
                             location.world,
                             location.getX(),
                             location.getY(),
                             location.getZ(),
                             0.0f,
                             0.0f
-                    ).getBlock().material.isSolid()) {
+                    ).getBlock().material.isEmpty()) {
                         return true;
                     }
                 }

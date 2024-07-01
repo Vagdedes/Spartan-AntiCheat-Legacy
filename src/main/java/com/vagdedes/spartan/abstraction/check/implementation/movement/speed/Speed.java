@@ -168,7 +168,7 @@ public class Speed extends CheckExecutor {
         }
         if (to.getY() == oldY && onGround != oldOnGround) groundSwitches++;
         if (to.getY() != oldY) groundSwitches = 0;
-        if (groundSwitches > 4) {
+        if (groundSwitches > 4 && !RayUtils.inBlock(player, player.movement.getLocation())) {
             if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")) {
                 flag = "type: ground-invalid, onGround: " + onGround;
             }
