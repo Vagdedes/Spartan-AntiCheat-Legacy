@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat.hitreach;
+package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
@@ -10,6 +10,7 @@ import com.vagdedes.spartan.listeners.protocol.async.LagCompensation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.LinkedList;
@@ -30,23 +31,34 @@ public class HitReach extends CheckExecutor {
         LivingEntity target = event.getTarget();
         if (SpartanBukkit.packetsEnabled()) {
             if (CombatProcessing.canCheck(player, target)
-                            && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
+                    && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
                 int playerId = event.getPlayer().getEntityId();
                 double bruteforceRayTrace = 0.7;
                 double value;
+
                 for (int i = 0; i < 3 + LagCompensation.getPlayerTicksDelay(playerId); i++) {
-                    value = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                    player, LagCompensation.getLocationWithTickRollback(targetId, i), target);
-                    if (value < bruteforceRayTrace) bruteforceRayTrace = value;
+                    Location locationWithRollback = LagCompensation.getLocationWithTickRollback(targetId, i);
+
+                    if (locationWithRollback != null) {
+                        value = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                player,
+                                locationWithRollback,
+                                target
+                        );
+
+                        if (value < bruteforceRayTrace) {
+                            bruteforceRayTrace = value;
+                        }
+                    }
                 }
                 if (bruteforceRayTrace > 0.43) {
                     localVl += 100;
                     if (localVl > 300) {
                         cancel(
-                                        "type: hitbox-raytrace, reach: " + (bruteforceRayTrace / 0.4) * 3,
-                                        vl / 100D,
-                                        player.movement.getEventFromLocation()
+                                "type: hitbox-raytrace, reach: " + (bruteforceRayTrace / 0.4) * 3,
+                                vl / 100D,
+                                player.movement.getEventFromLocation()
                         );
                     }
                     localVl -= 60;
@@ -65,9 +77,9 @@ public class HitReach extends CheckExecutor {
             }
         } else {
             if (CombatProcessing.canCheck(player, target)
-                            && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
+                    && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target),
-                                diff = bruteforceRayTrace - 0.4;
+                        diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(player.movement.getLocation(), bruteforceRayTrace);
@@ -92,8 +104,8 @@ public class HitReach extends CheckExecutor {
             cancel(
                     "type: " + punish + ", hitbox-size-analysis: "
                             + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: "
-                                    + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
-                     vl / 100D,
+                            + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
+                    vl / 100D,
                     to
             );
         } else {
