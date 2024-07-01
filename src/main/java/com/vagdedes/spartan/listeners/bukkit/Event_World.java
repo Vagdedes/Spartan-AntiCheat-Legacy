@@ -40,6 +40,7 @@ public class Event_World implements Listener {
             p.getExecutor(Enums.HackType.FastBreak).handle(cancelled, e);
             p.getExecutor(Enums.HackType.GhostHand).handle(cancelled, b);
         }
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, e);
 
         // Detections
         AntiCheatLogs.logMining(p, b, cancelled);
