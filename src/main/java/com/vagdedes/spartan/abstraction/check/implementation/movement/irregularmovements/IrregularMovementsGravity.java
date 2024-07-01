@@ -177,7 +177,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                 : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1);
                     }
                     double limit = Math.max(
-                            product / (double) airTicks,
+                            this.sensitive ? product : product / (double) airTicks,
                             player.trackers.has(Trackers.TrackerFamily.VELOCITY)
                                     ? GroundUtils.maxBoundingBox :
                                     liquid || player.trackers.has(Trackers.TrackerFamily.MOTION) ? GroundUtils.maxPlayerStep :
@@ -195,7 +195,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                 + ", old-vertical: " + oldVertical
                                 + ", box: " + box
                                 + ", old-box: " + oldBox
-                                + ", air-ticks: " + airTicks;
+                                + ", air-ticks: " + airTicks
+                                + ", liquid: " + liquid;
                     } else {
                         return;
                     }
