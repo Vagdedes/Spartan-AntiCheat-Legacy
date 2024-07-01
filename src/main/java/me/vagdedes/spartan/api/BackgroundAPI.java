@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
