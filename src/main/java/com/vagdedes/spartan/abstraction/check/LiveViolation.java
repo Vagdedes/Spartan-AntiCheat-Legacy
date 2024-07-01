@@ -390,8 +390,8 @@ public class LiveViolation {
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + ") "
                 + "[(Version: " + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
-                + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), "
-                + ", (Packets: " + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
+                + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "),"
+                + " (Packets: " + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
                 + location.getBlockZ() + "), (" + playerViolation.information + ")]";
         AntiCheatLogs.logInfo(player, information, true, null, playerViolation);

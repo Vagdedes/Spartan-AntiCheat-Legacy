@@ -26,7 +26,7 @@ public class ItemDrops extends CheckExecutor {
         long timePassed = System.currentTimeMillis() - this.time;
         this.time = System.currentTimeMillis();
 
-        if (timePassed <= TPS.tickTime) {
+        if (timePassed <= (TPS.tickTime * 0.8)) {
             int count = buffer.count(1, 10);
 
             if (count == 1) {

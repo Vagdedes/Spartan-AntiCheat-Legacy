@@ -6,6 +6,8 @@ import org.bukkit.GameMode;
 
 public class IrregularMovementsFoodSprint extends DetectionExecutor {
 
+    private static final int level = 6 - 1;
+
     IrregularMovementsFoodSprint(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
     }
@@ -16,12 +18,12 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
             GameMode gameMode = player.getInstance().getGameMode();
             int food = player.getInstance().getFoodLevel();
 
-            if (food <= 6
+            if (food <= level
                     && (gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE)) {
                 cancel(
                         "type: food-sprint"
-                                + ", game-mode: " + gameMode
+                                + ", game-mode: " + gameMode.toString().toLowerCase().replace("_", "-")
                                 + ", food: " + food,
                         1.0,
                         player.movement.getDetectionLocation(),

@@ -124,17 +124,18 @@ public class SpartanPlayer {
                     if (p.movement.isFlying()) {
                         p.trackers.add(Trackers.TrackerType.FLYING, (int) TPS.maximum);
                     }
+                    // Separator
+                    SpartanLocation to = p.movement.getLocation(),
+                            from = p.movement.getSchedulerFromLocation();
+
+                    if (from != null) {
+                        p.movement.schedulerDistance = to.distance(from);
+                    }
+                    p.movement.schedulerFrom = to;
 
                     // Separator
                     SpartanBukkit.runTask(p, () -> {
                         p.setStoredPotionEffects(p.getInstance().getActivePotionEffects()); // Bad
-                        SpartanLocation to = p.movement.getLocation(),
-                                from = p.movement.getSchedulerFromLocation();
-
-                        if (from != null) {
-                            p.movement.schedulerDistance = to.distance(from);
-                        }
-                        p.movement.schedulerFrom = to;
 
                         // Preventions
                         for (Enums.HackType hackType : Event_Movement.handledChecks) {

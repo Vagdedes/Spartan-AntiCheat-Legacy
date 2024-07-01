@@ -67,17 +67,14 @@ public class XRay extends CheckExecutor {
         if (minesDeviation > 0.0) {
             double averageDeviation = getAverageDeviation(environment, (MiningHistory.MiningOre) objects[2]);
 
-            if (averageDeviation < 0.0) {
-                averageDeviation = Math.abs(averageDeviation);
-            } else {
-                averageDeviation = averageDeviation * 1.5;
-            }
-            double points = AlgebraUtils.cut(minesDeviation - averageDeviation, 2);
+            if (averageDeviation > 0.0) {
+                double points = AlgebraUtils.cut(minesDeviation - averageDeviation, 2);
 
-            if (points > 0.0) {
-                cancel(
-                        "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points")
-                );
+                if (points > 0.0) {
+                    cancel(
+                            "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points")
+                    );
+                }
             }
         }
     }

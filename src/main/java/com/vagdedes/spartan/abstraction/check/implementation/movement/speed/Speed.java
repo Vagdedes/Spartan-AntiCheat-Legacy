@@ -27,8 +27,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedList;
-
 public class Speed extends CheckExecutor {
 
     /*
@@ -73,7 +71,6 @@ public class Speed extends CheckExecutor {
             needToCheckAura,
             isJump;
     private float jumpRotation;
-    private LinkedList<Aura> auraAnalysis;
     private int
             antiAbuseProcessor, groundSwitches,
             collideMinecraftShitMathFactorValue,
@@ -542,7 +539,6 @@ public class Speed extends CheckExecutor {
             verticalVl = 0;
             ignoreBasicChecks = true;
             sprintVl = 0;
-            auraAnalysis = new LinkedList<>();
             needToCheckAura = false;
             ticksOnGround = 0;
             oldWrappedOnFly = 0;
@@ -582,50 +578,6 @@ public class Speed extends CheckExecutor {
 
     private double getMaxSpeedAmplifier() {
         return Attributes.getAmount(player, Attributes.GENERIC_MOVEMENT_SPEED);
-    }
-
-    private void checkAuraAnalysis(SpartanLocation to) {
-        if (auraAnalysis.isEmpty()) return;
-        String flag = null;
-        float yawDiff = 0,
-                yawDiffFromFirst = Math.abs(auraAnalysis.getLast().yaw() - auraAnalysis.getFirst().yaw());
-        double rayDiff = 0,
-                raySimDiff = 0,
-                angle = Math.toDegrees(RayUtils.calculateRayLine(auraAnalysis.get(0).rayLine()));
-        float yaw = auraAnalysis.get(0).yaw();
-        double raySim = RayUtils.calculateRayLine(auraAnalysis.get(0).simRayLine());
-        boolean oldInTarget = false;
-
-        for (Aura a : auraAnalysis) {
-            double angleLocal = Math.toDegrees(RayUtils.calculateRayLine(a.rayLine()));
-            float yawLocal = a.yaw();
-
-            rayDiff += Math.abs(angleLocal - angle);
-            yawDiff += Math.abs(yawLocal - yaw);
-            double raySimDiffAdd = Math.abs(RayUtils.calculateRayLine(a.simRayLine()) - raySim);
-            raySimDiff += raySimDiffAdd;
-            yaw = yawLocal;
-            angle = angleLocal;
-            raySim = RayUtils.calculateRayLine(a.simRayLine());
-
-            oldInTarget = a.isLookAtTarget();
-        }
-        auraAnalysis.clear();
-
-        yawDiff = (float) RayUtils.scaleVal(RayUtils.set360Limit(yawDiff), 2);
-        yawDiffFromFirst = (float) RayUtils.scaleVal(yawDiffFromFirst, 2);
-        rayDiff = RayUtils.scaleVal(RayUtils.set360Limit((float) rayDiff), 2);
-        raySimDiff = RayUtils.scaleVal(Math.toDegrees(raySimDiff), 2);
-
-        /*if (rayDiff * 6.5 < raySimDiff && rayDiff < 16 && raySimDiff < 75 && rayDiff > 0.5 && yawDiffFromFirst > 9.8) {
-            for (int i = 0; i < 5; i++) {
-                flag = "type: aura(direction), final-rayDiff: "
-                                + rayDiff + ", final-raySimDiff: " + raySimDiff + ", count: " + (i + 1);
-                cancel(flag, player.movement.getLocation(), 9);
-            }
-        }*/
-
-
     }
 
     private boolean allowedAngle(double angle) {

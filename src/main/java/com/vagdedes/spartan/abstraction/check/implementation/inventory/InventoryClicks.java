@@ -53,7 +53,7 @@ public class InventoryClicks extends CheckExecutor {
                 if (shift
                         && !quick
                         && !BlockUtils.hasMaterial(player.getOpenInventory().getCursor())
-                        && shiftBuffer.count(1, 5) == 3) { // Inventory
+                        && shiftBuffer.count(1, 5) == 4) { // Inventory
                     shiftBuffer.reset();
                     cancel("type: shift, item: " + type);
                 } else {
