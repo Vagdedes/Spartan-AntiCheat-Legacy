@@ -6,5 +6,5 @@
 [#] Fixed an Exploits movement(spoof) repeating false positive.
 [#] Fixed XRay false positives caused by bad statistics.
 [#] Improved the violation information of the IrregularMovements check.
-[#] Fixed an IrregularMovements food-sprint false positive by decreasing the required food level.
+[#] Fixed an IrregularMovements food-sprint false positive.
 [#] Fixed an InventoryClicks shift clicking false positive.

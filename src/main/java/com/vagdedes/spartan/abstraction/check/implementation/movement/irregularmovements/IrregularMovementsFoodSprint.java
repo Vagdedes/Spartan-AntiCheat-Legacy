@@ -2,14 +2,16 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.data.Buffer;
 import org.bukkit.GameMode;
 
 public class IrregularMovementsFoodSprint extends DetectionExecutor {
 
-    private static final int level = 6 - 1;
+    private final Buffer.IndividualBuffer buffer;
 
     IrregularMovementsFoodSprint(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
+        this.buffer = new Buffer.IndividualBuffer(executor.player);
     }
 
     void run() {
@@ -18,9 +20,11 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
             GameMode gameMode = player.getInstance().getGameMode();
             int food = player.getInstance().getFoodLevel();
 
-            if (food <= level
+            if (food <= 6
                     && (gameMode == GameMode.SURVIVAL
-                    || gameMode == GameMode.ADVENTURE)) {
+                    || gameMode == GameMode.ADVENTURE)
+                    && buffer.count(1, 10) == 4) {
+                buffer.reset();
                 cancel(
                         "type: food-sprint"
                                 + ", game-mode: " + gameMode.toString().toLowerCase().replace("_", "-")
@@ -33,4 +37,5 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
             }
         }
     }
+
 }
