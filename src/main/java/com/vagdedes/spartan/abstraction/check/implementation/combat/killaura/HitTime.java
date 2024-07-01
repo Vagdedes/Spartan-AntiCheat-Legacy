@@ -11,23 +11,33 @@ public class HitTime extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    private int vl = 0;
-    private int vlAnalysis = 0;
-    private int nullPacket = 0;
-    private int devianceTotal = 0;
-    private int packets = 0;
-    private int lowPackets = 0;
+    private int
+            vl = 0,
+            vlAnalysis = 0,
+            nullPacket = 0,
+            devianceTotal = 0,
+            packets = 0,
+            lowPackets = 0;
 
-    private long lastHitTime = 0;
-    private long oldHitTiming = 0;
+    private long
+            lastHitTime = 0,
+            oldHitTiming = 0;
+
     void runDamage() {
-        if (!SpartanBukkit.packetsEnabled()) return;
+        if (!SpartanBukkit.packetsEnabled()) {
+            return;
+        }
         long hitTime = System.currentTimeMillis() - lastHitTime;
         int deviance = (int) Math.abs(hitTime - oldHitTiming);
         devianceTotal += deviance;
         packets += 1;
-        if (player.getPing() > 1_000) return;
-        if (deviance < 5 && deviance != 0) lowPackets++;
+
+        if (player.getPing() > 1_000) {
+            return;
+        }
+        if (deviance < 5 && deviance != 0) {
+            lowPackets++;
+        }
         if (hitTime == 0) {
             nullPacket = 2;
         }
@@ -60,10 +70,14 @@ public class HitTime extends DetectionExecutor {
             devianceTotal = 0;
             lowPackets = 0;
         }
-        if (vl > 0) vl -= 5;
-
-        if (nullPacket > 0) nullPacket -= 1;
+        if (vl > 0) {
+            vl -= 5;
+        }
+        if (nullPacket > 0) {
+            nullPacket -= 1;
+        }
         lastHitTime = System.currentTimeMillis();
         oldHitTiming = hitTime;
     }
+
 }

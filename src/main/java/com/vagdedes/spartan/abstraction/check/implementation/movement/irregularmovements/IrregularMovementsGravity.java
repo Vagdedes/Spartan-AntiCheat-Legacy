@@ -196,7 +196,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                 + ", box: " + box
                                 + ", old-box: " + oldBox
                                 + ", air-ticks: " + airTicks
-                                + ", liquid: " + liquid;
+                                + ", sensitive: " + this.sensitive;
                     } else {
                         return;
                     }
