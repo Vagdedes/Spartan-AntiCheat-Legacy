@@ -2,4 +2,4 @@
 [#] Fixed a non-such method console error when retrieving server TPS.
 [#] Fixed an issue where punishments repeat themselves after player is logged out.
 [#] Made the NoFall check more lenient as far as its violations and preventions go.
-[#]
+[#] Improved the prevention system to consider configuration options in more scenarios.
