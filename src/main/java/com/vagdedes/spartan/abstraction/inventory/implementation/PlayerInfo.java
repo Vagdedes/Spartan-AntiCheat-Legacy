@@ -131,8 +131,7 @@ public class PlayerInfo extends InventoryMenu {
         // Separator
 
         Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
-        boolean serverLag = isOnline && TPS.areLow(),
-                notChecked = isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
+        boolean notChecked = isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 detectionsNotAvailable = !SpartanEdition.hasDetectionsPurchased(dataType),
                 listedChecks = false;
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
@@ -147,7 +146,6 @@ public class PlayerInfo extends InventoryMenu {
                         dataType,
                         cancellableCompatibility,
                         isOnline,
-                        serverLag,
                         notChecked,
                         detectionsNotAvailable,
                         !hasViolations
@@ -185,7 +183,6 @@ public class PlayerInfo extends InventoryMenu {
                 dataType,
                 isOnline ? player.getCancellableCompatibility() : null,
                 isOnline,
-                isOnline && TPS.areLow(),
                 isOnline && !PlayerDetectionSlots.isChecked(player.uuid),
                 !SpartanEdition.hasDetectionsPurchased(dataType),
                 !hasViolations
@@ -203,7 +200,6 @@ public class PlayerInfo extends InventoryMenu {
     private String getDetectionState(SpartanPlayer player, HackType hackType, Enums.DataType dataType,
                                      String cancellableCompatibility,
                                      boolean hasPlayer,
-                                     boolean serverLag,
                                      boolean notChecked,
                                      boolean detectionMissing,
                                      boolean returnNull) {
@@ -223,7 +219,6 @@ public class PlayerInfo extends InventoryMenu {
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
                 cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
                         notChecked ? "Temporarily Not Checked" :
-                                serverLag ? "Server Lag" :
                                         disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
                                                 (returnNull ? null : (check.isSilent(worldName) ? "Silent " : "") + "Checking");
     }

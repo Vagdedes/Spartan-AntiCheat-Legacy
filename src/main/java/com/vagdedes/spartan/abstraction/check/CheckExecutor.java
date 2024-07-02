@@ -19,8 +19,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
         if (scheduler) {
             SpartanBukkit.runRepeatingTask(player, () -> {
-                function = !TPS.areLow()
-                        && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                         || player.getInstance().getGameMode() != GameMode.SPECTATOR)
                         && !player.protocol.isOnLoadStatus()
                         && player.getCancellableCompatibility() == null
@@ -36,8 +35,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
         } else {
             SpartanBukkit.runRepeatingTask(
                     player,
-                    () -> function = !TPS.areLow()
-                            && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                    () -> function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                             || player.getInstance().getGameMode() != GameMode.SPECTATOR)
                             && !player.protocol.isOnLoadStatus()
                             && player.getCancellableCompatibility() == null

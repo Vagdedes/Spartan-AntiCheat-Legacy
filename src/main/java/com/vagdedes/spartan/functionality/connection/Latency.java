@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.connection;
 
-import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -40,28 +39,8 @@ public class Latency {
         }
 
         // Separator
-        double tpsDelay;
-
-        if (!Config.settings.getBoolean(Settings.tpsProtectionOption)) {
-            tpsDelay = 0.0;
-        } else {
-            double tps = TPS.get();
-
-            if (tps >= TPS.excellent) {
-                tpsDelay = 0.0;
-            } else {
-                tpsDelay = TPS.maximum - tps;
-            }
-        }
-
-        // Separator
-        return Math.min(
-                Math.max(
-                        tpsDelay, pingDelay > TPS.tickTimeInteger
-                                ? (pingDelay - TPS.tickTimeInteger) / TPS.tickTimeDecimal
-                                : 0
-                ),
-                TPS.maximum
-        );
+        return pingDelay > TPS.tickTimeInteger
+                ? (pingDelay - TPS.tickTimeInteger) / TPS.tickTimeDecimal
+                : 0;
     }
 }
