@@ -34,7 +34,7 @@ public class NoFall extends CheckExecutor {
         }
     }
 
-    private double previousFallDistance, distance;
+    private double previousFallDistance;
     private int previousFallTick;
     private boolean ignore;
 
@@ -45,7 +45,6 @@ public class NoFall extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        this.distance = 0.0;
         this.ignore = true;
         this.previousFallTick = Integer.MAX_VALUE;
         this.previousFallDistance = player.getInstance().getFallDistance();
@@ -70,7 +69,6 @@ public class NoFall extends CheckExecutor {
 
         if (vertical == null
                 || oldVertical == null) {
-            this.distance = 0.0;
             this.previousFallTick = Integer.MAX_VALUE;
             this.previousFallDistance = player.getInstance().getFallDistance();
             return;
@@ -100,10 +98,6 @@ public class NoFall extends CheckExecutor {
                     || (!player.bedrockPlayer || vertical != 0.0)
                     && !player.isOnGround(player.movement.getEventToLocation(), true)
                     && !player.isOnGround(player.movement.getEventFromLocation(), false))) {
-                double damage = AlgebraUtils.integerCeil(
-                        this.distance - 3.0f
-                                - (PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1.0f)
-                );
                 cancel(
                         "type: motion"
                                 + ", fall-distance: " + fallDistance
@@ -117,12 +111,11 @@ public class NoFall extends CheckExecutor {
                         player.movement.getDetectionLocation(),
                         0,
                         false,
-                        damage
+                        difference
                 );
             }
         }
         this.previousFallDistance = fallDistance;
-        this.distance += Math.abs(vertical);
         this.previousFallTick = fallDistanceTick;
     }
 
