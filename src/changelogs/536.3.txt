@@ -3,3 +3,4 @@
 [#] Fixed an issue where punishments repeat themselves after player is logged out.
 [#] Made the NoFall check more lenient as far as its violations and preventions go.
 [#] Improved the prevention system to consider configuration options in more scenarios.
+[#] Fixed a BlockReach false positive caused by bedrock players.

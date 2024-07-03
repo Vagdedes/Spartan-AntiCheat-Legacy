@@ -18,8 +18,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class BlockReach extends CheckExecutor {
 
-    private static final double minimumLimit = 6.0;
-
     public BlockReach(HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, false);
     }
@@ -29,9 +27,10 @@ public class BlockReach extends CheckExecutor {
     }
 
     private double getLimit() {
+        double limit = player.bedrockPlayer ? 7.0 : 6.0;
         return Math.max(
-                hackType.getCheck().getDecimalOption("overall_distance", minimumLimit),
-                minimumLimit
+                hackType.getCheck().getDecimalOption("overall_distance", limit),
+                limit
         );
     }
 
