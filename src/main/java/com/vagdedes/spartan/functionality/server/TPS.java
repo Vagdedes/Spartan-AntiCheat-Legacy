@@ -1,9 +1,6 @@
 package com.vagdedes.spartan.functionality.server;
 
-import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
-import com.vagdedes.spartan.functionality.management.Config;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import org.bukkit.Bukkit;
 
 public class TPS {
 

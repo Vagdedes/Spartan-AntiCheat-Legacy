@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
-import com.vagdedes.spartan.functionality.management.Config;
+import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.API;
 

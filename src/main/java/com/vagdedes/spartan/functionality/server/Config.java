@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.management;
+package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
@@ -25,10 +25,6 @@ import java.io.File;
 public class Config {
 
     public static final String checksFileName = "checks.yml";
-    public static final String[] configs = new String[]{
-            "config.yml", "Config.settings.yml", checksFileName,
-            "compatibility.yml", "messages.yml", "sql.yml"
-    };
 
     private static YamlConfiguration configuration = null;
     private static String construct = null;
