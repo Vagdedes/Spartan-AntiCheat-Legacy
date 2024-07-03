@@ -100,7 +100,11 @@ public class SpartanEdition {
     }
 
     public static String getProductID() {
-        return getProductID(currentType);
+        return getProductID(
+                currentVersion
+                        ? currentType
+                        : (alternativeVersion ? oppositeType : Enums.DataType.UNIVERSAL)
+        );
     }
 
     public static String getProductName() {
