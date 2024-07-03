@@ -90,10 +90,12 @@ public class SpartanEdition {
 
     private static String getProductID(Enums.DataType dataType) {
         switch (dataType) {
+            case JAVA:
+                return "1";
             case BEDROCK:
                 return "16";
             default:
-                return "1";
+                return "26";
         }
     }
 
