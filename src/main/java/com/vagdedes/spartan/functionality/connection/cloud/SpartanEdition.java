@@ -95,7 +95,7 @@ public class SpartanEdition {
             case BEDROCK:
                 return "16";
             default:
-                return "26";
+                return "27";
         }
     }
 
