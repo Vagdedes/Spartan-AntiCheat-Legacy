@@ -11,7 +11,7 @@ public class Enums {
     public enum HackType {
         XRay(
                 HackCategoryType.WORLD,
-                2_000L,
+                TPS.tickTime,
                 com.vagdedes.spartan.abstraction.check.implementation.world.XRay.class,
                 new String[]{
                         "This check will prevent client modules",
