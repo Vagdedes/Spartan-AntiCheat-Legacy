@@ -143,7 +143,7 @@ public class CloudBase {
         if (cache) {
             disabledDetections.clear();
         } else {
-            identification = "identification=" + IDs.user() + "|" + IDs.nonce();
+            identification = "identification=" + IDs.platform() + "|" + IDs.user() + "|" + IDs.file();
         }
     }
 

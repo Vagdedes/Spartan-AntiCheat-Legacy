@@ -10,7 +10,7 @@ public class IDs {
 
     private static String
             user = "%%__USER__%%",
-            nonce = "%%__NONCE__%%";
+            file = "%%__NONCE__%%";
 
     public static final boolean
             hasUserIDByDefault = !user.startsWith("%%__");
@@ -18,8 +18,8 @@ public class IDs {
     private static int platform = 0;
 
     static {
-        if (!nonce.startsWith("%%__") && !AlgebraUtils.validInteger(nonce)) {
-            nonce = String.valueOf(Objects.hash(nonce));
+        if (!file.startsWith("%%__") && !AlgebraUtils.validInteger(file)) {
+            file = String.valueOf(Objects.hash(file));
         }
     }
 
@@ -27,7 +27,7 @@ public class IDs {
 
     static void set(int user, int nonce) {
         IDs.user = Integer.toString(user);
-        IDs.nonce = Integer.toString(nonce);
+        IDs.file = Integer.toString(nonce);
         Config.refreshFields(false);
     }
 
@@ -35,14 +35,14 @@ public class IDs {
         platform = id;
     }
 
-    // Platforms
+    // IDs
 
     public static String user() {
         return user;
     }
 
-    public static String nonce() {
-        return !JarVerification.enabled ? (CloudBase.hasToken() ? Integer.toString(CloudBase.getRawToken().hashCode()) : user) : nonce;
+    public static String file() {
+        return !JarVerification.enabled ? (CloudBase.hasToken() ? Integer.toString(CloudBase.getRawToken().hashCode()) : user) : file;
     }
 
     static String resource() {

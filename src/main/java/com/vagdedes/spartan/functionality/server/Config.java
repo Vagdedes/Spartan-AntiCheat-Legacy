@@ -103,7 +103,7 @@ public class Config {
         }
 
         // Identification & Labelling
-        construct = "[Spartan " + API.getVersion() + "/" + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.nonce()) + "] ";
+        construct = "[Spartan " + API.getVersion() + "/" + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.file()) + "] ";
         CloudBase.clear(false);
         CrossServerInformation.refresh();
 
