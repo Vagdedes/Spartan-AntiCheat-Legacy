@@ -124,10 +124,15 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public boolean wasInLiquids() {
+    public boolean isInLiquids() {
         return this.isSwimming()
                 || TPS.tick() - this.lastLiquidTicks <=
                 Math.max(AlgebraUtils.integerCeil(Latency.getDelay(this.parent)), 5L);
+    }
+
+    public boolean wasInLiquids() {
+        return !this.isInLiquids()
+                && TPS.tick() - this.lastLiquidTicks <= TPS.maximum;
     }
 
     public Material getLastLiquidMaterial() {

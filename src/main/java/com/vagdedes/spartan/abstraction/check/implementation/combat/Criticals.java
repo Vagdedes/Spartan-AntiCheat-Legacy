@@ -36,7 +36,7 @@ public class Criticals extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return CombatProcessing.canCheck(player)
-                && !player.movement.wasInLiquids()
+                && !player.movement.isInLiquids()
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
     }
 }

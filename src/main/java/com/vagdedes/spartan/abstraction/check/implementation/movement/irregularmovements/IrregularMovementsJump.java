@@ -98,7 +98,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
 
                 if (!player.isOnGround(player.movement.getEventToLocation(), true)
                         && !player.isOnGround(player.movement.getEventFromLocation(), false)
-                        && !player.movement.wasInLiquids()) {
+                        && !player.movement.isInLiquids()) {
                     int airTicks = player.movement.getTicksOnAir();
 
                     if (airTicks > limit) {
