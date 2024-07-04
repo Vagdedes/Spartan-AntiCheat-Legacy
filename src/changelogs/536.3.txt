@@ -1,4 +1,5 @@
 [+] Added new description to the Player Info inventory menu.
+[+] Updated the verification of the Cloud feature, update to maintain access to it.
 [#] Fixed a few Speed ground-invalid false positives
 [#] Fixed a non-such method console error when retrieving server TPS.
 [#] Fixed an issue where punishments repeat themselves after player is logged out.
