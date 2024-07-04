@@ -34,7 +34,7 @@ public class HitReach extends CheckExecutor {
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
                 int playerId = event.getPlayer().getEntityId();
-                double bruteforceRayTrace = 0.7;
+                double bruteforceRayTrace = 14.88;
                 double value;
 
                 for (int i = 0; i < 3 + LagCompensation.getPlayerTicksDelay(playerId); i++) {
@@ -52,7 +52,7 @@ public class HitReach extends CheckExecutor {
                         }
                     }
                 }
-                if (bruteforceRayTrace > 0.43) {
+                if (bruteforceRayTrace > 0.43 && bruteforceRayTrace != 14.88) {
                     localVl += 100;
                     if (localVl > 300) {
                         cancel(
