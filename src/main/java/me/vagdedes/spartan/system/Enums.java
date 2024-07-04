@@ -21,9 +21,9 @@ public class Enums {
                 }
         ),
         Exploits(
-                HackCategoryType.EXPLOITS,
+                HackCategoryType.WORLD,
                 2_000L,
-                com.vagdedes.spartan.abstraction.check.implementation.exploits.Exploits.class,
+                com.vagdedes.spartan.abstraction.check.implementation.world.exploits.Exploits.class,
                 new String[]{
                         "This check will prevent client",
                         "modules that may potentially hurt",
@@ -315,7 +315,7 @@ public class Enums {
     }
 
     public enum HackCategoryType {
-        COMBAT, MOVEMENT, EXPLOITS, PLAYER, WORLD, INVENTORY;
+        COMBAT, MOVEMENT, PLAYER, WORLD, INVENTORY;
 
         private final String string;
 
@@ -328,12 +328,9 @@ public class Enums {
                     string = "Movement";
                     break;
                 case 2:
-                    string = "Exploits";
-                    break;
-                case 3:
                     string = "Player";
                     break;
-                case 4:
+                case 3:
                     string = "World";
                     break;
                 default:
