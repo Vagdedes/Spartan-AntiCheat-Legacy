@@ -50,7 +50,7 @@ public class IDs {
     }
 
     static String platform() {
-        return IDs.isBuiltByBit() ? "BuiltByBit" : IDs.isPolymart() ? "Polymart" : isSpigotMC() ? "SpigotMC" : null;
+        return IDs.isBuiltByBit() ? "BuiltByBit" : IDs.isPolymart() ? "Polymart" : "SpigotMC";
     }
 
     // Platforms
@@ -61,10 +61,6 @@ public class IDs {
 
     public static boolean isPolymart() {
         return platform == 3 || "%%__POLYMART__%%".length() == 1;
-    }
-
-    public static boolean isSpigotMC() {
-        return platform == 1 || JarVerification.enabled && !CloudBase.hasToken() && !isBuiltByBit() && !isPolymart();
     }
 
     public static String hide(String id) {
