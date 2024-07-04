@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.player;
 
+import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -259,6 +260,15 @@ public class SpartanPlayerMovement {
     public boolean isGliding() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             return this.parent.getInstance().isGliding();
+        } else {
+            return false;
+        }
+    }
+
+    public boolean wasGliding() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            return !this.parent.getInstance().isGliding()
+                    && this.parent.trackers.has(Trackers.TrackerType.GLIDING);
         } else {
             return false;
         }

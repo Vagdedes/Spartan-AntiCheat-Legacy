@@ -124,6 +124,9 @@ public class SpartanPlayer {
                     if (p.movement.isFlying()) {
                         p.trackers.add(Trackers.TrackerType.FLYING, (int) TPS.maximum);
                     }
+                    if (p.movement.isGliding()) {
+                        p.trackers.add(Trackers.TrackerType.GLIDING, (int) TPS.maximum);
+                    }
                     // Separator
                     SpartanLocation to = p.movement.getLocation(),
                             from = p.movement.getSchedulerFromLocation();

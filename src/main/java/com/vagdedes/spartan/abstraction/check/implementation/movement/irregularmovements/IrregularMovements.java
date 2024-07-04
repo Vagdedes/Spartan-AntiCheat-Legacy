@@ -62,7 +62,8 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheck(player, false, true, false, true);
+        return MovementProcessing.canCheck(player, false, true, false, true)
+                && !player.movement.wasGliding();
     }
 
 }
