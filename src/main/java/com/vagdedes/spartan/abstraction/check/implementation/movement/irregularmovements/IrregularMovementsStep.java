@@ -139,6 +139,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                     if (!player.movement.isJumping(vertical)
                             && !BlockUtils.isInteractiveAndPassable(player, player.movement.getEventToLocation().getBlock().material)) {
                         double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                                + (player.trackers.has(Trackers.TrackerFamily.VELOCITY) ? 0.5 : 0.0)
                                 + PlayerUtils.getJumpMotion(
                                 PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
                                 0
