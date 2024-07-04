@@ -38,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LiveViolation {
 
     public static final String violationLevelIdentifier = "VL:";
-    public static final long violationTimeWorth = 2_000L;
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
@@ -177,7 +176,7 @@ public class LiveViolation {
     private int calculateLevel(long time) {
         time -= System.currentTimeMillis();
         return time > 0L
-                ? AlgebraUtils.integerCeil(time / (double) violationTimeWorth)
+                ? AlgebraUtils.integerCeil(time / (double) hackType.violationTimeWorth)
                 : 0;
     }
 
@@ -215,14 +214,14 @@ public class LiveViolation {
         Long time = this.level.get(hash);
 
         if (time == null) {
-            this.level.put(hash, System.currentTimeMillis() + (violationTimeWorth * amount));
+            this.level.put(hash, System.currentTimeMillis() + (hackType.violationTimeWorth * amount));
         } else {
             long current = System.currentTimeMillis();
 
             if (time < current) {
-                this.level.put(hash, current + (violationTimeWorth * amount));
+                this.level.put(hash, current + (hackType.violationTimeWorth * amount));
             } else {
-                this.level.put(hash, time + (violationTimeWorth * amount));
+                this.level.put(hash, time + (hackType.violationTimeWorth * amount));
             }
         }
         InteractiveInventory.playerInfo.refresh(player.name);

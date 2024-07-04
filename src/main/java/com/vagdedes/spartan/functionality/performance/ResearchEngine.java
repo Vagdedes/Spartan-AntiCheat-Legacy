@@ -517,7 +517,7 @@ public class ResearchEngine {
                                     if (!list.isEmpty()) {
                                         for (PlayerViolation playerViolation : list) {
                                             averages.computeIfAbsent(
-                                                    AlgebraUtils.integerFloor(playerViolation.time / (double) LiveViolation.violationTimeWorth),
+                                                    AlgebraUtils.integerFloor(playerViolation.time / (double) hackType.violationTimeWorth),
                                                     k -> new ViolationAnalysis.TimePeriod()
                                             ).add(playerProfile, playerViolation);
                                         }

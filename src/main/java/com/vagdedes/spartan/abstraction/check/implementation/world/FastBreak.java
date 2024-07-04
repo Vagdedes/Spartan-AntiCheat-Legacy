@@ -62,13 +62,20 @@ public class FastBreak extends CheckExecutor {
                             limit = originalLimit;
 
                     if (limit > -1L) { // Make sure the limit can be calculated on this specific server
-                        limit -= Math.min(
-                                (long) (Latency.getDelay(player) * TPS.tickTime),
-                                BlockUtils.sensitiveBlockBreakTime
-                        );
+                        limit -= (long) (Math.max(Latency.getDelay(player), 1.0) * TPS.tickTime);
 
                         if (player.bedrockPlayer) {
-                            limit = AlgebraUtils.integerRound(limit * 0.8);
+                            if (limit * 0.8 < limit - BlockUtils.sensitiveBlockBreakTime) {
+                                limit = AlgebraUtils.integerRound(limit * 0.8);
+                            } else {
+                                limit -= BlockUtils.sensitiveBlockBreakTime;
+                            }
+                        } else {
+                            if (limit * 0.9 < limit - BlockUtils.sensitiveBlockBreakTime) {
+                                limit = AlgebraUtils.integerRound(limit * 0.9);
+                            } else {
+                                limit -= BlockUtils.sensitiveBlockBreakTime;
+                            }
                         }
 
                         if (limit > (TPS.tickTime * 2L) && time < limit) {
