@@ -92,7 +92,7 @@ public class ImpossibleActions extends CheckExecutor {
                                             SpartanLocation loopLocation = iterator.next();
 
                                             if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
-                                                double diff = Math.abs(previousLocation.getYaw() - loopLocation.getYaw());
+                                                double diff = previousLocation.getYaw() - loopLocation.getYaw();
                                                 yawDeviation += diff * diff;
                                                 previousLocation = loopLocation;
                                             } else {
