@@ -49,7 +49,7 @@ public class HitTime extends DetectionExecutor {
         }
         if (packets >= 5 && LagCompensation.getPlayerTicksDelay(player.getInstance().getEntityId()) < 2) {
             if (devianceTotal < 35) {
-                vlAnalysis += (devianceTotal < 10) ? 500 : 100;
+                vlAnalysis += (devianceTotal < 10) ? 150 : 75;
                 if (vlAnalysis >= 300) {
                     cancel("type: post(linear-analysis)", (vl - 200) / 100D, player.movement.getEventFromLocation());
                 }
