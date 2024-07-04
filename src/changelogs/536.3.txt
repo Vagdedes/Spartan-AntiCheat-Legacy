@@ -4,3 +4,6 @@
 [#] Made the NoFall check more lenient as far as its violations and preventions go.
 [#] Improved the prevention system to consider configuration options in more scenarios.
 [#] Fixed a BlockReach false positive caused by bedrock players.
+[#] Fixed an IrregularMovements step false positive caused by several velocities.
+[#] Fixed FastBreak false positives caused by latency and haste effects.
+[#] Fixed many GhostHand false positives by making the check not retain violations for long.
