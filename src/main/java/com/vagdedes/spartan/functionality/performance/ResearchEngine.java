@@ -554,8 +554,14 @@ public class ResearchEngine {
                                 }
 
                                 // Calculate the average violations for each
-                                for (Map.Entry<Integer, Double> entry : sum.entrySet()) {
-                                    entry.setValue(Math.sqrt(entry.getValue() / count.get(entry.getKey())));
+                                if (hackType.getCheck().hasMultiViolations()) {
+                                    for (Map.Entry<Integer, Double> entry : sum.entrySet()) {
+                                        entry.setValue(entry.getValue() / count.get(entry.getKey()));
+                                    }
+                                } else {
+                                    for (Map.Entry<Integer, Double> entry : sum.entrySet()) {
+                                        entry.setValue(Math.sqrt(entry.getValue() / count.get(entry.getKey())));
+                                    }
                                 }
                                 hackType.getCheck().setIgnoredViolations(dataType, sum);
                             } else {

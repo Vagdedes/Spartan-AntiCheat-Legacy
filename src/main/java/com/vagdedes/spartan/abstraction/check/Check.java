@@ -39,6 +39,7 @@ public class Check {
     private final String[]
             disabledWorlds,
             silentWorlds;
+    private boolean hasMultiViolations;
 
     // Object Methods
 
@@ -49,6 +50,7 @@ public class Check {
     public Check(Enums.HackType hackType,
                  Map<Enums.DataType, Map<Integer, Integer>> ignoredViolations,
                  boolean copy) {
+        this.hasMultiViolations = false;
         this.options = Collections.synchronizedMap(new LinkedHashMap<>());
         this.hackType = hackType;
         this.ignoredViolations = copy ? ignoredViolations : Collections.synchronizedMap(ignoredViolations);
@@ -589,6 +591,16 @@ public class Check {
                         : Math.max(integer, standardIgnoredViolations);
             }
         }
+    }
+
+    // Separator
+
+    public void enableMultiViolations() {
+        this.hasMultiViolations = true;
+    }
+
+    public boolean hasMultiViolations() {
+        return hasMultiViolations;
     }
 
 }

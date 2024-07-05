@@ -23,6 +23,10 @@ public class PlayerViolation {
 
         this.detection = analysis.detection;
         this.identity = analysis.identity;
+
+        if (this.increase > 1) {
+            this.hackType.getCheck().enableMultiViolations();
+        }
     }
 
     public PlayerViolation(long time,
