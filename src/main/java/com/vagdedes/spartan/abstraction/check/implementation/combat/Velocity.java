@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -107,14 +108,14 @@ public class Velocity extends CheckExecutor {
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y = location.getBlockY(); y <= location.getBlockY() + 2; y++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    if (!new SpartanLocation(
+                    if (BlockUtils.isSolid(new SpartanLocation(
                             location.world,
                             location.getX(),
                             location.getY(),
                             location.getZ(),
                             0.0f,
                             0.0f
-                    ).getBlock().material.isEmpty()) {
+                    ).getBlock().material)) {
                         return true;
                     }
                 }
