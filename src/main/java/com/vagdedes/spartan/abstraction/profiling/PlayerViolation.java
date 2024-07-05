@@ -7,17 +7,19 @@ public class PlayerViolation {
     public final Enums.HackType hackType;
     public final long time;
     public final String information, detection;
-    public final int level, identity;
+    public final int level, increase, identity;
 
     public PlayerViolation(long time,
                            Enums.HackType hackType,
                            String information,
                            int level,
+                           int increase,
                            InformationAnalysis analysis) {
         this.hackType = hackType;
         this.time = time;
         this.information = information;
         this.level = level;
+        this.increase = increase;
 
         this.detection = analysis.detection;
         this.identity = analysis.identity;
@@ -26,12 +28,14 @@ public class PlayerViolation {
     public PlayerViolation(long time,
                            Enums.HackType hackType,
                            String information,
-                           int level) {
+                           int level,
+                           int increase) {
         this(
                 time,
                 hackType,
                 information,
                 level,
+                increase,
                 new InformationAnalysis(hackType, information)
         );
     }

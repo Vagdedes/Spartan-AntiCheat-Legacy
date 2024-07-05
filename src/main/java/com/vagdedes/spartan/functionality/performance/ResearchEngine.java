@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.java.TimeUtils;
@@ -32,43 +31,35 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ResearchEngine {
 
     public static final double requiredProfiles = 10;
-
-    private static final int cacheRefreshTicks = 1200;
-    private static int schedulerTicks = 0;
-
-    public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{Enums.DataType.JAVA, Enums.DataType.BEDROCK};
-
+    private static long schedulerTicks = 0L;
+    public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{
+            Enums.DataType.JAVA,
+            Enums.DataType.BEDROCK
+    };
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
-    private static final Map<MiningHistory.MiningOre, Double> averageMining = new LinkedHashMap<>(MiningHistory.MiningOre.values().length);
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
             if (schedulerTicks == 0) {
-                schedulerTicks = cacheRefreshTicks * 10;
+                schedulerTicks = 1200L;
 
-                SpartanBukkit.analysisThread.executeIfFree(() -> {
-                    if (Config.sql.isEnabled()) {
-                        refresh(Register.isPluginEnabled());
-                    } else if (schedulerTicks % cacheRefreshTicks == 0) {
-                        updateCache();
-                        MainMenu.refresh();
-                    }
-                });
-            } else {
-                schedulerTicks -= 1;
-
-                if (schedulerTicks % cacheRefreshTicks == 0) {
+                if (Config.sql.isEnabled()) {
+                    refresh(Register.isPluginEnabled());
+                } else {
                     SpartanBukkit.analysisThread.executeIfFree(() -> {
                         updateCache();
                         MainMenu.refresh();
                     });
                 }
+            } else {
+                schedulerTicks -= 1;
+
+                SpartanBukkit.analysisThread.executeIfFree(() -> {
+                    updateCache();
+                    MainMenu.refresh();
+                });
             }
         }, 1L, 1L);
-    }
-
-    public static boolean isStorageMode() {
-        return Config.settings.getBoolean("Logs.log_file") || Config.sql.isEnabled();
     }
 
     public static Enums.DataType[] getDynamicUsableDataTypes(boolean universal) {
@@ -82,28 +73,6 @@ public class ResearchEngine {
 
     public static boolean enoughData() {
         return playerProfiles.size() >= requiredProfiles;
-    }
-
-    // Separator
-
-    public static String getDetectionInformation(String s) {
-        String[] split = s.split("\\), \\(");
-        s = split[split.length - 1];
-        return s.length() < 2 ? null : s.substring(0, s.length() - 2);
-    }
-
-    public static int getDetectionViolationLevel(String s) {
-        int index1 = s.indexOf("(" + LiveViolation.violationLevelIdentifier + " ");
-
-        if (index1 > -1) {
-            int index2 = s.indexOf(") [");
-
-            if (index2 > -1 && index2 > index1) {
-                String number = s.substring(index1 + 5, index2);
-                return AlgebraUtils.validInteger(number) ? Integer.parseInt(number) : -1;
-            }
-        }
-        return -1;
     }
 
     // Separator
@@ -127,7 +96,7 @@ public class ResearchEngine {
         PlayerProfile playerProfile;
 
         if (!force) {
-             playerProfile = playerProfiles.get(player.name);
+            playerProfile = playerProfiles.get(player.name);
 
             if (playerProfile != null) {
                 playerProfile.update(player);
@@ -158,7 +127,7 @@ public class ResearchEngine {
     // Separator
 
     public static void resetData(Enums.HackType hackType) {
-        SpartanBukkit.analysisThread.executeWithPriority(() -> {
+        SpartanBukkit.analysisThread.execute(() -> {
             String hackTypeString = hackType.toString();
             hackType.getCheck().clearIgnoredViolations();
 
@@ -223,7 +192,7 @@ public class ResearchEngine {
 
         if (isStorageMode()) {
             // Clear Files/Database
-            SpartanBukkit.analysisThread.executeWithPriority(() -> {
+            SpartanBukkit.analysisThread.execute(() -> {
                 playerProfiles.remove(playerName);
 
                 if (foundPlayer) {
@@ -265,7 +234,46 @@ public class ResearchEngine {
 
     // Separator
 
-    public static Collection<File> getFiles() {
+    private static String getDetectionInformation(String s) {
+        String[] split = s.split("\\), \\(");
+        s = split[split.length - 1];
+        return s.length() < 2 ? null : s.substring(0, s.length() - 2);
+    }
+
+    private static int[] getDetectionViolationLevel(String s) {
+        int index1 = s.indexOf("(" + LiveViolation.violationLevelIdentifier + " ");
+
+        if (index1 > -1) {
+            int index2 = s.indexOf(") [");
+
+            if (index2 > -1 && index2 > index1) {
+                String number = s.substring(index1 + 5, index2);
+                String[] split = number.split("\\+", 3);
+
+                if (split.length == 2) {
+                    if (AlgebraUtils.validInteger(split[0])
+                            && AlgebraUtils.validInteger(split[1])) {
+                        return new int[]{
+                                Integer.parseInt(split[0]),
+                                Integer.parseInt(split[1])
+                        };
+                    }
+                } else if (AlgebraUtils.validInteger(number)) {
+                    return new int[]{
+                            Integer.parseInt(number),
+                            1
+                    };
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isStorageMode() {
+        return Config.settings.getBoolean("Logs.log_file") || Config.sql.isEnabled();
+    }
+
+    private static Collection<File> getFiles() {
         File[] files = new File(AntiCheatLogs.folderPath).listFiles();
 
         if (files != null && files.length > 0) {
@@ -293,7 +301,7 @@ public class ResearchEngine {
         return new ArrayList<>(0);
     }
 
-    public static Map<String, String> getLogs() {
+    private static Map<String, String> getLogs() {
         Map<String, String> cache = new LinkedHashMap<>();
         int byteSize = 0;
         boolean isFull = false,
@@ -429,16 +437,22 @@ public class ResearchEngine {
                                             String detection = getDetectionInformation(data);
 
                                             if (detection != null) {
-                                                int violation = getDetectionViolationLevel(data);
+                                                int[] violation = getDetectionViolationLevel(data);
 
-                                                if (violation != -1) {
+                                                if (violation != null) {
                                                     SimpleDateFormat sdf = new SimpleDateFormat(
                                                             fullDate.contains(AntiCheatLogs.dateFormatChanger) ?
                                                                     AntiCheatLogs.dateFormat :
                                                                     AntiCheatLogs.usualDateFormat
                                                     );
                                                     playerProfile.getViolationHistory(hackType).store(
-                                                            new PlayerViolation(sdf.parse(fullDate).getTime(), hackType, detection, violation)
+                                                            new PlayerViolation(
+                                                                    sdf.parse(fullDate).getTime(),
+                                                                    hackType,
+                                                                    detection,
+                                                                    violation[0],
+                                                                    violation[1]
+                                                            )
                                                     );
                                                 }
                                             }
@@ -485,24 +499,13 @@ public class ResearchEngine {
     private static void updateCache() {
         if (!playerProfiles.isEmpty()) {
             Collection<PlayerProfile> playerProfiles = new ArrayList<>(ResearchEngine.playerProfiles.values());
-            Enums.HackType[] hackTypes = Enums.HackType.values();
             Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
             ViolationAnalysis.calculateData(playerProfiles);
 
             // Separator
 
-            List<SpartanPlayer> staffOnline = SpartanBukkit.getPlayers();
-
-            if (!staffOnline.isEmpty()) {
-                staffOnline.removeIf(player -> !Permissions.isStaff(player));
-            }
-
-            // Separator
-
             if (enoughData()) {
-                for (Enums.HackType hackType : hackTypes) {
-                    hackType.getCheck().clearIgnoredViolations();
-
+                for (Enums.HackType hackType : Enums.HackType.values()) {
                     for (Enums.DataType dataType : dataTypes) {
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
                             boolean bedrock = dataType == Enums.DataType.BEDROCK;
@@ -532,7 +535,7 @@ public class ResearchEngine {
 
                                 // Add the average violations for the executed detections based on each time period
                                 for (ViolationAnalysis.TimePeriod timePeriod : averages.values()) {
-                                    Map<Integer, Double> averageViolations = timePeriod.getAverageViolations();
+                                    Map<Integer, Double> averageViolations = timePeriod.getSquareViolations();
 
                                     if (!averageViolations.isEmpty()) {
                                         for (Map.Entry<Integer, Double> averageViolationsEntry : averageViolations.entrySet()) {
@@ -552,20 +555,23 @@ public class ResearchEngine {
 
                                 // Calculate the average violations for each
                                 for (Map.Entry<Integer, Double> entry : sum.entrySet()) {
-                                    entry.setValue(entry.getValue() / count.get(entry.getKey()));
+                                    entry.setValue(Math.sqrt(entry.getValue() / count.get(entry.getKey())));
                                 }
                                 hackType.getCheck().setIgnoredViolations(dataType, sum);
+                            } else {
+                                hackType.getCheck().clearIgnoredViolations(dataType);
                             }
+                        } else {
+                            hackType.getCheck().clearIgnoredViolations(dataType);
                         }
                     }
                 }
             } else {
-                for (Enums.HackType hackType : hackTypes) {
+                for (Enums.HackType hackType : Enums.HackType.values()) {
                     hackType.getCheck().clearIgnoredViolations();
                 }
             }
         } else { // We clear because there are no players
-            averageMining.clear();
             ViolationAnalysis.clear();
 
             for (Enums.HackType hackType : Enums.HackType.values()) {

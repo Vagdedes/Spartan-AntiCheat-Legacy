@@ -32,7 +32,8 @@ public class ViolationAnalysis {
         public void add(PlayerProfile profile, PlayerViolation playerViolation) {
             this.violations.put(
                     playerViolation.identity,
-                    this.violations.getOrDefault(playerViolation.identity, 0) + 1
+                    this.violations.getOrDefault(playerViolation.identity, 0)
+                            + (playerViolation.increase * playerViolation.increase)
             );
             this.players.computeIfAbsent(
                     playerViolation.identity,
@@ -40,7 +41,7 @@ public class ViolationAnalysis {
             ).add(profile.hashCode());
         }
 
-        public Map<Integer, Double> getAverageViolations() {
+        public Map<Integer, Double> getSquareViolations() {
             int size = this.violations.size();
 
             if (size > 0) {

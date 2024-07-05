@@ -548,15 +548,21 @@ public class Check {
 
     public void setIgnoredViolations(Enums.DataType dataType, Map<Integer, Double> map) {
         synchronized (ignoredViolations) {
+            Map<Integer, Integer> createdMap = new LinkedHashMap<>();
+            ignoredViolations.put(dataType, createdMap);
+
             for (Map.Entry<Integer, Double> entry : map.entrySet()) {
-                ignoredViolations.computeIfAbsent(
-                        dataType,
-                        k -> new LinkedHashMap<>()
-                ).put(
+                createdMap.put(
                         entry.getKey(),
                         AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest
                 );
             }
+        }
+    }
+
+    public void clearIgnoredViolations(Enums.DataType dataType) {
+        synchronized (ignoredViolations) {
+            ignoredViolations.remove(dataType);
         }
     }
 

@@ -20,10 +20,6 @@ public class ViolationHistory {
         memory.add(playerViolation);
     }
 
-    public int getCount() {
-        return memory.size();
-    }
-
     public Collection<PlayerViolation> getCollection() {
         return new ArrayList<>(memory);
     }

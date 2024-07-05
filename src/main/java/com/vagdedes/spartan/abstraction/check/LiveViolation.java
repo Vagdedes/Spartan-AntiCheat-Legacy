@@ -54,7 +54,7 @@ public class LiveViolation {
 
     // Separator
 
-    void run(HackPrevention newPrevention, String information, double violations, long time) {
+    void run(HackPrevention newPrevention, String information, double increase, long time) {
         synchronized (this) {
             if (PlayerDetectionSlots.isChecked(player.uuid)
                     && !CloudBase.isInformationCancelled(hackType, information)
@@ -62,15 +62,16 @@ public class LiveViolation {
                     || disableCause.hasExpired()
                     || !disableCause.pointerMatches(information))) {
                 InformationAnalysis analysis = new InformationAnalysis(hackType, information);
-                int violationsInt = Math.max(AlgebraUtils.integerRound(violations), 1);
+                int increaseInt = Math.max(AlgebraUtils.integerRound(increase), 1);
                 PlayerViolation playerViolation = new PlayerViolation(
                         time,
                         hackType,
                         information,
                         Math.max(
-                                this.getLevel(analysis.identity) + violationsInt,
-                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + violationsInt))
+                                this.getLevel(analysis.identity) + increaseInt,
+                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + increaseInt))
                         ),
+                        increaseInt,
                         analysis
                 );
                 boolean event = Config.settings.getBoolean("Important.enable_developer_api");
@@ -90,7 +91,7 @@ public class LiveViolation {
                         }
                     }
                     player.protocol.getProfile().getViolationHistory(hackType).store(playerViolation);
-                    this.increaseLevel(playerViolation.identity, violationsInt);
+                    this.increaseLevel(playerViolation.identity, increaseInt);
                     this.performNotification(playerViolation);
                     this.performPunishments();
                     this.prevention = newPrevention;
@@ -387,7 +388,7 @@ public class LiveViolation {
 
         SpartanLocation location = player.movement.getLocation();
         String information = Config.getConstruct() + player.name + " failed " + hackType
-                + " (" + violationLevelIdentifier + " " + playerViolation.level + ") "
+                + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + ") "
                 + "[(Version: " + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
                 + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "),"
                 + " (Packets: " + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
