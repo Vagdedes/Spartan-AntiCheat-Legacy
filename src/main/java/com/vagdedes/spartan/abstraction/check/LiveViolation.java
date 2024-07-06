@@ -68,8 +68,8 @@ public class LiveViolation {
                         hackType,
                         information,
                         Math.max(
-                                this.getLevel(analysis.identity) + increaseInt,
-                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel() + increaseInt))
+                                this.getLevel(analysis.identity),
+                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel()))
                         ),
                         increaseInt,
                         analysis
@@ -81,7 +81,7 @@ public class LiveViolation {
                         PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
                                 player.getInstance(),
                                 hackType,
-                                playerViolation.level,
+                                playerViolation.level + playerViolation.increase,
                                 information
                         );
                         Register.manager.callEvent(playerViolationEvent);
@@ -99,7 +99,7 @@ public class LiveViolation {
                             && (silentCause == null
                             || silentCause.hasExpired()
                             || !silentCause.pointerMatches(information))
-                            && playerViolation.level >= playerViolation.getIgnoredViolations(player.dataType);
+                            && (playerViolation.level + playerViolation.increase) >= playerViolation.getIgnoredViolations(player.dataType);
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {
@@ -452,19 +452,20 @@ public class LiveViolation {
         }
     }
 
-    public static boolean hasNotificationCooldown(SpartanPlayer staff, SpartanPlayer player, PlayerViolation violation) {
+    public static boolean hasNotificationCooldown(SpartanPlayer staff, SpartanPlayer player,
+                                                  PlayerViolation playerViolation) {
         if (staff.cooldowns.canDo("notification")) {
             boolean hasViolations = violation != null;
             int frequency = getNotificationTicksCooldown(
                     staff,
                     player,
                     hasViolations
-                            ? violation.getIgnoredViolations(player.dataType)
+                            ? playerViolation.getIgnoredViolations(player.dataType)
                             : Check.standardIgnoredViolations
             );
             boolean def = !hasViolations || frequency < 0;
 
-            if (def || violation.level >= frequency) {
+            if (def || (playerViolation.level + playerViolation.increase) >= frequency) {
                 staff.cooldowns.add(
                         "notification",
                         def ? Math.abs(frequency) * TPS.tickTimeInteger : frequency

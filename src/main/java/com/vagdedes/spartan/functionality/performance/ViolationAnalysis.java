@@ -65,7 +65,7 @@ public class ViolationAnalysis {
 
     private static int hash(PlayerViolation playerViolation) {
         return Objects.hash(
-                playerViolation.level,
+                playerViolation.level + playerViolation.increase,
                 playerViolation.identity
         );
     }
@@ -174,7 +174,7 @@ public class ViolationAnalysis {
                         long time = AlgebraUtils.floorToNearest(violation.time, 60_000);
                         PlayerViolation highest = highestViolation.get(time);
 
-                        if (highest == null || violation.level > highest.level) {
+                        if (highest == null || (violation.level + violation.increase) > highest.level) {
                             highestViolation.put(time, violation);
                         }
                     }
