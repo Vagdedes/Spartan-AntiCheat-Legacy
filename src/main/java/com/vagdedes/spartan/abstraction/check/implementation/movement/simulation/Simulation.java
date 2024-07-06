@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.simulatio
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class Simulation extends CheckExecutor {
@@ -15,6 +16,14 @@ public class Simulation extends CheckExecutor {
     public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) object;
+            Location to = event.getTo();
+            Location from = event.getFrom();
+
+            double
+            dx = to.getX() - from.getX(),
+            dy = to.getY() - from.getY(),
+            dz = to.getZ() - from.getZ();
+
 
         }
     }

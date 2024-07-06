@@ -38,6 +38,7 @@ public class BackgroundMove {
             PacketContainer packet = event.getPacket();
             PacketType type = event.getPacket().getType();
 
+            /*
             if (!protocol.teleportEngine.isEmpty()) {
                 for (TeleportData teleportData : protocol.teleportEngine) {
                     Location teleportLocation = protocol.getLocation().clone().add(teleportData.getLocation());
@@ -54,6 +55,8 @@ public class BackgroundMove {
                     }
                 }
             }
+
+             */
 
             if (type.equals(PacketType.Play.Client.LOOK)) {
                 Location from = protocol.getLocation().clone();
