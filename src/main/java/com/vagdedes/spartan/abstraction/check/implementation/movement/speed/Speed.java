@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.event.PlayerStayEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
@@ -462,12 +461,7 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerStayEvent) {
-            if (((PlayerStayEvent) object).isOnGround()) {
-                wrappedOnAir = 0;
-                wrappedOnFly = 0;
-            }
-        } else if (object instanceof PlayerVelocityEvent) {
+        if (object instanceof PlayerVelocityEvent) {
             if (!cancelled) {
                 PlayerVelocityEvent event = (PlayerVelocityEvent) object;
                 RayLine line = new RayLine(event.getVelocity().getX(), event.getVelocity().getZ());

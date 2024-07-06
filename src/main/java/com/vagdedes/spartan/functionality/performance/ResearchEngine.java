@@ -53,11 +53,7 @@ public class ResearchEngine {
                 }
             } else {
                 schedulerTicks -= 1;
-
-                SpartanBukkit.analysisThread.executeIfFree(() -> {
-                    updateCache();
-                    MainMenu.refresh();
-                });
+                SpartanBukkit.analysisThread.executeIfFree(ResearchEngine::updateCache);
             }
         }, 1L, 1L);
     }
