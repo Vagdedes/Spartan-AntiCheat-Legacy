@@ -1,1 +1,3 @@
 [#] Fixed a world unload chunk console error.
+[#] Improved the accuracy of data in detection notifications.
+[+] Implemented new statistics to judge how many violations a given check should ignore.

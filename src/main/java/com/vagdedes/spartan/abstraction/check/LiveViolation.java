@@ -381,7 +381,8 @@ public class LiveViolation {
         String message = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
-                        .replace("{info}", playerViolation.information),
+                        .replace("{info}", playerViolation.information)
+                        .replace("{vls:detection}", Integer.toString(playerViolation.level + playerViolation.increase)),
                 hackType
         );
         CrossServerInformation.queueNotification(message, true);
@@ -455,7 +456,7 @@ public class LiveViolation {
     public static boolean hasNotificationCooldown(SpartanPlayer staff, SpartanPlayer player,
                                                   PlayerViolation playerViolation) {
         if (staff.cooldowns.canDo("notification")) {
-            boolean hasViolations = violation != null;
+            boolean hasViolations = playerViolation != null;
             int frequency = getNotificationTicksCooldown(
                     staff,
                     player,

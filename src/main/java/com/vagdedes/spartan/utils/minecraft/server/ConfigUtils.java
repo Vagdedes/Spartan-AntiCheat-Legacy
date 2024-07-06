@@ -76,7 +76,6 @@ public class ConfigUtils {
 
         if (hackType != null) {
             message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
-            message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getTotalLevel()));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }
@@ -111,7 +110,6 @@ public class ConfigUtils {
 
                 if (hasHackType) {
                     message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
-                    message = replace(message, "{vls:detection}", String.valueOf(p.getViolations(hackType).getTotalLevel()));
                 }
             } else if (hasHackType) {
                 PlayerProfile profile = ResearchEngine.getPlayerProfile(name);
