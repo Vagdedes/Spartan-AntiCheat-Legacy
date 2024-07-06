@@ -200,8 +200,10 @@ public class Event_Chunks implements Listener {
         World world = e.getWorld();
         Map<Long, ChunkData> subMap = map.remove(world);
 
-        for (ChunkData data : subMap.values()) {
-            loaded.remove(totalHash(world, data.snapshot.getX(), data.snapshot.getZ()));
+        if (subMap != null) {
+            for (ChunkData data : subMap.values()) {
+                loaded.remove(totalHash(world, data.snapshot.getX(), data.snapshot.getZ()));
+            }
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             loaded.remove(totalHash(world, chunk.getX(), chunk.getZ()));
