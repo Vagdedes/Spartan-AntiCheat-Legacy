@@ -5,8 +5,8 @@ import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import org.bukkit.potion.PotionEffectType;
 
-public class Attributes
-{
+public class Attributes {
+
     public static Object getAttributeValue(Attribute attribute, SpartanProtocol protocol) {
         if (attribute.equals(Attribute.MOVEMENT_SPEED)) {
             float d = 0.1F * (protocol.player.getWalkSpeed() * 5);

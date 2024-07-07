@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion;
 
 public class MotionVector {
+
     public double x;
     public double y;
     public double z;
@@ -22,6 +23,7 @@ public class MotionVector {
         this.y += y;
         this.z += z;
     }
+
     public MotionVector addWithClone(double x, double y, double z) {
         MotionVector v = this.cloneVector();
         v.add(x, y, z);
@@ -51,6 +53,7 @@ public class MotionVector {
     public void setZ(double z) {
         this.z = z;
     }
+
     public MotionVector cloneVector() {
         return new MotionVector(this.x, this.y, this.z);
     }

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion;
 
 public class JumpEvent {
+
     private float yaw;
 
     public JumpEvent(float yaw) {

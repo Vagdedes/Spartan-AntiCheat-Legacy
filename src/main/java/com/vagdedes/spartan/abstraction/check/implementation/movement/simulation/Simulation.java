@@ -19,10 +19,9 @@ public class Simulation extends CheckExecutor {
             Location to = event.getTo();
             Location from = event.getFrom();
 
-            double
-            dx = to.getX() - from.getX(),
-            dy = to.getY() - from.getY(),
-            dz = to.getZ() - from.getZ();
+            double dx = to.getX() - from.getX(),
+                    dy = to.getY() - from.getY(),
+                    dz = to.getZ() - from.getZ();
 
 
         }
