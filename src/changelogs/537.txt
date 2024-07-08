@@ -1,0 +1,2 @@
+[#] Fixed a ProtocolLib ping-pong transactions console error.
+[#] Fixed a 1.8 get block direction console error.
