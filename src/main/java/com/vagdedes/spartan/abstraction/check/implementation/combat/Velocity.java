@@ -6,12 +6,9 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
-import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Material;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
@@ -113,9 +110,9 @@ public class Velocity extends CheckExecutor {
                 && !player.isOutsideOfTheBorder(-1.0)
                 && !BlockPatternUtils.isBlockPattern(
                 new double[][]{
-                        {GroundUtils.boundingBox, 0, GroundUtils.boundingBox},
-                        {GroundUtils.boundingBox, 1, GroundUtils.boundingBox},
-                        {GroundUtils.boundingBox, player.getInstance().getEyeHeight(), GroundUtils.boundingBox}
+                        {1, 0, 1},
+                        {1, 1, 1},
+                        {1, player.getInstance().getEyeHeight(), 1}
                 },
                 player.movement.getLocation(),
                 true,
