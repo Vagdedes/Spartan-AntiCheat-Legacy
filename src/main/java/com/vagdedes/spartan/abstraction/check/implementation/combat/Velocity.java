@@ -6,7 +6,10 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -94,9 +97,32 @@ public class Velocity extends CheckExecutor {
     }
 
     @Override
+    protected void cannotHandle(boolean cancelled, Object object) {
+        veloV = true;
+        veloH = true;
+        arrayV = 0;
+        arrayH = 0;
+        verticalSended = 0;
+        xSended = 0;
+        zSended = 0;
+    }
+
+
+    @Override
     protected boolean canRun() {
-        return CombatProcessing.canCheck(player)
-                && !player.isOutsideOfTheBorder(-1.0);
+        return SpartanBukkit.packetsEnabled()
+                && CombatProcessing.canCheck(player)
+                && !player.isOutsideOfTheBorder(-1.0)
+                && !BlockPatternUtils.isBlockPattern(
+                new double[][]{
+                        {GroundUtils.boundingBox, 0, GroundUtils.boundingBox},
+                        {GroundUtils.boundingBox, 1, GroundUtils.boundingBox},
+                        {GroundUtils.boundingBox, player.getInstance().getEyeHeight(), GroundUtils.boundingBox}
+                },
+                player.movement.getLocation(),
+                true,
+                BlockUtils.solid, BlockUtils.semi_solid
+        );
     }
 
     private boolean blockCause(SpartanPlayer player) {
