@@ -503,6 +503,8 @@ public class ResearchEngine {
             if (enoughData()) {
                 for (Enums.HackType hackType : Enums.HackType.values()) {
                     for (Enums.DataType dataType : dataTypes) {
+                        int playerCount = 0;
+
                         if (hackType.getCheck().isEnabled(dataType, null, null)) {
                             boolean bedrock = dataType == Enums.DataType.BEDROCK;
                             Map<Integer, ViolationAnalysis.TimePeriod> averages = new LinkedHashMap<>();
@@ -514,6 +516,8 @@ public class ResearchEngine {
 
                                     // Organize the violations into time period pieces
                                     if (!list.isEmpty()) {
+                                        playerCount++;
+
                                         for (PlayerViolation playerViolation : list) {
                                             averages.computeIfAbsent(
                                                     AlgebraUtils.integerFloor(playerViolation.time / (double) hackType.violationTimeWorth),
@@ -524,7 +528,8 @@ public class ResearchEngine {
                                 }
                             }
 
-                            if (!averages.isEmpty()) {
+                            if (!averages.isEmpty()
+                                    && playerCount >= requiredProfiles) {
                                 Map<Integer, Double>
                                         sum = new LinkedHashMap<>(),
                                         count = new LinkedHashMap<>();
